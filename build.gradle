@@ -1,0 +1,20 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.nisgits.gradle:gradle-executable-jar-plugin:master-REL-6'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'executable-jar'
+
+mainClass = 'Main'
+
+repositories {
+    maven { url "http://repo.springsource.org/libs-release" }
+}
+
+dependencies {
+}
