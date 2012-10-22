@@ -8,25 +8,17 @@ public class Webapp {
 
 	public static void main(String[] args) throws Exception {
 
-		final AnnotationConfigWebApplicationContext applicationContext =
+		AnnotationConfigWebApplicationContext ctx =
 				new AnnotationConfigWebApplicationContext();
-		applicationContext.register(WebConfig.class);
+		ctx.register(WebConfig.class);
 
-		final ServletHolder servletHolder = new ServletHolder(
-				new DispatcherServlet(applicationContext));
-		final ServletContextHandler context = new ServletContextHandler();
+		ServletHolder servletHolder = new ServletHolder(new DispatcherServlet(ctx));
+		ServletContextHandler context = new ServletContextHandler();
 		context.setContextPath("/");
 		context.addServlet(servletHolder, "/*");
 
-		String webPort = System.getenv("PORT");
-		if (webPort == null || webPort.isEmpty()) {
-			webPort = "8080";
-		}
-
-		final Server server = new Server(Integer.valueOf(webPort));
-
+		Server server = new Server(8080);
 		server.setHandler(context);
-
 		server.start();
 		server.join();
 	}
