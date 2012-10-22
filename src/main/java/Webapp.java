@@ -1,24 +1,23 @@
+import org.eclipse.jetty.annotations.AnnotationConfiguration;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
 
 public class Webapp {
 
 	public static void main(String[] args) throws Exception {
 
-		AnnotationConfigWebApplicationContext ctx =
-				new AnnotationConfigWebApplicationContext();
-		ctx.register(WebConfig.class);
-
-		ServletHolder servletHolder = new ServletHolder(new DispatcherServlet(ctx));
-		ServletContextHandler context = new ServletContextHandler();
-		context.setContextPath("/");
-		context.addServlet(servletHolder, "/*");
+		WebAppContext webapp = new WebAppContext();
+		webapp.setContextPath("/");
+		webapp.setWar("/Work/spring-bootstrap/build/libs/spring-bootstrap.war");
+		webapp.setConfigurations(new Configuration[] {
+			new WebInfConfiguration(),
+			new AnnotationConfiguration()
+		});
 
 		Server server = new Server(8080);
-		server.setHandler(context);
+		server.setHandler(webapp);
 		server.start();
 		server.join();
 	}

@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     compile 'org.eclipse.jetty:jetty-webapp:9.0.0.M1'
+    compile 'org.eclipse.jetty:jetty-annotations:9.0.0.M1'
     compile 'org.springframework:spring-webmvc:3.2.0.BUILD-SNAPSHOT'
 }
 
