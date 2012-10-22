@@ -11,7 +11,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'executable-jar'
 
-mainClass = 'Main'
+ext.mainClass = 'Main'
 
 repositories {
     maven { url "http://repo.springsource.org/libs-release" }
@@ -19,4 +19,9 @@ repositories {
 
 dependencies {
     compile 'org.eclipse.jetty:jetty-server:9.0.0.M1'
+}
+
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '1.2'
 }
