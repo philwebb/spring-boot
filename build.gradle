@@ -1,7 +1,4 @@
 buildscript {
-	repositories {
-	    maven { url "http://repo.springsource.org/libs-snapshot" }
-	}
 }
 
 configure(allprojects) {
@@ -10,13 +7,29 @@ configure(allprojects) {
 
     sourceCompatibility=1.5
     targetCompatibility=1.5
+
+	ext.springVersion="3.2.0.BUILD-SNAPSHOT"
+
+	repositories {
+		maven { url "http://repo.springsource.org/libs-release" }
+		mavenLocal();
+	}
 }
 
 project('spring-bootstrap') {
 	dependencies {
-	    compile 'org.eclipse.jetty:jetty-webapp:9.0.0.M1'
-	    compile 'org.eclipse.jetty:jetty-annotations:9.0.0.M1'
-	    compile 'org.springframework:spring-webmvc:3.2.0.BUILD-SNAPSHOT'
+		compile("org.springframework:spring-core:$springVersion")
+		compile("org.springframework:spring-webmvc:$springVersion")
+		compile("javax.servlet:javax.servlet-api:3.0.1")
+	}
+}
+
+project('spring-bootstrap-sample') {
+	dependencies {
+		compile(project(":spring-bootstrap"))
+		compile("org.mortbay.jetty:jetty:6.1.26")
+		compile("org.mortbay.jetty:jetty-util:6.1.26")
+		compile("javax.servlet:javax.servlet-api:3.0.1")
 	}
 }
 

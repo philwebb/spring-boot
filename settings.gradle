@@ -1,3 +1,4 @@
 rootProject.name = 'spring-bootstrap-parent'
 
 include 'spring-bootstrap'
+include 'spring-bootstrap-sample'
