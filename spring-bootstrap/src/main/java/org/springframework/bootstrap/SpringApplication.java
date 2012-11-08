@@ -1,28 +1,322 @@
 
 package org.springframework.bootstrap;
 
-import org.springframework.bootstrap.application.Dunno;
-import org.springframework.bootstrap.web.context.EmbeddedContainerBeanFactoryPostProcessor;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.bootstrap.web.context.AnnotationConfigStandAloneWebApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
+
+//FIXME DC default to component scanning, use @Import or @ImportResource or configure to change.
+
+/**
+ * A stand-along Spring command-line application.
+ *
+ * <pre>
+ *
+ * public class MyApplication extends SpringApplication {
+ *
+ * 	public static void main(String[] args) {
+ * 		new MyApplication().run(args);
+ * 	}
+ * }
+ * </pre>
+ *
+ * @author Phillip Webb
+ * @see #configure(Configuration, String...)
+ * @see #run(String...)
+ */
 public class SpringApplication {
 
+	// FIXME DC can override
 	public void run(String... args) {
-		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-		applicationContext.addBeanFactoryPostProcessor(new EmbeddedContainerBeanFactoryPostProcessor());
-		//AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
-		applicationContext.register(getRunBean());
-		applicationContext.scan(getClass().getPackage().getName());
-		applicationContext.refresh();
-		applicationContext.registerShutdownHook();
-//		Object bean = applicationContext.getBean(getRunBean());
-//		if (bean instanceof Runnable) {
-//			((Runnable) bean).run();
-//		}
+		ConfigurationDetails configuration = new ConfigurationDetails(args);
+		initilizeConfiguration(configuration);
+		configure(configuration);
+		doRun(configuration);
 	}
 
-	protected Class<?> getRunBean() {
-		return Dunno.class;
+	/**
+	 * Initialize the configuration based on any class level annotations.
+	 *
+	 * @param configuration the configuration
+	 */
+	private void initilizeConfiguration(ConfigurationDetails configuration) {
+		Import importAnnotation = getClass().getAnnotation(Import.class);
+		if (importAnnotation != null) {
+			configuration.addImport(importAnnotation.value());
+		}
+		ImportResource importResourceAnnotation = getClass().getAnnotation(
+				ImportResource.class);
+		if (importResourceAnnotation != null) {
+			configuration.addImport(importResourceAnnotation.value());
+			configuration.setImportReader(importResourceAnnotation.reader());
+		}
+	}
+
+	/**
+	 * Called to configure the application before being run. Subcalsses can override this
+	 * method to customize the configuration.
+	 *
+	 * @param configuration the configuration
+	 * @see Configuration
+	 */
+	protected void configure(Configuration configuration) {
+	}
+
+	/**
+	 *
+	 * @param configuration
+	 */
+	protected void doRun(ConfigurationDetails configuration) {
+		ApplicationContext applicationContext = createApplicationContext(configuration.getContextClass());
+		setupImports(applicationContext, configuration);
+		customizeContext(applicationContext, configuration.getInitializers());
+		registerShutdownHook(applicationContext);
+		refresh(applicationContext);
+		if (configuration.isAutowireSelf()) {
+			applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
+		}
+	}
+
+	protected ApplicationContext createApplicationContext(
+			Class<? extends ApplicationContext> contextClass) {
+		if (contextClass == null) {
+			// FIXME we may want to decide on this based on if Servlet API exists
+			contextClass = AnnotationConfigStandAloneWebApplicationContext.class;
+		}
+		return BeanUtils.instantiate(contextClass);
+	}
+
+	protected void setupImports(ApplicationContext applicationContext,
+			ConfigurationDetails configuration) {
+		if (!configuration.getImports().isEmpty()
+				|| StringUtils.hasLength(configuration.getContextConfigLocation())) {
+			// FIXME configure user customized stuff
+		}
+		else {
+			// Fallback to scanning form the application class
+			try {
+				Method scanMethod = ReflectionUtils.findMethod(
+						applicationContext.getClass(), "scan", String[].class);
+				Assert.state(scanMethod != null,
+						"Unable to find scan method on application context "
+								+ applicationContext.getClass());
+				ReflectionUtils.invokeMethod(scanMethod, applicationContext,
+						new Object[] { getScanBasePackage() });
+			} catch (Exception ex) {
+				throw new IllegalStateException("Unable to scan for bean", ex);
+			}
+		}
+	}
+
+	protected String[] getScanBasePackage() {
+		return new String[] { getClass().getPackage().getName() };
+	}
+
+	protected void customizeContext(ApplicationContext applicationContext,
+			Set<Class<? extends ApplicationContextInitializer<?>>> initializers) {
+		// FIXME create, sort then call them
+	}
+
+	private void registerShutdownHook(ApplicationContext applicationContext) {
+		if (applicationContext instanceof ConfigurableWebApplicationContext) {
+			((AbstractApplicationContext) applicationContext).registerShutdownHook();
+		}
+	}
+
+	private void refresh(ApplicationContext applicationContext) {
+		if (applicationContext instanceof ConfigurableWebApplicationContext) {
+			((AbstractApplicationContext) applicationContext).refresh();
+		}
+	}
+
+	/**
+	 * Callback interfaces that allows configuration of the {@link SpringApplication}.
+	 * This interface is not Indented to be implemented by subclasses as it may be
+	 * extended in future releases.
+	 */
+	protected static interface Configuration {
+
+		/**
+		 * Returns a mutable list of the application arguments. This list is initially
+		 * populated from the command line but may be manipulated here.
+		 *
+		 * @return a mutable list of arguments
+		 * @see #setArguments(List)
+		 */
+		List<String> getArguments();
+
+		/**
+		 * Replace any existing arguments with the values from specified list.
+		 *
+		 * @param arguments the new arguments
+		 * @see #getArguments()
+		 */
+		void setArguments(List<String> arguments);
+
+		/**
+		 * Set the type of Spring {@link ApplicationContext} that will be created and
+		 * used.
+		 *
+		 * @param contextClass the application context type
+		 */
+		void setContextClass(Class<? extends ApplicationContext> contextClass);
+
+		/**
+		 * Add an {@link ApplicationContextInitializer} that will called before the
+		 * {@link ApplicationContext} is refreshed.
+		 *
+		 * @param initializer the type of initializer
+		 */
+		void addInitializer(Class<? extends ApplicationContextInitializer<?>> initializer);
+
+		/**
+		 * Import the specified resource when the application context is created. Adding
+		 * imports will disable the default strategy of searching for beans.
+		 *
+		 * @param importResource the resource to import
+		 * @see #addImport(Class)
+		 * @see #setImportReader(Class)
+		 */
+		void addImport(String... importResource);
+
+		/**
+		 * Import the specified class when the application context is created. Adding
+		 * imports will disable the default strategy of searching for beans.
+		 *
+		 * @param importClass the class to import
+		 * @see #addImport(Class)
+		 * @see #setImportReader(Class)
+		 */
+		void addImport(Class<?>... importClass);
+
+		/**
+		 * Set the reader that will be used to load imported resources. If not specified
+		 * the {@link XmlBeanDefinitionReader} will be used.
+		 *
+		 * @param importReader the import reader
+		 */
+		void setImportReader(Class<? extends BeanDefinitionReader> importReader);
+
+		/**
+		 * Set the context configuration location. Setting a context config location will
+		 * disable the default strategy of searching for beans.
+		 *
+		 * @param contextConfigLocation
+		 */
+		void setContextConfigLocation(String contextConfigLocation);
+
+		/**
+		 * Determine if the {@link SpringApplication} itself will be autowired with bean
+		 * from the application context. Whilst the {@link SpringApplication} is not
+		 * itself a managed bean it can be injected with managed objects. Defaults to
+		 * {@code true} if not specifically configured.
+		 *
+		 * @param autowireSelf if the {@link SpringApplication} should be autowired.
+		 */
+		void setAutowireSelf(boolean autowireSelf);
+	}
+
+	/**
+	 * Details of a specific {@link Configuration} that may be customized.
+	 */
+	protected final static class ConfigurationDetails implements Configuration {
+
+		private ArrayList<String> arguments;
+
+		private Class<? extends ApplicationContext> contextClass;
+
+		private Set<Class<? extends ApplicationContextInitializer<?>>> initializers = new LinkedHashSet<Class<? extends ApplicationContextInitializer<?>>>();
+
+		private Set<Object> imports = new LinkedHashSet<Object>();
+
+		private Class<? extends BeanDefinitionReader> importReader;
+
+		private String contextConfigLocation;
+
+		private boolean autowireSelf = true;
+
+		public ConfigurationDetails(String[] args) {
+			this.arguments = new ArrayList<String>(Arrays.asList(args));
+		}
+
+		public List<String> getArguments() {
+			return arguments;
+		}
+
+		public void setArguments(List<String> arguments) {
+			this.arguments = new ArrayList<String>(arguments);
+		}
+
+		public Class<? extends ApplicationContext> getContextClass() {
+			return contextClass;
+		}
+
+		public void setContextClass(Class<? extends ApplicationContext> contextClass) {
+			this.contextClass = contextClass;
+		}
+
+		public Set<Class<? extends ApplicationContextInitializer<?>>> getInitializers() {
+			return initializers;
+		}
+
+		public void addInitializer(
+				Class<? extends ApplicationContextInitializer<?>> initializer) {
+			this.initializers.add(initializer);
+		}
+
+		public Set<Object> getImports() {
+			return imports;
+		}
+
+		public void addImport(String... importResource) {
+			this.imports.addAll(Arrays.asList(importResource));
+		}
+
+		public void addImport(Class<?>... importClass) {
+			this.imports.add(Arrays.asList(importClass));
+		}
+
+		public Class<? extends BeanDefinitionReader> getImportReader() {
+			return importReader;
+		}
+
+		public void setImportReader(Class<? extends BeanDefinitionReader> importReader) {
+			this.importReader = importReader;
+		}
+
+		public String getContextConfigLocation() {
+			return contextConfigLocation;
+		}
+
+		public void setContextConfigLocation(String contextConfigLocation) {
+			this.contextConfigLocation = contextConfigLocation;
+		}
+
+		public boolean isAutowireSelf() {
+			return autowireSelf;
+		}
+
+		public void setAutowireSelf(boolean autowireSelf) {
+			this.autowireSelf = autowireSelf;
+		}
+
 	}
 
 	// CommandLinePropertySource
@@ -62,5 +356,7 @@ public class SpringApplication {
 	// Run a Runnable bean from the context then exit
 	//
 	// Wait forever
+	//
+	// Deal with @Import @ImportResource @ComponentScan
 
 }

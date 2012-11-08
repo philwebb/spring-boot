@@ -5,9 +5,10 @@ import javax.servlet.ServletContextListener;
 
 import org.springframework.web.context.WebApplicationContext;
 
-public interface EmbeddedServletProvider {
+public interface EmbeddedServletContainerFactory {
 
-	public void startEmbeddedServlet(WebApplicationContext applicationContext, ServletContextListener listener)
+	public EmbeddedServletContainer getContainer(
+			WebApplicationContext applicationContext, ServletContextListener listener)
 			throws Exception;
 
 }
