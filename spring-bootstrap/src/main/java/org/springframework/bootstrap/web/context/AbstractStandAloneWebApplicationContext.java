@@ -16,7 +16,7 @@ import org.springframework.web.context.support.AbstractRefreshableWebApplication
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-// FIXME DC A context that can either run inside a web container or can bootstap it's own
+// FIXME DC A context that can either run inside a web container or can bootstrap its own
 // by expecting a single EmbeddedServletContainerFactort bean
 
 public abstract class AbstractStandAloneWebApplicationContext extends
