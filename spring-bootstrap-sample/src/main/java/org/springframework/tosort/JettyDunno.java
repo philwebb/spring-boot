@@ -1,7 +1,7 @@
 
 package org.springframework.tosort;
 
-import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
@@ -15,24 +15,23 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @Component
-// @Conditional(NeverCondition.class)
+@Conditional(NeverCondition.class)
 public class JettyDunno implements EmbeddedServletProvider {
 
-	@Value("#{ systemProperties['user.region'] }")
+	@Value("#{ systemProperties['java.runtime.name'] }")
 	private String defaultLocale;
 
 	public void run() {
 	}
 
-	public ServletContext startEmbeddedServlet(WebApplicationContext applicationContext)
-			throws Exception {
+	public void startEmbeddedServlet(WebApplicationContext applicationContext,
+			ServletContextListener listener) throws Exception {
 		System.out.println(defaultLocale);
 		Server server = new Server(8080);
 		Context context = new Context(server, "/", Context.SESSIONS);
-		context.addServlet(new ServletHolder(new DispatcherServlet(applicationContext)),
-				"/*");
+		context.addServlet(new ServletHolder(new DispatcherServlet(applicationContext)), "/*");
+		context.addEventListener(listener);
 		server.start();
-		return context.getServletContext();
 	}
 
 
