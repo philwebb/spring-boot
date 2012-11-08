@@ -2,14 +2,15 @@
 package org.springframework.bootstrap;
 
 import org.springframework.bootstrap.application.Dunno;
-import org.springframework.bootstrap.web.context.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.bootstrap.web.context.EmbeddedContainerBeanFactoryPostProcessor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 public class SpringApplication {
 
 	public void run(String... args) {
-		//AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-		AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
+		AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+		applicationContext.addBeanFactoryPostProcessor(new EmbeddedContainerBeanFactoryPostProcessor());
+		//AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
 		applicationContext.register(getRunBean());
 		applicationContext.scan(getClass().getPackage().getName());
 		applicationContext.refresh();

@@ -7,15 +7,13 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.autoconfigure.NeverCondition;
 import org.springframework.bootstrap.web.context.EmbeddedServletProvider;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @Component
-@Conditional(NeverCondition.class)
+//@Conditional(NeverCondition.class)
 public class JettyDunno implements EmbeddedServletProvider {
 
 	@Value("#{ systemProperties['java.runtime.name'] }")
