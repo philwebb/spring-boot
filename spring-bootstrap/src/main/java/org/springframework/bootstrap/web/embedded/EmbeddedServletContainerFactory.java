@@ -1,5 +1,5 @@
 
-package org.springframework.bootstrap.web.context;
+package org.springframework.bootstrap.web.embedded;
 
 import javax.servlet.ServletContextListener;
 

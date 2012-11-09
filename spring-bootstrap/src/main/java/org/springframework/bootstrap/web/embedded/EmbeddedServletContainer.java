@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.web.context;
+package org.springframework.bootstrap.web.embedded;
 
 
 public interface EmbeddedServletContainer {

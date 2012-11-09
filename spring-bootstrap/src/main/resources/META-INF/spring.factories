@@ -1,0 +1,1 @@
+org.springframework.bootstrap.autoconfigure.AutoConfiguration=org.springframework.bootstrap.autoconfigure.example.ConfiguredByMe

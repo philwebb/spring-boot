@@ -7,6 +7,8 @@ import javax.servlet.ServletContextEvent;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.bootstrap.web.embedded.EmbeddedServletContainer;
+import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletConfigAware;
