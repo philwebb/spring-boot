@@ -61,7 +61,7 @@ configure(subprojects) { subproject ->
 	}
 }
 
-project('spring-bootstrap') {
+project('spring-bootstrap-core') {
 	dependencies {
 		compile("org.springframework:spring-core:$springVersion")
 		compile("org.springframework:spring-webmvc:$springVersion")
