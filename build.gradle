@@ -1,9 +1,48 @@
 buildscript {
 }
 
-configure(allprojects) {
+configure(subprojects) { subproject ->
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+	apply from: "${rootProject.projectDir}/publish-maven.gradle"
+
+	eclipse.classpath.file.whenMerged { classpath ->
+		def nonExportedPaths = []
+
+		// Don't export optional/provided projects
+		nonExportedPaths += (optionalDeps + providedDeps).findAll{
+			it instanceof ProjectDependency
+		}.collect{
+			"/" + it.dependencyProject.name
+		};
+
+		// Don't export optional/provided modules
+		def optionalModuleVersionIdentifiers = (optionalDeps + providedDeps).findAll{
+			it instanceof ExternalModuleDependency
+		}.collect{
+			new org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier(it.group, it.name, it.version)
+		} as Set
+
+			nonExportedPaths += configurations.testCompile.resolvedConfiguration.resolvedArtifacts.findAll{
+			it.moduleVersion.id in optionalModuleVersionIdentifiers
+		}.collect{
+			it.file as String
+		}
+
+		// Don't export test dependency
+		def testModuleVersionIdentifiers = configurations.testCompile.dependencies.findAll{
+			it instanceof ExternalModuleDependency
+		}.collect{
+			new org.gradle.api.internal.artifacts.DefaultModuleVersionIdentifier(it.group, it.name, it.version)
+		} as Set
+
+		nonExportedPaths += configurations.testCompile.resolvedConfiguration.resolvedArtifacts.findAll{
+			it.moduleVersion.id in testModuleVersionIdentifiers
+		}.collect{
+			it.file as String
+		}
+		classpath.entries.findAll { it.path in nonExportedPaths }*.exported = false
+	}
 
     sourceCompatibility=1.5
     targetCompatibility=1.5
@@ -26,7 +65,9 @@ project('spring-bootstrap') {
 	dependencies {
 		compile("org.springframework:spring-core:$springVersion")
 		compile("org.springframework:spring-webmvc:$springVersion")
-		compile("javax.servlet:javax.servlet-api:3.0.1")
+		compile("org.mortbay.jetty:jetty:6.1.26", provided)
+		compile("org.mortbay.jetty:jetty-util:6.1.26", provided)
+		compile("javax.servlet:javax.servlet-api:3.0.1", provided)
 	}
 }
 
