@@ -19,7 +19,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 // FIXME DC A context that can either run inside a web container or can bootstrap its own
 // by expecting a single EmbeddedServletContainerFactort bean
 
-public abstract class AbstractStandAloneWebApplicationContext extends
+public abstract class BootstrapWebApplicationContext extends
 		AbstractRefreshableWebApplicationContext {
 
 	private EmbeddedServletContainer embeddedServletContainer;
@@ -52,7 +52,8 @@ public abstract class AbstractStandAloneWebApplicationContext extends
 		try {
 			EmbeddedServletContainerFactory provider = getBeanFactory().getBean(
 					EmbeddedServletContainerFactory.class);
-			this.embeddedServletContainer = provider.getContainer(this, new EmbeddedContextLoaderListener(this));
+			this.embeddedServletContainer = provider.getContainer(this,
+					new EmbeddedContextLoaderListener(this));
 			this.embeddedServletContainer.start();
 		} catch (Exception ex) {
 			throw new IllegalStateException(ex);
@@ -60,8 +61,9 @@ public abstract class AbstractStandAloneWebApplicationContext extends
 	}
 
 	@Override
-	protected void destroyBeans() {
-		if(embeddedServletContainer != null) {
+	protected void doClose() {
+		super.doClose();
+		if (embeddedServletContainer != null) {
 			try {
 				embeddedServletContainer.stop();
 				embeddedServletContainer = null;
@@ -69,7 +71,6 @@ public abstract class AbstractStandAloneWebApplicationContext extends
 				throw new IllegalStateException(ex);
 			}
 		}
-		super.destroyBeans();
 	}
 
 	protected void contextInitialized(ServletContext servletContext) {
@@ -93,7 +94,7 @@ public abstract class AbstractStandAloneWebApplicationContext extends
 
 		@Override
 		public void contextInitialized(ServletContextEvent event) {
-			AbstractStandAloneWebApplicationContext.this.contextInitialized(event.getServletContext());
+			BootstrapWebApplicationContext.this.contextInitialized(event.getServletContext());
 			super.contextInitialized(event);
 		}
 

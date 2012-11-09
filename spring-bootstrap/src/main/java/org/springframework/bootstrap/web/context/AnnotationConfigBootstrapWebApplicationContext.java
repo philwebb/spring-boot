@@ -8,8 +8,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-public class AnnotationConfigStandAloneWebApplicationContext extends
-		AbstractStandAloneWebApplicationContext {
+public class AnnotationConfigBootstrapWebApplicationContext extends
+		BootstrapWebApplicationContext {
 
 	private Delegate delegate = new Delegate();
 
@@ -45,17 +45,17 @@ public class AnnotationConfigStandAloneWebApplicationContext extends
 
 		@Override
 		public ConfigurableWebEnvironment getEnvironment() {
-			return AnnotationConfigStandAloneWebApplicationContext.this.getEnvironment();
+			return AnnotationConfigBootstrapWebApplicationContext.this.getEnvironment();
 		}
 
 		@Override
 		public String[] getConfigLocations() {
-			return AnnotationConfigStandAloneWebApplicationContext.this.getConfigLocations();
+			return AnnotationConfigBootstrapWebApplicationContext.this.getConfigLocations();
 		}
 
 		@Override
 		public ClassLoader getClassLoader() {
-			return AnnotationConfigStandAloneWebApplicationContext.this.getClassLoader();
+			return AnnotationConfigBootstrapWebApplicationContext.this.getClassLoader();
 		}
 	}
 
