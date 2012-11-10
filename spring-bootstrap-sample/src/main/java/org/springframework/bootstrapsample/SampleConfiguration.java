@@ -1,5 +1,7 @@
 package org.springframework.bootstrapsample;
 
+import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.web.embedded.EmbeddedTomcatFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -13,4 +15,8 @@ public class SampleConfiguration {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
+	@Bean
+	public EmbeddedServletContainerFactory embeddedServletContainer() {
+		return new EmbeddedTomcatFactory();
+	}
 }

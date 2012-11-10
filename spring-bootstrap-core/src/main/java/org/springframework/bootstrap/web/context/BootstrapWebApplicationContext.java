@@ -66,9 +66,10 @@ public abstract class BootstrapWebApplicationContext extends
 	protected void doClose() {
 		super.doClose();
 		if (embeddedServletContainer != null) {
+			EmbeddedServletContainer stopping = embeddedServletContainer;
+			embeddedServletContainer = null;
 			try {
-				embeddedServletContainer.stop();
-				embeddedServletContainer = null;
+				stopping.stop();
 			} catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}

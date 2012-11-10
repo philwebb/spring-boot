@@ -1,18 +1,14 @@
 
-package org.springframework.bootstrapsample.web;
+package org.springframework.bootstrap.web.embedded;
 
 import javax.servlet.ServletContextListener;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-@Component
 public class EmbeddedJettyFactory implements EmbeddedServletContainerFactory {
 
 	public EmbeddedServletContainer getContainer(
