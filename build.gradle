@@ -87,10 +87,10 @@ project('spring-bootstrap-sample') {
 		compile("org.mortbay.jetty:jetty:6.1.26")
 		compile("org.mortbay.jetty:jetty-util:6.1.26")
 		compile("javax.servlet:javax.servlet-api:3.0.1")
-		compile("org.apache.tomcat.embed:tomcat-embed-core:7.0.30") {
-			exclude module: 'servlet-api'
-		}
-		compile("org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.30");
+//		compile("org.apache.tomcat.embed:tomcat-embed-core:7.0.30") {
+//			exclude module: 'servlet-api'
+//		}
+//		compile("org.apache.tomcat.embed:tomcat-embed-logging-juli:7.0.30");
 	}
 }
 

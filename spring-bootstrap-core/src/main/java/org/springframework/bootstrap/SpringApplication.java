@@ -11,9 +11,12 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.bootstrap.autoconfigure.AutoConfigurationApplicationContextInitializer;
+import org.springframework.bootstrap.autoconfigure.AutoConfigurationClassPostProcessor;
 import org.springframework.bootstrap.web.context.AnnotationConfigBootstrapWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -32,9 +35,6 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * A stand-along Spring command-line application.
  *
  * <pre>
- *
- *
- *
  * public class MyApplication extends SpringApplication {
  *
  * 	public static void main(String[] args) {
@@ -103,6 +103,9 @@ public class SpringApplication {
 		setupImports(applicationContext, configuration);
 		applyApplicationContextInitializers(applicationContext,
 				configuration.getInitializers());
+		if(configuration.isAutoConfigure()) {
+			new AutoConfigurationApplicationContextInitializer().initialize((ConfigurableApplicationContext) applicationContext);
+		}
 		addCommandLineProperySource(applicationContext, configuration);
 		refresh(applicationContext);
 		if (configuration.isAutowireSelf()) {
@@ -173,7 +176,6 @@ public class SpringApplication {
 		// this.contextInitializers) {
 		// initializer.initialize(wac);
 		// }
-
 	}
 
 	private void registerShutdownHook(ApplicationContext applicationContext) {
@@ -265,14 +267,17 @@ public class SpringApplication {
 		void setContextConfigLocation(String contextConfigLocation);
 
 		/**
-		 * Determine if the {@link SpringApplication} itself will be autowired with bean
+		 * Disable if the {@link SpringApplication} itself will be autowired with bean
 		 * from the application context. Whilst the {@link SpringApplication} is not
-		 * itself a managed bean it can be injected with managed objects. Defaults to
-		 * {@code true} if not specifically configured.
-		 *
-		 * @param autowireSelf if the {@link SpringApplication} should be autowired.
+		 * itself a managed bean it can be injected with managed objects.
 		 */
-		void setAutowireSelf(boolean autowireSelf);
+		void disableAutowireSelf();
+
+		/**
+		 * Disable all {@link AutoConfigurationClassPostProcessor auto-configuration} of
+		 * the application context.
+		 */
+		void disableAutoConfigure();
 	}
 
 	/**
@@ -293,6 +298,8 @@ public class SpringApplication {
 		private String contextConfigLocation;
 
 		private boolean autowireSelf = true;
+
+		private boolean autoConfigure = true;
 
 		public ConfigurationDetails(String[] args) {
 			this.arguments = new ArrayList<String>(Arrays.asList(args));
@@ -355,10 +362,17 @@ public class SpringApplication {
 			return autowireSelf;
 		}
 
-		public void setAutowireSelf(boolean autowireSelf) {
-			this.autowireSelf = autowireSelf;
+		public void disableAutowireSelf() {
+			this.autowireSelf = false;
 		}
 
+		public boolean isAutoConfigure() {
+			return autoConfigure;
+		}
+
+		public void disableAutoConfigure() {
+			this.autoConfigure = false;
+		}
 	}
 
 	// CommandLinePropertySource
