@@ -1,5 +1,5 @@
 
-package org.springframework.bootstrap.web.context;
+package org.springframework.bootstrap.web.embedded;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -8,8 +8,14 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-public class AnnotationConfigBootstrapWebApplicationContext extends
-		BootstrapWebApplicationContext {
+/**
+ * Variant of {@link AnnotationConfigWebApplicationContext} that support
+ * {@link EmbeddedServletContainer embedded} servlet containers.
+ * @author Phillip Webb
+ * @see EmbeddedWebApplicationContext
+ */
+public class AnnotationConfigEmbeddedWebApplicationContext extends
+		EmbeddedWebApplicationContext {
 
 	private Delegate delegate = new Delegate();
 
@@ -36,8 +42,8 @@ public class AnnotationConfigBootstrapWebApplicationContext extends
 		this.delegate.setScopeMetadataResolver(scopeMetadataResolver);
 	}
 
-
 	private class Delegate extends AnnotationConfigWebApplicationContext {
+
 		@Override
 		protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
 			super.loadBeanDefinitions(beanFactory);
@@ -45,17 +51,17 @@ public class AnnotationConfigBootstrapWebApplicationContext extends
 
 		@Override
 		public ConfigurableWebEnvironment getEnvironment() {
-			return AnnotationConfigBootstrapWebApplicationContext.this.getEnvironment();
+			return AnnotationConfigEmbeddedWebApplicationContext.this.getEnvironment();
 		}
 
 		@Override
 		public String[] getConfigLocations() {
-			return AnnotationConfigBootstrapWebApplicationContext.this.getConfigLocations();
+			return AnnotationConfigEmbeddedWebApplicationContext.this.getConfigLocations();
 		}
 
 		@Override
 		public ClassLoader getClassLoader() {
-			return AnnotationConfigBootstrapWebApplicationContext.this.getClassLoader();
+			return AnnotationConfigEmbeddedWebApplicationContext.this.getClassLoader();
 		}
 	}
 

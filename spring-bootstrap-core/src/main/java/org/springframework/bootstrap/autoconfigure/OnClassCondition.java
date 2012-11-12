@@ -5,14 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 
+/**
+ * {@link Condition} that checks for the specific classes.
+ * @author Phillip Webb
+ */
 class OnClassCondition implements Condition {
 
-	public boolean matches(AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(ConditionalOnClass.class.getName(), true);
 		if (attributes != null) {
 			List<String> classNames = new ArrayList<String>();
@@ -21,7 +26,7 @@ class OnClassCondition implements Condition {
 			Assert.isTrue(classNames.size() > 0,
 					"@ConditionalOnClass annotations must specify at least one class value");
 			for (String className : classNames) {
-				if (!ClassUtils.isPresent(className, getClass().getClassLoader())) {
+				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
 					return false;
 				}
 			}

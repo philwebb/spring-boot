@@ -9,7 +9,13 @@ import org.apache.catalina.startup.Tomcat;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+/**
+ * {@link EmbeddedServletContainerFactory} for Tomcat.
+ * @author Phillip Webb
+ */
 public class EmbeddedTomcatFactory implements EmbeddedServletContainerFactory {
+
+	// FIXME see notes in Jetty factory
 
 	public EmbeddedServletContainer getContainer(
 			WebApplicationContext applicationContext, ServletContextListener listener)

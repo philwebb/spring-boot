@@ -1,5 +1,5 @@
 
-package org.springframework.bootstrap.web.context;
+package org.springframework.bootstrap.web.embedded;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -7,8 +7,6 @@ import javax.servlet.ServletContextEvent;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletConfigAware;
@@ -21,7 +19,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 // FIXME DC A context that can either run inside a web container or can bootstrap its own
 // by expecting a single EmbeddedServletContainerFactort bean
 
-public abstract class BootstrapWebApplicationContext extends
+/**
+ * A {@link WebApplicationContext} that may be used in a classic servlet container or
+ * run from an {@link EmbeddedServletContainer}.  When not running in a classic container
+ * a {@link EmbeddedServletContainerFactory} bean should be defined within the context.
+ *
+ * @author Phillip Webb
+ */
+public abstract class EmbeddedWebApplicationContext extends
 		AbstractRefreshableWebApplicationContext {
 
 	private EmbeddedServletContainer embeddedServletContainer;
@@ -97,7 +102,7 @@ public abstract class BootstrapWebApplicationContext extends
 
 		@Override
 		public void contextInitialized(ServletContextEvent event) {
-			BootstrapWebApplicationContext.this.contextInitialized(event.getServletContext());
+			EmbeddedWebApplicationContext.this.contextInitialized(event.getServletContext());
 			super.contextInitialized(event);
 		}
 
@@ -108,6 +113,11 @@ public abstract class BootstrapWebApplicationContext extends
 		}
 	}
 
+	/**
+	 * Alternative {@link ServletContextAwareProcessor} implementation that resolves the
+	 * servlet context as late as possible. This is required because the servlet context
+	 * may be intially {@code null} when running with an {@link EmbeddedServletContainer}.
+	 */
 	private class LateBindingServletContextAwareProcessor implements BeanPostProcessor {
 
 		private ServletContextAwareProcessor delegate;

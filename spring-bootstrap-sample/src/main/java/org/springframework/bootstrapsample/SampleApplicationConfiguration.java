@@ -5,9 +5,11 @@ import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactor
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-public class SampleConfiguration {
+@EnableWebMvc
+public class SampleApplicationConfiguration {
 
 	@Bean
 	public PropertySourcesPlaceholderConfigurer placeholderConfigurer() {

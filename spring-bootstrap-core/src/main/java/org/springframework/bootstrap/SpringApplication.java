@@ -8,15 +8,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.bootstrap.autoconfigure.AutoConfigurationApplicationContextInitializer;
 import org.springframework.bootstrap.autoconfigure.AutoConfigurationClassPostProcessor;
-import org.springframework.bootstrap.web.context.AnnotationConfigBootstrapWebApplicationContext;
+import org.springframework.bootstrap.web.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -25,6 +28,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -48,6 +52,11 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * @see #run(String...)
  */
 public class SpringApplication {
+
+	private static final boolean SERVLET_ENVIRONMENT = ClassUtils.isPresent("javax.servlet.Servlet", null);
+
+	/** Logger used by this class. Available to subclasses. */
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	// FIXME DC can override
 	public void run(String... args) {
@@ -98,6 +107,15 @@ public class SpringApplication {
 	 * @param configuration
 	 */
 	protected void doRun(ConfigurationDetails configuration) throws Exception {
+		if(configuration.isBannerEnabled()) {
+			System.out.println();
+			Banner.write(System.out);
+			System.out.println();
+			System.out.println();
+		}
+		if(logger.isInfoEnabled()) {
+			logger.info("Running spring bootstrap application");
+		}
 		ApplicationContext applicationContext = createApplicationContext(configuration.getContextClass());
 		registerShutdownHook(applicationContext);
 		setupImports(applicationContext, configuration);
@@ -132,8 +150,9 @@ public class SpringApplication {
 	protected ApplicationContext createApplicationContext(
 			Class<? extends ApplicationContext> contextClass) {
 		if (contextClass == null) {
-			// FIXME we may want to decide on this based on if Servlet API exists
-			contextClass = AnnotationConfigBootstrapWebApplicationContext.class;
+			contextClass = SERVLET_ENVIRONMENT ?
+					AnnotationConfigEmbeddedWebApplicationContext.class :
+					AnnotationConfigApplicationContext.class;
 		}
 		return BeanUtils.instantiate(contextClass);
 	}
@@ -196,6 +215,11 @@ public class SpringApplication {
 	 * extended in future releases.
 	 */
 	protected static interface Configuration {
+
+		/**
+		 * Disable the "SpringBootstrap" banner usually logged as the application starts.
+		 */
+		void disableBanner();
 
 		/**
 		 * Returns a mutable list of the application arguments. This list is initially
@@ -285,6 +309,8 @@ public class SpringApplication {
 	 */
 	protected final static class ConfigurationDetails implements Configuration {
 
+		private boolean bannerEnabled = true;
+
 		private ArrayList<String> arguments;
 
 		private Class<? extends ApplicationContext> contextClass;
@@ -300,6 +326,15 @@ public class SpringApplication {
 		private boolean autowireSelf = true;
 
 		private boolean autoConfigure = true;
+
+
+		public void disableBanner() {
+			this.bannerEnabled = false;
+		}
+
+		public boolean isBannerEnabled() {
+			return bannerEnabled;
+		}
 
 		public ConfigurationDetails(String[] args) {
 			this.arguments = new ArrayList<String>(Arrays.asList(args));
@@ -375,6 +410,7 @@ public class SpringApplication {
 		}
 	}
 
+	// FIXME
 	// CommandLinePropertySource
 	// An API for command line options (probably duplicating commons-cli here, so maybe
 	// depend on that, or maybe just allow override for options gathering so users can

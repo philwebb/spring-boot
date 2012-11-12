@@ -9,7 +9,14 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+/**
+ * {@link EmbeddedServletContainerFactory} for Jetty.
+ * @author Phillip Webb
+ */
 public class EmbeddedJettyFactory implements EmbeddedServletContainerFactory {
+
+	// FIXME we should define common properties for jetty/tomcat eg port
+	// FIXME how to specify servlet
 
 	public EmbeddedServletContainer getContainer(
 			WebApplicationContext applicationContext, ServletContextListener listener)
