@@ -1,4 +1,5 @@
 rootProject.name = 'spring-bootstrap'
 
 include 'spring-bootstrap-core'
+include 'spring-bootstrap-autoconfigure'
 include 'spring-bootstrap-sample'

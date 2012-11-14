@@ -14,6 +14,7 @@ import org.springframework.util.MultiValueMap;
 /**
  * {@link Condition} that checks for the specific classes.
  * @author Phillip Webb
+ * @see ConditionalOnClass
  */
 class OnClassCondition implements Condition {
 

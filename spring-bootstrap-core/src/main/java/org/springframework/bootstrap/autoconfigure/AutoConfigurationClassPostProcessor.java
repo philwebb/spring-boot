@@ -66,12 +66,16 @@ public class AutoConfigurationClassPostProcessor extends ConfigurationClassPostP
 			Map<String, Object> annotation = metadata.getAnnotationAttributes(DISABLE_AUTO_CONFIGURATION_ANNOTATION, true);
 			String[] annotationValue = (String[]) annotation.get("value");
 			for (String configurationClass : annotationValue) {
-				logger.info("Disabling auto configuration "+configurationClass);
+				if(logger.isInfoEnabled()) {
+					logger.info("Disabling auto configuration "+configurationClass);
+				}
 				addDisabledAutoConfiguration(registry, configurationClass);
 			}
 		}
 		if(metadata.isAnnotated(AUTO_CONFIGURATION_ANNOTATION)) {
-			logger.info("Applying auto configuration "+metadata.getClassName());
+			if(logger.isInfoEnabled()) {
+				logger.info("Applying auto configuration "+metadata.getClassName());
+			}
 		}
 	}
 

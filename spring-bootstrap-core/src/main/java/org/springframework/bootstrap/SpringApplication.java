@@ -53,7 +53,9 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  */
 public class SpringApplication {
 
-	private static final boolean SERVLET_ENVIRONMENT = ClassUtils.isPresent("javax.servlet.Servlet", null);
+	private static final boolean WEB_ENVIRONMENT =
+			ClassUtils.isPresent("javax.servlet.Servlet", null) &&
+			ClassUtils.isPresent("org.springframework.web.context.ConfigurableWebApplicationContext", null);
 
 	/** Logger used by this class. Available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
@@ -64,7 +66,7 @@ public class SpringApplication {
 		try {
 			initilizeConfiguration(configuration);
 			configure(configuration);
-			doRun(configuration);
+			run(configuration);
 		} catch (Exception ex) {
 			// Optional call to System.exit() with status determined through e.g. a
 			// protected
@@ -102,19 +104,12 @@ public class SpringApplication {
 	protected void configure(Configuration configuration) {
 	}
 
-	/**
-	 *
-	 * @param configuration
-	 */
-	protected void doRun(ConfigurationDetails configuration) throws Exception {
+	private void run(ConfigurationDetails configuration) throws Exception {
 		if(configuration.isBannerEnabled()) {
 			System.out.println();
 			Banner.write(System.out);
 			System.out.println();
 			System.out.println();
-		}
-		if(logger.isInfoEnabled()) {
-			logger.info("Running spring bootstrap application");
 		}
 		ApplicationContext applicationContext = createApplicationContext(configuration.getContextClass());
 		registerShutdownHook(applicationContext);
@@ -129,6 +124,11 @@ public class SpringApplication {
 		if (configuration.isAutowireSelf()) {
 			applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
 		}
+		doRun(configuration, applicationContext);
+	}
+
+	protected void doRun(ConfigurationDetails configuration,
+			ApplicationContext applicationContext) {
 	}
 
 	private void addCommandLineProperySource(ApplicationContext applicationContext,
@@ -150,7 +150,7 @@ public class SpringApplication {
 	protected ApplicationContext createApplicationContext(
 			Class<? extends ApplicationContext> contextClass) {
 		if (contextClass == null) {
-			contextClass = SERVLET_ENVIRONMENT ?
+			contextClass = WEB_ENVIRONMENT ?
 					AnnotationConfigEmbeddedWebApplicationContext.class :
 					AnnotationConfigApplicationContext.class;
 		}
@@ -198,13 +198,13 @@ public class SpringApplication {
 	}
 
 	private void registerShutdownHook(ApplicationContext applicationContext) {
-		if (applicationContext instanceof ConfigurableWebApplicationContext) {
+		if (WEB_ENVIRONMENT && applicationContext instanceof ConfigurableWebApplicationContext) {
 			((AbstractApplicationContext) applicationContext).registerShutdownHook();
 		}
 	}
 
 	private void refresh(ApplicationContext applicationContext) {
-		if (applicationContext instanceof ConfigurableWebApplicationContext) {
+		if (applicationContext instanceof AbstractApplicationContext) {
 			((AbstractApplicationContext) applicationContext).refresh();
 		}
 	}

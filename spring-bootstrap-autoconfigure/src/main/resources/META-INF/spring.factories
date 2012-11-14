@@ -1,0 +1,5 @@
+org.springframework.bootstrap.autoconfigure.AutoConfiguration=\
+org.springframework.bootstrap.autoconfigure.core.PropertyPlaceholderAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.EmbeddedJettyAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.EmbeddedTomcatAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
