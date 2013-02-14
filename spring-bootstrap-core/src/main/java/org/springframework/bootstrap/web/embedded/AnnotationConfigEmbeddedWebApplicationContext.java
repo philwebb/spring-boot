@@ -4,8 +4,8 @@ package org.springframework.bootstrap.web.embedded;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ScopeMetadataResolver;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
-import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
@@ -50,7 +50,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 		}
 
 		@Override
-		public ConfigurableWebEnvironment getEnvironment() {
+		public ConfigurableEnvironment getEnvironment() {
 			return AnnotationConfigEmbeddedWebApplicationContext.this.getEnvironment();
 		}
 
