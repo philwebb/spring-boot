@@ -32,7 +32,8 @@ class OnMissingBeanCondition implements Condition {
 			try {
 				String[] beans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 						context.getBeanFactory(),
-						ClassUtils.forName(beanClass, context.getClassLoader()));
+						ClassUtils.forName(beanClass, context.getClassLoader()),
+						false, false);
 				if (beans.length != 0) {
 					return false;
 				}

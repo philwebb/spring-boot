@@ -11,10 +11,14 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.bootstrap.autoconfigure.AutoConfigurationApplicationContextInitializer;
 import org.springframework.bootstrap.autoconfigure.AutoConfigurationClassPostProcessor;
+import org.springframework.bootstrap.autoconfigure.AutoConfigurationSettings;
 import org.springframework.bootstrap.web.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -117,7 +121,16 @@ public class SpringApplication {
 		applyApplicationContextInitializers(applicationContext,
 				configuration.getInitializers());
 		if(configuration.isAutoConfigure()) {
-			new AutoConfigurationApplicationContextInitializer().initialize((ConfigurableApplicationContext) applicationContext);
+			ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
+			configurableApplicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
+				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+						throws BeansException {
+					beanFactory.registerSingleton(
+							AutoConfigurationSettings.BEAN_NAME,
+							new SpringApplicationAutoConfigurationSettings());
+				}
+			});
+			new AutoConfigurationApplicationContextInitializer().initialize(configurableApplicationContext);
 		}
 		addCommandLineProperySource(applicationContext, configuration);
 		refresh(applicationContext);
@@ -164,7 +177,7 @@ public class SpringApplication {
 			// FIXME configure user customized stuff
 		}
 		else {
-			// Fallback to scanning form the application class
+			// Fallback to scanning from the application class
 			try {
 				Method scanMethod = ReflectionUtils.findMethod(
 						applicationContext.getClass(), "scan", String[].class);
@@ -172,15 +185,15 @@ public class SpringApplication {
 						"Unable to find scan method on application context "
 								+ applicationContext.getClass());
 				ReflectionUtils.invokeMethod(scanMethod, applicationContext,
-						new Object[] { getScanBasePackage() });
+						new Object[] { new String[] { getScanBasePackage() } });
 			} catch (Exception ex) {
 				throw new IllegalStateException("Unable to scan for bean", ex);
 			}
 		}
 	}
 
-	protected String[] getScanBasePackage() {
-		return new String[] { getClass().getPackage().getName() };
+	protected String getScanBasePackage() {
+		return getClass().getPackage().getName();
 	}
 
 	protected void applyApplicationContextInitializers(
@@ -291,7 +304,7 @@ public class SpringApplication {
 		void setContextConfigLocation(String contextConfigLocation);
 
 		/**
-		 * Disable if the {@link SpringApplication} itself will be autowired with bean
+		 * Disable if the {@link SpringApplication} itself will be autowired with beans
 		 * from the application context. Whilst the {@link SpringApplication} is not
 		 * itself a managed bean it can be injected with managed objects.
 		 */
@@ -407,6 +420,13 @@ public class SpringApplication {
 
 		public void disableAutoConfigure() {
 			this.autoConfigure = false;
+		}
+	}
+
+	private class SpringApplicationAutoConfigurationSettings implements AutoConfigurationSettings {
+		public String getDomainPackage() {
+			//FIXME allow override or disable
+			return getScanBasePackage();
 		}
 	}
 

@@ -33,7 +33,7 @@ public class AutoConfigurationApplicationContextInitializer implements
 			// Register ConfigurationClassPostProcessor if not already present
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(registry);
 
-			// Replace ConfigurationClassPostProcessor with an auto-register varaint
+			// Replace ConfigurationClassPostProcessor with an auto-register variant
 			BeanDefinition postProcessor = registry.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
 			Assert.state(postProcessor != null, "Unable to find configuration class post processor bean");
 			Assert.state(ConfigurationClassPostProcessor.class.getName().equals(postProcessor.getBeanClassName()),
