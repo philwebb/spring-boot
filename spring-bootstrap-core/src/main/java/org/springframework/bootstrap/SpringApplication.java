@@ -121,16 +121,8 @@ public class SpringApplication {
 		applyApplicationContextInitializers(applicationContext,
 				configuration.getInitializers());
 		if(configuration.isAutoConfigure()) {
-			ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
-			configurableApplicationContext.addBeanFactoryPostProcessor(new BeanFactoryPostProcessor() {
-				public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-						throws BeansException {
-					beanFactory.registerSingleton(
-							AutoConfigurationSettings.BEAN_NAME,
-							new SpringApplicationAutoConfigurationSettings());
-				}
-			});
-			new AutoConfigurationApplicationContextInitializer().initialize(configurableApplicationContext);
+			new AutoConfigurationApplicationContextInitializer(
+					new SpringApplicationAutoConfigurationSettings()).initialize((ConfigurableApplicationContext) applicationContext);
 		}
 		addCommandLineProperySource(applicationContext, configuration);
 		refresh(applicationContext);
@@ -425,6 +417,11 @@ public class SpringApplication {
 
 	private class SpringApplicationAutoConfigurationSettings implements AutoConfigurationSettings {
 		public String getDomainPackage() {
+			//FIXME allow override or disable
+			return getScanBasePackage();
+		}
+
+		public String getRepositoryPackage() {
 			//FIXME allow override or disable
 			return getScanBasePackage();
 		}

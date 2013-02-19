@@ -1,5 +1,7 @@
 package org.springframework.bootstrap.autoconfigure;
 
+import static org.mockito.Mockito.mock;
+
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +15,8 @@ public class AutoConfigureApplicationContextInitializerTests {
 		//FIXME asserts
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(Config.class);
-		new AutoConfigurationApplicationContextInitializer().initialize(context);
+		AutoConfigurationSettings settings = mock(AutoConfigurationSettings.class);
+		new AutoConfigurationApplicationContextInitializer(settings ).initialize(context);
 		context.refresh();
 	}
 

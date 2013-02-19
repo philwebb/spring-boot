@@ -16,7 +16,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 @AutoConfiguration
 @Conditional(EmbeddedDatabaseAutoConfiguration.EmbeddedDatabaseCondition.class)

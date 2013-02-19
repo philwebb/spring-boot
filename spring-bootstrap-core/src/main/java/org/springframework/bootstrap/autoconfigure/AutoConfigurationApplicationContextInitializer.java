@@ -4,6 +4,7 @@ package org.springframework.bootstrap.autoconfigure;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.ApplicationContextInitializer;
@@ -20,16 +21,35 @@ import org.springframework.util.Assert;
 public class AutoConfigurationApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+
+	private AutoConfigurationSettings settings;
+
+	public AutoConfigurationApplicationContextInitializer(AutoConfigurationSettings settings) {
+		Assert.notNull(settings, "Settings must not be null");
+		this.settings = settings;
+	}
+
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		// Manually added post-processors will run before beans, this is critical
 		// to ensure we replace any existing ConfigurationClassPostProcessor
-		applicationContext.addBeanFactoryPostProcessor(new AutoConfigurationRegistrationPostProcessor());
+		applicationContext.addBeanFactoryPostProcessor(new AutoConfigurationRegistrationPostProcessor(settings));
 	}
 
 	private static class AutoConfigurationRegistrationPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
+		private AutoConfigurationSettings settings;
+
+		public AutoConfigurationRegistrationPostProcessor(
+				AutoConfigurationSettings settings) {
+			this.settings = settings;
+		}
+
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
+
+			((SingletonBeanRegistry) registry).registerSingleton(
+					AutoConfigurationSettings.BEAN_NAME, settings);
+
 			// Register ConfigurationClassPostProcessor if not already present
 			AnnotationConfigUtils.registerAnnotationConfigProcessors(registry);
 
