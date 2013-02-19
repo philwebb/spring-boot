@@ -94,6 +94,8 @@ project('spring-bootstrap-autoconfigure') {
 		compile(project(":spring-bootstrap-core"))
 		optional("org.springframework:spring-webmvc:$springVersion")
 		optional("org.springframework:spring-jdbc:$springVersion")
+		optional("org.springframework:spring-orm:$springVersion")
+		optional("javax.persistence:persistence-api:1.0")
 		optional("org.mortbay.jetty:jetty:6.1.26") {
 			exclude module: 'servlet-api'
 		}
@@ -126,6 +128,18 @@ project('spring-bootstrap-sample') {
 		compile("org.slf4j:jcl-over-slf4j:1.7.2")
 		compile("ch.qos.logback:logback-classic:1.0.9")
 		runtime("org.hsqldb:hsqldb:2.2.9")
+	}
+}
+
+project('spring-bootstrap-simple-sample') {
+	configurations {
+		all*.exclude group: "commons-logging", module: "commons-logging"
+	}
+	dependencies {
+		compile(project(":spring-bootstrap-autoconfigure"))
+		compile("org.slf4j:slf4j-api:1.7.2")
+		compile("org.slf4j:jcl-over-slf4j:1.7.2")
+		compile("ch.qos.logback:logback-classic:1.0.9")
 	}
 }
 

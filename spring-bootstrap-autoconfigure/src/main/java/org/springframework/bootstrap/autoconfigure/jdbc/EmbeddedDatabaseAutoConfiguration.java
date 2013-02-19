@@ -16,6 +16,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 @AutoConfiguration
 @Conditional(EmbeddedDatabaseAutoConfiguration.EmbeddedDatabaseCondition.class)
@@ -25,19 +26,21 @@ public class EmbeddedDatabaseAutoConfiguration {
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	static {
 		EMBEDDED_DATABASE_TYPE_CLASSES = new LinkedHashMap<EmbeddedDatabaseType, String>();
-		EMBEDDED_DATABASE_TYPE_CLASSES.put(EmbeddedDatabaseType.HSQL, "org.hsqldb.Database");
+		EMBEDDED_DATABASE_TYPE_CLASSES.put(EmbeddedDatabaseType.HSQL,
+				"org.hsqldb.Database");
+		// FIXME additional types
 	}
 
 	@Bean
-	//@Attribute(name="embedded", value=Boolean.TRUE)
 	public DataSource dataSource() {
-		return getEmbeddedDatabaseBuilder().build();
+		return new EmbeddedDatabaseBuilder().setType(getEmbeddedDatabaseType()).build();
 	}
 
-	static EmbeddedDatabaseBuilder getEmbeddedDatabaseBuilder() {
+	public static EmbeddedDatabaseType getEmbeddedDatabaseType() {
 		for (Map.Entry<EmbeddedDatabaseType, String> entry : EMBEDDED_DATABASE_TYPE_CLASSES.entrySet()) {
-			if(ClassUtils.isPresent(entry.getValue(), EmbeddedDatabaseAutoConfiguration.class.getClassLoader())) {
-				return new EmbeddedDatabaseBuilder().setType(entry.getKey());
+			if (ClassUtils.isPresent(entry.getValue(),
+					EmbeddedDatabaseAutoConfiguration.class.getClassLoader())) {
+				return entry.getKey();
 			}
 		}
 		return null;
@@ -46,7 +49,12 @@ public class EmbeddedDatabaseAutoConfiguration {
 	static class EmbeddedDatabaseCondition implements Condition {
 
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			return getEmbeddedDatabaseBuilder() != null;
+			if (!ClassUtils.isPresent(
+					"org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType",
+					context.getClassLoader())) {
+				return false;
+			}
+			return getEmbeddedDatabaseType() != null;
 		}
 	}
 
