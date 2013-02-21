@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context.annotation;
+
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Disable a specific {@link AutoConfiguration} class so that it will never apply.  This
- * annotation can be used to disable one or more {@link AutoConfiguration} class so that
- * are never considered.  Can be used to provide finegrained control over
- * auto-configuration.  This method can be placed on any {@code @Configuration} bean.
+ * {@link Condition} that checks that specific beans are missing.
+ *
  * @author Phillip Webb
+ * @see ConditionalOnMissingBean
  */
-public @interface DisableAutoConfiguration {
+class OnMissingBeanCondition extends AbstractOnBeanCondition {
 
-	/**
-	 * Returns the {@code @AutoConfiguration} annotated classes that should be disabled.
-	 * @return the classes to disable
-	 */
-	Class<?>[] value();
+	@Override
+	protected Class<?> annotationClass() {
+		return ConditionalOnMissingBean.class;
+	}
 
+	@Override
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		return !super.matches(context, metadata);
+	}
 }

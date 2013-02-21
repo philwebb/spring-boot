@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure.core;
+package org.springframework.bootstrap.autoconfigure;
 
-import org.springframework.bootstrap.autoconfigure.AutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 

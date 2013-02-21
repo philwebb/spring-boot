@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context.annotation;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.bootstrap.context.AutoConfigurationSettings;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
@@ -39,6 +40,7 @@ public class AutoConfigurationApplicationContextInitializer implements
 
 	private AutoConfigurationSettings settings;
 
+	//FIXME need a default constructor + this settings is too data specific
 	public AutoConfigurationApplicationContextInitializer(AutoConfigurationSettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
 		this.settings = settings;

@@ -21,8 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.springframework.bootstrap.autoconfigure.AutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;

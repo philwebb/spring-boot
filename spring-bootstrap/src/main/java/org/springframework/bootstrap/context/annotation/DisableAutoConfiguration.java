@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context.annotation;
+
 
 /**
- * Generally settings that can be accessed by {@link AutoConfiguration} classes. Settings
- * are registered as a {@link #BEAN_NAME specifically named} Spring bean.
- *
+ * Disable a specific {@link AutoConfiguration} class so that it will never apply.  This
+ * annotation can be used to disable one or more {@link AutoConfiguration} class so that
+ * are never considered.  Can be used to provide finegrained control over
+ * auto-configuration.  This method can be placed on any {@code @Configuration} bean.
  * @author Phillip Webb
  */
-public interface AutoConfigurationSettings {
+public @interface DisableAutoConfiguration {
 
-	public static final String BEAN_NAME = "AutoConfigurationSettings";
-
-	//FIXME packages should return iterables?
-
-	String getDomainPackage();
-
-	String getRepositoryPackage();
+	/**
+	 * Returns the {@code @AutoConfiguration} annotated classes that should be disabled.
+	 * @return the classes to disable
+	 */
+	Class<?>[] value();
 
 }

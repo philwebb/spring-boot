@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context.annotation;
 
 import java.util.Set;
 

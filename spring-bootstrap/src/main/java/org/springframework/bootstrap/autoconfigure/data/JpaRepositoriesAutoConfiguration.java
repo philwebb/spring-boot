@@ -16,9 +16,9 @@
 
 package org.springframework.bootstrap.autoconfigure.data;
 
-import org.springframework.bootstrap.autoconfigure.AutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnClass;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

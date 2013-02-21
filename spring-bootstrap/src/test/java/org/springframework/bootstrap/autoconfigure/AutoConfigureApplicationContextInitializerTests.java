@@ -3,6 +3,8 @@ package org.springframework.bootstrap.autoconfigure;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
+import org.springframework.bootstrap.context.AutoConfigurationSettings;
+import org.springframework.bootstrap.context.annotation.AutoConfigurationApplicationContextInitializer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

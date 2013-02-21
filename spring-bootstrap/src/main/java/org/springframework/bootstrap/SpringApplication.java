@@ -13,9 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.bootstrap.autoconfigure.AutoConfigurationApplicationContextInitializer;
-import org.springframework.bootstrap.autoconfigure.AutoConfigurationClassPostProcessor;
-import org.springframework.bootstrap.autoconfigure.AutoConfigurationSettings;
+import org.springframework.bootstrap.context.AutoConfigurationSettings;
+import org.springframework.bootstrap.context.annotation.AutoConfigurationApplicationContextInitializer;
+import org.springframework.bootstrap.context.annotation.AutoConfigurationClassPostProcessor;
 import org.springframework.bootstrap.web.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -164,6 +164,7 @@ public class SpringApplication {
 		if (!configuration.getImports().isEmpty()
 				|| StringUtils.hasLength(configuration.getContextConfigLocation())) {
 			// FIXME configure user customized stuff
+			// FIXME should this disable auto-configure?
 		}
 		else {
 			// Fallback to scanning from the application class

@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context.annotation;
 
 import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks that specific beans are missing.
+ * {@link Condition} that checks that specific beans are present.
  *
  * @author Phillip Webb
- * @see ConditionalOnMissingBean
+ * @see ConditionalOnBean
  */
-class OnMissingBeanCondition extends AbstractOnBeanCondition {
+class OnBeanCondition extends AbstractOnBeanCondition {
 
 	@Override
 	protected Class<?> annotationClass() {
-		return ConditionalOnMissingBean.class;
-	}
-
-	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return !super.matches(context, metadata);
+		return ConditionalOnBean.class;
 	}
 }

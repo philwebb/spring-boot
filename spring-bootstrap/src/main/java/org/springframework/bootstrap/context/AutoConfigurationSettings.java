@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure;
+package org.springframework.bootstrap.context;
 
-import org.springframework.context.annotation.Condition;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 
 /**
- * {@link Condition} that checks that specific beans are present.
+ * Generally settings that can be accessed by {@link AutoConfiguration} classes. Settings
+ * are registered as a {@link #BEAN_NAME specifically named} Spring bean.
  *
  * @author Phillip Webb
- * @see ConditionalOnBean
  */
-class OnBeanCondition extends AbstractOnBeanCondition {
+public interface AutoConfigurationSettings {
 
-	@Override
-	protected Class<?> annotationClass() {
-		return ConditionalOnBean.class;
-	}
+	public static final String BEAN_NAME = "AutoConfigurationSettings";
+
+	//FIXME packages should return iterables?
+
+	String getDomainPackage();
+
+	String getRepositoryPackage();
+
 }

@@ -19,9 +19,9 @@ package org.springframework.bootstrap.autoconfigure.orm.jpa;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.bootstrap.autoconfigure.AutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnClass;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaVendorAdapter;

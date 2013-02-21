@@ -19,11 +19,12 @@ package org.springframework.bootstrap.autoconfigure.data;
 import java.util.Collections;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.bootstrap.autoconfigure.AutoConfigurationSettings;
+import org.springframework.bootstrap.context.AutoConfigurationSettings;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -33,6 +34,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionBuilder;
+import org.springframework.data.repository.config.RepositoryBeanNameGenerator;
 import org.springframework.data.repository.config.RepositoryConfiguration;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
@@ -43,9 +45,11 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Phillip Webb
  */
 class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegistrar,
-		BeanFactoryAware {
+		BeanFactoryAware, BeanClassLoaderAware {
 
 	private BeanFactory beanFactory;
+
+	private ClassLoader beanClassLoader;
 
 
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -56,13 +60,17 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 		RepositoryConfigurationExtension extension = new JpaRepositoryConfigExtension();
 		extension.registerBeansForRoot(registry, configurationSource);
 
+		RepositoryBeanNameGenerator generator = new RepositoryBeanNameGenerator();
+		generator.setBeanClassLoader(this.beanClassLoader);
+
 		for (RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration :
 				extension.getRepositoryConfigurations(configurationSource, resourceLoader)) {
 			RepositoryBeanDefinitionBuilder builder = new RepositoryBeanDefinitionBuilder(repositoryConfiguration, extension);
 			BeanDefinitionBuilder definitionBuilder = builder.build(registry, resourceLoader);
 			extension.postProcess(definitionBuilder, configurationSource);
-			registry.registerBeanDefinition(repositoryConfiguration.getBeanId(),
-					definitionBuilder.getBeanDefinition());
+
+			String beanName = generator.generateBeanName(definitionBuilder.getBeanDefinition(), registry);
+			registry.registerBeanDefinition(beanName, definitionBuilder.getBeanDefinition());
 		}
 	}
 
@@ -84,6 +92,11 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
 	}
 
 	@EnableJpaRepositories

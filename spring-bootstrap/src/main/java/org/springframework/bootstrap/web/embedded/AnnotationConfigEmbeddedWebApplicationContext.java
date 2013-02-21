@@ -26,8 +26,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 /**
  * Variant of {@link AnnotationConfigWebApplicationContext} that support
  * {@link EmbeddedServletContainer embedded} servlet containers.
- * @author Phillip Webb
  *
+ * @author Phillip Webb
  * @see EmbeddedWebApplicationContext
  */
 public class AnnotationConfigEmbeddedWebApplicationContext extends

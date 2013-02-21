@@ -18,9 +18,9 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
-import org.springframework.bootstrap.autoconfigure.AutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnClass;
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
