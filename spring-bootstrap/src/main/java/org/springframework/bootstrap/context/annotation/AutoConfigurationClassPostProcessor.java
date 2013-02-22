@@ -39,7 +39,10 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Phillip Webb
  */
+@Deprecated
 public class AutoConfigurationClassPostProcessor extends ConfigurationClassPostProcessor {
+
+	//FIXME DELETE
 
 	private static final String DISABLE_AUTO_CONFIGURATION_ANNOTATION = DisableAutoConfiguration.class.getName();
 

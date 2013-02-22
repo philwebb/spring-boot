@@ -11,7 +11,14 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.bootstrap.context.AutoConfigurationSettings;
 import org.springframework.bootstrap.context.annotation.AutoConfigurationApplicationContextInitializer;
@@ -28,6 +35,8 @@ import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -40,6 +49,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * A stand-along Spring command-line application.
  *
  * <pre>
+ *
  * public class MyApplication extends SpringApplication {
  *
  * 	public static void main(String[] args) {
@@ -54,12 +64,20 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  */
 public class SpringApplication {
 
-	private static final boolean WEB_ENVIRONMENT =
-			ClassUtils.isPresent("javax.servlet.Servlet", null) &&
-			ClassUtils.isPresent("org.springframework.web.context.ConfigurableWebApplicationContext", null);
+	private static final boolean WEB_ENVIRONMENT = ClassUtils.isPresent(
+			"javax.servlet.Servlet", null)
+			&& ClassUtils.isPresent(
+					"org.springframework.web.context.ConfigurableWebApplicationContext",
+					null);
+
+	private static ThreadLocal<SpringApplication> instance = new ThreadLocal<SpringApplication>();
 
 	/** Logger used by this class. Available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
+
+	public SpringApplication() {
+		instance.set(this);
+	}
 
 	// FIXME DC can override
 	public void run(String... args) {
@@ -68,7 +86,8 @@ public class SpringApplication {
 			initilizeConfiguration(configuration);
 			configure(configuration);
 			run(configuration);
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			// Optional call to System.exit() with status determined through e.g. a
 			// protected
 			// method
@@ -106,7 +125,7 @@ public class SpringApplication {
 	}
 
 	private void run(ConfigurationDetails configuration) throws Exception {
-		if(configuration.isBannerEnabled()) {
+		if (configuration.isBannerEnabled()) {
 			System.out.println();
 			Banner.write(System.out);
 			System.out.println();
@@ -117,16 +136,35 @@ public class SpringApplication {
 		setupImports(applicationContext, configuration);
 		applyApplicationContextInitializers(applicationContext,
 				configuration.getInitializers());
-		if(configuration.isAutoConfigure()) {
+		if (configuration.isAutoConfigure()) {
 			new AutoConfigurationApplicationContextInitializer(
 					new SpringApplicationAutoConfigurationSettings()).initialize((ConfigurableApplicationContext) applicationContext);
 		}
 		addCommandLineProperySource(applicationContext, configuration);
+		dunno(applicationContext);
 		refresh(applicationContext);
 		if (configuration.isAutowireSelf()) {
-			applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
+			// FIXME applicationContext.getAutowireCapableBeanFactory().autowireBean(this);
 		}
 		doRun(configuration, applicationContext);
+	}
+
+	private void dunno(ApplicationContext applicationContext) {
+		ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
+		configurableApplicationContext.addBeanFactoryPostProcessor(new BeanDefinitionRegistryPostProcessor() {
+			@Override
+			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+					throws BeansException {
+			}
+
+			@Override
+			public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+					throws BeansException {
+				BeanDefinition beanDefinition = new RootBeanDefinition(SpringApplication.this.getClass());
+				beanDefinition.setFactoryMethodName("getInstance");
+				registry.registerBeanDefinition("springApplication", beanDefinition);
+			}
+		});
 	}
 
 	protected void doRun(ConfigurationDetails configuration,
@@ -152,9 +190,8 @@ public class SpringApplication {
 	protected ApplicationContext createApplicationContext(
 			Class<? extends ApplicationContext> contextClass) {
 		if (contextClass == null) {
-			contextClass = WEB_ENVIRONMENT ?
-					AnnotationConfigEmbeddedWebApplicationContext.class :
-					AnnotationConfigApplicationContext.class;
+			contextClass = WEB_ENVIRONMENT ? AnnotationConfigEmbeddedWebApplicationContext.class
+					: AnnotationConfigApplicationContext.class;
 		}
 		return BeanUtils.instantiate(contextClass);
 	}
@@ -176,7 +213,8 @@ public class SpringApplication {
 								+ applicationContext.getClass());
 				ReflectionUtils.invokeMethod(scanMethod, applicationContext,
 						new Object[] { new String[] { getScanBasePackage() } });
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				throw new IllegalStateException("Unable to scan for bean", ex);
 			}
 		}
@@ -201,7 +239,8 @@ public class SpringApplication {
 	}
 
 	private void registerShutdownHook(ApplicationContext applicationContext) {
-		if (WEB_ENVIRONMENT && applicationContext instanceof ConfigurableWebApplicationContext) {
+		if (WEB_ENVIRONMENT
+				&& applicationContext instanceof ConfigurableWebApplicationContext) {
 			((AbstractApplicationContext) applicationContext).registerShutdownHook();
 		}
 	}
@@ -255,7 +294,7 @@ public class SpringApplication {
 		 *
 		 * @param initializer the type of initializer
 		 */
-		void addInitializer(Class<? extends ApplicationContextInitializer<?>> initializer);
+		void addInitializer(Class<? extends ApplicationContextInitializer<?>> initializer); //FIXME should be ...
 
 		/**
 		 * Import the specified resource when the application context is created. Adding
@@ -329,7 +368,6 @@ public class SpringApplication {
 		private boolean autowireSelf = true;
 
 		private boolean autoConfigure = true;
-
 
 		public void disableBanner() {
 			this.bannerEnabled = false;
@@ -413,17 +451,20 @@ public class SpringApplication {
 		}
 	}
 
-	private class SpringApplicationAutoConfigurationSettings implements AutoConfigurationSettings {
+	private class SpringApplicationAutoConfigurationSettings implements
+			AutoConfigurationSettings {
+
 		public String getDomainPackage() {
-			//FIXME allow override or disable
+			// FIXME allow override or disable
 			return getScanBasePackage();
 		}
 
 		public String getRepositoryPackage() {
-			//FIXME allow override or disable
+			// FIXME allow override or disable
 			return getScanBasePackage();
 		}
 	}
+
 
 	// FIXME
 	// CommandLinePropertySource
@@ -439,5 +480,9 @@ public class SpringApplication {
 	//
 	// Optional bootstrap properties in a file or Resource, or some other way to
 	// initialize the Environment without writing code
+
+	public static SpringApplication getInstance() {
+		return instance.get();
+	}
 
 }

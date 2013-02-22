@@ -35,8 +35,11 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  */
+@Deprecated
 public class AutoConfigurationApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> {
+
+	//FIXME Delete
 
 	private AutoConfigurationSettings settings;
 

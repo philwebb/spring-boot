@@ -33,6 +33,8 @@ import org.springframework.core.type.ClassMetadata;
  */
 class NotDisabledCondition implements Condition {
 
+	// FIXME
+
 	@SuppressWarnings("unchecked")
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		if(metadata instanceof ClassMetadata) {
