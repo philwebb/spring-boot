@@ -10,20 +10,27 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.bootstrap.web.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
@@ -43,7 +50,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * </pre>
  *
  * @author Phillip Webb
- * @see #configure(Configuration, String...)
+ * @see #configure(ApplicationConfiguration, String...)
  * @see #run(String...)
  */
 public class SpringApplication {
@@ -66,8 +73,8 @@ public class SpringApplication {
 
 	// FIXME DC can override ?
 	public void run(String... args) {
-		ConfigurationDetails configuration = new ConfigurationDetails(args);
 		try {
+			ApplicationConfigurationDetails configuration = new ApplicationConfigurationDetails(args);
 			instance.set(this);
 			configure(configuration);
 			run(configuration);
@@ -89,22 +96,22 @@ public class SpringApplication {
 	 * method to customize the configuration.
 	 *
 	 * @param configuration the configuration
-	 * @see Configuration
+	 * @see ApplicationConfiguration
 	 */
-	protected void configure(Configuration configuration) {
+	protected void configure(ApplicationConfiguration configuration) {
 	}
 
-	private void run(ConfigurationDetails configuration) throws Exception {
+	private void run(ApplicationConfigurationDetails configuration) throws Exception {
 		if (configuration.isBannerEnabled()) {
 			Banner.write(System.out);
 		}
-		ApplicationContext applicationContext = createApplicationContext(configuration.getContextClass());
+		ConfigurableApplicationContext applicationContext = createApplicationContext(configuration.getContextClass());
 		registerShutdownHook(applicationContext);
-		registerSelf(applicationContext);
+		applicationContext.addBeanFactoryPostProcessor(getBeanFactoryPostProcessorHook(configuration));
 		applyApplicationContextInitializers(applicationContext, configuration.getInitializers());
 		addCommandLineProperySource(applicationContext, configuration);
 		refresh(applicationContext);
-		doRun(configuration, applicationContext);
+		doRun(configuration);
 	}
 
 	protected ConfigurableApplicationContext createApplicationContext(
@@ -124,6 +131,30 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * Create {@link BeanDefinitionRegistryPostProcessor} that acts as a hook back to the
+	 * application. Allows access to usable {@link BeanDefinitionRegistry}. The processor
+	 * should be added via
+	 * {@link ConfigurableApplicationContext#addBeanFactoryPostProcessor(BeanFactoryPostProcessor)}
+	 * so that it is always the first post-processor to run.
+	 * @param configuration the application configuration
+	 * @return a {@link BeanDefinitionRegistryPostProcessor} hook
+	 */
+	private BeanDefinitionRegistryPostProcessor getBeanFactoryPostProcessorHook(
+			final ApplicationConfigurationDetails configuration) {
+		return new BeanDefinitionRegistryPostProcessor() {
+			@Override
+			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+					throws BeansException {
+			}
+			@Override
+			public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+					throws BeansException {
+				SpringApplication.this.postProcessBeanDefinitionRegistry(configuration, registry);
+			}
+		};
+	}
+
 	protected void applyApplicationContextInitializers(
 			ApplicationContext applicationContext,
 			Set<Class<? extends ApplicationContextInitializer<?>>> initializers) {
@@ -138,7 +169,7 @@ public class SpringApplication {
 	}
 
 	private void addCommandLineProperySource(ApplicationContext applicationContext,
-			ConfigurationDetails configuration) {
+			ApplicationConfigurationDetails configuration) {
 		CommandLinePropertySource<?> propertySource = createCommandLinePropertySource(configuration);
 		Environment environment = applicationContext.getEnvironment();
 		if (environment instanceof ConfigurableEnvironment) {
@@ -148,27 +179,9 @@ public class SpringApplication {
 	}
 
 	protected CommandLinePropertySource<?> createCommandLinePropertySource(
-			Configuration configuration) {
+			ApplicationConfiguration configuration) {
 		List<String> args = configuration.getArguments();
 		return new SimpleCommandLinePropertySource(args.toArray(new String[args.size()]));
-	}
-
-	private void registerSelf(ApplicationContext applicationContext) {
-		ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
-		configurableApplicationContext.addBeanFactoryPostProcessor(new BeanDefinitionRegistryPostProcessor() {
-			@Override
-			public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-					throws BeansException {
-				BeanDefinition beanDefinition = new RootBeanDefinition(SpringApplication.this.getClass());
-				beanDefinition.setFactoryMethodName("getInstance");
-				registry.registerBeanDefinition("springApplication", beanDefinition);
-			}
-
-			@Override
-			public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-					throws BeansException {
-			}
-		});
 	}
 
 	private void refresh(ApplicationContext applicationContext) {
@@ -177,8 +190,42 @@ public class SpringApplication {
 		}
 	}
 
-	protected void doRun(ConfigurationDetails configuration,
-			ApplicationContext applicationContext) {
+	protected void postProcessBeanDefinitionRegistry(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry) {
+		registerSelf(registry);
+		dunno(configuration, registry);
+	}
+
+	private void registerSelf(BeanDefinitionRegistry registry) {
+		BeanDefinition beanDefinition = new RootBeanDefinition(SpringApplication.this.getClass());
+		beanDefinition.setFactoryMethodName("getInstance");
+		registry.registerBeanDefinition("springApplication", beanDefinition);
+	}
+
+	private void dunno(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry) {
+		Set<Object> imports = configuration.getImports();
+		if(!imports.isEmpty()) {
+			// FIXME register imports
+		}
+		else {
+			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(getClass());
+			if(!metadata.isAnnotated(Configuration.class.getName())) {
+				scan(registry);
+			}
+		}
+	}
+
+	private void scan(BeanDefinitionRegistry registry) {
+		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
+		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false){
+			@Override
+			protected boolean matchClassName(String className) {
+				return SpringApplication.this.getClass().getName().equals(className);
+			}
+		});
+		scanner.scan(ClassUtils.getPackageName(getClass()));
+	}
+
+	protected void doRun(ApplicationConfigurationDetails configuration) {
 	}
 
 	public static SpringApplication getInstance() {
@@ -191,7 +238,7 @@ public class SpringApplication {
 	 * This interface is not Indented to be implemented by subclasses as it may be
 	 * extended in future releases.
 	 */
-	protected static interface Configuration {
+	protected static interface ApplicationConfiguration {
 
 		/**
 		 * Disable the "SpringBootstrap" banner usually logged as the application starts.
@@ -201,7 +248,6 @@ public class SpringApplication {
 		/**
 		 * Returns a mutable list of the application arguments. This list is initially
 		 * populated from the command line but may be manipulated here.
-		 *
 		 * @return a mutable list of arguments
 		 * @see #setArguments(List)
 		 */
@@ -209,7 +255,6 @@ public class SpringApplication {
 
 		/**
 		 * Replace any existing arguments with the values from specified list.
-		 *
 		 * @param arguments the new arguments
 		 * @see #getArguments()
 		 */
@@ -218,7 +263,6 @@ public class SpringApplication {
 		/**
 		 * Set the type of Spring {@link ApplicationContext} that will be created and
 		 * used.
-		 *
 		 * @param contextClass the application context type
 		 */
 		void setContextClass(Class<? extends ConfigurableApplicationContext> contextClass);
@@ -226,16 +270,40 @@ public class SpringApplication {
 		/**
 		 * Add an {@link ApplicationContextInitializer} that will called before the
 		 * {@link ApplicationContext} is refreshed.
-		 *
 		 * @param initializer the type of initializer
 		 */
-		void addInitializer(Class<? extends ApplicationContextInitializer<?>> initializer); //FIXME should be ...
+		void addInitializer(Class<? extends ApplicationContextInitializer<?>>... initializer);
+
+		/**
+		 * Import the specified resource when the application context is created. Adding
+		 * imports will disable the default strategy of searching for beans.
+		 * @param importResource the resource to import
+		 * @see #addImport(Class)
+		 * @see #setImportReader(Class)
+		 */
+		void addImport(String... importResource);
+
+		/**
+		 * Import the specified class when the application context is created. Adding
+		 * imports will disable the default strategy of searching for beans.
+		 * @param importClass the class to import
+		 * @see #addImport(Class)
+		 * @see #setImportReader(Class)
+		 */
+		void addImport(Class<?>... importClass);
+
+		/**
+		 * Set the reader that will be used to load imported resources. If not specified
+		 * the {@link XmlBeanDefinitionReader} will be used.
+		 * @param importReader the import reader
+		 */
+		void setImportReader(Class<? extends BeanDefinitionReader> importReader);
 	}
 
 	/**
-	 * Details of a specific {@link Configuration} that may be customized.
+	 * Details of a specific {@link ApplicationConfiguration} that may be customized.
 	 */
-	protected final static class ConfigurationDetails implements Configuration {
+	protected final static class ApplicationConfigurationDetails implements ApplicationConfiguration {
 
 		private boolean bannerEnabled = true;
 
@@ -245,6 +313,10 @@ public class SpringApplication {
 
 		private Set<Class<? extends ApplicationContextInitializer<?>>> initializers = new LinkedHashSet<Class<? extends ApplicationContextInitializer<?>>>();
 
+		private Set<Object> imports = new LinkedHashSet<Object>();
+
+		private Class<? extends BeanDefinitionReader> importReader;
+
 		public void disableBanner() {
 			this.bannerEnabled = false;
 		}
@@ -253,7 +325,7 @@ public class SpringApplication {
 			return bannerEnabled;
 		}
 
-		public ConfigurationDetails(String[] args) {
+		public ApplicationConfigurationDetails(String[] args) {
 			this.arguments = new ArrayList<String>(Arrays.asList(args));
 		}
 
@@ -278,8 +350,28 @@ public class SpringApplication {
 		}
 
 		public void addInitializer(
-				Class<? extends ApplicationContextInitializer<?>> initializer) {
-			this.initializers.add(initializer);
+				Class<? extends ApplicationContextInitializer<?>>... initializer) {
+			this.initializers.addAll(Arrays.asList(initializer));
+		}
+
+		public Set<Object> getImports() {
+			return imports;
+		}
+
+		public void addImport(String... importResource) {
+			this.imports.addAll(Arrays.asList(importResource));
+		}
+
+		public void addImport(Class<?>... importClass) {
+			this.imports.add(Arrays.asList(importClass));
+		}
+
+		public Class<? extends BeanDefinitionReader> getImportReader() {
+			return importReader;
+		}
+
+		public void setImportReader(Class<? extends BeanDefinitionReader> importReader) {
+			this.importReader = importReader;
 		}
 	}
 

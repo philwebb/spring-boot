@@ -2,13 +2,12 @@ package org.springframework.bootstrap.sample.simple;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.sample.simple.service.HelloWorldService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-@AutoConfiguration
-@ComponentScan
+@Configuration
+@EnableAutoConfiguration
 public class SimpleBootstrapApplication extends SpringApplication {
 
 	// Simple example shows how a command line spring application can execute an
@@ -19,8 +18,7 @@ public class SimpleBootstrapApplication extends SpringApplication {
 	private HelloWorldService helloWorldService;
 
 	@Override
-	protected void doRun(ConfigurationDetails configuration,
-			ApplicationContext applicationContext) {
+	protected void doRun(ApplicationConfigurationDetails configuration) {
 		System.out.println(helloWorldService.getHelloMessage());
 	}
 

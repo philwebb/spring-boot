@@ -47,6 +47,7 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		for (String beanClass : beanClasses) {
 			try {
+				//FIXME confirm this does not cause early instantiation
 				String[] beans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 						context.getBeanFactory(),
 						ClassUtils.forName(beanClass, context.getClassLoader()), false,
