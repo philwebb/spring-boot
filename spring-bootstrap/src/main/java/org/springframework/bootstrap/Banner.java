@@ -13,9 +13,12 @@ class Banner {
 " |____| .__|_| |_|_| |_\\__, |____/\\___/\\___/\\__|___/\\__|_| \\__,_| .__/  / // // /  ",
 "      |_|              |___/                                    |_|    /_//_//_/   "};
 	public static void write(PrintStream printStream) {
+		System.out.println();
 		for (String line : BANNER) {
 			printStream.println(line);
 		}
+		System.out.println();
+		System.out.println();
 	}
 
 

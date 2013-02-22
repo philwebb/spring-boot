@@ -2,10 +2,14 @@ package org.springframework.bootstrap.sample.simple;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.sample.simple.service.HelloWorldService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
-public class SimpleBootstrapApplication extends SpringApplication{
+@AutoConfiguration
+@ComponentScan
+public class SimpleBootstrapApplication extends SpringApplication {
 
 	// Simple example shows how a command line spring application can execute an
 	// injected bean service. Also demonstraits how you can use @Value to inject

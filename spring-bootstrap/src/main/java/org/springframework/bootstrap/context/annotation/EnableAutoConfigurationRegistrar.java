@@ -17,6 +17,7 @@ class EnableAutoConfigurationRegistrar implements DeferredImportSelector, BeanCl
 
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+		importingClassMetadata.getAnnotationAttributes(EnableAutoConfiguration.class.getName(), true);
 		List<String> factoryNames = SpringFactoriesLoader.loadFactoryNames(AutoConfiguration.class, this.beanClassLoader);
 		return factoryNames.toArray(new String[factoryNames.size()]);
 	}

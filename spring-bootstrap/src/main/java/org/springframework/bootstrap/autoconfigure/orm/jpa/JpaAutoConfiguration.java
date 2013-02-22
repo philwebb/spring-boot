@@ -23,7 +23,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
-import org.springframework.bootstrap.context.AutoConfigurationSettings;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
@@ -85,7 +84,8 @@ public abstract class JpaAutoConfiguration implements ApplicationContextAware {
 	}
 
 	protected String getPackagesToScan() {
-		return this.applicationContext.getBean(AutoConfigurationSettings.class).getDomainPackage();
+		return "org.springframework.bootstrap.sample.data";
+		// FIXME return this.applicationContext.getBean(AutoConfigurationSettings.class).getDomainPackage();
 	}
 
 	protected void configure(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.bootstrap.context.AutoConfigurationSettings;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -87,7 +86,9 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 	}
 
 	protected String getPackageToScan() {
-		return this.beanFactory.getBean(AutoConfigurationSettings.class).getRepositoryPackage();
+		//return this.beanFactory.getBean(AutoConfigurationSettings.class).getRepositoryPackage();
+		//FIXME
+		return "org.springframework.bootstrap.sample.data";
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

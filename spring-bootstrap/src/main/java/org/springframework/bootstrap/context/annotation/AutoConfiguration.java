@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration
-@Conditional(NotDisabledCondition.class)
 public @interface AutoConfiguration {
 
 	//FIXME finding out why autoconfigure did not run is hard, we need a way to debug the logic used

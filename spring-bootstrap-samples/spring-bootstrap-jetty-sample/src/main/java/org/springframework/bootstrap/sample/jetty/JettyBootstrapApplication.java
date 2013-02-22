@@ -1,17 +1,10 @@
 package org.springframework.bootstrap.sample.jetty;
 
-import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.bootstrap.AutoConfigureSpringApplication;
+import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 
-@Configuration
-@EnableAutoConfiguration
-public class JettyBootstrapApplication extends SpringApplication {
-
-	@Override
-	protected void configure(Configuration configuration) {
-		configuration.disableAutoConfigure();
-	}
+@AutoConfiguration
+public class JettyBootstrapApplication extends AutoConfigureSpringApplication {
 
 	public static void main(String[] args) throws Exception {
 		new JettyBootstrapApplication().run(args);
