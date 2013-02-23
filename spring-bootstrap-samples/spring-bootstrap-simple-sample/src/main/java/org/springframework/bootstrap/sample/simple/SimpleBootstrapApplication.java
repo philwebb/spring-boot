@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.sample.simple.service.HelloWorldService;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan
 @EnableAutoConfiguration
 public class SimpleBootstrapApplication extends SpringApplication {
 

@@ -16,7 +16,7 @@
 
 package org.springframework.bootstrap.autoconfigure.data;
 
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -24,6 +24,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.bootstrap.context.annotation.AutoConfigurationUtils;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -36,6 +37,7 @@ import org.springframework.data.repository.config.RepositoryBeanDefinitionBuilde
 import org.springframework.data.repository.config.RepositoryBeanNameGenerator;
 import org.springframework.data.repository.config.RepositoryConfiguration;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
+import org.springframework.util.Assert;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JPA
@@ -50,7 +52,6 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 
 	private ClassLoader beanClassLoader;
 
-
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
 
@@ -62,33 +63,39 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 		RepositoryBeanNameGenerator generator = new RepositoryBeanNameGenerator();
 		generator.setBeanClassLoader(this.beanClassLoader);
 
-		for (RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration :
-				extension.getRepositoryConfigurations(configurationSource, resourceLoader)) {
-			RepositoryBeanDefinitionBuilder builder = new RepositoryBeanDefinitionBuilder(repositoryConfiguration, extension);
-			BeanDefinitionBuilder definitionBuilder = builder.build(registry, resourceLoader);
+		for (RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration : extension.getRepositoryConfigurations(
+				configurationSource, resourceLoader)) {
+			RepositoryBeanDefinitionBuilder builder = new RepositoryBeanDefinitionBuilder(
+					repositoryConfiguration, extension);
+			BeanDefinitionBuilder definitionBuilder = builder.build(registry,
+					resourceLoader);
 			extension.postProcess(definitionBuilder, configurationSource);
 
-			String beanName = generator.generateBeanName(definitionBuilder.getBeanDefinition(), registry);
-			registry.registerBeanDefinition(beanName, definitionBuilder.getBeanDefinition());
+			String beanName = generator.generateBeanName(
+					definitionBuilder.getBeanDefinition(), registry);
+			registry.registerBeanDefinition(beanName,
+					definitionBuilder.getBeanDefinition());
 		}
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
-		StandardAnnotationMetadata metadata =
-				new StandardAnnotationMetadata(EnableJpaRepositoriesConfiguration.class, true);
+		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
+				EnableJpaRepositoriesConfiguration.class, true);
 		AnnotationRepositoryConfigurationSource configurationSource = new AnnotationRepositoryConfigurationSource(
 				metadata, EnableJpaRepositories.class) {
+
 			public java.lang.Iterable<String> getBasePackages() {
-				return Collections.singleton(getPackageToScan());
+				return JpaRepositoriesAutoConfigureRegistrar.this.getBasePackages();
 			};
 		};
 		return configurationSource;
 	}
 
-	protected String getPackageToScan() {
-		//return this.beanFactory.getBean(AutoConfigurationSettings.class).getRepositoryPackage();
-		//FIXME
-		return "org.springframework.bootstrap.sample.data";
+	protected Iterable<String> getBasePackages() {
+		List<String> basePackages = AutoConfigurationUtils.getBasePackages(this.beanFactory);
+		Assert.notEmpty(basePackages, "Unable to find JPA repository base packages, please define " +
+				"a @ComponentScan annotation or disable JpaRepositoriesAutoConfigure");
+		return basePackages;
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

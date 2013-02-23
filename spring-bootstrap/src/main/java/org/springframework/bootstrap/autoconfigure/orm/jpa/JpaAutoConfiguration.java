@@ -16,25 +16,29 @@
 
 package org.springframework.bootstrap.autoconfigure.orm.jpa;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
+import org.springframework.bootstrap.context.annotation.AutoConfigurationUtils;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.Assert;
 
 /**
  * Base {@link AutoConfiguration} for JPA.
@@ -43,9 +47,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @ConditionalOnClass({LocalContainerEntityManagerFactoryBean.class, EnableTransactionManagement.class, EntityManager.class})
 @ConditionalOnBean(DataSource.class)
-public abstract class JpaAutoConfiguration implements ApplicationContextAware {
+public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 
-	private ConfigurableApplicationContext applicationContext;
+	private ConfigurableListableBeanFactory beanFactory;
 
 	@Bean
 	public PlatformTransactionManager txManager() {
@@ -69,7 +73,7 @@ public abstract class JpaAutoConfiguration implements ApplicationContextAware {
 	 */
 	protected boolean isAutoConfiguredDataSource() {
 		try {
-			BeanDefinition beanDefinition = this.applicationContext.getBeanFactory().getBeanDefinition("dataSource");
+			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition("dataSource");
 			return EmbeddedDatabaseAutoConfiguration.class.getName().equals(beanDefinition.getFactoryBeanName());
 		} catch(NoSuchBeanDefinitionException e) {
 			return false;
@@ -80,19 +84,21 @@ public abstract class JpaAutoConfiguration implements ApplicationContextAware {
 	public abstract JpaVendorAdapter jpaVendorAdapter();
 
 	protected DataSource getDataSource() {
-		return this.applicationContext.getBean(DataSource.class);
+		return this.beanFactory.getBean(DataSource.class);
 	}
 
-	protected String getPackagesToScan() {
-		return "org.springframework.bootstrap.sample.data";
-		// FIXME return this.applicationContext.getBean(AutoConfigurationSettings.class).getDomainPackage();
+	protected String[] getPackagesToScan() {
+		List<String> basePackages = AutoConfigurationUtils.getBasePackages(this.beanFactory);
+		Assert.notEmpty(basePackages, "Unable to find JPA packages to scan, please define " +
+				"a @ComponentScan annotation or disable JpaAutoConfiguration");
+		return basePackages.toArray(new String[basePackages.size()]);
 	}
 
 	protected void configure(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 	}
 
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 	}
 }

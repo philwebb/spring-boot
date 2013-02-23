@@ -12,14 +12,9 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EnableAutoConfigurationImportSelector.class)
+@Import({EnableAutoConfigurationImportSelector.class})
 public @interface EnableAutoConfiguration {
 
-	boolean componentScan() default true;
-
-	// FIXME
-	Class<?>[] excluding() default {};
-
-	// FIXME should imply @ComponentScan unless @ComponentScan
+	Class<?>[] exclude() default {};
 
 }
