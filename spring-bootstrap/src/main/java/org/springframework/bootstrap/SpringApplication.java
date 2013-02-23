@@ -21,6 +21,7 @@ import org.springframework.bootstrap.web.embedded.AnnotationConfigEmbeddedWebApp
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,6 +31,7 @@ import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.util.ClassUtils;
@@ -203,22 +205,67 @@ public class SpringApplication {
 		return beanDefinition;
 	}
 
-	private void setupBeanDefinitionRegistry(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry, AttributeAccessor attributes) {
+	private void setupBeanDefinitionRegistry(
+			ApplicationConfigurationDetails configuration,
+			BeanDefinitionRegistry registry, AttributeAccessor attributes) {
 		Set<Object> imports = configuration.getImports();
 		if(!imports.isEmpty()) {
-			// FIXME register imports
+			processImports(configuration, registry);
 		}
 		else {
 			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(getClass());
 			if(!metadata.isAnnotated(ComponentScan.class.getName())) {
 				String[] basePackages = new String[] { ClassUtils.getPackageName(getClass()) };
-				scan(registry, basePackages);
+				scan(configuration, registry, basePackages);
 				attributes.setAttribute("componentScanBasePackages", basePackages);
 			}
 		}
 	}
 
-	private void scan(BeanDefinitionRegistry registry, String[] basePackages) {
+	private void processImports(ApplicationConfigurationDetails configuration,
+			BeanDefinitionRegistry registry) {
+		BeanDefinitionReader classicReader = null;
+		AnnotatedBeanDefinitionReader annotationReader = null;
+		for (Object location : configuration.getImports()) {
+			if (location instanceof String || location instanceof Resource) {
+				if (classicReader == null) {
+					classicReader = getReader(configuration, registry);
+				}
+				if (location instanceof String) {
+					classicReader.loadBeanDefinitions((String) location);
+				}
+				else {
+					classicReader.loadBeanDefinitions((Resource) location);
+				}
+			}
+			else if (location instanceof Class) {
+				if (annotationReader == null) {
+					annotationReader = new AnnotatedBeanDefinitionReader(registry);
+				}
+				annotationReader.register((Class<?>[]) location);
+			}
+			else {
+				throw new IllegalStateException("Unsupported location " + location);
+			}
+		}
+	}
+
+	private BeanDefinitionReader getReader(ApplicationConfigurationDetails configuration,
+			BeanDefinitionRegistry registry) {
+		Class<? extends BeanDefinitionReader> readerClass = configuration.getImportReader();
+		readerClass = (readerClass == null ? XmlBeanDefinitionReader.class : readerClass);
+		try {
+			return readerClass.getConstructor(BeanDefinitionRegistry.class).
+					newInstance(registry);
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Could not instantiate BeanDefinitionReader class ["
+							+ readerClass.getName() + "]");
+		}
+	}
+
+	protected void scan(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry, String[] basePackages) {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
 		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false){
 			@Override
@@ -282,16 +329,28 @@ public class SpringApplication {
 		 * Import the specified resource when the application context is created. Adding
 		 * imports will disable the default strategy of searching for beans.
 		 * @param importResource the resource to import
+		 * @see #addImport(Resource)
 		 * @see #addImport(Class)
 		 * @see #setImportReader(Class)
 		 */
 		void addImport(String... importResource);
 
 		/**
+		 * Import the specified resource when the application context is created. Adding
+		 * imports will disable the default strategy of searching for beans.
+		 * @param importResource the resource to import
+		 * @see #addImport(String)
+		 * @see #addImport(Class)
+		 * @see #setImportReader(Class)
+		 */
+		void addImport(Resource... importResource);
+
+		/**
 		 * Import the specified class when the application context is created. Adding
 		 * imports will disable the default strategy of searching for beans.
 		 * @param importClass the class to import
-		 * @see #addImport(Class)
+		 * @see #addImport(String)
+		 * @see #addImport(Resource)
 		 * @see #setImportReader(Class)
 		 */
 		void addImport(Class<?>... importClass);
@@ -363,6 +422,10 @@ public class SpringApplication {
 		}
 
 		public void addImport(String... importResource) {
+			this.imports.addAll(Arrays.asList(importResource));
+		}
+
+		public void addImport(Resource... importResource) {
 			this.imports.addAll(Arrays.asList(importResource));
 		}
 
