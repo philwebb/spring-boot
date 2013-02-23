@@ -9,6 +9,9 @@
 	</parent>
 	<artifactId>spring-bootstrap-jetty-sample</artifactId>
 	<packaging>jar</packaging>
+	<properties>
+		 <start-class>org.springframework.bootstrap.sample.jetty.JettyBootstrapApplication</start-class>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -32,4 +35,14 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -34,6 +34,7 @@ public class EmbeddedTomcatFactory implements EmbeddedServletContainerFactory {
 
 	// FIXME see notes in Jetty factory
 	// FIXME what if we don't want DispatcherServlet
+	// FIXME can we stop tomcat.8080 dir from being created?
 
 	public EmbeddedServletContainer getContainer(
 			WebApplicationContext applicationContext, ServletContextListener listener)

@@ -218,7 +218,7 @@ public class RandomAccessJarFile extends JarFile {
 					this.data, filtersToUse);
 		} else {
 			if(ze.getMethod() != ZipEntry.STORED) {
-				throw new IllegalStateException("Unable to open nested compressed entries");
+				throw new IllegalStateException("Unable to open nested compressed entry " + ze.getName());
 			}
 			return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
 					+ ze.getName(), getData(ze), filters);

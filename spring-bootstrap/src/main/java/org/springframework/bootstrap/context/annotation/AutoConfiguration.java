@@ -37,5 +37,6 @@ import org.springframework.context.annotation.Configuration;
 public @interface AutoConfiguration {
 
 	//FIXME finding out why autoconfigure did not run is hard, we need a way to debug the logic used
+	//FIXME this now gets confusing with @EnableAutoConfigure. Perhps drop and just use factories
 
 }
