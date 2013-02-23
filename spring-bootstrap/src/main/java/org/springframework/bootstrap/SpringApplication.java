@@ -23,8 +23,9 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.AttributeAccessor;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -191,30 +192,33 @@ public class SpringApplication {
 	}
 
 	protected void postProcessBeanDefinitionRegistry(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry) {
-		registerSelf(registry);
-		dunno(configuration, registry);
+		AttributeAccessor attributes = registerSelf(registry);
+		setupBeanDefinitionRegistry(configuration, registry, attributes);
 	}
 
-	private void registerSelf(BeanDefinitionRegistry registry) {
+	private AttributeAccessor registerSelf(BeanDefinitionRegistry registry) {
 		BeanDefinition beanDefinition = new RootBeanDefinition(SpringApplication.this.getClass());
 		beanDefinition.setFactoryMethodName("getInstance");
 		registry.registerBeanDefinition("springApplication", beanDefinition);
+		return beanDefinition;
 	}
 
-	private void dunno(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry) {
+	private void setupBeanDefinitionRegistry(ApplicationConfigurationDetails configuration, BeanDefinitionRegistry registry, AttributeAccessor attributes) {
 		Set<Object> imports = configuration.getImports();
 		if(!imports.isEmpty()) {
 			// FIXME register imports
 		}
 		else {
 			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(getClass());
-			if(!metadata.isAnnotated(Configuration.class.getName())) {
-				scan(registry);
+			if(!metadata.isAnnotated(ComponentScan.class.getName())) {
+				String[] basePackages = new String[] { ClassUtils.getPackageName(getClass()) };
+				scan(registry, basePackages);
+				attributes.setAttribute("componentScanBasePackages", basePackages);
 			}
 		}
 	}
 
-	private void scan(BeanDefinitionRegistry registry) {
+	private void scan(BeanDefinitionRegistry registry, String[] basePackages) {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
 		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false){
 			@Override
@@ -222,7 +226,7 @@ public class SpringApplication {
 				return SpringApplication.this.getClass().getName().equals(className);
 			}
 		});
-		scanner.scan(ClassUtils.getPackageName(getClass()));
+		scanner.scan(basePackages);
 	}
 
 	protected void doRun(ApplicationConfigurationDetails configuration) {

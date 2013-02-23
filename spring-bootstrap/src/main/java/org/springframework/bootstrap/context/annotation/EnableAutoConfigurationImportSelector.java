@@ -69,6 +69,10 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 		List<String> basePackages = new ArrayList<String>();
 		for (String beanName : beanFactory.getBeanDefinitionNames()) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+			String[] basePackagesAttribute = (String[]) beanDefinition.getAttribute("componentScanBasePackages");
+			if(basePackagesAttribute != null) {
+				basePackages.addAll(Arrays.asList(basePackagesAttribute));
+			}
 			AnnotationMetadata metadata = getMetadata(beanDefinition);
 			basePackages.addAll(getBasePackages(metadata));
 		}
