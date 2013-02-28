@@ -18,9 +18,9 @@ package org.springframework.bootstrap.web.embedded;
 
 import javax.servlet.ServletContextListener;
 
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -39,9 +39,11 @@ public class EmbeddedJettyFactory implements EmbeddedServletContainerFactory {
 			WebApplicationContext applicationContext, ServletContextListener listener)
 			throws Exception {
 		final Server server = new Server(8080);
-		Context context = new Context(server, "/", Context.SESSIONS);
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
 		context.addServlet(new ServletHolder(new DispatcherServlet(applicationContext)), "/*");
 		context.addEventListener(listener);
+		server.setHandler(context);
 		return new EmbeddedJettyServer(server);
 	}
 

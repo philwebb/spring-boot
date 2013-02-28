@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.autoconfigure.data;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
@@ -53,18 +54,20 @@ class JpaRepositoriesAutoConfigureRegistrar implements ImportBeanDefinitionRegis
 	private ClassLoader beanClassLoader;
 
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+			final BeanDefinitionRegistry registry) {
 
-		ResourceLoader resourceLoader = new DefaultResourceLoader();
-		AnnotationRepositoryConfigurationSource configurationSource = getConfigurationSource();
-		RepositoryConfigurationExtension extension = new JpaRepositoryConfigExtension();
+		final ResourceLoader resourceLoader = new DefaultResourceLoader();
+		final AnnotationRepositoryConfigurationSource configurationSource = getConfigurationSource();
+		final RepositoryConfigurationExtension extension = new JpaRepositoryConfigExtension();
 		extension.registerBeansForRoot(registry, configurationSource);
 
-		RepositoryBeanNameGenerator generator = new RepositoryBeanNameGenerator();
+		final RepositoryBeanNameGenerator generator = new RepositoryBeanNameGenerator();
 		generator.setBeanClassLoader(this.beanClassLoader);
 
-		for (RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration : extension.getRepositoryConfigurations(
-				configurationSource, resourceLoader)) {
+		Collection<RepositoryConfiguration<AnnotationRepositoryConfigurationSource>> repositoryConfigurations =
+				extension.getRepositoryConfigurations(configurationSource, resourceLoader);
+
+		for (final RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration : repositoryConfigurations) {
 			RepositoryBeanDefinitionBuilder builder = new RepositoryBeanDefinitionBuilder(
 					repositoryConfiguration, extension);
 			BeanDefinitionBuilder definitionBuilder = builder.build(registry,

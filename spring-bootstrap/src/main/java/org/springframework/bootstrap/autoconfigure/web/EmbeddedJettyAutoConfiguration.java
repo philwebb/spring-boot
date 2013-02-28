@@ -18,8 +18,8 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
-import org.mortbay.jetty.Server;
-import org.mortbay.util.Loader;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.Loader;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;

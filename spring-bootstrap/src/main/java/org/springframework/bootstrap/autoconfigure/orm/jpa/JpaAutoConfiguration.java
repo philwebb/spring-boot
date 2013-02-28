@@ -84,7 +84,11 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 	public abstract JpaVendorAdapter jpaVendorAdapter();
 
 	protected DataSource getDataSource() {
-		return this.beanFactory.getBean(DataSource.class);
+		try {
+			return this.beanFactory.getBean("dataSource", DataSource.class);
+		} catch (RuntimeException e) {
+			return this.beanFactory.getBean(DataSource.class);
+		}
 	}
 
 	protected String[] getPackagesToScan() {

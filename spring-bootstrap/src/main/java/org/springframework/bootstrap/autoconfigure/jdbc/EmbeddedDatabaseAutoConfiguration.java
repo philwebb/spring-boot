@@ -18,15 +18,18 @@ package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import javax.sql.DataSource;
 
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.context.ExecutorServiceAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.task.AsyncUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -40,7 +43,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration
 @Conditional(EmbeddedDatabaseAutoConfiguration.EmbeddedDatabaseCondition.class)
 @ConditionalOnMissingBean(DataSource.class)
-public class EmbeddedDatabaseAutoConfiguration {
+public class EmbeddedDatabaseAutoConfiguration implements ExecutorServiceAware {
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	static {
@@ -49,9 +52,17 @@ public class EmbeddedDatabaseAutoConfiguration {
 		// FIXME additional types
 	}
 
+	private ExecutorService executorService;
+
+	@Override
+	public void setExecutorServiceAware(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
 	@Bean
 	public DataSource dataSource() {
-		return new EmbeddedDatabaseBuilder().setType(getEmbeddedDatabaseType()).build();
+		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder().setType(getEmbeddedDatabaseType());
+		return AsyncUtils.submitVia(executorService, builder).build();
 	}
 
 	public static EmbeddedDatabaseType getEmbeddedDatabaseType() {
@@ -74,5 +85,4 @@ public class EmbeddedDatabaseAutoConfiguration {
 			return getEmbeddedDatabaseType() != null;
 		}
 	}
-
 }

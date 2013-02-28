@@ -72,13 +72,13 @@ public class SpringApplication {
 		WEB_ENVIRONMENT = webEnvironment;
 	}
 
-	private static ThreadLocal<SpringApplication> instance = new ThreadLocal<SpringApplication>();
+	private static SpringApplication instance;
 
 	// FIXME DC can override ?
 	public void run(String... args) {
 		try {
 			ApplicationConfigurationDetails configuration = new ApplicationConfigurationDetails(args);
-			instance.set(this);
+			instance = this;
 			configure(configuration);
 			run(configuration);
 		}
@@ -90,7 +90,7 @@ public class SpringApplication {
 			System.exit(1);
 		}
 		finally {
-			instance.set(null);
+			instance = null;
 		}
 	}
 
@@ -280,7 +280,7 @@ public class SpringApplication {
 	}
 
 	public static SpringApplication getInstance() {
-		return instance.get();
+		return instance;
 	}
 
 
