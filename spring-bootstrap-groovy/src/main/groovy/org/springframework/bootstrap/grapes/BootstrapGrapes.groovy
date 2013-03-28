@@ -10,3 +10,10 @@ package org.springframework.bootstrap.grapes
 @Grab("org.slf4j:slf4j-jdk14:1.6.1")
 class BootstrapGrapes { 
 }
+
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration
+import org.springframework.context.annotation.Configuration
+@EnableAutoConfiguration
+@Configuration
+class BootstrapAutoConfiguration { 
+}
