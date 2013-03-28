@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-public class JettyBootstrapApplication extends SpringApplication {
+public class JettyBootstrapApplication {
 
 	public static void main(String[] args) throws Exception {
-		new JettyBootstrapApplication().run(args);
+		SpringApplication.main(JettyBootstrapApplication.class, args);
 	}
 
 }

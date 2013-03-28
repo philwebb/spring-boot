@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-public class TomcatBootstrapApplication extends SpringApplication{
+public class TomcatBootstrapApplication {
 
 	public static void main(String[] args) throws Exception {
-		new TomcatBootstrapApplication().run(args);
+		SpringApplication.main(TomcatBootstrapApplication.class, args);
 	}
 
 }

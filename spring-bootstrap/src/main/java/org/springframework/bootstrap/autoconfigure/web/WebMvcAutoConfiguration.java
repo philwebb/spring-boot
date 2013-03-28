@@ -21,6 +21,7 @@ import javax.servlet.Servlet;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -34,6 +35,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @AutoConfiguration
 @ConditionalOnClass({Servlet.class, DispatcherServlet.class})
 @EnableWebMvc
+@Import(WebMvcDispatcherServletAutoConfiguration.class)
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
 public class WebMvcAutoConfiguration {
+
+	// FIXME will never run because the @EnableWebMvc triggers an import that
+	// gets processed first thus failing @ConditionalOnMissingBean
+	// FIXME check if this is true
+//	@Bean
+//	public DispatcherServlet dispatcherServlet() {
+//		return new DispatcherServlet();
+//	}
+
 }

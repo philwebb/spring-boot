@@ -10,20 +10,22 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration
 public class XmlBootstrapApplication extends SpringApplication {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	//FIXME
 
-	@Override
-	protected void configure(ApplicationConfiguration configuration) {
-		configuration.addImport("classpath:/META-INF/application-context.xml");
-	}
-
-	@Override
-	protected void doRun(ApplicationConfigurationDetails configuration) {
-		System.out.println(helloWorldService.getHelloMessage());
-	}
-
-	public static void main(String[] args) throws Exception {
-		new XmlBootstrapApplication().run(args);
-	}
+//	@Autowired
+//	private HelloWorldService helloWorldService;
+//
+//	@Override
+//	protected void configure(ApplicationConfiguration configuration) {
+//		configuration.addImport("classpath:/META-INF/application-context.xml");
+//	}
+//
+//	@Override
+//	protected void doRun(ApplicationConfigurationDetails configuration) {
+//		System.out.println(helloWorldService.getHelloMessage());
+//	}
+//
+//	public static void main(String[] args) throws Exception {
+//		new XmlBootstrapApplication().run(args);
+//	}
 }

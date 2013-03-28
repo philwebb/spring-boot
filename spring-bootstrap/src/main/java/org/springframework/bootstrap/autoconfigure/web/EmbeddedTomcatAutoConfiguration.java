@@ -22,9 +22,9 @@ import org.apache.catalina.startup.Tomcat;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
-import org.springframework.bootstrap.web.embedded.EmbeddedTomcatFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.web.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
 @AutoConfiguration
 @ConditionalOnClass({Servlet.class, Tomcat.class})
@@ -32,8 +32,8 @@ import org.springframework.context.annotation.Bean;
 public class EmbeddedTomcatAutoConfiguration {
 
 	@Bean
-	public EmbeddedTomcatFactory embeddedTomcatFactory() {
-		return new EmbeddedTomcatFactory();
+	public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
+		return new TomcatEmbeddedServletContainerFactory();
 	}
 
 }

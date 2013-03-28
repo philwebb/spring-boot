@@ -23,9 +23,9 @@ import org.eclipse.jetty.util.Loader;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
-import org.springframework.bootstrap.web.embedded.EmbeddedJettyFactory;
-import org.springframework.bootstrap.web.embedded.EmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.web.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 
 /**
  * {@link AutoConfiguration} for {@link EmbeddedJettyFactory}.
@@ -38,8 +38,9 @@ import org.springframework.context.annotation.Bean;
 public class EmbeddedJettyAutoConfiguration {
 
 	@Bean
-	public EmbeddedJettyFactory embeddedJettyFactory() {
-		return new EmbeddedJettyFactory();
+	public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
+		return new JettyEmbeddedServletContainerFactory();
 	}
 
+	// FIXME consider port settings
 }

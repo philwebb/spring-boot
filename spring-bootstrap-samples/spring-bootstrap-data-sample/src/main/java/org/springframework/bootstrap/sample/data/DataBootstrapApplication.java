@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
-public class DataBootstrapApplication extends SpringApplication {
+public class DataBootstrapApplication {
 
 	public static void main(String[] args) throws Exception {
-		new DataBootstrapApplication().run(args);
+		SpringApplication.main(DataBootstrapApplication.class, args);
 	}
 
 }
