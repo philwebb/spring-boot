@@ -4,7 +4,7 @@ package org.springframework.bootstrap;
 /**
  * @author Dave Syer
  */
-public interface CommandlineRunner {
+public interface CommandLineRunner {
 
 	void run(String... args);
 

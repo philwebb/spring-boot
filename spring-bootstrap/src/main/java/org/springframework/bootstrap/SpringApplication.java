@@ -6,35 +6,28 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.type.StandardAnnotationMetadata;
-import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 
 public class SpringApplication {
 
-	// FIXME ArgumentAware interface
 	// FIXME ApplicationContextInitiaizer support
 	// FIXME Profile command line support
-	// FIXME Support for XML bean definitions ?
-	// FIXME support for a specific application context
-	// FIXME Disable banner?
 
 	private static final boolean WEB_ENVIRONMENT;
 	static {
@@ -54,43 +47,48 @@ public class SpringApplication {
 			"org.springframework.web.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
 
-	private ApplicationContext applicationContext;
-
-	private Class<? extends ApplicationContext> applicationContextClass;
+	private Object[] sources;
 
 	private boolean showBanner = true;
 
 	private boolean addCommandLineProperties = true;
 
+	private ResourceLoader resourceLoader;
 
-	public void run(Class<?> applicationClass, String... args) {
+	private BeanNameGenerator beanNameGenerator;
+
+	private ConfigurableEnvironment environment;
+
+	private ApplicationContext applicationContext;
+
+	private Class<? extends ApplicationContext> applicationContextClass;
+
+
+	public SpringApplication(Object... sources) {
+		Assert.notEmpty(sources, "Sources must not be empty");
+		this.sources = sources;
+	}
+
+	public SpringApplication(ResourceLoader resourceLoader, Object... sources) {
+		Assert.notEmpty(sources, "Sources must not be empty");
+		this.sources = sources;
+	}
+
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		this.resourceLoader = resourceLoader;
+	}
+
+
+	public ApplicationContext run(String... args) {
 		printBanner();
 		ApplicationContext context = createApplicationContext();
-		Assert.isInstanceOf(BeanDefinitionRegistry.class, context);
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context;
-
-		addCommandLineProperySource(context, args);
-
-		// FIXME how do we deal with XML
-
-		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(applicationClass);
-		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, "application");
-		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
-
-		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(applicationClass);
-		if(!metadata.isAnnotated(ComponentScan.class.getName())) {
-			String[] basePackages = new String[] { ClassUtils.getPackageName(applicationClass) };
-			scan(applicationClass, registry, basePackages);
-			abd.setAttribute("componentScanBasePackages", basePackages);
-		}
-
+		postProcessApplicationContext(context);
+		addPropertySources(context, args);
+		load(context);
 		refresh(context);
-		List<CommandlineRunner> runners = new ArrayList<CommandlineRunner>(context.getBeansOfType(CommandlineRunner.class).values());
-		AnnotationAwareOrderComparator.sort(runners);
-		for (CommandlineRunner runner : runners) {
-			runner.run(args);
-		}
-
+		runCommandLineRunners(context, args);
+		return context;
 	}
 
 	protected void printBanner() {
@@ -119,37 +117,70 @@ public class SpringApplication {
 		return (ApplicationContext) BeanUtils.instantiate(contextClass);
 	}
 
-	protected void addCommandLineProperySource(ApplicationContext applicationContext, String[] args) {
+	protected void postProcessApplicationContext(ApplicationContext context) {
+		if(context instanceof ConfigurableWebApplicationContext) {
+			ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
+			if(this.beanNameGenerator != null) {
+				configurableContext.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
+			}
+		}
+
+		if(context instanceof AbstractApplicationContext) {
+			((AbstractApplicationContext)context).setEnvironment(this.environment);
+		}
+
+		if(context instanceof GenericApplicationContext) {
+			((GenericApplicationContext)context).setResourceLoader(this.resourceLoader);
+		}
+	}
+
+	protected void addPropertySources(ApplicationContext context, String[] args) {
 		if(this.addCommandLineProperties) {
 			CommandLinePropertySource<?> propertySource = new SimpleCommandLinePropertySource(args);
-			Environment environment = applicationContext.getEnvironment();
+			Environment environment = context.getEnvironment();
 			if (environment instanceof ConfigurableEnvironment) {
 				((ConfigurableEnvironment) environment).getPropertySources().addFirst(propertySource);
 			}
 		}
 	}
 
-
-
-	protected void scan(final Class<?> mainClass, BeanDefinitionRegistry registry, String[] basePackages) {
-		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
-		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false){
-			@Override
-			protected boolean matchClassName(String className) {
-				return mainClass.getName().equals(className);
-			}
-		});
-		scanner.scan(basePackages);
+	protected void load(ApplicationContext context) {
+		Assert.isInstanceOf(BeanDefinitionRegistry.class, context);
+		BeanDefinitionLoader loader = new BeanDefinitionLoader((BeanDefinitionRegistry)context, this.sources);
+		loader.setBeanNameGenerator(this.beanNameGenerator);
+		loader.setResourceLoader(this.resourceLoader);
+		loader.setEnvironment(this.environment);
+		loader.load();
 	}
 
-
-
-	private void refresh(ApplicationContext applicationContext) {
-		if (applicationContext instanceof AbstractApplicationContext) {
-			((AbstractApplicationContext) applicationContext).refresh();
+	private void runCommandLineRunners(ApplicationContext context, String... args) {
+		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(context.getBeansOfType(CommandLineRunner.class).values());
+		AnnotationAwareOrderComparator.sort(runners);
+		for (CommandLineRunner runner : runners) {
+			runner.run(args);
 		}
 	}
 
+	protected void refresh(ApplicationContext applicationContext) {
+		Assert.isInstanceOf(AbstractApplicationContext.class, applicationContext);
+		((AbstractApplicationContext) applicationContext).refresh();
+	}
+
+	public void setShowBanner(boolean showBanner) {
+		this.showBanner = showBanner;
+	}
+
+	public void setAddCommandLineProperties(boolean addCommandLineProperties) {
+		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+		this.beanNameGenerator = beanNameGenerator;
+	}
+
+	public void setEnvironment(ConfigurableEnvironment environment) {
+		this.environment = environment;
+	}
 
 	/**
 	 * Sets a Spring {@link ApplicationContext} that will be used for the application. If
@@ -177,53 +208,15 @@ public class SpringApplication {
 	}
 
 	public static void main(String[] args) {
-		// FIXME inspect 1st item. class, package xml
-		try {
-			Class<?> applicationClass = Class.forName(args[0]);
-			String[] remainingArgs = new String[args.length-1];
-			System.arraycopy(args, 1, remainingArgs, 0, args.length - 1);
-			main(applicationClass, remainingArgs);
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		// ClassUtils .forName 
-		// or ends in XML
-		// or It's a package
-		
-		Package.getPackage("").
 	}
 
-	public static void main(Class<?> applicationClass, String[] args) {
-		new SpringApplication().run(applicationClass, args);
+	public static void run(Object[] sources, String[] args) {
+		new SpringApplication(sources).run(args);
 	}
 
-	public static void dunno(String basePackage, String[] args) {
-
+	public static void run(Object source, String[] args) {
+		new SpringApplication(source).run(args);
 	}
 
-	public static void dunno2(String xmlFile, String[] args) {
-
-	}
-
-	public static void dunno3(Resource xmlFile, String[] args[]) {
-
-	}
-
-	// FIXME
-	// CommandLinePropertySource
-	// An API for command line options (probably duplicating commons-cli here, so maybe
-	// depend on that, or maybe just allow override for options gathering so users can
-	// plugin external library if needed?)
-	//
-	// Accept arguments on command line and optionally append from stdin.
-	//
-	// Clear semantics and documentation about how to shutdown the application and ensure
-	// the application context is closed (depends on whether there are any non-daemon
-	// threads), and allow shutdown when main() ends or on CTRL-C according to taste.
-	//
-	// Optional bootstrap properties in a file or Resource, or some other way to
-	// initialize the Environment without writing code
 
 }
