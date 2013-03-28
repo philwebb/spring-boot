@@ -81,9 +81,9 @@ public class SpringApplication {
 		}
 
 		refresh(applicationContext);
-		List<CommandLineRunner> runners = new ArrayList<CommandLineRunner>(applicationContext.getBeansOfType(CommandLineRunner.class).values());
+		List<CommandlineRunner> runners = new ArrayList<CommandlineRunner>(applicationContext.getBeansOfType(CommandlineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
-		for (CommandLineRunner runner : runners) {
+		for (CommandlineRunner runner : runners) {
 			runner.run(args);
 		}
 

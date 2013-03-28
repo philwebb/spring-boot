@@ -5,11 +5,11 @@ package org.springframework.bootstrap.grapes
 @GrabConfig(systemClassLoader=true)
 @Grab("org.springframework.bootstrap:spring-bootstrap:0.0.1-SNAPSHOT")
 @Grab("org.springframework.batch:spring-batch-core:2.2.0.M1")
-@Grab("org.springframework:spring-context:3.2.2.BOOTSTRAP-SNAPSHOT")
+@Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
 class BatchGrapes {
 }
 
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean
 import org.springframework.bootstrap.CommandlineRunner
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.converter.DefaultJobParametersConverter

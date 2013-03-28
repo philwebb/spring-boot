@@ -1,7 +1,7 @@
 // Spring stuff needs to be on the system classloader apparently (when using @Configuration)
 @GrabResolver(name='spring-milestone', root='http://maven.springframework.org/milestone')
 @GrabConfig(systemClassLoader=true)
-@Grab("org.springframework:spring-context:3.2.0.RELEASE")
+@Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
 @GrabExclude("commons-logging:commons-logging")
 @Grab("org.slf4j:jcl-over-slf4j:1.6.1")
 @Grab("org.slf4j:slf4j-jdk14:1.6.1")

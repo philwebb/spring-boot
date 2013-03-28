@@ -2,7 +2,7 @@ package org.springframework.bootstrap.grapes
 
 @GrabResolver(name='spring-milestone', root='http://repo.springframework.org/milestone')
 @GrabConfig(systemClassLoader=true)
-@Grab("org.springframework:spring-jdbc:3.2.2.BOOTSTRAP-SNAPSHOT")
+@Grab("org.springframework:spring-jdbc:4.0.0.BOOTSTRAP-SNAPSHOT")
 @Grab("org.springframework.batch:spring-batch-core:2.2.0.M1")
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator

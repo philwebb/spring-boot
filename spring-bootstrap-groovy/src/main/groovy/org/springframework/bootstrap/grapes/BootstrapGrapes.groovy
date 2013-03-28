@@ -4,7 +4,7 @@ package org.springframework.bootstrap.grapes
 @GrabResolver(name='spring-snapshot', root='http://repo.springframework.org/snapshot')
 @GrabConfig(systemClassLoader=true)
 @Grab("org.springframework.bootstrap:spring-bootstrap:0.0.1-SNAPSHOT")
-@Grab("org.springframework:spring-context:3.2.2.BOOTSTRAP-SNAPSHOT")
+@Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
 @GrabExclude("commons-logging:commons-logging")
 @Grab("org.slf4j:jcl-over-slf4j:1.6.1")
 @Grab("org.slf4j:slf4j-jdk14:1.6.1")

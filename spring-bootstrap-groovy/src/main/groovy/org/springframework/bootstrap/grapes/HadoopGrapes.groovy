@@ -3,7 +3,7 @@ package org.springframework.bootstrap.grapes
 @GrabConfig(systemClassLoader=true)
 @Grab("org.springframework.data:spring-data-hadoop:1.0.0.RELEASE")
 @Grab("org.springframework.bootstrap:spring-bootstrap:0.0.1-SNAPSHOT")
-@Grab("org.springframework:spring-context:3.2.2.BOOTSTRAP-SNAPSHOT")
+@Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
 @Grab("org.apache.hadoop:hadoop-examples:1.0.4")
 @GrabExclude("org.mortbay.jetty:sevlet-api-2.5")
 @GrabExclude("org.mortbay.jetty:jetty")
@@ -15,7 +15,7 @@ package org.springframework.bootstrap.grapes
 class HadoopGrapes { 
 }
 
-import org.springframework.bootstrap.autoconfigure.ConditionalOnMissingBean
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportResource
 
