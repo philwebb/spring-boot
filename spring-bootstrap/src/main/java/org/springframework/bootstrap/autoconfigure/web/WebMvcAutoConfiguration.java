@@ -18,9 +18,11 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
+import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
@@ -34,17 +36,24 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @AutoConfiguration
 @ConditionalOnClass({Servlet.class, DispatcherServlet.class})
-@EnableWebMvc
-@Import(WebMvcDispatcherServletAutoConfiguration.class)
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
+@Import(WebMvcConfiguration.class)
 public class WebMvcAutoConfiguration {
 
-	// FIXME will never run because the @EnableWebMvc triggers an import that
-	// gets processed first thus failing @ConditionalOnMissingBean
-	// FIXME check if this is true
-//	@Bean
-//	public DispatcherServlet dispatcherServlet() {
-//		return new DispatcherServlet();
-//	}
+
+	/**
+	 * Nested configuration used because {@code @EnableWebMvc} will add HandlerAdapter
+	 * and HandlerMapping, causing the condition to fail and the additional
+	 * DispatcherServlet bean never to be registered if it were declared directly.
+	 */
+	@EnableWebMvc
+	public static class WebMvcConfiguration {
+
+		@Bean
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
+
+	}
 
 }

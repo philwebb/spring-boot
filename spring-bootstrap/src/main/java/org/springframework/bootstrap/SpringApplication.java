@@ -1,7 +1,10 @@
 
 package org.springframework.bootstrap;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -23,42 +26,60 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 
 public class SpringApplication {
 
-	// FIXME ArgumentAware
-
-	private static String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
-		"org.springframework.web.context.ConfigurableWebApplicationContext" };
+	// FIXME ArgumentAware interface
+	// FIXME ApplicationContextInitiaizer support
+	// FIXME Profile command line support
+	// FIXME Support for XML bean definitions ?
+	// FIXME support for a specific application context
+	// FIXME Disable banner?
 
 	private static final boolean WEB_ENVIRONMENT;
 	static {
 		boolean webEnvironment = true;
-		for (String className : WEB_ENVIRONMENT_CLASSES) {
+		for (String className : Arrays.asList(
+				"javax.servlet.Servlet",
+				"org.springframework.web.context.ConfigurableWebApplicationContext")) {
 			webEnvironment &= ClassUtils.isPresent(className, null);
 		}
 		WEB_ENVIRONMENT = webEnvironment;
 	}
 
-	public void run(Class<?> mainClass, String[] args) {
-		Banner.write(System.out); // FIXME make this optional
-		ConfigurableApplicationContext applicationContext = createApplicationContext();
-		registerShutdownHook(applicationContext);
-		//FIXME applyApplicationContextInitializers
+	private static final String DEFAULT_CONTEXT_CLASS =
+			"org.springframework.context.annotation.AnnotationConfigApplicationContext";
+
+	private static final String DEFAULT_WEB_CONTEXT_CLASS =
+			"org.springframework.web.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
+
+
+	private ApplicationContext applicationContext;
+
+	private Class<? extends ApplicationContext> applicationContextClass;
+
+	private boolean showBanner = true;
+
+	private boolean addCommandLineProperties = true;
+
+
+	public void run(Class<?> applicationClass, String... args) {
+		printBanner();
+		ApplicationContext applicationContext = createApplicationContext();
 		addCommandLineProperySource(applicationContext, args);
+
 		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
 		// FIXME how do we deal with XML
 
-		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(mainClass);
+		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(applicationClass);
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, "application");
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, registry);
 
-		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(mainClass);
+		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(applicationClass);
 		if(!metadata.isAnnotated(ComponentScan.class.getName())) {
-			String[] basePackages = new String[] { ClassUtils.getPackageName(mainClass) };
-			scan(mainClass, registry, basePackages);
+			String[] basePackages = new String[] { ClassUtils.getPackageName(applicationClass) };
+			scan(applicationClass, registry, basePackages);
 			abd.setAttribute("componentScanBasePackages", basePackages);
 		}
 
@@ -71,6 +92,44 @@ public class SpringApplication {
 
 	}
 
+	protected void printBanner() {
+		if(this.showBanner) {
+			Banner.write(System.out);
+		}
+	}
+
+	protected ApplicationContext createApplicationContext() {
+		if(this.applicationContext != null) {
+			return this.applicationContext;
+		}
+
+		Class<?> contextClass = this.applicationContextClass;
+		if(contextClass == null) {
+			try {
+				contextClass = Class.forName(
+						(WEB_ENVIRONMENT ? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS));
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException("Unable create a default ApplicationContext, " +
+						"please specify an ApplicationContextClass", ex);
+			}
+		}
+
+		return (ApplicationContext) BeanUtils.instantiate(contextClass);
+	}
+
+	protected void addCommandLineProperySource(ApplicationContext applicationContext, String[] args) {
+		if(this.addCommandLineProperties) {
+			CommandLinePropertySource<?> propertySource = new SimpleCommandLinePropertySource(args);
+			Environment environment = applicationContext.getEnvironment();
+			if (environment instanceof ConfigurableEnvironment) {
+				((ConfigurableEnvironment) environment).getPropertySources().addFirst(propertySource);
+			}
+		}
+	}
+
+
+
 	protected void scan(final Class<?> mainClass, BeanDefinitionRegistry registry, String[] basePackages) {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
 		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false){
@@ -82,15 +141,7 @@ public class SpringApplication {
 		scanner.scan(basePackages);
 	}
 
-	private void addCommandLineProperySource(
-			ConfigurableApplicationContext applicationContext, String[] args) {
-			CommandLinePropertySource<?> propertySource = new SimpleCommandLinePropertySource(args);
-			Environment environment = applicationContext.getEnvironment();
-			if (environment instanceof ConfigurableEnvironment) {
-				((ConfigurableEnvironment) environment).getPropertySources().addFirst(
-						propertySource);
-			}
-	}
+
 
 	private void refresh(ApplicationContext applicationContext) {
 		if (applicationContext instanceof AbstractApplicationContext) {
@@ -98,18 +149,32 @@ public class SpringApplication {
 		}
 	}
 
-	private ConfigurableApplicationContext createApplicationContext() {
-		Class<? extends ConfigurableApplicationContext> contextClass = WEB_ENVIRONMENT ? AnnotationConfigEmbeddedWebApplicationContext.class
-				: AnnotationConfigApplicationContext.class;
-		return BeanUtils.instantiate(contextClass);
+
+	/**
+	 * Sets a Spring {@link ApplicationContext} that will be used for the application. If
+	 * not specified an {@link AnnotationConfigEmbeddedWebApplicationContext} will be
+	 * created for web based applications or an {@link AnnotationConfigApplicationContext}
+	 * for non web based applications.
+	 * @param applicationContext the spring application context.
+	 * @see #setApplicationContextClass(Class)
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 
-	private void registerShutdownHook(ApplicationContext applicationContext) {
-		if (WEB_ENVIRONMENT
-				&& applicationContext instanceof ConfigurableWebApplicationContext) {
-			((AbstractApplicationContext) applicationContext).registerShutdownHook();
-		}
+	/**
+	 * Sets the type of Spring {@link ApplicationContext} that will be created. If not
+	 * specified defaults to {@link AnnotationConfigEmbeddedWebApplicationContext} for web
+	 * based applications or {@link AnnotationConfigApplicationContext} for non web based
+	 * applications.
+	 * @param applicationContextClass the context class to set
+	 * @see #setApplicationContext(ApplicationContext)
+	 */
+	public void setApplicationContextClass(
+			Class<? extends ApplicationContext> applicationContextClass) {
+		this.applicationContextClass = applicationContextClass;
 	}
+
 
 	public static void main(Class<?> mainClass, String[] args) {
 		new SpringApplication().run(mainClass, args);
