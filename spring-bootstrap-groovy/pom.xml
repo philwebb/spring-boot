@@ -65,7 +65,7 @@
 				<executions>
 					<execution>
 						<id>make-distribution</id>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>

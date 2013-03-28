@@ -3,6 +3,7 @@ package org.springframework.bootstrap.grapes
 import org.springframework.core.type.StandardAnnotationMetadata
 import org.springframework.util.ClassUtils
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
+import groovy.util.logging.Log
 
 @GrabResolver(name='spring-snapshot', root='http://repo.springframework.org/snapshot')
 @GrabConfig(systemClassLoader=true)
@@ -10,6 +11,7 @@ import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 @GrabExclude("commons-logging:commons-logging")
 @Grab("org.slf4j:jcl-over-slf4j:1.6.1")
 @Grab("org.slf4j:slf4j-jdk14:1.6.1")
+@Log
 class Dependencies { 
 
   static List<String> defaults() { 
@@ -20,16 +22,19 @@ class Dependencies {
 
     def result = []
     if (isWeb(configs)) { 
+      log.info("Adding web dependencies.")
       result.addAll(web())
     }
 
     if (isBatch(configs)) {
+      log.info("Adding batch dependencies.")
       result.addAll(batch())
       result << "org.springframework.bootstrap.grapes.BatchCommand"
       result << "org.springframework.bootstrap.grapes.BatchInitializationGrapes"
     }
 
     if (isHadoop(configs)) {
+      log.info("Adding info dependencies.")
       result.addAll(hadoop())
       result << "org.springframework.bootstrap.grapes.HadoopContext"
     }

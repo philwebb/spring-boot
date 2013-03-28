@@ -108,7 +108,7 @@ if [ "${#compilables[@]}" -gt 0 ]; then
     groovyc -cp "${CLASSPATH}" --configscript "$SPRING_BIN"/customizer.groovy  -d "${TARGETDIR}" "${compilables[@]}"
 fi
 
-config_classes=()
+config_classes=("org.springframework.bootstrap.grapes.BootstrapAutoConfiguration.class")
 for config in "${configs[@]}"; do
     convert_config_to_class
     config_classes[${#config_classes[@]}]="${config}"
