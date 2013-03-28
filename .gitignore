@@ -1,5 +1,7 @@
 .gradle
 *.sw?
+.#*
+*#
 /build
 .classpath
 .project
