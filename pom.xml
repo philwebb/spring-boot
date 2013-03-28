@@ -11,6 +11,7 @@
 	</prerequisites>
 	<modules>
 		<module>spring-bootstrap</module>
+		<module>spring-bootstrap-groovy</module>
 		<module>spring-bootstrap-launcher</module>
 		<module>spring-bootstrap-samples</module>
 	</modules>

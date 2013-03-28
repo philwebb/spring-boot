@@ -1,0 +1,24 @@
+apply from: 'gradle/setup.gradle'
+
+description = 'Spring Bootstrap Groovy'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    mavenRepo url: 'https://repo.springsource.org/libs-release'
+    mavenRepo url: 'https://repo.springsource.org/libs-snapshot'
+}
+
+defaultTasks = ['cleanCheck']
+
+dependencies {
+    groovy "org.codehaus.groovy:groovy-all:$groovyVersion"
+    groovy "org.apache.ivy:ivy:$ivyVersion"
+}
+
+compileGroovy.options.fork = true
+compileGroovy.groovyOptions.fork = true
+
