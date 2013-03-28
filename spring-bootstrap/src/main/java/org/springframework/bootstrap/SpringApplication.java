@@ -20,8 +20,10 @@ import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 
@@ -63,10 +65,12 @@ public class SpringApplication {
 
 	public void run(Class<?> applicationClass, String... args) {
 		printBanner();
-		ApplicationContext applicationContext = createApplicationContext();
-		addCommandLineProperySource(applicationContext, args);
+		ApplicationContext context = createApplicationContext();
+		Assert.isInstanceOf(BeanDefinitionRegistry.class, context);
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context;
 
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
+		addCommandLineProperySource(context, args);
+
 		// FIXME how do we deal with XML
 
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(applicationClass);
@@ -80,8 +84,8 @@ public class SpringApplication {
 			abd.setAttribute("componentScanBasePackages", basePackages);
 		}
 
-		refresh(applicationContext);
-		List<CommandlineRunner> runners = new ArrayList<CommandlineRunner>(applicationContext.getBeansOfType(CommandlineRunner.class).values());
+		refresh(context);
+		List<CommandlineRunner> runners = new ArrayList<CommandlineRunner>(context.getBeansOfType(CommandlineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
 		for (CommandlineRunner runner : runners) {
 			runner.run(args);
@@ -172,7 +176,6 @@ public class SpringApplication {
 		this.applicationContextClass = applicationContextClass;
 	}
 
-
 	public static void main(String[] args) {
 		// FIXME inspect 1st item. class, package xml
 		try {
@@ -184,10 +187,28 @@ public class SpringApplication {
 		catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+		// ClassUtils .forName 
+		// or ends in XML
+		// or It's a package
+		
+		Package.getPackage("").
 	}
 
 	public static void main(Class<?> applicationClass, String[] args) {
 		new SpringApplication().run(applicationClass, args);
+	}
+
+	public static void dunno(String basePackage, String[] args) {
+
+	}
+
+	public static void dunno2(String xmlFile, String[] args) {
+
+	}
+
+	public static void dunno3(Resource xmlFile, String[] args[]) {
+
 	}
 
 	// FIXME

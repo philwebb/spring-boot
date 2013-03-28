@@ -11,5 +11,5 @@ public class JettyBootstrapApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.main(JettyBootstrapApplication.class, args);
 	}
-
+	
 }

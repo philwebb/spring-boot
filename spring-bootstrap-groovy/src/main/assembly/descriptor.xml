@@ -22,7 +22,7 @@
     <dependencySets>
         <dependencySet>
           <includes>
-            <include>org.springframework.bootstrap:spring-bootstrap-groovy:*:jar</include>
+            <include>org.springframework.bootstrap:spring-bootstrap-groovy:jar:*</include>
           </includes>
           <outputDirectory>lib</outputDirectory>
         </dependencySet>
