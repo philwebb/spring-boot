@@ -1,8 +1,6 @@
 
 package org.springframework.bootstrap;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.annotation.ComponentScan;
@@ -176,8 +173,21 @@ public class SpringApplication {
 	}
 
 
-	public static void main(Class<?> mainClass, String[] args) {
-		new SpringApplication().run(mainClass, args);
+	public static void main(String[] args) {
+		// FIXME inspect 1st item. class, package xml
+		try {
+			Class<?> applicationClass = Class.forName(args[0]);
+			String[] remainingArgs = new String[args.length-1];
+			System.arraycopy(args, 1, remainingArgs, 0, args.length - 1);
+			main(applicationClass, remainingArgs);
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(Class<?> applicationClass, String[] args) {
+		new SpringApplication().run(applicationClass, args);
 	}
 
 	// FIXME
