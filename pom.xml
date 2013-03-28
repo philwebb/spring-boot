@@ -17,7 +17,7 @@
 	<properties>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.springframework.version>3.2.2.BOOTSTRAP-SNAPSHOT</dependency.springframework.version>
+		<dependency.springframework.version>4.0.0.BOOTSTRAP-SNAPSHOT</dependency.springframework.version>
 	</properties>
 	<repositories>
 		<repository>

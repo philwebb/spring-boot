@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 
 import org.springframework.bootstrap.context.annotation.AutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
-import org.springframework.context.ExecutorServiceAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -43,7 +42,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration
 @Conditional(EmbeddedDatabaseAutoConfiguration.EmbeddedDatabaseCondition.class)
 @ConditionalOnMissingBean(DataSource.class)
-public class EmbeddedDatabaseAutoConfiguration implements ExecutorServiceAware {
+public class EmbeddedDatabaseAutoConfiguration {
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	static {
@@ -53,11 +52,6 @@ public class EmbeddedDatabaseAutoConfiguration implements ExecutorServiceAware {
 	}
 
 	private ExecutorService executorService;
-
-	@Override
-	public void setExecutorServiceAware(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 
 	@Bean
 	public DataSource dataSource() {
