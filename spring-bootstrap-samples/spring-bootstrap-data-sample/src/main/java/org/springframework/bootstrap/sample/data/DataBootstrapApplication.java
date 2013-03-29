@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class DataBootstrapApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.main(DataBootstrapApplication.class, args);
+		SpringApplication.run(DataBootstrapApplication.class, args);
 	}
 
 }

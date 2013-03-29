@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 class BeanDefinitionLoader {
 
@@ -86,6 +87,12 @@ class BeanDefinitionLoader {
 		}
 
 		if (source instanceof CharSequence) {
+			try {
+				return load(Class.forName(source.toString()));
+			}
+			catch (ClassNotFoundException e) {
+			}
+
 			Resource loadedResource = (this.resourceLoader != null ? this.resourceLoader
 					: DEFAULT_RESOURCE_LOADER).getResource(source.toString());
 			if (loadedResource != null && loadedResource.exists()) {

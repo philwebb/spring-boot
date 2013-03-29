@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({EnableAutoConfigurationImportSelector.class})
+@Import(EnableAutoConfigurationImportSelector.class)
 public @interface EnableAutoConfiguration {
 
 	Class<?>[] exclude() default {};

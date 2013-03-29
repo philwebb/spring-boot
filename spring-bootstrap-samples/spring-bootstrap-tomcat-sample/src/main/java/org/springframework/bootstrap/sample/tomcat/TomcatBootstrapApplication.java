@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class TomcatBootstrapApplication {
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.main(TomcatBootstrapApplication.class, args);
+		SpringApplication.run(TomcatBootstrapApplication.class, args);
 	}
 
 }

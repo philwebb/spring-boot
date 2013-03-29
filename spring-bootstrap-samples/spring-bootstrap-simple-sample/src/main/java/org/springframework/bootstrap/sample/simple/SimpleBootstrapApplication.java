@@ -24,6 +24,6 @@ public class SimpleBootstrapApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.main(SimpleBootstrapApplication.class, args);
+		SpringApplication.run(SimpleBootstrapApplication.class, args);
 	}
 }
