@@ -18,23 +18,7 @@ configs = dependencies + configs
 configs = configs as Class[]
 parameters = parameters as String[]
 
-// Now create a Spring context
-def selectorType = "org.springframework.bootstrap.context.ApplicationContextSelector" as Class
-def ctx = selectorType.select(configs)
-ctx.refresh()
+// Now run the application
+def applicationClass = "org.springframework.bootstrap.SpringApplication" as Class
 
-def runner = null
-
-try {
-      
-  def runnerType = "org.springframework.bootstrap.CommandLineRunner" as Class
-  runner = ctx.getBean(runnerType)
-
-} catch (Exception e) {
-  log.info("No CommandLineRunner is defined (${e})")
-}
-
-if (runner!=null) { 
-  runner.run(parameters)
-}
-
+applicationClass.run(configs, parameters)
