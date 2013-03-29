@@ -28,6 +28,30 @@
             <scope>provided</scope>
 		</dependency>
 	</dependencies>
+    <profiles>
+      <profile>
+        <id>grapes</id>
+        <build>
+          <plugins>
+            <plugin>
+              <artifactId>maven-clean-plugin</artifactId>
+              <version>2.5</version>
+              <configuration>
+                <filesets>
+                  <fileset>
+                    <directory>${user.home}/.groovy/grapes</directory>
+                    <includes>
+                      <include>org.springframework*/**</include>
+                    </includes>
+                    <followSymlinks>false</followSymlinks>
+                  </fileset>
+                </filesets>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
 	<build>
 		<plugins>
           <plugin>
@@ -99,21 +123,6 @@
                     </pluginExecution>
                   </pluginExecutions>
                 </lifecycleMappingMetadata>
-              </configuration>
-            </plugin>
-            <plugin>
-              <artifactId>maven-clean-plugin</artifactId>
-              <version>2.5</version>
-              <configuration>
-                <filesets>
-                  <fileset>
-                    <directory>${user.home}/.groovy/grapes</directory>
-                    <includes>
-                      <include>org.springframework*/**</include>
-                    </includes>
-                    <followSymlinks>false</followSymlinks>
-                  </fileset>
-                </filesets>
               </configuration>
             </plugin>
           </plugins>

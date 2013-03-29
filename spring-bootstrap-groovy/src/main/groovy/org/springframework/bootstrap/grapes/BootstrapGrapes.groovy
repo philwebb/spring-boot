@@ -15,6 +15,6 @@ import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-// @EnableAutoConfiguration
+@EnableAutoConfiguration
 class BootstrapAutoConfiguration { 
 }
