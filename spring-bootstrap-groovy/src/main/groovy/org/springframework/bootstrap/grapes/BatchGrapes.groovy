@@ -10,7 +10,7 @@ class BatchGrapes {
 }
 
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean
-import org.springframework.bootstrap.CommandlineRunner
+import org.springframework.bootstrap.CommandLineRunner
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.converter.DefaultJobParametersConverter
 import org.springframework.batch.core.converter.JobParametersConverter
@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils
 import groovy.util.logging.Log
 
 @Configuration
-@ConditionalOnMissingBean(CommandlineRunner)
+@ConditionalOnMissingBean(CommandLineRunner)
 @Log
 class BatchCommand {
 
@@ -36,8 +36,8 @@ class BatchCommand {
   private Job job
 
   @Bean
-  CommandlineRunner batchCommandlineRunner() { 
-    return new CommandlineRunner() { 
+  CommandLineRunner batchCommandLineRunner() { 
+    return new CommandLineRunner() { 
       void run(String... args) {
         log.info("Running default command line with: ${args}")
         launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="))

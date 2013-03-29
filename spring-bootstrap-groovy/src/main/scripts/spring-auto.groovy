@@ -27,11 +27,11 @@ def runner = null
 
 try {
       
-  def runnerType = "org.springframework.bootstrap.CommandlineRunner" as Class
+  def runnerType = "org.springframework.bootstrap.CommandLineRunner" as Class
   runner = ctx.getBean(runnerType)
 
 } catch (Exception e) {
-  log.info("No CommandlineRunner is defined (${e})")
+  log.info("No CommandLineRunner is defined (${e})")
 }
 
 if (runner!=null) { 

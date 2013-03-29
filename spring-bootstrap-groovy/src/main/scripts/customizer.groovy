@@ -29,7 +29,7 @@ withConfig(configuration) {
     normal 'org.springframework.context.annotation.Scope'
     normal 'org.springframework.context.annotation.Configuration'
     normal 'org.springframework.context.annotation.Bean'
-    normal 'org.springframework.bootstrap.CommandlineRunner'
+    normal 'org.springframework.bootstrap.CommandLineRunner'
   }
 
   def dependencySource = "org.springframework.bootstrap.grapes.Dependencies" as Class // TODO: maybe strategise this
