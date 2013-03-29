@@ -2,7 +2,7 @@ package org.springframework.bootstrap.grapes
 
 @GrabConfig(systemClassLoader=true)
 @Grab("org.springframework.data:spring-data-hadoop:1.0.0.RELEASE")
-@Grab("org.springframework.bootstrap:spring-bootstrap:0.0.1-SNAPSHOT")
+@Grab("org.springframework.bootstrap:spring-bootstrap:@@version@@")
 @Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
 @Grab("org.apache.hadoop:hadoop-examples:1.0.4")
 @GrabExclude("org.mortbay.jetty:sevlet-api-2.5")

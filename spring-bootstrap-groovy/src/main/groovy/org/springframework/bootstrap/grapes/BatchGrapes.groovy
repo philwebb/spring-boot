@@ -3,9 +3,9 @@ package org.springframework.bootstrap.grapes
 @GrabResolver(name='spring-milestone', root='http://repo.springframework.org/milestone')
 @GrabResolver(name='spring-snapshot', root='http://repo.springframework.org/snapshot')
 @GrabConfig(systemClassLoader=true)
-@Grab("org.springframework.bootstrap:spring-bootstrap:0.0.1-SNAPSHOT")
+@Grab("org.springframework.bootstrap:spring-bootstrap:@@version@@")
 @Grab("org.springframework.batch:spring-batch-core:2.2.0.M1")
-@Grab("org.springframework:spring-context:4.0.0.BOOTSTRAP-SNAPSHOT")
+@Grab("org.springframework:spring-context:@@dependency.springframework.version@@")
 class BatchGrapes {
 }
 
