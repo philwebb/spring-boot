@@ -15,7 +15,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 class BeanDefinitionLoader {
 
@@ -43,23 +42,27 @@ class BeanDefinitionLoader {
 	}
 
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
-		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
-		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
-		this.scanner.setBeanNameGenerator(beanNameGenerator);
+		if(beanNameGenerator != null) {
+			this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
+			this.xmlReader.setBeanNameGenerator(beanNameGenerator);
+			this.scanner.setBeanNameGenerator(beanNameGenerator);
+		}
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-		this.xmlReader.setResourceLoader(resourceLoader);
 		if(resourceLoader != null) {
+			this.resourceLoader = resourceLoader;
+			this.xmlReader.setResourceLoader(resourceLoader);
 			this.scanner.setResourceLoader(resourceLoader);
 		}
 	}
 
 	public void setEnvironment(ConfigurableEnvironment environment) {
-		this.annotatedReader.setEnvironment(environment);
-		this.xmlReader.setEnvironment(environment);
-		this.scanner.setEnvironment(environment);
+		if(environment != null) {
+			this.annotatedReader.setEnvironment(environment);
+			this.xmlReader.setEnvironment(environment);
+			this.scanner.setEnvironment(environment);
+		}
 	}
 
 	public int load() {

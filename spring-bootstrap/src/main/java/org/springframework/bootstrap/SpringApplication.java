@@ -118,7 +118,7 @@ public class SpringApplication {
 	}
 
 	protected void postProcessApplicationContext(ApplicationContext context) {
-		if(context instanceof ConfigurableWebApplicationContext) {
+		if(WEB_ENVIRONMENT && context instanceof ConfigurableWebApplicationContext) {
 			ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
 			if(this.beanNameGenerator != null) {
 				configurableContext.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
