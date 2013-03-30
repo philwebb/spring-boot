@@ -15,10 +15,13 @@ built, the zip file is portable.
 
 Here are the steps to build and test:
 
-    $ cd spring-bootstrap
     $ mvn install
 
 The `spring` executable is then available at
-`spring-bootstrap-groovy/target/spring-<VERSION>`, e.g.
+`spring-bootstrap-groovy/target/spring-<VERSION>`. There is also a jar
+file with the Groovy Bootstrap components.  The `spring` executable
+includes jars from `SPRING_HOME` in the classpath so you can run it
+while you are developing like this
 
-    $ spring-bootstrap-groovy/target/spring-<VERSION>/bin/spring App.groovy
+    $ export SPRING_HOME=<spring-bootstrap-groovy>/target
+    $ <spring-bootstrap-groovy>/src/main/scripts/spring App.groovy
