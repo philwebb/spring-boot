@@ -19,6 +19,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.StandardAnnotationMetadata;
+import org.springframework.core.type.StandardClassMetadata;
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -118,10 +122,12 @@ public class SpringApplication {
 	}
 
 	protected void postProcessApplicationContext(ApplicationContext context) {
-		if(WEB_ENVIRONMENT && context instanceof ConfigurableWebApplicationContext) {
-			ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
-			if(this.beanNameGenerator != null) {
-				configurableContext.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
+		if(WEB_ENVIRONMENT) {
+			if(context instanceof ConfigurableWebApplicationContext) {
+				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
+				if(this.beanNameGenerator != null) {
+					configurableContext.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
+				}
 			}
 		}
 
@@ -216,6 +222,17 @@ public class SpringApplication {
 
 	public static void run(Object source, String[] args) {
 		new SpringApplication(source).run(args);
+	}
+
+	public static void runComponents(Class<?>[] classes, String[] args) {
+		List<Class<?>> componentClasses = new ArrayList<Class<?>>();
+		for (Class<?> candidate : classes) {
+			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(candidate);
+			if(metadata.isAnnotated(Component.class.getName())) {
+				componentClasses.add(candidate);
+			}
+		}
+		new SpringApplication(componentClasses.toArray()).run(args);
 	}
 
 

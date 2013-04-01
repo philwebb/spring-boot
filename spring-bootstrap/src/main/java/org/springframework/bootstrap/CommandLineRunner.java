@@ -6,6 +6,8 @@ package org.springframework.bootstrap;
  */
 public interface CommandLineRunner {
 
+	//FIXME replace with @Run
+
 	void run(String... args);
 
 }
