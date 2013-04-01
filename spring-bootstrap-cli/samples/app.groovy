@@ -13,7 +13,7 @@ class Example implements org.springframework.bootstrap.CommandLineRunner {
 	private MyService myService;
 
 	public void run(String... args) {
-		print "Hello World " + this.myService
+		print "Hello " + this.myService.sayWorld();
 	}
 }
 
@@ -21,6 +21,9 @@ class Example implements org.springframework.bootstrap.CommandLineRunner {
 @org.springframework.stereotype.Service
 class MyService {
 
+	public String sayWorld() {
+		return "World!";
+	}
 }
 
 

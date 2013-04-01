@@ -15,7 +15,7 @@
 		<module>spring-bootstrap-groovy</module>
 		<module>spring-bootstrap-launcher</module>
 		<module>spring-bootstrap-samples</module>
-		<module>spring-bootstrap-shell</module>
+		<module>spring-bootstrap-cli</module>
 	</modules>
 	<properties>
 		<java.version>1.6</java.version>
@@ -75,6 +75,10 @@
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>2.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
