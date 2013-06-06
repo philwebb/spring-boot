@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -149,13 +150,14 @@ public class DataSourceAutoConfiguration {
 		private Condition embeddedCondition = new EmbeddedDatabaseCondition();
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public boolean matches(ConditionContext context, ConditionPurpose purpose,
+				AnnotatedTypeMetadata metadata) {
 
 			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
-			if (this.tomcatCondition.matches(context, metadata)
-					|| this.dbcpCondition.matches(context, metadata)
-					|| this.embeddedCondition.matches(context, metadata)) {
+			if (this.tomcatCondition.matches(context, purpose, metadata)
+					|| this.dbcpCondition.matches(context, purpose, metadata)
+					|| this.embeddedCondition.matches(context, purpose, metadata)) {
 				if (this.logger.isDebugEnabled()) {
 					this.logger.debug(checking
 							+ "Existing auto database detected: match result true");
@@ -200,11 +202,12 @@ public class DataSourceAutoConfiguration {
 		}
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			if (this.condition.matches(context, metadata)) {
+		public boolean matches(ConditionContext context, ConditionPurpose purpose,
+				AnnotatedTypeMetadata metadata) {
+			if (this.condition.matches(context, purpose, metadata)) {
 				return false; // prefer Tomcat pool
 			}
-			return super.matches(context, metadata);
+			return super.matches(context, purpose, metadata);
 		}
 
 	}
@@ -216,7 +219,8 @@ public class DataSourceAutoConfiguration {
 		protected abstract String getDataSourecClassName();
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public boolean matches(ConditionContext context, ConditionPurpose purpose,
+				AnnotatedTypeMetadata metadata) {
 
 			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
@@ -270,12 +274,13 @@ public class DataSourceAutoConfiguration {
 		private Condition dbcpCondition = new BasicDatabaseCondition();
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public boolean matches(ConditionContext context, ConditionPurpose purpose,
+				AnnotatedTypeMetadata metadata) {
 
 			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
-			if (this.tomcatCondition.matches(context, metadata)
-					|| this.dbcpCondition.matches(context, metadata)) {
+			if (this.tomcatCondition.matches(context, purpose, metadata)
+					|| this.dbcpCondition.matches(context, purpose, metadata)) {
 				if (this.logger.isDebugEnabled()) {
 					this.logger
 							.debug(checking

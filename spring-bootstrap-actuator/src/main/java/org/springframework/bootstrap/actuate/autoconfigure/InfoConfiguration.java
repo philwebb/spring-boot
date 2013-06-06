@@ -35,7 +35,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -67,7 +66,7 @@ public class InfoConfiguration {
 		return new InfoEndpoint(applicationInfo());
 	}
 
-	@Component
+	@Configuration
 	protected static class InfoPropertiesConfiguration {
 
 		@Autowired

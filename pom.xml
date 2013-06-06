@@ -11,15 +11,16 @@
 	<modules>
 		<module>spring-bootstrap</module>
 		<module>spring-bootstrap-actuator</module>
-		<module>spring-bootstrap-starters</module>
-		<module>spring-bootstrap-launcher</module>
-		<module>spring-bootstrap-samples</module>
 		<module>spring-bootstrap-cli</module>
+		<module>spring-bootstrap-launcher</module>
+<!--		<module>spring-bootstrap-maven-plugin</module> -->
+		<module>spring-bootstrap-samples</module>
+		<module>spring-bootstrap-starters</module>
 	</modules>
 	<properties>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.0.0.M1</spring.version>
+		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.security.version>3.1.3.RELEASE</spring.security.version>
 		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
 		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>

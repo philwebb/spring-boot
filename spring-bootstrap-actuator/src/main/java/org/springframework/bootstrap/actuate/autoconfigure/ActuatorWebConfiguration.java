@@ -20,9 +20,11 @@ import java.util.List;
 
 import javax.servlet.Servlet;
 
-import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -31,12 +33,14 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * {@link WebMvcConfiguration} for actuator.
+ * {@link EnableAutoConfiguration Auto-configuration} for actuator.
  * 
  * @author Dave Syer
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @Configuration
+@Import(WebMvcAutoConfiguration.class)
+// FIXME above is a hack
 public class ActuatorWebConfiguration extends DelegatingWebMvcConfiguration {
 
 	@Override

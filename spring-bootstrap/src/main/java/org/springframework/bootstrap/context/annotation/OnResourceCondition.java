@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -42,7 +43,8 @@ class OnResourceCondition implements Condition {
 	private ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, ConditionPurpose purpose,
+			AnnotatedTypeMetadata metadata) {
 
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 

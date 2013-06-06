@@ -91,6 +91,7 @@ public class WebMvcAutoConfiguration {
 			return resolver;
 		}
 
+		// FIXME move out
 		@Bean
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();

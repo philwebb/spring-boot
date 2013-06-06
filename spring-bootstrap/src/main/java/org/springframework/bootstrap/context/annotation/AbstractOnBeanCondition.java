@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -54,7 +55,12 @@ abstract class AbstractOnBeanCondition implements Condition {
 	}
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, ConditionPurpose purpose,
+			AnnotatedTypeMetadata metadata) {
+
+		if (purpose != ConditionPurpose.REGISTER_BEAN) {
+			return true;
+		}
 
 		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 

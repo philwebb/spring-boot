@@ -35,6 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -116,7 +117,8 @@ public class ManagementAutoConfiguration implements ApplicationContextAware {
 	protected static class RememberManagementConfiguration implements Condition {
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public boolean matches(ConditionContext context, ConditionPurpose purpose,
+				AnnotatedTypeMetadata metadata) {
 			Environment environment = context.getEnvironment();
 			int serverPort = environment.getProperty("server.port", Integer.class, 8080);
 			int managementPort = environment.getProperty("management.port",

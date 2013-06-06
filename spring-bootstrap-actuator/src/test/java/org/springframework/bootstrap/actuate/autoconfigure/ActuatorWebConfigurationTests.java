@@ -21,7 +21,8 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Dave Syer
@@ -36,7 +37,8 @@ public class ActuatorWebConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(ActuatorWebConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(WebMvcConfigurationSupport.class));
+		assertThat(this.context.getBeansOfType(WebMvcConfigurationSupport.class).size(),
+				greaterThanOrEqualTo(1));
 	}
 
 }

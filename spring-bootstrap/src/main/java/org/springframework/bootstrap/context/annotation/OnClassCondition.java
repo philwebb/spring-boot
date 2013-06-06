@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -39,7 +40,8 @@ class OnClassCondition implements Condition {
 	private static Log logger = LogFactory.getLog(OnClassCondition.class);
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, ConditionPurpose purpose,
+			AnnotatedTypeMetadata metadata) {
 
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 

@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -90,7 +89,7 @@ public class ManagementServerConfiguration {
 		return new JettyEmbeddedServletContainerFactory();
 	}
 
-	@Component
+	@Configuration
 	protected static class ServerCustomizationConfiguration implements
 			EmbeddedServletContainerCustomizer {
 
