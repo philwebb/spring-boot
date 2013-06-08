@@ -42,7 +42,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
- * <p>
  * Auto configuration for security of a web application or service. By default everything
  * is secured with HTTP Basic authentication except the
  * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
@@ -54,8 +53,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
  * password=password)</code> but can easily be customized by providing a bean definition
  * of type {@link AuthenticationManager}. Also provides audit logging of authentication
  * events.
- * </p>
- * 
  * <p>
  * The framework {@link EndpointsProperties} configuration bean has explicitly
  * {@link EndpointsProperties#getSecurePaths() secure} and
@@ -65,7 +62,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
  * <code>endpoints.metrics.path</code> is secure), but not the security aspects. The
  * always secure paths are management endpoints that would be inadvisable to expose to all
  * users.
- * </p>
  * 
  * <p>
  * Some common simple customizations:
@@ -78,7 +74,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpConfiguration#formLogin()}</li>
  * </ul>
- * </p>
  * 
  * @author Dave Syer
  */

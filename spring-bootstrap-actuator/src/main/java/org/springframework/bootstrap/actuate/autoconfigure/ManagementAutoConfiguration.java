@@ -101,6 +101,7 @@ public class ManagementAutoConfiguration implements ApplicationContextAware {
 
 				if (ManagementAutoConfiguration.this.configuration.getPort() != ManagementAutoConfiguration.this.management
 						.getPort()) {
+					// Listening on a different port, add as a child
 					AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 					context.setParent(ManagementAutoConfiguration.this.parent);
 					context.register(assembleConfigClasses(ManagementAutoConfiguration.this.parent));
