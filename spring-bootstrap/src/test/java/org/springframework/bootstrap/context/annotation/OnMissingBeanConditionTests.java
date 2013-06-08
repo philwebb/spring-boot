@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class OnMissingBeanConditionTests {
 
@@ -49,6 +50,28 @@ public class OnMissingBeanConditionTests {
 		assertEquals("foo", this.context.getBean("foo"));
 	}
 
+	@Test
+	public void hierarchyConsidered() throws Exception {
+		this.context.register(FooConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
+		childContext.setParent(this.context);
+		childContext.register(HierarchyConsidered.class);
+		childContext.refresh();
+		assertFalse(childContext.containsLocalBean("bar"));
+	}
+
+	@Test
+	public void hierarchyNotConsidered() throws Exception {
+		this.context.register(FooConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
+		childContext.setParent(this.context);
+		childContext.register(HierarchyNotConsidered.class);
+		childContext.refresh();
+		assertTrue(childContext.containsLocalBean("bar"));
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -66,4 +89,21 @@ public class OnMissingBeanConditionTests {
 		}
 	}
 
+	@Configuration
+	@ConditionalOnMissingBean(name = "foo")
+	protected static class HierarchyConsidered {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(name = "foo", considerHierarchy = false)
+	protected static class HierarchyNotConsidered {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
 }
