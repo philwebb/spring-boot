@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.autoconfigure.web;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import javax.servlet.Servlet;
@@ -24,14 +25,12 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
@@ -58,73 +57,67 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
  * @author Phillip Webb
  */
 @Configuration
+@EnableWebMvc
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
-@Import(WebMvcConfiguration.class)
-public class WebMvcAutoConfiguration {
+public class WebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
 
-	/**
-	 * Nested configuration used because {@code @EnableWebMvc} will add HandlerAdapter and
-	 * HandlerMapping, causing the condition to fail and the additional DispatcherServlet
-	 * bean never to be registered if it were declared directly.
-	 */
-	@EnableWebMvc
-	public static class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+	@Autowired
+	private ListableBeanFactory beanFactory;
 
-		@Autowired
-		private ListableBeanFactory beanFactory;
+	@ConditionalOnBean(View.class)
+	@Bean
+	public BeanNameViewResolver beanNameViewResolver() {
+		BeanNameViewResolver resolver = new BeanNameViewResolver();
+		resolver.setOrder(0);
+		return resolver;
+	}
 
-		@ConditionalOnBean(View.class)
-		@Bean
-		public BeanNameViewResolver beanNameViewResolver() {
-			BeanNameViewResolver resolver = new BeanNameViewResolver();
-			resolver.setOrder(0);
-			return resolver;
+	@ConditionalOnBean(View.class)
+	@Bean
+	public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
+		ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
+		resolver.setContentNegotiationManager(beanFactory
+				.getBean(ContentNegotiationManager.class));
+		return resolver;
+	}
+
+	@Override
+	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+		configurer.enable();
+	}
+
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
+			registry.addConverter(converter);
 		}
 
-		@ConditionalOnBean(View.class)
-		@Bean
-		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
-			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-			resolver.setContentNegotiationManager(beanFactory
-					.getBean(ContentNegotiationManager.class));
-			return resolver;
+		for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
+			registry.addConverter(converter);
 		}
 
-		@Override
-		public void configureDefaultServletHandling(
-				DefaultServletHandlerConfigurer configurer) {
-			configurer.enable();
+		for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
+			registry.addFormatter(formatter);
 		}
+	}
 
-		@Override
-		public void addFormatters(FormatterRegistry registry) {
-			for (Converter<?, ?> converter : this.beanFactory.getBeansOfType(
-					Converter.class).values()) {
-				registry.addConverter(converter);
-			}
-			for (GenericConverter converter : this.beanFactory.getBeansOfType(
-					GenericConverter.class).values()) {
-				registry.addConverter(converter);
-			}
-			for (Formatter<?> formatter : this.beanFactory
-					.getBeansOfType(Formatter.class).values()) {
-				registry.addFormatter(formatter);
-			}
-		}
+	private <T> Collection<T> getBeansOfType(Class<T> type) {
+		return this.beanFactory.getBeansOfType(type).values();
+	}
 
-		@Override
-		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/resources/**").addResourceLocations("/")
-					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/resources/")
-					.addResourceLocations("classpath:/");
-			registry.addResourceHandler("/**").addResourceLocations("/")
-					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/static/")
-					.addResourceLocations("classpath:/");
-		}
-
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		// FIXME exposing the root classpath is a security risk
+		// eg http://localhost:8080/org/springframework/bootstrap/Banner.class
+		registry.addResourceHandler("/resources/**").addResourceLocations("/")
+				.addResourceLocations("classpath:/META-INF/resources/")
+				.addResourceLocations("classpath:/resources/")
+				.addResourceLocations("classpath:/");
+		registry.addResourceHandler("/**").addResourceLocations("/")
+				.addResourceLocations("classpath:/META-INF/resources/")
+				.addResourceLocations("classpath:/static/")
+				.addResourceLocations("classpath:/");
 	}
 
 	@Configuration
