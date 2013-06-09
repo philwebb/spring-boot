@@ -61,7 +61,7 @@ public class ServerPropertiesConfigurationTests {
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(EmbeddedContainerConfiguration.class,
-				EmbeddedContainerCustomizerConfiguration.class,
+				EmbeddedContainerCustomizerAutoConfiguration.class,
 				ServerPropertiesConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.port:9000");
@@ -76,7 +76,7 @@ public class ServerPropertiesConfigurationTests {
 	public void tomcatProperties() throws Exception {
 		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(EmbeddedContainerCustomizerConfiguration.class,
+		this.context.register(EmbeddedContainerCustomizerAutoConfiguration.class,
 				EmbeddedContainerConfiguration.class,
 				ServerPropertiesConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

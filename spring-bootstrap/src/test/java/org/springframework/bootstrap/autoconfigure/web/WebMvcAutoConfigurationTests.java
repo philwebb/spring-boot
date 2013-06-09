@@ -61,7 +61,7 @@ public class WebMvcAutoConfigurationTests {
 	public void customizeContainerThroughCallback() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				WebMvcAutoConfiguration.class, EmbeddedContainerConfiguration.class,
-				EmbeddedContainerCustomizerConfiguration.class,
+				EmbeddedContainerCustomizerAutoConfiguration.class,
 				CallbackEmbeddedContainerCustomizer.class);
 		verifyContext();
 		assertEquals(9000, getContainerFactory().getPort());

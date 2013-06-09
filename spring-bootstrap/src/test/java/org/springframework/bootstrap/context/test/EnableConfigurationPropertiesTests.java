@@ -21,6 +21,7 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -105,6 +106,8 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "external")
 	public static class External {
+
+		@Value("#{}")
 		private String name;
 
 		public String getName() {
@@ -118,6 +121,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "another")
 	public static class Another {
+
 		private String name;
 
 		public String getName() {
