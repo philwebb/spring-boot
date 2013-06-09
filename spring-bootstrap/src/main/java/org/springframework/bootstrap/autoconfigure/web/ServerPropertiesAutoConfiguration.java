@@ -21,6 +21,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
@@ -32,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EmbeddedServletContainerCustomizer} that configures the
+ * {@link EnableAutoConfiguration Auto-configuration} that configures the
  * {@link ConfigurableEmbeddedServletContainerFactory} from a {@link ServerProperties}
  * bean.
  * 
@@ -40,13 +41,14 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @EnableConfigurationProperties
-public class ServerPropertiesConfiguration implements EmbeddedServletContainerCustomizer {
+public class ServerPropertiesAutoConfiguration implements
+		EmbeddedServletContainerCustomizer {
 
 	@Autowired
 	private BeanFactory beanFactory;
 
-	@ConditionalOnMissingBean(ServerProperties.class)
 	@Bean(name = "org.springframework.bootstrap.properties.ServerProperties")
+	@ConditionalOnMissingBean(ServerProperties.class)
 	public ServerProperties serverProperties() {
 		return new ServerProperties();
 	}

@@ -62,7 +62,7 @@ public class ServerPropertiesConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(EmbeddedContainerConfiguration.class,
 				EmbeddedContainerCustomizerAutoConfiguration.class,
-				ServerPropertiesConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.port:9000");
 		this.context.refresh();
@@ -78,7 +78,7 @@ public class ServerPropertiesConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(EmbeddedContainerCustomizerAutoConfiguration.class,
 				EmbeddedContainerConfiguration.class,
-				ServerPropertiesConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
 		this.context.refresh();
