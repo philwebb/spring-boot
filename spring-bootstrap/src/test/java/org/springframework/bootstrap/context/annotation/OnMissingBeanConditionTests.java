@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@SuppressWarnings("resource")
 public class OnMissingBeanConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

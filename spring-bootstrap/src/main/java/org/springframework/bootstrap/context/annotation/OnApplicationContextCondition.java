@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.context.annotation;
 
 import org.springframework.context.ApplicationContext;
@@ -28,6 +29,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 public class OnApplicationContextCondition implements Condition {
+
+	// FIXME complete or delete
 
 	@Override
 	public boolean matches(ConditionContext context, ConditionPurpose purpose,

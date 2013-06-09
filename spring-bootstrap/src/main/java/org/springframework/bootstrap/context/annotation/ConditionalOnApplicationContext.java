@@ -36,6 +36,8 @@ import org.springframework.context.annotation.Conditional;
 @Conditional(OnApplicationContextCondition.class)
 public @interface ConditionalOnApplicationContext {
 
+	// FIXME complete of delete this
+
 	/**
 	 * The ID of the application context.
 	 */
@@ -45,7 +47,5 @@ public @interface ConditionalOnApplicationContext {
 	// condition=SomethingSpecific.class
 
 	boolean createIfMissing() default false;
-
-	CreateApplicationContext create() default @CreateApplicationContext;
 
 }

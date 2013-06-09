@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -37,6 +36,7 @@ import static org.junit.Assert.assertThat;
  * 
  * @author Phillip Webb
  */
+@SuppressWarnings("resource")
 public class OnApplicationContextConditionTest {
 
 	@Test
@@ -112,7 +112,7 @@ public class OnApplicationContextConditionTest {
 	}
 
 	@Configuration
-	@ConditionalOnApplicationContext(value = "child", createIfMissing = true, create = @CreateApplicationContext(type = WebApplicationContext.class))
+	@ConditionalOnApplicationContext(value = "child", createIfMissing = true)
 	public static class CreateContext {
 
 		@Bean

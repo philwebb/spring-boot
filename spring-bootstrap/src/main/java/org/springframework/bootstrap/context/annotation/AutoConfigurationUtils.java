@@ -30,7 +30,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * 
  * @author Phil Webb
  * @author Dave Syer
- * 
  */
 public abstract class AutoConfigurationUtils {
 

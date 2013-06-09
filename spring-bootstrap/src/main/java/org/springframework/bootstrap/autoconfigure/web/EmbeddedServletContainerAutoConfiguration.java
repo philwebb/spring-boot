@@ -26,6 +26,7 @@ import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerA
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
@@ -45,29 +46,29 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Import({ EmbeddedTomcat.class, EmbeddedJetty.class })
 public class EmbeddedServletContainerAutoConfiguration {
 
+	/**
+	 * Support {@link EmbeddedServletContainerCustomizerBeanPostProcessor} to apply
+	 * {@link EmbeddedServletContainerCustomizer}s.
+	 */
 	@Bean
+	@ConditionalOnMissingBean(EmbeddedServletContainerCustomizerBeanPostProcessor.class)
 	public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 		return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 	}
 
+	/**
+	 * Add the {@link DispatcherServlet} unless the user has defined their own
+	 * {@link ServletContextInitializer}s.
+	 */
 	@Bean
 	@ConditionalOnMissingBean(value = ServletContextInitializer.class, considerHierarchy = false)
 	public DispatcherServlet dispatcherServlet() {
 		return new DispatcherServlet();
 	}
 
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, considerHierarchy = false)
-	public static class EmbeddedJetty {
-
-		@Bean
-		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
-			return new JettyEmbeddedServletContainerFactory();
-		}
-
-	}
-
+	/**
+	 * Nested configuration for if Tomcat is being used.
+	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
 	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, considerHierarchy = false)
@@ -76,6 +77,21 @@ public class EmbeddedServletContainerAutoConfiguration {
 		@Bean
 		public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
 			return new TomcatEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	/**
+	 * Nested configuration if Jetty is being used.
+	 */
+	@Configuration
+	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, considerHierarchy = false)
+	public static class EmbeddedJetty {
+
+		@Bean
+		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
+			return new JettyEmbeddedServletContainerFactory();
 		}
 
 	}
