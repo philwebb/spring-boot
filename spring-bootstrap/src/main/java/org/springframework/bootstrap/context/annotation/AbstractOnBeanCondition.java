@@ -69,6 +69,7 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		Boolean considerHierarchy = (Boolean) metadata.getAnnotationAttributes(
 				annotationClass().getName()).get("considerHierarchy");
+		considerHierarchy = (considerHierarchy == null ? false : considerHierarchy);
 
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
