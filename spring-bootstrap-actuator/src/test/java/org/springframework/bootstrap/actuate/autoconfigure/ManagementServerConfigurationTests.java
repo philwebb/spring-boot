@@ -18,7 +18,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ServerPropertiesConfiguration;
+import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration;
 import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
@@ -42,7 +42,7 @@ public class ManagementServerConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(ManagementServerConfiguration.class,
-				ServerPropertiesConfiguration.class,
+				ActuatorServerPropertiesConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(WebMvcConfigurationSupport.class));

@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for service apps.
+ * {@link EnableAutoConfiguration Auto-configuration} for actuator.
  * 
  * @author Dave Syer
  */
@@ -40,7 +40,7 @@ public class ActuatorAutoConfiguration {
 	// added to the context early enough
 
 	@EnableConfigurationProperties
-	public static class ServerPropertiesConfiguration {
+	public static class ActuatorServerPropertiesConfiguration {
 
 		@ConditionalOnMissingBean(ManagementServerProperties.class)
 		@Bean(name = "org.springframework.bootstrap.actuate.properties.ManagementServerProperties")

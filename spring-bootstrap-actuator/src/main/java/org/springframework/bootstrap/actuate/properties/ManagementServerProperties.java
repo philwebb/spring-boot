@@ -20,8 +20,8 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.bootstrap.properties.ServerProperties;
 
 /**
  * Properties for the management server (e.g. port and path settings).
@@ -31,8 +31,7 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties {
 
-	@Value("${server.port:8080}")
-	private int port = 8080;
+	private Integer port;
 
 	private InetAddress address;
 
@@ -49,11 +48,20 @@ public class ManagementServerProperties {
 		this.allowShutdown = allowShutdown;
 	}
 
-	public int getPort() {
+	/**
+	 * Returns the management port or {@code null} if the
+	 * {@link ServerProperties#getPort() server port} should be used.
+	 * @see #setPort(Integer)
+	 */
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	/**
+	 * Sets the port of the management server, use {@code null} if the
+	 * {@link ServerProperties#getPort() server port} should be used. To disable use 0.
+	 */
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 

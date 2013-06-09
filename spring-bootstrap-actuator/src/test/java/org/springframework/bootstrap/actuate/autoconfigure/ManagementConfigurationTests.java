@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import org.springframework.bootstrap.actuate.TestUtils;
 import org.springframework.bootstrap.actuate.endpoint.health.HealthEndpoint;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.web.ServerPropertiesConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
@@ -60,8 +60,8 @@ public class ManagementConfigurationTests {
 	public void testManagementConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MetricRepositoryConfiguration.class,
-				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
-				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration.class,
 				ManagementAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -73,8 +73,8 @@ public class ManagementConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		TestUtils.addEnviroment(this.context, "management.port:0");
 		this.context.register(MetricRepositoryConfiguration.class,
-				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
-				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration.class,
 				ManagementAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -85,8 +85,8 @@ public class ManagementConfigurationTests {
 	public void testManagementConfigurationExtensions() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MetricRepositoryConfiguration.class,
-				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
-				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration.class,
 				ManagementAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, NewEndpoint.class);
 		this.context.refresh();
@@ -97,8 +97,8 @@ public class ManagementConfigurationTests {
 	public void testManagementConfigurationExtensionsOrderDependence() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(NewEndpoint.class, MetricRepositoryConfiguration.class,
-				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
-				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration.class,
 				ManagementAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -110,8 +110,8 @@ public class ManagementConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		TestUtils.addEnviroment(this.context, "server.port:7000", "management.port:7001");
 		this.context.register(ParentContext.class, MetricRepositoryConfiguration.class,
-				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
-				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesAutoConfiguration.class,
+				ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration.class,
 				ManagementAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, NewEndpoint.class);
 		this.context.refresh();

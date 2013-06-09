@@ -18,7 +18,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ServerPropertiesConfiguration;
+import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration;
 import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
@@ -39,7 +39,7 @@ public class ErrorConfigurationTests {
 	public void testErrorEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(ErrorConfiguration.class,
-				ServerPropertiesConfiguration.class,
+				ActuatorServerPropertiesConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(ErrorEndpoint.class));
