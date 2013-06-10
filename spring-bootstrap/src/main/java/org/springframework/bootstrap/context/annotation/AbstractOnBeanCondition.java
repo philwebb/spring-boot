@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.annotation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +24,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * Base for {@link OnBeanCondition} and {@link OnMissingBeanCondition}.
@@ -51,11 +56,37 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				annotationClass().getName(), true);
-		List<String> beanClasses = collect(attributes, "value");
-		List<String> beanNames = collect(attributes, "name");
+		final List<String> beanClasses = collect(attributes, "value");
+		final List<String> beanNames = collect(attributes, "name");
+
+		if (beanClasses.size() == 0) {
+			if (metadata instanceof MethodMetadata
+					&& metadata.isAnnotated(Bean.class.getName())) {
+				try {
+					final MethodMetadata methodMetadata = (MethodMetadata) metadata;
+					// We should be safe to load at this point since we are in the
+					// REGISTER_BEAN phase
+					Class<?> configClass = ClassUtils.forName(
+							methodMetadata.getDeclaringClassName(),
+							context.getClassLoader());
+					ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
+						@Override
+						public void doWith(Method method)
+								throws IllegalArgumentException, IllegalAccessException {
+							if (methodMetadata.getMethodName().equals(method.getName())) {
+								beanClasses.add(method.getReturnType().getName());
+							}
+						}
+					});
+				} catch (Exception e) {
+				}
+			}
+		}
+
 		Assert.isTrue(beanClasses.size() > 0 || beanNames.size() > 0,
 				"@" + ClassUtils.getShortName(annotationClass())
 						+ " annotations must specify at least one bean");
+
 		return matches(context, metadata, beanClasses, beanNames);
 	}
 

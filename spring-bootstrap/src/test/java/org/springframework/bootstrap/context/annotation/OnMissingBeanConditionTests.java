@@ -21,11 +21,15 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link OnMissingBeanCondition}.
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -73,6 +77,13 @@ public class OnMissingBeanConditionTests {
 		assertTrue(childContext.containsLocalBean("bar"));
 	}
 
+	@Test
+	public void impliedOnBeanMethod() throws Exception {
+		this.context.register(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class);
+		this.context.refresh();
+		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), equalTo(1));
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -106,5 +117,27 @@ public class OnMissingBeanConditionTests {
 		public String bar() {
 			return "bar";
 		}
+	}
+
+	@Configuration
+	protected static class ExampleBeanConfiguration {
+		@Bean
+		public ExampleBean exampleBean() {
+			return new ExampleBean();
+		}
+	}
+
+	@Configuration
+	protected static class ImpliedOnBeanMethod {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ExampleBean exampleBean2() {
+			return new ExampleBean();
+		}
+
+	}
+
+	public static class ExampleBean {
 	}
 }
