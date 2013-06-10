@@ -42,6 +42,7 @@ public class ManagementServerAutoConfigurationTest {
 		applicationContext.register(DifferentPortConfig.class,
 				ManagementServerAutoConfiguration.class);
 		applicationContext.refresh();
+		Thread.sleep(10000000000L);
 		System.out.println("test");
 	}
 

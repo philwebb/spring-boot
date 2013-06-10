@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate;
+package org.springframework.bootstrap.actuate.endpoint;
+
+import org.springframework.http.MediaType;
 
 /**
  * @author Phillip Webb
  * @author Dave Syer
  */
-public interface Endpoint {
+public interface Endpoint<T> {
 
-	// FIXME DC
+	String getId();
+
+	boolean isSensitive();
+
+	MediaType[] produces();
+
+	T execute();
 
 }

@@ -16,19 +16,11 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.bootstrap.actuate.autoconfigure.ManagementServerChildContextConfiguration.SpringMvcAliasRegistrar;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
-import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.bootstrap.properties.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -38,21 +30,15 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @see ManagementServerAutoConfiguration
  */
 @Configuration
-@Import({ PropertyPlaceholderAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class, SpringMvcAliasRegistrar.class })
 public class ManagementServerChildContextConfiguration implements
 		EmbeddedServletContainerCustomizer {
-
-	@Autowired
-	private ServerProperties serverProperties;
 
 	@Autowired
 	private ManagementServerProperties managementServerProperties;
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		factory.setPort(this.managementServerProperties.getPort() == null ? this.serverProperties
-				.getPort() : this.managementServerProperties.getPort());
+		factory.setPort(this.managementServerProperties.getPort());
 		factory.setAddress(this.managementServerProperties.getAddress());
 		factory.setContextPath(this.managementServerProperties.getContextPath());
 	}
@@ -70,14 +56,4 @@ public class ManagementServerChildContextConfiguration implements
 		return dispatcherServlet;
 	}
 
-	public static class SpringMvcAliasRegistrar implements ImportBeanDefinitionRegistrar {
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			registry.registerAlias("actuatorEndpointsHandlerMapping", "handlerMapping");
-			registry.registerAlias("actuatorEndpointHandlerAdapter", "handlerAdapter");
-		}
-
-	}
 }

@@ -28,9 +28,16 @@ public class SampleController {
 	@Autowired
 	private HelloWorldService helloWorldService;
 
-	@RequestMapping("/")
+	@RequestMapping("/a")
 	@ResponseBody
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();
 	}
+
+	@RequestMapping(value = "/b", produces = { "application/json" })
+	@ResponseBody
+	public String helloWorld2() {
+		return "{}";
+	}
+
 }
