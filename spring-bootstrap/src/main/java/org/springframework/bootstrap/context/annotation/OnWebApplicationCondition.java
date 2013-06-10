@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -37,8 +36,7 @@ class OnWebApplicationCondition implements Condition {
 	private static Log logger = LogFactory.getLog(OnWebApplicationCondition.class);
 
 	@Override
-	public boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 

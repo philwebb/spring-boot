@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
@@ -38,8 +37,7 @@ public class OnExpressionCondition implements Condition {
 	private static Log logger = LogFactory.getLog(OnExpressionCondition.class);
 
 	@Override
-	public boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 

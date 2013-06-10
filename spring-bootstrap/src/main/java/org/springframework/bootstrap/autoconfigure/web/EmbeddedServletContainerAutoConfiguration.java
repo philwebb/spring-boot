@@ -51,7 +51,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer}s.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(EmbeddedServletContainerCustomizerBeanPostProcessor.class)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, considerHierarchy = false)
 	public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 		return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 	}
@@ -61,7 +61,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * {@link ServletContextInitializer}s.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(value = ServletContextInitializer.class, considerHierarchy = false)
+	@ConditionalOnMissingBean(value = { ServletContextInitializer.class, Servlet.class }, considerHierarchy = false)
 	public DispatcherServlet dispatcherServlet() {
 		return new DispatcherServlet();
 	}

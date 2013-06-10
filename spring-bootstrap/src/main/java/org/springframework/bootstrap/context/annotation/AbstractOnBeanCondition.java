@@ -23,9 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.ConditionPurpose;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -37,20 +36,19 @@ import org.springframework.util.MultiValueMap;
  * @author Phillip Webb
  * @author Dave Syer
  */
-abstract class AbstractOnBeanCondition implements Condition {
+abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
 	protected abstract Class<?> annotationClass();
 
 	@Override
-	public boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata) {
+	public ConfigurationPhase getConfigurationPhase() {
+		return ConfigurationPhase.REGISTER_BEAN;
+	}
 
-		if (purpose != ConditionPurpose.REGISTER_BEAN) {
-			return true;
-		}
-
+	@Override
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				annotationClass().getName(), true);
 		List<String> beanClasses = collect(attributes, "value");
@@ -58,12 +56,11 @@ abstract class AbstractOnBeanCondition implements Condition {
 		Assert.isTrue(beanClasses.size() > 0 || beanNames.size() > 0,
 				"@" + ClassUtils.getShortName(annotationClass())
 						+ " annotations must specify at least one bean");
-		return matches(context, purpose, metadata, beanClasses, beanNames);
+		return matches(context, metadata, beanClasses, beanNames);
 	}
 
-	protected boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata, List<String> beanClasses,
-			List<String> beanNames) throws LinkageError {
+	protected boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata,
+			List<String> beanClasses, List<String> beanNames) throws LinkageError {
 
 		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 

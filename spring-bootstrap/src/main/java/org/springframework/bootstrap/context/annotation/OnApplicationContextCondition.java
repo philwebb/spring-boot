@@ -19,7 +19,6 @@ package org.springframework.bootstrap.context.annotation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.Assert;
@@ -33,8 +32,7 @@ public class OnApplicationContextCondition implements Condition {
 	// FIXME complete or delete
 
 	@Override
-	public boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata) {
+	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata
 						.getAnnotationAttributes(ConditionalOnApplicationContext.class

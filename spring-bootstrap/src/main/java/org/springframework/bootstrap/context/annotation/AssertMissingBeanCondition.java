@@ -21,7 +21,6 @@ import java.util.List;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.ConditionPurpose;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -38,11 +37,9 @@ class AssertMissingBeanCondition extends OnMissingBeanCondition {
 	}
 
 	@Override
-	protected boolean matches(ConditionContext context, ConditionPurpose purpose,
-			AnnotatedTypeMetadata metadata, List<String> beanClasses,
-			List<String> beanNames) throws LinkageError {
-		boolean result = super
-				.matches(context, purpose, metadata, beanClasses, beanNames);
+	protected boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata,
+			List<String> beanClasses, List<String> beanNames) throws LinkageError {
+		boolean result = super.matches(context, metadata, beanClasses, beanNames);
 		if (!result) {
 			throw new BeanCreationException("Found existing bean for classes="
 					+ beanClasses + " and names=" + beanNames);
