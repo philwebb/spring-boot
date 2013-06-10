@@ -25,7 +25,6 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
  * Externalized configuration for endpoints (e.g. paths)
  * 
  * @author Dave Syer
- * 
  */
 @ConfigurationProperties(name = "endpoints", ignoreUnknownFields = false)
 public class EndpointsProperties {

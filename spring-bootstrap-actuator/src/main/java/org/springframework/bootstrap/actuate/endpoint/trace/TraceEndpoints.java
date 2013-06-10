@@ -46,7 +46,7 @@ public class TraceEndpoints {
 	@RequestMapping("${endpoints.trace.path:/trace}")
 	@ResponseBody
 	public List<Trace> trace() {
-		return this.tracer.traces();
+		return this.tracer.findAll();
 	}
 
 	@RequestMapping("${endpoints.dump.path:/dump}")
