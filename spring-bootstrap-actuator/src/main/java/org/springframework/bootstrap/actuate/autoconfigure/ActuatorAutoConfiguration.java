@@ -39,7 +39,7 @@ public class ActuatorAutoConfiguration {
 	// ServerProperties has to be declared in a non-conditional bean, so that it gets
 	// added to the context early enough
 
-	// FIXME probably not any more
+	// FIXME ^^ perhaps not any more
 
 	@EnableConfigurationProperties
 	public static class ActuatorServerPropertiesConfiguration {

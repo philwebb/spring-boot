@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.endpoint.trace;
+
+package org.springframework.bootstrap.actuate.trace;
 
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
-import org.springframework.bootstrap.actuate.trace.WebRequestTraceFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link WebRequestTraceFilter}.
  * 
+ * @author Dave Syer
  */
-public class WebRequestLoggingFilterTests {
+public class WebRequestTraceFilterTests {
 
 	private WebRequestTraceFilter filter = new WebRequestTraceFilter(
 			new InMemoryTraceRepository());

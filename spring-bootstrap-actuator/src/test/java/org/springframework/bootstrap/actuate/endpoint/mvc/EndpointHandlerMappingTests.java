@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.endpoint.mvc;
 
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class EndpointHandlerMappingTests {
 		}
 
 		@Override
-		public Object execute() {
+		public Object invoke() {
 			return null;
 		}
 

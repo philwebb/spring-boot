@@ -88,7 +88,7 @@ public class EndpointHandlerAdapter implements HandlerAdapter {
 	private void handle(HttpServletRequest request, HttpServletResponse response,
 			Endpoint<?> endpoint) throws Exception {
 
-		Object result = endpoint.execute();
+		Object result = endpoint.invoke();
 		Class<?> resultClass = result.getClass();
 
 		List<MediaType> mediaTypes = getMediaTypes(request, endpoint, resultClass);

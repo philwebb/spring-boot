@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.properties;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -26,10 +26,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Externalized configuration for endpoints (e.g. paths)
+ * Tests for {@link EndpointsProperties}.
  * 
  * @author Dave Syer
- * 
  */
 public class EndpointsPropertiesTests {
 

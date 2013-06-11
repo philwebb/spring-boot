@@ -41,8 +41,8 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 	}
 
 	@Test
-	public void execute() throws Exception {
-		Trace trace = getEndpointBean().execute().get(0);
+	public void invoke() throws Exception {
+		Trace trace = getEndpointBean().invoke().get(0);
 		assertThat(trace.getInfo().get("a"), equalTo((Object) "b"));
 	}
 

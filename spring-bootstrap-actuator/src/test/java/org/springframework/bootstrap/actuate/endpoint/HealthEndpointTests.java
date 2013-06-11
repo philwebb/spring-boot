@@ -37,8 +37,8 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<St
 	}
 
 	@Test
-	public void execute() throws Exception {
-		assertThat(getEndpointBean().execute(), equalTo("fine"));
+	public void invoke() throws Exception {
+		assertThat(getEndpointBean().invoke(), equalTo("fine"));
 	}
 
 	@Configuration

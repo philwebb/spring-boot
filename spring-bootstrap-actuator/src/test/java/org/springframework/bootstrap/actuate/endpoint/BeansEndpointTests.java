@@ -38,8 +38,8 @@ public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 	}
 
 	@Test
-	public void execute() throws Exception {
-		assertThat(getEndpointBean().execute(), containsString("\"bean\": \"endpoint\""));
+	public void invoke() throws Exception {
+		assertThat(getEndpointBean().invoke(), containsString("\"bean\": \"endpoint\""));
 	}
 
 	@Configuration

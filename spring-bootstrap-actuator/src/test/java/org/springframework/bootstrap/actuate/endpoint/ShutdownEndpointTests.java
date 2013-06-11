@@ -40,8 +40,8 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 	}
 
 	@Test
-	public void execute() throws Exception {
-		assertThat((String) getEndpointBean().execute().get("message"),
+	public void invoke() throws Exception {
+		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
 		Thread.sleep(600);

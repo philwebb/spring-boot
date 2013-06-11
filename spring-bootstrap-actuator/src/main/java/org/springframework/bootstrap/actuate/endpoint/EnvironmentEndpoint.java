@@ -47,7 +47,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	@Override
-	public Map<String, Object> execute() {
+	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (PropertySource<?> source : getPropertySources()) {
 			if (source instanceof EnumerablePropertySource) {

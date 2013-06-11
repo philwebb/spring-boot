@@ -45,7 +45,7 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	@Override
-	public Map<String, Object> execute() {
+	public Map<String, Object> invoke() {
 		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
 		info.putAll(getAdditionalInfo());
 		return info;

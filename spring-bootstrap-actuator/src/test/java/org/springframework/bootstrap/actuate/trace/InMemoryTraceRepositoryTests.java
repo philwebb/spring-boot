@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.trace;
 
 import java.util.Collections;
@@ -23,8 +24,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link InMemoryTraceRepository}.
  * 
+ * @author Dave Syer
  */
 public class InMemoryTraceRepositoryTests {
 

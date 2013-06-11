@@ -36,8 +36,8 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	}
 
 	@Test
-	public void execute() throws Exception {
-		assertThat(getEndpointBean().execute().size(), greaterThan(0));
+	public void invoke() throws Exception {
+		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
 	}
 
 	@Configuration

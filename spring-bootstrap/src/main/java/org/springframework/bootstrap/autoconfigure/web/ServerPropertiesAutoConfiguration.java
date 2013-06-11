@@ -48,7 +48,7 @@ public class ServerPropertiesAutoConfiguration implements
 	private BeanFactory beanFactory;
 
 	@Bean(name = "org.springframework.bootstrap.properties.ServerProperties")
-	@ConditionalOnMissingBean(ServerProperties.class)
+	@ConditionalOnMissingBean
 	public ServerProperties serverProperties() {
 		return new ServerProperties();
 	}

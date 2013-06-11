@@ -21,7 +21,9 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.bootstrap.actuate.TestUtils;
 import org.springframework.bootstrap.actuate.endpoint.AbstractEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
@@ -96,6 +98,23 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertAllClosed();
 	}
 
+	@Test
+	@Ignore
+	public void specificPortsViaProperties() throws Exception {
+		// FIXME
+		TestUtils.addEnviroment(this.applicationContext, "server.port:7070",
+				"management.port:7071");
+		this.applicationContext.register(RootConfig.class,
+				EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", 7070, "controlleroutput");
+		assertContent("/endpoint", 7070, null);
+		assertContent("/controller", 7071, null);
+		assertContent("/endpoint", 7071, "endpointoutput");
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
 	private void assertAllClosed() throws Exception {
 		assertContent("/controller", 8080, null);
 		assertContent("/endpoint", 8080, null);
@@ -139,7 +158,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		public Endpoint<String> testEndpoint() {
 			return new AbstractEndpoint<String>("/endpoint") {
 				@Override
-				public String execute() {
+				public String invoke() {
 					return "endpointoutput";
 				}
 			};

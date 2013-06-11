@@ -19,17 +19,35 @@ package org.springframework.bootstrap.actuate.endpoint;
 import org.springframework.http.MediaType;
 
 /**
+ * An endpoint that can be used to expose useful information to the user. Usually exposed
+ * via Spring MVC but could also be exposed using some other technique.
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  */
 public interface Endpoint<T> {
 
+	/**
+	 * Returns the path of the endpoint. Must start with '/' and should not include
+	 * wildcards.
+	 */
 	String getPath();
 
+	/**
+	 * Returns if the endpoint is sensitive, i.e. may return data that the average user
+	 * should not see. Mappings can use this as a security hint.
+	 */
 	boolean isSensitive();
 
+	/**
+	 * Returns the {@link MediaType}s that this endpoint produces or {@code null}.
+	 */
 	MediaType[] getProduces();
 
-	T execute();
+	/**
+	 * Called to invoke the endpoint.
+	 * @return the results of the invocation
+	 */
+	T invoke();
 
 }

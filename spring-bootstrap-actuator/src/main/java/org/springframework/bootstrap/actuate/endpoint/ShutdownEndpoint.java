@@ -49,7 +49,7 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 	}
 
 	@Override
-	public Map<String, Object> execute() {
+	public Map<String, Object> invoke() {
 		if (this.configuration == null || !this.configuration.isAllowShutdown()
 				|| this.context == null) {
 			return Collections.<String, Object> singletonMap("message",

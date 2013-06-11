@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.bootstrap.actuate.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -84,10 +85,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void pathOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		PropertySource<?> propertySource = new MapPropertySource("test",
-				Collections.<String, Object> singletonMap(this.property + ".path",
-						"/mypath"));
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(this.context, this.property + ".path:/mypath");
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().getPath(), equalTo("/mypath"));

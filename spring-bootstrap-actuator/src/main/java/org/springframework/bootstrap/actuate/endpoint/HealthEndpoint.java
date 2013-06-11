@@ -42,7 +42,7 @@ public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 	}
 
 	@Override
-	public T execute() {
+	public T invoke() {
 		return this.indicator.health();
 	}
 
