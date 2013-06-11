@@ -25,6 +25,7 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -64,6 +65,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
 
 	@Autowired
