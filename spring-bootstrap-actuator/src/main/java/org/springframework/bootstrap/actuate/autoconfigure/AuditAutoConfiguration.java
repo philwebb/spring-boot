@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.actuate.audit.AuditEvent;
 import org.springframework.bootstrap.actuate.audit.AuditEventRepository;
 import org.springframework.bootstrap.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.bootstrap.actuate.audit.listener.AuditListener;
@@ -24,25 +25,20 @@ import org.springframework.bootstrap.actuate.security.AuthenticationAuditListene
 import org.springframework.bootstrap.actuate.security.AuthorizationAuditListener;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.
+ * 
  * @author Dave Syer
  */
 @Configuration
-public class AuditConfiguration {
+public class AuditAutoConfiguration {
 
 	@Autowired(required = false)
 	private AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
-
-	@ConditionalOnMissingBean(AuditEventRepository.class)
-	protected static class AuditEventRepositoryConfiguration {
-		@Bean
-		public AuditEventRepository auditEventRepository() throws Exception {
-			return new InMemoryAuditEventRepository();
-		}
-	}
 
 	@Bean
 	public AuditListener auditListener() throws Exception {
@@ -59,6 +55,14 @@ public class AuditConfiguration {
 	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();
+	}
+
+	@ConditionalOnMissingBean(AuditEventRepository.class)
+	protected static class AuditEventRepositoryConfiguration {
+		@Bean
+		public AuditEventRepository auditEventRepository() throws Exception {
+			return new InMemoryAuditEventRepository();
+		}
 	}
 
 }

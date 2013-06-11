@@ -17,25 +17,27 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.endpoint.trace.TraceEndpoints;
+import org.springframework.bootstrap.actuate.trace.WebRequestTraceFilter;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @author Dave Syer
+ * Tests for {@link TraceWebFilterAutoConfiguration}.
+ * 
+ * @author Phillip Webb
  */
-public class TraceConfigurationTests {
-
-	private AnnotationConfigApplicationContext context;
+public class TraceWebFilterAutoConfigurationTest {
 
 	@Test
-	public void testEndpointConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TraceFilterConfiguration.class, TraceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(TraceEndpoints.class));
+	public void configureFilter() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				PropertyPlaceholderAutoConfiguration.class,
+				TraceRepositoryAutoConfiguration.class,
+				TraceWebFilterAutoConfiguration.class);
+		assertNotNull(context.getBean(WebRequestTraceFilter.class));
+		context.close();
 	}
+
 }

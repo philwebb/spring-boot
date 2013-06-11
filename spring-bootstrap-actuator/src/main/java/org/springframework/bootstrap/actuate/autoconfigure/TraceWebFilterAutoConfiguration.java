@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
@@ -21,54 +20,35 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
 import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.bootstrap.actuate.trace.WebRequestTraceFilter;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
-import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for /trace endpoint.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
+ * tracing}.
  * 
  * @author Dave Syer
  */
-@Configuration
-public class TraceFilterConfiguration {
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
+public class TraceWebFilterAutoConfiguration {
 
-	@Autowired(required = false)
-	private TraceRepository traceRepository = new InMemoryTraceRepository();
+	@Autowired
+	private TraceRepository traceRepository;
 
-	@ConditionalOnMissingBean(TraceRepository.class)
-	@Configuration
-	protected static class TraceRepositoryConfiguration {
-		@Bean
-		public TraceRepository traceRepository() {
-			return new InMemoryTraceRepository();
-		}
-	}
+	@Value("${management.dump_requests:false}")
+	private boolean dumpRequests;
 
-	@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-	protected static class WebRequestLoggingFilterConfiguration {
-
-		@Autowired
-		private TraceRepository traceRepository;
-
-		@Value("${management.dump_requests:false}")
-		private boolean dumpRequests;
-
-		@Bean
-		public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-
-			WebRequestTraceFilter filter = new WebRequestTraceFilter(
-					this.traceRepository);
-			filter.setDumpRequests(this.dumpRequests);
-			return filter;
-		}
-
+	@Bean
+	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
+		filter.setDumpRequests(this.dumpRequests);
+		return filter;
 	}
 
 }

@@ -35,80 +35,86 @@ import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.StopWatch;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for service apps.
+ * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions
+ * with a {@link CounterService} and {@link GaugeService}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @Configuration
-// FIXME: make this conditional
-// @ConditionalOnBean({ CounterService.class, GaugeService.class })
+@ConditionalOnBean({ CounterService.class, GaugeService.class })
 @ConditionalOnClass({ Servlet.class })
-public class MetricFilterConfiguration {
+public class MetricFilterAutoConfiguration {
 
-	@Autowired(required = false)
+	private static final int UNDEFINED_HTTP_STATUS = 999;
+
+	@Autowired
 	private CounterService counterService;
 
-	@Autowired(required = false)
+	@Autowired
 	private GaugeService gaugeService;
 
 	@Bean
-	@ConditionalOnBean({ CounterService.class, GaugeService.class })
 	public Filter metricFilter() {
-		return new CounterServiceFilter();
+		return new MetricsFilter();
 	}
 
 	/**
 	 * Filter that counts requests and measures processing times.
-	 * 
-	 * @author Dave Syer
-	 * 
 	 */
-	@Order(Integer.MIN_VALUE)
-	// TODO: parameterize the order (ideally it runs before any other filter)
-	private final class CounterServiceFilter extends GenericFilterBean {
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private final class MetricsFilter extends GenericFilterBean {
+
+		// FIXME parameterize the order (ideally it runs before any other filter)
+
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) throws IOException, ServletException {
-			HttpServletRequest servletRequest = (HttpServletRequest) request;
-			HttpServletResponse servletResponse = (HttpServletResponse) response;
+			if ((request instanceof HttpServletRequest)
+					&& (response instanceof HttpServletResponse)) {
+				doFilter((HttpServletRequest) request, (HttpServletResponse) response,
+						chain);
+			} else {
+				chain.doFilter(request, response);
+			}
+		}
+
+		public void doFilter(HttpServletRequest request, HttpServletResponse response,
+				FilterChain chain) throws IOException, ServletException {
 			UrlPathHelper helper = new UrlPathHelper();
-			String suffix = helper.getPathWithinApplication(servletRequest);
-			int status = 999;
-			long t0 = System.currentTimeMillis();
+			String suffix = helper.getPathWithinApplication(request);
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
 			try {
 				chain.doFilter(request, response);
 			} finally {
-				try {
-					status = servletResponse.getStatus();
-				} catch (Exception e) {
-					// ignore
-				}
-				set("response", suffix, System.currentTimeMillis() - t0);
-				increment("status." + status, suffix);
+				stopWatch.stop();
+				String gaugeKey = getKey("response" + suffix);
+				MetricFilterAutoConfiguration.this.gaugeService.set(gaugeKey,
+						stopWatch.getTotalTimeMillis());
+				String counterKey = getKey("status." + getStatus(response) + suffix);
+				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
 			}
 		}
 
-		private void increment(String prefix, String suffix) {
-			if (MetricFilterConfiguration.this.counterService != null) {
-				String key = getKey(prefix + suffix);
-				MetricFilterConfiguration.this.counterService.increment(key);
-			}
-		}
-
-		private void set(String prefix, String suffix, double value) {
-			if (MetricFilterConfiguration.this.gaugeService != null) {
-				String key = getKey(prefix + suffix);
-				MetricFilterConfiguration.this.gaugeService.set(key, value);
+		private int getStatus(HttpServletResponse response) {
+			try {
+				return response.getStatus();
+			} catch (Exception e) {
+				return UNDEFINED_HTTP_STATUS;
 			}
 		}
 
 		private String getKey(String string) {
-			String value = string.replace("/", "."); // graphite compatible metric names
+			// graphite compatible metric names
+			String value = string.replace("/", ".");
 			value = value.replace("..", ".");
 			if (value.endsWith(".")) {
 				value = value + "root";

@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -29,6 +30,7 @@ import org.springframework.bootstrap.actuate.properties.ManagementServerProperti
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -39,14 +41,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -61,8 +58,9 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@Import({ PropertyPlaceholderAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class })
+@AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
+		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
 
@@ -78,14 +76,23 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnMissingBean(EndpointHandlerMapping.class)
-	@Conditional(EndpointCondition.class)
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		return new EndpointHandlerMapping();
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping() {
+			@Override
+			protected Object getHandlerInternal(HttpServletRequest request)
+					throws Exception {
+				if (ManagementServerPort.get(getApplicationContext()) == ManagementServerPort.SAME) {
+					return super.getHandlerInternal(request);
+				}
+				return null;
+			}
+		};
+		mapping.setPrefix(this.managementServerProperties.getContextPath());
+		return mapping;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(EndpointHandlerAdapter.class)
-	@Conditional(EndpointCondition.class)
 	public EndpointHandlerAdapter endpointHandlerAdapter() {
 		return new EndpointHandlerAdapter();
 	}
@@ -133,24 +140,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		childContext.refresh();
 	}
 
-	private static class EndpointCondition implements ConfigurationCondition {
-
-		@Override
-		public ConfigurationPhase getConfigurationPhase() {
-			return ConfigurationPhase.REGISTER_BEAN;
-		}
-
-		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			if (context.getBeanFactory() == null) {
-				// FIXME log a warning
-				return false;
-			}
-			return ManagementServerPort.get(context.getBeanFactory()) == ManagementServerPort.SAME;
-		}
-
-	}
-
 	private enum ManagementServerPort {
 
 		DISABLE, SAME, DIFFERENT;
@@ -178,8 +167,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			return managementServerProperties.getPort() == null
 					|| serverProperties.getPort() == managementServerProperties.getPort() ? SAME
 					: DIFFERENT;
-			// FIXME check the inet address etc are not different since they will be
-			// ignored
 		}
 	};
 }

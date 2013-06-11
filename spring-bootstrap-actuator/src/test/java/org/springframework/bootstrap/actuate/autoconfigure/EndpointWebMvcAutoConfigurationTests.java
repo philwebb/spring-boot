@@ -21,12 +21,15 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.bootstrap.actuate.TestUtils;
 import org.springframework.bootstrap.actuate.endpoint.AbstractEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
+import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +65,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onSamePort() throws Exception {
 		this.applicationContext.register(RootConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				WebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
@@ -75,6 +82,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onDifferentPort() throws Exception {
 		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				WebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
@@ -88,6 +99,10 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void disabled() throws Exception {
 		this.applicationContext.register(RootConfig.class, DisableConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				WebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
@@ -99,18 +114,36 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore
 	public void specificPortsViaProperties() throws Exception {
-		// FIXME
 		TestUtils.addEnviroment(this.applicationContext, "server.port:7070",
 				"management.port:7071");
 		this.applicationContext.register(RootConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 7070, "controlleroutput");
 		assertContent("/endpoint", 7070, null);
 		assertContent("/controller", 7071, null);
 		assertContent("/endpoint", 7071, "endpointoutput");
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void contextPath() throws Exception {
+		TestUtils.addEnviroment(this.applicationContext, "management.contextPath:/test");
+		this.applicationContext.register(RootConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertContent("/controller", 8080, "controlleroutput");
+		assertContent("/test/endpoint", 8080, "endpointoutput");
 		this.applicationContext.close();
 		assertAllClosed();
 	}

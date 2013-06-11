@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.security;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 /**
- * Convenient collector for all the management endpoints (stuff that goes in the
- * management context whether it is a child context or not).
- * 
- * @author Dave Syer
+ * Tests for {@link AuthenticationAuditListener}.
  */
-@Configuration
-// FIXME @ConditionalOnManagementContext
-@Import({ MetricsConfiguration.class, HealthConfiguration.class,
-		ShutdownConfiguration.class, TraceConfiguration.class, BeansConfiguration.class,
-		EnvConfiguration.class })
-public class ManagementEndpointsRegistration {
+@Ignore
+public class AuthorizationAuditListenerTests {
+
+	// FIXME
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
 
 }

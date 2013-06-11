@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.fixme;
 
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * Configuration for injecting externalized properties into the container (e.g. tomcat).
@@ -35,8 +33,9 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class })
-@Import(InfoConfiguration.class)
 public class ErrorConfiguration implements EmbeddedServletContainerCustomizer {
+
+	// FIXME
 
 	@Value("${endpoints.error.path:/error}")
 	private String errorPath = "/error";

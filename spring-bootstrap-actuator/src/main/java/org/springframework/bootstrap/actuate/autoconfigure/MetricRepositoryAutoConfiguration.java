@@ -33,22 +33,22 @@ import org.springframework.context.annotation.Configuration;
  * @author Dave Syer
  */
 @Configuration
-public class MetricRepositoryConfiguration {
+public class MetricRepositoryAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean({ CounterService.class })
+	@ConditionalOnMissingBean
 	public CounterService counterService() {
 		return new DefaultCounterService(metricRepository());
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ GaugeService.class })
+	@ConditionalOnMissingBean
 	public GaugeService gaugeService() {
 		return new DefaultGaugeService(metricRepository());
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ MetricRepository.class })
+	@ConditionalOnMissingBean
 	protected MetricRepository metricRepository() {
 		return new InMemoryMetricRepository();
 	}

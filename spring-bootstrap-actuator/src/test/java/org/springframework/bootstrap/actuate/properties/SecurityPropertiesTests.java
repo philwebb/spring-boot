@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.bootstrap.actuate.properties.SecurityProperties;
 import org.springframework.bootstrap.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 

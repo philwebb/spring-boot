@@ -16,26 +16,25 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import org.junit.Test;
-import org.springframework.bootstrap.actuate.endpoint.MetricsEndpoint;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import static org.junit.Assert.assertNotNull;
+import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
+import org.springframework.bootstrap.actuate.trace.TraceRepository;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link TraceRepository tracing}.
+ * 
  * @author Dave Syer
  */
-public class MetricsConfigurationTests {
+@Configuration
+public class TraceRepositoryAutoConfiguration {
 
-	private AnnotationConfigApplicationContext context;
-
-	@Test
-	public void testTraceConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MetricRepositoryConfiguration.class,
-				MetricsConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(MetricsEndpoint.class));
+	@ConditionalOnMissingBean
+	@Bean
+	public TraceRepository traceRepository() {
+		return new InMemoryTraceRepository();
 	}
 
 }

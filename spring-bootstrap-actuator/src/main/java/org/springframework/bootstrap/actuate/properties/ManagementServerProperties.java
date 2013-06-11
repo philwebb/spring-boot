@@ -27,6 +27,7 @@ import org.springframework.bootstrap.properties.ServerProperties;
  * Properties for the management server (e.g. port and path settings).
  * 
  * @author Dave Syer
+ * @see ServerProperties
  */
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties {

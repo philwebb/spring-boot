@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.fixme;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration;
-import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
+import org.springframework.bootstrap.actuate.fixme.ErrorConfiguration;
+import org.springframework.bootstrap.actuate.fixme.ErrorEndpoint;
+import org.springframework.bootstrap.actuate.fixme.ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;

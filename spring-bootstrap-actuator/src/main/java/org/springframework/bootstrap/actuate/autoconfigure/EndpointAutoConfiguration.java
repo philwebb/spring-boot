@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.actuate.endpoint.BeansEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.DumpEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.bootstrap.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.HealthEndpoint;
@@ -33,7 +34,9 @@ import org.springframework.bootstrap.actuate.endpoint.TraceEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.VanillaPublicMetrics;
 import org.springframework.bootstrap.actuate.health.HealthIndicator;
 import org.springframework.bootstrap.actuate.health.VanillaHealthIndicator;
+import org.springframework.bootstrap.actuate.metrics.InMemoryMetricRepository;
 import org.springframework.bootstrap.actuate.metrics.MetricRepository;
+import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
 import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -61,14 +64,14 @@ public class EndpointAutoConfiguration {
 	@Autowired
 	private InfoPropertiesConfiguration properties;
 
-	@Autowired
-	private MetricRepository metricRepository;
+	@Autowired(required = false)
+	private MetricRepository metricRepository = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private PublicMetrics metrics;
 
-	@Autowired
-	private TraceRepository traceRepository;
+	@Autowired(required = false)
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -113,6 +116,12 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public TraceEndpoint traceEndpoint() {
 		return new TraceEndpoint(this.traceRepository);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DumpEndpoint dumpEndpoint() {
+		return new DumpEndpoint();
 	}
 
 	@Bean

@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.security;
 
+import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.metrics.MetricRepository;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
- * @author Dave Syer
+ * Tests for {@link AuthenticationAuditListener}.
  */
-public class MetricRepositoryConfigurationTests {
+@Ignore
+public class AuthenticationAuditListenerTests {
 
-	private AnnotationConfigApplicationContext context;
+	// FIXME
 
 	@Test
-	public void testTraceConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(MetricRepositoryConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(MetricRepository.class));
+	public void test() {
+		fail("Not yet implemented");
 	}
 
 }

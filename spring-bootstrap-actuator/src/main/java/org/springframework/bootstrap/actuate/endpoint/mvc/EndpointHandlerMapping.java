@@ -60,7 +60,7 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 	 * @param prefix the prefix to set
 	 */
 	public void setPrefix(String prefix) {
-		Assert.isTrue(StringUtils.startsWithIgnoreCase(prefix, "/"),
+		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
 				"prefix must start with '/'");
 		this.prefix = prefix;
 	}

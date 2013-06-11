@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.health;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.endpoint.HealthEndpoint;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
- * @author Dave Syer
+ * Tests for {@link VanillaHealthIndicator}.
+ * 
+ * @author Phillip Webb
  */
-public class HealthConfigurationTests {
-
-	private AnnotationConfigApplicationContext context;
+public class VanillaHealthIndicatorTests {
 
 	@Test
-	public void testTraceConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(HealthConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(HealthEndpoint.class));
+	public void ok() throws Exception {
+		VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
+		assertThat(healthIndicator.health(), equalTo("ok"));
 	}
+
 }

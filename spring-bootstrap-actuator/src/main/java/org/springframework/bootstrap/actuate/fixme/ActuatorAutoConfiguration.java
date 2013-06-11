@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.autoconfigure;
+package org.springframework.bootstrap.actuate.fixme;
 
-import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
+import org.springframework.bootstrap.actuate.autoconfigure.AuditAutoConfiguration;
+import org.springframework.bootstrap.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.bootstrap.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
+import org.springframework.bootstrap.actuate.autoconfigure.TraceRepositoryAutoConfiguration;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -31,9 +34,9 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  */
 @Configuration
-@Import({ MetricRepositoryConfiguration.class, ErrorConfiguration.class,
-		TraceFilterConfiguration.class, MetricFilterConfiguration.class,
-		AuditConfiguration.class })
+@Import({ MetricRepositoryAutoConfiguration.class, ErrorConfiguration.class,
+		TraceRepositoryAutoConfiguration.class, MetricFilterAutoConfiguration.class,
+		AuditAutoConfiguration.class })
 public class ActuatorAutoConfiguration {
 
 	// ServerProperties has to be declared in a non-conditional bean, so that it gets
@@ -49,12 +52,12 @@ public class ActuatorAutoConfiguration {
 		public ManagementServerProperties managementServerProperties() {
 			return new ManagementServerProperties();
 		}
-
-		@Bean
-		@ConditionalOnMissingBean(EndpointsProperties.class)
-		public EndpointsProperties endpointsProperties() {
-			return new EndpointsProperties();
-		}
+		//
+		// @Bean
+		// @ConditionalOnMissingBean(EndpointsProperties.class)
+		// public EndpointsProperties endpointsProperties() {
+		// return new EndpointsProperties();
+		// }
 
 	}
 
