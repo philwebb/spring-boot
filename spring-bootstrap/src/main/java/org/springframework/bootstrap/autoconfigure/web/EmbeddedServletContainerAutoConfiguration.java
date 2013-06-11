@@ -35,6 +35,8 @@ import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServl
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -44,6 +46,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  */
 @Import({ EmbeddedTomcat.class, EmbeddedJetty.class })
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class EmbeddedServletContainerAutoConfiguration {
 
 	/**

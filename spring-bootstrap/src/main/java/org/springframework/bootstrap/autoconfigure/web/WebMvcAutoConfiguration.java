@@ -31,6 +31,8 @@ import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
@@ -61,6 +63,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @EnableWebMvc
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
 
 	@Autowired
