@@ -18,19 +18,20 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Configuration for the child actuator embedded servlet container,
- * {@link DispatcherServlet} and lite Spring MVC configuration.
+ * Configuration for triggered from {@link EndpointWebMvcAutoConfiguration} when a new
+ * {@link EmbeddedServletContainer} running on a different port is required.
  * 
- * @see ManagementServerAutoConfiguration
+ * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
-public class ManagementServerChildContextConfiguration implements
+public class EndpointWebMvcChildContextConfiguration implements
 		EmbeddedServletContainerCustomizer {
 
 	@Autowired

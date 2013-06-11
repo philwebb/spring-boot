@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.beans;
-
-import javax.servlet.http.HttpServletRequest;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
 
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
  * the {@link LiveBeansView#MBEAN_DOMAIN_PROPERTY_NAME} then all application contexts in
  * the JVM will be shown (and the corresponding MBeans will be registered per the standard
- * behaviour of LiveBeansView). Otherwise only the current application context.
+ * behavior of LiveBeansView). Otherwise only the current application context.
  * 
  * @author Dave Syer
  */
-@Controller
-public class BeansEndpoint implements ApplicationContextAware {
+public class BeansEndpoint extends AbstractEndpoint<String> implements
+		ApplicationContextAware {
 
 	private LiveBeansView liveBeansView = new LiveBeansView();
 
@@ -48,9 +44,18 @@ public class BeansEndpoint implements ApplicationContextAware {
 		}
 	}
 
-	@RequestMapping(value = "${endpoints.beans.path:/beans}", produces = "application/json")
-	@ResponseBody
-	public String error(HttpServletRequest request) {
+	@Override
+	public String getId() {
+		return "beans";
+	}
+
+	@Override
+	public MediaType[] produces() {
+		return new MediaType[] { MediaType.APPLICATION_JSON };
+	}
+
+	@Override
+	public String execute() {
 		return this.liveBeansView.getSnapshotAsJson();
 	}
 }

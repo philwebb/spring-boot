@@ -18,8 +18,8 @@ package org.springframework.bootstrap.actuate.endpoint.trace;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.endpoint.trace.WebRequestLoggingFilter;
 import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
+import org.springframework.bootstrap.actuate.trace.WebRequestTraceFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class WebRequestLoggingFilterTests {
 
-	private WebRequestLoggingFilter filter = new WebRequestLoggingFilter(
+	private WebRequestTraceFilter filter = new WebRequestTraceFilter(
 			new InMemoryTraceRepository());
 
 	@Test

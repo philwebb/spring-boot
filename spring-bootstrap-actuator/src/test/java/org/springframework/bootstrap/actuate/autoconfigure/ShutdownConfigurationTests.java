@@ -18,7 +18,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration.ActuatorServerPropertiesConfiguration;
-import org.springframework.bootstrap.actuate.endpoint.shutdown.ShutdownEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

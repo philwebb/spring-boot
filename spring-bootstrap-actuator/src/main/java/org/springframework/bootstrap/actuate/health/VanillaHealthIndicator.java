@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.endpoint;
+
+package org.springframework.bootstrap.actuate.health;
 
 /**
- * @author Phillip Webb
+ * Default implementation of {@link HealthIndicator} that simply returns "ok".
+ * 
  * @author Dave Syer
  */
-public class Endpoints {
+public class VanillaHealthIndicator implements HealthIndicator<String> {
+
+	@Override
+	public String health() {
+		return "ok";
+	}
 
 }

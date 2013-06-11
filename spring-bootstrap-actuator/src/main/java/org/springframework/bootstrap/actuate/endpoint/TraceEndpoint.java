@@ -16,20 +16,36 @@
 
 package org.springframework.bootstrap.actuate.endpoint;
 
-import org.springframework.http.MediaType;
+import java.util.List;
+
+import org.springframework.bootstrap.actuate.trace.Trace;
+import org.springframework.bootstrap.actuate.trace.TraceRepository;
+import org.springframework.util.Assert;
 
 /**
- * @author Phillip Webb
+ * {@link Endpoint} to expose {@link Trace} information.
+ * 
  * @author Dave Syer
  */
-public interface Endpoint<T> {
+public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 
-	String getId();
+	private TraceRepository repository;
 
-	boolean isSensitive();
+	/**
+	 * @param repository
+	 */
+	public TraceEndpoint(TraceRepository repository) {
+		Assert.notNull(repository, "Repository must not be null");
+		this.repository = repository;
+	}
 
-	MediaType[] produces();
+	@Override
+	public String getId() {
+		return "trace";
+	}
 
-	T execute();
-
+	@Override
+	public List<Trace> execute() {
+		return this.repository.findAll();
+	}
 }

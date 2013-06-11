@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.metrics;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.bootstrap.actuate.metrics.Metric;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * {@link Endpoint} to expose {@link PublicMetrics}.
+ * 
  * @author Dave Syer
  */
-@Controller
-public class MetricsEndpoint {
+public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private PublicMetrics metrics;
 
 	/**
-	 * @param metrics
+	 * Create a new {@link MetricsEndpoint} instance.
+	 * 
+	 * @param metrics the metrics to expose
 	 */
 	public MetricsEndpoint(PublicMetrics metrics) {
 		this.metrics = metrics;
 	}
 
-	@RequestMapping("${endpoints.metrics.path:/metrics}")
-	@ResponseBody
-	public Map<String, Object> metrics() {
+	@Override
+	public String getId() {
+		return "metrics";
+	}
+
+	@Override
+	public Map<String, Object> execute() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (Metric metric : this.metrics.metrics()) {
 			result.put(metric.getName(), metric.getValue());

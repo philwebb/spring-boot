@@ -14,31 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.health;
+package org.springframework.bootstrap.actuate.endpoint;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.bootstrap.actuate.health.HealthIndicator;
+import org.springframework.util.Assert;
 
 /**
+ * {@link Endpoint} to expose application health.
+ * 
  * @author Dave Syer
  */
-@Controller
-public class HealthEndpoint<T> {
+public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 
 	private HealthIndicator<? extends T> indicator;
 
 	/**
-	 * @param indicator
+	 * Create a new {@link HealthIndicator} instance.
+	 * @param indicator the health indicator
 	 */
 	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
-		super();
+		Assert.notNull(indicator, "Indicator must not be null");
 		this.indicator = indicator;
 	}
 
-	@RequestMapping("${endpoints.health.path:/health}")
-	@ResponseBody
-	public T health() {
+	@Override
+	public String getId() {
+		return "health";
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return false;
+	}
+
+	@Override
+	public T execute() {
 		return this.indicator.health();
 	}
 

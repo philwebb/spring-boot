@@ -14,44 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.trace;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.bootstrap.actuate.trace.Trace;
-import org.springframework.bootstrap.actuate.trace.TraceRepository;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 /**
+ * {@link Endpoint} to expose thread info.
+ * 
  * @author Dave Syer
  */
-@Controller
-public class TraceEndpoints {
+public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
-	private TraceRepository tracer;
-
-	/**
-	 * @param tracer
-	 */
-	public TraceEndpoints(TraceRepository tracer) {
-		super();
-		this.tracer = tracer;
+	@Override
+	public String getId() {
+		return "dump";
 	}
 
-	@RequestMapping("${endpoints.trace.path:/trace}")
-	@ResponseBody
-	public List<Trace> trace() {
-		return this.tracer.findAll();
-	}
-
-	@RequestMapping("${endpoints.dump.path:/dump}")
-	@ResponseBody
-	public List<ThreadInfo> dump() {
+	@Override
+	public List<ThreadInfo> execute() {
 		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
 				true));
 	}

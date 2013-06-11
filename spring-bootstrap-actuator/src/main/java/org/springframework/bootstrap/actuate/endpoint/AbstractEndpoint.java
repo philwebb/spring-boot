@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.health;
+package org.springframework.bootstrap.actuate.endpoint;
+
+import org.springframework.http.MediaType;
 
 /**
- * @author Dave Syer
+ * Abstract base for {@link Endpoint} implementations.
+ * 
+ * @author Phillip Webb
  */
-public interface HealthIndicator<T> {
+public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
-	/**
-	 * @return an indication of health
-	 */
-	T health();
+	@Override
+	public abstract String getId();
+
+	@Override
+	public boolean isSensitive() {
+		return true;
+	}
+
+	@Override
+	public MediaType[] produces() {
+		return null;
+	}
+
+	@Override
+	public abstract T execute();
 
 }

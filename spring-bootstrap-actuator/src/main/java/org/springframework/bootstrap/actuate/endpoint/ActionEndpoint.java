@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.actuate.endpoint;
 
-import org.springframework.http.MediaType;
-
 /**
+ * An {@link Endpoint} that performs some action.
+ * 
  * @author Phillip Webb
- * @author Dave Syer
  */
-public interface Endpoint<T> {
-
-	String getId();
-
-	boolean isSensitive();
-
-	MediaType[] produces();
-
-	T execute();
+public interface ActionEndpoint<T> extends Endpoint<T> {
 
 }

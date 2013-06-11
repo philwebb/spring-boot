@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.metrics;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.util.Collection;
 
 import org.springframework.bootstrap.actuate.metrics.Metric;
 
 /**
+ * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * 
  * @author Dave Syer
+ * @see VanillaPublicMetrics
  */
 public interface PublicMetrics {
 

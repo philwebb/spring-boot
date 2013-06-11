@@ -26,7 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.bootstrap.actuate.TestUtils;
-import org.springframework.bootstrap.actuate.endpoint.health.HealthEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.HealthEndpoint;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;

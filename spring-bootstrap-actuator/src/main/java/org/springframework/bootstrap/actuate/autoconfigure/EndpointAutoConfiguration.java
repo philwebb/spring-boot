@@ -13,20 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.servlet.Servlet;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.actuate.endpoint.info.InfoEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.BeansEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.Endpoint;
+import org.springframework.bootstrap.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.HealthEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.InfoEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.MetricsEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.PublicMetrics;
+import org.springframework.bootstrap.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.TraceEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.bootstrap.actuate.health.HealthIndicator;
+import org.springframework.bootstrap.actuate.health.VanillaHealthIndicator;
+import org.springframework.bootstrap.actuate.metrics.MetricRepository;
+import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
-import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -35,35 +44,81 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for /info endpoint.
+ * {@link EnableAutoConfiguration Auto-configuration} for common management
+ * {@link Endpoint}s.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ InfoEndpoint.class })
-public class InfoConfiguration {
+public class EndpointAutoConfiguration {
+
+	@Autowired(required = false)
+	private HealthIndicator<? extends Object> healthIndicator = new VanillaHealthIndicator();
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
 
+	@Autowired
+	private MetricRepository metricRepository;
+
+	@Autowired(required = false)
+	private PublicMetrics metrics;
+
+	@Autowired
+	private TraceRepository traceRepository;
+
 	@Bean
-	protected Map<String, Object> applicationInfo() throws Exception {
+	@ConditionalOnMissingBean
+	public EnvironmentEndpoint environmentEndpoint() {
+		return new EnvironmentEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthEndpoint<Object> healthEndpoint() {
+		return new HealthEndpoint<Object>(this.healthIndicator);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public BeansEndpoint beansEndpoint() {
+		return new BeansEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public InfoEndpoint infoEndpoint() throws Exception {
 		LinkedHashMap<String, Object> info = new LinkedHashMap<String, Object>();
 		info.putAll(this.properties.infoMap());
 		GitInfo gitInfo = this.properties.gitInfo();
 		if (gitInfo.getBranch() != null) {
 			info.put("git", gitInfo);
 		}
-		return info;
+		return new InfoEndpoint(info);
 	}
 
 	@Bean
-	public InfoEndpoint infoEndpoint() throws Exception {
-		return new InfoEndpoint(applicationInfo());
+	@ConditionalOnMissingBean
+	public MetricsEndpoint metricsEndpoint() {
+		if (this.metrics == null) {
+			this.metrics = new VanillaPublicMetrics(this.metricRepository);
+		}
+		return new MetricsEndpoint(this.metrics);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public TraceEndpoint traceEndpoint() {
+		return new TraceEndpoint(this.traceRepository);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ShutdownEndpoint shutdownEndpoint() {
+		return new ShutdownEndpoint();
 	}
 
 	@Configuration
@@ -135,4 +190,5 @@ public class InfoConfiguration {
 			}
 		}
 	}
+
 }

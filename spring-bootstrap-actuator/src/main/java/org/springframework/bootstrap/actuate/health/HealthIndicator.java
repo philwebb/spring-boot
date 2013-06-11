@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.health;
+package org.springframework.bootstrap.actuate.health;
 
 /**
+ * Strategy interface used to provide an indication of application health.
+ * 
  * @author Dave Syer
+ * @see VanillaHealthIndicator
  */
-public class VanillaHealthIndicator implements HealthIndicator<String> {
+public interface HealthIndicator<T> {
 
-	@Override
-	public String health() {
-		return "ok";
-	}
+	/**
+	 * @return an indication of health
+	 */
+	T health();
 
 }

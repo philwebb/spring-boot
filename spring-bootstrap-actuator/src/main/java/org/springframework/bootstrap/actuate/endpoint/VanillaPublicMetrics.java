@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.metrics;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -24,6 +24,9 @@ import org.springframework.bootstrap.actuate.metrics.MetricRepository;
 import org.springframework.util.Assert;
 
 /**
+ * Default implementation of {@link PublicMetrics} that exposes all metrics from the
+ * {@link MetricRepository} along with memory information.
+ * 
  * @author Dave Syer
  */
 public class VanillaPublicMetrics implements PublicMetrics {
@@ -31,7 +34,7 @@ public class VanillaPublicMetrics implements PublicMetrics {
 	private MetricRepository metricRepository;
 
 	public VanillaPublicMetrics(MetricRepository metricRepository) {
-		Assert.notNull(metricRepository, "A MetricRepository must be provided");
+		Assert.notNull(metricRepository, "MetricRepository must not be null");
 		this.metricRepository = metricRepository;
 	}
 

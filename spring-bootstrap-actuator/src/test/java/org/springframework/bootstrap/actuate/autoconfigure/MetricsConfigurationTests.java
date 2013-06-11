@@ -17,7 +17,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.endpoint.metrics.MetricsEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.MetricsEndpoint;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertNotNull;

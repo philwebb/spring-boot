@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.trace;
+package org.springframework.bootstrap.actuate.trace;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -34,18 +34,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.core.Ordered;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
+ * 
  * @author Dave Syer
  */
-public class WebRequestLoggingFilter implements Filter, Ordered {
+public class WebRequestTraceFilter implements Filter, Ordered {
 
-	final Log logger = LogFactory.getLog(WebRequestLoggingFilter.class);
+	final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
@@ -58,7 +59,7 @@ public class WebRequestLoggingFilter implements Filter, Ordered {
 	/**
 	 * @param traceRepository
 	 */
-	public WebRequestLoggingFilter(TraceRepository traceRepository) {
+	public WebRequestTraceFilter(TraceRepository traceRepository) {
 		this.traceRepository = traceRepository;
 	}
 
@@ -88,14 +89,15 @@ public class WebRequestLoggingFilter implements Filter, Ordered {
 		HttpServletResponse response = (HttpServletResponse) res;
 
 		Map<String, Object> trace = getTrace(request);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> headers = (Map<String, Object>) trace.get("headers");
 		this.traceRepository.add(trace);
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace("Processing request " + request.getMethod() + " "
 					+ request.getRequestURI());
 			if (this.dumpRequests) {
 				try {
+					@SuppressWarnings("unchecked")
+					Map<String, Object> headers = (Map<String, Object>) trace
+							.get("headers");
 					this.logger.trace("Headers: "
 							+ this.objectMapper.writeValueAsString(headers));
 				} catch (JsonProcessingException e) {

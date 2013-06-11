@@ -14,36 +14,47 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.info;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.Assert;
 
 /**
+ * {@link Endpoint} to expose arbitrary application information.
+ * 
  * @author Dave Syer
  */
-@Controller
-public class InfoEndpoint {
+public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private Map<String, Object> info;
 
 	/**
-	 * @param info
+	 * Create a new {@link InfoEndpoint} instance.
+	 * @param info the info to expose
 	 */
 	public InfoEndpoint(Map<String, Object> info) {
-		this.info = new LinkedHashMap<String, Object>(info);
-		this.info.putAll(getAdditionalInfo());
+		Assert.notNull(info, "Info must not be null");
+		this.info = info;
 	}
 
-	@RequestMapping("${endpoints.info.path:/info}")
-	@ResponseBody
-	public Map<String, Object> info() {
-		return this.info;
+	@Override
+	public String getId() {
+		return "info";
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return false;
+	}
+
+	@Override
+	public Map<String, Object> execute() {
+		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
+		info.putAll(getAdditionalInfo());
+		return info;
 	}
 
 	protected Map<String, Object> getAdditionalInfo() {

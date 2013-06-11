@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.endpoint;
+
+package org.springframework.bootstrap.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -37,9 +39,17 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+/**
+ * MVC {@link HandlerAdapter} for {@link Endpoint}s. Similar in may respects to
+ * {@link AbstractMessageConverterMethodProcessor} but not tied to annotated methods.
+ * 
+ * @author Phillip Webb
+ * @see EndpointHandlerMapping
+ */
 public class EndpointHandlerAdapter implements HandlerAdapter {
 
 	private static final Log logger = LogFactory.getLog(EndpointHandlerAdapter.class);
@@ -193,6 +203,10 @@ public class EndpointHandlerAdapter implements HandlerAdapter {
 		MediaType.sortBySpecificity(this.allSupportedMediaTypes);
 	}
 
+	/**
+	 * Default conventions, taken from {@link WebMvcConfigurationSupport} with a few minor
+	 * tweaks.
+	 */
 	private static class WebMvcConfigurationSupportConventions extends
 			WebMvcConfigurationSupport {
 		public List<HttpMessageConverter<?>> getDefaultHttpMessageConverters() {

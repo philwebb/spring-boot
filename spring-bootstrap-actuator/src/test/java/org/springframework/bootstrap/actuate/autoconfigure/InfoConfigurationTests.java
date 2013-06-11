@@ -18,7 +18,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.springframework.bootstrap.actuate.TestUtils;
-import org.springframework.bootstrap.actuate.endpoint.info.InfoEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.InfoEndpoint;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;

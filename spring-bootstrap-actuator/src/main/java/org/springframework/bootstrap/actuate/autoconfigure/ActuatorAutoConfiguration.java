@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  */
 @Configuration
-@Import({ ActuatorWebConfiguration.class, MetricRepositoryConfiguration.class,
-		ErrorConfiguration.class, TraceFilterConfiguration.class,
-		MetricFilterConfiguration.class, AuditConfiguration.class })
+@Import({ MetricRepositoryConfiguration.class, ErrorConfiguration.class,
+		TraceFilterConfiguration.class, MetricFilterConfiguration.class,
+		AuditConfiguration.class })
 public class ActuatorAutoConfiguration {
 
 	// ServerProperties has to be declared in a non-conditional bean, so that it gets

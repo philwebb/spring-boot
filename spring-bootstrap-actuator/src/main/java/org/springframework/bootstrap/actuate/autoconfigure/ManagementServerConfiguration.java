@@ -57,6 +57,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @Import(ManagementSecurityConfiguration.class)
 public class ManagementServerConfiguration {
 
+	// FIXME delete when security works
+
 	@Bean
 	public DispatcherServlet dispatcherServlet() {
 		return new DispatcherServlet();

@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.endpoint.env;
+package org.springframework.bootstrap.actuate.endpoint;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.core.env.StandardEnvironment;
 
 /**
+ * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
+ * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
-@Controller
-public class EnvEndpoint {
+public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> implements
+		EnvironmentAware {
 
-	private final ConfigurableEnvironment environment;
+	private Environment environment;
 
-	public EnvEndpoint(ConfigurableEnvironment environment) {
-		this.environment = environment;
+	@Override
+	public String getId() {
+		return "env";
 	}
 
-	@RequestMapping("${endpoints.metrics.path:/env}")
-	@ResponseBody
-	public Map<String, Object> env() {
+	@Override
+	public Map<String, Object> execute() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (PropertySource<?> source : this.environment.getPropertySources()) {
+		for (PropertySource<?> source : getPropertySources()) {
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				Map<String, Object> map = new LinkedHashMap<String, Object>();
@@ -56,12 +58,12 @@ public class EnvEndpoint {
 		return result;
 	}
 
-	@RequestMapping("${endpoints.metrics.path:/env}/{name:[a-zA-Z0-9._-]+}")
-	@ResponseBody
-	public Map<String, Object> env(@PathVariable String name) {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		result.put(name, sanitize(name, this.environment.getProperty(name)));
-		return result;
+	private Iterable<PropertySource<?>> getPropertySources() {
+		if (this.environment != null
+				&& this.environment instanceof ConfigurableEnvironment) {
+			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+		}
+		return new StandardEnvironment().getPropertySources();
 	}
 
 	private Object sanitize(String name, Object object) {
@@ -70,6 +72,11 @@ public class EnvEndpoint {
 			return object == null ? null : "******";
 		}
 		return object;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 }

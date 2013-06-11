@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnManagementContext
+// FIXME @ConditionalOnManagementContext
 @Import({ MetricsConfiguration.class, HealthConfiguration.class,
 		ShutdownConfiguration.class, TraceConfiguration.class, BeansConfiguration.class,
 		EnvConfiguration.class })

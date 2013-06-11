@@ -20,8 +20,9 @@ import javax.servlet.Servlet;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.actuate.endpoint.EndpointHandlerAdapter;
-import org.springframework.bootstrap.actuate.endpoint.EndpointHandlerMapping;
+import org.springframework.bootstrap.actuate.endpoint.Endpoint;
+import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerAdapter;
+import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
@@ -40,14 +41,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to create and configure a management
- * server. If the {@link ManagementServerProperties} specifies a different port to
- * {@link ServerProperties} a new child context is created, otherwise it is assumed that
- * management requests will be mapped and handled via an already registered
- * {@link DispatcherServlet} .
+ * {@link EnableAutoConfiguration Auto-configuration} to enable Spring MVC to handle
+ * {@link Endpoint} requests. If the {@link ManagementServerProperties} specifies a
+ * different port to {@link ServerProperties} a new child context is created, otherwise it
+ * is assumed that endpoint requests will be mapped and handled via an already registered
+ * {@link DispatcherServlet}.
  * 
  * @author Dave Syer
  * @author Phillip Webb
@@ -56,7 +58,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @Import({ PropertyPlaceholderAutoConfiguration.class,
 		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class })
-public class ManagementServerAutoConfiguration implements ApplicationContextAware,
+public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
 
 	private static final Integer DISABLED_PORT = Integer.valueOf(0);
@@ -114,13 +116,15 @@ public class ManagementServerAutoConfiguration implements ApplicationContextAwar
 		// Register the ManagementServerChildContextConfiguration first followed
 		// by various specific AutoConfiguration classes. NOTE: The child context
 		// is intentionally not completely auto-configured.
-		childContext.register(ManagementServerChildContextConfiguration.class,
+		childContext.register(EndpointWebMvcChildContextConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class);
 
 		// Provide aliases to only the specific endpoint MVC beans
-		childContext.registerAlias("endpointHandlerMapping", "handlerMapping");
-		childContext.registerAlias("endpointHandlerAdapter", "handlerAdapter");
+		String mappingBeanName = getBeanNameForType(EndpointHandlerMapping.class);
+		childContext.registerAlias(mappingBeanName, "handlerMapping");
+		String adapterBeanName = getBeanNameForType(EndpointHandlerAdapter.class);
+		childContext.registerAlias(adapterBeanName, "handlerAdapter");
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
@@ -128,12 +132,18 @@ public class ManagementServerAutoConfiguration implements ApplicationContextAwar
 					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
 						@Override
 						public void onApplicationEvent(ContextClosedEvent event) {
-							if (event.getApplicationContext() == ManagementServerAutoConfiguration.this.applicationContext) {
+							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
 								childContext.close();
 							}
 						}
 					});
 		}
 		childContext.refresh();
+	}
+
+	private String getBeanNameForType(Class<?> type) {
+		String[] names = this.applicationContext.getBeanNamesForType(type);
+		Assert.state(names.length == 1, "Expected single bean of type " + type);
+		return names[0];
 	}
 }
