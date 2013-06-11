@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.metrics.CounterService;
 import org.springframework.bootstrap.actuate.metrics.GaugeService;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -51,6 +52,7 @@ import org.springframework.web.util.UrlPathHelper;
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
 @ConditionalOnClass({ Servlet.class })
+@AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
 	private static final int UNDEFINED_HTTP_STATUS = 999;
