@@ -19,6 +19,7 @@ package org.springframework.bootstrap.actuate.endpoint;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -32,14 +33,17 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@ConfigurationProperties(name = "endpoints.env", ignoreUnknownFields = false)
 public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> implements
 		EnvironmentAware {
 
 	private Environment environment;
 
-	@Override
-	public String getId() {
-		return "env";
+	/**
+	 * Create a new {@link EnvironmentEndpoint} instance.
+	 */
+	public EnvironmentEndpoint() {
+		super("/env");
 	}
 
 	@Override

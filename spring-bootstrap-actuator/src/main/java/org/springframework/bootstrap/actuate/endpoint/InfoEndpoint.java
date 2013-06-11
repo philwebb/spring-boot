@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
@@ -27,27 +28,20 @@ import org.springframework.util.Assert;
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.info", ignoreUnknownFields = false)
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private Map<String, Object> info;
+	private Map<String, ? extends Object> info;
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.
+	 * 
 	 * @param info the info to expose
 	 */
-	public InfoEndpoint(Map<String, Object> info) {
+	public InfoEndpoint(Map<String, ? extends Object> info) {
+		super("/info", true);
 		Assert.notNull(info, "Info must not be null");
 		this.info = info;
-	}
-
-	@Override
-	public String getId() {
-		return "info";
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return false;
 	}
 
 	@Override

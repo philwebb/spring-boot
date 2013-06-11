@@ -20,12 +20,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.bootstrap.actuate.metrics.Metric;
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose {@link PublicMetrics}.
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.metrics", ignoreUnknownFields = false)
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private PublicMetrics metrics;
@@ -36,12 +39,9 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param metrics the metrics to expose
 	 */
 	public MetricsEndpoint(PublicMetrics metrics) {
+		super("/metrics");
+		Assert.notNull(metrics, "Metrics must not be null");
 		this.metrics = metrics;
-	}
-
-	@Override
-	public String getId() {
-		return "metrics";
 	}
 
 	@Override

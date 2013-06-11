@@ -16,6 +16,8 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerAdapter;
+import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
@@ -45,7 +47,7 @@ public class EndpointWebMvcChildContextConfiguration implements
 	}
 
 	@Bean
-	public DispatcherServlet actuatorDispatcherServlet() {
+	public DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 
 		// Ensure the parent configuration does not leak down to us
@@ -55,6 +57,16 @@ public class EndpointWebMvcChildContextConfiguration implements
 		dispatcherServlet.setDetectAllViewResolvers(false);
 
 		return dispatcherServlet;
+	}
+
+	@Bean
+	public EndpointHandlerMapping handlerMapping() {
+		return new EndpointHandlerMapping();
+	}
+
+	@Bean
+	public EndpointHandlerAdapter handlerAdapter() {
+		return new EndpointHandlerAdapter();
 	}
 
 }

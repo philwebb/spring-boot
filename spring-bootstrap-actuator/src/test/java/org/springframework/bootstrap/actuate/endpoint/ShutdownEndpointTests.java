@@ -13,54 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.autoconfigure;
+
+package org.springframework.bootstrap.actuate.endpoint;
 
 import org.junit.Test;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
-import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.bootstrap.properties.ServerProperties;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link ManagementServerAutoConfiguration}.
+ * Tests for {@link ShutdownEndpoint}.
  * 
  * @author Phillip Webb
  */
-public class ManagementServerAutoConfigurationTest {
+public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
-	@Test
-	public void onSamePort() {
-		fail("Not yet implemented");
+	public ShutdownEndpointTests() {
+		super(Config.class, ShutdownEndpoint.class, "/shutdown", true,
+				"endpoints.shutdown");
 	}
 
 	@Test
-	public void onDifferentPort() throws Exception {
-		AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
-		applicationContext.register(DifferentPortConfig.class,
-				ManagementServerAutoConfiguration.class);
-		applicationContext.refresh();
-		Thread.sleep(10000000000L);
-		System.out.println("test");
+	public void execute() throws Exception {
+		assertThat((String) getEndpointBean().execute().get("message"),
+				startsWith("Shutting down"));
+		assertTrue(this.context.isActive());
+		Thread.sleep(600);
+		assertFalse(this.context.isActive());
 	}
 
 	@Configuration
-	public static class DifferentPortConfig {
-
-		@Bean
-		public ServerProperties serverProperties() {
-			return new ServerProperties();
-		}
+	@EnableConfigurationProperties
+	public static class Config {
 
 		@Bean
 		public ManagementServerProperties managementServerProperties() {
 			ManagementServerProperties properties = new ManagementServerProperties();
-			properties.setPort(8081);
+			properties.setAllowShutdown(true);
 			return properties;
 		}
 
-	}
+		@Bean
+		public ShutdownEndpoint endpoint() {
+			return new ShutdownEndpoint();
+		}
 
+	}
 }

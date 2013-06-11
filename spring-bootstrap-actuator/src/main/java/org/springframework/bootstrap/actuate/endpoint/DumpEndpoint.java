@@ -21,16 +21,21 @@ import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+
 /**
  * {@link Endpoint} to expose thread info.
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.dump", ignoreUnknownFields = false)
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
-	@Override
-	public String getId() {
-		return "dump";
+	/**
+	 * Create a new {@link DumpEndpoint} instance.
+	 */
+	public DumpEndpoint() {
+		super("/dump");
 	}
 
 	@Override

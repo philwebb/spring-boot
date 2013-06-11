@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.endpoint;
 
 import org.springframework.beans.BeansException;
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
@@ -31,10 +32,15 @@ import org.springframework.http.MediaType;
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.beans", ignoreUnknownFields = false)
 public class BeansEndpoint extends AbstractEndpoint<String> implements
 		ApplicationContextAware {
 
 	private LiveBeansView liveBeansView = new LiveBeansView();
+
+	public BeansEndpoint() {
+		super("/beans");
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
@@ -45,12 +51,7 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public String getId() {
-		return "beans";
-	}
-
-	@Override
-	public MediaType[] produces() {
+	public MediaType[] getProduces() {
 		return new MediaType[] { MediaType.APPLICATION_JSON };
 	}
 

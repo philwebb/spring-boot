@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,22 +32,26 @@ import org.springframework.context.ConfigurableApplicationContext;
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.shutdown", ignoreUnknownFields = false)
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements
 		ApplicationContextAware, ActionEndpoint<Map<String, Object>> {
 
 	private ConfigurableApplicationContext context;
 
-	@Autowired
+	@Autowired(required = false)
 	private ManagementServerProperties configuration = new ManagementServerProperties();
 
-	@Override
-	public String getId() {
-		return "shutdown";
+	/**
+	 * Create a new {@link ShutdownEndpoint} instance.
+	 */
+	public ShutdownEndpoint() {
+		super("/shutdown");
 	}
 
 	@Override
 	public Map<String, Object> execute() {
-		if (!this.configuration.isAllowShutdown() || this.context == null) {
+		if (this.configuration == null || !this.configuration.isAllowShutdown()
+				|| this.context == null) {
 			return Collections.<String, Object> singletonMap("message",
 					"Shutdown not enabled, sorry.");
 		}

@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.bootstrap.actuate.endpoint.mvc;
 
-package org.springframework.bootstrap.actuate.endpoint;
+import org.junit.Test;
+import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 
-import org.springframework.http.MediaType;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
+ * Tests for {@link EndpointHandlerAdapter}.
+ * 
  * @author Phillip Webb
- * @author Dave Syer
  */
-public interface Endpoint<T> {
+public class EndpointHandlerAdapterTests {
 
-	String getPath();
+	private EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
 
-	boolean isSensitive();
+	@Test
+	public void onlySupportsEndpoints() throws Exception {
+		assertTrue(this.adapter.supports(mock(Endpoint.class)));
+		assertFalse(this.adapter.supports(mock(Object.class)));
+	}
 
-	MediaType[] getProduces();
-
-	T execute();
+	// FIXME tests
 
 }

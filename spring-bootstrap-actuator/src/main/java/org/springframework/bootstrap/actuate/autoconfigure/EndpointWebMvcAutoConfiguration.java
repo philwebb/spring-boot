@@ -19,6 +19,8 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerAdapter;
@@ -37,11 +39,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.util.Assert;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -73,12 +78,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnMissingBean(EndpointHandlerMapping.class)
+	@Conditional(EndpointCondition.class)
 	public EndpointHandlerMapping endpointHandlerMapping() {
 		return new EndpointHandlerMapping();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(EndpointHandlerAdapter.class)
+	@Conditional(EndpointCondition.class)
 	public EndpointHandlerAdapter endpointHandlerAdapter() {
 		return new EndpointHandlerAdapter();
 	}
@@ -92,19 +99,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (event.getApplicationContext() == this.applicationContext) {
-			if (isChildActuatorContextRequired()) {
+			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT) {
 				createChildManagementContext();
 			}
 		}
-	}
-
-	private boolean isChildActuatorContextRequired() {
-		if (DISABLED_PORT.equals(this.managementServerProperties.getPort())) {
-			return false;
-		}
-		return this.serverProperties.getPort() != this.managementServerProperties
-				.getPort();
-		// FIXME check the inet address etc are not different since they will be ignored
 	}
 
 	private void createChildManagementContext() {
@@ -119,12 +117,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		childContext.register(EndpointWebMvcChildContextConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class);
-
-		// Provide aliases to only the specific endpoint MVC beans
-		String mappingBeanName = getBeanNameForType(EndpointHandlerMapping.class);
-		childContext.registerAlias(mappingBeanName, "handlerMapping");
-		String adapterBeanName = getBeanNameForType(EndpointHandlerAdapter.class);
-		childContext.registerAlias(adapterBeanName, "handlerAdapter");
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
@@ -141,9 +133,53 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		childContext.refresh();
 	}
 
-	private String getBeanNameForType(Class<?> type) {
-		String[] names = this.applicationContext.getBeanNamesForType(type);
-		Assert.state(names.length == 1, "Expected single bean of type " + type);
-		return names[0];
+	private static class EndpointCondition implements ConfigurationCondition {
+
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
+		}
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			if (context.getBeanFactory() == null) {
+				// FIXME log a warning
+				return false;
+			}
+			return ManagementServerPort.get(context.getBeanFactory()) == ManagementServerPort.SAME;
+		}
+
 	}
+
+	private enum ManagementServerPort {
+
+		DISABLE, SAME, DIFFERENT;
+
+		public static ManagementServerPort get(BeanFactory beanFactory) {
+
+			ServerProperties serverProperties;
+			try {
+				serverProperties = beanFactory.getBean(ServerProperties.class);
+			} catch (NoSuchBeanDefinitionException ex) {
+				serverProperties = new ServerProperties();
+			}
+
+			ManagementServerProperties managementServerProperties;
+			try {
+				managementServerProperties = beanFactory
+						.getBean(ManagementServerProperties.class);
+			} catch (NoSuchBeanDefinitionException ex) {
+				managementServerProperties = new ManagementServerProperties();
+			}
+
+			if (DISABLED_PORT.equals(managementServerProperties.getPort())) {
+				return DISABLE;
+			}
+			return managementServerProperties.getPort() == null
+					|| serverProperties.getPort() == managementServerProperties.getPort() ? SAME
+					: DIFFERENT;
+			// FIXME check the inet address etc are not different since they will be
+			// ignored
+		}
+	};
 }

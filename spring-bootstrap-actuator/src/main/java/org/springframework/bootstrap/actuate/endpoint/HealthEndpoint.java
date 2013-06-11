@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.endpoint;
 
 import org.springframework.bootstrap.actuate.health.HealthIndicator;
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**
@@ -24,27 +25,20 @@ import org.springframework.util.Assert;
  * 
  * @author Dave Syer
  */
+@ConfigurationProperties(name = "endpoints.health", ignoreUnknownFields = false)
 public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 
 	private HealthIndicator<? extends T> indicator;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
+	 * 
 	 * @param indicator the health indicator
 	 */
 	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
+		super("/health", false);
 		Assert.notNull(indicator, "Indicator must not be null");
 		this.indicator = indicator;
-	}
-
-	@Override
-	public String getId() {
-		return "health";
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return false;
 	}
 
 	@Override

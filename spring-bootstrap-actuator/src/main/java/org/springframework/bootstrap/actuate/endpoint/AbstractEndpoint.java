@@ -16,6 +16,9 @@
 
 package org.springframework.bootstrap.actuate.endpoint;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 import org.springframework.http.MediaType;
 
 /**
@@ -25,20 +28,44 @@ import org.springframework.http.MediaType;
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
+	private static final MediaType[] NO_MEDIA_TYPES = new MediaType[0];
+
+	@NotNull
+	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	private String path;
+
+	private boolean sensitive;
+
+	public AbstractEndpoint(String path) {
+		this(path, true);
+	}
+
+	public AbstractEndpoint(String path, boolean sensitive) {
+		this.path = path;
+		this.sensitive = sensitive;
+	}
+
 	@Override
-	public abstract String getId();
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	@Override
 	public boolean isSensitive() {
-		return true;
+		return this.sensitive;
+	}
+
+	public void setSensitive(boolean sensitive) {
+		this.sensitive = sensitive;
 	}
 
 	@Override
-	public MediaType[] produces() {
-		return null;
+	public MediaType[] getProduces() {
+		return NO_MEDIA_TYPES;
 	}
-
-	@Override
-	public abstract T execute();
 
 }

@@ -15,58 +15,83 @@
  */
 package org.springframework.bootstrap.actuate.endpoint.mvc;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.bootstrap.actuate.endpoint.ActionEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
-import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
-import org.springframework.http.MediaType;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.AbstractHandlerMapping;
+import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
- * {@link HandlerMapping} to map {@link Endpoint}s to URLs. By default {@link Endpoint}s
- * are mapped to a URL by convention from their {@link Endpoint#getId() ID}. Overrides
- * from {@link ManagementServerProperties} are also considered. Standard {@link Endpoint}s
- * are mapped to GET requests, {@link ActionEndpoint}s are mapped to POST requests.
+ * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getPath()}.
+ * Standard {@link Endpoint}s are mapped to GET requests, {@link ActionEndpoint}s are
+ * mapped to POST requests.
  * 
  * @author Phillip Webb
  * @see EndpointHandlerAdapter
  */
-public class EndpointHandlerMapping extends AbstractHandlerMapping {
+public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
+		InitializingBean, ApplicationContextAware {
+
+	private List<Endpoint<?>> endpoints;
+
+	private String prefix = "";
 
 	public EndpointHandlerMapping() {
+		setOrder(HIGHEST_PRECEDENCE);
+	}
+
+	public EndpointHandlerMapping(Collection<? extends Endpoint<?>> endpoints) {
+		Assert.notNull(endpoints, "Endpoints must not be null");
+		this.endpoints = new ArrayList<Endpoint<?>>(endpoints);
+	}
+
+	/**
+	 * @param prefix the prefix to set
+	 */
+	public void setPrefix(String prefix) {
+		Assert.isTrue(StringUtils.startsWithIgnoreCase(prefix, "/"),
+				"prefix must start with '/'");
+		this.prefix = prefix;
 	}
 
 	@Override
-	protected Object getHandlerInternal(HttpServletRequest request) throws Exception {
-		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
-		System.out.println(lookupPath);
-		if ("/test".equals(lookupPath)) {
-			return new Endpoint<String>() {
+	public void afterPropertiesSet() throws Exception {
+		if (this.endpoints == null) {
+			this.endpoints = findEndpointBeans();
+		}
+		for (Endpoint<?> endpoint : this.endpoints) {
+			registerHandler(this.prefix + endpoint.getPath(), endpoint);
+		}
+	}
 
-				@Override
-				public String getId() {
-					// TODO Auto-generated method stub
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List<Endpoint<?>> findEndpointBeans() {
+		return new ArrayList(BeanFactoryUtils.beansOfTypeIncludingAncestors(
+				getApplicationContext(), Endpoint.class).values());
+	}
 
-				@Override
-				public boolean isSensitive() {
-					// TODO Auto-generated method stub
-					throw new UnsupportedOperationException("Auto-generated method stub");
-				}
-
-				@Override
-				public MediaType[] produces() {
-					return new MediaType[] { MediaType.APPLICATION_JSON };
-				}
-
-				@Override
-				public String execute() {
-					return "{}";
-				}
-			};
+	@Override
+	protected Object lookupHandler(String urlPath, HttpServletRequest request)
+			throws Exception {
+		Object handler = super.lookupHandler(urlPath, request);
+		if (handler != null) {
+			Object endpoint = (handler instanceof HandlerExecutionChain ? ((HandlerExecutionChain) handler)
+					.getHandler() : handler);
+			String method = (endpoint instanceof ActionEndpoint<?> ? "POST" : "GET");
+			if (request.getMethod().equals(method)) {
+				return endpoint;
+			}
 		}
 		return null;
 	}
