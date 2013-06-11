@@ -52,12 +52,22 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
 					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
 							true));
+
+			// Find all possible auto configuration classes
 			List<String> factories = new ArrayList<String>(
 					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
 							this.beanClassLoader));
+
+			// Remove those specifically disabled
 			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
+
+			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
 					.getInPriorityOrder(factories);
+
+			// Always add the ComponentScanDetector as the first in the list
+			factories.add(0, ComponentScanDetector.class.getName());
+
 			return factories.toArray(new String[factories.size()]);
 		} catch (IOException ex) {
 			throw new IllegalStateException(ex);

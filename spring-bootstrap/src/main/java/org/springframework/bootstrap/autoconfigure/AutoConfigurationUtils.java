@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.context.annotation;
+package org.springframework.bootstrap.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collections;
