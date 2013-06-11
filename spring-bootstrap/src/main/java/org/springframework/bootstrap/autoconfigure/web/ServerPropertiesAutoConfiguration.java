@@ -18,8 +18,7 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
@@ -28,6 +27,8 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCu
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.properties.ServerProperties;
 import org.springframework.bootstrap.properties.ServerProperties.Tomcat;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -42,10 +43,9 @@ import org.springframework.util.StringUtils;
 @Configuration
 @EnableConfigurationProperties
 public class ServerPropertiesAutoConfiguration implements
-		EmbeddedServletContainerCustomizer {
+		EmbeddedServletContainerCustomizer, ApplicationContextAware {
 
-	@Autowired
-	private BeanFactory beanFactory;
+	private ApplicationContext applicationContext;
 
 	@Bean(name = "org.springframework.bootstrap.properties.ServerProperties")
 	@ConditionalOnMissingBean
@@ -54,10 +54,16 @@ public class ServerPropertiesAutoConfiguration implements
 	}
 
 	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
 
 		// Need to do a look up here to make it lazy
-		ServerProperties server = this.beanFactory.getBean(ServerProperties.class);
+		ServerProperties server = this.applicationContext.getBean(ServerProperties.class);
 
 		factory.setPort(server.getPort());
 		factory.setAddress(server.getAddress());
