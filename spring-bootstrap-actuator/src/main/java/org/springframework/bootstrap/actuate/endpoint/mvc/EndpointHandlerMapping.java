@@ -70,14 +70,13 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (this.disabled) {
-			return;
-		}
 		if (this.endpoints == null) {
 			this.endpoints = findEndpointBeans();
 		}
-		for (Endpoint<?> endpoint : this.endpoints) {
-			registerHandler(this.prefix + endpoint.getPath(), endpoint);
+		if (!this.disabled) {
+			for (Endpoint<?> endpoint : this.endpoints) {
+				registerHandler(this.prefix + endpoint.getPath(), endpoint);
+			}
 		}
 	}
 

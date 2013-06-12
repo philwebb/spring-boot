@@ -61,89 +61,96 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
  * @author Dave Syer
  */
 @Configuration
-@EnableWebMvc
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
+		WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
-public class WebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
+public class WebMvcAutoConfiguration {
 
-	@Autowired
-	private ListableBeanFactory beanFactory;
+	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
+	// on the classpath
+	@EnableWebMvc
+	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
-	@ConditionalOnBean(View.class)
-	@Bean
-	public BeanNameViewResolver beanNameViewResolver() {
-		BeanNameViewResolver resolver = new BeanNameViewResolver();
-		resolver.setOrder(0);
-		return resolver;
-	}
+		@Autowired
+		private ListableBeanFactory beanFactory;
 
-	@ConditionalOnBean(View.class)
-	@Bean
-	public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
-		ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
-		resolver.setContentNegotiationManager(beanFactory
-				.getBean(ContentNegotiationManager.class));
-		return resolver;
-	}
-
-	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		configurer.enable();
-	}
-
-	@Override
-	public void addFormatters(FormatterRegistry registry) {
-		for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
-			registry.addConverter(converter);
-		}
-
-		for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
-			registry.addConverter(converter);
-		}
-
-		for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
-			registry.addFormatter(formatter);
-		}
-	}
-
-	private <T> Collection<T> getBeansOfType(Class<T> type) {
-		return this.beanFactory.getBeansOfType(type).values();
-	}
-
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// FIXME exposing the root classpath is a security risk
-		// eg http://localhost:8080/org/springframework/bootstrap/Banner.class
-		registry.addResourceHandler("/resources/**").addResourceLocations("/")
-				.addResourceLocations("classpath:/META-INF/resources/")
-				.addResourceLocations("classpath:/resources/")
-				.addResourceLocations("classpath:/");
-		registry.addResourceHandler("/**").addResourceLocations("/")
-				.addResourceLocations("classpath:/META-INF/resources/")
-				.addResourceLocations("classpath:/static/")
-				.addResourceLocations("classpath:/");
-	}
-
-	@Configuration
-	public static class FaviconConfiguration {
-
+		@ConditionalOnBean(View.class)
 		@Bean
-		public SimpleUrlHandlerMapping faviconHandlerMapping() {
-			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-			mapping.setOrder(Integer.MIN_VALUE + 1);
-			mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
-					faviconRequestHandler()));
-			return mapping;
+		public BeanNameViewResolver beanNameViewResolver() {
+			BeanNameViewResolver resolver = new BeanNameViewResolver();
+			resolver.setOrder(0);
+			return resolver;
 		}
 
+		@ConditionalOnBean(View.class)
 		@Bean
-		protected ResourceHttpRequestHandler faviconRequestHandler() {
-			ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-			requestHandler.setLocations(Arrays.<Resource> asList(new ClassPathResource(
-					"/")));
-			return requestHandler;
+		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
+			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
+			resolver.setContentNegotiationManager(beanFactory
+					.getBean(ContentNegotiationManager.class));
+			return resolver;
+		}
+
+		@Override
+		public void configureDefaultServletHandling(
+				DefaultServletHandlerConfigurer configurer) {
+			configurer.enable();
+		}
+
+		@Override
+		public void addFormatters(FormatterRegistry registry) {
+			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
+				registry.addConverter(converter);
+			}
+
+			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
+				registry.addConverter(converter);
+			}
+
+			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
+				registry.addFormatter(formatter);
+			}
+		}
+
+		private <T> Collection<T> getBeansOfType(Class<T> type) {
+			return this.beanFactory.getBeansOfType(type).values();
+		}
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			// FIXME exposing the root classpath is a security risk
+			// eg http://localhost:8080/org/springframework/bootstrap/Banner.class
+			registry.addResourceHandler("/resources/**").addResourceLocations("/")
+					.addResourceLocations("classpath:/META-INF/resources/")
+					.addResourceLocations("classpath:/resources/")
+					.addResourceLocations("classpath:/");
+			registry.addResourceHandler("/**").addResourceLocations("/")
+					.addResourceLocations("classpath:/META-INF/resources/")
+					.addResourceLocations("classpath:/static/")
+					.addResourceLocations("classpath:/");
+		}
+
+		@Configuration
+		public static class FaviconConfiguration {
+
+			@Bean
+			public SimpleUrlHandlerMapping faviconHandlerMapping() {
+				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+				mapping.setOrder(Integer.MIN_VALUE + 1);
+				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
+						faviconRequestHandler()));
+				return mapping;
+			}
+
+			@Bean
+			protected ResourceHttpRequestHandler faviconRequestHandler() {
+				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
+				requestHandler.setLocations(Arrays
+						.<Resource> asList(new ClassPathResource("/")));
+				return requestHandler;
+			}
 		}
 	}
 

@@ -15,16 +15,25 @@
  */
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import javax.servlet.Filter;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerAdapter;
 import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
+import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerAdapter;
+import org.springframework.web.servlet.HandlerMapping;
 
 /**
  * Configuration for triggered from {@link EndpointWebMvcAutoConfiguration} when a new
@@ -60,13 +69,30 @@ public class EndpointWebMvcChildContextConfiguration implements
 	}
 
 	@Bean
-	public EndpointHandlerMapping handlerMapping() {
+	public HandlerMapping handlerMapping() {
 		return new EndpointHandlerMapping();
 	}
 
 	@Bean
-	public EndpointHandlerAdapter handlerAdapter() {
+	public HandlerAdapter handlerAdapter() {
 		return new EndpointHandlerAdapter();
+	}
+
+	@Configuration
+	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
+	public static class EndpointWebMvcChildContextSecurityConfiguration {
+
+		// FIXME reuse of security filter here is not good. What if totally different
+		// security config is required. Perhaps we can just drop it on the management
+		// port?
+
+		@Bean
+		@ConditionalOnBean(name = "springSecurityFilterChain")
+		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
+			BeanFactory parent = beanFactory.getParentBeanFactory();
+			return parent.getBean("springSecurityFilterChain", Filter.class);
+		}
+
 	}
 
 }

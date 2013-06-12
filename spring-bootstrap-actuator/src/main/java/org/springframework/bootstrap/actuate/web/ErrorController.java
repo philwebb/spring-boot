@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.sample.tomcat.web;
+package org.springframework.bootstrap.actuate.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.sample.tomcat.service.HelloWorldService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-@Controller
-public class SampleController {
+/**
+ * Marker interface used to indicate that a {@link Controller @Controller} is used to
+ * render errors.
+ * 
+ * @author Phillip Webb
+ */
+public interface ErrorController {
 
-	@Autowired
-	private HelloWorldService helloWorldService;
+	public String getErrorPath();
 
-	@RequestMapping("/")
-	@ResponseBody
-	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage();
-	}
 }

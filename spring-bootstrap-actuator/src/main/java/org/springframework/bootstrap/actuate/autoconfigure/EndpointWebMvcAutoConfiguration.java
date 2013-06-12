@@ -74,7 +74,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	private ManagementServerProperties managementServerProperties = new ManagementServerProperties();
 
 	@Bean
-	@ConditionalOnMissingBean(EndpointHandlerMapping.class)
+	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping();
 		mapping.setDisabled(ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME);
@@ -83,7 +83,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(EndpointHandlerAdapter.class)
+	@ConditionalOnMissingBean
 	public EndpointHandlerAdapter endpointHandlerAdapter() {
 		return new EndpointHandlerAdapter();
 	}

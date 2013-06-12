@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.fixme;
+package org.springframework.bootstrap.actuate.web;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Basic fallback global error endpoint, rendering servlet container error codes and
+ * Basic global error {@link Controller}, rendering servlet container error codes and
  * messages where available. More specific errors can be handled either using Spring MVC
  * abstractions (e.g. {@code @ExceptionHandler}) or by adding servlet
  * {@link AbstractEmbeddedServletContainerFactory#setErrorPages(java.util.Set) container
@@ -44,17 +45,25 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Dave Syer
  */
 @Controller
-public class ErrorEndpoint {
+public class BasicErrorController implements ErrorController {
 
-	private Log logger = LogFactory.getLog(ErrorEndpoint.class);
+	private Log logger = LogFactory.getLog(BasicErrorController.class);
 
-	@RequestMapping(value = "${endpoints.error.path:/error}", produces = "text/html")
+	@Value("${error.path:/error}")
+	private String errorPath;
+
+	@Override
+	public String getErrorPath() {
+		return this.errorPath;
+	}
+
+	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
 		Map<String, Object> map = error(request);
 		return new ModelAndView("error", map);
 	}
 
-	@RequestMapping(value = "${endpoints.error.path:/error}")
+	@RequestMapping(value = "${error.path:/error}")
 	@ResponseBody
 	public Map<String, Object> error(HttpServletRequest request) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();

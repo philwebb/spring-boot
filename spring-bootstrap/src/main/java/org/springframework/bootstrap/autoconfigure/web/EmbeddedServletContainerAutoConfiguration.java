@@ -21,8 +21,6 @@ import javax.servlet.Servlet;
 import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
-import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedJetty;
-import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedTomcat;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -34,7 +32,6 @@ import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServlet
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -45,7 +42,6 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @author Dave Syer
  */
-@Import({ EmbeddedTomcat.class, EmbeddedJetty.class })
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class EmbeddedServletContainerAutoConfiguration {
 
@@ -63,10 +59,15 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * Add the {@link DispatcherServlet} unless the user has defined their own
 	 * {@link ServletContextInitializer}s.
 	 */
-	@Bean
-	@ConditionalOnMissingBean(value = { ServletContextInitializer.class, Servlet.class }, considerHierarchy = false)
-	public DispatcherServlet dispatcherServlet() {
-		return new DispatcherServlet();
+	@ConditionalOnClass(DispatcherServlet.class)
+	public static class DispatcherServletConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(value = { ServletContextInitializer.class,
+				Servlet.class }, considerHierarchy = false)
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
 	}
 
 	/**

@@ -2,6 +2,7 @@ org.springframework.bootstrap.context.annotation.EnableAutoConfiguration=\
 org.springframework.bootstrap.actuate.autoconfigure.AuditAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.EndpointAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
+org.springframework.bootstrap.actuate.autoconfigure.ErrorMvcAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\

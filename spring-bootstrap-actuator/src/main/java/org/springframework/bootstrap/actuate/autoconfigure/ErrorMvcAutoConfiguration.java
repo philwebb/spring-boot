@@ -14,35 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.fixme;
+package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.bootstrap.actuate.web.BasicErrorController;
+import org.springframework.bootstrap.actuate.web.ErrorController;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Configuration for injecting externalized properties into the container (e.g. tomcat).
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
+ * controller.
  * 
  * @author Dave Syer
  */
-@Configuration
-@ConditionalOnClass({ Servlet.class })
-public class ErrorConfiguration implements EmbeddedServletContainerCustomizer {
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer {
 
-	// FIXME
-
-	@Value("${endpoints.error.path:/error}")
+	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
 	@Bean
-	public ErrorEndpoint errorEndpoint() {
-		return new ErrorEndpoint();
+	@ConditionalOnMissingBean(ErrorController.class)
+	public BasicErrorController basicErrorController() {
+		return new BasicErrorController();
 	}
 
 	@Override

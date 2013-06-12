@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
 import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.bootstrap.actuate.properties.SecurityProperties;
+import org.springframework.bootstrap.actuate.web.ErrorController;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -40,6 +41,7 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -116,6 +118,9 @@ public class SecurityAutoConfiguration {
 		@Autowired
 		private AuthenticationEventPublisher authenticationEventPublisher;
 
+		@Autowired(required = false)
+		private ErrorController errorController;
+
 		@Override
 		protected void configure(HttpConfiguration http) throws Exception {
 
@@ -148,6 +153,7 @@ public class SecurityAutoConfiguration {
 					list.add(path);
 				}
 			}
+			// FIXME makes more sense to secure enpoints with a different role
 			list.addAll(Arrays.asList(getEndpointPaths(true)));
 			return list.toArray(new String[list.size()]);
 		}
@@ -160,15 +166,22 @@ public class SecurityAutoConfiguration {
 
 		@Override
 		public void configure(WebSecurityBuilder builder) throws Exception {
-			builder.ignoring().antMatchers(this.security.getIgnored())
-					.antMatchers(getEndpointPaths(false));
+			IgnoredRequestRegistry ignoring = builder.ignoring();
+			ignoring.antMatchers(this.security.getIgnored());
+			ignoring.antMatchers(getEndpointPaths(false));
+			if (this.errorController != null) {
+				ignoring.antMatchers(this.errorController.getErrorPath());
+			}
 		}
 
 		private String[] getEndpointPaths(boolean secure) {
-			if (this.endpointHandlerMapping == null
-					|| this.endpointHandlerMapping.isDisabled()) {
+			if (this.endpointHandlerMapping == null) {
 				return NO_PATHS;
 			}
+
+			// FIXME this will still open up paths on the server when a management port is
+			// being used.
+
 			List<Endpoint<?>> endpoints = this.endpointHandlerMapping.getEndpoints();
 			List<String> paths = new ArrayList<String>(endpoints.size());
 			for (Endpoint<?> endpoint : endpoints) {

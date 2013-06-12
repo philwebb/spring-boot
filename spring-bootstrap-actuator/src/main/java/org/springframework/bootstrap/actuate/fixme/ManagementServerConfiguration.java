@@ -29,6 +29,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
+import org.springframework.bootstrap.actuate.web.BasicErrorController;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
@@ -70,8 +71,8 @@ public class ManagementServerConfiguration {
 	}
 
 	@Bean
-	public ErrorEndpoint errorEndpoint() {
-		return new ErrorEndpoint();
+	public BasicErrorController errorEndpoint() {
+		return new BasicErrorController();
 	}
 
 	@Bean
