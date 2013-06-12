@@ -189,7 +189,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 		@Bean
 		public Endpoint<String> testEndpoint() {
-			return new AbstractEndpoint<String>("/endpoint") {
+			return new AbstractEndpoint<String>("/endpoint", false) {
 				@Override
 				public String invoke() {
 					return "endpointoutput";

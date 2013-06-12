@@ -5,5 +5,6 @@ org.springframework.bootstrap.actuate.autoconfigure.EndpointWebMvcAutoConfigurat
 org.springframework.bootstrap.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.MetricFilterAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.MetricRepositoryAutoConfiguration,\
+org.springframework.bootstrap.actuate.autoconfigure.SecurityAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.bootstrap.actuate.autoconfigure.TraceWebFilterAutoConfiguration

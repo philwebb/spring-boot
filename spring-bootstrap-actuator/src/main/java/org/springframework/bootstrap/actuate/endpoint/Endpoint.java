@@ -19,8 +19,8 @@ package org.springframework.bootstrap.actuate.endpoint;
 import org.springframework.http.MediaType;
 
 /**
- * An endpoint that can be used to expose useful information to the user. Usually exposed
- * via Spring MVC but could also be exposed using some other technique.
+ * An endpoint that can be used to expose useful information to operations. Usually
+ * exposed via Spring MVC but could also be exposed using some other technique.
  * 
  * @author Phillip Webb
  * @author Dave Syer

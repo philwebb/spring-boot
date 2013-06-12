@@ -17,6 +17,7 @@ package org.springframework.bootstrap.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.bootstrap.actuate.endpoint.ActionEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.Endpoint;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -47,26 +49,30 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 
 	private String prefix = "";
 
+	private boolean disabled = false;
+
+	/**
+	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
+	 * detected from the {@link ApplicationContext}.
+	 */
 	public EndpointHandlerMapping() {
 		setOrder(HIGHEST_PRECEDENCE);
 	}
 
+	/**
+	 * Create a new {@link EndpointHandlerMapping} with the specified endpoints.
+	 * @param endpoints the endpoints
+	 */
 	public EndpointHandlerMapping(Collection<? extends Endpoint<?>> endpoints) {
 		Assert.notNull(endpoints, "Endpoints must not be null");
 		this.endpoints = new ArrayList<Endpoint<?>>(endpoints);
 	}
 
-	/**
-	 * @param prefix the prefix to set
-	 */
-	public void setPrefix(String prefix) {
-		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
-				"prefix must start with '/'");
-		this.prefix = prefix;
-	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if (this.disabled) {
+			return;
+		}
 		if (this.endpoints == null) {
 			this.endpoints = findEndpointBeans();
 		}
@@ -94,5 +100,35 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @param prefix the prefix to set
+	 */
+	public void setPrefix(String prefix) {
+		Assert.isTrue("".equals(prefix) || StringUtils.startsWithIgnoreCase(prefix, "/"),
+				"prefix must start with '/'");
+		this.prefix = prefix;
+	}
+
+	/**
+	 * Sets if this mapping is disabled.
+	 */
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+
+	/**
+	 * Returns if this mapping is disabled.
+	 */
+	public boolean isDisabled() {
+		return this.disabled;
+	}
+
+	/**
+	 * Return the endpoints
+	 */
+	public List<Endpoint<?>> getEndpoints() {
+		return Collections.unmodifiableList(this.endpoints);
 	}
 }

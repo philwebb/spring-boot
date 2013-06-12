@@ -87,6 +87,17 @@ public class EndpointHandlerMappingTests {
 		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
 	}
 
+	@Test
+	public void disabled() throws Exception {
+		TestEndpoint endpointA = new TestEndpoint("/a");
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				Arrays.asList(endpointA));
+		mapping.setDisabled(true);
+		mapping.afterPropertiesSet();
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
+				nullValue());
+	}
+
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		public TestEndpoint(String path) {

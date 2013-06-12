@@ -17,7 +17,6 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -77,16 +76,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean(EndpointHandlerMapping.class)
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping() {
-			@Override
-			protected Object getHandlerInternal(HttpServletRequest request)
-					throws Exception {
-				if (ManagementServerPort.get(getApplicationContext()) == ManagementServerPort.SAME) {
-					return super.getHandlerInternal(request);
-				}
-				return null;
-			}
-		};
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping();
+		mapping.setDisabled(ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME);
 		mapping.setPrefix(this.managementServerProperties.getContextPath());
 		return mapping;
 	}
