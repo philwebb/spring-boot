@@ -293,19 +293,11 @@
 	</build>
 	<profiles>
 		<profile>
-			<id>spring-snapshot-build</id>
+			<id>spring-snapshots</id>
 			<activation>
-				<activeByDefault>@{spring-snapshot-build-profile-active}</activeByDefault>
+				<activeByDefault>@{spring-snapshots-profile-active}</activeByDefault>
 			</activation>
 			<repositories>
-				<repository>
-					<id>spring-milestones</id>
-					<name>Spring Milestones</name>
-					<url>http://maven.springframework.org/milestone</url>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
 				<repository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
@@ -317,19 +309,37 @@
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+		<profile>
+			<id>spring-milestones</id>
+			<activation>
+				<activeByDefault>@{spring-milestones-profile-active}</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
 					<url>http://maven.springframework.org/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
-				</pluginRepository>
+				</repository>
+			</repositories>
+			<pluginRepositories>
 				<pluginRepository>
-					<id>spring-snapshots</id>
-					<name>Spring Snapshots</name>
-					<url>http://maven.springframework.org/snapshot</url>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
 					<snapshots>
-						<enabled>true</enabled>
+						<enabled>false</enabled>
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>

@@ -237,6 +237,10 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.3.1</version>
+			</plugin>
+			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
@@ -292,17 +296,17 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<profiles>
+		<!-- Default Profile (active locally) -->
 		<profile>
-			<!-- Allow snapshots and milestones when building locally, this profile
-				should not be enabled during release. -->
-			<id>spring-snapshot-build</id>
+			<id>default</id>
 			<activation>
-				<!-- FIXME disable this during release -->
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<spring-snapshot-build-profile-active>true</spring-snapshot-build-profile-active>
+				<spring-snapshots-profile-active>true</spring-snapshots-profile-active>
+				<spring-milestones-profile-active>true</spring-milestones-profile-active>
 			</properties>
 			<repositories>
 				<repository>
@@ -341,6 +345,150 @@
 				</pluginRepository>
 			</pluginRepositories>
 		</profile>
+
+		<!-- CI Snapshot Profile -->
+		<profile>
+			<id>ci-snapshot</id>
+			<activation>
+				<file>
+					<exists>../building-version.snapshot</exists>
+				</file>
+			</activation>
+			<properties>
+				<spring-snapshots-profile-active>true</spring-snapshots-profile-active>
+				<spring-milestones-profile-active>true</spring-milestones-profile-active>
+			</properties>
+			<repositories>
+				<repository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+
+		<!-- CI Milestone Profile -->
+		<profile>
+			<id>ci-milestone</id>
+			<activation>
+				<file>
+					<exists>../building-version.milestone</exists>
+				</file>
+			</activation>
+			<properties>
+				<spring-snapshots-profile-active>false</spring-snapshots-profile-active>
+				<spring-milestones-profile-active>true</spring-milestones-profile-active>
+			</properties>
+			<repositories>
+				<repository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce-milestone-rules</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireReleaseDeps />
+										<requireReleaseVersion />
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- CI Release Profile -->
+		<profile>
+			<id>ci-release</id>
+			<activation>
+				<file>
+					<exists>../building-version.release</exists>
+				</file>
+			</activation>
+			<properties>
+				<spring-snapshots-profile-active>false</spring-snapshots-profile-active>
+				<spring-milestones-profile-active>false</spring-milestones-profile-active>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce-milestone-rules</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireReleaseDeps />
+										<requireReleaseVersion />
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<!-- JDK 8 Tweaks -->
 		<profile>
 			<id>jdk8</id>
 			<activation>
