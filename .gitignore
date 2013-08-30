@@ -17,3 +17,4 @@ build.log
 manifest.yml
 Gemfile.lock
 MANIFEST.MF
+build-release-version.milestone

@@ -35,9 +35,9 @@
 		<profile>
 			<id>testme</id>
 			<activation>
-				<property>
-					<name>env.RELEASE_MILESTONE</name>
-				</property>
+				<file>
+					<exists>${main.basedir}/build-release-version.milestone</exists>
+				</file>
 			</activation>
 			<build>
 				<plugins>
