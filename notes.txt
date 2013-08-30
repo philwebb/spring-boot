@@ -1,0 +1,4 @@
+
+mvn install -Psnapshot-build,prepare
+mvn install -Psnapshot-build,full
+

@@ -252,28 +252,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
@@ -298,7 +276,6 @@
 	</build>
 
 	<profiles>
-		<!-- Default Profile (active locally) -->
 		<profile>
 			<id>default</id>
 			<activation>
@@ -342,9 +319,56 @@
 			</pluginRepositories>
 		</profile>
 
+		<profile>
+			<id>full</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-source-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>prepare</id>
+			<properties>
+				<skipTests>true</skipTests>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 		<!-- CI Snapshot Profile -->
 		<profile>
-			<id>ci-snapshot</id>
+			<id>snapshot-build</id>
 			<activation>
 				<file>
 					<exists>../building-version.snapshot</exists>
@@ -390,7 +414,7 @@
 
 		<!-- CI Milestone Profile -->
 		<profile>
-			<id>ci-milestone</id>
+			<id>milestone-build</id>
 			<activation>
 				<file>
 					<exists>../building-version.milestone</exists>
@@ -442,7 +466,7 @@
 
 		<!-- CI Release Profile -->
 		<profile>
-			<id>ci-release</id>
+			<id>release-build</id>
 			<activation>
 				<file>
 					<exists>../building-version.release</exists>
