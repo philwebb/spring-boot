@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- This POM file that can be used as a parent for your own builds. It provides
-	generally useful dependencies and plugins. NOTE: If you are editing a local
-	checkout of this file, be sure to modify 'spring-boot-starter-parent/src/main/parent/pom.xml'. -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
