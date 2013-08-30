@@ -7,17 +7,17 @@ rm building-version.* 2>/dev/null
 version=`cat pom.xml| grep -m 1 "<version>.*</version>"`
 echo "$version" | grep -q "\-SNAPSHOT<"
 if [ $? -eq 0 ];then
-	echo "Setting 'building.version' profile file to SNAPSHOT"
+	echo "Setting 'building-version' profile file to SNAPSHOT"
 	touch building-version.snapshot
 fi
 echo "$version" | grep -q "\.M.*<"
 if [ $? -eq 0 ];then
-	echo "Setting 'building.version' profile file to MILESTONE"
+	echo "Setting 'building-version' profile file to MILESTONE"
 	touch building-version.milestone
 fi
 echo "$version" | grep -q "\.RELEASE<"
 if [ $? -eq 0 ];then
-	echo "Setting 'building.version' profile file to RELEASE"
+	echo "Setting 'building-version' profile file to RELEASE"
 	touch building-version.release
 fi
 
