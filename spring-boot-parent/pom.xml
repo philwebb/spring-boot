@@ -304,10 +304,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<spring-snapshots-profile-active>true</spring-snapshots-profile-active>
-				<spring-milestones-profile-active>true</spring-milestones-profile-active>
-			</properties>
 			<repositories>
 				<repository>
 					<id>spring-milestones</id>
@@ -354,10 +350,6 @@
 					<exists>../building-version.snapshot</exists>
 				</file>
 			</activation>
-			<properties>
-				<spring-snapshots-profile-active>true</spring-snapshots-profile-active>
-				<spring-milestones-profile-active>true</spring-milestones-profile-active>
-			</properties>
 			<repositories>
 				<repository>
 					<id>spring-milestones</id>
@@ -404,10 +396,6 @@
 					<exists>../building-version.milestone</exists>
 				</file>
 			</activation>
-			<properties>
-				<spring-snapshots-profile-active>false</spring-snapshots-profile-active>
-				<spring-milestones-profile-active>true</spring-milestones-profile-active>
-			</properties>
 			<repositories>
 				<repository>
 					<id>spring-milestones</id>
@@ -460,10 +448,6 @@
 					<exists>../building-version.release</exists>
 				</file>
 			</activation>
-			<properties>
-				<spring-snapshots-profile-active>false</spring-snapshots-profile-active>
-				<spring-milestones-profile-active>false</spring-milestones-profile-active>
-			</properties>
 			<build>
 				<plugins>
 					<plugin>
