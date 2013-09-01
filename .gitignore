@@ -18,3 +18,4 @@ manifest.yml
 Gemfile.lock
 MANIFEST.MF
 building-version.*
+./settings.xml
