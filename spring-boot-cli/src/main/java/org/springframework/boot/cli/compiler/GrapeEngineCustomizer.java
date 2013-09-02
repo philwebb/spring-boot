@@ -52,7 +52,7 @@ import org.apache.ivy.util.MessageLogger;
 import org.springframework.boot.cli.Log;
 
 /**
- * Customizes the groovy grape engine to enhance and patch the behaviour of ivy. Can add
+ * Customizes the groovy grape engine to enhance and patch the behavior of ivy. Can add
  * Spring repos to the search path, provide simple log progress feedback if downloads are
  * taking a long time, and also fixes a problem where ivy cannot use a local Maven cache
  * repo.
@@ -303,6 +303,7 @@ class GrapeEngineCustomizer {
 		@Override
 		public void log(String msg, int level) {
 			logDownloadingMessage();
+			System.out.println(">>>" + msg);
 		}
 
 		@Override
