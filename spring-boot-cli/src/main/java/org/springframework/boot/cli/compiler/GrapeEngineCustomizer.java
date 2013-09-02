@@ -146,7 +146,7 @@ class GrapeEngineCustomizer {
 		private static final Set<String> POM_ONLY_DEPENDENCIES;
 		static {
 			Set<String> dependencies = new HashSet<String>();
-			dependencies.add("spring-boot-dependencies");
+			dependencies.add("spring-boot-build");
 			dependencies.add("spring-boot-parent");
 			dependencies.add("spring-boot-starters");
 			POM_ONLY_DEPENDENCIES = Collections.unmodifiableSet(dependencies);

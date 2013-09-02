@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-dependencies</artifactId>
+		<artifactId>spring-boot-build</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
-		<relativePath>../../spring-boot-dependencies</relativePath>
+		<relativePath>../../</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
 	<packaging>pom</packaging>
