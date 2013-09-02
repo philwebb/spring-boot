@@ -46,5 +46,8 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>full</id>
+		</profile>
 	</profiles>
 </project>

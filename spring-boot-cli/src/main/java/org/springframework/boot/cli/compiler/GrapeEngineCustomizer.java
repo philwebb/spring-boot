@@ -303,7 +303,6 @@ class GrapeEngineCustomizer {
 		@Override
 		public void log(String msg, int level) {
 			logDownloadingMessage();
-			System.out.println(">>>" + msg);
 		}
 
 		@Override
