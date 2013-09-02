@@ -37,6 +37,11 @@
 		<!-- Provided (to ensure in m2 repo for @grab to resolve) -->
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-dsl-groovy-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
