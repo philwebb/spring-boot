@@ -6,6 +6,16 @@
 	<artifactId>spring-boot-default-build</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -88,6 +98,58 @@
 												<filter token="profile" value="${profile}" />
 											</filterset>
 										</copy>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>fixup-starter-parent</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<inherited>false</inherited>
+								<configuration>
+									<target>
+										<property name="sourceFile" value="spring-boot-starters/spring-boot-starter-parent/pom.xml"/>
+										<xslt
+											in="${sourceFile}"
+											out="${sourceFile}.new"
+											force="true">
+											<style>
+												<string><![CDATA[
+<xsl:stylesheet version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:m="http://maven.apache.org/POM/4.0.0"
+	exclude-result-prefixes="m">
+
+	<xsl:template match="node()|@*">
+		<xsl:copy>
+			<xsl:apply-templates select="node()|@*" />
+		</xsl:copy>
+	</xsl:template>
+
+	<xsl:template
+		match="m:properties/m:spring-boot.version/text()">
+		<xsl:value-of select="/m:project/m:parent/m:version/text()"/>
+	</xsl:template>
+
+	<xsl:template
+		match="m:dependency[m:groupId='org.springframework.boot']/m:version/text()">
+		<xsl:text>${spring-boot.version}</xsl:text>
+	</xsl:template>
+
+	<xsl:template
+		match="m:plugin[m:groupId='org.springframework.boot']/m:version/text()">
+		<xsl:text>${spring-boot.version}</xsl:text>
+	</xsl:template>
+
+</xsl:stylesheet>
+				]]>
+												</string>
+											</style>
+										</xslt>
+										<move file="${sourceFile}" tofile="${sourceFile}.old"/>
+										<move file="${sourceFile}.new" tofile="${sourceFile}"/>
+										<delete file="${sourceFile}.old"/>
 									</target>
 								</configuration>
 							</execution>
