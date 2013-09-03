@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	<properties>
 		<java.version>1.6</java.version>
+		<spring-boot.version>0.5.0.BUILD-SNAPSHOT</spring-boot.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -30,62 +31,62 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-actuator</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-jetty</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-batch</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-integration</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-websocket</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>${spring-boot.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -202,7 +203,7 @@
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>0.5.0.BUILD-SNAPSHOT</version>
+					<version>${spring-boot.version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -223,7 +224,7 @@
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-maven-plugin</artifactId>
-							<version>0.5.0.BUILD-SNAPSHOT</version>
+							<version>${spring-boot.version}</version>
 						</dependency>
 					</dependencies>
 					<configuration>
