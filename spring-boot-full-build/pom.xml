@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-default-build</artifactId>
+	<artifactId>spring-boot-full-build</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>../</module>
-		<module>../spring-boot-dependencies</module>
+ 		<module>../spring-boot-dependencies</module>
 		<module>../spring-boot-parent</module>
 		<module>../spring-boot-tools</module>
 		<module>../spring-boot</module>
@@ -19,4 +19,9 @@
 		<module>../spring-boot-samples</module>
 		<module>../spring-boot-integration-tests</module>
 	</modules>
+	<profiles>
+		<profile>
+			<id>full</id>
+		</profile>
+	</profiles>
 </project>
