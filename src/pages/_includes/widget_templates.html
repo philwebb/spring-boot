@@ -11,7 +11,10 @@
                     {@ _.each(releases, function(release) { @}
                     <div class="item--body--version">
                         <div class="item--left-column">
-                            <p>{@= release.version @}</p>
+                            <p>{@= release.versionDisplayName @}</p>
+                            {@ if(release.current) { @}
+                                <div class="spring-icon spring-icon-current-version"></div>
+                            {@ } @}
                             <div class="spring-icon {@= release.statusIconClass() @}"></div>
                         </div>
                         <div class="item--right-column">
@@ -30,7 +33,16 @@
     <div class="js-download-widget-selector">
         <select class='selector selectpicker'>
             {@ _.each(releases, function(release, index) { @}
-            <option value="{@= index @}" data-content="<span>{@= release.versionDisplayName @}</span><div class='spring-icon {@= release.statusIconClass() @}'/>" data-current="{@= release.current @}"> ()</option>
+            <option value="{@= index @}"
+                    data-content="
+                        <span>{@= release.versionDisplayName @}</span>
+                        {@ if(release.current) { @}
+                            <div class='spring-icon spring-icon-current-version'></div>
+                        {@ } @}
+                        <div class='spring-icon {@= release.statusIconClass() @}'/>"
+                    data-current="{@= release.current @}">
+                ()
+            </option>
             {@ }); @}
         </select>
     </div>
@@ -44,9 +56,6 @@
             <div class="item js-item" data-snippet-type='gradle'>
                 Gradle
             </div>
-            <div class="item js-item" data-snippet-type='zip'>
-                Zip
-            </div>
         </div>
     </div>
 
@@ -59,28 +68,29 @@
 
 {%if maven_pom_template contains 'not found in _includes directory' %}
 {% capture maven_pom_template %}
-<dependencies>
-    <dependency>
-        <groupId>{@= groupId @}</groupId>
-        <artifactId>{@= artifactId @}</artifactId>
-        <version>{@= version @}</version>
-    </dependency>
-</dependencies>
+<span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>{@= groupId @}<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>{@= artifactId @}<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>{@= version @}<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
 {@ if (repository) { @}
-<repositories>
-    <repository>
-        <id>{@= repository.id @}</id>
-        <name>{@= repository.name @}</name>
-        <url>{@= repository.url @}</url>
-        <snapshots>
-            <enabled>{@= repository.snapshotsEnabled @}</enabled>
-        </snapshots>
-    </repository>
-</repositories>{@ } @}
+<span class="nt">&lt;repositories&gt;</span>
+    <span class="nt">&lt;repository&gt;</span>
+        <span class="nt">&lt;id&gt;</span>{@= repository.id @}<span class="nt">&lt;/id&gt;</span>
+        <span class="nt">&lt;name&gt;</span>{@= repository.name @}<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;url&gt;</span>{@= repository.url @}<span class="nt">&lt;/url&gt;</span>
+        <span class="nt">&lt;snapshots&gt;</span>
+            <span class="nt">&lt;enabled&gt;</span>{@= repository.snapshotsEnabled @}<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;/snapshots&gt;</span>
+    <span class="nt">&lt;/repository&gt;</span>
+<span class="nt">&lt;/repositories&gt;</span>
+{@ } @}
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-download-maven-widget-template">{{ maven_pom_template | escape }}</script>
+<script type="text/html" id="project-download-maven-widget-template">{{ maven_pom_template }}</script>
 
 {% capture gradle_template %}
 {% include build.gradle %}
@@ -88,20 +98,20 @@
 
 {%if gradle_template contains 'not found in _includes directory' %}
 {% capture gradle_template %}
-dependencies {
-    compile '{@= groupId @}:{@= artifactId @}:{@= version @}'
-}
+<span class="n">dependencies&nbsp;</span><span class="o">{</span>
+    <span class="n">compile&nbsp;</span><span class="s1">'{@= groupId @}:{@= artifactId @}:{@= version @}'</span>
+<span class="o">}</span>
 {@ if (repository) { @}
-repositories {
-    maven {
-        url '{@= repository.url @}'
-    }
-}
+<span class="n">repositories&nbsp;</span><span class="o">{</span>
+    <span class="n">maven&nbsp;</span><span class="o">{</span>
+        <span class="n">url&nbsp;</span><span class="s1">'{@= repository.url @}'</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 {@ } @}
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-download-gradle-widget-template">{{ gradle_template | escape }}</script>
+<script type="text/html" id="project-download-gradle-widget-template">{{ gradle_template }}</script>
 
 <script type="text/html" id="project-download-zip-widget-template">
 This is a zip url

@@ -1,6 +1,5 @@
 .spring-icon {
   background-image: url("../img/iconsprite.png");
-  background-repeat: no-repeat;
   display: inline-block !important;
 }
 
@@ -103,4 +102,67 @@
   height: 13px;
   width: 23px;
   background-position: -344px -520px;
+}
+
+.spring-icon.spring-icon-ga-release {
+    margin-left: 0 !important;
+    height: 13px;
+    width: 9px;
+    background-position: 626px 317px;
+    background-color: #6db33f;
+    padding: 0 2px;
+    border-radius: 10px;
+}
+
+.spring-icon.spring-icon-snapshot-release {
+    height: 13px;
+    width: 46px;
+    background-position: 603px 317px;
+}
+
+.spring-icon.project-badges {
+  width: 32px;
+  height: 32px;
+}
+.spring-icon.project-badges.twitter {
+  background-position: 918px 32px;
+}
+.spring-icon.project-badges.twitter:hover, .spring-icon.project-badges.twitter:active {
+  background-position: 918px 73px;
+}
+.spring-icon.project-badges.github {
+  background-position: 875px 32px;
+}
+.spring-icon.project-badges.github:hover, .spring-icon.project-badges.github:active {
+  background-position: 875px 73px;
+}
+.spring-icon.project-badges.ci {
+  background-position: 832px 32px;
+}
+.spring-icon.project-badges.ci:hover, .spring-icon.project-badges.ci:active {
+  background-position: 832px 73px;
+}
+.spring-icon.project-badges.tracking {
+  background-position: 789px 32px;
+}
+.spring-icon.project-badges.tracking:hover, .spring-icon.project-badges.tracking:active {
+  background-position: 789px 73px;
+}
+.spring-icon.project-badges.forum {
+  background-position: 746px 32px;
+}
+.spring-icon.project-badges.forum:hover, .spring-icon.project-badges.forum:active {
+  background-position: 746px 73px;
+}
+.spring-icon.project-badges.stackoverflow {
+  background-position: 703px 32px;
+}
+.spring-icon.project-badges.stackoverflow:hover, .spring-icon.project-badges.stackoverflow:active {
+  background-position: 703px 73px;
+}
+.spring-icon.project-badges.metrics {
+  background-position: 660px 32px;
+}
+.spring-icon.project-badges.metrics:hover, .spring-icon.project-badges.metrics:active {
+  background-position: 660px 73px;
 }

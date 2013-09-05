@@ -1,6 +1,40 @@
 ---
 layout: base_layout
-title: Spring Project Title
+
+# The name of your project
+title: Spring Data JPA
+
+badges:
+
+  # Specify your project's twitter handle, if any. Delete if none.
+  twitter: SpringData
+
+  # Customize your project's badges. Delete any entries that do not apply.
+  custom:
+    - name: Source (GitHub)
+      url:  https://github.com/spring-projects/spring-data-jpa
+      icon: github
+
+    - name: Issues (JIRA)
+      url:  http://jira.springsource.org/browse/DATAJPA
+      icon: tracking
+
+    - name: CI (Bamboo)
+      url:  https://build.springsource.org/browse/SPRINGDATAJPA
+      icon: ci
+
+    - name: Forum
+      url:  http://forum.spring.io/forum/spring-projects/data
+      icon: forum
+
+    - name: StackOverflow
+      url:  http://stackoverflow.com/questions/tagged/spring-data-jpa
+      icon: stackoverflow
+
+    - name: Metrics (SonarQube)
+      url:  https://sonar.springsource.org/dashboard/index/org.springframework.data:spring-data-jpa
+      icon: metrics
+
 ---
 
 <!-- Specify the parent of this project (or delete if none) to influence the rendering of the breadcrumb -->
@@ -32,25 +66,22 @@ extraordinary claims require extraordinary evidence stirred by
 starlight, culture? Flatland Tunguska event finite but unbounded
 corpus callosum!
 
-{% include download_widget.md %}
-
-Radio telescope Orion's sword science, brain is the seed of intelligence. Hearts of the stars a still more glorious dawn awaits, how far away tendrils of gossamer clouds with pretty stories for which there's little good evidence!
-
-Intelligent beings are creatures of the cosmos at the edge of forever of brilliant syntheses network of wormholes tingling of the spine not a sunrise but a galaxyrise prime number Vangelis gathered by gravity Orion's sword network of wormholes rogue tingling of the spine?
-
 ## Features
 
-* Implementation of CRUD methods for JPA Entities
-* Dynamic query generation from query method names
-* Transparent triggering of JPA NamedQueries by query methods
-* Implementation domain base classes providing basic properties
-* Support for transparent auditing (created, last changed)
-* Possibility to integrate custom repository code
-* Easy Spring integration with custom namespace
+* Feature 1
+* Feature 2
+* Feature 3
+* Feature 4
+* ...
+
+## Quick Start
+
+{% include download_widget.md %}
+
 
 ```java
-public static void main(){
-	foo();
+public static void main() {
+  foo();
 }
 ```
 
@@ -58,7 +89,7 @@ public static void main(){
 
 {% capture related_resources %}
 
-### Spring Sample Projects
+### Sample Projects
 
 * [Project Name 1](#)
 * [Project name 2](#)
@@ -66,15 +97,15 @@ public static void main(){
 
 ### Getting Started Guides
 
-* [Getting Started Guide 1]({{site.main_site_url}}/gs-rest-service)
-* [Getting Started Guide 2]({{site.main_site_url}}/gs-rest-service)
-* [Getting Started Guide nth]({{site.main_site_url}}/gs-rest-service)
+* [GSG 1]({{site.main_site_url}}/guides/gs/rest-service)
+* [GSG 2]({{site.main_site_url}}/guides/gs/other-guide-2)
+* [GSG n]({{site.main_site_url}}/guides/gs/other-guide-3)
 
 ### Tutorials
 
-* [Tutorial 1](#)
-* [Tutorial 2](#)
-* [Tutorial nth](#)
+* [Tutorial 1]({{site.main_site_url}}/guides/tutorials/rest)
+* [Tutorial 2]({{site.main_site_url}}/guides/tutorials/other-2)
+* [Tutorial n]({{site.main_site_url}}/guides/tutorials/other-3)
 
 {% endcapture %}
 

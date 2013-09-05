@@ -55,10 +55,10 @@ Spring.Release.prototype = {
   statusIconClass: function () {
     if (this.preRelease) {
       return "spring-icon-pre-release";
-    } else if (this.current) {
-      return "spring-icon-current-version";
+    } else if (this.generalAvailability) {
+      return "spring-icon-ga-release";
     } else {
-      return "spring-icon-supported-version";
+      return "spring-icon-snapshot-release";
     }
   }
 }

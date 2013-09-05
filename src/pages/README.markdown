@@ -1,41 +1,124 @@
 # Introduction
 
-Spring's project pages at http://projects.springframework.io are based on Jekyll and gh-pages.
-In order to keep everything looking similar, common elements of the Jekyll site layout, css, etc
-are stored in this shared gh-pages repository. If you're seeing this README in the gh-pages branch
-of an actual Spring project, that's because this file, along with all the other common files
-get merged periodically into each project.
+Spring's project pages are based on [Jekyll](http://jekyllrb.com) and [GitHub Pages](http://pages.github.com/). This means that each project's website is stored within the project repo, in a special branch called "gh-pages". In order to keep everything looking similar across the many individual Spring projects, common elements of the Jekyll site layout, css, etc are stored in [a shared gh-pages repository](http://github.com/spring-projects/gh-pages). If you're seeing this README in the gh-pages branch of an actual Spring project, that's because this file, along with all the other common files get merged periodically into each project.
 
-It sounds a little funky (and it is), but it's way better than the misery of Git submodules.
-It's actually pretty easy. If you're just getting started, the follow the directions immediately
-below. If you're needing a refresher on how to keep things up to date, then head to the section
-at the bottom.
+This approach may sound a little funky (and it is), but it's way better than the misery of Git submodules. In fact, it's actually pretty easy. If you're just getting started, then follow the directions immediately below. If you're needing a refresher on how to keep things up to date, then head to the section at the bottom on "keeping up to date".
 
-## How to start a new `gh-pages` project page
+
+# How to start a new `gh-pages` project page
+
 From within your Spring project's git checkout directory:
 
-    git remote add gh-pages-upstream https://github.com/spring-projects/gh-pages.git
+### Create and checkout the gh-pages branch
+
     git checkout --orphan gh-pages
+    
+### Remove all files
+
+    git rm -rf *
+    git rm -rf '.*'
+
+### Add the gh-pages-upstream remote
+
+    git remote add gh-pages-upstream https://github.com/spring-projects/gh-pages.git
+
+### Pull in the common site infrastructure
+
     git pull gh-pages-upstream gh-pages
 
-## Create index.html
 
-1. Copy common-index.html to index.html
-2. Update the information within, build out the content of your site
+## Edit `_config.yml`
+
+You'll need to tweak a few settings in `_config.yml`, sitting in the root directory. Edit this file and follow the instructions within. It should be self explanatory; you'll see that there are lots of instances of "spring-framework" as a project name. You should replace these with your own project's information as appropriate.
+
+
+## Create the project home page
+
+### What kind of project are you?
+
+At this point, you just need to give your project a home page. There are pre-fab samples included in the `sample-pages` directory:
+
+    $ ls -1 sample-pages
+    project_aggregator.md
+    project_home.md
+
+At this point you need to make a decision: is your project an "aggregator", like Spring Data, acting as a parent for one or more child projects? If so, you should choose `project_aggregator.md` in the following step. Otherwise, if you're dealing with an individual, concrete Spring project, e.g. Spring Data JPA, or Spring Security OAuth, you should choose `project_home.md`.
+
+### Copy the sample page to `index.md`
+
+Based on your choice above, copy the correct sample page to `index.md`, e.g.:
+
+    $ cp sample-pages/project_home.md index.md
+
+or
+
+    $ cp sample-pages/project_aggregator.md index.md
+
+
+## Edit the content of your home page
+
+### Edit the YAML front matter
+
+Open up `index.md` in your favorite text editor. Within, you'll find "YAML front matter" at the top of the file, i.e. everything between the triple dashes that look like `---`. This section contains some basic metadata, and—if you've copied the `project_home.md` sample—also contains a custom section of information for your project "badges". These are icons that will render in the sidebar of your project page.
+
+Edit the URLs and other values in the YAML front matter as appropriate. This should be self-explanatory.
+
+> **Tip**: If a particular "badge" (e.g. Sonar) does not apply to your project, just delete that entry from the YAML.
+
+### Understand the use of "captures" and "includes"
+
+Next, you'll see a series of `{% capture variable_name %}` blocks that look like this:
+
+    {% capture billboard_description %}
+    ...
+    {% endcapture %}
+
+At the end of the file you'll see a `{% include %}` directive that looks like this:
+
+    {% include project_home_include.md parent_link=parent_link billboard_description=billboard_description main_content=main_content related_resources=related_resources %}
+
+That `include` directive is the most important part. It brings in `project_home_include.md`, which will actually be responsible for rendering the page content, but along the way, it parameterizes the include with all the _capture_ variables you've assigned earlier in the page.
+
+The net effect is that you have one simple place to edit actual page content, and the actual rendering and placement of that content is handled for you by the include.
+
+Ideally, you shouldn't have to touch any other files besides `_config.yml` and `index.md`, but of course if you need to you always can.
+
+### Replace the filler text with copy specific to your project
+
+Of course the next step is simply to change the prose within each `{% capture %}` block to read as you want it to. It's just Markdown, so do as you please with that in mind. Note that you'll want to move on to the next step to view the site locally before you get too far into the editing process; this will allow you view your changes live as you make them.
+
 
 ## View the site locally
 
-Follow the instructions at http://jekyllrb.com, which are really just as simple as the following
-(assuming your project name is "spring-xyz"):
+Assuming you're already within your project's clone directory, and you've already checked out the `gh-pages` branch, follow these simple directions to view your site locally:
+
+### Install jekyll if you have not already
+
+> **Note:** Jekyll 1.1.2 is a known good version.
 
     gem install jekyll
-    jekyll new spring-xyz
-    cd spring-xyz
+
+### Run jekyll
+
+Use the `--watch` flag to pick up changes to files as you make them, allowing you a nice edit-and-refresh workflow.
+
     jekyll serve --watch
+
+> **Important:** Because the `baseurl` is set explicitly within your project's `_config.yml` file, you'll need to fully-qualify the URL to view your project. For example, if your project is named "spring-xyz", your URL when running Jekyll locally will be <http://localhost:4000/spring-xyz/>. Don't forget the trailing slash! You'll get a 404 without it.
+
 
 ## Commit your changes
 
-    git push origin gh-pages
+Once you're satisified with your edits, commit your changes and push the `gh-pages` pages up to your project's `origin` remote.
+
+    git commit -m "Initialize project page"
+    git push --set-upstream origin gh-pages
+    git push
+
+
+## View your site live on the web
+
+That's it! After not more than a few minutes, you should be able to see your site at http://spring-projects.github.io/{your-spring-project}
 
 
 # How to keep common gh-pages content up to date

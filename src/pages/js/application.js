@@ -68,7 +68,18 @@ $(function(){
   };
   $('.download-links').showPreferredLink();
 
+  var setBillboardBodyHeight = function() {
+    var projectBillboard = $(".project-header--wrapper");
+    var projectBody = $(".project-body--container");
+    if (!projectBillboard.length || !projectBody.length ) {
+      return;
+    } else {
+      var billboardHeight = projectBillboard.height();
+      projectBody.css("margin-top",billboardHeight - 100);
+    };
+  };
 
+  setBillboardBodyHeight();
 
   new Spring.ProjectDocumentationWidget();
 });
