@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -30,14 +28,16 @@ import java.util.Properties;
  * 
  * @author Andy Wilkinson
  */
-final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinatesResolver {
+public final class PropertiesArtifactCoordinatesResolver implements
+		ArtifactCoordinatesResolver {
 
-	private final GroovyClassLoader loader;
+	private final ClassLoader loader;
 
 	private Properties properties = null;
 
-	public PropertiesArtifactCoordinatesResolver(GroovyClassLoader loader) {
-		this.loader = loader;
+	public PropertiesArtifactCoordinatesResolver() {
+		// FIXMRE
+		this.loader = Thread.currentThread().getContextClassLoader();
 	}
 
 	@Override

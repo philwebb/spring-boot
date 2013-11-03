@@ -16,16 +16,12 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.grape.GrapeEngine;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -45,6 +41,10 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
+import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
+import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
+import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
+import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
 
 /**
  * Compiler for Groovy source files. Primarily a simple Facade for
@@ -67,62 +67,51 @@ import org.codehaus.groovy.transform.ASTTransformationVisitor;
  */
 public class GroovyCompiler {
 
-	private static final ClassLoader AETHER_CLASS_LOADER = new URLClassLoader(
-			new URL[] { GroovyCompiler.class.getResource("/internal/") });
+	private final ArtifactCoordinatesResolver coordinatesResolver;
 
 	private final GroovyCompilerConfiguration configuration;
 
 	private final ExtendedGroovyClassLoader loader;
 
-	private final ArtifactCoordinatesResolver coordinatesResolver;
-
 	private final ServiceLoader<CompilerAutoConfiguration> compilerAutoConfigurations;
 
 	private final List<ASTTransformation> transformations;
+
+	private GroovyClassLoader transformLoader;
 
 	/**
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
 	 */
 	public GroovyCompiler(final GroovyCompilerConfiguration configuration) {
+		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver();
+
 		this.configuration = configuration;
-		this.loader = new ExtendedGroovyClassLoader(getClass().getClassLoader(),
-				new CompilerConfiguration());
-		if (configuration.getClasspath().length() > 0) {
-			this.loader.addClasspath(configuration.getClasspath());
-		}
-		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver(this.loader);
-		installGrapeEngine();
+		this.loader = createLoader(configuration);
+		this.transformLoader = new GroovyClassLoader();
+
+		GrapeEngineInstaller.install(new AetherGrapeEngine(this.loader));
+
 		this.loader.getConfiguration().addCompilationCustomizers(
 				new CompilerAutoConfigureCustomizer());
 		this.compilerAutoConfigurations = ServiceLoader.load(
 				CompilerAutoConfiguration.class, GroovyCompiler.class.getClassLoader());
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		this.transformations.add(new DependencyAutoConfigurationTransformation(this.loader,
-				this.coordinatesResolver, this.compilerAutoConfigurations));
+		this.transformations.add(new DependencyAutoConfigurationTransformation(
+				this.loader, this.coordinatesResolver, this.compilerAutoConfigurations));
 		if (this.configuration.isGuessDependencies()) {
 			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
 					this.coordinatesResolver));
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void installGrapeEngine() {
-		try {
-			Class<GrapeEngine> grapeEngineClass = (Class<GrapeEngine>) AETHER_CLASS_LOADER
-					.loadClass("org.springframework.boot.cli.compiler.AetherGrapeEngine");
-			Constructor<GrapeEngine> constructor = grapeEngineClass.getConstructor(
-					GroovyClassLoader.class, String.class, String.class, String.class);
-			GrapeEngine grapeEngine = constructor.newInstance(this.loader,
-					"org.springframework.boot", "spring-boot-starter-parent",
-					this.coordinatesResolver.getVersion("spring-boot"));
-
-			new GrapeEngineInstaller(grapeEngine).install();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to install custom GrapeEngine", ex);
-		}
+	private ExtendedGroovyClassLoader createLoader(
+			GroovyCompilerConfiguration configuration) {
+		ExtendedGroovyClassLoader loader = new ExtendedGroovyClassLoader(
+				configuration.getScope());
+		// FIXME this.loader.addClasspath(configuration.getClasspath());
+		return loader;
 	}
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
@@ -163,7 +152,7 @@ public class GroovyCompiler {
 		CompilerConfiguration configuration = this.loader.getConfiguration();
 
 		CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
-				this.loader);
+				this.loader, this.transformLoader);
 		SourceUnit sourceUnit = new SourceUnit(file[0], configuration, this.loader,
 				compilationUnit.getErrorCollector());
 		ClassCollector collector = this.loader.createCollector(compilationUnit,

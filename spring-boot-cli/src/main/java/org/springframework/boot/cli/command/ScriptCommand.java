@@ -32,6 +32,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.util.FileUtils;
 
 /**
@@ -40,6 +41,8 @@ import org.springframework.boot.cli.util.FileUtils;
  * @author Dave Syer
  */
 public class ScriptCommand implements Command {
+
+	// FIXME not sure this is actually a command
 
 	private static final String[] DEFAULT_PATHS = new String[] { "${SPRING_HOME}/ext",
 			"${SPRING_HOME}/bin" };
@@ -231,6 +234,11 @@ public class ScriptCommand implements Command {
 	private static class ScriptConfiguration implements GroovyCompilerConfiguration {
 
 		@Override
+		public GroovyCompilerScope getScope() {
+			return GroovyCompilerScope.EXTENSION;
+		}
+
+		@Override
 		public boolean isGuessImports() {
 			return true;
 		}
@@ -241,8 +249,9 @@ public class ScriptCommand implements Command {
 		}
 
 		@Override
-		public String getClasspath() {
-			return "";
+		public String[] getClasspath() {
+			// FIXME revisit all these
+			return new String[] {};
 		}
 
 	}

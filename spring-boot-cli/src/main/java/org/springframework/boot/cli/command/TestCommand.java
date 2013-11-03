@@ -16,203 +16,95 @@
 
 package org.springframework.boot.cli.command;
 
-import groovy.lang.GroovyObject;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
-import org.codehaus.groovy.control.CompilationFailedException;
-import org.springframework.boot.cli.Log;
-import org.springframework.boot.cli.command.tester.Failure;
-import org.springframework.boot.cli.command.tester.TestResults;
-import org.springframework.boot.cli.compiler.GroovyCompiler;
-import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
-import org.springframework.boot.cli.util.FileUtils;
+import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.testrunner.TestRunner;
+import org.springframework.boot.cli.testrunner.TestRunnerConfiguration;
+
+import static java.util.Arrays.asList;
 
 /**
- * Invokes testing for auto-compiled scripts
+ * {@link Command} to run a groovy test script or scripts.
  * 
  * @author Greg Turnquist
+ * @author Phillip Webb
  */
 public class TestCommand extends OptionParsingCommand {
 
-	private TestOptionHandler testOptionHandler;
-
 	public TestCommand() {
-		super("test", "Test a groovy script", new TestOptionHandler());
-		this.testOptionHandler = (TestOptionHandler) this.getHandler();
-	}
-
-	@Override
-	public String getUsageHelp() {
-		return "[options] <files>";
-	}
-
-	public TestResults getResults() {
-		return this.testOptionHandler.results;
-	}
-
-	private static class TestGroovyCompilerConfiguration implements
-			GroovyCompilerConfiguration {
-
-		@Override
-		public boolean isGuessImports() {
-			return true;
-		}
-
-		@Override
-		public boolean isGuessDependencies() {
-			return true;
-		}
-
-		@Override
-		public String getClasspath() {
-			return "";
-		}
-
-		public Level getLogLevel() {
-			return Level.INFO;
-		}
+		super("test", "Run a spring groovy script test", new TestOptionHandler());
 	}
 
 	private static class TestOptionHandler extends OptionHandler {
 
-		private final GroovyCompiler compiler;
+		private OptionSpec<Void> noGuessImportsOption;
 
-		private TestResults results;
+		private OptionSpec<Void> noGuessDependenciesOption;
 
-		public TestOptionHandler() {
-			TestGroovyCompilerConfiguration configuration = new TestGroovyCompilerConfiguration();
-			this.compiler = new GroovyCompiler(configuration);
-			if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
-				System.setProperty("groovy.grape.report.downloads", "true");
-			}
+		private OptionSpec<String> classpathOption;
+
+		private TestRunner runner;
+
+		@Override
+		protected void options() {
+			this.noGuessImportsOption = option("no-guess-imports",
+					"Do not attempt to guess imports");
+			this.noGuessDependenciesOption = option("no-guess-dependencies",
+					"Do not attempt to guess dependencies");
+			this.classpathOption = option(asList("classpath", "cp"),
+					"Additional classpath entries").withRequiredArg();
 		}
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
-			FileOptions fileOptions = new FileOptions(options, getClass()
-					.getClassLoader());
-
-			/*
-			 * Need to compile the code twice: The first time automatically pulls in
-			 * autoconfigured libraries including test tools. Then the compiled code can
-			 * be scanned to see what libraries were activated. Then it can be recompiled,
-			 * with appropriate tester groovy scripts included in the same classloading
-			 * context. Then the testers can be fetched and invoked through reflection
-			 * against the composite AST.
-			 */
-
-			// Compile - Pass 1 - collect testers
-			Object[] sources = this.compiler.sources(fileOptions.getFilesArray());
-			Set<File> testerFiles = compileAndCollectTesterFiles(sources);
-
-			// Compile - Pass 2 - with appropriate testers added in
-			List<File> files = new ArrayList<File>(fileOptions.getFiles());
-			files.addAll(testerFiles);
-			sources = this.compiler.sources(files.toArray(new File[files.size()]));
-			if (sources.length == 0) {
-				throw new RuntimeException("No classes found in '" + files + "'");
-			}
-
-			// Extract list of compiled classes
-			List<Class<?>> compiled = new ArrayList<Class<?>>();
-			List<Class<?>> testers = new ArrayList<Class<?>>();
-			for (Object source : sources) {
-				if (source instanceof Class) {
-					Class<?> sourceClass = (Class<?>) source;
-					if (sourceClass.getSuperclass().getName().equals("AbstractTester")) {
-						testers.add(sourceClass);
-					}
-					else {
-						compiled.add((Class<?>) source);
-					}
-				}
-			}
-
-			this.results = new TestResults();
-			for (Class<?> tester : testers) {
-				GroovyObject obj = (GroovyObject) tester.newInstance();
-				this.results.add((TestResults) obj.invokeMethod("findAndTest", compiled));
-			}
-			printReport(this.results);
+			FileOptions fileOptions = new FileOptions(options);
+			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
+					options);
+			this.runner = new TestRunner(configuration, fileOptions.getFilesArray(),
+					fileOptions.getArgsArray());
+			this.runner.compileAndRunTests(); // FIXME should return results
 		}
 
-		private Set<File> compileAndCollectTesterFiles(Object[] sources)
-				throws CompilationFailedException, IOException {
-			Set<File> testerFiles = new LinkedHashSet<File>();
-			addTesterOnClass(sources, "org.junit.Test", "junit", testerFiles);
-			addTesterOnClass(sources, "spock.lang.Specification", "spock", testerFiles);
-			if (!testerFiles.isEmpty()) {
-				testerFiles.add(createTempTesterFile("tester"));
+		/**
+		 * Simple adapter class to present the {@link OptionSet} as a
+		 * {@link TestRunnerConfiguration}.
+		 */
+		private class TestRunnerConfigurationAdapter implements TestRunnerConfiguration {
+
+			private OptionSet options;
+
+			public TestRunnerConfigurationAdapter(OptionSet options) {
+				this.options = options;
 			}
 
-			return testerFiles;
+			@Override
+			public GroovyCompilerScope getScope() {
+				return GroovyCompilerScope.DEFAULT;
+			}
+
+			@Override
+			public boolean isGuessImports() {
+				return !this.options.has(TestOptionHandler.this.noGuessImportsOption);
+			}
+
+			@Override
+			public boolean isGuessDependencies() {
+				return !this.options
+						.has(TestOptionHandler.this.noGuessDependenciesOption);
+			}
+
+			@Override
+			public String[] getClasspath() {
+				return new String[] {};
+				// if (this.options.has(TestOptionHandler.this.classpathOption)) {
+				// return this.options.valueOf(TestOptionHandler.this.classpathOption);
+				// }
+				// return "";
+			}
+
 		}
-
-		private void addTesterOnClass(Object[] sources, String className,
-				String testerName, Set<File> testerFiles) {
-			for (Object source : sources) {
-				if (source instanceof Class<?>) {
-					try {
-						((Class<?>) source).getClassLoader().loadClass(className);
-						testerFiles.add(createTempTesterFile(testerName));
-						return;
-					}
-					catch (ClassNotFoundException ex) {
-					}
-				}
-			}
-		}
-
-		private File createTempTesterFile(String name) {
-			try {
-				File file = File.createTempFile(name, ".groovy");
-				file.deleteOnExit();
-				URL resource = getClass().getClassLoader().getResource(
-						"testers/" + name + ".groovy");
-				FileUtils.copy(resource, file);
-				return file;
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Could not create temp file for source: "
-						+ name);
-			}
-		}
-
-		private void printReport(TestResults results) throws FileNotFoundException {
-			PrintWriter writer = new PrintWriter("results.txt");
-
-			String header = "Total: " + results.getRunCount() + ", Success: "
-					+ (results.getRunCount() - results.getFailureCount())
-					+ ", : Failures: " + results.getFailureCount() + "\n" + "Passed? "
-					+ results.wasSuccessful();
-
-			String trailer = "";
-			String trace = "";
-			for (Failure failure : results.getFailures()) {
-				trailer += failure.getDescription().toString();
-				trace += failure.getTrace() + "\n";
-			}
-
-			writer.println(header);
-			writer.println(trace);
-			writer.close();
-
-			Log.info(header);
-			Log.info(trailer);
-		}
-
 	}
-
 }

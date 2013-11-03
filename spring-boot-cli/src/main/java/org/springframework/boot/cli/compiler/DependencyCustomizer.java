@@ -184,6 +184,7 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module) {
+		// FIXME make... version
 		return this.add(this.coordinatesResolver.getGroupId(module), module,
 				this.coordinatesResolver.getVersion(module), true);
 	}

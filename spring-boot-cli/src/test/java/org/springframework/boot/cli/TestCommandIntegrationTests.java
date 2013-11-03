@@ -16,16 +16,6 @@
 
 package org.springframework.boot.cli;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.boot.cli.command.CleanCommand;
-import org.springframework.boot.cli.command.TestCommand;
-import org.springframework.boot.cli.command.tester.TestResults;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the CLI's test command.
@@ -34,93 +24,93 @@ import static org.junit.Assert.assertTrue;
  */
 public class TestCommandIntegrationTests {
 
-	@BeforeClass
-	public static void cleanGrapes() throws Exception {
-		GrapesCleaner.cleanIfNecessary();
-		// System.setProperty("ivy.message.logger.level", "3");
-	}
-
-	@Before
-	public void setup() throws Exception {
-		System.setProperty("disableSpringSnapshotRepos", "true");
-		new CleanCommand().run("org.springframework");
-	}
-
-	@After
-	public void teardown() {
-		System.clearProperty("disableSpringSnapshotRepos");
-	}
-
-	@Test
-	public void noTests() throws Throwable {
-		TestCommand command = new TestCommand();
-		command.run("samples/book.groovy");
-		TestResults results = command.getResults();
-		assertEquals(0, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
-	@Test
-	public void empty() throws Exception {
-		TestCommand command = new TestCommand();
-		command.run("samples/empty.groovy");
-		TestResults results = command.getResults();
-		assertEquals(0, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void noFile() throws Exception {
-		try {
-			TestCommand command = new TestCommand();
-			command.run("samples/nothing.groovy");
-		}
-		catch (RuntimeException e) {
-			assertEquals("Can't find samples/nothing.groovy", e.getMessage());
-			throw e;
-		}
-	}
-
-	@Test
-	public void appAndTestsInOneFile() throws Exception {
-		TestCommand command = new TestCommand();
-		command.run("samples/book_and_tests.groovy");
-		TestResults results = command.getResults();
-		assertEquals(1, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
-	@Test
-	public void appInOneFileTestsInAnotherFile() throws Exception {
-		TestCommand command = new TestCommand();
-		command.run("samples/book.groovy", "samples/test.groovy");
-		TestResults results = command.getResults();
-		assertEquals(1, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
-	@Test
-	public void spockTester() throws Exception {
-		TestCommand command = new TestCommand();
-		command.run("samples/spock.groovy");
-		TestResults results = command.getResults();
-		assertEquals(1, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
-	@Test
-	public void spockAndJunitTester() throws Exception {
-		TestCommand command = new TestCommand();
-		command.run("samples/spock.groovy", "samples/book_and_tests.groovy");
-		TestResults results = command.getResults();
-		assertEquals(2, results.getRunCount());
-		assertEquals(0, results.getFailureCount());
-		assertTrue(results.wasSuccessful());
-	}
-
+	// @BeforeClass
+	// public static void cleanGrapes() throws Exception {
+	// GrapesCleaner.cleanIfNecessary();
+	// // System.setProperty("ivy.message.logger.level", "3");
+	// }
+	//
+	// @Before
+	// public void setup() throws Exception {
+	// System.setProperty("disableSpringSnapshotRepos", "true");
+	// new CleanCommand().run("org.springframework");
+	// }
+	//
+	// @After
+	// public void teardown() {
+	// System.clearProperty("disableSpringSnapshotRepos");
+	// }
+	//
+	// @Test
+	// public void noTests() throws Throwable {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/book.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(0, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
+	// @Test
+	// public void empty() throws Exception {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/empty.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(0, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
+	// @Test(expected = RuntimeException.class)
+	// public void noFile() throws Exception {
+	// try {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/nothing.groovy");
+	// }
+	// catch (RuntimeException e) {
+	// assertEquals("Can't find samples/nothing.groovy", e.getMessage());
+	// throw e;
+	// }
+	// }
+	//
+	// @Test
+	// public void appAndTestsInOneFile() throws Exception {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/book_and_tests.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(1, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
+	// @Test
+	// public void appInOneFileTestsInAnotherFile() throws Exception {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/book.groovy", "samples/test.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(1, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
+	// @Test
+	// public void spockTester() throws Exception {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/spock.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(1, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
+	// @Test
+	// public void spockAndJunitTester() throws Exception {
+	// XTestCommand command = new XTestCommand();
+	// command.run("samples/spock.groovy", "samples/book_and_tests.groovy");
+	// TestResults results = command.getResults();
+	// assertEquals(2, results.getRunCount());
+	// assertEquals(0, results.getFailureCount());
+	// assertTrue(results.wasSuccessful());
+	// }
+	//
 }

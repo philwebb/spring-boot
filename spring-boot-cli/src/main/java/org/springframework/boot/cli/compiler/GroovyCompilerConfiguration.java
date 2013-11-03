@@ -24,6 +24,11 @@ package org.springframework.boot.cli.compiler;
 public interface GroovyCompilerConfiguration {
 
 	/**
+	 * Returns the scope in which the compiler operates.
+	 */
+	GroovyCompilerScope getScope();
+
+	/**
 	 * Returns if import declarations should be guessed.
 	 */
 	boolean isGuessImports();
@@ -34,8 +39,8 @@ public interface GroovyCompilerConfiguration {
 	boolean isGuessDependencies();
 
 	/**
-	 * @return a path for local resources (colon separated)
+	 * @return a path for local resources
 	 */
-	String getClasspath();
+	String[] getClasspath();
 
 }

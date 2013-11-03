@@ -37,7 +37,7 @@ public class SpringApplicationRunner {
 
 	private static int runnerCounter = 0;
 
-	private SpringApplicationRunnerConfiguration configuration;
+	private final SpringApplicationRunnerConfiguration configuration;
 
 	private final File[] files;
 
@@ -62,6 +62,7 @@ public class SpringApplicationRunner {
 		this.files = files.clone();
 		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
+		// FIXME log level is not used with aether
 		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
 			System.setProperty("groovy.grape.report.downloads", "true");
 		}

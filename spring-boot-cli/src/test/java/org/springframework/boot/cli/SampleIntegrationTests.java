@@ -61,7 +61,6 @@ public class SampleIntegrationTests {
 	@Test
 	public void jobSample() throws Exception {
 		String output = this.cli.run("samples/job.groovy", "foo=bar");
-		System.out.println(output);
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 	}
