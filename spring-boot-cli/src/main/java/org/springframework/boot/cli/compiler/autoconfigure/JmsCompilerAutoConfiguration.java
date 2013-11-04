@@ -42,7 +42,7 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-jms").add("geronimo-jms_1.1_spec");
+		dependencies.add("spring-jms", "geronimo-jms_1.1_spec");
 
 	}
 

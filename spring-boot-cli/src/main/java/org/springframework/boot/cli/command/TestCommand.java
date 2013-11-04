@@ -98,11 +98,11 @@ public class TestCommand extends OptionParsingCommand {
 
 			@Override
 			public String[] getClasspath() {
-				return new String[] {};
-				// if (this.options.has(TestOptionHandler.this.classpathOption)) {
-				// return this.options.valueOf(TestOptionHandler.this.classpathOption);
-				// }
-				// return "";
+				if (this.options.has(TestOptionHandler.this.classpathOption)) {
+					return this.options.valueOf(TestOptionHandler.this.classpathOption)
+							.split(":");
+				}
+				return NO_CLASSPATH;
 			}
 
 		}

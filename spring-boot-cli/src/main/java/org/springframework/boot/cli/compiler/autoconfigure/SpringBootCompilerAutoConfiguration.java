@@ -39,7 +39,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("spring-boot-starter").add("spring-boot-groovy");
+				.add("spring-boot-starter", "spring-boot-groovy");
 	}
 
 	@Override

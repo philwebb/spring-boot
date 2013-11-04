@@ -250,8 +250,7 @@ public class ScriptCommand implements Command {
 
 		@Override
 		public String[] getClasspath() {
-			// FIXME revisit all these
-			return new String[] {};
+			return NO_CLASSPATH;
 		}
 
 	}

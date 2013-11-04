@@ -18,10 +18,9 @@ package org.springframework.boot.cli.compiler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Properties;
+
+import org.springframework.util.Assert;
 
 /**
  * {@link ArtifactCoordinatesResolver} backed by a properties file.
@@ -31,14 +30,7 @@ import java.util.Properties;
 public final class PropertiesArtifactCoordinatesResolver implements
 		ArtifactCoordinatesResolver {
 
-	private final ClassLoader loader;
-
 	private Properties properties = null;
-
-	public PropertiesArtifactCoordinatesResolver() {
-		// FIXMRE
-		this.loader = Thread.currentThread().getContextClassLoader();
-	}
 
 	@Override
 	public String getGroupId(String artifactId) {
@@ -52,34 +44,24 @@ public final class PropertiesArtifactCoordinatesResolver implements
 
 	private String getProperty(String name) {
 		if (this.properties == null) {
-			loadProperties();
+			this.properties = loadProperties();
 		}
 		String property = this.properties.getProperty(name);
 		return property;
 	}
 
-	private void loadProperties() {
+	private Properties loadProperties() {
 		Properties properties = new Properties();
+		InputStream inputStream = getClass().getResourceAsStream(
+				"META-INF/springcli.properties");
+		Assert.state(inputStream != null, "Unable to load springcli properties");
 		try {
-			ArrayList<URL> urls = Collections.list(this.loader
-					.getResources("META-INF/springcli.properties"));
-			for (URL url : urls) {
-				InputStream inputStream = url.openStream();
-				try {
-					properties.load(inputStream);
-				}
-				catch (IOException ex) {
-					// Swallow and continue
-				}
-				finally {
-					inputStream.close();
-				}
-			}
+			properties.load(inputStream);
+			return properties;
 		}
 		catch (IOException ex) {
-			// Swallow and continue
+			throw new IllegalStateException("Unable to load springcli properties", ex);
 		}
-		this.properties = properties;
 	}
 
 }

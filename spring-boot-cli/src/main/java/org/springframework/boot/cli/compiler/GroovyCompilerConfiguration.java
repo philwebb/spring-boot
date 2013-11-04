@@ -24,6 +24,11 @@ package org.springframework.boot.cli.compiler;
 public interface GroovyCompilerConfiguration {
 
 	/**
+	 * Constant to be used when there is not {@link #getClasspath() classpath}.
+	 */
+	public static final String[] NO_CLASSPATH = {};
+
+	/**
 	 * Returns the scope in which the compiler operates.
 	 */
 	GroovyCompilerScope getScope();

@@ -159,12 +159,11 @@ public class RunCommand extends OptionParsingCommand {
 
 			@Override
 			public String[] getClasspath() {
-				return new String[] {};
-				// FIXME
-				// if (this.options.has(RunOptionHandler.this.classpathOption)) {
-				// return this.options.valueOf(RunOptionHandler.this.classpathOption);
-				// }
-				// return "";
+				if (this.options.has(RunOptionHandler.this.classpathOption)) {
+					return this.options.valueOf(RunOptionHandler.this.classpathOption)
+							.split(":");
+				}
+				return NO_CLASSPATH;
 			}
 
 		}

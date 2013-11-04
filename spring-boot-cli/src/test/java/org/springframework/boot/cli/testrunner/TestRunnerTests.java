@@ -50,7 +50,7 @@ public class TestRunnerTests {
 
 			@Override
 			public String[] getClasspath() {
-				return null;
+				return NO_CLASSPATH;
 			}
 		};
 

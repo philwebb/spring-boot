@@ -40,9 +40,8 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.integration.Message")
-				.add("spring-boot-starter-integration")
-				.add("spring-integration-dsl-groovy-core");
+		dependencies.ifAnyMissingClasses("org.springframework.integration.Message").add(
+				"spring-boot-starter-integration", "spring-integration-dsl-groovy-core");
 		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add("groovy-xml");
 	}
 
