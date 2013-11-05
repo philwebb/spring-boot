@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.report;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationErrorHandler;
@@ -23,27 +24,36 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ * {@link ApplicationContextInitializer} to register the {@link AutoConfigurationReport}
+ * bean.
+ * 
  * @author Dave Syer
+ * @author Phillip Webb
+ * @see AutoConfigurationReport
  */
 public class AutoConfigurationReportApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
 		SpringApplicationErrorHandler {
 
-	private AutoConfigurationReport report;
-
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-		this.report = AutoConfigurationReport.registerReport(applicationContext,
-				beanFactory);
+		beanFactory.registerSingleton(AutoConfigurationReport.BEAN_NAME,
+				new AutoConfigurationReport());
 	}
 
 	@Override
 	public void handleError(SpringApplication application,
 			ConfigurableApplicationContext applicationContext, String[] args,
 			Throwable exception) {
-		if (this.report != null) {
-			this.report.initialize(); // salvage a report if possible
+		if (applicationContext != null) {
+			try {
+				applicationContext.getBean(AutoConfigurationReport.BEAN_NAME,
+						AutoConfigurationReport.class).logErrorReport();
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				// Swallow and continue
+			}
 		}
 	}
 

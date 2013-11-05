@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.EventObject;
 
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.MethodMetadata;
@@ -32,22 +33,27 @@ import org.springframework.util.StringUtils;
  */
 public class ConditionEvaluationEvent extends EventObject {
 
+	private final ConditionContext context;
+
 	private final ConditionOutcome outcome;
 
 	private final String message;
 
 	/**
 	 * Create a new {@link ConditionEvaluationEvent} instance.
+	 * @param context the condition context
 	 * @param metadata the source meta-data
 	 * @param outcome the condition outcome
 	 */
-	public ConditionEvaluationEvent(AnnotatedTypeMetadata metadata,
-			ConditionOutcome outcome) {
-		this(getClassOrMethodName(metadata), outcome);
+	public ConditionEvaluationEvent(ConditionContext context,
+			AnnotatedTypeMetadata metadata, ConditionOutcome outcome) {
+		this(context, getClassOrMethodName(metadata), outcome);
 	}
 
-	private ConditionEvaluationEvent(String classOrMethodName, ConditionOutcome outcome) {
+	private ConditionEvaluationEvent(ConditionContext context, String classOrMethodName,
+			ConditionOutcome outcome) {
 		super(classOrMethodName);
+		this.context = context;
 		this.outcome = outcome;
 		this.message = buildMessage(classOrMethodName, outcome);
 	}
@@ -64,6 +70,10 @@ public class ConditionEvaluationEvent extends EventObject {
 			message.append(outcome.getMessage());
 		}
 		return message.toString();
+	}
+
+	public ConditionContext getContext() {
+		return this.context;
 	}
 
 	public String getSourceClassOrMethodName() {

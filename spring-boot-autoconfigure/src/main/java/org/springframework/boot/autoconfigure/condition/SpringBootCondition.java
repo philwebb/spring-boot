@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -37,9 +36,10 @@ public abstract class SpringBootCondition implements Condition {
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionOutcome outcome = getMatchOutcome(context, metadata);
-		ConditionEvaluationEvent event = new ConditionEvaluationEvent(metadata, outcome);
+		ConditionEvaluationEvent event = new ConditionEvaluationEvent(context, metadata,
+				outcome);
 		logEvent(event);
-		AutoConfigurationReport.registerDecision(context, event);
+		// AutoConfigurationReport.registerDecision(context, event);
 		return outcome.isMatch();
 	}
 
