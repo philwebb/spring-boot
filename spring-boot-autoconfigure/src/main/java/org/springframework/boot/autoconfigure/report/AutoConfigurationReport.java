@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -65,13 +65,13 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 
 	private boolean initialized = false;
 
-	public static void registerDecision(ConditionContext context, String message,
-			String classOrMethodName, ConditionOutcome outcome) {
+	public static void registerDecision(ConditionContext context,
+			ConditionEvaluationEvent event) {
 		if (context.getBeanFactory().containsBeanDefinition(AUTO_CONFIGURATION_REPORT)
 				|| context.getBeanFactory().containsSingleton(AUTO_CONFIGURATION_REPORT)) {
 			AutoConfigurationReport autoconfigurationReport = context.getBeanFactory()
 					.getBean(AUTO_CONFIGURATION_REPORT, AutoConfigurationReport.class);
-			autoconfigurationReport.registerDecision(message, classOrMethodName, outcome);
+			autoconfigurationReport.registerDecision(event);
 		}
 	}
 
@@ -88,10 +88,10 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 				AutoConfigurationReport.class);
 	}
 
-	private void registerDecision(String message, String classOrMethodName,
-			ConditionOutcome outcome) {
-		AutoConfigurationDecision decision = new AutoConfigurationDecision(message,
-				classOrMethodName, outcome);
+	private void registerDecision(ConditionEvaluationEvent event) {
+		String classOrMethodName = event.getSourceClassOrMethodName();
+		AutoConfigurationDecision decision = new AutoConfigurationDecision(
+				event.getMessage(), classOrMethodName, event.getOutcome());
 		if (!this.autoconfigurationDecisions.containsKey(classOrMethodName)) {
 			this.autoconfigurationDecisions.put(classOrMethodName,
 					new ArrayList<AutoConfigurationDecision>());

@@ -22,10 +22,6 @@ import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.ClassMetadata;
-import org.springframework.core.type.MethodMetadata;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Base of all {@link Condition} implementations used with Spring Boot. Provides sensible
@@ -40,51 +36,19 @@ public abstract class SpringBootCondition implements Condition {
 
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConditionOutcome result = getMatchOutcome(context, metadata);
-		StringBuilder message = getMessage(metadata, result);
-
-		if (!result.isMatch()) {
-			// Log non-matching conditions at debug
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(message);
-			}
-			AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
-			return false;
-		}
-
-		// Log matching conditions at trace
-		if (this.logger.isTraceEnabled()) {
-			this.logger.trace(message);
-		}
-		AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
-		return true;
+		ConditionOutcome outcome = getMatchOutcome(context, metadata);
+		ConditionEvaluationEvent event = new ConditionEvaluationEvent(metadata, outcome);
+		logEvent(event);
+		AutoConfigurationReport.registerDecision(context, event);
+		return outcome.isMatch();
 	}
 
-	private StringBuilder getMessage(AnnotatedTypeMetadata metadata, ConditionOutcome result) {
-		StringBuilder message = new StringBuilder();
-		message.append("Condition ");
-		message.append(ClassUtils.getShortName(getClass()));
-		message.append(" on ");
-		message.append(getClassOrMethodName(metadata));
-		message.append(result.isMatch() ? " matched" : " did not match");
-		if (StringUtils.hasLength(result.getMessage())) {
-			message.append(" due to ");
-			message.append(result.getMessage());
+	private void logEvent(ConditionEvaluationEvent event) {
+		if (event.getOutcome().isMatch() && this.logger.isDebugEnabled()) {
+			this.logger.debug(event.getMessage());
 		}
-		return message;
-	}
-
-	private String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
-		if (metadata instanceof ClassMetadata) {
-			ClassMetadata classMetadata = (ClassMetadata) metadata;
-			return classMetadata.getClassName();
-		}
-		else if (metadata instanceof MethodMetadata) {
-			MethodMetadata methodMetadata = (MethodMetadata) metadata;
-			return methodMetadata.getDeclaringClassName() + "#" + methodMetadata.getMethodName();
-		}
-		else {
-			return "";
+		else if (!event.getOutcome().isMatch() && this.logger.isTraceEnabled()) {
+			this.logger.trace(event.getMessage());
 		}
 	}
 
