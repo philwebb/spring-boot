@@ -112,6 +112,7 @@ public class RandomAccessJarFile extends JarFile {
 	private RandomAccessJarFile(RandomAccessDataFile rootJarFile, String name,
 			RandomAccessData data, JarEntryFilter... filters) throws IOException {
 		super(rootJarFile.getFile());
+		System.out.println(System.nanoTime());
 		this.rootJarFile = rootJarFile;
 		this.name = name;
 		this.data = data;
@@ -131,6 +132,7 @@ public class RandomAccessJarFile extends JarFile {
 			}
 		}
 		finally {
+			System.out.println(System.nanoTime());
 			inputStream.close();
 		}
 	}
