@@ -17,11 +17,9 @@
 package org.springframework.boot.loader.data;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.lang.ref.WeakReference;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -34,8 +32,6 @@ import java.util.concurrent.Semaphore;
 public class RandomAccessDataFile implements RandomAccessData {
 
 	private static final int DEFAULT_CONCURRENT_READS = 4;
-
-	private static final int READ_BLOCK_SIZE = 1024 * 400 * 20;
 
 	private File file;
 
@@ -160,8 +156,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cap(len) <= 0) {
 				return -1;
 			}
-			BlockCachingRandomAccessFile file = RandomAccessDataFile.this.filePool
-					.acquire();
+			RandomAccessFile file = RandomAccessDataFile.this.filePool.acquire();
 			try {
 				file.seek(RandomAccessDataFile.this.offset + this.position);
 				if (b == null) {
@@ -214,26 +209,28 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		private final Semaphore available;
 
-		private final Queue<BlockCachingRandomAccessFile> files;
+		private final Queue<RandomAccessFile> files;
 
 		public FilePool(int size) {
 			this.size = size;
 			this.available = new Semaphore(size);
-			this.files = new ConcurrentLinkedQueue<BlockCachingRandomAccessFile>();
+			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
 		}
 
-		public BlockCachingRandomAccessFile acquire() throws IOException {
+		@SuppressWarnings("resource")
+		public RandomAccessFile acquire() throws IOException {
 			try {
 				this.available.acquire();
-				BlockCachingRandomAccessFile file = this.files.poll();
-				return (file == null ? new BlockCachingRandomAccessFile() : file);
+				RandomAccessFile file = this.files.poll();
+				return (file == null ? new RandomAccessFile(
+						RandomAccessDataFile.this.file, "r") : file);
 			}
 			catch (InterruptedException ex) {
 				throw new IOException(ex);
 			}
 		}
 
-		public void release(BlockCachingRandomAccessFile file) {
+		public void release(RandomAccessFile file) {
 			this.files.add(file);
 			this.available.release();
 		}
@@ -242,7 +239,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			try {
 				this.available.acquire(this.size);
 				try {
-					BlockCachingRandomAccessFile file = this.files.poll();
+					RandomAccessFile file = this.files.poll();
 					while (file != null) {
 						file.close();
 						file = this.files.poll();
@@ -257,74 +254,4 @@ public class RandomAccessDataFile implements RandomAccessData {
 			}
 		}
 	}
-
-	/**
-	 * Wraps a {@link RandomAccessFile} to provide read caching and to load large blocks.`
-	 */
-	private class BlockCachingRandomAccessFile {
-
-		private byte[] singleByte = new byte[1];
-
-		private RandomAccessFile file;
-
-		private long position;
-
-		private int blockNumber = 0;
-
-		private int blockSize = -1;
-
-		private WeakReference<byte[]> block;
-
-		public BlockCachingRandomAccessFile() throws FileNotFoundException {
-			this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
-		}
-
-		public void close() throws IOException {
-			this.file.close();
-		}
-
-		public int read() throws IOException {
-			long read = read(this.singleByte, 0, 1);
-			return (read == 1 ? this.singleByte[0] : -1);
-		}
-
-		public long read(byte[] b, int off, int len) throws IOException {
-			long totalRead = 0;
-			byte[] blockBytes = (this.block == null ? null : this.block.get());
-			while (len > 0) {
-				int requiredDataBlock = (int) (this.position / READ_BLOCK_SIZE);
-				int blockStartIndex = requiredDataBlock * READ_BLOCK_SIZE;
-				if (this.blockNumber != requiredDataBlock || blockBytes == null) {
-					if (blockBytes == null) {
-						blockBytes = new byte[READ_BLOCK_SIZE];
-					}
-					this.file.seek(blockStartIndex);
-					this.blockSize = this.file.read(blockBytes);
-					this.blockNumber = requiredDataBlock;
-					this.block = new WeakReference<byte[]>(blockBytes);
-				}
-
-				// 0 1 2 3
-				// 012 345 678 9 BS=3
-				// 01234 56789 BS=5
-
-				int blockOffset = (int) this.position - blockStartIndex;
-				int readAmount = Math.min(this.blockSize - blockOffset, len);
-				if (readAmount <= 0) {
-					return (totalRead == 0 ? readAmount : totalRead);
-				}
-				System.arraycopy(blockBytes, blockOffset, b, off, readAmount);
-				totalRead += readAmount;
-				this.position += readAmount;
-				off += readAmount;
-				len -= readAmount;
-			}
-			return totalRead;
-		}
-
-		public void seek(long pos) throws IOException {
-			this.position = pos;
-		}
-	}
-
 }

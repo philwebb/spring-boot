@@ -122,8 +122,8 @@ public class TempTest {
 
 	public static void main(String[] args) {
 		try {
-			System.in.read();
-			new TempTest().testName4();
+			// System.in.read();
+			new TempTest().testName();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

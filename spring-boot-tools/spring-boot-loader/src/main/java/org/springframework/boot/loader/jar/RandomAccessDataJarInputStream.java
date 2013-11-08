@@ -20,8 +20,11 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.lang.reflect.Field;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.zip.CRC32;
+import java.util.zip.ZipInputStream;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
@@ -34,9 +37,13 @@ import org.springframework.boot.loader.data.RandomAccessData;
  */
 public class RandomAccessDataJarInputStream extends JarInputStream {
 
+	private static final int LARGE_BUFFER_SIZE = 20 * 1024;
+
 	private RandomAccessData data;
 
 	private TrackingInputStream trackingInputStream;
+
+	protected JarEntry entry;
 
 	/**
 	 * Create a new {@link RandomAccessData} instance.
@@ -59,24 +66,80 @@ public class RandomAccessDataJarInputStream extends JarInputStream {
 		super(trackingInputStream);
 		this.data = data;
 		this.trackingInputStream = trackingInputStream;
+		applyPerformaceTweaks();
+	}
+
+	/**
+	 * Apply JDK specific tweaks that improve performance.
+	 */
+	private void applyPerformaceTweaks() {
+		increaseTempBufferSize();
+		useNoOpCrc();
+	}
+
+	private void increaseTempBufferSize() {
+		try {
+			Field field = ZipInputStream.class.getDeclaredField("tmpbuf");
+			field.setAccessible(true);
+			field.set(this, new byte[LARGE_BUFFER_SIZE]);
+		}
+		catch (Exception ex) {
+			// Ignore and continue with standard buffer
+		}
+	}
+
+	private void useNoOpCrc() {
+		try {
+			Field field = ZipInputStream.class.getDeclaredField("crc");
+			field.setAccessible(true);
+			field.set(this, new NoOpCRC32());
+		}
+		catch (Exception ex) {
+			// Ignore and continue with standard crc
+		}
 	}
 
 	@Override
 	public RandomAccessDataJarEntry getNextEntry() throws IOException {
-		JarEntry entry = (JarEntry) super.getNextEntry();
-		if (entry == null) {
+		this.entry = (JarEntry) super.getNextEntry();
+		if (this.entry == null) {
 			return null;
 		}
 		int start = getPosition();
 		closeEntry();
 		int end = getPosition();
 		RandomAccessData entryData = this.data.getSubsection(start, end - start);
-		return new RandomAccessDataJarEntry(entry, entryData);
+		return new RandomAccessDataJarEntry(this.entry, entryData);
 	}
 
 	private int getPosition() throws IOException {
 		int pushback = ((PushbackInputStream) this.in).available();
 		return this.trackingInputStream.getPosition() - pushback;
+	}
+
+	/**
+	 * CRC32 implementation that does nothing, used to provide a performance boost at the
+	 * expense of CRC verification.
+	 */
+	private class NoOpCRC32 extends CRC32 {
+
+		@Override
+		public void update(byte[] b) {
+		}
+
+		@Override
+		public void update(byte[] b, int off, int len) {
+		}
+
+		@Override
+		public void update(int b) {
+		}
+
+		@Override
+		public long getValue() {
+			JarEntry entry = RandomAccessDataJarInputStream.this.entry;
+			return (entry == null ? 0 : entry.getCrc());
+		}
 	}
 
 	/**
