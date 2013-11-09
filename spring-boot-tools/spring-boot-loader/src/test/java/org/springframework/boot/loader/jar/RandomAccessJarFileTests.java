@@ -47,7 +47,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link RandomAccessJarFile}.
+ * Tests for {@link RandomAccessDataJarFile}.
  * 
  * @author Phillip Webb
  */
@@ -61,18 +61,18 @@ public class RandomAccessJarFileTests {
 
 	private File rootJarFile;
 
-	private RandomAccessJarFile jarFile;
+	private RandomAccessDataJarFile jarFile;
 
 	@Before
 	public void setup() throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(this.rootJarFile);
-		this.jarFile = new RandomAccessJarFile(this.rootJarFile);
+		this.jarFile = new RandomAccessDataJarFile(this.rootJarFile);
 	}
 
 	@Test
 	public void createFromFile() throws Exception {
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(this.rootJarFile);
+		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(this.rootJarFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
 		jarFile.close();
 	}
@@ -81,7 +81,7 @@ public class RandomAccessJarFileTests {
 	public void createFromRandomAccessDataFile() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = new RandomAccessDataFile(
 				this.rootJarFile, 1);
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(randomAccessDataFile);
+		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(randomAccessDataFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
 		jarFile.close();
 	}
@@ -143,7 +143,7 @@ public class RandomAccessJarFileTests {
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(
 				this.rootJarFile, 1));
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(randomAccessDataFile);
+		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
 	}
@@ -203,7 +203,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getNestedJarFile() throws Exception {
-		RandomAccessJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+		RandomAccessDataJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
 				.getEntry("nested.jar"));
 
 		Enumeration<JarEntry> entries = nestedJarFile.entries();
@@ -227,7 +227,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getNestedJarDirectory() throws Exception {
-		RandomAccessJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+		RandomAccessDataJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
 				.getEntry("d/"));
 
 		Enumeration<JarEntry> entries = nestedJarFile.entries();
@@ -263,7 +263,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getFilteredJarFile() throws Exception {
-		RandomAccessJarFile filteredJarFile = this.jarFile
+		RandomAccessDataJarFile filteredJarFile = this.jarFile
 				.getFilteredJarFile(new JarEntryFilter() {
 					@Override
 					public String apply(String entryName, JarEntry entry) {

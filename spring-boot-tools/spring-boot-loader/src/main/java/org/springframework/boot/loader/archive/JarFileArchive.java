@@ -29,24 +29,24 @@ import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.jar.JarEntryFilter;
-import org.springframework.boot.loader.jar.RandomAccessJarFile;
+import org.springframework.boot.loader.jar.RandomAccessDataJarFile;
 
 /**
- * {@link Archive} implementation backed by a {@link RandomAccessJarFile}.
+ * {@link Archive} implementation backed by a {@link RandomAccessDataJarFile}.
  * 
  * @author Phillip Webb
  */
 public class JarFileArchive extends Archive {
 
-	private final RandomAccessJarFile jarFile;
+	private final RandomAccessDataJarFile jarFile;
 
 	private final List<Entry> entries;
 
 	public JarFileArchive(File file) throws IOException {
-		this(new RandomAccessJarFile(file));
+		this(new RandomAccessDataJarFile(file));
 	}
 
-	public JarFileArchive(RandomAccessJarFile jarFile) {
+	public JarFileArchive(RandomAccessDataJarFile jarFile) {
 		this.jarFile = jarFile;
 		ArrayList<Entry> jarFileEntries = new ArrayList<Entry>();
 		Enumeration<JarEntry> entries = jarFile.entries();
@@ -84,13 +84,13 @@ public class JarFileArchive extends Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
-		RandomAccessJarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
+		RandomAccessDataJarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
 		return new JarFileArchive(jarFile);
 	}
 
 	@Override
 	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		RandomAccessJarFile filteredJar = this.jarFile
+		RandomAccessDataJarFile filteredJar = this.jarFile
 				.getFilteredJarFile(new JarEntryFilter() {
 					@Override
 					public String apply(String name, JarEntry entry) {

@@ -16,34 +16,77 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.InputStream;
+import java.security.CodeSigner;
+import java.security.cert.Certificate;
 import java.util.jar.JarEntry;
+import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
- * A {@link JarEntry} returned from a {@link RandomAccessDataJarInputStream}.
+ * A {@link JarEntry} used with a {@link RandomAccessDataJarFile}.
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataJarEntry extends JarEntry {
+class RandomAccessDataJarEntry extends JarEntry {
 
-	private RandomAccessData data;
+	private String name;
 
-	/**
-	 * Create new {@link RandomAccessDataJarEntry} instance.
-	 * @param entry the underlying {@link JarEntry}
-	 * @param data the entry data
-	 */
-	public RandomAccessDataJarEntry(JarEntry entry, RandomAccessData data) {
-		super(entry);
+	private final RandomAccessData data;
+
+	private long time = -1;
+
+	public RandomAccessDataJarEntry(String name, RandomAccessData data) {
+		super(name);
+		this.name = name;
 		this.data = data;
 	}
 
-	/**
-	 * Returns the {@link RandomAccessData} for this entry.
-	 * @return the entry data
-	 */
+	void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setTime(long time) {
+		// Time conversion is slow, only do it on the first read
+		this.time = time;
+	}
+
+	@Override
+	public long getTime() {
+		if (this.time != -1) {
+			super.setTime(this.time);
+			this.time = -1;
+		}
+		return super.getTime();
+	}
+
+	public InputStream getInputStream() {
+		InputStream inputStream = getData().getInputStream();
+		if (getMethod() == ZipEntry.DEFLATED) {
+			inputStream = new ZipInflaterInputStream(inputStream, (int) getSize());
+		}
+		return inputStream;
+	}
+
 	public RandomAccessData getData() {
 		return this.data;
 	}
+
+	@Override
+	public Certificate[] getCertificates() {
+		return null; // FIXME;
+	}
+
+	@Override
+	public CodeSigner[] getCodeSigners() {
+		return null; // FIXME
+	}
+
 }
