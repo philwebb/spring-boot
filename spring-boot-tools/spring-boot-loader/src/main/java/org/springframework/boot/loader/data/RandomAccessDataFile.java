@@ -20,9 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Semaphore;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.
@@ -34,8 +31,6 @@ public class RandomAccessDataFile implements RandomAccessData {
 	private static final int DEFAULT_CONCURRENT_READS = 4;
 
 	private File file;
-
-	private final FilePool filePool;
 
 	private final long offset;
 
@@ -67,19 +62,18 @@ public class RandomAccessDataFile implements RandomAccessData {
 			throw new IllegalArgumentException("File must exist");
 		}
 		this.file = file;
-		this.filePool = new FilePool(concurrentReads);
 		this.offset = 0L;
 		this.length = file.length();
 	}
 
 	/**
 	 * Private constructor used to create a {@link #getSubsection(long, long) subsection}.
-	 * @param pool the underlying pool
+	 * @param file the underlying file
 	 * @param offset the offset of the section
 	 * @param length the length of the section
 	 */
-	private RandomAccessDataFile(FilePool pool, long offset, long length) {
-		this.filePool = pool;
+	private RandomAccessDataFile(File file, long offset, long length) {
+		this.file = file;
 		this.offset = offset;
 		this.length = length;
 	}
@@ -94,7 +88,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	@Override
 	public InputStream getInputStream() {
-		return new DataInputStream();
+		try {
+			return new DataInputStream(this.file, this.offset, this.length);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		if (offset < 0 || length < 0 || offset + length > this.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		return new RandomAccessDataFile(this.filePool, this.offset + offset, length);
+		return new RandomAccessDataFile(this.file, this.offset + offset, length);
 	}
 
 	@Override
@@ -110,17 +109,25 @@ public class RandomAccessDataFile implements RandomAccessData {
 		return this.length;
 	}
 
-	public void close() throws IOException {
-		this.filePool.close();
+	public void close() {
+		// FIXME close all streams
 	}
 
 	/**
 	 * {@link RandomAccessDataInputStream} implementation for the
 	 * {@link RandomAccessDataFile}.
 	 */
-	private class DataInputStream extends InputStream {
+	private static class DataInputStream extends InputStream {
 
-		private long position;
+		private final RandomAccessFile file;
+
+		private long remaining;
+
+		public DataInputStream(File file, long offset, long length) throws IOException {
+			this.file = new RandomAccessFile(file, "r");
+			this.file.seek(offset);
+			this.remaining = length - offset;
+		}
 
 		@Override
 		public int read() throws IOException {
@@ -156,20 +163,13 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cap(len) <= 0) {
 				return -1;
 			}
-			RandomAccessFile file = RandomAccessDataFile.this.filePool.acquire();
-			try {
-				file.seek(RandomAccessDataFile.this.offset + this.position);
-				if (b == null) {
-					int rtn = file.read();
-					moveOn(rtn == -1 ? 0 : 1);
-					return rtn;
-				}
-				else {
-					return (int) moveOn(file.read(b, off, (int) cap(len)));
-				}
+			if (b == null) {
+				int rtn = this.file.read();
+				moveOn(rtn == -1 ? 0 : 1);
+				return rtn;
 			}
-			finally {
-				RandomAccessDataFile.this.filePool.release(file);
+			else {
+				return (int) moveOn(this.file.read(b, off, (int) cap(len)));
 			}
 		}
 
@@ -185,7 +185,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @return the capped value
 		 */
 		private long cap(long n) {
-			return Math.min(RandomAccessDataFile.this.length - this.position, n);
+			return Math.min(this.remaining, n);
 		}
 
 		/**
@@ -194,64 +194,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @return the amount moved
 		 */
 		private long moveOn(long amount) {
-			this.position += amount;
+			this.remaining = -amount;
 			return amount;
 		}
 	}
 
-	/**
-	 * Manage a pool that can be used to perform concurrent reads on the underlying
-	 * {@link RandomAccessFile}.
-	 */
-	private class FilePool {
-
-		private int size;
-
-		private final Semaphore available;
-
-		private final Queue<RandomAccessFile> files;
-
-		public FilePool(int size) {
-			this.size = size;
-			this.available = new Semaphore(size);
-			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
-		}
-
-		@SuppressWarnings("resource")
-		public RandomAccessFile acquire() throws IOException {
-			try {
-				this.available.acquire();
-				RandomAccessFile file = this.files.poll();
-				return (file == null ? new RandomAccessFile(
-						RandomAccessDataFile.this.file, "r") : file);
-			}
-			catch (InterruptedException ex) {
-				throw new IOException(ex);
-			}
-		}
-
-		public void release(RandomAccessFile file) {
-			this.files.add(file);
-			this.available.release();
-		}
-
-		public void close() throws IOException {
-			try {
-				this.available.acquire(this.size);
-				try {
-					RandomAccessFile file = this.files.poll();
-					while (file != null) {
-						file.close();
-						file = this.files.poll();
-					}
-				}
-				finally {
-					this.available.release(this.size);
-				}
-			}
-			catch (InterruptedException ex) {
-				throw new IOException(ex);
-			}
-		}
-	}
 }
