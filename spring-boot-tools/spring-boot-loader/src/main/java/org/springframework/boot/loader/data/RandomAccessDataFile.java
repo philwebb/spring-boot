@@ -126,7 +126,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		public DataInputStream(File file, long offset, long length) throws IOException {
 			this.file = new RandomAccessFile(file, "r");
 			this.file.seek(offset);
-			this.remaining = length - offset;
+			this.remaining = length;
 		}
 
 		@Override
@@ -194,7 +194,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @return the amount moved
 		 */
 		private long moveOn(long amount) {
-			this.remaining = -amount;
+			this.remaining -= amount;
 			return amount;
 		}
 	}
