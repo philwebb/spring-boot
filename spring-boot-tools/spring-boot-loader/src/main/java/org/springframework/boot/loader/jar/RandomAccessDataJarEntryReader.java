@@ -18,10 +18,9 @@ package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.data.RandomAccessData;
@@ -35,30 +34,30 @@ class RandomAccessDataJarEntryReader {
 
 	private final ZipData zipData = new ZipData();
 
-	private final Map<String, RandomAccessDataJarEntry> entries;
+	private final List<RandomAccessDataJarEntry> entries;
 
-	private final Manifest manifest;
+	private Manifest manifest;
 
-	private final Iterator<Entry<String, RandomAccessDataJarEntry>> entriesIterator;
+	private final Iterator<RandomAccessDataJarEntry> entriesIterator;
 
 	public RandomAccessDataJarEntryReader(RandomAccessData data) throws IOException {
 		EndOfCentralDirectoryRecord endRecord = new EndOfCentralDirectoryRecord(data);
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(data);
-		this.entries = new LinkedHashMap<String, RandomAccessDataJarEntry>();
+		this.entries = new ArrayList<RandomAccessDataJarEntry>(
+				endRecord.getNumberOfRecords());
 		byte[] header = new byte[46];
 		InputStream stream = centralDirectory.getInputStream();
 		try {
 			while (this.zipData.fillBytes(stream, header)) {
 				RandomAccessDataJarEntry entry = createEntry(data, header, stream);
-				this.entries.put(entry.getName(), entry);
+				this.entries.add(entry);
 			}
 		}
 		finally {
 			stream.close();
 		}
 
-		this.manifest = createManifest();
-		this.entriesIterator = this.entries.entrySet().iterator();
+		this.entriesIterator = this.entries.iterator();
 	}
 
 	private RandomAccessDataJarEntry createEntry(RandomAccessData data, byte[] header,
@@ -89,27 +88,41 @@ class RandomAccessDataJarEntryReader {
 	}
 
 	private Manifest createManifest() throws IOException {
-		RandomAccessDataJarEntry entry = this.entries.get("META-INF/MANIFEST.MF");
-		if (entry == null) {
-			return null;
+		int i = 0;
+		for (RandomAccessDataJarEntry entry : this.entries) {
+			if (entry.getName().equals("META-INF/MANIFEST.MF")) {
+				InputStream inputStream = entry.getInputStream();
+				try {
+					return new Manifest(inputStream);
+				}
+				finally {
+					inputStream.close();
+				}
+			}
+			i++;
+			if (i > 4) {
+				return null;
+			}
 		}
-		InputStream inputStream = entry.getInputStream();
-		try {
-			return new Manifest(inputStream);
-		}
-		finally {
-			inputStream.close();
-		}
+		return null;
 	}
 
 	public RandomAccessDataJarEntry getNextEntry() throws IOException {
 		if (this.entriesIterator.hasNext()) {
-			return this.entriesIterator.next().getValue();
+			return this.entriesIterator.next();
 		}
 		return null;
 	}
 
 	public Manifest getManifest() {
+		if (this.manifest == null) {
+			try {
+				this.manifest = createManifest();
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
 		return this.manifest;
 	}
 
@@ -172,6 +185,10 @@ class RandomAccessDataJarEntryReader {
 			long offset = getValue(16, 4);
 			long length = getValue(12, 4);
 			return data.getSubsection(offset, length);
+		}
+
+		public int getNumberOfRecords() {
+			return (int) getValue(10, 2);
 		}
 
 		private long getValue(int offset, int length) {

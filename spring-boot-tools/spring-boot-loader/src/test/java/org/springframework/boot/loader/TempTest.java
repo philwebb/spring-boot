@@ -21,7 +21,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -120,11 +123,79 @@ public class TempTest {
 		System.out.println((System.nanoTime() - start) / 100000000.0);
 	}
 
+	@Test
+	public void stringPerf() throws Exception {
+		byte[] bytes = "META-INF/MANIFEST.MF/test/test/test//test/test/test/.test"
+				.getBytes();
+		long start = System.nanoTime();
+		for (int i = 0; i < 7000; i++) {
+			char[] c = new char[bytes.length];
+			for (int i1 = 0; i1 < c.length; i1++) {
+				c[i1] = (char) bytes[i1];
+			}
+			new String(c); // fastToString3(bytes);
+		}
+		System.out.println((System.nanoTime() - start) / 100000000.0);
+		System.out.println(fastToString2(bytes));
+	}
+
+	// 0.39
+	private String fastToString0(byte[] bytes) throws UnsupportedEncodingException {
+		return new String(bytes, "UTF-8");
+	}
+
+	// 0.22
+	private String fastToString1(byte[] bytes) {
+		StringBuilder builder = new StringBuilder(bytes.length);
+		for (byte b : bytes) {
+			builder.append((char) b);
+		}
+		return builder.toString();
+	}
+
+	// 0.16
+	private String fastToString2(byte[] bytes) {
+		char[] c = new char[bytes.length];
+		for (int i = 0; i < c.length; i++) {
+			c[i] = (char) bytes[i];
+		}
+		return new String(c);
+	}
+
+	static Constructor<String> stringcon;
+	static {
+		try {
+			Constructor<String> declaredConstructor = String.class
+					.getDeclaredConstructor(int.class, int.class, char[].class);
+			declaredConstructor.setAccessible(true);
+			stringcon = declaredConstructor;
+
+		}
+		catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	// 0.16
+	private String fastToString3(byte[] bytes) throws IllegalArgumentException,
+			InstantiationException, IllegalAccessException, InvocationTargetException {
+		char[] c = new char[bytes.length];
+		for (int i = 0; i < c.length; i++) {
+			c[i] = (char) bytes[i];
+		}
+		return stringcon.newInstance(0, c.length, c);
+	}
+
 	public static void main(String[] args) {
 
 		try {
 			// System.in.read();
-			new TempTest().testName();
+			new TempTest().stringPerf();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

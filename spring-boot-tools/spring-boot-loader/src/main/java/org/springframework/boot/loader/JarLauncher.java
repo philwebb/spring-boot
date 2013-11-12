@@ -16,7 +16,6 @@
 
 package org.springframework.boot.loader;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.boot.loader.archive.Archive;
@@ -40,12 +39,12 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	public static void main(String[] args) {
-		try {
-			System.in.read();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		// try {
+		// System.in.read();
+		// }
+		// catch (IOException e) {
+		// e.printStackTrace();
+		// }
 		new JarLauncher().launch(args);
 	}
 }

@@ -52,7 +52,11 @@ class ZipData {
 		if (!fillBytes(inputStream, this.tempBuffer, 0, (int) length)) {
 			throw new IOException("Unable to read bytes");
 		}
-		return new String(this.tempBuffer, 0, (int) length, UTF_8);
+		char[] chars = new char[(int) length];
+		for (int i = 0; i < length; i++) {
+			chars[i] = (char) this.tempBuffer[i];
+		}
+		return new String(chars);
 	}
 
 	public byte[] readBytes(InputStream inputStream, long length) throws IOException {
