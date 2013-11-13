@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.AsciiString;
+
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
  * 
@@ -49,7 +51,7 @@ public class ExplodedArchive extends Archive {
 
 	private File root;
 
-	private Map<String, Entry> entries = new LinkedHashMap<String, Entry>();
+	private Map<AsciiString, Entry> entries = new LinkedHashMap<AsciiString, Entry>();
 
 	private Manifest manifest;
 
@@ -62,7 +64,7 @@ public class ExplodedArchive extends Archive {
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
-	private ExplodedArchive(File root, Map<String, Entry> entries) {
+	private ExplodedArchive(File root, Map<AsciiString, Entry> entries) {
 		this.root = root;
 		this.entries = Collections.unmodifiableMap(entries);
 	}
@@ -74,7 +76,8 @@ public class ExplodedArchive extends Archive {
 			if (file.isDirectory()) {
 				name += "/";
 			}
-			this.entries.put(name, new FileEntry(name, file));
+			FileEntry entry = new FileEntry(new AsciiString(name), file);
+			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
 			for (File child : file.listFiles()) {
@@ -129,9 +132,9 @@ public class ExplodedArchive extends Archive {
 
 	@Override
 	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
-		Map<String, Entry> filteredEntries = new LinkedHashMap<String, Archive.Entry>();
-		for (Map.Entry<String, Entry> entry : this.entries.entrySet()) {
-			String filteredName = filter.apply(entry.getKey(), entry.getValue());
+		Map<AsciiString, Entry> filteredEntries = new LinkedHashMap<AsciiString, Archive.Entry>();
+		for (Map.Entry<AsciiString, Entry> entry : this.entries.entrySet()) {
+			AsciiString filteredName = filter.apply(entry.getKey(), entry.getValue());
 			if (filteredName != null) {
 				filteredEntries.put(filteredName, new FileEntry(filteredName,
 						((FileEntry) entry.getValue()).getFile()));
@@ -142,10 +145,11 @@ public class ExplodedArchive extends Archive {
 
 	private class FileEntry implements Entry {
 
-		private final String name;
+		private final AsciiString name;
+
 		private final File file;
 
-		public FileEntry(String name, File file) {
+		public FileEntry(AsciiString name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -160,7 +164,7 @@ public class ExplodedArchive extends Archive {
 		}
 
 		@Override
-		public String getName() {
+		public AsciiString getName() {
 			return this.name;
 		}
 	}

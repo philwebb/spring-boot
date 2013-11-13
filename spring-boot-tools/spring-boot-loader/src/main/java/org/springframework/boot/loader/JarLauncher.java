@@ -28,9 +28,11 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
+	private static final AsciiString LIB = new AsciiString("lib/");
+
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
-		return !entry.isDirectory() && entry.getName().startsWith("lib/");
+		return !entry.isDirectory() && entry.getName().startsWith(LIB);
 	}
 
 	@Override

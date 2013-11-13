@@ -16,12 +16,8 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.io.InputStream;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
-import java.util.zip.ZipEntry;
-
-import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
@@ -30,23 +26,15 @@ import org.springframework.boot.loader.data.RandomAccessData;
  */
 class JarEntry extends java.util.jar.JarEntry {
 
-	private final RandomAccessData data;
+	private final JarEntryData source;
 
-	public JarEntry(String name, RandomAccessData data) {
-		super(name);
-		this.data = data;
+	public JarEntry(JarEntryData source) {
+		super(source.getName().toString());
+		this.source = source;
 	}
 
-	public InputStream getInputStream() {
-		InputStream inputStream = getData().getInputStream();
-		if (getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new ZipInflaterInputStream(inputStream, (int) getSize());
-		}
-		return inputStream;
-	}
-
-	public RandomAccessData getData() {
-		return this.data;
+	public JarEntryData getSource() {
+		return this.source;
 	}
 
 	@Override

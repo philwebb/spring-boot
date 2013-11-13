@@ -21,13 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.springframework.boot.loader.AsciiString;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
@@ -49,7 +50,11 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * 
  * @author Phillip Webb
  */
-public class JarFile extends java.util.jar.JarFile {
+public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryData> {
+
+	private static final AsciiString META_INF = new AsciiString("META-INF/");
+
+	private static final AsciiString MANIFEST_MF = new AsciiString("META-INF/MANIFEST.MF");
 
 	private final RandomAccessDataFile rootJarFile;
 
@@ -59,7 +64,9 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private final long size;
 
-	private Map<JarEntryName, java.util.jar.JarEntry> entries = new LinkedHashMap<JarEntryName, java.util.jar.JarEntry>();
+	private Map<AsciiString, JarEntryData> entries = new LinkedHashMap<AsciiString, JarEntryData>();
+
+	private JarEntryData manifestData;
 
 	private Manifest manifest;
 
@@ -100,30 +107,42 @@ public class JarFile extends java.util.jar.JarFile {
 		this.name = name;
 		this.data = data;
 		this.size = data.getSize();
+		loadJarEntries(filters);
+	}
 
-		RandomAccessDataJarEntryReader entryReader = new RandomAccessDataJarEntryReader(
-				data);
+	private void loadJarEntries(JarEntryFilter[] filters) throws IOException {
+		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(this.data);
+		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
+		InputStream inputStream = centralDirectory.getInputStream();
 		try {
-			JarEntry entry = entryReader.getNextEntry();
-			while (entry != null) {
-				addJarEntry(entry, filters);
-				entry = entryReader.getNextEntry();
+			JarEntryData data = JarEntryData.get(this, inputStream, centralDirectory);
+			while (data != null) {
+				addJarEntry(data, filters);
+				data = JarEntryData.get(this, inputStream, centralDirectory);
 			}
-			this.manifest = entryReader.getManifest();
 		}
 		finally {
-			entryReader.close();
+			inputStream.close();
 		}
 	}
 
-	private void addJarEntry(JarEntry entry, JarEntryFilter... filters) {
-		String name = entry.getName();
+	private void addJarEntry(JarEntryData entryData, JarEntryFilter[] filters) {
+		AsciiString name = entryData.getName();
 		for (JarEntryFilter filter : filters) {
-			name = (filter == null || name == null ? name : filter.apply(name, entry));
+			name = (filter == null || name == null ? name : filter.apply(name, entryData));
 		}
 		if (name != null) {
-			entry.setName(name);
-			this.entries.put(name, entry);
+			entryData.setName(name);
+			this.entries.put(name, entryData);
+			if (name.startsWith(META_INF)) {
+				processMetaInfEntry(name, entryData);
+			}
+		}
+	}
+
+	private void processMetaInfEntry(AsciiString name, JarEntryData entryData) {
+		if (name.equals(MANIFEST_MF)) {
+			this.manifestData = entryData;
 		}
 	}
 
@@ -133,12 +152,41 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public Manifest getManifest() throws IOException {
+		if (this.manifestData == null) {
+			return null;
+		}
+		if (this.manifest == null) {
+			InputStream inputStream = this.manifestData.getInputStream();
+			try {
+				this.manifest = new Manifest(inputStream);
+			}
+			finally {
+				inputStream.close();
+			}
+		}
 		return this.manifest;
 	}
 
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
-		return Collections.enumeration(this.entries.values());
+		final Iterator<JarEntryData> iterator = iterator();
+		return new Enumeration<java.util.jar.JarEntry>() {
+
+			@Override
+			public boolean hasMoreElements() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public java.util.jar.JarEntry nextElement() {
+				return iterator.next().getJarEntry();
+			}
+		};
+	}
+
+	@Override
+	public Iterator<JarEntryData> iterator() {
+		return this.entries.values().iterator();
 	}
 
 	@Override
@@ -148,16 +196,19 @@ public class JarFile extends java.util.jar.JarFile {
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		java.util.jar.JarEntry entry = this.entries.get(name);
-		if (entry == null && name != null && !name.endsWith("/")) {
-			entry = this.entries.get(name + "/");
+		if (name == null) {
+			return null;
 		}
-		return entry;
+		JarEntryData entryData = this.entries.get(new AsciiString(name));
+		if (entryData == null && !name.endsWith("/")) {
+			entryData = this.entries.get(new AsciiString(name + "/"));
+		}
+		return entryData.getJarEntry();
 	}
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		return getContainedEntry(ze).getInputStream();
+		return getContainedEntry(ze).getSource().getInputStream();
 	}
 
 	/**
@@ -169,43 +220,51 @@ public class JarFile extends java.util.jar.JarFile {
 	 */
 	public synchronized JarFile getNestedJarFile(final ZipEntry ze,
 			JarEntryFilter... filters) throws IOException {
-		if (ze == null) {
-			throw new IllegalArgumentException("ZipEntry must not be null");
-		}
+		return getNestedJarFile(getContainedEntry(ze).getSource());
+	}
 
+	/**
+	 * Return a nested {@link JarFile} loaded from the specified entry.
+	 * @param ze the zip entry
+	 * @param filters an optional set of jar entry filters to be applied
+	 * @return a {@link JarFile} for the entry
+	 * @throws IOException
+	 */
+	public synchronized JarFile getNestedJarFile(final JarEntryData ze,
+			JarEntryFilter... filters) throws IOException {
 		if (ze.isDirectory()) {
 			return getNestedJarFileFromDirectoryEntry(ze, filters);
 		}
-
 		return getNestedJarFileFromFileEntry(ze, filters);
 	}
 
-	private JarFile getNestedJarFileFromDirectoryEntry(final ZipEntry entry,
+	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData entry,
 			JarEntryFilter... filters) throws IOException {
-		final String name = entry.getName();
+		final AsciiString sourceName = entry.getName();
 		JarEntryFilter[] filtersToUse = new JarEntryFilter[filters.length + 1];
 		System.arraycopy(filters, 0, filtersToUse, 1, filters.length);
 		filtersToUse[0] = new JarEntryFilter() {
 			@Override
-			public String apply(String entryName, java.util.jar.JarEntry ze) {
-				if (entryName.startsWith(name) && !entryName.equals(name)) {
-					return entryName.substring(entry.getName().length());
+			public AsciiString apply(AsciiString entryName, JarEntryData ze) {
+				if (entryName.startsWith(sourceName) && !entryName.equals(sourceName)) {
+					return entryName.substring(sourceName.length());
 				}
 				return null;
 			}
 		};
 		return new JarFile(this.rootJarFile, getName() + "!/"
-				+ name.substring(0, name.length() - 1), this.data, filtersToUse);
+				+ entry.getName().substring(0, sourceName.length() - 1), this.data,
+				filtersToUse);
 	}
 
-	private JarFile getNestedJarFileFromFileEntry(ZipEntry entry,
+	private JarFile getNestedJarFileFromFileEntry(JarEntryData entry,
 			JarEntryFilter... filters) throws IOException {
 		if (entry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException("Unable to open nested compressed entry "
 					+ entry.getName());
 		}
 		return new JarFile(this.rootJarFile, getName() + "!/" + entry.getName(),
-				getContainedEntry(entry).getData(), filters);
+				entry.getData(), filters);
 	}
 
 	/**
@@ -219,11 +278,14 @@ public class JarFile extends java.util.jar.JarFile {
 		return new JarFile(this.rootJarFile, getName(), this.data, filters);
 	}
 
-	private synchronized JarEntry getContainedEntry(ZipEntry ze) throws IOException {
-		if (!this.entries.containsValue(ze)) {
-			throw new IllegalArgumentException("ZipEntry must be contained in this file");
+	private synchronized JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
+		if (zipEntry != null && zipEntry instanceof JarEntry) {
+			JarEntry jarEntry = (JarEntry) zipEntry;
+			if (this.entries.get(jarEntry.getSource().getName()) == jarEntry.getSource()) {
+				return jarEntry;
+			}
 		}
-		return ((JarEntry) ze);
+		throw new IllegalArgumentException("ZipEntry must be contained in this file");
 	}
 
 	@Override

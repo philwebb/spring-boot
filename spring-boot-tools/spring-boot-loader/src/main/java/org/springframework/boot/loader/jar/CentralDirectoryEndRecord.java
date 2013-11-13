@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
-class ZipEndOfCentralDirectoryRecord {
+class CentralDirectoryEndRecord {
 
 	private static final int MINIMUM_SIZE = 22;
 
@@ -40,7 +40,7 @@ class ZipEndOfCentralDirectoryRecord {
 
 	private int size;
 
-	public ZipEndOfCentralDirectoryRecord(RandomAccessData data) throws IOException {
+	public CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);
 		this.size = MINIMUM_SIZE;
 		while (!isValid()) {
@@ -64,22 +64,22 @@ class ZipEndOfCentralDirectoryRecord {
 
 	private boolean isValid() {
 		if (this.block.length < MINIMUM_SIZE
-				|| LittleEndian.valueOf(this.block, this.offset + 0, 4) != SIGNATURE) {
+				|| Bytes.littleEndianValue(this.block, this.offset + 0, 4) != SIGNATURE) {
 			return false;
 		}
 		// Total size must be the structure size + comment
-		long commentLength = LittleEndian.valueOf(this.block, this.offset
+		long commentLength = Bytes.littleEndianValue(this.block, this.offset
 				+ COMMENT_LENGTH_OFFSET, 2);
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 
 	public RandomAccessData getCentralDirectory(RandomAccessData data) {
-		long offset = LittleEndian.valueOf(this.block, this.offset + 16, 4);
-		long length = LittleEndian.valueOf(this.block, this.offset + 12, 4);
+		long offset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
+		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
 		return data.getSubsection(offset, length);
 	}
 
 	public int getNumberOfRecords() {
-		return (int) LittleEndian.valueOf(this.block, this.offset + 10, 2);
+		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);
 	}
 }

@@ -38,8 +38,7 @@ class Bytes {
 		}
 	}
 
-	public static byte[] get(InputStream inputStream, long length)
-			throws IOException {
+	public static byte[] get(InputStream inputStream, long length) throws IOException {
 		if (length == 0) {
 			return EMPTY_BYTES;
 		}
@@ -50,12 +49,11 @@ class Bytes {
 		return bytes;
 	}
 
-	public static boolean fill(InputStream inputStream, byte[] bytes)
-			throws IOException {
+	public static boolean fill(InputStream inputStream, byte[] bytes) throws IOException {
 		return fill(inputStream, bytes, 0, bytes.length);
 	}
 
-	public static boolean fill(InputStream inputStream, byte[] bytes, int offset,
+	private static boolean fill(InputStream inputStream, byte[] bytes, int offset,
 			int length) throws IOException {
 		while (length > 0) {
 			int read = inputStream.read(bytes, offset, length);
@@ -68,4 +66,11 @@ class Bytes {
 		return true;
 	}
 
+	public static long littleEndianValue(byte[] bytes, int offset, int length) {
+		long value = 0;
+		for (int i = length - 1; i >= 0; i--) {
+			value = ((value << 8) | (bytes[offset + i] & 0xFF));
+		}
+		return value;
+	}
 }

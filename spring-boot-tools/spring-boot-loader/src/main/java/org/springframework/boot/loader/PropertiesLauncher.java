@@ -421,10 +421,15 @@ public class PropertiesLauncher extends Launcher {
 	 * classpath entries).
 	 */
 	private static final class ArchiveEntryFilter implements EntryFilter {
+
+		private static final AsciiString DOT_JAR = new AsciiString(".jar");
+
+		private static final AsciiString DOT_ZIP = new AsciiString(".zip");
+
 		@Override
 		public boolean matches(Entry entry) {
-			return entry.isDirectory() || entry.getName().endsWith(".jar")
-					|| entry.getName().endsWith(".zip");
+			return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
+					|| entry.getName().endsWith(DOT_ZIP);
 		}
 	}
 
@@ -433,11 +438,13 @@ public class PropertiesLauncher extends Launcher {
 	 * (e.g. "lib/").
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
-		private final String prefix;
+
+		private final AsciiString prefix;
+
 		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
 		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = prefix;
+			this.prefix = new AsciiString(prefix);
 		}
 
 		@Override
