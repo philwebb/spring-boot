@@ -17,20 +17,14 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -38,9 +32,8 @@ import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 /**
- * A Jar file that can loaded from a {@link RandomAccessDataFile}. This class extends and
- * behaves in the same was a the standard JDK {@link JarFile} the following additional
- * functionality.
+ * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
+ * offers the following additional functionality.
  * <ul>
  * <li>Jar entries can be {@link JarEntryFilter filtered} during construction and new
  * filtered files can be {@link #getFilteredJarFile(JarEntryFilter...) created} from
@@ -56,7 +49,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataJarFile extends JarFile {
+public class JarFile extends java.util.jar.JarFile {
 
 	private final RandomAccessDataFile rootJarFile;
 
@@ -66,43 +59,42 @@ public class RandomAccessDataJarFile extends JarFile {
 
 	private final long size;
 
-	private Map<String, JarEntry> entries = new LinkedHashMap<String, JarEntry>();
+	private Map<String, java.util.jar.JarEntry> entries = new LinkedHashMap<String, java.util.jar.JarEntry>();
 
 	private Manifest manifest;
 
 	/**
-	 * Create a new {@link RandomAccessDataJarFile} backed by the specified file.
+	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	public RandomAccessDataJarFile(File file, JarEntryFilter... filters)
-			throws IOException {
+	public JarFile(File file, JarEntryFilter... filters) throws IOException {
 		this(new RandomAccessDataFile(file), filters);
 	}
 
 	/**
-	 * Create a new {@link RandomAccessDataJarFile} backed by the specified file.
+	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	public RandomAccessDataJarFile(RandomAccessDataFile file, JarEntryFilter... filters)
+	private JarFile(RandomAccessDataFile file, JarEntryFilter... filters)
 			throws IOException {
 		this(file, file.getFile().getPath(), file, filters);
 	}
 
 	/**
-	 * Private constructor used to create a new {@link RandomAccessDataJarFile} either
-	 * directly or from a nested entry.
+	 * Private constructor used to create a new {@link JarFile} either directly or from a
+	 * nested entry.
 	 * @param rootJarFile the root jar file
 	 * @param name the name of this file
 	 * @param data the underlying data
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	private RandomAccessDataJarFile(RandomAccessDataFile rootJarFile, String name,
-			RandomAccessData data, JarEntryFilter... filters) throws IOException {
+	private JarFile(RandomAccessDataFile rootJarFile, String name, RandomAccessData data,
+			JarEntryFilter... filters) throws IOException {
 		super(rootJarFile.getFile());
 		this.rootJarFile = rootJarFile;
 		this.name = name;
@@ -112,7 +104,7 @@ public class RandomAccessDataJarFile extends JarFile {
 		RandomAccessDataJarEntryReader entryReader = new RandomAccessDataJarEntryReader(
 				data);
 		try {
-			RandomAccessDataJarEntry entry = entryReader.getNextEntry();
+			JarEntry entry = entryReader.getNextEntry();
 			while (entry != null) {
 				addJarEntry(entry, filters);
 				entry = entryReader.getNextEntry();
@@ -124,7 +116,7 @@ public class RandomAccessDataJarFile extends JarFile {
 		}
 	}
 
-	private void addJarEntry(RandomAccessDataJarEntry entry, JarEntryFilter... filters) {
+	private void addJarEntry(JarEntry entry, JarEntryFilter... filters) {
 		String name = entry.getName();
 		for (JarEntryFilter filter : filters) {
 			name = (filter == null || name == null ? name : filter.apply(name, entry));
@@ -145,7 +137,7 @@ public class RandomAccessDataJarFile extends JarFile {
 	}
 
 	@Override
-	public Enumeration<JarEntry> entries() {
+	public Enumeration<java.util.jar.JarEntry> entries() {
 		return Collections.enumeration(this.entries.values());
 	}
 
@@ -156,7 +148,7 @@ public class RandomAccessDataJarFile extends JarFile {
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		JarEntry entry = this.entries.get(name);
+		java.util.jar.JarEntry entry = this.entries.get(name);
 		if (entry == null && name != null && !name.endsWith("/")) {
 			entry = this.entries.get(name + "/");
 		}
@@ -169,13 +161,13 @@ public class RandomAccessDataJarFile extends JarFile {
 	}
 
 	/**
-	 * Return a nested {@link RandomAccessDataJarFile} loaded from the specified entry.
+	 * Return a nested {@link JarFile} loaded from the specified entry.
 	 * @param ze the zip entry
 	 * @param filters an optional set of jar entry filters to be applied
-	 * @return a {@link RandomAccessDataJarFile} for the entry
+	 * @return a {@link JarFile} for the entry
 	 * @throws IOException
 	 */
-	public synchronized RandomAccessDataJarFile getNestedJarFile(final ZipEntry ze,
+	public synchronized JarFile getNestedJarFile(final ZipEntry ze,
 			JarEntryFilter... filters) throws IOException {
 		if (ze == null) {
 			throw new IllegalArgumentException("ZipEntry must not be null");
@@ -188,52 +180,50 @@ public class RandomAccessDataJarFile extends JarFile {
 		return getNestedJarFileFromFileEntry(ze, filters);
 	}
 
-	private RandomAccessDataJarFile getNestedJarFileFromDirectoryEntry(
-			final ZipEntry entry, JarEntryFilter... filters) throws IOException {
+	private JarFile getNestedJarFileFromDirectoryEntry(final ZipEntry entry,
+			JarEntryFilter... filters) throws IOException {
 		final String name = entry.getName();
 		JarEntryFilter[] filtersToUse = new JarEntryFilter[filters.length + 1];
 		System.arraycopy(filters, 0, filtersToUse, 1, filters.length);
 		filtersToUse[0] = new JarEntryFilter() {
 			@Override
-			public String apply(String entryName, JarEntry ze) {
+			public String apply(String entryName, java.util.jar.JarEntry ze) {
 				if (entryName.startsWith(name) && !entryName.equals(name)) {
 					return entryName.substring(entry.getName().length());
 				}
 				return null;
 			}
 		};
-		return new RandomAccessDataJarFile(this.rootJarFile, getName() + "!/"
+		return new JarFile(this.rootJarFile, getName() + "!/"
 				+ name.substring(0, name.length() - 1), this.data, filtersToUse);
 	}
 
-	private RandomAccessDataJarFile getNestedJarFileFromFileEntry(ZipEntry entry,
+	private JarFile getNestedJarFileFromFileEntry(ZipEntry entry,
 			JarEntryFilter... filters) throws IOException {
 		if (entry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException("Unable to open nested compressed entry "
 					+ entry.getName());
 		}
-		return new RandomAccessDataJarFile(this.rootJarFile, getName() + "!/"
-				+ entry.getName(), getContainedEntry(entry).getData(), filters);
+		return new JarFile(this.rootJarFile, getName() + "!/" + entry.getName(),
+				getContainedEntry(entry).getData(), filters);
 	}
 
 	/**
 	 * Return a new jar based on the filtered contents of this file.
 	 * @param filters the set of jar entry filters to be applied
-	 * @return a filtered {@link RandomAccessDataJarFile}
+	 * @return a filtered {@link JarFile}
 	 * @throws IOException
 	 */
-	public synchronized RandomAccessDataJarFile getFilteredJarFile(
-			JarEntryFilter... filters) throws IOException {
-		return new RandomAccessDataJarFile(this.rootJarFile, getName(), this.data,
-				filters);
+	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
+			throws IOException {
+		return new JarFile(this.rootJarFile, getName(), this.data, filters);
 	}
 
-	private synchronized RandomAccessDataJarEntry getContainedEntry(ZipEntry ze)
-			throws IOException {
+	private synchronized JarEntry getContainedEntry(ZipEntry ze) throws IOException {
 		if (!this.entries.containsValue(ze)) {
 			throw new IllegalArgumentException("ZipEntry must be contained in this file");
 		}
-		return ((RandomAccessDataJarEntry) ze);
+		return ((JarEntry) ze);
 	}
 
 	@Override
@@ -263,121 +253,9 @@ public class RandomAccessDataJarFile extends JarFile {
 	 * @throws MalformedURLException
 	 */
 	public URL getUrl() throws MalformedURLException {
-		RandomAccessJarURLStreamHandler handler = new RandomAccessJarURLStreamHandler(
+		JarURLStreamHandler handler = new JarURLStreamHandler(
 				this);
 		return new URL("jar", "", -1, "file:" + getName() + "!/", handler);
-	}
-
-	/**
-	 * {@link URLStreamHandler} used to support {@link RandomAccessDataJarFile#getUrl()}.
-	 */
-	private static class RandomAccessJarURLStreamHandler extends URLStreamHandler {
-
-		private RandomAccessDataJarFile jarFile;
-
-		public RandomAccessJarURLStreamHandler(RandomAccessDataJarFile jarFile) {
-			this.jarFile = jarFile;
-		}
-
-		@Override
-		protected URLConnection openConnection(URL url) throws IOException {
-			return new RandomAccessJarURLConnection(url, this.jarFile);
-		}
-	}
-
-	/**
-	 * {@link JarURLConnection} used to support {@link RandomAccessDataJarFile#getUrl()}.
-	 */
-	private static class RandomAccessJarURLConnection extends JarURLConnection {
-
-		private RandomAccessDataJarFile jarFile;
-
-		private JarEntry jarEntry;
-
-		private String jarEntryName;
-
-		private String contentType;
-
-		protected RandomAccessJarURLConnection(URL url, RandomAccessDataJarFile jarFile)
-				throws MalformedURLException {
-			super(new URL("jar:file:" + jarFile.getRootJarFile().getFile().getPath()
-					+ "!/"));
-			this.jarFile = jarFile;
-
-			String spec = url.getFile();
-			int separator = spec.lastIndexOf("!/");
-			if (separator == -1) {
-				throw new MalformedURLException("no !/ found in url spec:" + spec);
-			}
-			if (separator + 2 != spec.length()) {
-				this.jarEntryName = spec.substring(separator + 2);
-			}
-		}
-
-		@Override
-		public void connect() throws IOException {
-			if (this.jarEntryName != null) {
-				this.jarEntry = this.jarFile.getJarEntry(this.jarEntryName);
-				if (this.jarEntry == null) {
-					throw new FileNotFoundException("JAR entry " + this.jarEntryName
-							+ " not found in " + this.jarFile.getName());
-				}
-			}
-			this.connected = true;
-		}
-
-		@Override
-		public RandomAccessDataJarFile getJarFile() throws IOException {
-			connect();
-			return this.jarFile;
-		}
-
-		@Override
-		public JarEntry getJarEntry() throws IOException {
-			connect();
-			return this.jarEntry;
-		}
-
-		@Override
-		public InputStream getInputStream() throws IOException {
-			connect();
-			if (this.jarEntryName == null) {
-				throw new IOException("no entry name specified");
-			}
-			return this.jarFile.getInputStream(this.jarEntry);
-		}
-
-		@Override
-		public int getContentLength() {
-			try {
-				connect();
-				return (int) (this.jarEntry == null ? this.jarFile.size() : this.jarEntry
-						.getSize());
-			}
-			catch (IOException ex) {
-				return -1;
-			}
-		}
-
-		@Override
-		public Object getContent() throws IOException {
-			connect();
-			return (this.jarEntry == null ? this.jarFile : super.getContent());
-		}
-
-		@Override
-		public String getContentType() {
-			if (this.contentType == null) {
-				// Guess the content type, don't bother with steams as mark is not
-				// supported
-				this.contentType = (this.jarEntryName == null ? "x-java/jar" : null);
-				this.contentType = (this.contentType == null ? guessContentTypeFromName(this.jarEntryName)
-						: this.contentType);
-				this.contentType = (this.contentType == null ? "content/unknown"
-						: this.contentType);
-			}
-			return this.contentType;
-		}
 	}
 
 }

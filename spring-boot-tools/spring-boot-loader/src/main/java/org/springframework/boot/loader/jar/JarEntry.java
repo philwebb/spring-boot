@@ -19,17 +19,16 @@ package org.springframework.boot.loader.jar;
 import java.io.InputStream;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
-import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
- * A {@link JarEntry} used with a {@link RandomAccessDataJarFile}.
+ * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
  * 
  * @author Phillip Webb
  */
-class RandomAccessDataJarEntry extends JarEntry {
+class JarEntry extends java.util.jar.JarEntry {
 
 	private String name;
 
@@ -37,7 +36,7 @@ class RandomAccessDataJarEntry extends JarEntry {
 
 	private long time = -1;
 
-	public RandomAccessDataJarEntry(String name, RandomAccessData data) {
+	public JarEntry(String name, RandomAccessData data) {
 		super(name);
 		this.name = name;
 		this.data = data;

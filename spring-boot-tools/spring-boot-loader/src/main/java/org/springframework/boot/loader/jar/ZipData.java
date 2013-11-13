@@ -18,13 +18,12 @@ package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
 class ZipData {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
+	// FIXME LOOSE
 
 	private static final byte[] EMPTY_BYTES = new byte[] {};
 

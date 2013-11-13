@@ -47,7 +47,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link RandomAccessDataJarFile}.
+ * Tests for {@link JarFile}.
  * 
  * @author Phillip Webb
  */
@@ -61,27 +61,18 @@ public class RandomAccessJarFileTests {
 
 	private File rootJarFile;
 
-	private RandomAccessDataJarFile jarFile;
+	private JarFile jarFile;
 
 	@Before
 	public void setup() throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(this.rootJarFile);
-		this.jarFile = new RandomAccessDataJarFile(this.rootJarFile);
+		this.jarFile = new JarFile(this.rootJarFile);
 	}
 
 	@Test
 	public void createFromFile() throws Exception {
-		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(this.rootJarFile);
-		assertThat(jarFile.getName(), notNullValue(String.class));
-		jarFile.close();
-	}
-
-	@Test
-	public void createFromRandomAccessDataFile() throws Exception {
-		RandomAccessDataFile randomAccessDataFile = new RandomAccessDataFile(
-				this.rootJarFile, 1);
-		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(randomAccessDataFile);
+		JarFile jarFile = new JarFile(this.rootJarFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
 		jarFile.close();
 	}
@@ -143,7 +134,7 @@ public class RandomAccessJarFileTests {
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(
 				this.rootJarFile, 1));
-		RandomAccessDataJarFile jarFile = new RandomAccessDataJarFile(randomAccessDataFile);
+		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
 	}
@@ -154,7 +145,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/"));
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile(), sameInstance((JarFile) this.jarFile));
+		assertThat(jarURLConnection.getJarFile(), sameInstance(this.jarFile));
 		assertThat(jarURLConnection.getJarEntry(), nullValue());
 		assertThat(jarURLConnection.getContentLength(), greaterThan(1));
 		assertThat(jarURLConnection.getContent(), sameInstance((Object) this.jarFile));
@@ -167,7 +158,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/1.dat"));
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile(), sameInstance((JarFile) this.jarFile));
+		assertThat(jarURLConnection.getJarFile(), sameInstance(this.jarFile));
 		assertThat(jarURLConnection.getJarEntry(),
 				sameInstance(this.jarFile.getJarEntry("1.dat")));
 		assertThat(jarURLConnection.getContentLength(), equalTo(1));
@@ -203,7 +194,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getNestedJarFile() throws Exception {
-		RandomAccessDataJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
 				.getEntry("nested.jar"));
 
 		Enumeration<JarEntry> entries = nestedJarFile.entries();
@@ -222,13 +213,13 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/nested.jar!/"));
 		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
-				sameInstance((JarFile) nestedJarFile));
+				sameInstance(nestedJarFile));
 	}
 
 	@Test
 	public void getNestedJarDirectory() throws Exception {
-		RandomAccessDataJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
-				.getEntry("d/"));
+		JarFile nestedJarFile = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("d/"));
 
 		Enumeration<JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("9.dat"));
@@ -243,7 +234,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/d!/"));
 		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
-				sameInstance((JarFile) nestedJarFile));
+				sameInstance(nestedJarFile));
 	}
 
 	@Test
@@ -263,16 +254,15 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getFilteredJarFile() throws Exception {
-		RandomAccessDataJarFile filteredJarFile = this.jarFile
-				.getFilteredJarFile(new JarEntryFilter() {
-					@Override
-					public String apply(String entryName, JarEntry entry) {
-						if (entryName.equals("1.dat")) {
-							return "x.dat";
-						}
-						return null;
-					}
-				});
+		JarFile filteredJarFile = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
+			@Override
+			public String apply(String entryName, JarEntry entry) {
+				if (entryName.equals("1.dat")) {
+					return "x.dat";
+				}
+				return null;
+			}
+		});
 		Enumeration<JarEntry> entries = filteredJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("x.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));

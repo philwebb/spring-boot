@@ -23,7 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 
-import org.springframework.boot.loader.jar.RandomAccessDataJarFile;
+import org.springframework.boot.loader.jar.JarFile;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
@@ -161,8 +161,8 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					String path = name.replace('.', '/').concat(".class");
 					for (URL url : getURLs()) {
 						try {
-							if (url.getContent() instanceof RandomAccessDataJarFile) {
-								RandomAccessDataJarFile jarFile = (RandomAccessDataJarFile) url
+							if (url.getContent() instanceof JarFile) {
+								JarFile jarFile = (JarFile) url
 										.getContent();
 								if (jarFile.getManifest() != null
 										&& jarFile.getJarEntry(path) != null) {

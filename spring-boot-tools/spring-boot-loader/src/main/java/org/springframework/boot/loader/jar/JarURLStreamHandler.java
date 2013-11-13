@@ -16,21 +16,24 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+
 /**
- * Interface that can be used to filter and optionally rename jar entries.
- * 
- * @author Phillip Webb
+ * {@link URLStreamHandler} used to support {@link JarFile#getUrl()}.
  */
-public interface JarEntryFilter {
+class JarURLStreamHandler extends URLStreamHandler {
 
-	/**
-	 * Apply the jar entry filter.
-	 * @param entryName the current entry name. This may be different that the original
-	 * entry name if a previous filter has been applied
-	 * @param entry the entry to filter
-	 * @return the new name of the entry or {@code null} if the entry should not be
-	 * included.
-	 */
-	String apply(String entryName, java.util.jar.JarEntry entry);
+	private JarFile jarFile;
 
+	public JarURLStreamHandler(JarFile jarFile) {
+		this.jarFile = jarFile;
+	}
+
+	@Override
+	protected URLConnection openConnection(URL url) throws IOException {
+		return new JarURLConnection(url, this.jarFile);
+	}
 }

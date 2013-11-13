@@ -34,22 +34,22 @@ class RandomAccessDataJarEntryReader {
 
 	private final ZipData zipData = new ZipData();
 
-	private final List<RandomAccessDataJarEntry> entries;
+	private final List<JarEntry> entries;
 
 	private Manifest manifest;
 
-	private final Iterator<RandomAccessDataJarEntry> entriesIterator;
+	private final Iterator<JarEntry> entriesIterator;
 
 	public RandomAccessDataJarEntryReader(RandomAccessData data) throws IOException {
 		EndOfCentralDirectoryRecord endRecord = new EndOfCentralDirectoryRecord(data);
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(data);
-		this.entries = new ArrayList<RandomAccessDataJarEntry>(
+		this.entries = new ArrayList<JarEntry>(
 				endRecord.getNumberOfRecords());
 		byte[] header = new byte[46];
 		InputStream stream = centralDirectory.getInputStream();
 		try {
 			while (this.zipData.fillBytes(stream, header)) {
-				RandomAccessDataJarEntry entry = createEntry(data, header, stream);
+				JarEntry entry = createEntry(data, header, stream);
 				this.entries.add(entry);
 			}
 		}
@@ -60,7 +60,7 @@ class RandomAccessDataJarEntryReader {
 		this.entriesIterator = this.entries.iterator();
 	}
 
-	private RandomAccessDataJarEntry createEntry(RandomAccessData data, byte[] header,
+	private JarEntry createEntry(RandomAccessData data, byte[] header,
 			InputStream inputStream) throws IOException {
 		String name = this.zipData.readString(inputStream,
 				ZipData.getValue(header, 28, 2));
@@ -74,7 +74,7 @@ class RandomAccessDataJarEntryReader {
 		localFileOffset += LOCAL_FILE_HEADER_SIZE + name.length() + extra.length;
 
 		RandomAccessData entryData = data.getSubsection(localFileOffset, compressedSize);
-		RandomAccessDataJarEntry entry = new RandomAccessDataJarEntry(name, entryData);
+		JarEntry entry = new JarEntry(name, entryData);
 
 		entry.setCompressedSize(compressedSize);
 		entry.setMethod((int) ZipData.getValue(header, 10, 2));
@@ -89,7 +89,7 @@ class RandomAccessDataJarEntryReader {
 
 	private Manifest createManifest() throws IOException {
 		int i = 0;
-		for (RandomAccessDataJarEntry entry : this.entries) {
+		for (JarEntry entry : this.entries) {
 			if (entry.getName().equals("META-INF/MANIFEST.MF")) {
 				InputStream inputStream = entry.getInputStream();
 				try {
@@ -107,7 +107,7 @@ class RandomAccessDataJarEntryReader {
 		return null;
 	}
 
-	public RandomAccessDataJarEntry getNextEntry() throws IOException {
+	public JarEntry getNextEntry() throws IOException {
 		if (this.entriesIterator.hasNext()) {
 			return this.entriesIterator.next();
 		}
