@@ -21,60 +21,42 @@ import java.io.InputStream;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
-class ZipData {
-
-	// FIXME LOOSE
+/**
+ * @author Phillip Webb
+ */
+class Bytes {
 
 	private static final byte[] EMPTY_BYTES = new byte[] {};
 
-	private static final String EMPTY_STRING = "";
-
-	private byte[] tempBuffer = new byte[256];
-
-	public byte[] readBytes(RandomAccessData data) throws IOException {
+	public static byte[] get(RandomAccessData data) throws IOException {
 		InputStream inputStream = data.getInputStream();
 		try {
-			return readBytes(inputStream, data.getSize());
+			return get(inputStream, data.getSize());
 		}
 		finally {
 			inputStream.close();
 		}
 	}
 
-	public String readString(InputStream inputStream, long length) throws IOException {
-		if (length == 0) {
-			return EMPTY_STRING;
-		}
-		if (this.tempBuffer.length < length) {
-			this.tempBuffer = new byte[(int) (length + 100)];
-		}
-		if (!fillBytes(inputStream, this.tempBuffer, 0, (int) length)) {
-			throw new IOException("Unable to read bytes");
-		}
-		char[] chars = new char[(int) length];
-		for (int i = 0; i < length; i++) {
-			chars[i] = (char) this.tempBuffer[i];
-		}
-		return new String(chars);
-	}
-
-	public byte[] readBytes(InputStream inputStream, long length) throws IOException {
+	public static byte[] get(InputStream inputStream, long length)
+			throws IOException {
 		if (length == 0) {
 			return EMPTY_BYTES;
 		}
 		byte[] bytes = new byte[(int) length];
-		if (!fillBytes(inputStream, bytes)) {
+		if (!fill(inputStream, bytes)) {
 			throw new IOException("Unable to read bytes");
 		}
 		return bytes;
 	}
 
-	public boolean fillBytes(InputStream inputStream, byte[] bytes) throws IOException {
-		return fillBytes(inputStream, bytes, 0, bytes.length);
+	public static boolean fill(InputStream inputStream, byte[] bytes)
+			throws IOException {
+		return fill(inputStream, bytes, 0, bytes.length);
 	}
 
-	public boolean fillBytes(InputStream inputStream, byte[] bytes, int offset, int length)
-			throws IOException {
+	public static boolean fill(InputStream inputStream, byte[] bytes, int offset,
+			int length) throws IOException {
 		while (length > 0) {
 			int read = inputStream.read(bytes, offset, length);
 			if (read == -1) {

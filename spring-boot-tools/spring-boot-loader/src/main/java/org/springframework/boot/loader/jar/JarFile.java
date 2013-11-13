@@ -59,7 +59,7 @@ public class JarFile extends java.util.jar.JarFile {
 
 	private final long size;
 
-	private Map<String, java.util.jar.JarEntry> entries = new LinkedHashMap<String, java.util.jar.JarEntry>();
+	private Map<JarEntryName, java.util.jar.JarEntry> entries = new LinkedHashMap<JarEntryName, java.util.jar.JarEntry>();
 
 	private Manifest manifest;
 
@@ -253,8 +253,7 @@ public class JarFile extends java.util.jar.JarFile {
 	 * @throws MalformedURLException
 	 */
 	public URL getUrl() throws MalformedURLException {
-		JarURLStreamHandler handler = new JarURLStreamHandler(
-				this);
+		JarURLStreamHandler handler = new JarURLStreamHandler(this);
 		return new URL("jar", "", -1, "file:" + getName() + "!/", handler);
 	}
 

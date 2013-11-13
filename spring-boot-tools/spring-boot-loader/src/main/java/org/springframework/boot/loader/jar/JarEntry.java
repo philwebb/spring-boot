@@ -30,40 +30,11 @@ import org.springframework.boot.loader.data.RandomAccessData;
  */
 class JarEntry extends java.util.jar.JarEntry {
 
-	private String name;
-
 	private final RandomAccessData data;
-
-	private long time = -1;
 
 	public JarEntry(String name, RandomAccessData data) {
 		super(name);
-		this.name = name;
 		this.data = data;
-	}
-
-	void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public void setTime(long time) {
-		// Time conversion is slow, only do it on the first read
-		this.time = time;
-	}
-
-	@Override
-	public long getTime() {
-		if (this.time != -1) {
-			super.setTime(this.time);
-			this.time = -1;
-		}
-		return super.getTime();
 	}
 
 	public InputStream getInputStream() {
