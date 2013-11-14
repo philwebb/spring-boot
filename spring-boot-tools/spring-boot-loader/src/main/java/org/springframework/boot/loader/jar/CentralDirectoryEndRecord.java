@@ -56,6 +56,7 @@ class CentralDirectoryEndRecord {
 	public CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);
 		this.size = MINIMUM_SIZE;
+		this.offset = this.block.length - this.size;
 		while (!isValid()) {
 			this.size++;
 			if (this.size > this.block.length) {

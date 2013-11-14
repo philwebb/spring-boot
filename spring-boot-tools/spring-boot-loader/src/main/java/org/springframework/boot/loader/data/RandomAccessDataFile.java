@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.
@@ -30,7 +33,9 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	private static final int DEFAULT_CONCURRENT_READS = 4;
 
-	private File file;
+	private final File file;
+
+	private final FilePool filePool;
 
 	private final long offset;
 
@@ -62,18 +67,20 @@ public class RandomAccessDataFile implements RandomAccessData {
 			throw new IllegalArgumentException("File must exist");
 		}
 		this.file = file;
+		this.filePool = new FilePool(concurrentReads);
 		this.offset = 0L;
 		this.length = file.length();
 	}
 
 	/**
 	 * Private constructor used to create a {@link #getSubsection(long, long) subsection}.
-	 * @param file the underlying file
+	 * @param pool the underlying pool
 	 * @param offset the offset of the section
 	 * @param length the length of the section
 	 */
-	private RandomAccessDataFile(File file, long offset, long length) {
+	private RandomAccessDataFile(File file, FilePool pool, long offset, long length) {
 		this.file = file;
+		this.filePool = pool;
 		this.offset = offset;
 		this.length = length;
 	}
@@ -87,13 +94,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	@Override
-	public InputStream getInputStream() {
-		try {
-			return new DataInputStream(this.file, this.offset, this.length);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
+	public InputStream getInputStream(ResourceAccess access) throws IOException {
+		return new DataInputStream(access);
 	}
 
 	@Override
@@ -101,7 +103,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 		if (offset < 0 || length < 0 || offset + length > this.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		return new RandomAccessDataFile(this.file, this.offset + offset, length);
+		return new RandomAccessDataFile(this.file, this.filePool, this.offset + offset,
+				length);
 	}
 
 	@Override
@@ -109,24 +112,24 @@ public class RandomAccessDataFile implements RandomAccessData {
 		return this.length;
 	}
 
-	public void close() {
-		// FIXME close all streams
+	public void close() throws IOException {
+		this.filePool.close();
 	}
 
 	/**
 	 * {@link RandomAccessDataInputStream} implementation for the
 	 * {@link RandomAccessDataFile}.
 	 */
-	private static class DataInputStream extends InputStream {
+	private class DataInputStream extends InputStream {
 
-		private final RandomAccessFile file;
+		private RandomAccessFile file;
 
-		private long remaining;
+		private long position;
 
-		public DataInputStream(File file, long offset, long length) throws IOException {
-			this.file = new RandomAccessFile(file, "r");
-			this.file.seek(offset);
-			this.remaining = length;
+		public DataInputStream(ResourceAccess access) throws IOException {
+			if (access == ResourceAccess.ONCE) {
+				this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
+			}
 		}
 
 		@Override
@@ -163,19 +166,38 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (cap(len) <= 0) {
 				return -1;
 			}
-			if (b == null) {
-				int rtn = this.file.read();
-				moveOn(rtn == -1 ? 0 : 1);
-				return rtn;
+			RandomAccessFile file = this.file;
+			if (file == null) {
+				file = RandomAccessDataFile.this.filePool.acquire();
 			}
-			else {
-				return (int) moveOn(this.file.read(b, off, (int) cap(len)));
+			try {
+				file.seek(RandomAccessDataFile.this.offset + this.position);
+				if (b == null) {
+					int rtn = file.read();
+					moveOn(rtn == -1 ? 0 : 1);
+					return rtn;
+				}
+				else {
+					return (int) moveOn(file.read(b, off, (int) cap(len)));
+				}
+			}
+			finally {
+				if (this.file == null) {
+					RandomAccessDataFile.this.filePool.release(file);
+				}
 			}
 		}
 
 		@Override
 		public long skip(long n) throws IOException {
 			return (n <= 0 ? 0 : moveOn(cap(n)));
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (this.file != null) {
+				this.file.close();
+			}
 		}
 
 		/**
@@ -185,7 +207,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @return the capped value
 		 */
 		private long cap(long n) {
-			return Math.min(this.remaining, n);
+			return Math.min(RandomAccessDataFile.this.length - this.position, n);
 		}
 
 		/**
@@ -194,9 +216,64 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @return the amount moved
 		 */
 		private long moveOn(long amount) {
-			this.remaining -= amount;
+			this.position += amount;
 			return amount;
 		}
 	}
 
+	/**
+	 * Manage a pool that can be used to perform concurrent reads on the underlying
+	 * {@link RandomAccessFile}.
+	 */
+	private class FilePool {
+
+		private int size;
+
+		private final Semaphore available;
+
+		private final Queue<RandomAccessFile> files;
+
+		public FilePool(int size) {
+			this.size = size;
+			this.available = new Semaphore(size);
+			this.files = new ConcurrentLinkedQueue<RandomAccessFile>();
+		}
+
+		@SuppressWarnings("resource")
+		public RandomAccessFile acquire() throws IOException {
+			try {
+				this.available.acquire();
+				RandomAccessFile file = this.files.poll();
+				return (file == null ? new RandomAccessFile(
+						RandomAccessDataFile.this.file, "r") : file);
+			}
+			catch (InterruptedException ex) {
+				throw new IOException(ex);
+			}
+		}
+
+		public void release(RandomAccessFile file) {
+			this.files.add(file);
+			this.available.release();
+		}
+
+		public void close() throws IOException {
+			try {
+				this.available.acquire(this.size);
+				try {
+					RandomAccessFile file = this.files.poll();
+					while (file != null) {
+						file.close();
+						file = this.files.poll();
+					}
+				}
+				finally {
+					this.available.release(this.size);
+				}
+			}
+			catch (InterruptedException ex) {
+				throw new IOException(ex);
+			}
+		}
+	}
 }

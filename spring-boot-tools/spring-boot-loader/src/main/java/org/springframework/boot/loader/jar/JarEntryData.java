@@ -22,6 +22,7 @@ import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until
@@ -53,7 +54,9 @@ public final class JarEntryData {
 
 	private final AsciiBytes comment;
 
-	private final RandomAccessData data;
+	private long dataOffset;
+
+	private RandomAccessData data;
 
 	private JarEntry entry;
 
@@ -75,11 +78,10 @@ public final class JarEntryData {
 		this.extra = Bytes.get(inputStream, extraLength);
 		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
 
-		long offset = Bytes.littleEndianValue(header, 42, 4);
-		offset += LOCAL_FILE_HEADER_SIZE;
-		offset += this.name.length();
-		offset += this.extra.length;
-		this.data = source.getData().getSubsection(offset, this.compressedSize);
+		this.dataOffset = Bytes.littleEndianValue(header, 42, 4);
+		this.dataOffset += LOCAL_FILE_HEADER_SIZE;
+		this.dataOffset += this.name.length();
+		this.dataOffset += this.extra.length;
 	}
 
 	JarFile getSource() {
@@ -126,8 +128,8 @@ public final class JarEntryData {
 		return this.comment;
 	}
 
-	public InputStream getInputStream() {
-		InputStream inputStream = getData().getInputStream();
+	public InputStream getInputStream() throws IOException {
+		InputStream inputStream = getData().getInputStream(ResourceAccess.PER_READ);
 		if (this.method == ZipEntry.DEFLATED) {
 			inputStream = new ZipInflaterInputStream(inputStream, this.size);
 		}
@@ -135,6 +137,10 @@ public final class JarEntryData {
 	}
 
 	public RandomAccessData getData() {
+		if (this.data == null) {
+			this.data = this.source.getData().getSubsection(this.dataOffset,
+					this.compressedSize);
+		}
 		return this.data;
 	}
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Utilities for dealing with bytes.
@@ -31,7 +32,7 @@ class Bytes {
 	private static final byte[] EMPTY_BYTES = new byte[] {};
 
 	public static byte[] get(RandomAccessData data) throws IOException {
-		InputStream inputStream = data.getInputStream();
+		InputStream inputStream = data.getInputStream(ResourceAccess.ONCE);
 		try {
 			return get(inputStream, data.getSize());
 		}

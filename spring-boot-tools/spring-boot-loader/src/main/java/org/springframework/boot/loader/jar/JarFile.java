@@ -21,15 +21,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 /**
@@ -64,9 +67,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private final long size;
 
-	private Map<AsciiBytes, JarEntryData> entries = new LinkedHashMap<AsciiBytes, JarEntryData>();
+	private List<JarEntryData> entries;
 
-	private JarEntryData manifestData;
+	private Map<AsciiBytes, JarEntryData> entriesByName;
+
+	private JarEntryData manifestEntry;
 
 	private Manifest manifest;
 
@@ -113,12 +118,15 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	private void loadJarEntries(JarEntryFilter[] filters) throws IOException {
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(this.data);
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
-		InputStream inputStream = centralDirectory.getInputStream();
+		int numberOfRecords = endRecord.getNumberOfRecords();
+		this.entries = new ArrayList<JarEntryData>(numberOfRecords);
+		this.entriesByName = new HashMap<AsciiBytes, JarEntryData>(numberOfRecords);
+		InputStream inputStream = centralDirectory.getInputStream(ResourceAccess.ONCE);
 		try {
-			JarEntryData data = JarEntryData.fromInputStream(this, inputStream);
-			while (data != null) {
-				addJarEntry(data, filters);
-				data = JarEntryData.fromInputStream(this, inputStream);
+			JarEntryData entry = JarEntryData.fromInputStream(this, inputStream);
+			while (entry != null) {
+				addJarEntry(entry, filters);
+				entry = JarEntryData.fromInputStream(this, inputStream);
 			}
 		}
 		finally {
@@ -126,23 +134,24 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 	}
 
-	private void addJarEntry(JarEntryData entryData, JarEntryFilter[] filters) {
-		AsciiBytes name = entryData.getName();
+	private void addJarEntry(JarEntryData entry, JarEntryFilter[] filters) {
+		AsciiBytes name = entry.getName();
 		for (JarEntryFilter filter : filters) {
-			name = (filter == null || name == null ? name : filter.apply(name, entryData));
+			name = (filter == null || name == null ? name : filter.apply(name, entry));
 		}
 		if (name != null) {
-			entryData.setName(name);
-			this.entries.put(name, entryData);
+			entry.setName(name);
+			this.entries.add(entry);
+			this.entriesByName.put(name, entry);
 			if (name.startsWith(META_INF)) {
-				processMetaInfEntry(name, entryData);
+				processMetaInfEntry(name, entry);
 			}
 		}
 	}
 
-	private void processMetaInfEntry(AsciiBytes name, JarEntryData entryData) {
+	private void processMetaInfEntry(AsciiBytes name, JarEntryData entry) {
 		if (name.equals(MANIFEST_MF)) {
-			this.manifestData = entryData;
+			this.manifestEntry = entry;
 		}
 	}
 
@@ -156,11 +165,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public Manifest getManifest() throws IOException {
-		if (this.manifestData == null) {
+		if (this.manifestEntry == null) {
 			return null;
 		}
 		if (this.manifest == null) {
-			InputStream inputStream = this.manifestData.getInputStream();
+			InputStream inputStream = this.manifestEntry.getInputStream();
 			try {
 				this.manifest = new Manifest(inputStream);
 			}
@@ -190,7 +199,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public Iterator<JarEntryData> iterator() {
-		return this.entries.values().iterator();
+		return this.entries.iterator();
 	}
 
 	@Override
@@ -203,9 +212,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		if (name == null) {
 			return null;
 		}
-		JarEntryData entryData = this.entries.get(new AsciiBytes(name));
+		JarEntryData entryData = this.entriesByName.get(new AsciiBytes(name));
 		if (entryData == null && !name.endsWith("/")) {
-			entryData = this.entries.get(new AsciiBytes(name + "/"));
+			entryData = this.entriesByName.get(new AsciiBytes(name + "/"));
 		}
 		return entryData.getJarEntry();
 	}
