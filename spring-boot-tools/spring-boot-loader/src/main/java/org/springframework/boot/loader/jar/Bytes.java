@@ -22,6 +22,8 @@ import java.io.InputStream;
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
+ * Utilities for dealing with bytes.
+ * 
  * @author Phillip Webb
  */
 class Bytes {

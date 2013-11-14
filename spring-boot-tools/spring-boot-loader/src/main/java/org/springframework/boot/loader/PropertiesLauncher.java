@@ -422,9 +422,9 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	private static final class ArchiveEntryFilter implements EntryFilter {
 
-		private static final AsciiString DOT_JAR = new AsciiString(".jar");
+		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
 
-		private static final AsciiString DOT_ZIP = new AsciiString(".zip");
+		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
 
 		@Override
 		public boolean matches(Entry entry) {
@@ -439,12 +439,12 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 
-		private final AsciiString prefix;
+		private final AsciiBytes prefix;
 
 		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
 		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = new AsciiString(prefix);
+			this.prefix = new AsciiBytes(prefix);
 		}
 
 		@Override

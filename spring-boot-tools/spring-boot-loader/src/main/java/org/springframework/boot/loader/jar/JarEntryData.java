@@ -18,10 +18,9 @@ package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 
-import org.springframework.boot.loader.AsciiString;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
@@ -34,109 +33,134 @@ public final class JarEntryData {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
+	private static final AsciiBytes SLASH = new AsciiBytes("/");
 
-	private JarFile source;
+	private final JarFile source;
 
-	private AsciiString name;
+	private AsciiBytes name;
+
+	private final int method;
+
+	private long time;
+
+	private long crc;
+
+	private int compressedSize;
+
+	private final int size;
 
 	private final byte[] extra;
 
-	private final byte[] comment;
+	private final AsciiBytes comment;
 
-	private final byte[] header;
+	private final RandomAccessData data;
 
-	private final RandomAccessData entryData;
+	private JarEntry entry;
 
-	private volatile JarEntry entry;
+	public JarEntryData(JarFile source, byte[] header, InputStream inputStream)
+			throws IOException {
 
-	private long offset;
-
-	private long compressedSize;
-
-	public JarEntryData(JarFile source, byte[] header, InputStream inputStream,
-			RandomAccessData data) throws IOException {
 		this.source = source;
+
+		this.method = (int) Bytes.littleEndianValue(header, 10, 2);
+		this.time = Bytes.littleEndianValue(header, 12, 4);
+		this.crc = Bytes.littleEndianValue(header, 16, 4);
+		this.compressedSize = (int) Bytes.littleEndianValue(header, 20, 4);
+		this.size = (int) Bytes.littleEndianValue(header, 24, 4);
 		long nameLength = Bytes.littleEndianValue(header, 28, 2);
-		this.name = new AsciiString(Bytes.get(inputStream, nameLength));
-		this.extra = Bytes.get(inputStream, Bytes.littleEndianValue(header, 30, 2));
-		this.comment = Bytes.get(inputStream, Bytes.littleEndianValue(header, 32, 2));
-		this.header = header;
-		this.offset = Bytes.littleEndianValue(this.header, 42, 4)
-				+ LOCAL_FILE_HEADER_SIZE + this.name.length() + this.extra.length;
-		this.compressedSize = Bytes.littleEndianValue(this.header, 20, 4);
-		RandomAccessData entryData = this.entryData.getSubsection(this.offset,
-				this.compressedSize);
-		this.entryData = entryData;
+		long extraLength = Bytes.littleEndianValue(header, 30, 2);
+		long commentLength = Bytes.littleEndianValue(header, 32, 2);
+
+		this.name = new AsciiBytes(Bytes.get(inputStream, nameLength));
+		this.extra = Bytes.get(inputStream, extraLength);
+		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
+
+		long offset = Bytes.littleEndianValue(header, 42, 4);
+		offset += LOCAL_FILE_HEADER_SIZE;
+		offset += this.name.length();
+		offset += this.extra.length;
+		this.data = source.getData().getSubsection(offset, this.compressedSize);
 	}
 
 	JarFile getSource() {
 		return this.source;
 	}
 
-	void setName(AsciiString name) {
+	void setName(AsciiBytes name) {
 		this.name = name;
 	}
 
-	public AsciiString getName() {
+	public AsciiBytes getName() {
 		return this.name;
 	}
 
-	public JarEntry getJarEntry() {
+	public boolean isDirectory() {
+		return this.name.endsWith(SLASH);
+	}
+
+	public int getMethod() {
+		return this.method;
+	}
+
+	public long getTime() {
+		return this.time;
+	}
+
+	public long getCrc() {
+		return this.crc;
+	}
+
+	public int getCompressedSize() {
+		return this.compressedSize;
+	}
+
+	public int getSize() {
+		return this.size;
+	}
+
+	public byte[] getExtra() {
+		return this.extra;
+	}
+
+	public AsciiBytes getComment() {
+		return this.comment;
+	}
+
+	public InputStream getInputStream() {
+		InputStream inputStream = getData().getInputStream();
+		if (this.method == ZipEntry.DEFLATED) {
+			inputStream = new ZipInflaterInputStream(inputStream, this.size);
+		}
+		return inputStream;
+	}
+
+	public RandomAccessData getData() {
+		return this.data;
+	}
+
+	JarEntry getJarEntry() {
 		if (this.entry == null) {
 			JarEntry entry = new JarEntry(this);
 			entry.setCompressedSize(this.compressedSize);
-			entry.setMethod((int) Bytes.littleEndianValue(this.header, 10, 2));
-			entry.setCrc(Bytes.littleEndianValue(this.header, 16, 4));
-			entry.setSize(Bytes.littleEndianValue(this.header, 24, 4));
+			entry.setMethod(this.method);
+			entry.setCrc(this.crc);
+			entry.setSize(this.size);
 			entry.setExtra(this.extra);
-			entry.setComment(new String(this.comment, UTF_8));
-			entry.setSize(Bytes.littleEndianValue(this.header, 24, 4));
-			entry.setTime(Bytes.littleEndianValue(this.header, 12, 4));
+			entry.setComment(this.comment.toString());
+			entry.setSize(this.size);
+			entry.setTime(this.time);
 			this.entry = entry;
 		}
 		return this.entry;
 	}
 
-	public static JarEntryData get(JarFile source, InputStream inputStream,
-			RandomAccessData data) throws IOException {
+	public static JarEntryData fromInputStream(JarFile source, InputStream inputStream)
+			throws IOException {
 		byte[] header = new byte[46];
 		if (!Bytes.fill(inputStream, header)) {
 			return null;
 		}
-		return new JarEntryData(source, header, inputStream, data);
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isDirectory() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @return
-	 */
-	public int getMethod() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	/**
-	 * @return the entryData
-	 */
-	public RandomAccessData getData() {
-		return this.entryData;
-	}
-
-	public InputStream getInputStream() {
-		// InputStream inputStream = getData().getInputStream();
-		// if (getMethod() == ZipEntry.DEFLATED) {
-		// inputStream = new ZipInflaterInputStream(inputStream, (int) getSize());
-		// }
-		// return inputStream;
-		throw new UnsupportedOperationException();
+		return new JarEntryData(source, header, inputStream);
 	}
 
 }

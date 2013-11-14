@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiString;
+import org.springframework.boot.loader.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
@@ -51,7 +51,7 @@ public class ExplodedArchive extends Archive {
 
 	private File root;
 
-	private Map<AsciiString, Entry> entries = new LinkedHashMap<AsciiString, Entry>();
+	private Map<AsciiBytes, Entry> entries = new LinkedHashMap<AsciiBytes, Entry>();
 
 	private Manifest manifest;
 
@@ -64,7 +64,7 @@ public class ExplodedArchive extends Archive {
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
-	private ExplodedArchive(File root, Map<AsciiString, Entry> entries) {
+	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
 		this.root = root;
 		this.entries = Collections.unmodifiableMap(entries);
 	}
@@ -76,7 +76,7 @@ public class ExplodedArchive extends Archive {
 			if (file.isDirectory()) {
 				name += "/";
 			}
-			FileEntry entry = new FileEntry(new AsciiString(name), file);
+			FileEntry entry = new FileEntry(new AsciiBytes(name), file);
 			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
@@ -132,9 +132,9 @@ public class ExplodedArchive extends Archive {
 
 	@Override
 	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
-		Map<AsciiString, Entry> filteredEntries = new LinkedHashMap<AsciiString, Archive.Entry>();
-		for (Map.Entry<AsciiString, Entry> entry : this.entries.entrySet()) {
-			AsciiString filteredName = filter.apply(entry.getKey(), entry.getValue());
+		Map<AsciiBytes, Entry> filteredEntries = new LinkedHashMap<AsciiBytes, Archive.Entry>();
+		for (Map.Entry<AsciiBytes, Entry> entry : this.entries.entrySet()) {
+			AsciiBytes filteredName = filter.apply(entry.getKey(), entry.getValue());
 			if (filteredName != null) {
 				filteredEntries.put(filteredName, new FileEntry(filteredName,
 						((FileEntry) entry.getValue()).getFile()));
@@ -145,11 +145,11 @@ public class ExplodedArchive extends Archive {
 
 	private class FileEntry implements Entry {
 
-		private final AsciiString name;
+		private final AsciiBytes name;
 
 		private final File file;
 
-		public FileEntry(AsciiString name, File file) {
+		public FileEntry(AsciiBytes name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -164,7 +164,7 @@ public class ExplodedArchive extends Archive {
 		}
 
 		@Override
-		public AsciiString getName() {
+		public AsciiBytes getName() {
 			return this.name;
 		}
 	}

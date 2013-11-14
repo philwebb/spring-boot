@@ -20,6 +20,12 @@ import java.io.IOException;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
+/**
+ * A ZIP File "End of central directory record" (EOCD).
+ * 
+ * @author Phillip Webb
+ * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
+ */
 class CentralDirectoryEndRecord {
 
 	private static final int MINIMUM_SIZE = 22;
@@ -40,6 +46,13 @@ class CentralDirectoryEndRecord {
 
 	private int size;
 
+	/**
+	 * Create a new {@link CentralDirectoryEndRecord} instance from the specified
+	 * {@link RandomAccessData}, searching backwards from the end until a valid block is
+	 * located.
+	 * @param data the source data
+	 * @throws IOException
+	 */
 	public CentralDirectoryEndRecord(RandomAccessData data) throws IOException {
 		this.block = createBlockFromEndOfData(data, READ_BLOCK_SIZE);
 		this.size = MINIMUM_SIZE;
@@ -73,12 +86,21 @@ class CentralDirectoryEndRecord {
 		return this.size == MINIMUM_SIZE + commentLength;
 	}
 
+	/**
+	 * Return the bytes of the "Central directory" based on the offset indicated in this
+	 * record.
+	 * @param data the source data
+	 * @return the central directory data
+	 */
 	public RandomAccessData getCentralDirectory(RandomAccessData data) {
 		long offset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
 		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
 		return data.getSubsection(offset, length);
 	}
 
+	/**
+	 * Return the number of ZIP entries in the file.
+	 */
 	public int getNumberOfRecords() {
 		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);
 	}

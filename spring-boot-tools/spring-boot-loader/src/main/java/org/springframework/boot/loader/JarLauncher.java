@@ -28,7 +28,7 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	private static final AsciiString LIB = new AsciiString("lib/");
+	private static final AsciiBytes LIB = new AsciiBytes("lib/");
 
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {

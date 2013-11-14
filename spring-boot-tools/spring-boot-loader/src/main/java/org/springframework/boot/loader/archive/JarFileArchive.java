@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiString;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.jar.JarEntryData;
 import org.springframework.boot.loader.jar.JarEntryFilter;
 import org.springframework.boot.loader.jar.JarFile;
@@ -92,7 +92,7 @@ public class JarFileArchive extends Archive {
 	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
 		JarFile filteredJar = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
 			@Override
-			public AsciiString apply(AsciiString name, JarEntryData entryData) {
+			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
 				return filter.apply(name, new JarFileEntry(entryData));
 			}
 		});
@@ -120,7 +120,7 @@ public class JarFileArchive extends Archive {
 		}
 
 		@Override
-		public AsciiString getName() {
+		public AsciiBytes getName() {
 			return this.jarEntryData.getName();
 		}
 

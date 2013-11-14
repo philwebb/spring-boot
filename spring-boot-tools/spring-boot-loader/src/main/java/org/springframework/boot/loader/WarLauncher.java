@@ -30,16 +30,16 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public class WarLauncher extends ExecutableArchiveLauncher {
 
-	private static final AsciiString WEB_INF_LIB_PROVIDED = new AsciiString(
+	private static final AsciiBytes WEB_INF_LIB_PROVIDED = new AsciiBytes(
 			"WEB-INF/lib-provided/");
 
-	private static final AsciiString WEB_INF_LIB = new AsciiString("WEB-INF/lib/");
+	private static final AsciiBytes WEB_INF_LIB = new AsciiBytes("WEB-INF/lib/");
 
-	private static final AsciiString WEB_INF = new AsciiString("WEB-INF/");
+	private static final AsciiBytes WEB_INF = new AsciiBytes("WEB-INF/");
 
-	private static final AsciiString META_INF = new AsciiString("META-INF/");
+	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
-	private static final AsciiString WEB_INF_CLASSES = new AsciiString("WEB-INF/classes/");
+	private static final AsciiBytes WEB_INF_CLASSES = new AsciiBytes("WEB-INF/classes/");
 
 	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
@@ -66,7 +66,7 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	protected Archive getFilteredArchive() throws IOException {
 		return getArchive().getFilteredArchive(new Archive.EntryRenameFilter() {
 			@Override
-			public AsciiString apply(AsciiString entryName, Archive.Entry entry) {
+			public AsciiBytes apply(AsciiBytes entryName, Archive.Entry entry) {
 				if (entryName.startsWith(META_INF) || entryName.startsWith(WEB_INF)) {
 					return null;
 				}

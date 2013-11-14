@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.springframework.boot.loader.AsciiString;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
@@ -52,11 +52,11 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  */
 public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryData> {
 
-	private static final AsciiString META_INF = new AsciiString("META-INF/");
+	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
-	private static final AsciiString MANIFEST_MF = new AsciiString("META-INF/MANIFEST.MF");
+	private static final AsciiBytes MANIFEST_MF = new AsciiBytes("META-INF/MANIFEST.MF");
 
-	private final RandomAccessDataFile rootJarFile;
+	private final RandomAccessDataFile rootFile;
 
 	private RandomAccessData data;
 
@@ -64,7 +64,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private final long size;
 
-	private Map<AsciiString, JarEntryData> entries = new LinkedHashMap<AsciiString, JarEntryData>();
+	private Map<AsciiBytes, JarEntryData> entries = new LinkedHashMap<AsciiBytes, JarEntryData>();
 
 	private JarEntryData manifestData;
 
@@ -94,16 +94,16 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	/**
 	 * Private constructor used to create a new {@link JarFile} either directly or from a
 	 * nested entry.
-	 * @param rootJarFile the root jar file
+	 * @param rootFile the root jar file
 	 * @param name the name of this file
 	 * @param data the underlying data
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	private JarFile(RandomAccessDataFile rootJarFile, String name, RandomAccessData data,
+	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
 			JarEntryFilter... filters) throws IOException {
-		super(rootJarFile.getFile());
-		this.rootJarFile = rootJarFile;
+		super(rootFile.getFile());
+		this.rootFile = rootFile;
 		this.name = name;
 		this.data = data;
 		this.size = data.getSize();
@@ -115,10 +115,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
 		InputStream inputStream = centralDirectory.getInputStream();
 		try {
-			JarEntryData data = JarEntryData.get(this, inputStream, centralDirectory);
+			JarEntryData data = JarEntryData.fromInputStream(this, inputStream);
 			while (data != null) {
 				addJarEntry(data, filters);
-				data = JarEntryData.get(this, inputStream, centralDirectory);
+				data = JarEntryData.fromInputStream(this, inputStream);
 			}
 		}
 		finally {
@@ -127,7 +127,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	private void addJarEntry(JarEntryData entryData, JarEntryFilter[] filters) {
-		AsciiString name = entryData.getName();
+		AsciiBytes name = entryData.getName();
 		for (JarEntryFilter filter : filters) {
 			name = (filter == null || name == null ? name : filter.apply(name, entryData));
 		}
@@ -140,14 +140,18 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 	}
 
-	private void processMetaInfEntry(AsciiString name, JarEntryData entryData) {
+	private void processMetaInfEntry(AsciiBytes name, JarEntryData entryData) {
 		if (name.equals(MANIFEST_MF)) {
 			this.manifestData = entryData;
 		}
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
-		return this.rootJarFile;
+		return this.rootFile;
+	}
+
+	RandomAccessData getData() {
+		return this.data;
 	}
 
 	@Override
@@ -199,9 +203,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		if (name == null) {
 			return null;
 		}
-		JarEntryData entryData = this.entries.get(new AsciiString(name));
+		JarEntryData entryData = this.entries.get(new AsciiBytes(name));
 		if (entryData == null && !name.endsWith("/")) {
-			entryData = this.entries.get(new AsciiString(name + "/"));
+			entryData = this.entries.get(new AsciiBytes(name + "/"));
 		}
 		return entryData.getJarEntry();
 	}
@@ -225,46 +229,46 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	/**
 	 * Return a nested {@link JarFile} loaded from the specified entry.
-	 * @param ze the zip entry
+	 * @param sourceEntry the zip entry
 	 * @param filters an optional set of jar entry filters to be applied
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException
 	 */
-	public synchronized JarFile getNestedJarFile(final JarEntryData ze,
+	public synchronized JarFile getNestedJarFile(final JarEntryData sourceEntry,
 			JarEntryFilter... filters) throws IOException {
-		if (ze.isDirectory()) {
-			return getNestedJarFileFromDirectoryEntry(ze, filters);
+		if (sourceEntry.isDirectory()) {
+			return getNestedJarFileFromDirectoryEntry(sourceEntry, filters);
 		}
-		return getNestedJarFileFromFileEntry(ze, filters);
+		return getNestedJarFileFromFileEntry(sourceEntry, filters);
 	}
 
-	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData entry,
+	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData sourceEntry,
 			JarEntryFilter... filters) throws IOException {
-		final AsciiString sourceName = entry.getName();
+		final AsciiBytes sourceName = sourceEntry.getName();
 		JarEntryFilter[] filtersToUse = new JarEntryFilter[filters.length + 1];
 		System.arraycopy(filters, 0, filtersToUse, 1, filters.length);
 		filtersToUse[0] = new JarEntryFilter() {
 			@Override
-			public AsciiString apply(AsciiString entryName, JarEntryData ze) {
-				if (entryName.startsWith(sourceName) && !entryName.equals(sourceName)) {
-					return entryName.substring(sourceName.length());
+			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
+				if (name.startsWith(sourceName) && !name.equals(sourceName)) {
+					return name.substring(sourceName.length());
 				}
 				return null;
 			}
 		};
-		return new JarFile(this.rootJarFile, getName() + "!/"
-				+ entry.getName().substring(0, sourceName.length() - 1), this.data,
+		return new JarFile(this.rootFile, getName() + "!/"
+				+ sourceEntry.getName().substring(0, sourceName.length() - 1), this.data,
 				filtersToUse);
 	}
 
-	private JarFile getNestedJarFileFromFileEntry(JarEntryData entry,
+	private JarFile getNestedJarFileFromFileEntry(JarEntryData sourceEntry,
 			JarEntryFilter... filters) throws IOException {
-		if (entry.getMethod() != ZipEntry.STORED) {
+		if (sourceEntry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException("Unable to open nested compressed entry "
-					+ entry.getName());
+					+ sourceEntry.getName());
 		}
-		return new JarFile(this.rootJarFile, getName() + "!/" + entry.getName(),
-				entry.getData(), filters);
+		return new JarFile(this.rootFile, getName() + "!/" + sourceEntry.getName(),
+				sourceEntry.getData(), filters);
 	}
 
 	/**
@@ -275,15 +279,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
 			throws IOException {
-		return new JarFile(this.rootJarFile, getName(), this.data, filters);
+		return new JarFile(this.rootFile, getName(), this.data, filters);
 	}
 
-	private synchronized JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
-		if (zipEntry != null && zipEntry instanceof JarEntry) {
-			JarEntry jarEntry = (JarEntry) zipEntry;
-			if (this.entries.get(jarEntry.getSource().getName()) == jarEntry.getSource()) {
-				return jarEntry;
-			}
+	private JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
+		if (zipEntry instanceof JarEntry
+				&& ((JarEntry) zipEntry).getSource().getSource() == this) {
+			return (JarEntry) zipEntry;
 		}
 		throw new IllegalArgumentException("ZipEntry must be contained in this file");
 	}
@@ -300,7 +302,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public void close() throws IOException {
-		this.rootJarFile.close();
+		this.rootFile.close();
 	}
 
 	@Override

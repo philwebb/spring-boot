@@ -19,12 +19,14 @@ package org.springframework.boot.loader.jar;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 
+import org.springframework.boot.loader.data.RandomAccessData;
+
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
  * 
  * @author Phillip Webb
  */
-class JarEntry extends java.util.jar.JarEntry {
+public class JarEntry extends java.util.jar.JarEntry {
 
 	private final JarEntryData source;
 
@@ -35,6 +37,10 @@ class JarEntry extends java.util.jar.JarEntry {
 
 	public JarEntryData getSource() {
 		return this.source;
+	}
+
+	public RandomAccessData getData() {
+		return this.source.getData();
 	}
 
 	@Override

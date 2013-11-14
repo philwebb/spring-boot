@@ -23,6 +23,8 @@ import java.net.URLStreamHandler;
 
 /**
  * {@link URLStreamHandler} used to support {@link JarFile#getUrl()}.
+ * 
+ * @author Phillip Webb
  */
 class JarURLStreamHandler extends URLStreamHandler {
 

@@ -25,6 +25,8 @@ import java.util.jar.JarEntry;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
+ * 
+ * @author Phillip Webb
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
@@ -36,8 +38,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private String contentType;
 
-	protected JarURLConnection(URL url, JarFile jarFile)
-			throws MalformedURLException {
+	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
 		super(new URL("jar:file:" + jarFile.getRootJarFile().getFile().getPath() + "!/"));
 		this.jarFile = jarFile;
 
