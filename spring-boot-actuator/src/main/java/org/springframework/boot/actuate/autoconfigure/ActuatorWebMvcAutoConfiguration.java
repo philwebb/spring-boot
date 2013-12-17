@@ -16,48 +16,53 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import javax.servlet.Servlet;
+import java.io.IOException;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.actuate.web.ManagementHandlerMapping;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to enable Spring MVC to handle
- * {@link Endpoint} requests via a {@link ManagementHandlerMapping}.
+ * {@link EnableAutoConfiguration Auto-configuration} for actuator specific MVC
+ * enhancements.
  * 
- * @author Dave Syer
  * @author Phillip Webb
+ * @author Dave Syer
  */
-@Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
-@AutoConfigureAfter({ ManagementWebMvcAutoConfiguration.class })
-public class EndpointWebMvcAutoConfiguration {
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+public class ActuatorWebMvcAutoConfiguration {
 
+	/**
+	 * Add "X-Application-Context" header to each request containing the Spring
+	 * {@link ApplicationContext} ID.
+	 */
 	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerMapping endpointHandlerMapping() {
-		return new EndpointHandlerMapping();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerAdapter endpointHandlerAdapter(
-			final HttpMessageConverters messageConverters) {
-		EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
-		adapter.setMessageConverters(messageConverters.getConverters());
-		return adapter;
+	public Filter applicationContextIdFilter(ApplicationContext context) {
+		final String id = context.getId();
+		return new OncePerRequestFilter() {
+			@Override
+			protected void doFilterInternal(HttpServletRequest request,
+					HttpServletResponse response, FilterChain filterChain)
+					throws ServletException, IOException {
+				response.addHeader("X-Application-Context", id);
+				filterChain.doFilter(request, response);
+			}
+		};
 	}
 
 }

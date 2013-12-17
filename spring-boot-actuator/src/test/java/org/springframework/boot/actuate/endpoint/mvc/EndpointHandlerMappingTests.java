@@ -20,7 +20,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -87,17 +86,6 @@ public class EndpointHandlerMappingTests {
 		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
 	}
 
-	@Test
-	public void disabled() throws Exception {
-		TestEndpoint endpointA = new TestEndpoint("/a");
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				Arrays.asList(endpointA));
-		mapping.setDisabled(true);
-		mapping.afterPropertiesSet();
-		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a")),
-				nullValue());
-	}
-
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		public TestEndpoint(String path) {
@@ -117,10 +105,6 @@ public class EndpointHandlerMappingTests {
 			super(path);
 		}
 
-		@Override
-		public HttpMethod[] methods() {
-			return POST_HTTP_METHOD;
-		}
 	}
 
 }

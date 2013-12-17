@@ -22,7 +22,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
@@ -51,12 +50,8 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public MediaType[] produces() {
-		return new MediaType[] { MediaType.APPLICATION_JSON };
-	}
-
-	@Override
 	protected String doInvoke() {
+		// FIXME need to indicate that this produces MediaType.APPLICATION_JSON
 		return this.liveBeansView.getSnapshotAsJson();
 	}
 }

@@ -68,7 +68,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ManagementWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -83,7 +83,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(EndpointAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class,
+				ManagementWebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
@@ -129,7 +129,7 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				EndpointAutoConfiguration.class, ManagementWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "security.basic.enabled:false");

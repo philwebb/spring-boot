@@ -24,7 +24,9 @@ import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * Properties for the management server (e.g. port and path settings).
@@ -35,6 +37,9 @@ import org.springframework.util.ClassUtils;
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties implements SecurityPrequisite {
 
+	private static final boolean SPRING_SECURITY_PRESENT = ClassUtils.isPresent(
+			"org.springframework.security.core.Authentication", null);
+
 	private Integer port;
 
 	private InetAddress address;
@@ -42,7 +47,13 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	@NotNull
 	private String contextPath = "";
 
-	private Security security = maybeCreateSecurity();
+	private Security security;
+
+	public ManagementServerProperties() {
+		if (SPRING_SECURITY_PRESENT) {
+			this.security = new Security();
+		}
+	}
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -61,26 +72,52 @@ public class ManagementServerProperties implements SecurityPrequisite {
 		this.port = port;
 	}
 
+	/**
+	 * Return the {@link InetAddress} of the management server. This address is only used
+	 * when running on a different port to the standard server.
+	 */
 	public InetAddress getAddress() {
 		return this.address;
 	}
 
+	/**
+	 * Set the {@link InetAddress} of the management server. This address is only used
+	 * when running on a different port to the standard server.
+	 */
 	public void setAddress(InetAddress address) {
 		this.address = address;
 	}
 
+	/**
+	 * Return the context path for the management server. When running on the same port as
+	 * the standard server the context path is relative to the {@link DispatcherServlet}
+	 * mapping.
+	 */
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
+	/**
+	 * Set the context path for the management server. When running on the same port as
+	 * the standard server the context path is relative to the {@link DispatcherServlet}
+	 * mapping.
+	 */
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
 	}
 
+	/**
+	 * Return the security configuration.
+	 */
 	public Security getSecurity() {
+		Assert.state(this.security != null, "Security Security is required to configure"
+				+ " management security settings");
 		return this.security;
 	}
 
+	/**
+	 * Management server security configuration.
+	 */
 	public static class Security {
 
 		private boolean enabled = true;
@@ -89,38 +126,49 @@ public class ManagementServerProperties implements SecurityPrequisite {
 
 		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
+		/**
+		 * Return the {@link SessionCreationPolicy} for the management server.
+		 */
 		public SessionCreationPolicy getSessions() {
 			return this.sessions;
 		}
 
+		/**
+		 * Set the {@link SessionCreationPolicy} for the management server.
+		 */
 		public void setSessions(SessionCreationPolicy sessions) {
 			this.sessions = sessions;
 		}
 
-		public void setRole(String role) {
-			this.role = role;
-		}
-
+		/**
+		 * Return the security role required to access secure URLs on the management
+		 * server.
+		 */
 		public String getRole() {
 			return this.role;
 		}
 
+		/**
+		 * Set the security role required to access secure URLs on the management server.
+		 */
+		public void setRole(String role) {
+			this.role = role;
+		}
+
+		/**
+		 * Return if the security is enable for the management server.
+		 */
 		public boolean isEnabled() {
 			return this.enabled;
 		}
 
+		/**
+		 * Set if the security is enable for the management server.
+		 */
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-	}
-
-	private static Security maybeCreateSecurity() {
-		if (ClassUtils
-				.isPresent("org.springframework.security.core.Authentication", null)) {
-			return new Security();
-		}
-		return null;
 	}
 
 }

@@ -24,7 +24,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpMethod;
 
 /**
  * {@link Endpoint} to shutdown the {@link ApplicationContext}.
@@ -77,9 +76,6 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 		}
 	}
 
-	@Override
-	public HttpMethod[] methods() {
-		return POST_HTTP_METHOD;
-	}
+	// FIXME indicate that this is an acton, so should be triggered with POST
 
 }

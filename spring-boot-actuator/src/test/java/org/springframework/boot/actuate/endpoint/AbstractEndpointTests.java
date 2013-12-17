@@ -25,7 +25,6 @@ import org.springframework.boot.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -49,16 +48,13 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	private final String property;
 
-	private MediaType[] produces;
-
 	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String path,
-			boolean sensitive, String property, MediaType... produces) {
+			boolean sensitive, String property) {
 		this.configClass = configClass;
 		this.type = type;
 		this.path = path;
 		this.sensitive = sensitive;
 		this.property = property;
-		this.produces = produces;
 	}
 
 	@Before
@@ -76,13 +72,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	}
 
 	@Test
-	public void producesMediaType() {
-		assertThat(getEndpointBean().produces(), equalTo(this.produces));
-	}
-
-	@Test
 	public void getPath() throws Exception {
-		assertThat(getEndpointBean().getPath(), equalTo(this.path));
+		assertThat(getEndpointBean().getPathSegment(), equalTo(this.path));
 	}
 
 	@Test
@@ -96,7 +87,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		TestUtils.addEnviroment(this.context, this.property + ".path:/mypath");
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().getPath(), equalTo("/mypath"));
+		assertThat(getEndpointBean().getPathSegment(), equalTo("/mypath"));
 	}
 
 	@Test

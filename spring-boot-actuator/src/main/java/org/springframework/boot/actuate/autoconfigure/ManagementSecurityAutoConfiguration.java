@@ -28,6 +28,8 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.web.ErrorController;
+import org.springframework.boot.actuate.web.ManagementHandlerMapping;
+import org.springframework.boot.actuate.web.ManagementHandlerExecutionChain;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -53,17 +55,18 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for security of framework endpoints.
- * Many aspects of the behavior can be controller with {@link ManagementServerProperties}
- * via externalized application properties (or via an bean definition of that type to set
- * the defaults).
+ * {@link EnableAutoConfiguration Auto-configuration} for security of the management
+ * server. Many aspects of the behavior can be controller with
+ * {@link ManagementServerProperties} via externalized application properties (or via an
+ * bean definition of that type to set the defaults).
  * 
  * <p>
- * The framework {@link Endpoint}s (used to expose application information to operations)
- * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
- * used as a security hint by the filter created here.
+ * The security filter used by this configuration will secure
+ * {@link ManagementHandlerMapping}s when {@link ManagementHandlerExecutionChain#isSecure()}
+ * returns true.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
@@ -122,6 +125,10 @@ public class ManagementSecurityAutoConfiguration {
 
 		@Override
 		public void init(WebSecurity builder) throws Exception {
+			// FIXME
+			if (true) {
+				return;
+			}
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			// The ignores are not cumulative, so to prevent overwriting the defaults we
 			// add them back.
@@ -163,6 +170,11 @@ public class ManagementSecurityAutoConfiguration {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
+
+			// FIXME use the new mapping
+			if (true) {
+				return;
+			}
 
 			// secure endpoints
 			String[] paths = getEndpointPaths(this.endpointHandlerMapping, true);
@@ -214,7 +226,7 @@ public class ManagementSecurityAutoConfiguration {
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (Endpoint<?> endpoint : endpoints) {
 			if (endpoint.isSensitive() == secure) {
-				paths.add(endpoint.getPath());
+				paths.add(endpoint.getPathSegment());
 			}
 		}
 		return paths.toArray(new String[paths.size()]);

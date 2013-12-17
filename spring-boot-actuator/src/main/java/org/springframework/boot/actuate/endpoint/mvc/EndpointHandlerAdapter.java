@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -161,11 +160,6 @@ public final class EndpointHandlerAdapter implements HandlerAdapter {
 
 	private List<MediaType> getProducibleMediaTypes(Endpoint<?> endpoint,
 			Class<?> returnValueClass) {
-		MediaType[] mediaTypes = endpoint.produces();
-		if (mediaTypes != null && mediaTypes.length != 0) {
-			return Arrays.asList(mediaTypes);
-		}
-
 		if (this.allSupportedMediaTypes.isEmpty()) {
 			return Collections.singletonList(MediaType.ALL);
 		}

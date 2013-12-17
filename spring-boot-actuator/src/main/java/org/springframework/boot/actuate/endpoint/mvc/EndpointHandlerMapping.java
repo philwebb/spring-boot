@@ -28,7 +28,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -36,20 +35,20 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
- * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getPath()}.
+ * {@link HandlerMapping} to map {@link Endpoint}s to URLs via
+ * {@link Endpoint#getPathSegment()}.
  * 
  * @author Phillip Webb
  * @author Christian Dupuis
  * @see EndpointHandlerAdapter
  */
+// FIXME change to new one, drop disabled
 public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 		InitializingBean, ApplicationContextAware {
 
 	private List<Endpoint<?>> endpoints;
 
 	private String prefix = "";
-
-	private boolean disabled = false;
 
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
@@ -73,10 +72,8 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 		if (this.endpoints == null) {
 			this.endpoints = findEndpointBeans();
 		}
-		if (!this.disabled) {
-			for (Endpoint<?> endpoint : this.endpoints) {
-				registerHandler(this.prefix + endpoint.getPath(), endpoint);
-			}
+		for (Endpoint<?> endpoint : this.endpoints) {
+			registerHandler(this.prefix + endpoint.getPathSegment(), endpoint);
 		}
 	}
 
@@ -93,9 +90,8 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 		if (handler != null) {
 			Object endpoint = (handler instanceof HandlerExecutionChain ? ((HandlerExecutionChain) handler)
 					.getHandler() : handler);
-			HttpMethod method = HttpMethod.valueOf(request.getMethod());
-			if (endpoint instanceof Endpoint
-					&& supportsMethod(((Endpoint<?>) endpoint).methods(), method)) {
+			// FIXME limit action endpoints to POST
+			if (endpoint instanceof Endpoint) {
 				return endpoint;
 			}
 		}
@@ -112,35 +108,10 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 	}
 
 	/**
-	 * Sets if this mapping is disabled.
-	 */
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
-	}
-
-	/**
-	 * Returns if this mapping is disabled.
-	 */
-	public boolean isDisabled() {
-		return this.disabled;
-	}
-
-	/**
 	 * Return the endpoints
 	 */
 	public List<Endpoint<?>> getEndpoints() {
 		return Collections.unmodifiableList(this.endpoints);
 	}
 
-	private boolean supportsMethod(HttpMethod[] supportedMethods,
-			HttpMethod requestedMethod) {
-		Assert.notNull(supportedMethods, "SupportMethods must not be null");
-		Assert.notNull(supportedMethods, "RequestedMethod must not be null");
-		for (HttpMethod supportedMethod : supportedMethods) {
-			if (supportedMethod.equals(requestedMethod)) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

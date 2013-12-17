@@ -63,6 +63,8 @@ import org.springframework.core.env.Environment;
 @ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
 public class JolokiaAutoConfiguration {
 
+	// FIXME convert to use ManHanMap
+
 	private RelaxedPropertyResolver environment;
 
 	@Autowired
