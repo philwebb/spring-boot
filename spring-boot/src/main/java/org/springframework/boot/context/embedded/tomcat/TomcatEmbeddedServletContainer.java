@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -111,6 +112,11 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		Connector connector = this.tomcat.getConnector();
 		if (connector != null && this.autoStart) {
 			try {
+				for (Container child : this.tomcat.getHost().findChildren()) {
+					if (child instanceof TomcatEmbeddedContext) {
+						((TomcatEmbeddedContext) child).deferredLoadOnStartup();
+					}
+				}
 				connector.getProtocolHandler().start();
 				this.logger.info("Tomcat started on port: " + connector.getLocalPort());
 			}

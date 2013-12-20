@@ -78,7 +78,6 @@
 												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
 												prefix="api" />
 										</zip>
-
 									</target>
 								</configuration>
 							</execution>

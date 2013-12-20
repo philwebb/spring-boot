@@ -96,7 +96,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
-		WebAppContext context = new WebAppContext();
+		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
 
