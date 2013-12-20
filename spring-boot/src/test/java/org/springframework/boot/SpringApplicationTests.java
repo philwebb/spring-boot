@@ -41,6 +41,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -140,6 +141,14 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(StaticApplicationContext.class);
 		this.context = application.run();
 		assertThat(this.context, instanceOf(StaticApplicationContext.class));
+	}
+
+	@Test
+	public void refreshableApplicationContextClass() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(ClassPathXmlApplicationContext.class);
+		this.context = application.run();
+		assertThat(this.context, instanceOf(ClassPathXmlApplicationContext.class));
 	}
 
 	@Test

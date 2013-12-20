@@ -31,7 +31,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +53,9 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.OrderComparator;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -317,7 +322,8 @@ public class SpringApplication {
 				logStartupInfo(context.getParent() == null);
 			}
 
-			load(context, sources.toArray(new Object[sources.size()]));
+			context.addBeanFactoryPostProcessor(new BeanDefinitionLoaderPostProcessor(
+					environment, sources.toArray(new Object[sources.size()])));
 			refresh(context);
 
 			stopWatch.stop();
@@ -534,45 +540,6 @@ public class SpringApplication {
 						.getClassLoader());
 			}
 		}
-	}
-
-	/**
-	 * Load beans into the application context.
-	 * @param context the context to load beans into
-	 * @param sources the sources to load
-	 */
-	protected void load(ApplicationContext context, Object[] sources) {
-		if (this.log.isDebugEnabled()) {
-			this.log.debug("Loading source "
-					+ StringUtils.arrayToCommaDelimitedString(sources));
-		}
-		BeanDefinitionLoader loader = createBeanDefinitionLoader(
-				getBeanDefinitionRegistry(context), sources);
-		if (this.beanNameGenerator != null) {
-			loader.setBeanNameGenerator(this.beanNameGenerator);
-		}
-		if (this.resourceLoader != null) {
-			loader.setResourceLoader(this.resourceLoader);
-		}
-		if (this.environment != null) {
-			loader.setEnvironment(this.environment);
-		}
-		loader.load();
-	}
-
-	/**
-	 * @param context the application context
-	 * @return the BeanDefinitionRegistry if it can be determined
-	 */
-	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
-		if (context instanceof BeanDefinitionRegistry) {
-			return (BeanDefinitionRegistry) context;
-		}
-		if (context instanceof AbstractApplicationContext) {
-			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context)
-					.getBeanFactory();
-		}
-		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
 	/**
@@ -877,6 +844,46 @@ public class SpringApplication {
 			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
 			closable.close();
 		}
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private class BeanDefinitionLoaderPostProcessor implements
+			BeanDefinitionRegistryPostProcessor {
+
+		private final ConfigurableEnvironment environment;
+
+		private final Object[] sources;
+
+		public BeanDefinitionLoaderPostProcessor(ConfigurableEnvironment environment,
+				Object[] sources) {
+			this.environment = environment;
+			this.sources = sources;
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+		}
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			if (SpringApplication.this.log.isDebugEnabled()) {
+				SpringApplication.this.log.debug("Loading source "
+						+ StringUtils.arrayToCommaDelimitedString(this.sources));
+			}
+			BeanDefinitionLoader loader = createBeanDefinitionLoader(registry,
+					this.sources);
+			loader.setEnvironment(this.environment);
+			if (SpringApplication.this.beanNameGenerator != null) {
+				loader.setBeanNameGenerator(SpringApplication.this.beanNameGenerator);
+			}
+			if (SpringApplication.this.resourceLoader != null) {
+				loader.setResourceLoader(SpringApplication.this.resourceLoader);
+			}
+			loader.load();
+		}
+
 	}
 
 }
