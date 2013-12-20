@@ -48,7 +48,7 @@ import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -90,7 +90,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @see XmlEmbeddedWebApplicationContext
  * @see EmbeddedServletContainerFactory
  */
-public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
+public abstract class EmbeddedWebApplicationContext extends
+		AbstractRefreshableWebApplicationContext {
 
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
@@ -105,6 +106,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	private ServletConfig servletConfig;
 
 	private String namespace;
+
+	private boolean reloading;
 
 	/**
 	 * Register ServletContextAwareProcessor.
@@ -121,6 +124,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	public final void refresh() throws BeansException, IllegalStateException {
 		try {
+			this.reloading = hasBeanFactory();
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
@@ -132,20 +136,24 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	protected void onRefresh() {
 		super.onRefresh();
-		registerShutdownHook();
-		try {
-			createEmbeddedServletContainer();
-		}
-		catch (Throwable ex) {
-			throw new ApplicationContextException("Unable to start embedded container",
-					ex);
+		if (!this.reloading) {
+			registerShutdownHook();
+			try {
+				createEmbeddedServletContainer();
+			}
+			catch (Throwable ex) {
+				throw new ApplicationContextException(
+						"Unable to start embedded container", ex);
+			}
 		}
 	}
 
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		startEmbeddedServletContainer();
+		if (!this.reloading) {
+			startEmbeddedServletContainer();
+		}
 	}
 
 	@Override
