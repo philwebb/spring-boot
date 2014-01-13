@@ -22,10 +22,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.AbstractCommand;
-import org.springframework.boot.cli.command.InitCommand;
+import org.springframework.boot.cli.command.ShellCommand;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
@@ -52,25 +53,23 @@ public class SpringCli {
 
 	private String displayName = CLI_APP + " ";
 
-	private InitCommand init;
-
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
 	public SpringCli(String... args) {
-		try {
-			this.init = new InitCommand(this);
-			this.init.run(args);
-		}
-		catch (Exception e) {
-			throw new IllegalStateException("Cannot init with those args", e);
+		setCommands(ServiceLoader.load(CommandFactory.class, getClass().getClassLoader()));
+	}
+
+	private void setCommands(Iterable<CommandFactory> iterable) {
+		this.commands = new ArrayList<Command>();
+		for (CommandFactory factory : iterable) {
+			for (Command command : factory.getCommands(this)) {
+				this.commands.add(command);
+			}
 		}
 		this.commands.add(0, new HelpCommand());
 		this.commands.add(new HintCommand());
-	}
-
-	public InitCommand getInitCommand() {
-		return this.init;
+		this.commands.add(new ShellCommand(this));
 	}
 
 	/**
@@ -78,7 +77,7 @@ public class SpringCli {
 	 * 'help' command will be automatically provided in addition to this list.
 	 * @param commands the commands to add
 	 */
-	public void setCommands(List<? extends Command> commands) {
+	protected void setCommands(List<? extends Command> commands) {
 		this.commands = new ArrayList<Command>(commands);
 		this.commands.add(0, new HelpCommand());
 		this.commands.add(new HintCommand());

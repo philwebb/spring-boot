@@ -29,6 +29,7 @@ import jline.console.ConsoleReader;
 import jline.console.completer.CandidateListCompletionHandler;
 
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
+import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.SpringCli;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -91,15 +92,12 @@ public class ShellCommand extends AbstractCommand {
 		this.prompt = this.defaultPrompt;
 		cli.setDisplayName("");
 
-		RunCommand run = (RunCommand) cli.find("run");
-		if (run != null) {
-			StopCommand stop = new StopCommand(run);
-			cli.register(stop);
+		Command run = cli.find("run");
+		if (run != null && run instanceof RunCommand) {
+			cli.register(new StopCommand((RunCommand) run));
 		}
 
-		PromptCommand prompt = new PromptCommand(this);
-		cli.register(prompt);
-		cli.register(cli.getInitCommand());
+		cli.register(new PromptCommand(this));
 	}
 
 	private ConsoleReader createConsoleReader() throws IOException {
