@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Dave Syer
- * 
  */
 @Service
 public class SampleService {

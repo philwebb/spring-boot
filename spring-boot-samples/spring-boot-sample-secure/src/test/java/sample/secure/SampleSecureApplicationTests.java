@@ -57,9 +57,9 @@ public class SampleSecureApplicationTests {
 
 	@Before
 	public void init() {
-		AuthenticationManager authenticationManager = context
+		AuthenticationManager authenticationManager = this.context
 				.getBean(AuthenticationManager.class);
-		authentication = authenticationManager
+		this.authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
@@ -70,25 +70,25 @@ public class SampleSecureApplicationTests {
 
 	@Test(expected = AuthenticationException.class)
 	public void secure() throws Exception {
-		assertEquals(service.secure(), "Hello Security");
+		assertEquals(this.service.secure(), "Hello Security");
 	}
 
 	@Test
 	public void authenticated() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		assertEquals(service.secure(), "Hello Security");
+		SecurityContextHolder.getContext().setAuthentication(this.authentication);
+		assertEquals(this.service.secure(), "Hello Security");
 	}
 
 	@Test
 	public void preauth() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		assertEquals(service.authorized(), "Hello World");
+		SecurityContextHolder.getContext().setAuthentication(this.authentication);
+		assertEquals(this.service.authorized(), "Hello World");
 	}
 
 	@Test(expected = AccessDeniedException.class)
 	public void denied() throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		assertEquals(service.denied(), "Goodbye World");
+		SecurityContextHolder.getContext().setAuthentication(this.authentication);
+		assertEquals(this.service.denied(), "Goodbye World");
 	}
 
 	@PropertySource("classpath:test.properties")
