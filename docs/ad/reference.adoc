@@ -1,0 +1,2867 @@
+= Spring Boot Reference Guide
+:linkcss:
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:copycss:
+:numbered:
+:icons: font
+:spring-boot-version: 1.0.0.BUILD-SNAPSHOT
+:spring-boot-repo: snapshot
+:author: Phillip Webb, Dave Syer
+
+// FIXME look at this for inspiration http://media.readthedocs.org/pdf/django/1.6.x/django.pdf
+
+== Spring Boot Documentation
+
+=== Getting help
+Having trouble with Spring Boot, We'd like to help!
+
+* Try the How-to's -- they provide solutions to the most common questions
+* Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
+	the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
+	you are just starting out with Spring, try one of the http://spring.io/guides[guides]
+* Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+	tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues
+
+
+=== First steps
+If you are just starting out...
+
+* From scratch
+* Tutorial
+* Advanced tutorial
+
+// FIXME
+
+
+
+// FIXME overview of all the chapters here
+
+
+== Getting started
+
+=== Introducing Spring Boot
+Spring Boot makes it easy to create stand-alone, production-grade Spring based
+Applications that can you can ``just run''. We take an opinionated view of the Spring
+platform and third-party libraries so you can get started with minimum fuss. Most Spring
+Boot applications need very little Spring configuration.
+
+You can use Spring Boot to create Java applications that can be started using `java -jar`
+or more traditional WAR deployments. We also provide a command line tool that runs ``spring
+scripts''.
+
+Our primary goals are:
+
+* Provide a radically faster and widely accessible getting started experience for all
+Spring development
+* Be opinionated out of the box, but get out of the way quickly as requirements start to
+diverge from the defaults
+* Provide a range of non-functional features that are common to large classes of projects
+(e.g. embedded servers, security, metrics, health checks, externalized configuration)
+* Absolutely no code generation and no requirement for XML configuration
+
+=== Installing Spring Boot
+Spring Boot can be used with ``classic'' Java development tools or installed as a command
+line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
+should check your current Java installation before you begin:
+
+[indent=0]
+----
+	$ java -version
+----
+
+If you are new to Java development, or if you just want to experiment with Spring Boot
+you might want to try the Spring Boot CLI first, otherwise, read on for ``classic''
+installation instructions.
+
+TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
+using the latest version of Java.
+
+==== Installation instructions for the Java developer
+You can use Spring Boot in the same way as any standard java library. Simply include the
+appropriate `spring-boot-*.jar` files in your classpath. Spring Boot does not require
+any special tool integration, so you can use any IDE or text editor; and there is nothing
+special about a Spring Boot application, so you can run and debug as you would any other
+Java program.
+
+Although you _could_ just copy Spring Boot JARs, we generally recommend that you use a
+build tool that support dependency management (such as Maven or Gradle).
+
+===== Maven installation
+Spring Boot is compatible with Apache Maven 3.0 or above. If you don't already have Maven
+installed you can follow the instructions at http://maven.apache.org.
+
+TIP: On many operating systems Maven can be installed via a package manager. If you're a
+OSX Homebrew user try `brew install maven`. Ubuntu users can run `sudo apt-get install maven`.
+
+Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
+Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
+dependencies to one or more ``starter POMs''. Spring Boot also provides an optional Maven
+plugin to create executable JARs.
+
+// FIXME link to starter section
+
+Here is a typical `pom.xml` file:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.example</groupId>
+		<artifactId>myproject</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+
+		<!-- Inherit defaults from Spring Boot -->
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>{spring-boot-version}</version>
+		</parent>
+
+		<!-- Add typical dependencies for a web application -->
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</dependency>
+		</dependencies>
+
+		<!-- Package as an executable JAR -->
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+
+ifeval::["{spring-boot-repo}" != "release"]
+		<!-- Add Spring repoistories -->
+		<!-- (you don't need this if you are using a .RELEASE version) -->
+		<repositories>
+			<repository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+				<snapshots><enabled>true</enabled></snapshots>
+			</repository>
+			<repository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+			</pluginRepository>
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
+endif::[]
+	</project>
+----
+
+// FIXME links here to later sections
+
+===== Gradle installation
+Spring Boot is compatible with Gradle 1.6 or above. If you don't already have Gradle
+installed you can follow the instructions at http://www.gradle.org/.
+
+Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
+Typically your project will declare dependencies to one or more starter POMs. Spring Boot
+provides a useful Gradle plugin that can be used to simplify dependency declarations
+and to create executable JARs.
+
+.Gradle Wrapper
+****
+The Gradle Wrapper provides a nice way of ``obtaining'' Gradle when you need to build a
+project. It's a small script and library that you commit alongside your code to bootstrap
+the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
+for details.
+****
+
+Here is a typical `build.gradle` file:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	buildscript {
+		repositories {
+			mavenCentral()
+ifndef::release[]
+			maven { url "http://repo.spring.io/snapshot" }
+			maven { url "http://repo.spring.io/milestone" }
+endif::release[]
+		}
+		dependencies {
+			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+		}
+	}
+
+	apply plugin: 'java'
+	apply plugin: 'spring-boot'
+
+	jar {
+		baseName = 'myproject'
+		version =  '0.0.1-SNAPSHOT'
+	}
+
+	repositories {
+		mavenCentral()
+ifndef::release[]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::release[]
+	}
+
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+		testCompile("junit:junit")
+	}
+----
+
+// FIXME links to later on
+
+==== Installing the Spring Boot CLI
+The Spring Boot CLI is a command line tool that can be used if you want to quickly
+prototype with Spring. It allows you to run http://groovy.codehaus.org/[Groovy] scripts,
+which means that you have a familiar Java-like syntax, without so much boilerplate code.
+
+You don't need to use the CLI to work with Spring Boot but it's definitely the quickest
+way to get a Spring application off the ground.
+
+===== Manual installation
+You can download the Spring CLI distribution from the Spring software repository:
+
+* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* http://repo.spring.io/{spring-boot-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+
+Cutting edge http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions]
+are also available.
+
+Once downloaded, follow the INSTALL instructions from the unpacked archive. In summary:
+there is a `spring` script (`spring.bat` for Windows) in a `bin/` directory in the `.zip`
+file, or alternatively you can use `java -jar` with the `.jar` file (the script helps you
+to be sure that the classpath is set correctly).
+
+===== Installation with GVM
+GVM (the Groovy Environment Manager) can be used for managing multiple versions of
+various Groovy and Java binary packages, including Groovy itself and the Spring Boot CLI.
+Get `gvm` from http://gvmtool.net and install Spring Boot with
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ gvm install springboot
+	$ spring --version
+	Spring Boot v{spring-boot-version}
+----
+
+If you are developing features for the CLI and want easy access to the version you just
+built, follow these extra instructions.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
+	$ gvm use springboot dev
+	$ spring --version
+	Spring CLI v{spring-boot-version}
+----
+
+This will install a local instance of `spring` called the `dev` instance inside your gvm
+repository. It points at your target build location, so every time you rebuild Spring
+Boot, `spring` will be up-to-date.
+
+You can see it by doing this:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ gvm ls springboot
+
+	================================================================================
+	Available Springboot Versions
+	================================================================================
+	> + dev
+	* {spring-boot-version}
+
+	================================================================================
+	+ - local version
+	* - installed
+	> - currently in use
+	================================================================================
+----
+
+===== OSX Homebrew installation
+If you are on a Mac and using http://brew.sh/[Homebrew], all you need to do to install
+the Spring Boot CLI is:
+
+[indent=0]
+----
+	$ brew tap pivotal/tap
+	$ brew install springboot
+----
+
+Homebrew will install `spring` to `/usr/local/bin`.
+
+NOTE: If you don't see the formula, you're installation of brew might be out-of-date.
+Just execute `brew update` and try again.
+
+===== Quick start Spring CLI example
+Here's a really simple web application that you can use to test you installation. Create
+a file called `app.groovy`:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Controller
+	class ThisWillActuallyRun {
+
+		@RequestMapping("/")
+		@ResponseBody
+		String home() {
+			return "Hello World!"
+		}
+
+	}
+----
+
+Then simply run it from a shell:
+
+[indent=0]
+----
+	$ spring run app.groovy
+----
+
+NOTE: It will take some time when you first run the application as dependencies are
+downloaded, subsequent runs will be much quicker.
+
+Open http://localhost:8080 in your favorite web browser and you should see the following
+output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+=== Developing your first Spring Boot application
+Let's develop a simple ``Hello World!'' web application in Java that highlights some
+of Spring Boot's key features. We'll use Maven to build this project since most IDEs
+support it.
+
+TIP: The http://spring.io[spring.io] web site contains many ``Getting Started'' guides
+that use Spring Boot. If you're looking to solve a specific problem; check there first.
+
+Before we begin, open a terminal to check that you have valid versions of Java and Maven
+installed.
+
+[indent=0]
+----
+	$ java -version
+	java version "1.7.0_51"
+	Java(TM) SE Runtime Environment (build 1.7.0_51-b13)
+	Java HotSpot(TM) 64-Bit Server VM (build 24.51-b03, mixed mode)
+----
+
+[indent=0]
+----
+	$ mvn -v
+	Apache Maven 3.1.1 (0728685237757ffbf44136acec0402957f723d9a; 2013-09-17 08:22:22-0700)
+	Maven home: /Users/user/tools/apache-maven-3.1.1
+	Java version: 1.7.0_51, vendor: Oracle Corporation
+----
+
+NOTE: This sample needs to be created in it's own folder. Subsequent instructions assume
+that you have created a suitable folder and that it is your ``current directory''.
+
+==== Creating the POM
+We need to start by creating a Maven `pom.xml` file. The `pom.xml` is the recipe that
+will be used to build your project. Open you favorite text editor and add the following:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.example</groupId>
+		<artifactId>myproject</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>{spring-boot-version}</version>
+		</parent>
+
+		<!-- Additional lines to be added here... -->
+
+ifeval::["{spring-boot-repo}" != "release"]
+		<!-- (you don't need this if you are using a .RELEASE version) -->
+		<repositories>
+			<repository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+				<snapshots><enabled>true</enabled></snapshots>
+			</repository>
+			<repository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+			</pluginRepository>
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
+endif::[]
+	</project>
+----
+
+This should give you a working build, you can test it out by running `mvn package` (you
+can ignore the _`JAR will be empty - no content was marked for inclusion!'_ warning for
+now).
+
+NOTE: At this point you could import the project into an IDE (most modern Java IDE's
+include built-in support for Maven). For simplicity, we will continue to use a simple
+text editor for this example.
+
+==== Adding classpath dependencies
+Spring Boot provides a number of ``Starter POMs'' that make easy to add JARs to your
+classpath. Our sample application has already used `spring-boot-starter-parent` in the
+`parent` section of the POM. The `spring-boot-starter-parent` is a special starter
+that provides useful Maven defaults. It also provides a `dependency-management` section
+so that you can omit `version` tags for blessed `dependencies`.
+
+Other ``Starter POMs'' simply provide dependencies that you are likely to need to a
+specific type of application. Since we are developing web application we will add a
+`spring-boot-starter-web` dependency -- but before that, lets look at what we currently
+have.
+
+[indent=0]
+----
+	$ mvn dependency:tree
+
+	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+	[INFO] +- junit:junit:jar:4.11:test
+	[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+	[INFO] +- org.mockito:mockito-core:jar:1.9.5:test
+	[INFO] |  \- org.objenesis:objenesis:jar:1.0:test
+	[INFO] \- org.hamcrest:hamcrest-library:jar:1.3:test
+----
+
+The `mvn dependency:tree` command prints tree representation of your project dependencies.
+You can see that `spring-boot-starter-parent` has already provides some useful test
+dependencies. Lets edit our `pom.xml` and add the `spring-boot-starter-web` dependency
+just below the `parent` section:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+If you run `mvn dependency:tree` again, you will see that there are now a number of
+additional dependencies, including the Tomcat web server and Spring Boot itself.
+
+==== Writing the code
+To finish our application we need to create a single Java file. Maven will compile sources
+from `src/main/java` so you need to create that folder structure, then add a file named
+`src/main/java/Example.java`:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.*;
+	import org.springframework.boot.autoconfigure.*;
+	import org.springframework.stereotype.*;
+	import org.springframework.web.bind.annotation.*;
+
+	@Controller
+	@EnableAutoConfiguration
+	public class Example {
+
+		@RequestMapping("/")
+		@ResponseBody
+		String home() {
+			return "Hello World!";
+		}
+
+		public static void main(String[] args) throws Exception {
+			SpringApplication.run(Example.class, args);
+		}
+
+	}
+----
+
+Although there isn't much code here, quite a lot is going on. Lets step though the
+important parts of the code.
+
+===== The @Controller, @RequestMapping and @ResponseBody annotations
+The first annotation on our `Example` class is `@Controller`. This is known as a
+_stereotype_ annotation. It provides hints for people reading the code, and for Spring,
+that the class plays a specific role. In this case, our class is web `@Controller` so
+Spring will consider it when handling incoming web requests.
+
+The `@RequestMapping` annotation provides ``routing'' information. It is telling Spring
+that any HTTP request with the path "`/`" should be mapped to the method. The additional
+`@ResponseBody` annotation tells Spring to render the resulting string directly back to
+the caller.
+
+TIP: The `@Controller`, `@RequestMapping` and `@ResponseBody` annotation are Spring MVC
+annotations (they are not specific to Spring Boot). See the MVC section in the Spring
+Reference Documentation for more details.
+
+===== The @EnableAutoConfiguration annotation
+The second class-level annotation is `@EnableAutoConfiguration`. This annotation tells
+Spring Boot to ``guess'' how you will want to configure Spring based on the JAR
+dependencies that you have added. Since `spring-boot-starter-web` added Tomcat and
+Spring MVC, the auto-configuration will assume that you are developing a web application
+and setup Spring accordingly.
+
+.Starter POMs and Auto-Configuration
+****
+Auto-configuration is designed to work well with ``Starter POMs'', but the two concepts
+are not directly tied. You are free to pick-and-choose JAR dependencies outside of the
+starter POMs and Spring Boot will still do its best to auto-configure your application.
+****
+
+===== The ``main'' method
+The final part of our application is the `main` method. This is just a standard method
+that follows the Java convention for an application entry point. Our main method delegates
+to Spring Boot's `SpringApplication` class by calling `run`. `SpringApplication` will
+bootstrap our application, starting Spring which will in turn start the auto-configured
+Tomcat web server. We need to pass `Example.class` as an argument to the `run` method to
+tell `SpringApplication` which is the primary Spring component. The `args` array is also
+passed though to expose any command-line arguments.
+
+==== Running the example
+At this point out application should work. Since we have used the
+`spring-boot-starter-parent` POM we have a useful `run` goal that we can use to start
+the application. Type `mvn spring-boot:run` from the root project directory to start the
+application:
+
+[indent=0,subs="attributes"]
+----
+	$ mvn spring-boot:run
+
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started Example in 2.222 seconds (JVM running for 6.514)
+----
+
+If you open a web browser to http://localhost:8080 you should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+To gracefully exist the application hit `ctrl-c`.
+
+==== Creating an executable JAR
+Lets finish our example by create a completely self-contained executable JAR file that
+we could run in production. Executable JARs (sometimes called ``Fat JARs'') are archives
+containing your compiled classes along with all of the JAR dependencies that your code
+needs to run.
+
+.Executable JARs and Java
+****
+Java does not provide any standard way to load nested jar files (i.e. jar files that are
+themselves contained within a jar). This can be problematic if you are looking to
+distribute a self contained application.
+
+To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
+all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
+it becomes hard to see which libraries you are actually using in your application. It can
+also be problematic if the the same filename is used (but with different content) in
+multiple jars.
+
+Spring Boot takes a different approach and allows you to actually nest jars directly.
+****
+
+To create an executable JAR we need to add the `spring-boot-maven-plugin` to our
+`pom.xml`. Insert the following lines just below the `dependencies` section:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Save your `pom.xml` and run `mvn package` from the command line:
+
+[indent=0,subs="attributes"]
+----
+	$ mvn package
+
+	[INFO] Scanning for projects...
+	[INFO]
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Building myproject 0.0.1-SNAPSHOT
+	[INFO] ------------------------------------------------------------------------
+	[INFO] .... ..
+	[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
+	[INFO] Building jar: /Users/pwebb/tmp/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
+	[INFO]
+	[INFO] --- spring-boot-maven-plugin:{spring-boot-version}:repackage (default) @ myproject ---
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESS
+	[INFO] ------------------------------------------------------------------------
+----
+
+If you look in the `target` directory you should see `myproject-0.0.1-SNAPSHOT.jar`. The
+file should be around 10 Mb in size. If you want to peek inside, you can use `jar tvf`:
+
+[indent=0]
+----
+	$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+You should also see a much smaller file named `myproject-0.0.1-SNAPSHOT.jar.original`
+in the `target` directory. This is the original JAR file that Maven created before it was
+repackaged by Spring Boot.
+
+To run that application, use the `java -jar` command:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started Example in 3.236 seconds (JVM running for 3.764)
+----
+
+As before, to gracefully exist the application hit `ctrl-c`.
+
+=== What to read next
+
+// FIXME write this
+
+== Using Spring Boot
+This section provides a brief overview of best-practices when using Spring Boot. There
+is nothing particularly special about Spring Boot, it is just another library that you
+can consume. There are, however, a few recommendations that when followed will make your
+development process just a little easier.
+
+=== Build systems
+It is strongly recommended that you choose a build system that supports _dependency
+management_, and one that can consume artifacts published to the ``Maven Central''
+repository. We would recommend that you choose Maven or Gradle. It is possible to get
+Spring Boot to work with other build systems (Ant for example), but they would not be
+particularly well supported.
+
+==== Maven
+Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible
+defaults. The parent project provides the following features:
+
+* Java 1.6 as the default compiler level
+* UTF-8 source encoding
+* A Dependency Management section, allowing you to omit `<version>` tags for common
+  dependencies.
+* Generally useful test dependencies (JUnit, Mockito, Hamcrest)
+* Sensible resource filtering
+* Sensible plugin configuration (exec plugin, surefire, git commit ID, shade)
+
+===== Inheriting the starter parent
+To configure your project to inherit from the `spring-boot-starter-parent` simply set
+the `parent`:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<!-- Inherit defaults from Spring Boot -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>{spring-boot-version}</version>
+	</parent>
+----
+
+NOTE: You should only need to specify the Spring Boot version number on this dependency.
+if you import additional starters, you can safely omit the version number.
+
+===== Using your own parent POM
+If you don't want to use the Spring Boot starter parent, you can use your own and still
+keep the benefit of the dependency management (but not the plugin management) using a
+`scope=import` dependency:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencyManagement>
+ 		<dependencies>
+			<dependency>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-parent</artifactId>
+				<version>{spring-boot-version}</version>
+		        <scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+----
+
+===== Changing the Java version
+The `spring-boot-starter-parent` chooses fairly conservative Java compatibility. If you
+want to follow our recommendation and use a later Java version you can add a
+`java.version` property:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+----
+
+===== Using the Spring Boot Maven plugin
+Spring Boot includes a Maven plugin that can package the project as an executable JAR, or
+run it from source code. Add the plugin to your `<plugins>` section if you want to use it:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+NOTE: You only need to add the plugin, there is no need for to configure it, unless you
+want to change the settings in the parent.
+
+// FIXME Link to maven plugin
+
+==== Gradle
+Gradle users can directly import ``starter POMs'' in their `dependencies` section. Unlike
+Maven, there is no ``super parent'' to import.
+
+[source,groovy,indent=0,subs="attributes"]
+----
+	apply plugin: 'java'
+
+	repositories { mavenCentral() }
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+	}
+----
+
+The `spring-boot-gradle-plugin` is also available and provides tasks to create executable
+JARs and run projects from source. It also adds a `ResolutionStrategy` that enables you
+to omit the version number for common dependencies:
+
+
+[source,groovy,indent=0,subs="attributes"]
+----
+	buildscript {
+		repositories { mavenCentral() }
+		dependencies {
+			classpath("org.springframework.boot:spring-boot-gradle-plugin:${spring-boot-version}")
+		}
+	}
+
+	apply plugin: 'java'
+	apply plugin: 'spring-boot'
+
+	repositories { mavenCentral() }
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+		testCompile("org.springframework.boot:spring-boot-starter-test")
+	}
+----
+
+// FIXME Link to gradle plugin
+
+====  Ant
+It is possible to build a Spring Boot project using Apache Ant, however, no special
+support or plugins are provided. Ant scripts can use the Ivy dependency system to import
+starter POMs.
+
+See XXX for more complete instructions.
+
+// FIXME link
+
+==== Starter POMs
+Starter POMs are a set of convenient dependency descriptors that you can include in your
+application. You get a one-stop-shop for all the Spring and related technology that you
+need, without having to hunt through sample code and copy paste loads of dependency
+descriptors. For example, if you want to get started using Spring and JPA for database
+access, just include the `spring-boot-starter-data-jpa` dependency in your project, and
+you are good to go.
+
+The starters contain a lot of the dependencies that you need to get a project up and
+running quickly and with a consistent, supported set of managed transitive dependencies.
+
+.What's in a name
+****
+All starters follow a similar naming pattern; `spring-boot-starter-*`, where `*` is
+a particular type of application. This naming structure is intended to help when you need
+to find a starter. The Maven integration in many IDEs allow you to search dependencies by
+name. For example, with the appropriate Eclipse or STS plugin installed, you can simply
+hit `ctrl-space` in the POM editor and type ''spring-boot-starter'' for a complete list.
+****
+
+The following application starters are provided by Spring Boot under the
+`org.springframework.boot` group:
+
+.Spring Boot application starters
+|===
+| Name | Description
+
+|spring-boot-starter
+|The core Spring Boot starter, including auto-configuration support, logging and YAML.
+
+
+|spring-boot-starter-amqp
+|Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
+
+|spring-boot-starter-aop
+|Full AOP programming support including `spring-aop` and AspectJ.
+
+|spring-boot-starter-batch
+|Support for ``Spring Batch'' including HSQLDB database.
+
+|spring-boot-starter-data-jpa
+|Full support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
+and Hibernate.
+
+|spring-boot-starter-data-mongodb
+|Support for the MongoDB NoSQL Database, including `spring-data-mongodb`,
+
+|spring-boot-starter-data-rest
+|Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
+
+|spring-boot-starter-integration
+|Support for common `spring-integration` modules.
+
+|spring-boot-starter-jdbc
+|JDBC Database support
+
+|spring-boot-starter-mobile
+|Support for `spring-mobile`
+
+|spring-boot-starter-redis
+|Support for the REDIS key-value data store, including `spring-redis`.
+
+|spring-boot-starter-security
+|Support for `spring-security`
+
+|spring-boot-starter-test
+|Support for common test dependencies, including JUnit, Mockito and Hamcrest along with
+ the `spring-test` module.
+
+|spring-boot-starter-thymeleaf
+|Support for the Thymeleaf templating engine, including integration with Spring.
+
+|spring-boot-starter-web
+|Support for full-stack web development, including Tomcat and `spring-webmvc`.
+
+|spring-boot-starter-websocket
+|Support for websocket development with Tomcat.
+|===
+
+
+In addition to the application starter, the following starters can be used to
+add ``production ready'' features.
+
+.Spring Boot ``production ready'' starters
+|===
+| Name | Description
+
+|spring-boot-starter-actuator
+|Adds production ready features such as metrics and monitoring.
+
+|spring-boot-starter-shell-remote
+|Adds remote `ssh` shell support.
+|===
+
+Finally, Spring Boot includes some starters that can be used if you want to exclude or
+swap specific technical facets.
+
+.Spring Boot technical starters
+|===
+| Name | Description
+
+|spring-boot-starter-jetty
+|Imports the Jetty HTTP engine (to be used as an alternative to Tomcat)
+
+|spring-boot-starter-log4j
+|Support the Log4J looggin framework
+
+|spring-boot-starter-logging
+|Import Spring Boot's default logging framework (Logback).
+
+|spring-boot-starter-tomcat
+|Import Spring Boot's default HTTP engine (Tomcat).
+|===
+
+
+=== Structuring your code
+Spring Boot does not require any specific code layout to work, however, there are some
+best practices that help.
+
+==== Using the ``default'' package
+When a class doesn't include a `package` declaration it is considered to be in the
+``default package''. The use of the ``default package'' is generally discouraged, and
+should be avoided. It can cause particular problems for Spring Boot applications that
+use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
+will be read.
+
+TIP: We recommend that you use the follow Java's recommended package naming conventions
+and use a reversed domain name (for example, `com.example.project`).
+
+==== Locating the main application class
+We generally recommend that you locate your main application class in a root package
+above other classes. The `@EnableAutoConfiguration` annotation is often placed on your
+main class, and it implicitly defines a base ``search package'' for certain items. For
+example, if you are writing a JPA application, the package of the
+`@EnableAutoConfiguration` annotated class will be used to search for `@Entity` items.
+
+Using a root package also allows the `@ComponentScan` annotation to be used without
+needing to specify a `basePackage` attribute.
+
+Here is a typical layout:
+
+[indent=0]
+----
+	com
+	 +- example
+	     +- myproject
+	         +- Application.java
+	         |
+	         +- domain
+	         |   +- Customer.java
+	         |   +- CustomerRepository.java
+	         |
+	         +- service
+	         |   +- CustomerService.java
+	         |
+	         +- web
+	             +- CustomerController.java
+----
+
+The `Application.java` file would declare the `main` method, along with the basic
+`@Configuration`.
+
+[source,java,indent=0]
+----
+	package com.example.myproject;
+
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+	import org.springframework.context.annotation.ComponentScan;
+	import org.springframework.context.annotation.Configuration;
+
+	@Configuration
+	@EnableAutoConfiguration
+	@ComponentScan
+	public class Application {
+
+		public static void main(String[] args) {
+			SpringApplication.run(Application.class, args);
+		}
+
+	}
+----
+
+=== @Configuration classes
+Spring Boot favors Java-based configuration. Although it is possible to call
+`SpringApplication.run()` with a XML source, we generally recommend that your primary
+source is a `@Configuration` class. Usually the class that defines the `main` method
+is also a good candidate as the primary `@Configuration`.
+
+TIP: Many Spring configuration examples have been published that use XML configuration.
+Always try to use the equivalent Java-base configuration if possible. Searching for
+`enable*` annotations can be a good starting point.
+
+==== Importing additional configuration classes
+You don't need to put all your `@Configuration` into a single class. The `@Import`
+annotation an be used to import additional configuration classes. Alternatively, you
+can use `@ComponentScan` to automatically pickup all Spring components, including
+`@Configuration` classes.
+
+==== Importing XML configuration
+If you absolutely must use XML based configuration we recommend that you still start
+with a `@Configuration` class. You can then use an additional `@ImportResource`
+annotation to load XML configuration files.
+
+=== Auto-configuration
+Spring Boot auto-configuration attempts to automatically configure your Spring
+application based on the JAR dependencies that you have added. For example, If
+`HSQLDB` is on your classpath, and you have not manually configured any database
+connection beans, then we will auto-configure an in-memory database.
+
+You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration`
+annotation to one of your `@Configuration` classes.
+
+TIP: You should only ever add one `@EnableAutoConfiguration` annotation. We generally
+recommend that you add it to your primary `@Configuration` class.
+
+==== Gradually replacing auto-configuration
+Auto-configuration is noninvasive,  at any point you can start to define your own
+configuration to replace specific parts of the auto-configuration. For example, if
+you add your own `DataSource` bean, the default embedded database support will back away.
+
+If you need to find out what auto-configuration is currently being applied, and why,
+starting your application with the `--debug` switch. This will log an auto-configuration
+report to the console.
+
+// FIXME we need links here to a complete section.
+
+==== Disabling specific auto-configuration
+If you find that specific auto-configure classes are being applied that you don't want
+you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.autoconfigure.*;
+	import org.springframework.boot.autoconfigure.jdbc.*;
+	import org.springframework.context.annotation.*;
+
+	@Configuration
+	@EnableAutoConfiguration(exclude={EmbeddedDatabaseConfiguration.class})
+	public class MyConfiguration {
+	}
+----
+
+=== Spring Beans and dependency injection
+You are free to use any the standard Spring Framework techniques to defines your beans
+and their injected dependencies. For simplicity, we often find that using `@ComponentScan`
+to find your beans, in combination with `@Autowired` constructor injection works well.
+
+If you structure your code as suggested above (locating your application class in a root
+package), you can add `@ComponentScan` without any arguments. All of your application
+components (`@Component`, `@Service`, `@Repoistory`, `@Controller` etc.) will be
+automatically registered as Spring Beans.
+
+Here is an example `@Service` Bean that uses constructor injection to obtain its'
+required `RiskAssessor` bean.
+
+[source,java,indent=0]
+----
+	package com.example.service;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Service;
+
+	@Service
+	public class DatabaseAccountService implements AccountService {
+
+		private final RiskAssessor riskAssessor;
+
+		@Autowired
+		public DatabaseAccountService(RiskAssessor riskAssessor) {
+			this.riskAssessor = riskAssessor;
+		}
+
+		// ...
+
+	}
+----
+
+TIP: Notice how using constructor injection allows the `riskAssessor` field to be marked
+as `final`, indicating that it cannot be subsequently changed.
+
+=== Running your application
+One of the biggest advantages of packaging your application as JAR and using an embedded
+HTTP server is that you can run your application as you would any other. Debugging Spring
+Boot applications is also easy; you don't need any special IDE plugins or extensions.
+
+NOTE: This section only covers JAR pased packaging, If you choose to package your
+application as a WAR file you should refer to your server and IDE documentation.
+
+==== Running from an IDE
+You can run a Spring Boot application from your IDE as a simple Java application, however,
+first you will need to import your project. Import steps will vary depending on your IDE
+and build system. Most IDEs can import Maven projects directly, for example Eclipse users
+can select `Import...` -> `Existing Maven Projects` from the `File` menu.
+
+If you can't directly import your project into your IDE, you may be able to generate IDE
+meta-data using a build plugin. Maven includes plugins for
+http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
+http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
+for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
+
+TIP: If you accidentally run a web application twice you will see a ``Port already in
+use'' error. STS users can use the `Relauch` button rather than `Run` to ensure that
+any existing instance is closed.
+
+==== As a packaged application
+If you use the Spring Boot Maven or Gradle plugins to create an executable JAR you can
+run your application using `java -jar`. For example:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+It is also possible to run a package application with remote debugging support enabled.
+This allows you to attach a debugger to your packaged application:
+
+[indent=0,subs="attributes"]
+----
+	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+	       -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+==== Using the Maven plugin
+The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
+and run your application. Applications run in an exploded form, and you can edit
+resources for instant ``hot'' reload.
+
+[indent=0,subs="attributes"]
+----
+	$ mvn spring-boot:run
+----
+
+// FIXME link to docs
+
+==== Using the Gradle plugin
+The Spring Boot Gradle plugin also includes a `run` goal which can be used to run
+your application in an exploded form. The `bootRun` task is added whenever you import
+the `spring-boot-plugin`
+
+[indent=0,subs="attributes"]
+----
+	$ gradle bootRun
+----
+
+// FIXME link to docs
+
+==== Hot swapping
+Since Spring Boot applications are just plain Java application, JVM hot-swapping should
+work out of the box. JVM hot swapping is somewhat limited with bytecode that it can
+replace, for a more complete solution the
+https://github.com/spring-projects/spring-loaded[Spring Loaded] project, or
+http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
+
+See the Hot swapping ``How-to'' section for details.
+
+// FIXME link
+=== Packaging your application for production
+Executable JARs can be used for production deployment. As they are self contained, they
+are also ideally suited for cloud-based deployment.
+
+For additional ``production ready'' features, such as health, auditing and metric REST
+or JMX end-points; consider adding `spring-boot-actuator`. Actuator
+
+.Definition of Actuator
+****
+An actuator is a manufacturing term, referring to a mechanical device for moving or
+controlling something. Actuators can generate a large amount of motion from a small
+change.
+****
+
+To add actuator features to Maven based project, add the following ``starter''
+dependency:
+
+[source,xml,indent=0]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+For Gradle, use the declaration:
+
+[source,groovy,indent=0]
+----
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-actuator")
+	}
+----
+
+More information on Actuator features can be found in XXX below.
+
+// FIXME links
+
+=== What to read next
+
+// FIXME summary here, write this
+
+== SpringApplication
+The `SpringApplication` class provides a convenient way to bootstrap a Spring application
+that will be started from a `main()` method. In many situations you can just delegate to
+the static `SpringApplication.run` method:
+
+[source,java,indent=0]
+----
+	public static void main(String[] args) {
+		SpringApplication.run(MySpringConfiguration.class, args);
+	}
+----
+
+When you application starts you should see something similar to the following:
+
+[indent=0,subs="attributes"]
+----
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::   v{spring-boot-version}
+
+2013-07-31 00:08:16.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication            : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
+2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
+2014-03-04 13:09:54.912  INFO 41370 --- [           main] .t.TomcatEmbeddedServletContainerFactory : Server initialized with port: 8080
+2014-03-04 13:09:56.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
+----
+
+By default `INFO` logging messages will shown, including some relevant startup details
+such as the user that launched the application.
+
+=== Customizing SpringApplication
+If the `SpringApplication` defaults aren't to your taste you can instead create a local
+instance and customize it. For example, to turn off the banner you would write:
+
+[source,java,indent=0]
+----
+	public static void main(String[] args) {
+		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
+		app.setShowBanner(false);
+		app.run(args);
+	}
+----
+
+NOTE: The constructor arguments passed to `SpringApplication` are configuration sources
+for spring beans. In most cases these will be references to `@Configuration` classes, but
+they could also be references to XML configuration or to packages that should be scanned.
+
+It is also possible to configure the `SpringApplication` using an `application.properties`
+file. See XXX.
+
+// FIXME Link
+
+For a complete list of the configuration options, see the `SpringApplication` Javadoc.
+
+=== Fleunt builder API
+If you need to build an `ApplicationContext` hierarchy (multiple contexts with a
+parent/child relationship), or if you just prefer using a ``fluent'' builder API, you
+can use the `SpringApplicationBuilder`.
+
+The `SpringApplicationBuilder` allows you to chain together multiple method calls, and
+includes `parent` and `child` methods that allow you to create a hierarchy.
+
+For example:
+[source,java,indent=0]
+----
+	new SpringApplicationBuilder()
+		.showBanner(false)
+		.sources(Parent.class)
+		.child(Application.class)
+		.run(args);
+----
+
+NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy, e.g.
+the parent application context is *not* a `WebApplicationContext`.  Both parent and child
+are executed with the same `Environment` constructed in the usual way to include command
+line arguments.  Any `ServletContextAware` components all have to go in the child
+context, otherwise there is no way for Spring Boot to create the `ServletContext` in time.
+
+=== Application events and listeners
+In addition to the usual Spring Framework events, such as `ContextRefreshedEvent`, a
+`SpringApplication` sends some additional application events. Some events are actually
+triggered before the `ApplicationContext` is created.
+
+You can register event listeners in a number of ways, the most common being
+`SpringApplication.addListeners(...)` method (See XXX).
+
+// FIXME
+
+Application events are sent in the following order, as your application runs:
+
+. An `ApplicationStartedEvent` is sent at the start of a run, but before any
+  processing except the registration of listeners and initializers.
+. An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in
+  the context is known, but before the context is created.
+. An `ApplicationPreparedEvent` is sent just before the refresh is started, but after bean
+  definitions have been loaded.
+. An `ApplicationFailedEvent` is sent if there is an exception on startup.
+
+TIP: You often won't need to use application events, but it can be handy to know that they
+exist. Internally, Spring Boot uses events to handle a variety of tasks.
+
+=== Web environment
+A `SpringApplication` will attempt to create the right type of `ApplicationContext` on
+your behalf. By default, an `AnnotationConfigApplicationContext` or
+`AnnotationConfigEmbeddedWebApplicationContext` will be used, depending on whether you
+are developing a web application or not.
+
+The algorithm used to determine a ``web environment'' is fairly simplistic (based on the
+presence of a few classes). You can use `setWebEnvironment(boolean webEnvironment)` if
+you need to override the default.
+
+It is also possible to take complete control of the `ApplicationContext` type that will
+be used by using `setApplicationContextClass(...)`.
+
+TIP: It is often desirable call `setWebEnvironment(false)` when using `SpringApplication`
+within a JUnit test.
+
+=== Using the CommandLineRunner
+If you want access to the raw command line argument, or you need to run some specific code
+once the `SpringApplication` has started you can implement the `CommandLineRunner`
+interface. The `run(String... args)` method will be called on all spring beans
+implementing this interface.
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.*
+	import org.springframework.stereotype.*
+
+	@Component
+	public class MyBean implements CommandLineRunner {
+
+	    public void run(String... args) {
+	        // Do something...
+	    }
+
+	}
+----
+
+You can additionally implement the `org.springframework.core.Ordered` interface or use the
+`org.springframework.core.annotation.Order` annotation if several `CommandLineRunner`
+beans are defined that must be called in a specific order.
+
+=== Application exit
+Each `SpringApplication` will register a shutdown hook with the JVM to ensure that the
+`ApplicationContext` is closed gracefully on exit. All the standard Spring lifecycle
+callbacks (such as the `DisposableBean` interface, or the `@PreDestroy` annotation) can
+be used.
+
+In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
+interface if they wish to return a specific exit code when the application ends.
+
+== Externalized Configuration
+Spring Boot likes you to externalize your configuration so you can work with the same
+application code in different environments. You can use properties files, YAML files,
+environment variables and command-line arguments to externalize configuration. Property
+values can be injected directly into your beans using the `@Value` annotation, accessed
+via Spring's `Environment` abstraction or bound to structured objects.
+
+Spring Boot uses a very particular `PropertySource` order that is designed to allow
+sensible overriding of values, properties are considered in the the following order:
+
+. Command line argument
+. Java System properties (`System.getProperties()`).
+. OS environment variables.
+. `@PropertySource` annotations on your `@Configuration` classes.
+. Application properties outside of your packaged JAR (`application.properties`
+  including YAML and profile variants)
+. Application properties packaged inside your JAR (`application.properties`
+  including YAML and profile variants)
+. Default properties (specified using `SpringApplication.setDefaultProperties`)
+
+To provide a concrete example, suppose you develop a `@Component` that uses a
+`name` property:
+
+[source,java,indent=0]
+----
+	import org.springframework.stereotype.*
+	import org.springframework.beans.factory.annotation.*
+
+	@Component
+	public class MyBean {
+
+	    @Value("${name}")
+	    private String name;
+
+	    // ...
+
+	}
+----
+
+You can bundle an `application.properties` inside your jar that provides a sensible
+default `name`. When running in production, an `application.properties` can be provided
+outside of your JAR that overrides `name`; and for one off testing you can launch with
+a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
+
+
+=== Accessing command line properties
+By default SpringApplication will convert any command line option arguments (starting
+with ``--'', e.g. `--server.port=9000`) to a `PropertySource` and add it to the Spring
+`Environment`. As mentioned above, command line properties always take precedence over
+other property sources.
+
+If you don't want command line properties to be added to the `Environment` you can disable
+them using `SpringApplication.setAddCommandLineProperties(false)`.
+
+=== Application property files
+`SpringApplication` will load properties from `application.properties` files in the
+following locations and add them to the Spring `Environment`:
+
+. The current directory
+. A `/config` subdir of the current directory.
+. The classpath root
+. A classpath `/config` package
+
+The list is ordered by precedence (locations higher in the list override lower items).
+
+NOTE: You can also use YAML ('.yml') files as an alternative to '.properties' (see below)
+
+If you don't like `application.properties` as the configuration file name you can switch
+to another by specifying `spring.config.name` environment property. You can also refer
+to an explicit location using the `spring.config.location` environment property.
+
+[indent=0]
+----
+	$ java -jar myproject.jar --spring.config.name=myproject
+----
+
+==== Profile specific properties
+In addition to `application.properties` files, profile specific properties can also be
+defined using the naming convention `application-{profile}.properties`.
+
+Profile specific properties are loaded from the same locations as standard
+`application.properties`, with profiles specific files overriding the default ones.
+
+==== Placeholders in properties
+The values in `application.properties` are filtered through the existing `Environment`
+when they are used so you can refer back to previously defined values (e.g. from System
+properties).
+
+[indent=0]
+----
+	app.name: MyApp
+	app.description: ${app.name} is a Spring Boot application
+----
+
+TIP: You can also use this technique to create `short` variants of existing Spring Boot
+properties. See XXX
+
+
+=== Using YAML instead of Properties
+http://yaml.org[YAML] is a superset of JSON, and as such is a very convenient format
+for specifying hierarchical configuration data. The `SpringApplication` class will
+automatically support YAML as an alternative to properties whenever you have the
+http://code.google.com/p/snakeyaml/[SnakeYAML] library on your classpath.
+
+NOTE: If you use ``starter POMs'' SnakeYAML will be automatically provided via
+`spring-boot-starter`.
+
+==== Loading YAML
+Spring Boot provides two convenient classes that can be used to load YAML documents. The
+`YamlPropertiesFactoryBean` will load YAML as `Properties` and the `YamlMapFactoryBean`
+will load YAML as a `Map`.
+
+For example, the following YAML document:
+
+[source,yaml,indent=0]
+----
+	dev:
+		url: http://dev.bar.com
+		name: Developer Setup
+	prod:
+		url: http://foo.bar.com
+		name: My Cool App
+----
+
+Would be transformed into these properties:
+
+[indent=0]
+----
+	environments.dev.url=http://dev.bar.com
+	environments.dev.name=Developer Setup
+	environments.prod.url=http://foo.bar.com
+	environments.prod.name=My Cool App
+----
+
+YAML lists are represented as comma-separated values (useful for simple String values)
+and also as property keys with `[index]` dereferencers, for example this YAML:
+
+[source,yaml,indent=0]
+----
+	 servers:
+ 		- dev.bar.com
+ 		- foo.bar.com
+----
+
+Would be transformed into these properties:
+
+[indent=0]
+----
+	servers=dev.bar.com,foo.bar.com
+	servers[0]=dev.bar.com
+	servers[1]=foo.bar.com
+----
+
+==== Exposing YAML as properties in the Spring Environment.
+The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource`
+in the Spring `Environment`. This allows you to the familiar `@Value` with placeholders
+syntax to access YAML properties.
+
+You can also specify multiple profile-specific YAML document in a single file by
+by using a `spring.profiles` key to indicate when the document applies. For example:
+
+[source,yaml,indent=0]
+----
+	server:
+		address: 192.168.1.100
+	---
+	spring:
+		profiles: production
+	server:
+		address: 192.168.1.120
+----
+
+==== YAML shortcomings
+YAML files can't be loaded via the `@PropertySource` annotation. So in the
+case that you need to load values that way, you need to use a properties file.
+
+=== Typesafe Configuration Properties
+Using the `@Value("${property}")` annotation to inject configuration properties can
+sometimes be cumbersome, especially if you are working with multiple properties or
+your data is hierarchical in nature. Spring Boot provides an alternative method
+of working with properties that allows strongly typed beans to govern and validate
+the configuration of your application. For example:
+
+[source,java,indent=0]
+----
+	@Component
+	@ConfigurationProperties(name="connection")
+	public class ConnectionSettings {
+
+		private String username;
+
+		private InetAddress remoteAddress;
+
+		// ... getters and setters
+
+	}
+----
+
+When the `@EnableConfigurationProperties` annotation is applied to your `@Configuration`,
+any beans annotated with `@ConfigurationProperties` will automatically be configured
+from the `Environment` properties. This style of configuration works particularly well
+with the `SpringApplication` external YAML configuration:
+
+[source,yaml,indent=0]
+----
+	# application.yml
+
+	connection:
+		username: admin
+		remoteAddress: 192.168.1.1
+
+	# additional configuration as required
+----
+
+To work with `@ConfigurationProperties` beans you can just inject them in the same way
+as any other bean.
+
+[source,java,indent=0]
+----
+	@Service
+	public class MyService {
+
+		@Autowired
+		private ConnectionSettings connection;
+
+	 	//...
+
+		@PostConstruct
+		public void openConnection() {
+			Server server = new Server();
+			this.connection.configure(server);
+		}
+
+	}
+----
+
+It is also possible to shortcut the registration of `@ConfigurationProperties` bean
+definitions by simply listing the properties classes directly in the
+`@EnableConfigurationProperties` annotation:
+
+[source,java,indent=0]
+----
+	@Configuration
+	@EnableConfigurationProperties(ConnectionSettings.class)
+	public class MyConfiguration {
+	}
+----
+
+==== Relaxed binding
+Spring Boot uses some relaxed rules for binding `Environment` properties to
+`@ConfigurationProperties` beans, so there doesn't need to be an exact match between
+the `Environment` property name and the bean property name.  Common examples where this
+is useful include underscore separated (e.g. `context_path` binds to `contextPath`), and
+capitalized (e.g. `PORT` binds to `port`) environment properties.
+
+Spring will attempt to coerce the external application properties to the right type when
+it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
+can provide a `ConversionService` bean (with bean id `conversionService`) or custom
+property editors (via a `CustomEditorConfigurer` bean).
+
+==== @ConfigurationProperties Validation
+Spring Boot will attempt to validate external configuration, by default using JSR-303
+(if it is on the classpath). You can simply add JSR-303 `javax.valididation` constraint
+annotations to your `@ConfigurationProperties` class:
+
+[source,java,indent=0]
+----
+	@Component
+	@ConfigurationProperties(name="connection")
+	public class ConnectionSettings {
+
+		@NotNull
+		private InetAddress remoteAddress;
+
+		// ... getters and setters
+
+	}
+----
+
+You can also add a custom Spring `Validator` by creating a bean definition called
+`configurationPropertiesValidator`.
+
+TIP: The `spring-boot-actuator` includes an end-point that exposes all
+`@ConfigurationProperties` beans. Simply point your web browser to `/configprops`.
+
+== Profiles
+
+== Logging
+
+== Developing a web application
+
+=== Embedded servlet container support
+
+=== Customizing servlet containers
+
+=== Servlets and Filters
+
+=== JSP limitations When running a Spring Boot application that uses
+
+=== Static content
+
+=== Create a deployable WAR file
+
+== Working with data
+
+=== Configure a DataSource
+
+=== Spring Data
+
+=== @EntityScan
+
+=== JPA properties
+
+=== Initialize a database
+
+== Testing
+
+== Production ready features
+
+=== JMX
+
+== Gradle plugin
+
+== Maven plugin
+
+== Spring Boot CLI
+
+== Deploying to the cloud
+
+=== Cloud Foundry
+
+=== Heroku
+
+
+== Lombok
+
+== Extending Spring Boot
+
+== Starters
+
+// FIXME what's in a name. why we called them spring-boot-starter-xxx
+
+=== Auto-Configuration
+==== Batch
+==== Integration
+==== Actuator
+
+=== CLI
+
+=== Common application properties
+
+=== Conditions
+
+
+== ``How-to'' guides
+This section provides answers to some common ``how do I do that...'' types of questions.
+
+=== Spring Boot application
+
+==== Troubleshoot auto-configuration
+The Spring Boot auto-configuration tries it's best to ``do the right thing'', but
+sometimes things fail and it can be hard to tell why.
+
+There is a really useful `AutoConfigurationReport` available in any Spring Boot
+`ApplicationContext`. You will see it if you enable `DEBUG` logging output. If you use
+the Actuator there is also an endpoint `/autoconfig` that renders the report in JSON.
+Use that to debug the application and see what features have been added (and which not) by
+Spring Boot at runtime.
+
+// FIXME link to full auto-config list + link to actuator
+
+Many more questions can be answered by looking at the source code and Javadocs. Some
+rules of thumb:
+
+* Look for classes called `*AutoConfiguration` and read their sources, in particular the
+  `@Conditional*` annotations to find out what features they enable and when. Add
+  `--debug` to the command line or a System property `-Ddebug` to get a printout on the
+  console of all the autoconfiguration decisions that were made in your app. In a running
+  Actuator app look at the `/autoconfig` endpoint (or the JMX equivalent) for the same
+  information.
+* Look for classes that are `@ConfigurationProperties` (e.g.
+  https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c[`ServerProperties`]
+  and read from there the available external configuration options. The
+  `@ConfigurationProperties` has a `name` attribute which acts as a prefix to external
+  properties, thus `ServerProperties` has `name="server"` and its configuration properties
+  are `server.port`, `server.address` etc. In a running Actuator app look at the
+  `/configprops` endpoint or JMX equivalent.
+* Look for use of `RelaxedEnvironment` to pull configuration values explicitly out of the
+  `Environment`. It often is used with a prefix.
+* Look for `@Value` annotations that bind directly to the `Environment`. This is less
+  flexible than the `RelaxedEnvironment` approach, but does allow some relaxed binding,
+  specifically for OS environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
+  for `period.separated`).
+* Look for `@ConditionalOnExpression` annotations that switch features on and off in
+  response to SpEL expressions, normally evaluated with place-holders resolved from the
+  `Environment`.
+
+==== Test a Spring Boot application
+A Spring Boot application is just a Spring `ApplicationContext` so nothing very special
+has to be done to test it beyond what you would normally do with a vanilla Spring context.
+One thing to watch out for though is that the external properties, logging and other
+features of Spring Boot are only installed in the context by default if you use
+`SpringApplication` to create it. Spring Boot has a special Spring `@ContextConfiguration`
+annotation, so you can use this for example (from the JPA Sample):
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+	public class CityRepositoryIntegrationTests {
+
+		@Autowired
+		CityRepository repository;
+
+		// ...
+
+	}
+----
+
+To use the `@SpringApplicationConfiguration` you need the test jar on your classpath
+(recommended Maven co-ordinates `org.springframework.boot:spring-boot-starter-test`).
+The context loader guesses whether you want to test a web application or not (e.g. with
+`MockMVC`) by looking for the `@WebAppConfiguration` annotation.  (`MockMVC` and
+`@WebAppConfiguration` are from the Spring Test support library).
+
+==== Customize the Environment or ApplicationContext before it starts
+A `SpringApplication` has `ApplicationListeners` and `ApplicationContextInitializers` that
+are used to apply customizations to the context or environment. Spring Boot loads a number
+of such customizations for use internally from `META-INF/spring.factories`. There is more
+than one way to register additional ones:
+
+* Programmatically per application by calling the `addListeners` and `addInitializers`
+  methods on `SpringApplication` before you run it.
+* Declaratively per application by setting `context.initializer.classes` or
+  `context.listener.classes`.
+* Declarative for all applications by adding a `META-INF/spring.factories` and packaging
+  a jar file that the applications all use as a library.
+
+The `SpringApplication` sends some special `ApplicationEvents` to the listeners (even
+some before the context is created), and then registers the listeners for events published
+by the `ApplicationContext` as well. See XXX for a complete list.
+
+// FIXME
+
+
+[[build-hierarchy]]
+==== Build an ApplicationContext hierarchy (adding a parent or root context)
+
+// FIXME see ApplicationBuilder section
+
+==== Create a non-web application
+Not all Spring applications have to be web applications (or web services). If you want to
+execute some code in a `main` method, but also bootstrap a Spring application to set up
+the infrastructure to use, then it's easy with the `SpringApplication` features of Spring
+Boot. A `SpringApplication` changes its `ApplicationContext` class depending on whether it
+thinks it needs a web application or not. The first thing you can do to help it is to just
+leave the servlet API dependencies off the classpath. If you can't do that (e.g. you are
+running 2 applications from the same code base) then you can explicitly call
+`SpringApplication.setWebEnvironment(false)`, or set the `applicationContextClass`
+property (through the Java API or with external properties).
+Application code that you want to run as your business logic can be implemented as a
+`CommandLineRunner` and dropped into the context as a `@Bean` definition.
+
+=== Properties & configuration
+
+
+==== Externalize the configuration of SpringApplication
+A `SpringApplication` has bean properties (mainly setters) so you can use its Java API as
+you create the application to modify its behavior. Or you can externalize the
+configuration using properties in `spring.main.*`. E.g. in `application.properties` you
+might have.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.main.web_environment: false
+	spring.main.show_banner: false
+----
+
+and then the Spring Boot banner will not be printed on startup, and the application will
+not be a web application.
+
+==== Change the location of external properties of an application
+By default properties from different sources are added to the Spring `Environment` in a
+defined order, and the precedence for resolution is:
+
+. commandline
+. filesystem (current working directory) `application.properties`
+. classpath `application.properties`.
+
+A nice way to augment and modify this is to add `@PropertySource` annotations to your
+application sources. Classes passed to the `SpringApplication` static convenience
+methods, and those added using `setSources()` are inspected to see if they have
+`@PropertySources` and if they do those properties are added to the `Environment` early
+enough to be used in all phases of the `ApplicationContext` lifecycle. Properties added
+in this way have precendence over any added using the default locations, but have lower
+priority than system properties, environment variables or the command line.
+
+You can also provide System properties (or environment variables) to change the behavior:
+
+* `spring.config.name` (`SPRING_CONFIG_NAME`), defaults to `application` as the root of
+  the file name.
+* `spring.config.location` (`SPRING_CONFIG_LOCATION`) is file to load (e.g. a classpath
+  resource or a URL). A separate `Environment` property source is set up for this document
+  and it can be overridden by system properties, environment variables or the
+  command line.
+
+No matter what you set in the environment, Spring Boot will always load
+`application.properties` as described above. If YAML is used then files with the ``.yml''
+extension are also added to the list by default.
+
+See `ConfigFileApplicationListener` for more detail.
+
+==== Use ``short'' command line arguments
+Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to
+set configuration properties on the command line. You can easily enable this by using
+placeholders in `application.properties`, e.g.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	server.port: ${port:8080}
+----
+
+NOTE: In this specific case the port binding will work in a PaaS environment like Heroku
+and Cloud Foundry, since in those two platforms the `PORT` environment variable is set
+automatically and Spring can bind to capitalized synonyms for `Environment` properties.
+
+==== Use YAML for external properties
+YAML is a superset of JSON and as such is a very convenient syntax for storing external
+properties in a hierarchical format. E.g.
+
+[source,yaml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring:
+		application:
+			name: cruncher
+		datasource:
+			driverClassName: com.mysql.jdbc.Driver
+			url: jdbc:mysql://localhost/test
+	server:
+		port: 9000
+----
+
+Create a file called `application.yml` and stick it in the root of your classpath, and
+also add `snakeyaml` to your classpath (Maven co-ordinates `org.yaml:snakeyaml`, already
+included if you use a Spring Boot Starter). A YAML file is parsed to a Java
+`Map<String,Object>` (like a JSON object), and Spring Boot flattens the maps so that it
+is 1-level deep and has period-separated keys, a lot like people are used to with
+`Properties` files in Java.
+
+The example YAML above corresponds to an `application.properties` file
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.application.name: cruncher
+	spring.datasource.driverClassName: com.mysql.jdbc.Driver
+	spring.datasource.url: jdbc:mysql://localhost/test
+	server.port: 9000
+----
+
+==== Set the active Spring profiles
+The Spring `Environment` has an API for this, but normally you would set a System profile
+(`spring.profiles.active`) or an OS environment variable (`SPRING_PROFILES_ACTIVE`). E.g.
+launch your application with a `-D...` argument (remember to put it before the main class
+or jar archive):
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
+----
+
+In Spring Boot you can also set the active profile in `application.properties`, e.g.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.profiles.active=production
+----
+
+A value set this way is replaced by the System property or environment variable setting,
+but not by the `SpringApplicationBuilder.profiles()` method. Thus the latter Java API can
+be used to augment the profiles without changing the defaults.
+
+
+==== Change configuration depending on the environment
+A YAML file is actually a sequence of documents separated by `---` lines, and each
+document is parsed separately to a flattened map.
+
+If a YAML document contains a `spring.profiles` key, then the profiles value
+(comma-separated list of profiles) is fed into the Spring
+`Environment.acceptsProfiles()` and if any of those profiles is active that document is
+included in the final merge (otherwise not).
+
+Example:
+
+[source,yaml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	server:
+		port: 9000
+	---
+
+	spring:
+		profiles: development
+	server:
+		port: 9001
+
+	---
+
+	spring:
+		profiles: production
+	server:
+		port: 0
+----
+
+In this example the default port is 9000, but if the Spring profile ``development'' is
+active then the port is 9001, and if ``production'' is active then it is 0.
+
+The YAML documents are merged in the order they are encountered (so later values override
+earlier ones).
+
+To do the same thing with properties files you can use `application-${profile}.properties`
+to specify profile-specific values.
+
+
+
+
+[[discover-options]]
+==== Discover built-in options for external properties
+Spring Boot binds external properties from `application.properties` (or `.yml`) (and
+other places) into an application at runtime.  There is not (and technically cannot be)
+an exhaustive list of all supported properties in a single location because contributions
+can come from additional JAR files on your classpath.
+
+A running application with the Actuator features has a `/configprops` endpoint that shows
+all the bound and bindable properties available through `@ConfigurationProperties` (also
+exposed through JMX if you don't have a web endpoint).
+
+There is a sample
+https://github.com/spring-projects/spring-boot/blob/master/docs/application.yml[`application.yml`]
+with a non-exhaustive and possibly inaccurate list of properties supported by Spring Boot
+vanilla with autoconfiguration. The definitive list comes from searching the source code
+for `@ConfigurationProperties` and `@Value` annotations, as well as the occasional use of
+`RelaxedEnvironment` (c.f. https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java?source=c#L65[here]).
+
+
+
+
+=== Embedded servlet containers
+
+==== Add a Servlet, Filter or ServletContextListener to an application
+`Servlet`, `Filter`, `ServletContextListener` and the other listeners supported by the
+Servlet spec can be added to your application as `@Bean` definitions. Be very careful that
+they don't cause eager initialization of too many other beans because they have to be
+installed in th container very early in the application lifecycle (e.g. it's not a good
+idea to have them depend on your `DataSource` or JPA configuration). You can work around
+restrictions like that by initializing them lazily when first used instead of on
+initialization.
+
+In the case of `Filters` and `Servlets` you can also add mappings and init parameters by
+adding a `FilterRegistrationBean` or `ServletRegistrationBean` instead of or as well as
+the underlying component.
+
+==== Change the HTTP port
+In a standalone application the main HTTP port defaults to 8080, but can be set with
+`server.port` (e.g. in `application.properties` or as a System property). Thanks to
+relaxed binding of `Environment` values you can also use `SERVER_PORT` (e.g. as an OS
+environment variable).
+
+To switch off the HTTP endpoints completely, but still create a `WebApplicationContext`,
+use `server.port=-1` (this is sometimes useful for testing).
+
+For more detail look at the https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c[`ServerProperties`]
+source code.
+
+==== Use a random unassigned HTTP port
+To scan for a free port (using OS natives to prevent clashes) use `server.port=0`.
+
+==== Discover the HTTP port at runtime
+You can access the port the server is running on from log output or from the
+`EmbeddedWebApplicationContext` via its `EmbeddedServletContainer`. The best way to get
+that and be sure that it has initialized is to add a `@Bean` of type
+`ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
+out of the event wehen it is published.
+
+
+==== Configure Tomcat
+Generally you can follow the advice from <<discover-options>> about
+`@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
+`EmbeddedServletContainerCustomizer` and various Tomcat specific `*Customizers` that you
+can add in one of those. The Tomcat APIs are quite rich so once you have access to the
+`TomcatEmbeddedServletContainerFactory` you can modify it in a number of ways. Or the
+nuclear option is to add your own `TomcatEmbeddedServletContainerFactory`.
+
+==== Terminate SSL in Tomcat
+Add a `EmbeddedServletContainerCustomizer` and in that add a `TomcatConnectorCustomizer`
+that sets up the connector to be secure:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public EmbeddedServletContainerCustomizer containerCustomizer(){
+		return new MyCustomizer();
+	}
+
+	// ...
+
+	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+			if(factory instanceof TomcatEmbeddedServletContainerFactory) {
+				customizeTomcat((TomcatEmbeddedServletContainerFactory) factory));
+			}
+		}
+
+		public void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
+			factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+				@Override
+				public void customize(Connector connector) {
+					connector.setPort(serverPort);
+					connector.setSecure(true);
+					connector.setScheme("https");
+					connector.setAttribute("keyAlias", "tomcat");
+					connector.setAttribute("keystorePass", "password");
+					try {
+						connector.setAttribute("keystoreFile",
+							ResourceUtils.getFile("src/ssl/tomcat.keystore").getAbsolutePath());
+					} catch (FileNotFoundException e) {
+						throw new IllegalStateException("Cannot load keystore", e);
+					}
+					connector.setAttribute("clientAuth", "false");
+					connector.setAttribute("sslProtocol", "TLS");
+					connector.setAttribute("SSLEnabled", true);
+				}
+			});
+		}
+
+	}
+----
+
+==== Use Jetty instead of Tomcat
+The Spring Boot starters (`spring-boot-starter-web` in particular) use Tomcat as an
+embedded container by default. You need to exclude those dependencies and include the
+Jetty ones to use that container. Spring Boot provides Tomcat and Jetty dependencies
+bundled together as separate startes to help make this process as easy as possible.
+
+Example in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+	</dependency>
+----
+
+Example in Gradle:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	configurations {
+		compile.exclude module: 'spring-boot-starter-tomcat'
+	}
+
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC3")
+		compile("org.springframework.boot:spring-boot-starter-jetty:1.0.0.RC3")
+		// ...
+	}
+----
+
+==== Configure Jetty
+Generally you can follow the advice [here](#discover.options) about
+`@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
+`EmbeddedServletContainerCustomizer`. The Jetty APIs are quite rich so once you have
+access to the `JettyEmbeddedServletContainerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own `JettyEmbeddedServletContainerFactory`.
+
+
+
+
+
+==== Use Tomcat 8
+Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support
+Java 1.6 out of the box). You should only need to change the classpath to use Tomcat 8
+for it to work. The https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-websocket/pom.xml[websocket sample]
+shows you how to do that in Maven.
+
+
+
+==== Use Jetty 9
+Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so we can support
+Java 1.6 out of the box). You should only need to change the classpath to use Jetty 9
+for it to work.
+
+If you are using the starter poms and parent you can just add the Jetty starter and
+change the version properties, e.g. for a simple webapp or service:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<java.version>1.7</java.version>
+		<jetty.version>9.1.0.v20131115</jetty.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency>
+	</dependencies>
+----
+
+
+
+
+=== Spring MVC
+
+==== Write a JSON REST service
+Any Spring `@RestController` in a Spring Boot application should render JSON response by
+default as long as Jackson2 is on the classpath. For example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RestController
+	public class MyController {
+
+		@RequestMapping("/thing")
+		public MyThing thing() {
+				return new MyThing();
+		}
+
+	}
+----
+
+As long as `MyThing` can be serialized by Jackson2 (e.g. a normal POJO or Groovy object)
+then `http://localhost:8080/thing` will serve a JSON representation of it by default.
+Sometimes in a browser you might see XML responses (but by default only if `MyThing` was
+a JAXB object) because browsers tend to send accept headers that prefer XML.
+
+
+
+==== Customize the Jackson ObjectMapper
+Spring MVC (client and server side) uses `HttpMessageConverters` to negotiate content
+conversion in an HTTP exchange. If Jackson is on the classpath you already get a default
+converter with a vanilla `ObjectMapper`. Spring Boot has some features to make it easier
+to customize this behavior.
+
+The smallest change that might work is to just add beans of type `Module` to your context.
+They will be registered with the default `ObjectMapper` and then injected into the default
+message converter. To replace the default `ObjectMapper` completely, define a `@Bean` of
+that type and mark it as `@Primary`.
+
+In addition, if your context contains any beans of type `ObjectMapper` then all of the
+`Module` beans will be registered with all of the mappers. So there is a global mechanism
+for contributing custom modules when you add new features to your application.
+
+Finally, if you provide any `@Beans` of type `MappingJackson2HttpMessageConverter` then
+they will replace the default value in the MVC configuration. Also, a convenience bean is
+provided of type `HttpMessageConverters` (always available if you use the default MVC
+configuration) which has some useful methods to access the default and user-enhanced
+message converters.
+
+See also the <<message-converters, section on `HttpMessageConverters`>> and the
+`WebMvcAutoConfiguration` source code for more details.
+
+
+
+[[message-converters]]
+==== Customize the @ResponseBody rendering
+Spring uses `HttpMessageConverters` to render `@ResponseBody` (or responses from
+`@RestControllers`). You can contribute additional converters by simply adding beans of
+that type in a Spring Boot context. If a bean you add is of a type that would have been
+included by default anyway (like `MappingJackson2HttpMessageConverter` for JSON
+conversions) then it will replace the default value. A convenience bean is provided of
+type `HttpMessageConverters` (always available if you use the default MVC configuration)
+which has some useful methods to access the default and user-enhanced message converters
+(useful, for example if you want to manually inject them into a custom `RestTemplate`).
+
+As in normal MVC usage, any `WebMvcConfigurerAdapter` beans that you provide can also
+contribute converters by overriding the `configureMessageConverters` method, but unlike
+with normal MVC, you can supply only additional converters that you need (because Spring
+Boot uses the same mechanism to contribute its defaults). Finally, if you opt out of the
+Spring Boot default MVC configuration by providing your own `@EnableWebMvc` configuration,
+then you can take control completely and do everything manually using
+`getMessageConverters` from `WebMvcConfigurationSupport`.
+
+See the `WebMvcAutoConfiguration` source code for more details.
+
+==== Serve static content
+Spring Boot by default will serve static content from a folder called `/static` (or
+`/public` or or `/resources` or `/META-INF/resources`) in the classpath or from the root
+of the `ServeltContext`.  It uses the `ResourceHttpRequestHandler` from Spring MVC so you
+can modify that behavior by adding your own `WebMvcConfigurerAdapter` and overriding the
+`addResourceHandlers` method.
+
+By default in a standalone web application the default servlet from the container is also
+enabled, and acts as a fallback, serving content from the root of the `ServletContext` if
+Spring decides not to handle it. Most of the time this will not happen unless you modify
+the deafult MVC configuration because Spring will always be able to handle requests
+through the `DispatcherServlet`.
+
+In addition to the ``standard'' static resource locations above, a special case is made for
+http://www.webjars.org/[Webjars content]. Any resources with a path in `/webjars/**` will
+be served from jar files if they are packaged in the Webjars format.
+
+For more detail look at the
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.java?source=c[`WebMvcAutoConfiguration`]
+source code.
+
+==== Switch off the Spring MVC DispatcherServlet
+Spring Boot wants to serve all content from the root of your application `/` down. If you
+would rather map your own servlet to that URL you can do it, but of course you may lose
+some of the other Boot MVC features. To add your own servlet and map it to the root
+resource just declare a `@Bean` of type `Servlet` and give it the special bean name
+`dispatcherServlet`. (You can also create a bean of a different type with that name if
+you want to switch it off and not replace it.)
+
+==== Switch off the Default MVC configuration
+The easiest way to take complete control over MVC configuration is to provide your own
+`@Configuration` with the `@EnableWebMvc` annotation. This will leave all MVC
+configuration in your hands.
+
+
+=== Logging
+
+==== Configure Logback for logging
+Spring Boot has no mandatory logging dependence, except for the `commons-logging` API, of
+which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
+you need to include it, and some bindings for `commons-logging` on the classpath. The
+simplest way to do that is through the starter poms which all depend on
+`spring-boot-start-logging`.  For a web application you only need the web starter since it
+depends transitively on the logging starter. E.g. in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+----
+
+Spring Boot has a `LoggingSystem` abstraction that attempts to select a system depending
+on the contents of the classpath. If Logback is available it is the first choice. So if
+you put a `logback.xml` in the root of your classpath it will be picked up from there.
+Spring Boot provides a default base configuration that you can include if you just want
+to set levels, e.g.
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+		<include resource="org/springframework/boot/logging/logback/base.xml"/>
+		<logger name="org.springframework.web" level="DEBUG"/>
+	</configuration>
+----
+
+If you look at the default `logback.xml` in the spring-boot JAR you will see that it uses
+some useful System properties which the `LoggingSystem` takes care of creating for you.
+These are:
+
+* `${PID}` the current process ID.
+* `${LOG_FILE}` if `logging.file` was set in Boot's external configuration.
+* `${LOG_PATH` if `logging.path` was set (representing a directory for
+	log files to live in).
+
+Spring Boot also provides some nice ANSI colour terminal output on a console (but not in
+a log file) using a custom Logback converter. See the default `base.xml` configuration
+for details.
+
+If Groovy is on the classpath you should be able to configure Logback with
+`logback.groovy` as well (it will be given preference if present).
+
+==== Configure Log4j for logging
+Spring Boot supports http://logging.apache.org/log4j/1.x/[Log4j] for logging
+configuration, but it has to be on the classpath. If you are using the starter poms for
+assembling dependencies that means you have to exclude logback and then include log4j
+back. If you aren't using the starter poms then you need to provide `commons-logging`
+(at least) in addition to Log4j.
+
+The simplest path to using Log4j is probably through the starter poms, even though it
+requires some jiggling with excludes, e.g. in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+				<exclusion>
+						<groupId>${project.groupId}</groupId>
+						<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-log4j</artifactId>
+	</dependency>
+----
+
+NOTE: The use of the log4j starter to gather together the dependencies for common logging
+requirements (e.g. including having Tomcat use `java.util.logging` but configure the
+output using Log4j). See the Actuator Log4j Sample for more detail and to see it in
+action.
+
+
+
+
+=== Data Access
+
+==== Configure a DataSource
+Spring Boot will create a `DataSource` for you if you have `spring-jdbc` and some other
+things on the classpath. Here's the algorithm for choosing a specific implementation.
+
+* We prefer the Tomcat pooling `DataSource` for its performance and concurrency, so if
+  that is available we always choose it.
+* If commons-dbcp is available we will use that, but we don't recommend it in production.
+* If neither of those is available but an embedded database is then we create one of
+  those for you (preference order is h2, then Apache Derby, then hsqldb).
+
+The pooling `DataSource` option is controlled by external configuration properties in
+`spring.datasource.*` for example:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.datasource.url: jdbc:mysql://localhost/test
+	spring.datasource.username: root
+	spring.datasource.password:
+	spring.datasource.driverClassName: com.mysql.jdbc.Driver
+----
+
+The `@ConfigurationProperties` for `spring.datasource` are defined in
+`AbstractDataSourceConfiguration` (so see there for more options).
+
+For a pooling `DataSource` to be created we need to be able to verify that a valid
+`Driver` class is available, so we check for that before doing anything. I.e. if you set
+`spring.datasource.driverClassName=com.mysql.jdbc.Driver` then that class has to be
+loadable.
+
+To override the default settings just define a `@Bean` of your own of type `DataSource`.
+See https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`]
+for more details.
+
+==== Use Spring Data repositories
+Spring Data can create implementations for you of `@Repository` interfaces of various
+flavours. Spring Boot will handle all of that for you as long as those `@Repositories`
+are included in the same package (or a sub-package) of your `@EnableAutoConfiguration`
+class.
+
+For many applications all you will need is to put the right Spring Data dependencies on
+your classpath (there is a `spring-boot-starter-data-jpa` for JPA and for Mongodb you
+only need to add `spring-datamongodb`), create some repository interfaces to handle your
+`@Entity` objects. Examples are in the https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa[JPA sample]
+or the https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb[Mongodb sample].
+
+Spring Boot tries to guess the location of your `@Repository` definitions, based on the
+`@EnableAutoConfiguration` it finds. To get more control, use the `@EnableJpaRepositories`
+annotation (from Spring Data JPA).
+
+==== Separate @Entity definitions from Spring configuration
+Spring Boot tries to guess the location of your `@Entity` definitions, based on the
+`@EnableAutoConfiguration` it finds. To get more control, you can use the `@EntityScan`
+annotation, e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	@EnableAutoConfiguration
+	@EntityScan(basePackageClasses=City.class)
+	public class Application {
+
+		//...
+
+	}
+----
+
+==== Configure JPA properties
+Spring JPA already provides some vendor-independent configuration options (e.g. for SQL
+logging) and Spring Boot exposes those, and a few more for hibernate as external
+configuration properties. The most common options to set are:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	spring.jpa.hibernate.ddl-auto: create-drop
+	spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
+	spring.jpa.database: H2
+	spring.jpa.show-sql: true
+----
+
+(Because of relaxed data binding hyphens or underscores should work equally well as
+property keys.)  The `ddl-auto` setting is a special case in that it has different
+defaults depending on whether you are using an embedded database (`create-drop`) or not
+(`none`). In addition all properties in `spring.jpa.properties.*` are passed through as
+normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
+created.
+
+See https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`]
+and https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
+for more details.
+
+==== Use a traditional persistence.xml
+Spring doesn't require the use of XML to configure the JPA provider, and Spring Boot
+assumes you want to take advantage of that feature. If you prefer to use `persistence.xml`
+then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean`, and set
+the persistence unit name there.
+
+See
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
+for the default settings.
+
+=== Database initialization
+An SQL database can be initialized in different ways depending on what your stack is. Or
+of course you can do it manually as long as the database is in a server.
+
+==== Initialize a database using JPA
+JPA has features for DDL generation, and these can be set up to run on startup against the
+database. This is controlled through two external properties:
+
+* `spring.jpa.generate-ddl` (boolean) switches the feature on and off and is vendor
+  independent.
+* `spring.jpa.hibernate.ddl-auto` (enum) is a Hibernate feature that controls the
+  behavior in a more fine-grained way. See below for more detail.
+
+==== Initialize a database using Hibernate
+You can set `spring.jpa.hibernate.ddl-auto` explicitly and the standard Hibernate property
+values are `none`, `validate`, `update`, `create-drop`. Spring Boot chooses a default
+value for you based on whether it thinks your database is embedded (default `create-drop`)
+or not (default `none`). An embedded database is detected by looking at the `Connection`
+type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful when switching
+from in-memory to a ``real'' database that you don't make assumptions about the existence of
+the tables and data in the new platform. You either have to set `ddl-auto` expicitly, or
+use one of the other mechanisms to initialize the database.
+
+In addition, a file named `import.sql` in the root of the classpath will be executed on
+startup. This can be useful for demos and for testing if you are carefuil, but probably
+not something you want to be on the classpath in production. It is a Hibernate feature
+(nothing to do with Spring).
+
+==== Initialize a database using Spring JDBC
+Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
+loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
+classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
+`platform` is the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
+`postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
+initializer by default, so if the scripts cause exceptions the application will fail.
+
+To disable the failfast you can set `spring.datasource.continueOnError=true`. This can be
+useful once an application has matured and been deployed a few times, since the scripts
+can act as ``poor man's migrations'' - inserts that fail mean that the data is already
+there, so there would be no need to prevent the application from running, for instance.
+
+==== Initialize a Spring Batch database
+If you are using Spring Batch then it comes pre-packaged with SQL initialization scripts
+for most popular database platforms. Spring Boot will detect your database type, and
+execute those scripts by default, and in this case will switch the fail fast setting to
+false (errors are logged but do not prevent the application from starting). This is
+because the scripts are known to be reliable and generally do not contain bugs, so errors
+are ignorable, and ignoring them makes the scripts idempotent. You can switch off the
+initialization explicitly using `spring.batch.initializer.enabled=false`.
+
+==== Use a higher level datababse migration tool
+Spring Boot works fine with higher level migration tools http://flywaydb.org/[Flyway]
+(SQL-based) and http://www.liquibase.org/[Liquibase] (XML). In general we prefer
+Flyway because it is easier on the eyes, and it isn't very common to need platform
+independence: usually only one or at most couple of platforms is needed.
+
+=== Batch applications
+
+==== Execute Spring Batch jobs on startup
+Spring Batch autoconfiguration is enabled by adding `@EnableBatchProcessing`
+(from Spring Batch) somewhere in your context.
+
+By default it executes *all* `Jobs` in the application context on startup (see
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java[JobLauncherCommandLineRunner]
+for details). You can narrow down to a specific job or jobs by specifying
+`spring.batch.job.names` (comma separated job name patterns).
+
+If the application context includes a `JobRegistry` then the jobs in
+`spring.batch.job.names` are looked up in the regsitry instead of bein autowired from the
+context. This is a common pattern with more complex systems where multiple jobs are
+defined in child contexts and registered centrally.
+
+See
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java[BatchAutoConfiguration]
+and
+https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java[@EnableBatchProcessing]
+for more details.
+
+
+=== Actuator
+
+==== Change the HTTP port or address of the actuator endpoints
+In a standalone application the Actuator HTTP port defaults to the same as the main HTTP
+port. To make the application listen on a different port set the external property
+`management.port`. To listen on a completely different network address (e.g. if you have
+an internal network for management and an external one for user applications) you can
+also set `management.address` to a valid IP address that the server is able to bind to.
+
+For more detail look at the
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/properties/ManagementServerProperties.java?source=c[`ManagementServerProperties`]
+source code.
+
+==== Customize the ``whitelabel'' error page
+The Actuator installs a ``whitelabel'' error page that you will see in browser client if
+you encounter a server error (machine clients consuming JSON and other media types should
+see a sensible response with the right error code). To switch it off you can set
+`error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
+will want to add your own error page replacing the whitelabel one. If you are using
+Thymeleaf you can do this by adding an `error.html` template. In general what you need is
+a `View` that resolves with a name of `error`, and/or a `@Controller` that handles the
+`/error` path. Unless you replaced some of the default configuration you should find a
+`BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would be
+a simple way of doing that.  Look at `ErrorMvcAutoConfiguration` for more options.
+
+=== Security
+
+==== Secure an application
+Web applications will be secure by default (with Basic authentication on all endpoints) if
+Spring Security is on the classpath. To add method-level security to a web application you
+can simply `@EnableGlobalMethodSecurity` with your desired settings.
+
+The default `AuthenticationManager` has a single user (username ``user'' and password
+random, printed at INFO when the application starts up). You can change the password by
+providing a `security.user.password`. This and other useful properties are externalized
+via `SecurityProperties`.
+
+==== Switch off the Spring Boot security configuration
+If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application
+it will switch off the default webapp security settings in Spring Boot. To tweak the
+defaults try setting properties in `security.*` (see
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/SecurityProperties.java[`SecurityProperties`]
+for details of available settings).
+
+==== Change the AuthenticationManager and add user accounts
+If you provide a `@Bean` of type `AuthenticationManager` the default one will not be
+created, so you have the full feature set of Spring Security available (e.g.
+http://docs.spring.io/spring-security/site/docs/3.2.1.RELEASE/reference/htmlsingle/#jc-authentication[various authentication options]).
+
+Spring Security also provides a convenient `AuthenticationManagerBuilder` which can be
+used to build an `AuthenticationManager` with common options. The recommended way to
+use this in a webapp is to inject it into a void method in a
+`WebSecurityConfigurerAdapter`, e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	@Order(0)
+	public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+		@Autowired
+		protected void init(AuthenticationManagerBuilder builder) {
+				builder.inMemoryAuthentication().withUser("barry"); // ...  etc.
+		}
+
+		// ... other stuff for application security
+
+	}
+----
+
+The configuration class that does this should declare an `@Order` so that it is used
+before the default one in Spring Boot (which has very low precedence).
+
+
+
+
+
+
+
+
+
+
+=== Hot swapping
+
+==== Reload static content
+There are several options. Running in an IDE (especially with debugging on) is a good way
+to do development (all modern IDEs allow reloading of static resources and usually also
+hot-swapping of Java class changes). The Maven and Gradle tooling also support running
+from the command line with reloading of static files. You can use that with an external
+css/js compiler process if you are writing that code with higher level tools.
+
+// FIXME links to Maven/Gradle plugins
+
+==== Reload Thymeleaf templates without restarting the container
+If you are using Thymeleaf, then set `spring.thymeleaf.cache=false`. See
+`ThymeleafAutoConfiguration` for other template customization options.
+
+==== Reload Java classes without restarting the container
+Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode, so if you make a
+change that doesn't affect class or method signatures it should reload cleanly with no
+side effects.
+
+https://github.com/spring-projects/spring-loaded[Spring Loaded] goes a little further in
+that it can reload class definitions with changes in the method signatures. With some
+customization it can force an `ApplicationContext` to refresh itself (but there is no
+general mechanism to ensure that would be safe for a running application anyway, so it
+would only ever be a development time trick probably).
+
+
+
+=== Build
+
+==== Build an executable archive with Ant
+To build with Ant you need to grab dependencies and compile and then create a JAR or WAR
+archive as normal.  To make it executable:
+
+1. Use the appropriate launcher as a `Main-Class`,
+e.g. `org.springframework.boot.loader.JarLauncher` for a JAR file, and
+specify the other stuff it needs as manifest entries, principally a
+`Start-Class`.
+
+2. Add the runtime dependencies in a nested "lib" directory (for a
+JAR) and the "provided" (embedded container) dependencies in a nested
+"lib-provided" directory. Remember *not* to compress the entries in
+the archive.
+
+3. Add the `spring-boot-loader` classes at the root of the archive (so
+the `Main-Class` is available).
+
+Example
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<target name="build" depends="compile">
+		<copy todir="target/classes/lib">
+			<fileset dir="lib/runtime" />
+		</copy>
+		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
+			<fileset dir="target/classes" />
+			<fileset dir="src/main/resources" />
+			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Start-Class" value="${start-class}" />
+			</manifest>
+		</jar>
+	</target>
+----
+
+The Actuator Sample has a `build.xml` that should work if you run it with
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ ant -lib <path_to>/ivy-2.2.jar
+----
+
+after which you can run the application with
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ java -jar target/*.jar
+----
+
+
+=== Traditional deployment
+
+==== Create a deployable WAR file
+Use the `SpringBootServletInitializer` base class, which is picked up by Spring's
+Servlet 3.0 support on deployment. Add an extension of that to your project and build a
+WAR file as normal. For more detail, see the
+http://spring.io/guides/gs/convert-jar-to-war[``Converting a JAR Project to a WAR''] guide
+on the spring.io website.
+
+The WAR file can also be executable if you use the Spring Boot build tools. In that case
+the embedded container classes (to launch Tomcat for instance) have to be added to the
+WAR in a `lib-provided` directory. The tools will take care of that as long as the
+dependencies are marked as "provided" in Maven or Gradle. Here's a Maven example
+https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
+
+==== Create a deployable WAR file for older servlet containers
+Older Servlet containers don't have support for the `ServletContextInitializer` bootstrap
+process used in Servlet 3.0. You can still use Spring and Spring Boot in these containers
+but you are going to need to add a `web.xml` to your application and configure it to load
+an `ApplicationContext` via a `DispatcherServlet`.
+
+//FIXME add some detail.
+
+==== Convert an existing application to Spring Boot
+For a non-web application it should be easy (throw away the code that creates your
+`ApplicationContext` and replace it with calls to `SpringApplication` or
+`SpringApplicationBuilder`). Spring MVC web applications are generally amenable to first
+creating a deployable WAR application, and then migrating it later to an executable WAR
+and/or JAR.  Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
+Started Guide on Converting a JAR to a WAR].
+
+Create a deployable WAR by extending `SpringBootServletInitializer` (e.g. in a class
+called `Application`), and add the Spring Boot `@EnableAutoConfiguration` annotation.
+Example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Configuration
+	@EnableAutoConfiguration
+	@ComponentScan
+	public class Application extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+			return application.sources(Application.class);
+		}
+
+	}
+----
+
+Remember that whatever you put in the `sources` is just a Spring `ApplicationContext` and
+normally anything that already works should work here. There might be some beans you can
+remove later and let Spring Boot provide its own defaults for them, but it should be
+possible to get something working first.
+
+Static resources can be moved to `/public` (or `/static` or `/resources` or
+`/META-INFO/resources`) in the classpath root. Same for `messages.properties` (Spring Boot
+detects this automatically in the root of the classpath).
+
+Vanilla usage of Spring `DispatcherServlet` and Spring Security should require no further
+changes. If you have other features in your application, using other servlets or filters,
+for instance then you may need to add some configuration to your `Application` context,
+replacing those elements from the `web.xml` as follows:
+
+* A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the
+  container as if it was a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
+* A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (like a
+  `<filter/>` and `<filter-mapping/>`.
+* An `ApplicationContext` in an XML file can be added to an `@Import` in your
+  `Application`. Or simple cases where annotation configuration is heavily used already
+  can be recreated in a few lines as `@Bean` definitions.
+
+Once the WAR is working we make it executable by adding a `main` method to our
+`Application`, e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+----
+
+Applications can fall into more than one category:
+
+* Servlet 3.0 applications with no `web.xml`.
+* Applications with a `web.xml`.
+* Applications with a context hierarchy.
+* Applications without a context hierarchy.
+
+All of these should be amenable to translation, but each might require slightly different
+tricks.
+
+Servlet 3.0 applications might translate pretty easily if they already use the Spring
+Servlet 3.0 initializer support classes. Normally all the code from an existing
+`WebApplicationInitializer` can be moved into a `SpringBootServletInitializer`. If your
+existing application has more than one `ApplicationContext` (e.g. if it uses
+`AbstractDispatcherServletInitializer`) then you might be able to squish all your context
+sources into a single `SpringApplication`. The main complication you might encounter is if
+that doesn't work and you need to maintain the context hierarchy. See the
+<<build.hierarchy, entry on building a hierarchy>> for examples. An existing parent
+context that contains web-specific features will usually need to be broken up so that all
+the `ServletContextAware` components are in the child context.
+
+Applications that are not already Spring applications might be convertible to a Spring
+Boot application, and the guidance above might help, but your mileage may vary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
