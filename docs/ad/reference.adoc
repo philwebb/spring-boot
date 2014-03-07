@@ -2404,11 +2404,25 @@ the following provided libraries:
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.
 
-These are common libraries that we generally find useful when writing Tests.
-
-TIP: given, when, then
+These are common libraries that we generally find useful when writing Tests. You are free
+to add or replace them if they don't suit your needs.
 
 === Testing Spring applications
+One of the major advantages of dependency injection is that it should make your code
+easier to unit test. You can simply instantiate objects using the `new` operator without
+even involving Spring. You can also use _mock objects_ instead of real dependencies.
+
+Often you need to move beyond ``unit testing'' and start ``integration testing'' (with
+a Spring `ApplicationContext` actually involved in the process). It's useful to be able
+to perform integration testing without requiring deployment of your application or
+needing to connect to other enterprise infrastructure.
+
+The Spring Framework includes a dedicated test module for just such integration testing.
+You can declare a dependency directly to `org.springframework:spring-test` or use the
+`spring-boot-starter-test` ``Starter POM'' to pull it in transitively.
+
+If you have not use the `spring-test` module before you should start by reading the
+relevant section of the Spring Framework reference documentation.
 
 === Testing Spring Boot applications
 
@@ -2490,13 +2504,7 @@ simply answer the `cf push` command's prompts as follows:
 	$ cf push --path target/demo-0.0.1-SNAPSHOT.jar
 
 	Name> *_$YOURAPP_*
-
 	Instances> *1*
-
-	1: 128M
-	2: 256M
-	3: 512M
-	4: 1G
 	Memory Limit> *256M*
 
 	Creating _$YOURAPP_... *OK*
@@ -2513,9 +2521,7 @@ simply answer the `cf push` command's prompts as follows:
 	Binding _$YOURAPP_.cfapps.io to _$YOURAPP_... OK
 
 	Create services for application?> *n*
-
 	Bind other services to application?> *n*
-
 	Save configuration?> *y*
 ----
 
@@ -2584,14 +2590,84 @@ for tasks such as configuring a DataSource; and you can also use Spring Cloud wi
 Heroku too!
 
 === Heroku
+Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
+`Procfile`, which provides the incantation required to deploy an application. Heroku
+assigns a `port` for the Java application to use and then ensures that routing to the
+external URI works.
 
+You must configure your application listen to the correct port. This is a breeze with
+Spring Boot. Here's the `Procfile` for our starter REST application:
 
-== Deploying to the cloud
+[indent=0]
+----
+	web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
+----
 
-=== Cloud Foundry
+Spring Boot makes `-D` arguments available as properties accessible from a Spring
+`Environment` instance. The `server.port` configuration property is fed to the embedded
+Tomcat or Jetty instance which then uses it when it starts up. The `$PORT` environment
+variable is assigned to us by the Heroku PaaS.
 
-=== Heroku
+Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
+is set to use the same version (Maven users can use the `java.version` property). If you
+want to use JDK 1.7, create a new file adjacent to your `pom.xml` and `Procfile`,
+called `system.properties`. In this file add the following:
 
+[source,java]
+----
+java.runtime.version=1.7
+----
+
+This should be everything you need. The most common workflow for Heroku deployments is to
+`git push` the code to production.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ git push heroku master
+
+	Initializing repository, *done*.
+	Counting objects: 95, *done*.
+	Delta compression using up to 8 threads.
+	Compressing objects: 100% (78/78), *done*.
+	Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, *done*.
+	Total 95 (delta 31), reused 0 (delta 0)
+
+	-----> Java app detected
+	-----> Installing OpenJDK 1.7... *done*
+	-----> Installing Maven 3.0.3... *done*
+	-----> Installing settings.xml... *done*
+	-----> executing /app/tmp/cache/.maven/bin/mvn -B
+	       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229
+	       -Dmaven.repo.local=/app/tmp/cache/.m2/repository
+	       -s /app/tmp/cache/.m2/settings.xml -DskipTests=true clean install
+
+	       [INFO] Scanning for projects...
+	       Downloading: http://repo.spring.io/...
+	       Downloaded: http://repo.spring.io/... (818 B at 1.8 KB/sec)
+			....
+	       Downloaded: http://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
+	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
+	       [INFO] ------------------------------------------------------------------------
+	       [INFO] *BUILD SUCCESS*
+	       [INFO] ------------------------------------------------------------------------
+	       [INFO] Total time: 59.358s
+	       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
+	       [INFO] Final Memory: 20M/493M
+	       [INFO] ------------------------------------------------------------------------
+
+	-----> Discovering process types
+	       Procfile declares types -> *web*
+
+	-----> Compressing... *done*, 70.4MB
+	-----> Launching... *done*, v6
+	       http://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
+
+	To git@heroku.com:agile-sierra-1405.git
+	 * [new branch]      master -> master
+----
+
+That should be it! Your application should be up and running on Heroku.
 
 == Lombok
 

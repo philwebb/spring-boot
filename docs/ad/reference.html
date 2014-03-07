@@ -277,149 +277,142 @@
 <li><a href="#_heroku">16.2. Heroku</a></li>
 </ul>
 </li>
-<li><a href="#_deploying_to_the_cloud_2">17. Deploying to the cloud</a></li>
+<li><a href="#_lombok">17. Lombok</a></li>
+<li><a href="#_extending_spring_boot">18. Extending Spring Boot</a></li>
+<li><a href="#_starters">19. Starters</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_cloud_foundry_2">17.1. Cloud Foundry</a></li>
-<li><a href="#_heroku_2">17.2. Heroku</a></li>
+<li><a href="#_auto_configuration_2">19.1. Auto-Configuration</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_batch">19.1.1. Batch</a></li>
+<li><a href="#_integration">19.1.2. Integration</a></li>
+<li><a href="#_actuator">19.1.3. Actuator</a></li>
 </ul>
 </li>
-<li><a href="#_lombok">18. Lombok</a></li>
-<li><a href="#_extending_spring_boot">19. Extending Spring Boot</a></li>
-<li><a href="#_starters">20. Starters</a></li>
+<li><a href="#_cli">19.2. CLI</a></li>
+<li><a href="#_common_application_properties">19.3. Common application properties</a></li>
+<li><a href="#_conditions">19.4. Conditions</a></li>
+</ul>
+</li>
+<li><a href="#__how_to_guides">20. &#8220;How-to&#8221; guides</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_auto_configuration_2">20.1. Auto-Configuration</a></li>
+<li><a href="#_spring_boot_application">20.1. Spring Boot application</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_batch">20.1.1. Batch</a></li>
-<li><a href="#_integration">20.1.2. Integration</a></li>
-<li><a href="#_actuator">20.1.3. Actuator</a></li>
+<li><a href="#_troubleshoot_auto_configuration">20.1.1. Troubleshoot auto-configuration</a></li>
+<li><a href="#_test_a_spring_boot_application">20.1.2. Test a Spring Boot application</a></li>
+<li><a href="#_customize_the_environment_or_applicationcontext_before_it_starts">20.1.3. Customize the Environment or ApplicationContext before it starts</a></li>
+<li><a href="#build-hierarchy">20.1.4. Build an ApplicationContext hierarchy (adding a parent or root context)</a></li>
+<li><a href="#_create_a_non_web_application">20.1.5. Create a non-web application</a></li>
 </ul>
 </li>
-<li><a href="#_cli">20.2. CLI</a></li>
-<li><a href="#_common_application_properties">20.3. Common application properties</a></li>
-<li><a href="#_conditions">20.4. Conditions</a></li>
-</ul>
-</li>
-<li><a href="#__how_to_guides">21. &#8220;How-to&#8221; guides</a></li>
-<li>
-<ul class="sectlevel2">
-<li><a href="#_spring_boot_application">21.1. Spring Boot application</a></li>
+<li><a href="#_properties_configuration">20.2. Properties &amp; configuration</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_troubleshoot_auto_configuration">21.1.1. Troubleshoot auto-configuration</a></li>
-<li><a href="#_test_a_spring_boot_application">21.1.2. Test a Spring Boot application</a></li>
-<li><a href="#_customize_the_environment_or_applicationcontext_before_it_starts">21.1.3. Customize the Environment or ApplicationContext before it starts</a></li>
-<li><a href="#build-hierarchy">21.1.4. Build an ApplicationContext hierarchy (adding a parent or root context)</a></li>
-<li><a href="#_create_a_non_web_application">21.1.5. Create a non-web application</a></li>
+<li><a href="#_externalize_the_configuration_of_springapplication">20.2.1. Externalize the configuration of SpringApplication</a></li>
+<li><a href="#_change_the_location_of_external_properties_of_an_application">20.2.2. Change the location of external properties of an application</a></li>
+<li><a href="#_use_short_command_line_arguments">20.2.3. Use &#8220;short&#8221; command line arguments</a></li>
+<li><a href="#_use_yaml_for_external_properties">20.2.4. Use YAML for external properties</a></li>
+<li><a href="#_set_the_active_spring_profiles">20.2.5. Set the active Spring profiles</a></li>
+<li><a href="#_change_configuration_depending_on_the_environment">20.2.6. Change configuration depending on the environment</a></li>
+<li><a href="#discover-options">20.2.7. Discover built-in options for external properties</a></li>
 </ul>
 </li>
-<li><a href="#_properties_configuration">21.2. Properties &amp; configuration</a></li>
+<li><a href="#_embedded_servlet_containers">20.3. Embedded servlet containers</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_externalize_the_configuration_of_springapplication">21.2.1. Externalize the configuration of SpringApplication</a></li>
-<li><a href="#_change_the_location_of_external_properties_of_an_application">21.2.2. Change the location of external properties of an application</a></li>
-<li><a href="#_use_short_command_line_arguments">21.2.3. Use &#8220;short&#8221; command line arguments</a></li>
-<li><a href="#_use_yaml_for_external_properties">21.2.4. Use YAML for external properties</a></li>
-<li><a href="#_set_the_active_spring_profiles">21.2.5. Set the active Spring profiles</a></li>
-<li><a href="#_change_configuration_depending_on_the_environment">21.2.6. Change configuration depending on the environment</a></li>
-<li><a href="#discover-options">21.2.7. Discover built-in options for external properties</a></li>
+<li><a href="#_add_a_servlet_filter_or_servletcontextlistener_to_an_application">20.3.1. Add a Servlet, Filter or ServletContextListener to an application</a></li>
+<li><a href="#_change_the_http_port">20.3.2. Change the HTTP port</a></li>
+<li><a href="#_use_a_random_unassigned_http_port">20.3.3. Use a random unassigned HTTP port</a></li>
+<li><a href="#_discover_the_http_port_at_runtime">20.3.4. Discover the HTTP port at runtime</a></li>
+<li><a href="#_configure_tomcat">20.3.5. Configure Tomcat</a></li>
+<li><a href="#_terminate_ssl_in_tomcat">20.3.6. Terminate SSL in Tomcat</a></li>
+<li><a href="#_use_jetty_instead_of_tomcat">20.3.7. Use Jetty instead of Tomcat</a></li>
+<li><a href="#_configure_jetty">20.3.8. Configure Jetty</a></li>
+<li><a href="#_use_tomcat_8">20.3.9. Use Tomcat 8</a></li>
+<li><a href="#_use_jetty_9">20.3.10. Use Jetty 9</a></li>
 </ul>
 </li>
-<li><a href="#_embedded_servlet_containers">21.3. Embedded servlet containers</a></li>
+<li><a href="#_spring_mvc">20.4. Spring MVC</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_add_a_servlet_filter_or_servletcontextlistener_to_an_application">21.3.1. Add a Servlet, Filter or ServletContextListener to an application</a></li>
-<li><a href="#_change_the_http_port">21.3.2. Change the HTTP port</a></li>
-<li><a href="#_use_a_random_unassigned_http_port">21.3.3. Use a random unassigned HTTP port</a></li>
-<li><a href="#_discover_the_http_port_at_runtime">21.3.4. Discover the HTTP port at runtime</a></li>
-<li><a href="#_configure_tomcat">21.3.5. Configure Tomcat</a></li>
-<li><a href="#_terminate_ssl_in_tomcat">21.3.6. Terminate SSL in Tomcat</a></li>
-<li><a href="#_use_jetty_instead_of_tomcat">21.3.7. Use Jetty instead of Tomcat</a></li>
-<li><a href="#_configure_jetty">21.3.8. Configure Jetty</a></li>
-<li><a href="#_use_tomcat_8">21.3.9. Use Tomcat 8</a></li>
-<li><a href="#_use_jetty_9">21.3.10. Use Jetty 9</a></li>
+<li><a href="#_write_a_json_rest_service">20.4.1. Write a JSON REST service</a></li>
+<li><a href="#_customize_the_jackson_objectmapper">20.4.2. Customize the Jackson ObjectMapper</a></li>
+<li><a href="#message-converters">20.4.3. Customize the @ResponseBody rendering</a></li>
+<li><a href="#_switch_off_the_spring_mvc_dispatcherservlet">20.4.4. Switch off the Spring MVC DispatcherServlet</a></li>
+<li><a href="#_switch_off_the_default_mvc_configuration">20.4.5. Switch off the Default MVC configuration</a></li>
 </ul>
 </li>
-<li><a href="#_spring_mvc">21.4. Spring MVC</a></li>
+<li><a href="#_logging_2">20.5. Logging</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_write_a_json_rest_service">21.4.1. Write a JSON REST service</a></li>
-<li><a href="#_customize_the_jackson_objectmapper">21.4.2. Customize the Jackson ObjectMapper</a></li>
-<li><a href="#message-converters">21.4.3. Customize the @ResponseBody rendering</a></li>
-<li><a href="#_switch_off_the_spring_mvc_dispatcherservlet">21.4.4. Switch off the Spring MVC DispatcherServlet</a></li>
-<li><a href="#_switch_off_the_default_mvc_configuration">21.4.5. Switch off the Default MVC configuration</a></li>
+<li><a href="#_configure_logback_for_logging">20.5.1. Configure Logback for logging</a></li>
+<li><a href="#_configure_log4j_for_logging">20.5.2. Configure Log4j for logging</a></li>
 </ul>
 </li>
-<li><a href="#_logging_2">21.5. Logging</a></li>
+<li><a href="#_data_access">20.6. Data Access</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_configure_logback_for_logging">21.5.1. Configure Logback for logging</a></li>
-<li><a href="#_configure_log4j_for_logging">21.5.2. Configure Log4j for logging</a></li>
+<li><a href="#_configure_a_datasource_2">20.6.1. Configure a DataSource</a></li>
+<li><a href="#_use_spring_data_repositories">20.6.2. Use Spring Data repositories</a></li>
+<li><a href="#_separate_entity_definitions_from_spring_configuration">20.6.3. Separate @Entity definitions from Spring configuration</a></li>
+<li><a href="#_configure_jpa_properties">20.6.4. Configure JPA properties</a></li>
+<li><a href="#_use_a_traditional_persistence_xml">20.6.5. Use a traditional persistence.xml</a></li>
 </ul>
 </li>
-<li><a href="#_data_access">21.6. Data Access</a></li>
+<li><a href="#_database_initialization">20.7. Database initialization</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_configure_a_datasource_2">21.6.1. Configure a DataSource</a></li>
-<li><a href="#_use_spring_data_repositories">21.6.2. Use Spring Data repositories</a></li>
-<li><a href="#_separate_entity_definitions_from_spring_configuration">21.6.3. Separate @Entity definitions from Spring configuration</a></li>
-<li><a href="#_configure_jpa_properties">21.6.4. Configure JPA properties</a></li>
-<li><a href="#_use_a_traditional_persistence_xml">21.6.5. Use a traditional persistence.xml</a></li>
+<li><a href="#_initialize_a_database_using_jpa">20.7.1. Initialize a database using JPA</a></li>
+<li><a href="#_initialize_a_database_using_hibernate">20.7.2. Initialize a database using Hibernate</a></li>
+<li><a href="#_initialize_a_database_using_spring_jdbc">20.7.3. Initialize a database using Spring JDBC</a></li>
+<li><a href="#_initialize_a_spring_batch_database">20.7.4. Initialize a Spring Batch database</a></li>
+<li><a href="#_use_a_higher_level_datababse_migration_tool">20.7.5. Use a higher level datababse migration tool</a></li>
 </ul>
 </li>
-<li><a href="#_database_initialization">21.7. Database initialization</a></li>
+<li><a href="#_batch_applications">20.8. Batch applications</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_initialize_a_database_using_jpa">21.7.1. Initialize a database using JPA</a></li>
-<li><a href="#_initialize_a_database_using_hibernate">21.7.2. Initialize a database using Hibernate</a></li>
-<li><a href="#_initialize_a_database_using_spring_jdbc">21.7.3. Initialize a database using Spring JDBC</a></li>
-<li><a href="#_initialize_a_spring_batch_database">21.7.4. Initialize a Spring Batch database</a></li>
-<li><a href="#_use_a_higher_level_datababse_migration_tool">21.7.5. Use a higher level datababse migration tool</a></li>
+<li><a href="#_execute_spring_batch_jobs_on_startup">20.8.1. Execute Spring Batch jobs on startup</a></li>
 </ul>
 </li>
-<li><a href="#_batch_applications">21.8. Batch applications</a></li>
+<li><a href="#_actuator_2">20.9. Actuator</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_execute_spring_batch_jobs_on_startup">21.8.1. Execute Spring Batch jobs on startup</a></li>
+<li><a href="#_change_the_http_port_or_address_of_the_actuator_endpoints">20.9.1. Change the HTTP port or address of the actuator endpoints</a></li>
+<li><a href="#_customize_the_whitelabel_error_page">20.9.2. Customize the &#8220;whitelabel&#8221; error page</a></li>
 </ul>
 </li>
-<li><a href="#_actuator_2">21.9. Actuator</a></li>
+<li><a href="#_security">20.10. Security</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_change_the_http_port_or_address_of_the_actuator_endpoints">21.9.1. Change the HTTP port or address of the actuator endpoints</a></li>
-<li><a href="#_customize_the_whitelabel_error_page">21.9.2. Customize the &#8220;whitelabel&#8221; error page</a></li>
+<li><a href="#_secure_an_application">20.10.1. Secure an application</a></li>
+<li><a href="#_switch_off_the_spring_boot_security_configuration">20.10.2. Switch off the Spring Boot security configuration</a></li>
+<li><a href="#_change_the_authenticationmanager_and_add_user_accounts">20.10.3. Change the AuthenticationManager and add user accounts</a></li>
 </ul>
 </li>
-<li><a href="#_security">21.10. Security</a></li>
+<li><a href="#_hot_swapping_2">20.11. Hot swapping</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_secure_an_application">21.10.1. Secure an application</a></li>
-<li><a href="#_switch_off_the_spring_boot_security_configuration">21.10.2. Switch off the Spring Boot security configuration</a></li>
-<li><a href="#_change_the_authenticationmanager_and_add_user_accounts">21.10.3. Change the AuthenticationManager and add user accounts</a></li>
+<li><a href="#_reload_static_content">20.11.1. Reload static content</a></li>
+<li><a href="#_reload_thymeleaf_templates_without_restarting_the_container">20.11.2. Reload Thymeleaf templates without restarting the container</a></li>
+<li><a href="#_reload_java_classes_without_restarting_the_container">20.11.3. Reload Java classes without restarting the container</a></li>
 </ul>
 </li>
-<li><a href="#_hot_swapping_2">21.11. Hot swapping</a></li>
+<li><a href="#_build">20.12. Build</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_reload_static_content">21.11.1. Reload static content</a></li>
-<li><a href="#_reload_thymeleaf_templates_without_restarting_the_container">21.11.2. Reload Thymeleaf templates without restarting the container</a></li>
-<li><a href="#_reload_java_classes_without_restarting_the_container">21.11.3. Reload Java classes without restarting the container</a></li>
+<li><a href="#_build_an_executable_archive_with_ant">20.12.1. Build an executable archive with Ant</a></li>
 </ul>
 </li>
-<li><a href="#_build">21.12. Build</a></li>
+<li><a href="#_traditional_deployment">20.13. Traditional deployment</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_build_an_executable_archive_with_ant">21.12.1. Build an executable archive with Ant</a></li>
-</ul>
-</li>
-<li><a href="#_traditional_deployment">21.13. Traditional deployment</a></li>
-<li>
-<ul class="sectlevel3">
-<li><a href="#_create_a_deployable_war_file">21.13.1. Create a deployable WAR file</a></li>
-<li><a href="#_create_a_deployable_war_file_for_older_servlet_containers">21.13.2. Create a deployable WAR file for older servlet containers</a></li>
-<li><a href="#_convert_an_existing_application_to_spring_boot">21.13.3. Convert an existing application to Spring Boot</a></li>
+<li><a href="#_create_a_deployable_war_file">20.13.1. Create a deployable WAR file</a></li>
+<li><a href="#_create_a_deployable_war_file_for_older_servlet_containers">20.13.2. Create a deployable WAR file for older servlet containers</a></li>
+<li><a href="#_convert_an_existing_application_to_spring_boot">20.13.3. Convert an existing application to Spring Boot</a></li>
 </ul>
 </li>
 </ul>
@@ -3875,24 +3868,32 @@ allowing <code>assertThat</code> style JUnit assertions.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>These are common libraries that we generally find useful when writing Tests.</p>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-given, when, then
-</td>
-</tr>
-</table>
+<p>These are common libraries that we generally find useful when writing Tests. You are free
+to add or replace them if they don&#8217;t suit your needs.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_testing_spring_applications">11.2. Testing Spring applications</h3>
-
+<div class="paragraph">
+<p>One of the major advantages of dependency injection is that it should make your code
+easier to unit test. You can simply instantiate objects using the <code>new</code> operator without
+even involving Spring. You can also use <em>mock objects</em> instead of real dependencies.</p>
+</div>
+<div class="paragraph">
+<p>Often you need to move beyond &#8220;unit testing&#8221; and start &#8220;integration testing&#8221; (with
+a Spring <code>ApplicationContext</code> actually involved in the process). It&#8217;s useful to be able
+to perform integration testing without requiring deployment of your application or
+needing to connect to other enterprise infrastructure.</p>
+</div>
+<div class="paragraph">
+<p>The Spring Framework includes a dedicated test module for just such integration testing.
+You can declare a dependency directly to <code>org.springframework:spring-test</code> or use the
+<code>spring-boot-starter-test</code> &#8220;Starter POM&#8221; to pull it in transitively.</p>
+</div>
+<div class="paragraph">
+<p>If you have not use the <code>spring-test</code> module before you should start by reading the
+relevant section of the Spring Framework reference documentation.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_testing_spring_boot_applications">11.3. Testing Spring Boot applications</h3>
@@ -4006,13 +4007,7 @@ simply answer the <code>cf push</code> command&#8217;s prompts as follows:</p>
 <pre>$ cf push --path target/demo-0.0.1-SNAPSHOT.jar
 
 Name&gt; <strong><em>$YOURAPP</em></strong>
-
 Instances&gt; <strong>1</strong>
-
-1: 128M
-2: 256M
-3: 512M
-4: 1G
 Memory Limit&gt; <strong>256M</strong>
 
 Creating <em>$YOURAPP</em>... <strong>OK</strong>
@@ -4029,9 +4024,7 @@ Creating route <em>$YOURAPP</em>.cfapps.io... OK
 Binding <em>$YOURAPP</em>.cfapps.io to <em>$YOURAPP</em>... OK
 
 Create services for application?&gt; <strong>n</strong>
-
 Bind other services to application?&gt; <strong>n</strong>
-
 Save configuration?&gt; <strong>y</strong></pre>
 </div>
 </div>
@@ -4120,77 +4113,148 @@ Heroku too!
 </div>
 <div class="sect2">
 <h3 id="_heroku">16.2. Heroku</h3>
+<div class="paragraph">
+<p>Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
+<code>Procfile</code>, which provides the incantation required to deploy an application. Heroku
+assigns a <code>port</code> for the Java application to use and then ensures that routing to the
+external URI works.</p>
+</div>
+<div class="paragraph">
+<p>You must configure your application listen to the correct port. This is a breeze with
+Spring Boot. Here&#8217;s the <code>Procfile</code> for our starter REST application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Spring Boot makes <code>-D</code> arguments available as properties accessible from a Spring
+<code>Environment</code> instance. The <code>server.port</code> configuration property is fed to the embedded
+Tomcat or Jetty instance which then uses it when it starts up. The <code>$PORT</code> environment
+variable is assigned to us by the Heroku PaaS.</p>
+</div>
+<div class="paragraph">
+<p>Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
+is set to use the same version (Maven users can use the <code>java.version</code> property). If you
+want to use JDK 1.7, create a new file adjacent to your <code>pom.xml</code> and <code>Procfile</code>,
+called <code>system.properties</code>. In this file add the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>java.runtime.version=1.7</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This should be everything you need. The most common workflow for Heroku deployments is to
+<code>git push</code> the code to production.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ git push heroku master
 
+Initializing repository, <strong>done</strong>.
+Counting objects: 95, <strong>done</strong>.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (78/78), <strong>done</strong>.
+Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, <strong>done</strong>.
+Total 95 (delta 31), reused 0 (delta 0)
+
+-----&gt; Java app detected
+-----&gt; Installing OpenJDK 1.7... <strong>done</strong>
+-----&gt; Installing Maven 3.0.3... <strong>done</strong>
+-----&gt; Installing settings.xml... <strong>done</strong>
+-----&gt; executing /app/tmp/cache/.maven/bin/mvn -B
+       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229
+       -Dmaven.repo.local=/app/tmp/cache/.m2/repository
+       -s /app/tmp/cache/.m2/settings.xml -DskipTests=true clean install
+
+       [INFO] Scanning for projects...
+       Downloading: http://repo.spring.io/...
+       Downloaded: http://repo.spring.io/... (818 B at 1.8 KB/sec)
+        ....
+       Downloaded: http://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
+       [INFO] ------------------------------------------------------------------------
+       [INFO] <strong>BUILD SUCCESS</strong>
+       [INFO] ------------------------------------------------------------------------
+       [INFO] Total time: 59.358s
+       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
+       [INFO] Final Memory: 20M/493M
+       [INFO] ------------------------------------------------------------------------
+
+-----&gt; Discovering process types
+       Procfile declares types -&gt; <strong>web</strong>
+
+-----&gt; Compressing... <strong>done</strong>, 70.4MB
+-----&gt; Launching... <strong>done</strong>, v6
+       http://agile-sierra-1405.herokuapp.com/ <strong>deployed to Heroku</strong>
+
+To git@heroku.com:agile-sierra-1405.git
+ * [new branch]      master -&gt; master</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That should be it! Your application should be up and running on Heroku.</p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_deploying_to_the_cloud_2">17. Deploying to the cloud</h2>
+<h2 id="_lombok">17. Lombok</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extending_spring_boot">18. Extending Spring Boot</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_starters">19. Starters</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_cloud_foundry_2">17.1. Cloud Foundry</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_heroku_2">17.2. Heroku</h3>
-
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_lombok">18. Lombok</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_extending_spring_boot">19. Extending Spring Boot</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_starters">20. Starters</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_auto_configuration_2">20.1. Auto-Configuration</h3>
+<h3 id="_auto_configuration_2">19.1. Auto-Configuration</h3>
 <div class="sect3">
-<h4 id="_batch">20.1.1. Batch</h4>
+<h4 id="_batch">19.1.1. Batch</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_integration">20.1.2. Integration</h4>
+<h4 id="_integration">19.1.2. Integration</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_actuator">20.1.3. Actuator</h4>
+<h4 id="_actuator">19.1.3. Actuator</h4>
 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_cli">20.2. CLI</h3>
+<h3 id="_cli">19.2. CLI</h3>
 
 </div>
 <div class="sect2">
-<h3 id="_common_application_properties">20.3. Common application properties</h3>
+<h3 id="_common_application_properties">19.3. Common application properties</h3>
 
 </div>
 <div class="sect2">
-<h3 id="_conditions">20.4. Conditions</h3>
+<h3 id="_conditions">19.4. Conditions</h3>
 
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="__how_to_guides">21. &#8220;How-to&#8221; guides</h2>
+<h2 id="__how_to_guides">20. &#8220;How-to&#8221; guides</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This section provides answers to some common &#8220;how do I do that&#8230;&#8221; types of questions.</p>
 </div>
 <div class="sect2">
-<h3 id="_spring_boot_application">21.1. Spring Boot application</h3>
+<h3 id="_spring_boot_application">20.1. Spring Boot application</h3>
 <div class="sect3">
-<h4 id="_troubleshoot_auto_configuration">21.1.1. Troubleshoot auto-configuration</h4>
+<h4 id="_troubleshoot_auto_configuration">20.1.1. Troubleshoot auto-configuration</h4>
 <div class="paragraph">
 <p>The Spring Boot auto-configuration tries it&#8217;s best to &#8220;do the right thing&#8221;, but
 sometimes things fail and it can be hard to tell why.</p>
@@ -4244,7 +4308,7 @@ response to SpEL expressions, normally evaluated with place-holders resolved fro
 </div>
 </div>
 <div class="sect3">
-<h4 id="_test_a_spring_boot_application">21.1.2. Test a Spring Boot application</h4>
+<h4 id="_test_a_spring_boot_application">20.1.2. Test a Spring Boot application</h4>
 <div class="paragraph">
 <p>A Spring Boot application is just a Spring <code>ApplicationContext</code> so nothing very special
 has to be done to test it beyond what you would normally do with a vanilla Spring context.
@@ -4276,7 +4340,7 @@ The context loader guesses whether you want to test a web application or not (e.
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_environment_or_applicationcontext_before_it_starts">21.1.3. Customize the Environment or ApplicationContext before it starts</h4>
+<h4 id="_customize_the_environment_or_applicationcontext_before_it_starts">20.1.3. Customize the Environment or ApplicationContext before it starts</h4>
 <div class="paragraph">
 <p>A <code>SpringApplication</code> has <code>ApplicationListeners</code> and <code>ApplicationContextInitializers</code> that
 are used to apply customizations to the context or environment. Spring Boot loads a number
@@ -4306,11 +4370,11 @@ by the <code>ApplicationContext</code> as well. See XXX for a complete list.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="build-hierarchy">21.1.4. Build an ApplicationContext hierarchy (adding a parent or root context)</h4>
+<h4 id="build-hierarchy">20.1.4. Build an ApplicationContext hierarchy (adding a parent or root context)</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_create_a_non_web_application">21.1.5. Create a non-web application</h4>
+<h4 id="_create_a_non_web_application">20.1.5. Create a non-web application</h4>
 <div class="paragraph">
 <p>Not all Spring applications have to be web applications (or web services). If you want to
 execute some code in a <code>main</code> method, but also bootstrap a Spring application to set up
@@ -4327,9 +4391,9 @@ Application code that you want to run as your business logic can be implemented 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_properties_configuration">21.2. Properties &amp; configuration</h3>
+<h3 id="_properties_configuration">20.2. Properties &amp; configuration</h3>
 <div class="sect3">
-<h4 id="_externalize_the_configuration_of_springapplication">21.2.1. Externalize the configuration of SpringApplication</h4>
+<h4 id="_externalize_the_configuration_of_springapplication">20.2.1. Externalize the configuration of SpringApplication</h4>
 <div class="paragraph">
 <p>A <code>SpringApplication</code> has bean properties (mainly setters) so you can use its Java API as
 you create the application to modify its behavior. Or you can externalize the
@@ -4348,7 +4412,7 @@ not be a web application.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_location_of_external_properties_of_an_application">21.2.2. Change the location of external properties of an application</h4>
+<h4 id="_change_the_location_of_external_properties_of_an_application">20.2.2. Change the location of external properties of an application</h4>
 <div class="paragraph">
 <p>By default properties from different sources are added to the Spring <code>Environment</code> in a
 defined order, and the precedence for resolution is:</p>
@@ -4402,7 +4466,7 @@ extension are also added to the list by default.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_short_command_line_arguments">21.2.3. Use &#8220;short&#8221; command line arguments</h4>
+<h4 id="_use_short_command_line_arguments">20.2.3. Use &#8220;short&#8221; command line arguments</h4>
 <div class="paragraph">
 <p>Some people like to use (for example) <code>--port=9000</code> instead of <code>--server.port=9000</code> to
 set configuration properties on the command line. You can easily enable this by using
@@ -4429,7 +4493,7 @@ automatically and Spring can bind to capitalized synonyms for <code>Environment<
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_yaml_for_external_properties">21.2.4. Use YAML for external properties</h4>
+<h4 id="_use_yaml_for_external_properties">20.2.4. Use YAML for external properties</h4>
 <div class="paragraph">
 <p>YAML is a superset of JSON and as such is a very convenient syntax for storing external
 properties in a hierarchical format. E.g.</p>
@@ -4467,7 +4531,7 @@ server.port: 9000</pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_set_the_active_spring_profiles">21.2.5. Set the active Spring profiles</h4>
+<h4 id="_set_the_active_spring_profiles">20.2.5. Set the active Spring profiles</h4>
 <div class="paragraph">
 <p>The Spring <code>Environment</code> has an API for this, but normally you would set a System profile
 (<code>spring.profiles.active</code>) or an OS environment variable (<code>SPRING_PROFILES_ACTIVE</code>). E.g.
@@ -4494,7 +4558,7 @@ be used to augment the profiles without changing the defaults.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_configuration_depending_on_the_environment">21.2.6. Change configuration depending on the environment</h4>
+<h4 id="_change_configuration_depending_on_the_environment">20.2.6. Change configuration depending on the environment</h4>
 <div class="paragraph">
 <p>A YAML file is actually a sequence of documents separated by <code>---</code> lines, and each
 document is parsed separately to a flattened map.</p>
@@ -4541,7 +4605,7 @@ to specify profile-specific values.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="discover-options">21.2.7. Discover built-in options for external properties</h4>
+<h4 id="discover-options">20.2.7. Discover built-in options for external properties</h4>
 <div class="paragraph">
 <p>Spring Boot binds external properties from <code>application.properties</code> (or <code>.yml</code>) (and
 other places) into an application at runtime.  There is not (and technically cannot be)
@@ -4564,9 +4628,9 @@ for <code>@ConfigurationProperties</code> and <code>@Value</code> annotations, a
 </div>
 </div>
 <div class="sect2">
-<h3 id="_embedded_servlet_containers">21.3. Embedded servlet containers</h3>
+<h3 id="_embedded_servlet_containers">20.3. Embedded servlet containers</h3>
 <div class="sect3">
-<h4 id="_add_a_servlet_filter_or_servletcontextlistener_to_an_application">21.3.1. Add a Servlet, Filter or ServletContextListener to an application</h4>
+<h4 id="_add_a_servlet_filter_or_servletcontextlistener_to_an_application">20.3.1. Add a Servlet, Filter or ServletContextListener to an application</h4>
 <div class="paragraph">
 <p><code>Servlet</code>, <code>Filter</code>, <code>ServletContextListener</code> and the other listeners supported by the
 Servlet spec can be added to your application as <code>@Bean</code> definitions. Be very careful that
@@ -4583,7 +4647,7 @@ the underlying component.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_http_port">21.3.2. Change the HTTP port</h4>
+<h4 id="_change_the_http_port">20.3.2. Change the HTTP port</h4>
 <div class="paragraph">
 <p>In a standalone application the main HTTP port defaults to 8080, but can be set with
 <code>server.port</code> (e.g. in <code>application.properties</code> or as a System property). Thanks to
@@ -4600,13 +4664,13 @@ source code.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_random_unassigned_http_port">21.3.3. Use a random unassigned HTTP port</h4>
+<h4 id="_use_a_random_unassigned_http_port">20.3.3. Use a random unassigned HTTP port</h4>
 <div class="paragraph">
 <p>To scan for a free port (using OS natives to prevent clashes) use <code>server.port=0</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_discover_the_http_port_at_runtime">21.3.4. Discover the HTTP port at runtime</h4>
+<h4 id="_discover_the_http_port_at_runtime">20.3.4. Discover the HTTP port at runtime</h4>
 <div class="paragraph">
 <p>You can access the port the server is running on from log output or from the
 <code>EmbeddedWebApplicationContext</code> via its <code>EmbeddedServletContainer</code>. The best way to get
@@ -4616,7 +4680,7 @@ out of the event wehen it is published.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_tomcat">21.3.5. Configure Tomcat</h4>
+<h4 id="_configure_tomcat">20.3.5. Configure Tomcat</h4>
 <div class="paragraph">
 <p>Generally you can follow the advice from <a href="#discover-options">Discover built-in options for external properties</a> about
 <code>@ConfigurationProperties</code> (<code>ServerProperties</code> is the main one here), but also look at
@@ -4627,7 +4691,7 @@ nuclear option is to add your own <code>TomcatEmbeddedServletContainerFactory</c
 </div>
 </div>
 <div class="sect3">
-<h4 id="_terminate_ssl_in_tomcat">21.3.6. Terminate SSL in Tomcat</h4>
+<h4 id="_terminate_ssl_in_tomcat">20.3.6. Terminate SSL in Tomcat</h4>
 <div class="paragraph">
 <p>Add a <code>EmbeddedServletContainerCustomizer</code> and in that add a <code>TomcatConnectorCustomizer</code>
 that sets up the connector to be secure:</p>
@@ -4677,7 +4741,7 @@ private static class MyCustomizer implements EmbeddedServletContainerCustomizer 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_jetty_instead_of_tomcat">21.3.7. Use Jetty instead of Tomcat</h4>
+<h4 id="_use_jetty_instead_of_tomcat">20.3.7. Use Jetty instead of Tomcat</h4>
 <div class="paragraph">
 <p>The Spring Boot starters (<code>spring-boot-starter-web</code> in particular) use Tomcat as an
 embedded container by default. You need to exclude those dependencies and include the
@@ -4723,7 +4787,7 @@ dependencies {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_jetty">21.3.8. Configure Jetty</h4>
+<h4 id="_configure_jetty">20.3.8. Configure Jetty</h4>
 <div class="paragraph">
 <p>Generally you can follow the advice [here](#discover.options) about
 <code>@ConfigurationProperties</code> (<code>ServerProperties</code> is the main one here), but also look at
@@ -4733,7 +4797,7 @@ of ways. Or the nuclear option is to add your own <code>JettyEmbeddedServletCont
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_tomcat_8">21.3.9. Use Tomcat 8</h4>
+<h4 id="_use_tomcat_8">20.3.9. Use Tomcat 8</h4>
 <div class="paragraph">
 <p>Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support
 Java 1.6 out of the box). You should only need to change the classpath to use Tomcat 8
@@ -4742,7 +4806,7 @@ shows you how to do that in Maven.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_jetty_9">21.3.10. Use Jetty 9</h4>
+<h4 id="_use_jetty_9">20.3.10. Use Jetty 9</h4>
 <div class="paragraph">
 <p>Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so we can support
 Java 1.6 out of the box). You should only need to change the classpath to use Jetty 9
@@ -4780,9 +4844,9 @@ change the version properties, e.g. for a simple webapp or service:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_spring_mvc">21.4. Spring MVC</h3>
+<h3 id="_spring_mvc">20.4. Spring MVC</h3>
 <div class="sect3">
-<h4 id="_write_a_json_rest_service">21.4.1. Write a JSON REST service</h4>
+<h4 id="_write_a_json_rest_service">20.4.1. Write a JSON REST service</h4>
 <div class="paragraph">
 <p>Any Spring <code>@RestController</code> in a Spring Boot application should render JSON response by
 default as long as Jackson2 is on the classpath. For example:</p>
@@ -4808,7 +4872,7 @@ a JAXB object) because browsers tend to send accept headers that prefer XML.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_jackson_objectmapper">21.4.2. Customize the Jackson ObjectMapper</h4>
+<h4 id="_customize_the_jackson_objectmapper">20.4.2. Customize the Jackson ObjectMapper</h4>
 <div class="paragraph">
 <p>Spring MVC (client and server side) uses <code>HttpMessageConverters</code> to negotiate content
 conversion in an HTTP exchange. If Jackson is on the classpath you already get a default
@@ -4839,7 +4903,7 @@ message converters.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="message-converters">21.4.3. Customize the @ResponseBody rendering</h4>
+<h4 id="message-converters">20.4.3. Customize the @ResponseBody rendering</h4>
 <div class="paragraph">
 <p>Spring uses <code>HttpMessageConverters</code> to render <code>@ResponseBody</code> (or responses from
 <code>@RestControllers</code>). You can contribute additional converters by simply adding beans of
@@ -4864,7 +4928,7 @@ then you can take control completely and do everything manually using
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_spring_mvc_dispatcherservlet">21.4.4. Switch off the Spring MVC DispatcherServlet</h4>
+<h4 id="_switch_off_the_spring_mvc_dispatcherservlet">20.4.4. Switch off the Spring MVC DispatcherServlet</h4>
 <div class="paragraph">
 <p>Spring Boot wants to serve all content from the root of your application <code>/</code> down. If you
 would rather map your own servlet to that URL you can do it, but of course you may lose
@@ -4875,7 +4939,7 @@ you want to switch it off and not replace it.)</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_default_mvc_configuration">21.4.5. Switch off the Default MVC configuration</h4>
+<h4 id="_switch_off_the_default_mvc_configuration">20.4.5. Switch off the Default MVC configuration</h4>
 <div class="paragraph">
 <p>The easiest way to take complete control over MVC configuration is to provide your own
 <code>@Configuration</code> with the <code>@EnableWebMvc</code> annotation. This will leave all MVC
@@ -4884,9 +4948,9 @@ configuration in your hands.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_logging_2">21.5. Logging</h3>
+<h3 id="_logging_2">20.5. Logging</h3>
 <div class="sect3">
-<h4 id="_configure_logback_for_logging">21.5.1. Configure Logback for logging</h4>
+<h4 id="_configure_logback_for_logging">20.5.1. Configure Logback for logging</h4>
 <div class="paragraph">
 <p>Spring Boot has no mandatory logging dependence, except for the <code>commons-logging</code> API, of
 which there are many implementations to choose from. To use <a href="http://logback.qos.ch">Logback</a>
@@ -4949,7 +5013,7 @@ for details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_log4j_for_logging">21.5.2. Configure Log4j for logging</h4>
+<h4 id="_configure_log4j_for_logging">20.5.2. Configure Log4j for logging</h4>
 <div class="paragraph">
 <p>Spring Boot supports <a href="http://logging.apache.org/log4j/1.x/">Log4j</a> for logging
 configuration, but it has to be on the classpath. If you are using the starter poms for
@@ -4997,9 +5061,9 @@ action.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_data_access">21.6. Data Access</h3>
+<h3 id="_data_access">20.6. Data Access</h3>
 <div class="sect3">
-<h4 id="_configure_a_datasource_2">21.6.1. Configure a DataSource</h4>
+<h4 id="_configure_a_datasource_2">20.6.1. Configure a DataSource</h4>
 <div class="paragraph">
 <p>See XXX.</p>
 </div>
@@ -5010,7 +5074,7 @@ for more details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_spring_data_repositories">21.6.2. Use Spring Data repositories</h4>
+<h4 id="_use_spring_data_repositories">20.6.2. Use Spring Data repositories</h4>
 <div class="paragraph">
 <p>Spring Data can create implementations for you of <code>@Repository</code> interfaces of various
 flavours. Spring Boot will handle all of that for you as long as those <code>@Repositories</code>
@@ -5031,7 +5095,7 @@ annotation (from Spring Data JPA).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_separate_entity_definitions_from_spring_configuration">21.6.3. Separate @Entity definitions from Spring configuration</h4>
+<h4 id="_separate_entity_definitions_from_spring_configuration">20.6.3. Separate @Entity definitions from Spring configuration</h4>
 <div class="paragraph">
 <p>Spring Boot tries to guess the location of your <code>@Entity</code> definitions, based on the
 <code>@EnableAutoConfiguration</code> it finds. To get more control, you can use the <code>@EntityScan</code>
@@ -5051,7 +5115,7 @@ public class Application {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_jpa_properties">21.6.4. Configure JPA properties</h4>
+<h4 id="_configure_jpa_properties">20.6.4. Configure JPA properties</h4>
 <div class="paragraph">
 <p>Spring JPA already provides some vendor-independent configuration options (e.g. for SQL
 logging) and Spring Boot exposes those, and a few more for hibernate as external
@@ -5080,7 +5144,7 @@ for more details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_traditional_persistence_xml">21.6.5. Use a traditional persistence.xml</h4>
+<h4 id="_use_a_traditional_persistence_xml">20.6.5. Use a traditional persistence.xml</h4>
 <div class="paragraph">
 <p>Spring doesn&#8217;t require the use of XML to configure the JPA provider, and Spring Boot
 assumes you want to take advantage of that feature. If you prefer to use <code>persistence.xml</code>
@@ -5095,13 +5159,13 @@ for the default settings.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_database_initialization">21.7. Database initialization</h3>
+<h3 id="_database_initialization">20.7. Database initialization</h3>
 <div class="paragraph">
 <p>An SQL database can be initialized in different ways depending on what your stack is. Or
 of course you can do it manually as long as the database is in a server.</p>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_jpa">21.7.1. Initialize a database using JPA</h4>
+<h4 id="_initialize_a_database_using_jpa">20.7.1. Initialize a database using JPA</h4>
 <div class="paragraph">
 <p>JPA has features for DDL generation, and these can be set up to run on startup against the
 database. This is controlled through two external properties:</p>
@@ -5120,7 +5184,7 @@ behavior in a more fine-grained way. See below for more detail.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_hibernate">21.7.2. Initialize a database using Hibernate</h4>
+<h4 id="_initialize_a_database_using_hibernate">20.7.2. Initialize a database using Hibernate</h4>
 <div class="paragraph">
 <p>You can set <code>spring.jpa.hibernate.ddl-auto</code> explicitly and the standard Hibernate property
 values are <code>none</code>, <code>validate</code>, <code>update</code>, <code>create-drop</code>. Spring Boot chooses a default
@@ -5139,7 +5203,7 @@ not something you want to be on the classpath in production. It is a Hibernate f
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_spring_jdbc">21.7.3. Initialize a database using Spring JDBC</h4>
+<h4 id="_initialize_a_database_using_spring_jdbc">20.7.3. Initialize a database using Spring JDBC</h4>
 <div class="paragraph">
 <p>Spring JDBC has a <code>DataSource</code> initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations <code>schema.sql</code> and <code>data.sql</code> (in the root of the
@@ -5156,7 +5220,7 @@ there, so there would be no need to prevent the application from running, for in
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_spring_batch_database">21.7.4. Initialize a Spring Batch database</h4>
+<h4 id="_initialize_a_spring_batch_database">20.7.4. Initialize a Spring Batch database</h4>
 <div class="paragraph">
 <p>If you are using Spring Batch then it comes pre-packaged with SQL initialization scripts
 for most popular database platforms. Spring Boot will detect your database type, and
@@ -5168,7 +5232,7 @@ initialization explicitly using <code>spring.batch.initializer.enabled=false</co
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_higher_level_datababse_migration_tool">21.7.5. Use a higher level datababse migration tool</h4>
+<h4 id="_use_a_higher_level_datababse_migration_tool">20.7.5. Use a higher level datababse migration tool</h4>
 <div class="paragraph">
 <p>Spring Boot works fine with higher level migration tools <a href="http://flywaydb.org/">Flyway</a>
 (SQL-based) and <a href="http://www.liquibase.org/">Liquibase</a> (XML). In general we prefer
@@ -5178,9 +5242,9 @@ independence: usually only one or at most couple of platforms is needed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_batch_applications">21.8. Batch applications</h3>
+<h3 id="_batch_applications">20.8. Batch applications</h3>
 <div class="sect3">
-<h4 id="_execute_spring_batch_jobs_on_startup">21.8.1. Execute Spring Batch jobs on startup</h4>
+<h4 id="_execute_spring_batch_jobs_on_startup">20.8.1. Execute Spring Batch jobs on startup</h4>
 <div class="paragraph">
 <p>Spring Batch autoconfiguration is enabled by adding <code>@EnableBatchProcessing</code>
 (from Spring Batch) somewhere in your context.</p>
@@ -5207,9 +5271,9 @@ for more details.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_actuator_2">21.9. Actuator</h3>
+<h3 id="_actuator_2">20.9. Actuator</h3>
 <div class="sect3">
-<h4 id="_change_the_http_port_or_address_of_the_actuator_endpoints">21.9.1. Change the HTTP port or address of the actuator endpoints</h4>
+<h4 id="_change_the_http_port_or_address_of_the_actuator_endpoints">20.9.1. Change the HTTP port or address of the actuator endpoints</h4>
 <div class="paragraph">
 <p>In a standalone application the Actuator HTTP port defaults to the same as the main HTTP
 port. To make the application listen on a different port set the external property
@@ -5224,7 +5288,7 @@ source code.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_whitelabel_error_page">21.9.2. Customize the &#8220;whitelabel&#8221; error page</h4>
+<h4 id="_customize_the_whitelabel_error_page">20.9.2. Customize the &#8220;whitelabel&#8221; error page</h4>
 <div class="paragraph">
 <p>The Actuator installs a &#8220;whitelabel&#8221; error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
@@ -5240,9 +5304,9 @@ a simple way of doing that.  Look at <code>ErrorMvcAutoConfiguration</code> for 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_security">21.10. Security</h3>
+<h3 id="_security">20.10. Security</h3>
 <div class="sect3">
-<h4 id="_secure_an_application">21.10.1. Secure an application</h4>
+<h4 id="_secure_an_application">20.10.1. Secure an application</h4>
 <div class="paragraph">
 <p>Web applications will be secure by default (with Basic authentication on all endpoints) if
 Spring Security is on the classpath. To add method-level security to a web application you
@@ -5256,7 +5320,7 @@ via <code>SecurityProperties</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_spring_boot_security_configuration">21.10.2. Switch off the Spring Boot security configuration</h4>
+<h4 id="_switch_off_the_spring_boot_security_configuration">20.10.2. Switch off the Spring Boot security configuration</h4>
 <div class="paragraph">
 <p>If you define a <code>@Configuration</code> with <code>@EnableWebSecurity</code> anywhere in your application
 it will switch off the default webapp security settings in Spring Boot. To tweak the
@@ -5266,7 +5330,7 @@ for details of available settings).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_authenticationmanager_and_add_user_accounts">21.10.3. Change the AuthenticationManager and add user accounts</h4>
+<h4 id="_change_the_authenticationmanager_and_add_user_accounts">20.10.3. Change the AuthenticationManager and add user accounts</h4>
 <div class="paragraph">
 <p>If you provide a <code>@Bean</code> of type <code>AuthenticationManager</code> the default one will not be
 created, so you have the full feature set of Spring Security available (e.g.
@@ -5301,9 +5365,9 @@ before the default one in Spring Boot (which has very low precedence).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_hot_swapping_2">21.11. Hot swapping</h3>
+<h3 id="_hot_swapping_2">20.11. Hot swapping</h3>
 <div class="sect3">
-<h4 id="_reload_static_content">21.11.1. Reload static content</h4>
+<h4 id="_reload_static_content">20.11.1. Reload static content</h4>
 <div class="paragraph">
 <p>There are several options. Running in an IDE (especially with debugging on) is a good way
 to do development (all modern IDEs allow reloading of static resources and usually also
@@ -5313,14 +5377,14 @@ css/js compiler process if you are writing that code with higher level tools.</p
 </div>
 </div>
 <div class="sect3">
-<h4 id="_reload_thymeleaf_templates_without_restarting_the_container">21.11.2. Reload Thymeleaf templates without restarting the container</h4>
+<h4 id="_reload_thymeleaf_templates_without_restarting_the_container">20.11.2. Reload Thymeleaf templates without restarting the container</h4>
 <div class="paragraph">
 <p>If you are using Thymeleaf, then set <code>spring.thymeleaf.cache=false</code>. See
 <code>ThymeleafAutoConfiguration</code> for other template customization options.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_reload_java_classes_without_restarting_the_container">21.11.3. Reload Java classes without restarting the container</h4>
+<h4 id="_reload_java_classes_without_restarting_the_container">20.11.3. Reload Java classes without restarting the container</h4>
 <div class="paragraph">
 <p>Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode, so if you make a
 change that doesn&#8217;t affect class or method signatures it should reload cleanly with no
@@ -5336,9 +5400,9 @@ would only ever be a development time trick probably).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_build">21.12. Build</h3>
+<h3 id="_build">20.12. Build</h3>
 <div class="sect3">
-<h4 id="_build_an_executable_archive_with_ant">21.12.1. Build an executable archive with Ant</h4>
+<h4 id="_build_an_executable_archive_with_ant">20.12.1. Build an executable archive with Ant</h4>
 <div class="paragraph">
 <p>To build with Ant you need to grab dependencies and compile and then create a JAR or WAR
 archive as normal.  To make it executable:</p>
@@ -5403,9 +5467,9 @@ the <code>Main-Class</code> is available).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_traditional_deployment">21.13. Traditional deployment</h3>
+<h3 id="_traditional_deployment">20.13. Traditional deployment</h3>
 <div class="sect3">
-<h4 id="_create_a_deployable_war_file">21.13.1. Create a deployable WAR file</h4>
+<h4 id="_create_a_deployable_war_file">20.13.1. Create a deployable WAR file</h4>
 <div class="paragraph">
 <p>Use the <code>SpringBootServletInitializer</code> base class, which is picked up by Spring&#8217;s
 Servlet 3.0 support on deployment. Add an extension of that to your project and build a
@@ -5422,7 +5486,7 @@ dependencies are marked as "provided" in Maven or Gradle. Here&#8217;s a Maven e
 </div>
 </div>
 <div class="sect3">
-<h4 id="_create_a_deployable_war_file_for_older_servlet_containers">21.13.2. Create a deployable WAR file for older servlet containers</h4>
+<h4 id="_create_a_deployable_war_file_for_older_servlet_containers">20.13.2. Create a deployable WAR file for older servlet containers</h4>
 <div class="paragraph">
 <p>Older Servlet containers don&#8217;t have support for the <code>ServletContextInitializer</code> bootstrap
 process used in Servlet 3.0. You can still use Spring and Spring Boot in these containers
@@ -5431,7 +5495,7 @@ an <code>ApplicationContext</code> via a <code>DispatcherServlet</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_convert_an_existing_application_to_spring_boot">21.13.3. Convert an existing application to Spring Boot</h4>
+<h4 id="_convert_an_existing_application_to_spring_boot">20.13.3. Convert an existing application to Spring Boot</h4>
 <div class="paragraph">
 <p>For a non-web application it should be easy (throw away the code that creates your
 <code>ApplicationContext</code> and replace it with calls to <code>SpringApplication</code> or
@@ -5551,7 +5615,7 @@ Boot application, and the guidance above might help, but your mileage may vary.<
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-06 23:36:34 PST
+Last updated 2014-03-07 00:20:10 PST
 </div>
 </div>
 </body>
