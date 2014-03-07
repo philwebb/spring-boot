@@ -8,7 +8,7 @@
 :icons: font
 :spring-boot-version: 1.0.0.BUILD-SNAPSHOT
 :spring-boot-repo: snapshot
-:author: Phillip Webb, Dave Syer
+:author: Phillip Webb, Dave Syer, Josh Long
 
 // FIXME look at this for inspiration http://media.readthedocs.org/pdf/django/1.6.x/django.pdf
 
@@ -2234,7 +2234,7 @@ Spring Data repositories usually extend from the
 auto-configuration, repositories will be searched from the package containing your
 main configuration class (the one annotated with `@EnableAutoConfiguration`) down.
 
-Here is a typical Spring Data JPA repository:
+Here is a typical Spring Data repository:
 
 [source,java,indent=0]
 ----
@@ -2281,21 +2281,110 @@ project, but you will need to configure them yourself. Refer to the appropriate
 reference documentation at http://projects.spring.io/spring-data.
 
 === MongoDB
+MongoDB is an open-source NoSQL document database that uses a JSON-like schema instead
+of traditional table-based relational data. Spring Boot offers several conveniences
+for working with MongoDB, including the The `spring-boot-starter-data-mongodb`
+``Starter POM''.
 
-Mongo
+==== Connecting to a MongoDB database
+You can inject an auto-configured `com.mongodb.Mongo` instance as you would any other
+Spring Bean. By default the instance will attempt to connect to a MongoDB server using
+the URL `mongodb://localhost/test`:
 
-MongoProperties
-spring.data.mongodb.database
-host port
+[source,java,indent=0]
+----
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-database
+import com.mongodb.Mongo;
 
- url
+@Component
+public class MyBean {
 
+	private final Mongo mongo;
+
+	@Autowired
+	public MyBean(Mongo mongo) {
+		this.mongo = mongo;
+	}
+
+	// ...
+
+}
+----
+
+You can set `spring.data.mongodb.url` property to change the `url`, or alternatively
+specify a `host`/`port`. For example, you might declare the following in your
+`application.properties`:
+
+[indent=0]
+----
+	spring.data.mongodb.host = mongoserver
+	spring.data.mongodb.port = 27017
+----
+
+TIP: If `spring.data.mongodb.port` is not specified the default of `27017` is used. You
+could simply delete this line from the sample above.
+
+You can also declare your own `Mongo` `@Bean` if you want to take complete control of
+establishing the MongoDB connection.
 
 ==== MongoTemplate
-==== Spring Data MongoDB repositories
+Spring Data Mongo provides a `MongoTemplate` class that is very similar in its design to
+Spring's `JdbcTemplate`. As with `JdbcTemplate` Spring Boot auto-configures a bean
+for you to simply inject:
 
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.data.mongodb.core.MongoTemplate;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final MongoTemplate mongoTemplate;
+
+		@Autowired
+		public MyBean(MongoTemplate mongoTemplate) {
+			this.mongoTemplate = mongoTemplate;
+		}
+
+		// ...
+
+	}
+----
+
+See the `MongoOperations` Javadoc for complete details.
+
+==== Spring Data MongoDB repositories
+Spring Data includes repository support for MongoDB. As with the JPA repositories
+discussed earlier, the basic principal is that queries are constructed for you
+automatically based on method names.
+
+In fact, both Spring Data JPA and Spring Data MongoDB share the same common
+infrastructure; so you could take the JPA example from earlier and, assuming that
+`City` is now a Mongo data class rather than a JPA `@Entity`, it will work in the
+same way.
+
+[source,java,indent=0]
+----
+	package com.example.myapp.domain;
+
+	import org.springframework.data.domain.*;
+	import org.springframework.data.repository.*;
+
+	public interface CityRepository extends Repository<City, Long> {
+
+		Page<City> findAll(Pageable pageable);
+
+		City findByNameAndCountryAllIgnoringCase(String name, String country);
+
+	}
+----
+
+TIP: For complete details of Spring Data MongoDB, including its rich object mapping
+technologies, refer to the documentation.
 
 
 == Testing

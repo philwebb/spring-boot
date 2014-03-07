@@ -14,7 +14,7 @@
 <body class="article">
 <div id="header">
 <h1>Spring Boot Reference Guide</h1>
-<span id="author" class="author">Phillip Webb, Dave Syer</span><br>
+<span id="author" class="author">Phillip Webb, Dave Syer, Josh Long</span><br>
 <div id="toc" class="toc">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -240,8 +240,9 @@
 <li><a href="#_mongodb">10.1. MongoDB</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_mongotemplate">10.1.1. MongoTemplate</a></li>
-<li><a href="#_spring_data_mongodb_repositories">10.1.2. Spring Data MongoDB repositories</a></li>
+<li><a href="#_connecting_to_a_mongodb_database">10.1.1. Connecting to a MongoDB database</a></li>
+<li><a href="#_mongotemplate">10.1.2. MongoTemplate</a></li>
+<li><a href="#_spring_data_mongodb_repositories">10.1.3. Spring Data MongoDB repositories</a></li>
 </ul>
 </li>
 </ul>
@@ -3608,7 +3609,7 @@ auto-configuration, repositories will be searched from the package containing yo
 main configuration class (the one annotated with <code>@EnableAutoConfiguration</code>) down.</p>
 </div>
 <div class="paragraph">
-<p>Here is a typical Spring Data JPA repository:</p>
+<p>Here is a typical Spring Data repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3681,28 +3682,143 @@ reference documentation at <a href="http://projects.spring.io/spring-data">http:
 <div class="sect2">
 <h3 id="_mongodb">10.1. MongoDB</h3>
 <div class="paragraph">
-<p>Mongo</p>
+<p>MongoDB is an open-source NoSQL document database that uses a JSON-like schema instead
+of traditional table-based relational data. Spring Boot offers several conveniences
+for working with MongoDB, including the The <code>spring-boot-starter-data-mongodb</code>
+&#8220;Starter POM&#8221;.</p>
 </div>
+<div class="sect3">
+<h4 id="_connecting_to_a_mongodb_database">10.1.1. Connecting to a MongoDB database</h4>
 <div class="paragraph">
-<p>MongoProperties
-spring.data.mongodb.database
-host port</p>
+<p>You can inject an auto-configured <code>com.mongodb.Mongo</code> instance as you would any other
+Spring Bean. By default the instance will attempt to connect to a MongoDB server using
+the URL <code>mongodb://localhost/test</code>:</p>
 </div>
-<div class="paragraph">
-<p>database</p>
-</div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>url</pre>
+<pre class="prettyprint java language-java"><code>import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.mongodb.Mongo;
+
+@Component
+public class MyBean {
+
+	private final Mongo mongo;
+
+	@Autowired
+	public MyBean(Mongo mongo) {
+		this.mongo = mongo;
+	}
+
+	// ...
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can set <code>spring.data.mongodb.url</code> property to change the <code>url</code>, or alternatively
+specify a <code>host</code>/<code>port</code>. For example, you might declare the following in your
+<code>application.properties</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>spring.data.mongodb.host = mongoserver
+spring.data.mongodb.port = 27017</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If <code>spring.data.mongodb.port</code> is not specified the default of <code>27017</code> is used. You
+could simply delete this line from the sample above.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can also declare your own <code>Mongo</code> <code>@Bean</code> if you want to take complete control of
+establishing the MongoDB connection.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mongotemplate">10.1.1. MongoTemplate</h4>
+<h4 id="_mongotemplate">10.1.2. MongoTemplate</h4>
+<div class="paragraph">
+<p>Spring Data Mongo provides a <code>MongoTemplate</code> class that is very similar in its design to
+Spring&#8217;s <code>JdbcTemplate</code>. As with <code>JdbcTemplate</code> Spring Boot auto-configures a bean
+for you to simply inject:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
+public class MyBean {
+
+    private final MongoTemplate mongoTemplate;
+
+    @Autowired
+    public MyBean(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    // ...
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See the <code>MongoOperations</code> Javadoc for complete details.</p>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_spring_data_mongodb_repositories">10.1.2. Spring Data MongoDB repositories</h4>
+<h4 id="_spring_data_mongodb_repositories">10.1.3. Spring Data MongoDB repositories</h4>
+<div class="paragraph">
+<p>Spring Data includes repository support for MongoDB. As with the JPA repositories
+discussed earlier, the basic principal is that queries are constructed for you
+automatically based on method names.</p>
+</div>
+<div class="paragraph">
+<p>In fact, both Spring Data JPA and Spring Data MongoDB share the same common
+infrastructure; so you could take the JPA example from earlier and, assuming that
+<code>City</code> is now a Mongo data class rather than a JPA <code>@Entity</code>, it will work in the
+same way.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>package com.example.myapp.domain;
 
+import org.springframework.data.domain.*;
+import org.springframework.data.repository.*;
+
+public interface CityRepository extends Repository&lt;City, Long&gt; {
+
+    Page&lt;City&gt; findAll(Pageable pageable);
+
+    City findByNameAndCountryAllIgnoringCase(String name, String country);
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For complete details of Spring Data MongoDB, including its rich object mapping
+technologies, refer to the documentation.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -5167,7 +5283,7 @@ Boot application, and the guidance above might help, but your mileage may vary.<
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-06 17:09:39 PST
+Last updated 2014-03-06 22:11:20 PST
 </div>
 </div>
 </body>
