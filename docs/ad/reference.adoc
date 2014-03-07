@@ -695,7 +695,7 @@ defaults. The parent project provides the following features:
 * UTF-8 source encoding
 * A Dependency Management section, allowing you to omit `<version>` tags for common
   dependencies.
-* Generally useful test dependencies (JUnit, Mockito, Hamcrest)
+* Generally useful test dependencies (JUnit, Hamcrest, Mockito)
 * Sensible resource filtering
 * Sensible plugin configuration (exec plugin, surefire, git commit ID, shade)
 
@@ -884,7 +884,7 @@ and Hibernate.
 |Support for `spring-security`
 
 |spring-boot-starter-test
-|Support for common test dependencies, including JUnit, Mockito and Hamcrest along with
+|Support for common test dependencies, including JUnit, Hamcrest and Mockito along with
  the `spring-test` module.
 
 |spring-boot-starter-thymeleaf
@@ -2388,6 +2388,60 @@ technologies, refer to the documentation.
 
 
 == Testing
+Spring Boot provides a number of useful tools for testing your application. The
+`spring-boot-starter-parent` POM provides JUnit, Hamcrest and Mockito ``test'' `scope`
+dependencies. There are also useful test utilities in the core `spring-boot` modules
+under the `org.springframework.boot.test` package. There is also a
+`spring-boot-starter-test` ``Starter POM''.
+
+=== Test scope dependencies
+If you extend your Maven project from the `spring-boot-starter-parent` POM, or use the
+`spring-boot-starter-test` ``Starter POM'' (in the ``test'' `scope`), you will find
+the following provided libraries:
+
+* Junit -- The de-facto standard for unit testing Java applications.
+* Hamcrest -- A library of matcher objects (also known as constraints or predicates)
+  allowing `assertThat` style JUnit assertions.
+* Mockito -- A Java mocking framework.
+
+These are common libraries that we generally find useful when writing Tests.
+
+TIP: given, when, then
+
+=== Testing Spring applications
+
+=== Testing Spring Boot applications
+
+=== Utilities
+
+Spring Test
+
+OutputCapture
+EnvironmentTestUtils
+ConfigFileApplicationContextInitializer
+
+[source,java,indent=0]
+----
+import org.junit.Rule;
+import org.junit.Test;
+import org.springframework.boot.test.OutputCapture;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+public class MyTest {
+
+	@Rule
+	public OutputCapture capture = new OutputCapture();
+
+	@Test
+	public void testName() throws Exception {
+		System.out.println("Hello World!");
+		assertThat(capture.toString(), containsString("World"));
+	}
+
+}
+----
 
 == Production ready features
 
@@ -2398,6 +2452,139 @@ technologies, refer to the documentation.
 == Maven plugin
 
 == Spring Boot CLI
+
+
+== Deploying to the cloud
+Spring Boot's executable JARs are ready-made for most popular cloud PaaS
+(platform-as-a-service) providers. These providers tend to require that you
+_`bring your own container'_; they manage application processes (not Java applications
+specifically), so they need some intermediary layer that adapts _your_ application to the
+_cloud's_ notion of a running process.
+
+Two popular cloud providers, Heroku and Cloud Foundry, employ a ``buildpack'' approach.
+The buildpack wraps your deployed code in whatever is needed to _start_ your
+application: it might be a JDK and a call to `java`, it might be an embedded webserver,
+or it might be a full fledged application server. A buildpack is pluggable, but ideally
+you should be able to get by with as few customizations to it as possible.
+This reduces the footprint of functionality that is not under your control. It minimizes
+divergence between deployment and production environments.
+
+Ideally, your application, like a Spring Boot executable JAR, has everything that it needs
+to run packaged within it.
+
+In this section we'll look at what it takes to get the simple Boot application that we
+developed in the Getting Started section up and running on Cloud Foundry and Heroku.
+
+=== Cloud Foundry
+Cloud Foundry provides default buildpacks that come into play if no other buildpack is
+specified. The Cloud Foundry buildpack has excellent support for Spring applications,
+including Spring Boot.  You can deploy stand-alone executable JAR applications as well as
+traditional `WAR` packaged applications.
+
+Once you've built your application (using, for example, `mvn clean install`) and
+http://docs.cloudfoundry.org/devguide/installcf/[installed the `cf` command line tool],
+simply answer the `cf push` command's prompts as follows:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ cf push --path target/demo-0.0.1-SNAPSHOT.jar
+
+	Name> *_$YOURAPP_*
+
+	Instances> *1*
+
+	1: 128M
+	2: 256M
+	3: 512M
+	4: 1G
+	Memory Limit> *256M*
+
+	Creating _$YOURAPP_... *OK*
+
+	1: _$YOURAPP_
+	2: none
+	Subdomain> *_$YOURAPP_*
+
+	1: cfapps.io
+	2: none
+	Domain> *cfapps.io*
+
+	Creating route _$YOURAPP_.cfapps.io... OK
+	Binding _$YOURAPP_.cfapps.io to _$YOURAPP_... OK
+
+	Create services for application?> *n*
+
+	Bind other services to application?> *n*
+
+	Save configuration?> *y*
+----
+
+At this point `cf` will start uploading your application:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	Saving to manifest.yml... *OK*
+	Uploading $YOURAPP... *OK*
+	Preparing to start _$YOURAPP_... *OK*
+	-----> Downloaded app package (8.7M)
+	-----> Java Buildpack source: system
+	-----> Downloading Open JDK 1.7.0_51 from .../openjdk-1.7.0_51.tar.gz (*1.4s*)
+	       Expanding Open JDK to .java-buildpack/open_jdk (*1.3s*)
+	-----> Downloading Spring Auto Reconfiguration 0.8.7 from .../auto-reconfiguration-0.8.7.jar (*0.0s*)
+	-----> Uploading droplet (*43M*)
+	Checking status of app '_$YOURAPP_'...
+	 0 of 1 instances running (1 starting)
+	 0 of 1 instances running (1 starting)
+	 1 of 1 instances running (1 running)
+	Push successful! App '_$YOURAPP_' available at http://_$YOURAPP_.cfapps.io
+----
+
+Here I'm substituting `$YOURAPP` for whatever value you give `cf` when it asks for the
+`name` of your application.
+
+Once Cloud Foundry acknowledges that your application has been deployed, you should be
+able to hit the application at the URI provided:
+`http://$YOURAPP.cfapps.io/`.
+
+==== Binding to services
+By default, meta-data about the running application as well as service connection
+information is exposed to the application as environment variables (for example:
+`$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
+(any language and platform that can be supported as a buildpack) nature; process-scoped
+environment variables are language agnostic.
+
+Environment variables don't always make for the easiest API so Spring Boot automatically
+extracts then and flattens the data into properties that can be accessed through
+Spring's `Environment` abstraction:
+
+[source,java,indent=0]
+----
+	@Component
+	class MyBean implements EnvironmentAware {
+
+		private String instanceId;
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.instanceId = environment.getProperty("vcap.application.instance_id");
+		}
+
+		// ...
+
+	}
+----
+
+All Cloud Foundry properties are prefixed with `vcap`. You can use vcap properties to
+access application information (such as the public URL of the application) and service
+information (such as database credentials). See `VcapApplicationListener` Javdoc for
+complete details.
+
+TIP: The http://spring.io/projects/spring-cloud[Spring Cloud] project is a better fit
+for tasks such as configuring a DataSource; and you can also use Spring Cloud with
+Heroku too!
+
+=== Heroku
+
 
 == Deploying to the cloud
 
