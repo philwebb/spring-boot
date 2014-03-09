@@ -8,6 +8,14 @@
 :icons: font
 :spring-boot-version: 1.0.0.BUILD-SNAPSHOT
 :spring-boot-repo: snapshot
+:sc-ext: java
+:dc-ext: html
+:sc-root: http://github.com/spring-projects/spring-boot/tree/master
+:dc-root: http://docs.spring.io/spring-boot/docs/1.0.0.RC4/api
+:sc-spring-boot-autoconfigure: {sc-root}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+:dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
+:sc-spring-boot-actuator: {sc-root}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
 :author: Phillip Webb, Dave Syer, Josh Long
 
 // FIXME look at this for inspiration http://media.readthedocs.org/pdf/django/1.6.x/django.pdf
@@ -845,55 +853,55 @@ The following application starters are provided by Spring Boot under the
 |===
 | Name | Description
 
-|spring-boot-starter
+|`spring-boot-starter`
 |The core Spring Boot starter, including auto-configuration support, logging and YAML.
 
 
-|spring-boot-starter-amqp
+|`spring-boot-starter-amqp`
 |Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
 
-|spring-boot-starter-aop
+|`spring-boot-starter-aop`
 |Full AOP programming support including `spring-aop` and AspectJ.
 
-|spring-boot-starter-batch
+|`spring-boot-starter-batch`
 |Support for ``Spring Batch'' including HSQLDB database.
 
-|spring-boot-starter-data-jpa
+|`spring-boot-starter-data-jpa`
 |Full support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
 and Hibernate.
 
-|spring-boot-starter-data-mongodb
+|`spring-boot-starter-data-mongodb`
 |Support for the MongoDB NoSQL Database, including `spring-data-mongodb`,
 
-|spring-boot-starter-data-rest
+|`spring-boot-starter-data-rest`
 |Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
 
-|spring-boot-starter-integration
+|`spring-boot-starter-integration`
 |Support for common `spring-integration` modules.
 
-|spring-boot-starter-jdbc
+|`spring-boot-starter-jdbc`
 |JDBC Database support
 
-|spring-boot-starter-mobile
+|`spring-boot-starter-mobile`
 |Support for `spring-mobile`
 
-|spring-boot-starter-redis
+|`spring-boot-starter-redis`
 |Support for the REDIS key-value data store, including `spring-redis`.
 
-|spring-boot-starter-security
+|`spring-boot-starter-security`
 |Support for `spring-security`
 
-|spring-boot-starter-test
+|`spring-boot-starter-test`
 |Support for common test dependencies, including JUnit, Hamcrest and Mockito along with
  the `spring-test` module.
 
-|spring-boot-starter-thymeleaf
+|`spring-boot-starter-thymeleaf`
 |Support for the Thymeleaf templating engine, including integration with Spring.
 
-|spring-boot-starter-web
+|`spring-boot-starter-web`
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.
 
-|spring-boot-starter-websocket
+|`spring-boot-starter-websocket`
 |Support for websocket development with Tomcat.
 |===
 
@@ -905,10 +913,10 @@ add ``production ready'' features.
 |===
 | Name | Description
 
-|spring-boot-starter-actuator
+|`spring-boot-starter-actuator`
 |Adds production ready features such as metrics and monitoring.
 
-|spring-boot-starter-shell-remote
+|`spring-boot-starter-shell-remote`
 |Adds remote `ssh` shell support.
 |===
 
@@ -919,16 +927,16 @@ swap specific technical facets.
 |===
 | Name | Description
 
-|spring-boot-starter-jetty
+|`spring-boot-starter-jetty`
 |Imports the Jetty HTTP engine (to be used as an alternative to Tomcat)
 
-|spring-boot-starter-log4j
+|`spring-boot-starter-log4j`
 |Support the Log4J looggin framework
 
-|spring-boot-starter-logging
+|`spring-boot-starter-logging`
 |Import Spring Boot's default logging framework (Logback).
 
-|spring-boot-starter-tomcat
+|`spring-boot-starter-tomcat`
 |Import Spring Boot's default HTTP engine (Tomcat).
 |===
 
@@ -3321,240 +3329,14 @@ That should be it! Your application should be up and running on Heroku.
 
 
 == Extending Spring Boot
+
 === Conditions
 
 == Spring Boot CLI
 
-== Common application properties
+== Executable JARs
+// FIXME do we want this here?
 
-[indent=0]
-----
-# EndpointMBeanExportProperties
-endpoints.jmx.domain
-endpoints.jmx.uniqueNames=false
-endpoints.jmx.enabled=true
-endpoints.jmx.staticNames=
-
-# JolokiaProperties
-jolokia.config.*=
-
-# ManagementServerProperties
-management.port
-management.address
-management.contextPath
-
-# ShellProperties
-shell.auth=simple # jaas, key, simple, spring
-shell.defaultAuth
-shell.commandRefreshInterval=-1
-shell.commandPathPattern=classpath*:/commands/**", "classpath*:/crash/commands/**"
-shell.configPathPatterns=classpath*:/crash/*
-shell.disabledPlugins=
-shell.ssh.enabled
-shell.ssh.keyPath
-shell.ssh.port
-shell.telnet.enabled
-shell.telnet.port
-shell.auth.jaas.domain
-shell.auth.key.path
-shell.auth.simple.user.name
-shell.auth.simple.user.password
-shell.auth.spring.roles
-
-#Endpoints
-endpoints.autoconfig.id
-endpoints.autoconfig.sensitive
-endpoints.autoconfig.enabled
-
-endpoints.beans.id
-endpoints.beans.sensitive
-endpoints.beans.enabled
-
-endpoints.configprops.id
-endpoints.configprops.sensitive
-endpoints.configprops.enabled
-endpoints.configprops.keysToSanitize
-
-endpoints.dump.id
-endpoints.dump.sensitive
-endpoints.dump.enabled
-
-endpoints.env.id
-endpoints.env.sensitive
-endpoints.env.enabled
-
-endpoints.health.id
-endpoints.health.sensitive
-endpoints.health.enabled
-
-endpoints.info.id
-endpoints.info.sensitive
-endpoints.info.enabled
-
-endpoints.metrics.id
-endpoints.metrics.sensitive
-endpoints.metrics.enabled
-
-endpoints.shutdown.id
-endpoints.shutdown.sensitive
-endpoints.shutdown.enabled
-
-endpoints.trace.id
-endpoints.trace.sensitive
-endpoints.trace.enabled
-
-# MVC Ends
-endpoints.jolokia.path
-endpoints.jolokia.sensitive
-endpoints.jolokia.enabled
-endpoints.error.path
-
-# JMX
-spring.jmx.enabled
-endpoints.jmx.enabled
-
-# RabbitProperties
-spring.rabbitmq
-host
-port
-username
-password
-virtualhost
-dynamic
-spring.rabbitmq.dynamic
-
-# DataSourceAutoConfiguration & AbstractDataSourceConfiguration
-spring.datasource.name
-spring.datasource.intialize=true
-spring.datasource.schema=
-spring.datasource.continueOnError
-spring.datasource.driverClassName;
-spring.datasource.url;
-spring.datasource.username;
-spring.datasource.password;
-spring.datasource.maxActive = 100;
-spring.datasource.maxIdle = 8;
-spring.datasource.minIdle = 8;
-spring.datasource.initialSize = 10;
-spring.datasource.validationQuery;
-spring.datasource.testOnBorrow = false;
-spring.datasource.testOnReturn = false;
-
-#ActiveMQProperties
-spring.activemq.brokerURL=tcp://localhost:61616
-inMemory=true
-pooled=false
-
-# JmsTemplateProperties
-spring.jms.pubSubDomain
-
-# MongoProperties
-spring.data.mongodb.host=
-spring.data.mongodb.port=27017
-spring.data.mongodb.uri=mongodb://localhost/test
-
-# RedisProperties
-spring.redis.host=localhost
-spring.redis.password=
-spring.redis.port=6379
-spring.redis.pool.maxIdle = 8;
-spring.redis.pool.minIdle = 0;
-spring.redis.pool.maxActive = 8;
-spring.redis.pool.maxWait = -1;
-
-SecurityProperties
-security.requireSsl=false
-security.enableCsrf=false
-security.basic.enabled = true
-security.basic.realm =Spring
-security.basic.path =/**
-security.headers.xss=false
-security.headers.cache=false
-security.headers.frame=false
-security.headers.contentType=false
-security.headers.hsts = all # none/domain/all
-security.sessions=stateless #always/never/if_required/stateless
-security.ignored=
-security.user.name=user
-security.user.role=USER
-security.user.password=
-
-# HttpMapperProperties
-http.mappers.jsonPrettyPrint=false
-
-#ServerProperties
-server.port
-server.address
-server.sessionTimeout
-server.contextPath
-server.servletPath
-server.tomcat.accessLogPattern;
-server.tomcat.accessLogEnabled = false;
-server.tomcat.protocolHeader = "x-forwarded-proto";
-server.tomcat.remoteIpHeader = "x-forwarded-for";
-server.tomcat.basedir;
-server.tomcat.backgroundProcessorDelay = 30; // seconds
-server.tomcat.maxThreads = 0; // Number of threads in protocol handler
-
-# ConfigFileApplicationListner
-spring.config.name=application
-spring.config.location=
-
-#SpringApplication
-spring.main.sources
-spring.main.webEnvironment
-spring.main.showBannder
-
-#ContextIdApplicationContextInitializer
-spring.application.name
-vcap.application.name
-spring.config.name
-
-# FileEncodingApplicationListener
-spring.mandatoryFileEncoding=false
-
-spring.profiles
-
-spring.git.properties
-
-spring.aop.auto
-spring.aop.proxyTargetClass
-
-# BatchDatabaseInitializer
-spring.batch.job.names=job1,job2
-spring.batch.job.enabled=true
-spring.batch.initializer.enabled
-spring.batch.schema
-
-
-spring.jpa.hibernate.naming-strategy
-ddl-auto
-
-spring.jpa.properties.{...}=
-spring.jpa.openInView=true
-spring.jpa.show-sql=true
-spring.jpa.database-platform
-spring.jpa.database
-spring.jpa.generate-ddl
-
-
-# ThymeleafAutoConfiguration
-spring.thymeleaf.prefix=classpath:/templates/
-spring.thymeleaf.suffix=.html
-modeHTML5
-encoding=UTF-8
-cache=true
-
-
-spring.view.prefix=
-spring.view.suffix=
-spring.resources.cachePeriod
-
-spring.messages.basenamemessages
-spring.messages.encoding=UTF-8
-----
-
-== Auto-configuration classes
 
 == ``How-to'' guides
 This section provides answers to some common ``how do I do that...'' types of questions.
@@ -4643,3 +4425,388 @@ Boot application, and the guidance above might help, but your mileage may vary.
 
 
 // FIXME add security section
+
+:numbered!:
+
+[appendix]
+== Common application properties
+Various properties can be specific inside your `application.properties`/`application.yml`
+file or as command line switches. This section provides a list common Spring Boot
+properties and references to the underlying classes that consume them.
+
+NOTE: Property contributions can come from additional JAR files on your classpath so
+you should no consider this an exhaustive list. It is also perfectly legal to define
+your own properties.
+
+WARNING: This sample file is meant as a guide only. DO NOT COPY/PASTE the entire content
+into your application; rather pick only the properties that you need.
+
+[source,properties,indent=0,subs="attributes"]
+----
+# ===================================================================
+# COMMON SPRING BOOT PROPERTIES
+#
+# This sample file is provided as a guideline. Do NOT copy it in its
+# entirety to your own application.               ^^^
+# ===================================================================
+
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+
+# SPRING CONFIG (ConfigFileApplicationListner)
+spring.config.name= # config file name (default to 'application')
+spring.config.location= # location of config file
+
+# PROFILES
+spring.profiles= # comma list of active profiles
+
+# APPLICATION SETTINGS (SpringApplication_
+spring.main.sources=
+spring.main.web-environment= # detect by default
+spring.main.show-bannder=true
+spring.main.... # see class for all properties
+
+# IDENTITY (ContextIdApplicationContextInitializer)
+spring.application.name=
+vcap.application.name=
+
+# EMBEDDED SERVER CONFIGURATION (ServerProperties)
+server.port=8080
+server.address= # bind to a specific NIC
+server.session-timeout= # session timeout in sections
+server.context-path= # the context path, defaults to '/'
+server.servlet-path= # the servlet path, defaults to '/'
+server.tomcat.access-log-pattern= # log pattern of the access log
+server.tomcat.access-log-enabled=false # is access logging enabled
+server.tomcat.protocol-header="x-forwarded-proto" # ssl forward headers
+server.tomcat.remote-ip-header="x-forwarded-for"
+server.tomcat.basedir="/tmp" # base dir (usually not needed, defaults to tmp)
+server.tomcat.background-processor-delay=30; # in seconds
+server.tomcat.max-threads = 0 # number of threads in protocol handler
+
+# SPRING MVC (HttpMapperProperties)
+http.mappers.json-pretty-print=false # pretty print JSON
+spring.view.prefix= # MVC view prefix
+spring.view.suffix= # ... and suffix
+spring.resources.cache-period # cache timeouts in headers sent to browser
+
+# THYMELEAF (ThymeleafAutoConfiguration)
+spring.thymeleaf.prefix="classpath:/templates/"
+spring.thymeleaf.suffix=".html"
+spring.thymeleaf.mode="HTML5"
+spring.thymeleaf.encoding="UTF-8"
+spring.thymeleaf.cache=true # set to false for hot refresh
+
+# INTERNATIONALIZATION (MessageSourceAutoConfiguration)
+spring.messages.basename="messages"
+spring.messages.encoding="UTF-8"
+
+# SECURITY (SecurityProperties)
+security.user.name="user" # login username
+security.user.password= # login password
+security.user.role="USER" # role assigned to the user
+security.require-ssl=false # advanced settings ...
+security.enable-csrf=false
+security.basic.enabled=true
+security.basic.realm="Spring"
+security.basic.path="/**"
+security.headers.xss=false
+security.headers.cache=false
+security.headers.frame=false
+security.headers.contentType=false
+security.headers.hsts=all # none / domain / all
+security.sessions=stateless # always / never / if_required / stateless
+security.ignored=false
+
+# DATASOURCE (DataSourceAutoConfiguration & AbstractDataSourceConfiguration)
+spring.datasource.name= # name of the data source
+spring.datasource.intialize=true # populate using data.sql
+spring.datasource.schema= # a schema resource reference
+spring.datasource.continueOnError=false # continue even if can't be initialized
+spring.datasource.driverClassName= # JDBC Settings...
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.max-active=100 # Advanced configuration...
+spring.datasource.max-idle=8
+spring.datasource.min-idle=8
+spring.datasource.initial-size=10
+spring.datasource.validation-query
+spring.datasource.test-on-borrow=false
+spring.datasource.test-on-return=false
+
+# MONGODB (MongoProperties)
+spring.data.mongodb.host= # the db host
+spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
+spring.data.mongodb.uri=mongodb://localhost/test # connection URL
+
+# JPA (JpaBaseConfiguration, HibernateJpaAutoConfiguration)
+spring.jpa.properties.*= # properties to set on the JPA connection
+spring.jpa.openInView=true
+spring.jpa.show-sql=true
+spring.jpa.database-platform=
+spring.jpa.database=
+spring.jpa.generate-ddl=
+spring.jpa.hibernate.naming-strategy= # naming classname
+spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
+
+# JMX
+spring.jmx.enabled=true # Expose MBeans from Spring
+
+# RABBIT (RabbitProperties)
+spring.rabbitmq.host= # connection host
+spring.rabbitmq.port= # connection port
+spring.rabbitmq.username= # login user
+spring.rabbitmq.password= # login password
+spring.rabbitmq.virtualhost=
+spring.rabbitmq.dynamic=
+
+# REDIS (RedisProperties)
+spring.redis.host="localhost" # server host
+spring.redis.password= # server password
+spring.redis.port=6379 # connection port
+spring.redis.pool.max-idle=8 # pool settings ...
+spring.redis.pool.min-idle=0
+spring.redis.pool.max-active=8
+spring.redis.pool.max-wait=-1
+
+# ACTIVEMQ (ActiveMQProperties)
+spring.activemq.broker-url="tcp://localhost:61616" # connection URL
+spring.activemq.in-memory=true
+spring.activemq.pooled=false
+
+# JMS (JmsTemplateProperties)
+spring.jms.pub-sub-domain=
+
+# SPRING BATCH (BatchDatabaseInitializer)
+spring.batch.job.names="job1,job2"
+spring.batch.job.enabled=true
+spring.batch.initializer.enabled=true
+spring.batch.schema= # batch schema to load
+
+# AOP
+spring.aop.auto=
+spring.aop.proxyTargetClass=
+
+# FILE ENCODING (FileEncodingApplicationListener)
+spring.mandatory-file-encoding=false
+
+# ----------------------------------------
+# ACTUATOR PROPERTIES
+# ----------------------------------------
+
+# MANAGEMENT HTTP SERVER (ManagementServerProperties)
+management.port= # defaults to 'server.port'
+management.address= # bind to a specific NIC
+management.contextPath= # default to '/'
+
+# ENDPOINTS (AbstractEndpoint subclasses)
+endpoints.autoconfig.id="autoconfig"
+endpoints.autoconfig.sensitive=true
+endpoints.autoconfig.enabled=true
+endpoints.beans.id="beans"
+endpoints.beans.sensitive=true
+endpoints.beans.enabled=true
+endpoints.configprops.id="configprops"
+endpoints.configprops.sensitive=true
+endpoints.configprops.enabled=true
+endpoints.configprops.keys-to-sanitize="password,secret"
+endpoints.dump.id="dump"
+endpoints.dump.sensitive=true
+endpoints.dump.enabled=true
+endpoints.env.id="env"
+endpoints.env.sensitive=true
+endpoints.env.enabled=true
+endpoints.health.id="health"
+endpoints.health.sensitive=false
+endpoints.health.enabled=true
+endpoints.info.id="info"
+endpoints.info.sensitive=false
+endpoints.info.enabled=true
+endpoints.metrics.id="metrics"
+endpoints.metrics.sensitive=true
+endpoints.metrics.enabled=true
+endpoints.shutdown.id="shutdown"
+endpoints.shutdown.sensitive=true
+endpoints.shutdown.enabled=false
+endpoints.trace.id="trace"
+endpoints.trace.sensitive=true
+endpoints.trace.enabled=true
+
+# MVC ONLY ENDPOINTS
+endpoints.jolokia.path="jolokia"
+endpoints.jolokia.sensitive=true
+endpoints.jolokia.enabled=true # when using Jolokia
+endpoints.error.path="/error"
+
+# JMX ENDPOINT (EndpointMBeanExportProperties)
+endpoints.jmx.enabled=true
+endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
+endpoints.jmx.unique-names=false
+endpoints.jmx.enabled=true
+endpoints.jmx.staticNames=
+
+# JOLOKIA (JolokiaProperties)
+jolokia.config.*= # See Jolokia manual
+
+# REMOTE SHELL
+shell.auth=simple # jaas, key, simple, spring
+shell.command-refresh-interval=-1
+shell.command-path-pattern="classpath*:/commands/**, classpath*:/crash/commands/**"
+shell.config-path-patterns="classpath*:/crash/*"
+shell.disabled-plugins=false # don't expose plugins
+shell.ssh.enabled= # ssh settings ...
+shell.ssh.keyPath=
+shell.ssh.port=
+shell.telnet.enabled= # telnet settings ...
+shell.telnet.port=
+shell.auth.jaas.domain= # authentication settings ...
+shell.auth.key.path=
+shell.auth.simple.user.name=
+shell.auth.simple.user.password=
+shell.auth.spring.roles=
+
+# GIT INFO
+spring.git.properties= # resource ref to generated git info properties file
+----
+
+[appendix]
+== Auto-configuration classes
+Here is a list of all auto configuration classes provided by Spring Boot with links to
+documentation and source code. Remember to also look at the autoconfig report in your
+application for more details of which features are switched on in that specific use case
+(start the app with "--debug" or "-Ddebug", or in an Actuator app go to "/autoconfig").
+
+=== From the ``spring-boot-autoconfigure'' module
+The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
+
+|===
+|Configuration Class | Links
+
+|{sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{sc-ext}[PropertyPlaceholderAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{sc-ext}[RabbitAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{sc-ext}[AopAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/batch/BatchAutoConfiguration.{sc-ext}[BatchAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/batch/BatchAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{sc-ext}[JpaRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{sc-ext}[MongoRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{sc-ext}[MongoTemplateAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/jdbc/DataSourceTransactionManagerAutoConfiguration.{sc-ext}[DataSourceTransactionManagerAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jdbc/DataSourceTransactionManagerAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{sc-ext}[JmsTemplateAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[JmxAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{sc-ext}[DeviceResolverAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{sc-ext}[MongoAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/reactor/ReactorAutoConfiguration.{sc-ext}[ReactorAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/reactor/ReactorAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/redis/RedisAutoConfiguration.{sc-ext}[RedisAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/redis/RedisAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{sc-ext}[SecurityAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{sc-ext}[DispatcherServletAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{sc-ext}[HttpMessageConvertersAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[MultipartAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{sc-ext}[ServerPropertiesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[WebMvcAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/websocket/WebSocketAutoConfiguration.{sc-ext}[WebSocketAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/websocket/WebSocketAutoConfiguration.{dc-ext}[javadoc]
+|===
+
+
+=== From the ``spring-boot-actuator'' module
+The following auto-configuration classes are from the `spring-boot-actuator` module:
+
+|===
+|Configuration Class |Links
+
+|{sc-spring-boot-actuator}/autoconfigure/AuditAutoConfiguration.{sc-ext}[AuditAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/AuditAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{sc-ext}[CrshAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/EndpointAutoConfiguration.{sc-ext}[EndpointAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/EndpointAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportAutoConfiguration.{sc-ext}[EndpointMBeanExportAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/EndpointWebMvcAutoConfiguration.{sc-ext}[EndpointWebMvcAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/EndpointWebMvcAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{sc-ext}[ErrorMvcAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/JolokiaAutoConfiguration.{sc-ext}[JolokiaAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/JolokiaAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/ManagementSecurityAutoConfiguration.{sc-ext}[ManagementSecurityAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/ManagementSecurityAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/ManagementServerPropertiesAutoConfiguration.{sc-ext}[ManagementServerPropertiesAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/ManagementServerPropertiesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/MetricFilterAutoConfiguration.{sc-ext}[MetricFilterAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/MetricFilterAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/MetricRepositoryAutoConfiguration.{sc-ext}[MetricRepositoryAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/MetricRepositoryAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/TraceRepositoryAutoConfiguration.{sc-ext}[TraceRepositoryAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/TraceRepositoryAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-actuator}/autoconfigure/TraceWebFilterAutoConfiguration.{sc-ext}[TraceWebFilterAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/TraceWebFilterAutoConfiguration.{dc-ext}[javadoc]
+|===
+
