@@ -341,39 +341,29 @@
 <li><a href="#_error_handling">12.9. Error Handling</a></li>
 </ul>
 </li>
-<li><a href="#_gradle_plugin">13. Gradle plugin</a></li>
-<li><a href="#_maven_plugin">14. Maven plugin</a></li>
-<li><a href="#_spring_boot_cli">15. Spring Boot CLI</a></li>
-<li><a href="#_deploying_to_the_cloud">16. Deploying to the cloud</a></li>
+<li><a href="#_spring_boot_gradle_plugin">13. Spring Boot Gradle plugin</a></li>
+<li><a href="#_spring_boot_maven_plugin">14. Spring Boot Maven plugin</a></li>
+<li><a href="#_deploying_to_the_cloud">15. Deploying to the cloud</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_cloud_foundry">16.1. Cloud Foundry</a></li>
+<li><a href="#_cloud_foundry">15.1. Cloud Foundry</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_binding_to_services">16.1.1. Binding to services</a></li>
+<li><a href="#_binding_to_services">15.1.1. Binding to services</a></li>
 </ul>
 </li>
-<li><a href="#_heroku">16.2. Heroku</a></li>
+<li><a href="#_heroku">15.2. Heroku</a></li>
 </ul>
 </li>
-<li><a href="#_lombok">17. Lombok</a></li>
-<li><a href="#_extending_spring_boot">18. Extending Spring Boot</a></li>
-<li><a href="#_starters">19. Starters</a></li>
+<li><a href="#_extending_spring_boot">16. Extending Spring Boot</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_auto_configuration_2">19.1. Auto-Configuration</a></li>
-<li>
-<ul class="sectlevel3">
-<li><a href="#_batch">19.1.1. Batch</a></li>
-<li><a href="#_integration">19.1.2. Integration</a></li>
-<li><a href="#_actuator">19.1.3. Actuator</a></li>
+<li><a href="#_conditions">16.1. Conditions</a></li>
 </ul>
 </li>
-<li><a href="#_cli">19.2. CLI</a></li>
-<li><a href="#_common_application_properties">19.3. Common application properties</a></li>
-<li><a href="#_conditions">19.4. Conditions</a></li>
-</ul>
-</li>
+<li><a href="#_spring_boot_cli">17. Spring Boot CLI</a></li>
+<li><a href="#_common_application_properties">18. Common application properties</a></li>
+<li><a href="#_auto_configuration_classes">19. Auto-configuration classes</a></li>
 <li><a href="#__how_to_guides">20. &#8220;How-to&#8221; guides</a></li>
 <li>
 <ul class="sectlevel2">
@@ -456,7 +446,7 @@
 <li><a href="#_execute_spring_batch_jobs_on_startup">20.8.1. Execute Spring Batch jobs on startup</a></li>
 </ul>
 </li>
-<li><a href="#_actuator_2">20.9. Actuator</a></li>
+<li><a href="#_actuator">20.9. Actuator</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_change_the_http_port_or_address_of_the_actuator_endpoints">20.9.1. Change the HTTP port or address of the actuator endpoints</a></li>
@@ -4952,25 +4942,19 @@ or Jetty on the classpath), but then the API is the same.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_gradle_plugin">13. Gradle plugin</h2>
+<h2 id="_spring_boot_gradle_plugin">13. Spring Boot Gradle plugin</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_maven_plugin">14. Maven plugin</h2>
+<h2 id="_spring_boot_maven_plugin">14. Spring Boot Maven plugin</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_spring_boot_cli">15. Spring Boot CLI</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_deploying_to_the_cloud">16. Deploying to the cloud</h2>
+<h2 id="_deploying_to_the_cloud">15. Deploying to the cloud</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Spring Boot&#8217;s executable JARs are ready-made for most popular cloud PaaS
@@ -4997,7 +4981,7 @@ to run packaged within it.</p>
 developed in the Getting Started section up and running on Cloud Foundry and Heroku.</p>
 </div>
 <div class="sect2">
-<h3 id="_cloud_foundry">16.1. Cloud Foundry</h3>
+<h3 id="_cloud_foundry">15.1. Cloud Foundry</h3>
 <div class="paragraph">
 <p>Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry buildpack has excellent support for Spring applications,
@@ -5066,7 +5050,7 @@ able to hit the application at the URI provided:
 <code>http://$YOURAPP.cfapps.io/</code>.</p>
 </div>
 <div class="sect3">
-<h4 id="_binding_to_services">16.1.1. Binding to services</h4>
+<h4 id="_binding_to_services">15.1.1. Binding to services</h4>
 <div class="paragraph">
 <p>By default, meta-data about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
@@ -5119,7 +5103,7 @@ Heroku too!
 </div>
 </div>
 <div class="sect2">
-<h3 id="_heroku">16.2. Heroku</h3>
+<h3 id="_heroku">15.2. Heroku</h3>
 <div class="paragraph">
 <p>Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
 <code>Procfile</code>, which provides the incantation required to deploy an application. Heroku
@@ -5209,47 +5193,256 @@ To git@heroku.com:agile-sierra-1405.git
 </div>
 </div>
 <div class="sect1">
-<h2 id="_lombok">17. Lombok</h2>
+<h2 id="_extending_spring_boot">16. Extending Spring Boot</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_conditions">16.1. Conditions</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_spring_boot_cli">17. Spring Boot CLI</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_extending_spring_boot">18. Extending Spring Boot</h2>
+<h2 id="_common_application_properties">18. Common application properties</h2>
 <div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre># EndpointMBeanExportProperties
+endpoints.jmx.domain
+endpoints.jmx.uniqueNames=false
+endpoints.jmx.enabled=true
+endpoints.jmx.staticNames=
 
+# JolokiaProperties
+jolokia.config.*=
+
+# ManagementServerProperties
+management.port
+management.address
+management.contextPath
+
+# ShellProperties
+shell.auth=simple # jaas, key, simple, spring
+shell.defaultAuth
+shell.commandRefreshInterval=-1
+shell.commandPathPattern=classpath*:/commands/**", "classpath*:/crash/commands/**"
+shell.configPathPatterns=classpath*:/crash/*
+shell.disabledPlugins=
+shell.ssh.enabled
+shell.ssh.keyPath
+shell.ssh.port
+shell.telnet.enabled
+shell.telnet.port
+shell.auth.jaas.domain
+shell.auth.key.path
+shell.auth.simple.user.name
+shell.auth.simple.user.password
+shell.auth.spring.roles
+
+#Endpoints
+endpoints.autoconfig.id
+endpoints.autoconfig.sensitive
+endpoints.autoconfig.enabled
+
+endpoints.beans.id
+endpoints.beans.sensitive
+endpoints.beans.enabled
+
+endpoints.configprops.id
+endpoints.configprops.sensitive
+endpoints.configprops.enabled
+endpoints.configprops.keysToSanitize
+
+endpoints.dump.id
+endpoints.dump.sensitive
+endpoints.dump.enabled
+
+endpoints.env.id
+endpoints.env.sensitive
+endpoints.env.enabled
+
+endpoints.health.id
+endpoints.health.sensitive
+endpoints.health.enabled
+
+endpoints.info.id
+endpoints.info.sensitive
+endpoints.info.enabled
+
+endpoints.metrics.id
+endpoints.metrics.sensitive
+endpoints.metrics.enabled
+
+endpoints.shutdown.id
+endpoints.shutdown.sensitive
+endpoints.shutdown.enabled
+
+endpoints.trace.id
+endpoints.trace.sensitive
+endpoints.trace.enabled
+
+# MVC Ends
+endpoints.jolokia.path
+endpoints.jolokia.sensitive
+endpoints.jolokia.enabled
+endpoints.error.path
+
+# JMX
+spring.jmx.enabled
+endpoints.jmx.enabled
+
+# RabbitProperties
+spring.rabbitmq
+host
+port
+username
+password
+virtualhost
+dynamic
+spring.rabbitmq.dynamic
+
+# DataSourceAutoConfiguration &amp; AbstractDataSourceConfiguration
+spring.datasource.name
+spring.datasource.intialize=true
+spring.datasource.schema=
+spring.datasource.continueOnError
+spring.datasource.driverClassName;
+spring.datasource.url;
+spring.datasource.username;
+spring.datasource.password;
+spring.datasource.maxActive = 100;
+spring.datasource.maxIdle = 8;
+spring.datasource.minIdle = 8;
+spring.datasource.initialSize = 10;
+spring.datasource.validationQuery;
+spring.datasource.testOnBorrow = false;
+spring.datasource.testOnReturn = false;
+
+#ActiveMQProperties
+spring.activemq.brokerURL=tcp://localhost:61616
+inMemory=true
+pooled=false
+
+# JmsTemplateProperties
+spring.jms.pubSubDomain
+
+# MongoProperties
+spring.data.mongodb.host=
+spring.data.mongodb.port=27017
+spring.data.mongodb.uri=mongodb://localhost/test
+
+# RedisProperties
+spring.redis.host=localhost
+spring.redis.password=
+spring.redis.port=6379
+spring.redis.pool.maxIdle = 8;
+spring.redis.pool.minIdle = 0;
+spring.redis.pool.maxActive = 8;
+spring.redis.pool.maxWait = -1;
+
+SecurityProperties
+security.requireSsl=false
+security.enableCsrf=false
+security.basic.enabled = true
+security.basic.realm =Spring
+security.basic.path =/**
+security.headers.xss=false
+security.headers.cache=false
+security.headers.frame=false
+security.headers.contentType=false
+security.headers.hsts = all # none/domain/all
+security.sessions=stateless #always/never/if_required/stateless
+security.ignored=
+security.user.name=user
+security.user.role=USER
+security.user.password=
+
+# HttpMapperProperties
+http.mappers.jsonPrettyPrint=false
+
+#ServerProperties
+server.port
+server.address
+server.sessionTimeout
+server.contextPath
+server.servletPath
+server.tomcat.accessLogPattern;
+server.tomcat.accessLogEnabled = false;
+server.tomcat.protocolHeader = "x-forwarded-proto";
+server.tomcat.remoteIpHeader = "x-forwarded-for";
+server.tomcat.basedir;
+server.tomcat.backgroundProcessorDelay = 30; // seconds
+server.tomcat.maxThreads = 0; // Number of threads in protocol handler
+
+# ConfigFileApplicationListner
+spring.config.name=application
+spring.config.location=
+
+#SpringApplication
+spring.main.sources
+spring.main.webEnvironment
+spring.main.showBannder
+
+#ContextIdApplicationContextInitializer
+spring.application.name
+vcap.application.name
+spring.config.name
+
+# FileEncodingApplicationListener
+spring.mandatoryFileEncoding=false
+
+spring.profiles
+
+spring.git.properties
+
+spring.aop.auto
+spring.aop.proxyTargetClass
+
+# BatchDatabaseInitializer
+spring.batch.job.names=job1,job2
+spring.batch.job.enabled=true
+spring.batch.initializer.enabled
+spring.batch.schema
+
+
+spring.jpa.hibernate.naming-strategy
+ddl-auto
+
+spring.jpa.properties.{...}=
+spring.jpa.openInView=true
+spring.jpa.show-sql=true
+spring.jpa.database-platform
+spring.jpa.database
+spring.jpa.generate-ddl
+
+
+# ThymeleafAutoConfiguration
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+modeHTML5
+encoding=UTF-8
+cache=true
+
+
+spring.view.prefix=
+spring.view.suffix=
+spring.resources.cachePeriod
+
+spring.messages.basenamemessages
+spring.messages.encoding=UTF-8</pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_starters">19. Starters</h2>
+<h2 id="_auto_configuration_classes">19. Auto-configuration classes</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_auto_configuration_2">19.1. Auto-Configuration</h3>
-<div class="sect3">
-<h4 id="_batch">19.1.1. Batch</h4>
 
-</div>
-<div class="sect3">
-<h4 id="_integration">19.1.2. Integration</h4>
-
-</div>
-<div class="sect3">
-<h4 id="_actuator">19.1.3. Actuator</h4>
-
-</div>
-</div>
-<div class="sect2">
-<h3 id="_cli">19.2. CLI</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_common_application_properties">19.3. Common application properties</h3>
-
-</div>
-<div class="sect2">
-<h3 id="_conditions">19.4. Conditions</h3>
-
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -6246,7 +6439,7 @@ for more details.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_actuator_2">20.9. Actuator</h3>
+<h3 id="_actuator">20.9. Actuator</h3>
 <div class="sect3">
 <h4 id="_change_the_http_port_or_address_of_the_actuator_endpoints">20.9.1. Change the HTTP port or address of the actuator endpoints</h4>
 <div class="paragraph">
@@ -6619,7 +6812,7 @@ Boot application, and the guidance above might help, but your mileage may vary.<
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-08 21:58:08 PST
+Last updated 2014-03-08 23:12:44 PST
 </div>
 </div>
 </body>

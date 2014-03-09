@@ -3114,11 +3114,9 @@ or Jetty on the classpath), but then the API is the same.
 //FIXME TODO: finish this, possibly move.
 
 
-== Gradle plugin
+== Spring Boot Gradle plugin
 
-== Maven plugin
-
-== Spring Boot CLI
+== Spring Boot Maven plugin
 
 == Deploying to the cloud
 Spring Boot's executable JARs are ready-made for most popular cloud PaaS
@@ -3321,24 +3319,242 @@ This should be everything you need. The most common workflow for Heroku deployme
 
 That should be it! Your application should be up and running on Heroku.
 
-== Lombok
 
 == Extending Spring Boot
-
-== Starters
-
-
-=== Auto-Configuration
-==== Batch
-==== Integration
-==== Actuator
-
-=== CLI
-
-=== Common application properties
-
 === Conditions
 
+== Spring Boot CLI
+
+== Common application properties
+
+[indent=0]
+----
+# EndpointMBeanExportProperties
+endpoints.jmx.domain
+endpoints.jmx.uniqueNames=false
+endpoints.jmx.enabled=true
+endpoints.jmx.staticNames=
+
+# JolokiaProperties
+jolokia.config.*=
+
+# ManagementServerProperties
+management.port
+management.address
+management.contextPath
+
+# ShellProperties
+shell.auth=simple # jaas, key, simple, spring
+shell.defaultAuth
+shell.commandRefreshInterval=-1
+shell.commandPathPattern=classpath*:/commands/**", "classpath*:/crash/commands/**"
+shell.configPathPatterns=classpath*:/crash/*
+shell.disabledPlugins=
+shell.ssh.enabled
+shell.ssh.keyPath
+shell.ssh.port
+shell.telnet.enabled
+shell.telnet.port
+shell.auth.jaas.domain
+shell.auth.key.path
+shell.auth.simple.user.name
+shell.auth.simple.user.password
+shell.auth.spring.roles
+
+#Endpoints
+endpoints.autoconfig.id
+endpoints.autoconfig.sensitive
+endpoints.autoconfig.enabled
+
+endpoints.beans.id
+endpoints.beans.sensitive
+endpoints.beans.enabled
+
+endpoints.configprops.id
+endpoints.configprops.sensitive
+endpoints.configprops.enabled
+endpoints.configprops.keysToSanitize
+
+endpoints.dump.id
+endpoints.dump.sensitive
+endpoints.dump.enabled
+
+endpoints.env.id
+endpoints.env.sensitive
+endpoints.env.enabled
+
+endpoints.health.id
+endpoints.health.sensitive
+endpoints.health.enabled
+
+endpoints.info.id
+endpoints.info.sensitive
+endpoints.info.enabled
+
+endpoints.metrics.id
+endpoints.metrics.sensitive
+endpoints.metrics.enabled
+
+endpoints.shutdown.id
+endpoints.shutdown.sensitive
+endpoints.shutdown.enabled
+
+endpoints.trace.id
+endpoints.trace.sensitive
+endpoints.trace.enabled
+
+# MVC Ends
+endpoints.jolokia.path
+endpoints.jolokia.sensitive
+endpoints.jolokia.enabled
+endpoints.error.path
+
+# JMX
+spring.jmx.enabled
+endpoints.jmx.enabled
+
+# RabbitProperties
+spring.rabbitmq
+host
+port
+username
+password
+virtualhost
+dynamic
+spring.rabbitmq.dynamic
+
+# DataSourceAutoConfiguration & AbstractDataSourceConfiguration
+spring.datasource.name
+spring.datasource.intialize=true
+spring.datasource.schema=
+spring.datasource.continueOnError
+spring.datasource.driverClassName;
+spring.datasource.url;
+spring.datasource.username;
+spring.datasource.password;
+spring.datasource.maxActive = 100;
+spring.datasource.maxIdle = 8;
+spring.datasource.minIdle = 8;
+spring.datasource.initialSize = 10;
+spring.datasource.validationQuery;
+spring.datasource.testOnBorrow = false;
+spring.datasource.testOnReturn = false;
+
+#ActiveMQProperties
+spring.activemq.brokerURL=tcp://localhost:61616
+inMemory=true
+pooled=false
+
+# JmsTemplateProperties
+spring.jms.pubSubDomain
+
+# MongoProperties
+spring.data.mongodb.host=
+spring.data.mongodb.port=27017
+spring.data.mongodb.uri=mongodb://localhost/test
+
+# RedisProperties
+spring.redis.host=localhost
+spring.redis.password=
+spring.redis.port=6379
+spring.redis.pool.maxIdle = 8;
+spring.redis.pool.minIdle = 0;
+spring.redis.pool.maxActive = 8;
+spring.redis.pool.maxWait = -1;
+
+SecurityProperties
+security.requireSsl=false
+security.enableCsrf=false
+security.basic.enabled = true
+security.basic.realm =Spring
+security.basic.path =/**
+security.headers.xss=false
+security.headers.cache=false
+security.headers.frame=false
+security.headers.contentType=false
+security.headers.hsts = all # none/domain/all
+security.sessions=stateless #always/never/if_required/stateless
+security.ignored=
+security.user.name=user
+security.user.role=USER
+security.user.password=
+
+# HttpMapperProperties
+http.mappers.jsonPrettyPrint=false
+
+#ServerProperties
+server.port
+server.address
+server.sessionTimeout
+server.contextPath
+server.servletPath
+server.tomcat.accessLogPattern;
+server.tomcat.accessLogEnabled = false;
+server.tomcat.protocolHeader = "x-forwarded-proto";
+server.tomcat.remoteIpHeader = "x-forwarded-for";
+server.tomcat.basedir;
+server.tomcat.backgroundProcessorDelay = 30; // seconds
+server.tomcat.maxThreads = 0; // Number of threads in protocol handler
+
+# ConfigFileApplicationListner
+spring.config.name=application
+spring.config.location=
+
+#SpringApplication
+spring.main.sources
+spring.main.webEnvironment
+spring.main.showBannder
+
+#ContextIdApplicationContextInitializer
+spring.application.name
+vcap.application.name
+spring.config.name
+
+# FileEncodingApplicationListener
+spring.mandatoryFileEncoding=false
+
+spring.profiles
+
+spring.git.properties
+
+spring.aop.auto
+spring.aop.proxyTargetClass
+
+# BatchDatabaseInitializer
+spring.batch.job.names=job1,job2
+spring.batch.job.enabled=true
+spring.batch.initializer.enabled
+spring.batch.schema
+
+
+spring.jpa.hibernate.naming-strategy
+ddl-auto
+
+spring.jpa.properties.{...}=
+spring.jpa.openInView=true
+spring.jpa.show-sql=true
+spring.jpa.database-platform
+spring.jpa.database
+spring.jpa.generate-ddl
+
+
+# ThymeleafAutoConfiguration
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+modeHTML5
+encoding=UTF-8
+cache=true
+
+
+spring.view.prefix=
+spring.view.suffix=
+spring.resources.cachePeriod
+
+spring.messages.basenamemessages
+spring.messages.encoding=UTF-8
+----
+
+== Auto-configuration classes
 
 == ``How-to'' guides
 This section provides answers to some common ``how do I do that...'' types of questions.
@@ -4415,7 +4631,7 @@ Boot application, and the guidance above might help, but your mileage may vary.
 
 
 // FIXME how to change the git.properties file using spring.git.properties
-
+// FIXME how to use lombok
 
 
 
