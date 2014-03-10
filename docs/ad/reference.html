@@ -570,6 +570,39 @@
 </ul>
 </li>
 <li><a href="#_the_executable_jar_format">Appendix C: The executable jar format</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_nested_jars">Nested JARs</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_the_executable_jar_file_structure">The executable jar file structure</a></li>
+<li><a href="#_the_executable_war_file_structure">The executable war file structure</a></li>
+</ul>
+</li>
+<li><a href="#_spring_boot_s_jarfile_class">Spring Boot&#8217;s &#8220;JarFile&#8221; class</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_compatibility_with_the_standard_java_jarfile">Compatibility with the standard Java &#8220;JarFile&#8221;</a></li>
+</ul>
+</li>
+<li><a href="#_launching_executable_jars">Launching executable jars</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_launcher_manifest">Launcher manifest</a></li>
+<li><a href="#_exploded_archives">Exploded archives</a></li>
+</ul>
+</li>
+<li><a href="#_propertieslauncher_features">PropertiesLauncher Features</a></li>
+<li><a href="#_restrictions">Restrictions</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_zip_entry_compression">Zip entry compression</a></li>
+<li><a href="#_system_classloader">System ClassLoader</a></li>
+</ul>
+</li>
+<li><a href="#_alternatives">Alternatives</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -5515,11 +5548,13 @@ to &#8220;grab&#8221; based on your code. For example, since the <code>WebApplic
 <col style="width:50%;">
 <col style="width:50%;"> 
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Items</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Grabs</p></td>
+<th class="tableblock halign-left valign-top">Items</th>
+<th class="tableblock halign-left valign-top">Grabs</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>JdbcTemplate</code>, <code>NamedParameterJdbcTemplate</code>, <code>DataSource</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">JDBC Application</p></td>
@@ -6043,13 +6078,15 @@ and install a Java IDE.</p>
 <col style="width:57%;">
 <col style="width:14%;"> 
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>classesDirectrory</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">File</p></td>
@@ -6070,13 +6107,15 @@ and install a Java IDE.</p>
 <col style="width:57%;">
 <col style="width:14%;"> 
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>arguments</code> or <code>-Drun.arguments</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String[]</p></td>
@@ -6287,13 +6326,15 @@ repackaged boot jar will have all dependencies from a runtime but no log4j jars.
 <col style="width:57%;">
 <col style="width:14%;"> 
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>mainClass</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
@@ -8296,13 +8337,350 @@ application for more details of which features are switched on in that specific 
 <div class="sect1">
 <h2 id="_the_executable_jar_format">Appendix C: The executable jar format</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The <code>spring-boot-loader</code> modules allows Spring Boot to support executable jar and
+war files. If you&#8217;re using the Maven or Gradle plugin, executable jars are
+automatically generated and you generally won&#8217;t need to know the details of how
+they work.</p>
+</div>
+<div class="paragraph">
+<p>If you need to create executable jars from a different build system, or if you are just
+curious about the underlying technology, this section provides some background.</p>
+</div>
+<div class="sect2">
+<h3 id="_nested_jars">Nested JARs</h3>
+<div class="paragraph">
+<p>Java does not provide any standard way to load nested jar files (i.e. jar files that
+are themselves contained within a jar). This can be problematic if you are looking
+to distribute a self contained application that you can just run from the command line
+without unpacking.</p>
+</div>
+<div class="paragraph">
+<p>To solve this problem, many developers use <em>shaded</em> jars. A shaded jar simply packages
+all classes, from all jars, into a single <em>uber jar</em>. The problem with shaded jars is
+that it becomes hard to see which libraries you are actually using in your application.
+It can also be problematic if the the same filename is used (but with different content)
+in multiple jars. Spring Boot takes a different approach and allows you to actually nest
+jars directly.</p>
+</div>
+<div class="sect3">
+<h4 id="_the_executable_jar_file_structure">The executable jar file structure</h4>
+<div class="paragraph">
+<p>Spring Boot Loader compatible jar files should be structured in the following way:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>example.jar
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-&lt;spring boot loader classes&gt;
+ +-com
+ |  +-mycompany
+ |     + project
+ |        +-YouClasses.class
+ +-lib
+    +-dependency1.jar
+    +-dependency2.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dependencies should be placed in a nested <code>lib</code> directory.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the_executable_war_file_structure">The executable war file structure</h4>
+<div class="paragraph">
+<p>Spring Boot Loader compatible war files should be structured in the following way:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>example.jar
+ |
+ +-META-INF
+ |  +-MANIFEST.MF
+ +-org
+ |  +-springframework
+ |     +-boot
+ |        +-loader
+ |           +-&lt;spring boot loader classes&gt;
+ +-WEB-INF
+    +-classes
+    |  +-com
+    |     +-mycompany
+    |        +-project
+    |           +-YouClasses.class
+    +-lib
+    |  +-dependency1.jar
+    |  +-dependency2.jar
+    +-lib-provided
+       +-servlet-api.jar
+       +-dependency3.jar</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Dependencies should be placed in a nested <code>WEB-INF/lib</code> directory. Any dependencies
+that are required when running embedded but are not required when deploying to
+a traditional web container should be placed in <code>WEB-INF/lib-provided</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spring_boot_s_jarfile_class">Spring Boot&#8217;s &#8220;JarFile&#8221; class</h3>
+<div class="paragraph">
+<p>The core class used to support loading nested jars is
+<code>org.springframework.boot.loader.jar.JarFile</code>. It allows  you load jar
+content from a standard jar file or from nested child jar data. When first  loaded, the
+location of each  <code>JarEntry</code> is mapped to a physical file offset of the outer jar:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>myapp.jar
++---------+---------------------+
+|         | /lib/mylib.jar      |
+| A.class |+---------+---------+|
+|         || B.class | B.class ||
+|         |+---------+---------+|
++---------+---------------------+
+^          ^          ^
+0063       3452       3980</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The example above shows how <code>A.class</code> can be found in <code>myapp.jar</code> position <code>0063</code>.
+<code>B.class</code> from the nested jar can actually be found in <code>myapp.jar</code> position <code>3452</code>
+and <code>B.class</code> is at position <code>3980</code>.</p>
+</div>
+<div class="paragraph">
+<p>Armed with this information, we can load specific nested entries by simply seeking to
+appropriate part if the outer jar. We don&#8217;t need to unpack the archive and we don&#8217;t
+need to read all entry data into memory.</p>
+</div>
+<div class="sect3">
+<h4 id="_compatibility_with_the_standard_java_jarfile">Compatibility with the standard Java &#8220;JarFile&#8221;</h4>
+<div class="paragraph">
+<p>Spring Boot Loader strives to remain compatible with existing code and libraries.
+<code>org.springframework.boot.loader.jar.JarFile</code> extends from <code>java.util.jar.JarFile</code> and
+should work as a drop-in replacement. The <code>RandomAccessJarFile.getURL()</code> method will
+return a <code>URL</code> that opens a <code>java.net.JarURLConnection</code> compatible connection.
+<code>RandomAccessJarFile</code> URLs can be used with Java&#8217;s <code>URLClassLoader</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_launching_executable_jars">Launching executable jars</h3>
+<div class="paragraph">
+<p>The <code>org.springframework.boot.loader.Launcher</code> class is a special bootstrap class that
+is used as an executable jars main entry point. It is the actual <code>Main-Class</code> in your jar
+file and it&#8217;s used to setup an appropriate <code>URLClassLoader</code> and ultimately call your
+<code>main()</code> method</p>
+</div>
+<div class="paragraph">
+<p>There are 3 launcher subclasses (<code>JarLauncher</code>, <code>WarLauncher</code> and <code>PropertiesLauncher</code>).
+Their purpose is to load resources (<code>.class</code> files etc.) from nested jar files or war
+files in directories (as opposed to explicitly on the classpath). In the case of the
+<code>[Jar|War]Launcher</code> the nested paths are fixed <code>(lib/*.jar</code> and <code>lib-provided/*.jar</code> for
+the war case) so you just add extra jars in those locations if you want more. The
+<code>PropertiesLauncher</code> looks in <code>lib/</code> by default, but you can add additional locations by
+setting an environment variable <code>LOADER_PATH</code> or <code>loader.path</code> in <code>application.properties</code>
+(colon-separated list of directories or archives).</p>
+</div>
+<div class="sect3">
+<h4 id="_launcher_manifest">Launcher manifest</h4>
+<div class="paragraph">
+<p>You need specify an appropriate <code>Launcher</code> as the <code>Main-Class</code> attribute of
+<code>META-INF/MANIFEST.MF</code>. The actual class that you want to launch (i.e. the class that
+you wrote that contains a <code>main</code> method) should be specified  in the <code>Start-Class</code>
+attribute.</p>
+</div>
+<div class="paragraph">
+<p>For example, here is a typical <code>MANIFEST.MF</code> for a executable jar file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.mycompany.project.MyApplication</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For a war file, it would be:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Main-Class: org.springframework.boot.loader.WarLauncher
+Start-Class: com.mycompany.project.MyApplication</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+You do not need to specify <code>Class-Path</code> entries in your manifest file, the classpath
+will be deduced from the nested jars.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_exploded_archives">Exploded archives</h4>
+<div class="paragraph">
+<p>Certain PaaS implementations may choose to unpack archives before they run. For example,
+Cloud Foundry operates in this way. You can run an unpacked archive by simply starting
+the appropriate launcher:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ unzip -q myapp.jar
+$ java org.springframework.boot.loader.JarLauncher</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_propertieslauncher_features">PropertiesLauncher Features</h3>
+<div class="paragraph">
+<p><code>PropertiesLauncher</code> has a few special features that can be enabled with external
+properties (System properties, environment variables, manifest entries or
+<code>application.properties</code>).</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:20%;">
+<col style="width:60%;">
+<col style="width:20%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Key</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Typical value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.path</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Classpath (colon-separated)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>lib:${HOME}/app/lib</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.home</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Location of additional properties file (defaults to <code>${user.dir}</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>file:///opt/app</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.args</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default arguments for the main method (space separated)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.main</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of main class to launch</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>com.app.Application</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.config.name</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of properties file (default "application")</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.config.location</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Path to properties file (default "application/.properties")</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>classpath:loader.properties</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>loader.system</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean flag to indicate that all properties should be added to System properties
+ (defaults to <code>false</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+</tbody>
+</table>
 
+<div class="paragraph">
+<p>Manifest entry keys are formed by capitalizing initial letters of words and changing the
+separator to <code>-</code> from <code>.</code> (e.g. <code>Loader-Path</code>). The exception is <code>loader.main</code> which is
+looked up as <code>Start-Class</code> in the manifest for compatibility with <code>JarLauncher</code>).</p>
+</div>
+<div class="paragraph">
+<p>Environment variables can be capitalized with underscore separators instead of periods.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>loader.home</code> is the directory location of an additional properties file (overriding
+the default) as long as <code>loader.config.location</code> is   not specified.</p>
+</li>
+<li>
+<p><code>loader.path</code> can contain directories (scanned recursively for jar and zip files),
+archive paths, or wildcard patterns (for the default JVM behavior).</p>
+</li>
+<li>
+<p>Placeholder replacement is done from System and environment variables plus the
+properties file itself on all values before use.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_restrictions">Restrictions</h3>
+<div class="paragraph">
+<p>There are a number of restrictions that you need to consider when working with a Spring
+Boot Loader packaged application.</p>
+</div>
+<div class="sect3">
+<h4 id="_zip_entry_compression">Zip entry compression</h4>
+<div class="paragraph">
+<p>The <code>ZipEntry</code> for a nested jar must be saved using the <code>ZipEntry.STORED</code> method. This
+is required so that we can seek directly to individual content within the nested jar.
+The content of the nested jar file itself can still be compressed, as can any other
+entries in the outer jar.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_system_classloader">System ClassLoader</h4>
+<div class="paragraph">
+<p>Launched applications should use <code>Thread.getContextClassLoader()</code> when loading classes
+(most libraries and frameworks will do this by default). Trying to load nested jar
+classes via <code>ClassLoader.getSystemClassLoader()</code> will fail. Please be aware that
+<code>java.util.Logging</code> always uses the system classloader, for this reason you should
+consider a different logging implementation.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_alternatives">Alternatives</h3>
+<div class="paragraph">
+<p>If the above restrictions mean that you cannot use Spring Boot Loader the following
+alternatives could be considered:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://maven.apache.org/plugins/maven-shade-plugin/">Maven Shade Plugin</a></p>
+</li>
+<li>
+<p><a href="http://www.jdotsoft.com/JarClassLoader.php">JarClassLoader</a></p>
+</li>
+<li>
+<p><a href="http://one-jar.sourceforge.net">OneJar</a></p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-10 12:10:04 PDT
+Last updated 2014-03-10 13:25:05 PDT
 </div>
 </div>
 </body>
