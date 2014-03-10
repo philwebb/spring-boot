@@ -57,7 +57,7 @@ platform and third-party libraries so you can get started with minimum fuss. Mos
 Boot applications need very little Spring configuration.
 
 You can use Spring Boot to create Java applications that can be started using `java -jar`
-or more traditional WAR deployments. We also provide a command line tool that runs ``spring
+or more traditional war deployments. We also provide a command line tool that runs ``spring
 scripts''.
 
 Our primary goals are:
@@ -94,7 +94,7 @@ any special tool integration, so you can use any IDE or text editor; and there i
 special about a Spring Boot application, so you can run and debug as you would any other
 Java program.
 
-Although you _could_ just copy Spring Boot JARs, we generally recommend that you use a
+Although you _could_ just copy Spring Boot jars, we generally recommend that you use a
 build tool that support dependency management (such as Maven or Gradle).
 
 ===== Maven installation
@@ -107,7 +107,7 @@ OSX Homebrew user try `brew install maven`. Ubuntu users can run `sudo apt-get i
 Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
 Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
 dependencies to one or more ``starter POMs''. Spring Boot also provides an optional Maven
-plugin to create executable JARs.
+plugin to create executable jars.
 
 // FIXME link to starter section
 
@@ -139,7 +139,7 @@ Here is a typical `pom.xml` file:
 			</dependency>
 		</dependencies>
 
-		<!-- Package as an executable JAR -->
+		<!-- Package as an executable jar -->
 		<build>
 			<plugins>
 				<plugin>
@@ -186,7 +186,7 @@ installed you can follow the instructions at http://www.gradle.org/.
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more starter POMs. Spring Boot
 provides a useful Gradle plugin that can be used to simplify dependency declarations
-and to create executable JARs.
+and to create executable jars.
 
 .Gradle Wrapper
 ****
@@ -455,7 +455,7 @@ endif::[]
 ----
 
 This should give you a working build, you can test it out by running `mvn package` (you
-can ignore the _`JAR will be empty - no content was marked for inclusion!'_ warning for
+can ignore the _`jar will be empty - no content was marked for inclusion!'_ warning for
 now).
 
 NOTE: At this point you could import the project into an IDE (most modern Java IDE's
@@ -463,7 +463,7 @@ include built-in support for Maven). For simplicity, we will continue to use a s
 text editor for this example.
 
 ==== Adding classpath dependencies
-Spring Boot provides a number of ``Starter POMs'' that make easy to add JARs to your
+Spring Boot provides a number of ``Starter POMs'' that make easy to add jars to your
 classpath. Our sample application has already used `spring-boot-starter-parent` in the
 `parent` section of the POM. The `spring-boot-starter-parent` is a special starter
 that provides useful Maven defaults. It also provides a `dependency-management` section
@@ -553,7 +553,7 @@ Reference Documentation for more details.
 
 ===== The @EnableAutoConfiguration annotation
 The second class-level annotation is `@EnableAutoConfiguration`. This annotation tells
-Spring Boot to ``guess'' how you will want to configure Spring based on the JAR
+Spring Boot to ``guess'' how you will want to configure Spring based on the jar
 dependencies that you have added. Since `spring-boot-starter-web` added Tomcat and
 Spring MVC, the auto-configuration will assume that you are developing a web application
 and setup Spring accordingly.
@@ -561,7 +561,7 @@ and setup Spring accordingly.
 .Starter POMs and Auto-Configuration
 ****
 Auto-configuration is designed to work well with ``Starter POMs'', but the two concepts
-are not directly tied. You are free to pick-and-choose JAR dependencies outside of the
+are not directly tied. You are free to pick-and-choose jar dependencies outside of the
 starter POMs and Spring Boot will still do its best to auto-configure your application.
 ****
 
@@ -606,28 +606,28 @@ If you open a web browser to http://localhost:8080 you should see the following 
 
 To gracefully exist the application hit `ctrl-c`.
 
-==== Creating an executable JAR
-Lets finish our example by create a completely self-contained executable JAR file that
-we could run in production. Executable JARs (sometimes called ``Fat JARs'') are archives
-containing your compiled classes along with all of the JAR dependencies that your code
+==== Creating an executable jar
+Lets finish our example by create a completely self-contained executable jar file that
+we could run in production. Executable jars (sometimes called ``Fat jars'') are archives
+containing your compiled classes along with all of the jar dependencies that your code
 needs to run.
 
-.Executable JARs and Java
+.Executable jars and Java
 ****
-Java does not provide any standard way to load nested JAR files (i.e. JAR files that are
-themselves contained within a JAR). This can be problematic if you are looking to
+Java does not provide any standard way to load nested jar files (i.e. jar files that are
+themselves contained within a jar). This can be problematic if you are looking to
 distribute a self contained application.
 
-To solve this problem, many developers use ``shaded'' JARs. A shaded JAR simply packages
-all classes, from all JARs, into a single ``uber JAR''. The problem with shaded JARs is that
+To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
+all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
 it becomes hard to see which libraries you are actually using in your application. It can
 also be problematic if the the same filename is used (but with different content) in
-multiple JARs.
+multiple jars.
 
-Spring Boot takes a different approach and allows you to actually nest JARs directly.
+Spring Boot takes a different approach and allows you to actually nest jars directly.
 ****
 
-To create an executable JAR we need to add the `spring-boot-maven-plugin` to our
+To create an executable jar we need to add the `spring-boot-maven-plugin` to our
 `pom.xml`. Insert the following lines just below the `dependencies` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -672,7 +672,7 @@ file should be around 10 Mb in size. If you want to peek inside, you can use `ja
 ----
 
 You should also see a much smaller file named `myproject-0.0.1-SNAPSHOT.jar.original`
-in the `target` directory. This is the original JAR file that Maven created before it was
+in the `target` directory. This is the original jar file that Maven created before it was
 repackaged by Spring Boot.
 
 To run that application, use the `java -jar` command:
@@ -775,7 +775,7 @@ want to follow our recommendation and use a later Java version you can add a
 ----
 
 ===== Using the Spring Boot Maven plugin
-Spring Boot includes a Maven plugin that can package the project as an executable JAR, or
+Spring Boot includes a Maven plugin that can package the project as an executable jar, or
 run it from source code. Add the plugin to your `<plugins>` section if you want to use it:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -810,7 +810,7 @@ Maven, there is no ``super parent'' to import.
 ----
 
 The `spring-boot-gradle-plugin` is also available and provides tasks to create executable
-JARs and run projects from source. It also adds a `ResolutionStrategy` that enables you
+jars and run projects from source. It also adds a `ResolutionStrategy` that enables you
 to omit the version number for common dependencies:
 
 
@@ -967,7 +967,7 @@ best practices that help.
 When a class doesn't include a `package` declaration it is considered to be in the
 ``default package''. The use of the ``default package'' is generally discouraged, and
 should be avoided. It can cause particular problems for Spring Boot applications that
-use `@ComponentScan` or `@EntityScan` annotations, since every class from every JAR,
+use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
 will be read.
 
 TIP: We recommend that you use the follow Java's recommended package naming conventions
@@ -1050,7 +1050,7 @@ annotation to load XML configuration files.
 
 === Auto-configuration
 Spring Boot auto-configuration attempts to automatically configure your Spring
-application based on the JAR dependencies that you have added. For example, If
+application based on the jar dependencies that you have added. For example, If
 `HSQLDB` is on your classpath, and you have not manually configured any database
 connection beans, then we will auto-configure an in-memory database.
 
@@ -1126,12 +1126,12 @@ TIP: Notice how using constructor injection allows the `riskAssessor` field to b
 as `final`, indicating that it cannot be subsequently changed.
 
 === Running your application
-One of the biggest advantages of packaging your application as JAR and using an embedded
+One of the biggest advantages of packaging your application as jar and using an embedded
 HTTP server is that you can run your application as you would any other. Debugging Spring
 Boot applications is also easy; you don't need any special IDE plugins or extensions.
 
-NOTE: This section only covers JAR passed packaging, If you choose to package your
-application as a WAR file you should refer to your server and IDE documentation.
+NOTE: This section only covers jar passed packaging, If you choose to package your
+application as a war file you should refer to your server and IDE documentation.
 
 ==== Running from an IDE
 You can run a Spring Boot application from your IDE as a simple Java application, however,
@@ -1150,7 +1150,7 @@ use'' error. STS users can use the `Relauch` button rather than `Run` to ensure 
 any existing instance is closed.
 
 ==== As a packaged application
-If you use the Spring Boot Maven or Gradle plugins to create an executable JAR you can
+If you use the Spring Boot Maven or Gradle plugins to create an executable jar you can
 run your application using `java -jar`. For example:
 
 [indent=0,subs="attributes"]
@@ -1202,7 +1202,7 @@ See the Hot swapping ``How-to'' section for details.
 
 // FIXME link
 === Packaging your application for production
-Executable JARs can be used for production deployment. As they are self contained, they
+Executable jars can be used for production deployment. As they are self contained, they
 are also ideally suited for cloud-based deployment.
 
 For additional ``production ready'' features, such as health, auditing and metric REST
@@ -1384,9 +1384,9 @@ sensible overriding of values, properties are considered in the the following or
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
 . `@PropertySource` annotations on your `@Configuration` classes.
-. Application properties outside of your packaged JAR (`application.properties`
+. Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants)
-. Application properties packaged inside your JAR (`application.properties`
+. Application properties packaged inside your jar (`application.properties`
   including YAML and profile variants)
 . Default properties (specified using `SpringApplication.setDefaultProperties`)
 
@@ -1409,9 +1409,9 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 	}
 ----
 
-You can bundle an `application.properties` inside your JAR that provides a sensible
+You can bundle an `application.properties` inside your jar that provides a sensible
 default `name`. When running in production, an `application.properties` can be provided
-outside of your JAR that overrides `name`; and for one off testing you can launch with
+outside of your jar that overrides `name`; and for one off testing you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
 
@@ -1745,7 +1745,7 @@ The default log output from Spring Boot looks like this:
 The following items are output:
 
 * Date and Time -- Millesecond precision and easily sortable
-* Log Level -- `ERROR`, `WARN`, `INFO`, `DEBUG` or `TRACE`
+* Log Level -- `ERROR`, `warN`, `INFO`, `DEBUG` or `TRACE`
 * Process ID
 * A `---` separator to distinguish the start of actual log messages
 * Logger name -- This is usually the source class name (often abbreviated)
@@ -1754,7 +1754,7 @@ The following items are output:
 
 ==== Console output
 The default log configuration will echo messages to the console as they written. By
-default `ERROR`, `WARN` and `INFO` level messages are logged. To also log `DEBUG` level
+default `ERROR`, `warN` and `INFO` level messages are logged. To also log `DEBUG` level
 messages to the console you can start your application with a `--debug` flag.
 
 [indent=0]
@@ -1770,7 +1770,7 @@ By default, log files are written to `spring.log` in your `temp` directory and r
 (for example in your `application.properties`). It is also possible to change the filename
 using a `logging.file` property.
 
-As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
+As with console output, `ERROR`, `warN` and `INFO` level messages are logged by default.
 
 ==== Custom log configuration
 
@@ -1817,7 +1817,7 @@ All the logging systems supported can consult System properties when parsing the
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
 WARNING: There are know classloading issues with Java Util Logging that cause problems
-when running from an ``executable JAR''. We recommend that you avoid it if at all
+when running from an ``executable jar''. We recommend that you avoid it if at all
 possible.
 
 === Developing web applications
@@ -1921,11 +1921,11 @@ through the `DispatcherServlet`.
 
 In addition to the ``standard'' static resource locations above, a special case is made for
 http://www.webjars.org/[Webjars content]. Any resources with a path in `/webjars/**` will
-be served from JAR files if they are packaged in the Webjars format.
+be served from jar files if they are packaged in the Webjars format.
 
 TIP: Do not use the `src/main/webapp` folder if your application will be packaged as a
-JAR. Although this folder is a common standard, it will *only* work with WAR packaging
-and it will be silently ignored by most build tools if you generate a JAR.
+jar. Although this folder is a common standard, it will *only* work with war packaging
+and it will be silently ignored by most build tools if you generate a jar.
 
 ===== Template engines
 As well as REST web service, you can also use Spring MVC to service dynamic HTML content.
@@ -2033,15 +2033,15 @@ source code documentation for details.
 When running a Spring Boot application that uses an embedded servlet container (and is
 packaged as an executable archive), there are some limitations in the JSP support.
 
-* With Tomcat it should work if you use WAR packaging, i.e. an executable WAR will work,
+* With Tomcat it should work if you use war packaging, i.e. an executable war will work,
   and will also be deployable to a standard container (not limited to, but including
-  Tomcat). An executable JAR will not work because of a hard coded file pattern in Tomcat.
+  Tomcat). An executable jar will not work because of a hard coded file pattern in Tomcat.
 
 * Jetty does not currently work as an embedded container with JSPs.
 
 There is a JSP sample so you can see how to set things up.
 // FIXME link to sample
-// FIXME  Create a deployable WAR file ?
+// FIXME  Create a deployable war file ?
 
 === Working with SQL databases
 The Spring Framework provides extensive support for working with SQL databases. From
@@ -2509,7 +2509,7 @@ public class MyTest {
 === Developing auto-configuration and using conditions
 If you work in a company that develops shared libraries, or if you work on an open-source
 or commercial library, you might want to develop your own auto-configuration.
-Auto-configuration classes can be bundled in external JARs and still be picked-up by
+Auto-configuration classes can be bundled in external jars and still be picked-up by
 Spring Boot.
 
 ==== Understanding auto-configured beans
@@ -2525,7 +2525,7 @@ classes that we provide (see the `META-INF/spring.factories` file).
 
 ==== Locating auto-configuration candidates
 Spring Boot checks for the presence of a `META-INF/spring.factories` file within your
-published JAR. The file should list your configuration classes under the
+published jar. The file should list your configuration classes under the
 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` key.
 
 [indent=0]
@@ -2779,7 +2779,7 @@ fallbacks if the Maven resource filtering has for some reason not been switched 
 ===== Git commit information
 Another useful feature of the `info` endpoint is its ability to publish information
 about the state of your `git` source code repository when the project was built. If a
-`git.properties` file is contained in your JAR the `git.branch` and `git.commit`
+`git.properties` file is contained in your jar the `git.branch` and `git.commit`
 properties will be loaded.
 
 For Maven users the `spring-boot-starter-parent` POM includes a pre-configured plugin to
@@ -3144,7 +3144,7 @@ Users can create Codahale metrics by prefixing their metric names with the appro
 type (e.g. `histogram.*`, `meter.*`).
 
 ==== Message channel integration
-If the ``Spring Messaging'' JAR is on your classpath a `MessageChannel` called
+If the ``Spring Messaging'' jar is on your classpath a `MessageChannel` called
 `metricsChannel` is automatically created (unless one already exists). All metric update
 events are additionally published as ``messages'' on that channel. Additional analysis or
 actions can be taken by clients subscribing to that channel.
@@ -3219,7 +3219,7 @@ or Jetty on the classpath), but then the API is the same.
 //FIXME TODO: finish this, possibly move.
 
 == Deploying to the cloud
-Spring Boot's executable JARs are ready-made for most popular cloud PaaS
+Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
 _`bring your own container'_; they manage application processes (not Java applications
 specifically), so they need some intermediary layer that adapts _your_ application to the
@@ -3233,7 +3233,7 @@ you should be able to get by with as few customizations to it as possible.
 This reduces the footprint of functionality that is not under your control. It minimizes
 divergence between deployment and production environments.
 
-Ideally, your application, like a Spring Boot executable JAR, has everything that it needs
+Ideally, your application, like a Spring Boot executable jar, has everything that it needs
 to run packaged within it.
 
 In this section we'll look at what it takes to get the simple Boot application that we
@@ -3242,8 +3242,8 @@ developed in the Getting Started section up and running on Cloud Foundry and Her
 === Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry buildpack has excellent support for Spring applications,
-including Spring Boot.  You can deploy stand-alone executable JAR applications as well as
-traditional `WAR` packaged applications.
+including Spring Boot.  You can deploy stand-alone executable jar applications as well as
+traditional `war` packaged applications.
 
 Once you've built your application (using, for example, `mvn clean install`) and
 http://docs.cloudfoundry.org/devguide/installcf/[installed the `cf` command line tool],
@@ -3503,7 +3503,7 @@ Here is an example ``hello world'' web application written in Groovy:
 
 ===== Deduced ``grab'' dependencies
 Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
-on a third-party libraries. This useful technique allows Groovy to download JARs in the
+on a third-party libraries. This useful technique allows Groovy to download jars in the
 same way as Maven or Gradle would; but without requiring you to use a build tool.
 
 Spring Boot extends this technique further, and will attempt to deduce which libraries
@@ -3620,15 +3620,15 @@ from the main application code:
 
 ==== Packaging your application
 You can use the `jar` command to package your application into a self-contained
-executable JAR file. For example:
+executable jar file. For example:
 
 [indent=0]
 ----
 	$ spring jar my-app.jar *.groovy
 ----
 
-The resulting JAR will contain the classes produced by compiling the application and all
-of the application's dependencies such that it can then be run using `java -jar`. The JAR
+The resulting jar will contain the classes produced by compiling the application and all
+of the application's dependencies such that it can then be run using `java -jar`. The jar
 file will also contain entries from the application's classpath.
 
 See the output of `spring help jar` for more information.
@@ -3638,13 +3638,13 @@ See the output of `spring help jar` for more information.
 
 == Build tool plugins
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
-variety of features, including the packaging executable JARs. The section provides
+variety of features, including the packaging executable jars. The section provides
 more details on both plugins, as well as some help should you need to extend a differnt
 build system. If you are just getting started, you might want to read XXX first.
 
 === Spring Boot Maven plugin
 The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
-package executable JAR or WAR archives and run an application in-place. To use it you
+package executable jar or war archives and run an application in-place. To use it you
 must be using Maven 3 (or better).
 
 ==== Including the plugin
@@ -3677,7 +3677,7 @@ section of your `pom.xml`
 	</project>
 ----
 
-This configuration will repackage a JAR or WAR that is built in the `package` phase of
+This configuration will repackage a jar or war that is built in the `package` phase of
 the Maven lifecycle, so
 
 [indent=0]
@@ -3715,10 +3715,10 @@ If you are using a milestone or snapshot release you will also need to add appro
 	</pluginRepositories>
 ----
 
-==== Packaging executable JAR and WAR files
+==== Packaging executable jar and war files
 Once `spring-boot-maven-plugin` has been included in your `pom.xml` it will automatically
 attempt to rewrite archives to make them executable using the `spring-boot:repackage`
-goal. You should configure your project to build a JAR or WAR (as appropriate) using the
+goal. You should configure your project to build a jar or war (as appropriate) using the
 usual `packaging` element:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -3815,8 +3815,8 @@ The plugin rewrites your manifest, and in particular it manages the `Main-Class`
 	</plugin>
 ----
 
-The layout property defaults to a guess based on the archive type (JAR or WAR). For the
-`PropertiesLauncher` the layout is ``ZIP'' (even though the output might be a JAR file).
+The layout property defaults to a guess based on the archive type (jar or war). For the
+`PropertiesLauncher` the layout is ``ZIP'' (even though the output might be a jar file).
 
 ==== Running applications
 The Spring Boot Maven Plugin includes a `run` goal which can be used to launch your
@@ -3932,7 +3932,7 @@ Simply declare dependencies in the usual way, but leave the version number empty
 	}
 ----
 
-==== Packaging executable JAR and WAR files
+==== Packaging executable jar and war files
 Once the `spring-boot` plugin has been applied to your project it will automatically
 attempt to rewrite archives to make them executable using the `bootRepackage` task. You
 should configure your project to build a jar or war (as appropriate) in the usual way.
@@ -4102,17 +4102,17 @@ get unnecessary dependencies in it.
 
 === Supporting other build systems
 If you want to use a build tool other than Maven or Gradle you will likely need to develop
-your own plugin. Executable JARs need to follow a specific format and certain entries need
+your own plugin. Executable jars need to follow a specific format and certain entries need
 to be written in an uncompressed form.
 
 The Spring Boot Maven and Gradle plugins both make use of `spring-boot-loader-tools` to
-actually generate JARs. You are also free to use this library directly yourself if you
+actually generate jars. You are also free to use this library directly yourself if you
 need to.
 
 ==== Repackaging archives
 To repackage an existing archive so that it becomes a self-contained executable archive
 use `org.springframework.boot.loader.tools.Repackager`. The `Repackager` class takes a
-single constructor argument that refers to an existing JAR or WAR archive. Use one of the
+single constructor argument that refers to an existing jar or war archive. Use one of the
 two available `repackage()` methods to either replace the original file or write to a new
 destination. Various settings can also be configured on the repackager before it is
 run.
@@ -4394,7 +4394,7 @@ to specify profile-specific values.
 Spring Boot binds external properties from `application.properties` (or `.yml`) (and
 other places) into an application at runtime.  There is not (and technically cannot be)
 an exhaustive list of all supported properties in a single location because contributions
-can come from additional JAR files on your classpath.
+can come from additional jar files on your classpath.
 
 A running application with the Actuator features has a `/configprops` endpoint that shows
 all the bound and bindable properties available through `@ConfigurationProperties` (also
@@ -4719,7 +4719,7 @@ to set levels, e.g.
 	</configuration>
 ----
 
-If you look at the default `logback.xml` in the spring-boot JAR you will see that it uses
+If you look at the default `logback.xml` in the spring-boot jar you will see that it uses
 some useful System properties which the `LoggingSystem` takes care of creating for you.
 These are:
 
@@ -5062,16 +5062,16 @@ would only ever be a development time trick probably).
 === Build
 
 ==== Build an executable archive with Ant
-To build with Ant you need to grab dependencies and compile and then create a JAR or WAR
+To build with Ant you need to grab dependencies and compile and then create a jar or war
 archive as normal.  To make it executable:
 
 1. Use the appropriate launcher as a `Main-Class`,
-e.g. `org.springframework.boot.loader.JarLauncher` for a JAR file, and
+e.g. `org.springframework.boot.loader.JarLauncher` for a jar file, and
 specify the other stuff it needs as manifest entries, principally a
 `Start-Class`.
 
 2. Add the runtime dependencies in a nested "lib" directory (for a
-JAR) and the "provided" (embedded container) dependencies in a nested
+jar) and the "provided" (embedded container) dependencies in a nested
 "lib-provided" directory. Remember *not* to compress the entries in
 the archive.
 
@@ -5115,20 +5115,20 @@ after which you can run the application with
 
 === Traditional deployment
 
-==== Create a deployable WAR file
+==== Create a deployable war file
 Use the `SpringBootServletInitializer` base class, which is picked up by Spring's
 Servlet 3.0 support on deployment. Add an extension of that to your project and build a
-WAR file as normal. For more detail, see the
-http://spring.io/guides/gs/convert-jar-to-war[``Converting a JAR Project to a WAR''] guide
+war file as normal. For more detail, see the
+http://spring.io/guides/gs/convert-jar-to-war[``Converting a jar Project to a war''] guide
 on the spring.io website.
 
-The WAR file can also be executable if you use the Spring Boot build tools. In that case
+The war file can also be executable if you use the Spring Boot build tools. In that case
 the embedded container classes (to launch Tomcat for instance) have to be added to the
-WAR in a `lib-provided` directory. The tools will take care of that as long as the
+war in a `lib-provided` directory. The tools will take care of that as long as the
 dependencies are marked as "provided" in Maven or Gradle. Here's a Maven example
 https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
 
-==== Create a deployable WAR file for older servlet containers
+==== Create a deployable war file for older servlet containers
 Older Servlet containers don't have support for the `ServletContextInitializer` bootstrap
 process used in Servlet 3.0. You can still use Spring and Spring Boot in these containers
 but you are going to need to add a `web.xml` to your application and configure it to load
@@ -5140,11 +5140,11 @@ an `ApplicationContext` via a `DispatcherServlet`.
 For a non-web application it should be easy (throw away the code that creates your
 `ApplicationContext` and replace it with calls to `SpringApplication` or
 `SpringApplicationBuilder`). Spring MVC web applications are generally amenable to first
-creating a deployable WAR application, and then migrating it later to an executable WAR
-and/or JAR.  Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
-Started Guide on Converting a JAR to a WAR].
+creating a deployable war application, and then migrating it later to an executable war
+and/or jar.  Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
+Started Guide on Converting a jar to a war].
 
-Create a deployable WAR by extending `SpringBootServletInitializer` (e.g. in a class
+Create a deployable war by extending `SpringBootServletInitializer` (e.g. in a class
 called `Application`), and add the Spring Boot `@EnableAutoConfiguration` annotation.
 Example:
 
@@ -5185,7 +5185,7 @@ replacing those elements from the `web.xml` as follows:
   `Application`. Or simple cases where annotation configuration is heavily used already
   can be recreated in a few lines as `@Bean` definitions.
 
-Once the WAR is working we make it executable by adding a `main` method to our
+Once the war is working we make it executable by adding a `main` method to our
 `Application`, e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -5243,7 +5243,7 @@ Various properties can be specific inside your `application.properties`/`applica
 file or as command line switches. This section provides a list common Spring Boot
 properties and references to the underlying classes that consume them.
 
-NOTE: Property contributions can come from additional JAR files on your classpath so
+NOTE: Property contributions can come from additional jar files on your classpath so
 you should no consider this an exhaustive list. It is also perfectly legal to define
 your own properties.
 
@@ -5622,5 +5622,5 @@ The following auto-configuration classes are from the `spring-boot-actuator` mod
 |===
 
 [appendix]
-== The executable JAR format
+== The executable jar format
 // FIXME do we want this here?
