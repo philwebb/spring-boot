@@ -5707,12 +5707,65 @@ file will also contain entries from the application&#8217;s classpath.</p>
 </div>
 <div class="sect3">
 <h4 id="_using_the_embedded_shell">7.2.5. Using the embedded shell</h4>
-
+<div class="paragraph">
+<p>Spring Boot includes command-line completion scripts for BASH and zsh shells. If you
+don&#8217;t use either of these shells (perhaps you are a Windows user) then you can use the
+<code>shell</code> command to launch an integrated shell.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring shell
+<strong>Spring Boot</strong> (v1.0.0.BUILD-SNAPSHOT)
+Hit TAB to complete. Type 'help' and hit RETURN for help, and 'exit' to quit.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>From inside the embedded shell you can run other commands directly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ version
+Spring CLI v1.0.0.BUILD-SNAPSHOT</pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_developing_application_with_the_groovy_beans_dsl">7.3. Developing application with the Groovy beans DSL</h3>
+<div class="paragraph">
+<p>Spring Framework 4.0 has native support for a <code>beans{}</code> &#8220;DSL&#8221; (borrowed from
+<a href="http://grails.org/">Grails</a>),  and you can embed bean definitions in your Groovy
+application scripts using the same format. This is sometimes a good way to include
+external features like middleware declarations. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>@Configuration
+class Application implements CommandLineRunner {
 
+    @Autowired
+    SharedService service
+
+    @Override
+    void run(String... args) {
+        println service.message
+    }
+
+}
+
+import my.company.SharedService
+
+beans {
+    service(SharedService) {
+        message "Hello World"
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can mix class declarations with <code>beans{}</code> in the same file as long as they stay at
+the top level, or you can put the beans DSL in a separate file if you prefer.</p>
+</div>
 </div>
 </div>
 </div>
@@ -8249,7 +8302,7 @@ application for more details of which features are switched on in that specific 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-10 11:56:49 PDT
+Last updated 2014-03-10 12:10:04 PDT
 </div>
 </div>
 </body>
