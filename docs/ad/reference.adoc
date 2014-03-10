@@ -320,6 +320,24 @@ Homebrew will install `spring` to `/usr/local/bin`.
 NOTE: If you don't see the formula, you're installation of brew might be out-of-date.
 Just execute `brew update` and try again.
 
+===== Command-line completion
+Spring Boot CLI ships with scripts that provide command completion for BASH and zsh
+shells. You can `source` the script (also named `spring`) in any shell, or put it in your
+personal or system-wide bash completion initialization. On a Debian system the
+system-wide scripts are in `/etc/bash_completion.d` and all scripts in that directory are
+executed in a new shell. To run the script manually, e.g. if you have installed using
+`GVM`
+
+[indent=0]
+----
+	$ . ~/.gvm/springboot/current/bash_completion.d/spring
+	$ spring <HIT TAB HERE>
+	  grab  help  jar  run  test  version
+----
+
+NOTE: If you install Spring Boot CLI using Homebrew, the command-line completion scripts
+are automatically registered with your shell.
+
 ===== Quick start Spring CLI example
 Here's a really simple web application that you can use to test you installation. Create
 a file called `app.groovy`:
@@ -596,17 +614,17 @@ needs to run.
 
 .Executable JARs and Java
 ****
-Java does not provide any standard way to load nested jar files (i.e. jar files that are
-themselves contained within a jar). This can be problematic if you are looking to
+Java does not provide any standard way to load nested JAR files (i.e. JAR files that are
+themselves contained within a JAR). This can be problematic if you are looking to
 distribute a self contained application.
 
-To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
-all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
+To solve this problem, many developers use ``shaded'' JARs. A shaded JAR simply packages
+all classes, from all JARs, into a single ``uber JAR''. The problem with shaded JARs is that
 it becomes hard to see which libraries you are actually using in your application. It can
 also be problematic if the the same filename is used (but with different content) in
-multiple jars.
+multiple JARs.
 
-Spring Boot takes a different approach and allows you to actually nest jars directly.
+Spring Boot takes a different approach and allows you to actually nest JARs directly.
 ****
 
 To create an executable JAR we need to add the `spring-boot-maven-plugin` to our
@@ -949,7 +967,7 @@ best practices that help.
 When a class doesn't include a `package` declaration it is considered to be in the
 ``default package''. The use of the ``default package'' is generally discouraged, and
 should be avoided. It can cause particular problems for Spring Boot applications that
-use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
+use `@ComponentScan` or `@EntityScan` annotations, since every class from every JAR,
 will be read.
 
 TIP: We recommend that you use the follow Java's recommended package naming conventions
@@ -1112,7 +1130,7 @@ One of the biggest advantages of packaging your application as JAR and using an 
 HTTP server is that you can run your application as you would any other. Debugging Spring
 Boot applications is also easy; you don't need any special IDE plugins or extensions.
 
-NOTE: This section only covers JAR pased packaging, If you choose to package your
+NOTE: This section only covers JAR passed packaging, If you choose to package your
 application as a WAR file you should refer to your server and IDE documentation.
 
 ==== Running from an IDE
@@ -1391,7 +1409,7 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 	}
 ----
 
-You can bundle an `application.properties` inside your jar that provides a sensible
+You can bundle an `application.properties` inside your JAR that provides a sensible
 default `name`. When running in production, an `application.properties` can be provided
 outside of your JAR that overrides `name`; and for one off testing you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
@@ -1903,7 +1921,7 @@ through the `DispatcherServlet`.
 
 In addition to the ``standard'' static resource locations above, a special case is made for
 http://www.webjars.org/[Webjars content]. Any resources with a path in `/webjars/**` will
-be served from jar files if they are packaged in the Webjars format.
+be served from JAR files if they are packaged in the Webjars format.
 
 TIP: Do not use the `src/main/webapp` folder if your application will be packaged as a
 JAR. Although this folder is a common standard, it will *only* work with WAR packaging
@@ -2507,7 +2525,7 @@ classes that we provide (see the `META-INF/spring.factories` file).
 
 ==== Locating auto-configuration candidates
 Spring Boot checks for the presence of a `META-INF/spring.factories` file within your
-published jar. The file should list your configuration classes under the
+published JAR. The file should list your configuration classes under the
 `org.springframework.boot.autoconfigure.EnableAutoConfiguration` key.
 
 [indent=0]
@@ -2995,7 +3013,7 @@ for details). By default Spring Boot will search for commands in the following l
 
 TIP: You can change the search path by settings a `shell.commandpathpatterns` property.
 
-Here is a simple hello world command that could be loaded from
+Here is a simple ``hello world'' command that could be loaded from
 `src/main/resources/commands/Hello.groovy`
 
 [source,groovy,indent=0]
@@ -3403,8 +3421,220 @@ That should be it! Your application should be up and running on Heroku.
 
 
 == Spring Boot CLI
+The Spring Boot CLI is a command line tool that can be used if you want to quickly
+prototype with Spring. It allows you to run Groovy scripts, which means that you have a
+familiar Java-like syntax, without so much boilerplate code.
 
-// FIXME some intro
+=== Installing the CLI
+The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
+Manually) or using Homebrew if you are an OSX user. See the XXX section for comprehensive
+installation instructions.
+
+=== Using the CLI
+Once you have installed the CLI you can run it by typing `spring`. If you run `spring`
+without any arguments, a simple help screen is displayed:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring
+	usage: spring [--help] [--version]
+	       <command> [<args>]
+
+	Available commands are:
+
+	  run [options] <files> [--] [args]
+	    Run a spring groovy script
+
+	  _... more command help is shown here_
+----
+
+You can use `help` to get more details about any of the supported commands. For example:
+
+[indent=0]
+----
+	$ spring help run
+	spring run - Run a spring groovy script
+
+	usage: spring run [options] <files> [--] [args]
+
+	Option                     Description
+	------                     -----------
+	--autoconfigure [Boolean]  Add autoconfigure compiler
+	                             transformations (default: true)
+	--classpath, -cp           Additional classpath entries
+	-e, --edit                 Open the file with the default system
+	                             editor
+	--no-guess-dependencies    Do not attempt to guess dependencies
+	--no-guess-imports         Do not attempt to guess imports
+	-q, --quiet                Quiet logging
+	-v, --verbose              Verbose logging of dependency
+	                             resolution
+	--watch                    Watch the specified file for changes
+----
+
+The `version` command provides a quick way to check which version of Spring Boot you are
+using.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring version
+	Spring CLI v{spring-boot-version}
+----
+
+==== Running applications using the CLI
+You can compile and run Groovy source code using the `run` command. The Spring Boot CLI
+is completely self contained so you don't need any external Groovy installation.
+
+Here is an example ``hello world'' web application written in Groovy:
+
+[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Controller
+	class WebApplication {
+
+		@RequestMapping("/")
+		@ResponseBody
+		String home() {
+			return "Hello World!"
+		}
+
+	}
+----
+
+===== Deduced ``grab'' dependencies
+Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
+on a third-party libraries. This useful technique allows Groovy to download JARs in the
+same way as Maven or Gradle would; but without requiring you to use a build tool.
+
+Spring Boot extends this technique further, and will attempt to deduce which libraries
+to ``grab'' based on your code. For example, since the `WebApplication` code above uses
+`@Controller` annotations, ``Tomcat'' and ``Spring MVC'' will be grabbed.
+
+The following items are used as ``grab hints'':
+
+|===
+| Items | Grabs
+|`JdbcTemplate`, `NamedParameterJdbcTemplate`, `DataSource`
+|JDBC Application
+
+|`@EnableJmsMessaging`
+|JMS Application
+
+|`@Test`
+|JUnit
+
+|`@EnableRabbitMessaging`
+|RabbitMQ
+
+|`@EnableReactor`
+|Project Reactor
+
+|extends `Specification`
+|Spock test
+
+|`@EnableBatchProcessing`
+|Spring Batch
+
+|`@MessageEndpoint` `@EnableIntegrationPatterns`
+|Spring Integration
+
+|`@EnableDeviceResolver`
+|Spring Mobile
+
+|`@Controller` `@RestController` `@EnableWebMvc`
+|Spring MVC + Embedded Tomcat
+
+|`@EnableWebSecurity`
+|Spring Security
+
+|`@EnableTransactionManagement`
+|Spring Transaction Management
+|===
+
+TIP: See subclasses of `CompilerAutoConfiguration` in the Spring Boot CLI source code
+to understand exactly how customizations are applied.
+
+===== Default import statements
+To help reduce the size of your Groovy code, several `import` statements are
+automatically included. Notice how the example above refers to `@Component`,
+`@Controller`, `@RequestMapping` and `@ResponseBody` without needing to use
+fully-qualified names or `import` statements.
+
+TIP: Many Spring annotations will work without using `import` statements. Try running
+your application to see what fails, before adding imports.
+
+===== Automatic main method
+Unlike the equilvement Java application, you do not need to include a
+`public static void main(String[] args)` method with your `Groovy` scripts. A
+`SpringApplication` is automatically created with your compiled code acting as the
+`source`.
+
+==== Testing your code
+The `test` command allows you to compile and run tests for your application. Typical
+usage looks like this:
+
+[indent=0]
+----
+	$ spring test app.groovy tests.groovy
+	Total: 1, Success: 1, : Failures: 0
+	Passed? true
+----
+
+In this example, `tests.groovy` contains JUnit `@Test` methods or Spock `Specification`
+classes. All the common framework annotations and static methods should be available to
+you without having to `import` them.
+
+Here is the `test.groovy` file that we used above:
+
+[source,groovy,indent=0]
+----
+	class ApplicationTests {
+
+		@Test
+		void homeSaysHello() {
+			assertEquals("Hello World", new WebApplication().home())
+		}
+
+	}
+----
+
+TIP: If you have more than one test source files, you might prefer to organize them
+into a `test` directory.
+
+==== Applications with multiple source files
+You can use ``shell globbing'' with all commands that accept file input. This allows you
+to easily use multiple files from a single directory, e.g.
+
+[indent=0]
+----
+	$ spring run *.groovy
+----
+
+This technique can also be useful if you want to segregate your ``test'' or ``spec'' code
+from the main application code:
+
+[indent=0]
+----
+	$ spring test app/*.groovy test/*.groovy
+----
+
+==== Packaging your application
+You can use the `jar` command to package your application into a self-contained
+executable JAR file. For example:
+
+[indent=0]
+----
+	$ spring jar my-app.jar *.groovy
+----
+
+The resulting JAR will contain the classes produced by compiling the application and all
+of the application's dependencies such that it can then be run using `java -jar`. The JAR
+file will also contain entries from the application's classpath.
+
+See the output of `spring help jar` for more information.
+
+==== Using the embedded shell
+=== Developing application with the Groovy beans DSL
 
 == Build tool plugins
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
@@ -3414,7 +3644,7 @@ build system. If you are just getting started, you might want to read XXX first.
 
 === Spring Boot Maven plugin
 The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
-package executable jar or war archives and run an application in-place. To use it you
+package executable JAR or WAR archives and run an application in-place. To use it you
 must be using Maven 3 (or better).
 
 ==== Including the plugin
@@ -3485,7 +3715,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 	</pluginRepositories>
 ----
 
-==== Packaging executable jar and war files
+==== Packaging executable JAR and WAR files
 Once `spring-boot-maven-plugin` has been included in your `pom.xml` it will automatically
 attempt to rewrite archives to make them executable using the `spring-boot:repackage`
 goal. You should configure your project to build a JAR or WAR (as appropriate) using the

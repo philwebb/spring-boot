@@ -45,6 +45,7 @@
 <li><a href="#_manual_installation">Manual installation</a></li>
 <li><a href="#_installation_with_gvm">Installation with GVM</a></li>
 <li><a href="#_osx_homebrew_installation">OSX Homebrew installation</a></li>
+<li><a href="#_command_line_completion">Command-line completion</a></li>
 <li><a href="#_quick_start_spring_cli_example">Quick start Spring CLI example</a></li>
 </ul>
 </li>
@@ -366,6 +367,29 @@
 </ul>
 </li>
 <li><a href="#_spring_boot_cli">7. Spring Boot CLI</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_installing_the_cli">7.1. Installing the CLI</a></li>
+<li><a href="#_using_the_cli">7.2. Using the CLI</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_running_applications_using_the_cli">7.2.1. Running applications using the CLI</a></li>
+<li>
+<ul class="sectlevel4">
+<li><a href="#_deduced_grab_dependencies">Deduced &#8220;grab&#8221; dependencies</a></li>
+<li><a href="#_default_import_statements">Default import statements</a></li>
+<li><a href="#_automatic_main_method">Automatic main method</a></li>
+</ul>
+</li>
+<li><a href="#_testing_your_code">7.2.2. Testing your code</a></li>
+<li><a href="#_applications_with_multiple_source_files">7.2.3. Applications with multiple source files</a></li>
+<li><a href="#_packaging_your_application">7.2.4. Packaging your application</a></li>
+<li><a href="#_using_the_embedded_shell">7.2.5. Using the embedded shell</a></li>
+</ul>
+</li>
+<li><a href="#_developing_application_with_the_groovy_beans_dsl">7.3. Developing application with the Groovy beans DSL</a></li>
+</ul>
+</li>
 <li><a href="#_build_tool_plugins">8. Build tool plugins</a></li>
 <li>
 <ul class="sectlevel2">
@@ -373,7 +397,7 @@
 <li>
 <ul class="sectlevel3">
 <li><a href="#_including_the_plugin">8.1.1. Including the plugin</a></li>
-<li><a href="#_packaging_executable_jar_and_war_files">8.1.2. Packaging executable jar and war files</a></li>
+<li><a href="#_packaging_executable_jar_and_war_files">8.1.2. Packaging executable JAR and WAR files</a></li>
 <li><a href="#_repackage_configuration">8.1.3. Repackage configuration</a></li>
 <li>
 <ul class="sectlevel4">
@@ -952,6 +976,37 @@ Just execute <code>brew update</code> and try again.
 </div>
 </div>
 <div class="sect4">
+<h5 id="_command_line_completion">Command-line completion</h5>
+<div class="paragraph">
+<p>Spring Boot CLI ships with scripts that provide command completion for BASH and zsh
+shells. You can <code>source</code> the script (also named <code>spring</code>) in any shell, or put it in your
+personal or system-wide bash completion initialization. On a Debian system the
+system-wide scripts are in <code>/etc/bash_completion.d</code> and all scripts in that directory are
+executed in a new shell. To run the script manually, e.g. if you have installed using
+<code>GVM</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ . ~/.gvm/springboot/current/bash_completion.d/spring
+$ spring &lt;HIT TAB HERE&gt;
+  grab  help  jar  run  test  version</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you install Spring Boot CLI using Homebrew, the command-line completion scripts
+are automatically registered with your shell.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
 <h5 id="_quick_start_spring_cli_example">Quick start Spring CLI example</h5>
 <div class="paragraph">
 <p>Here&#8217;s a really simple web application that you can use to test you installation. Create
@@ -1321,19 +1376,19 @@ needs to run.</p>
 <div class="content">
 <div class="title">Executable JARs and Java</div>
 <div class="paragraph">
-<p>Java does not provide any standard way to load nested jar files (i.e. jar files that are
-themselves contained within a jar). This can be problematic if you are looking to
+<p>Java does not provide any standard way to load nested JAR files (i.e. JAR files that are
+themselves contained within a JAR). This can be problematic if you are looking to
 distribute a self contained application.</p>
 </div>
 <div class="paragraph">
-<p>To solve this problem, many developers use &#8220;shaded&#8221; jars. A shaded jar simply packages
-all classes, from all jars, into a single &#8220;uber jar&#8221;. The problem with shaded jars is that
+<p>To solve this problem, many developers use &#8220;shaded&#8221; JARs. A shaded JAR simply packages
+all classes, from all JARs, into a single &#8220;uber JAR&#8221;. The problem with shaded JARs is that
 it becomes hard to see which libraries you are actually using in your application. It can
 also be problematic if the the same filename is used (but with different content) in
-multiple jars.</p>
+multiple JARs.</p>
 </div>
 <div class="paragraph">
-<p>Spring Boot takes a different approach and allows you to actually nest jars directly.</p>
+<p>Spring Boot takes a different approach and allows you to actually nest JARs directly.</p>
 </div>
 </div>
 </div>
@@ -1810,7 +1865,7 @@ best practices that help.</p>
 <p>When a class doesn&#8217;t include a <code>package</code> declaration it is considered to be in the
 &#8220;default package&#8221;. The use of the &#8220;default package&#8221; is generally discouraged, and
 should be avoided. It can cause particular problems for Spring Boot applications that
-use <code>@ComponentScan</code> or <code>@EntityScan</code> annotations, since every class from every jar,
+use <code>@ComponentScan</code> or <code>@EntityScan</code> annotations, since every class from every JAR,
 will be read.</p>
 </div>
 <div class="admonitionblock tip">
@@ -2053,7 +2108,7 @@ Boot applications is also easy; you don&#8217;t need any special IDE plugins or 
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-This section only covers JAR pased packaging, If you choose to package your
+This section only covers JAR passed packaging, If you choose to package your
 application as a WAR file you should refer to your server and IDE documentation.
 </td>
 </tr>
@@ -2467,7 +2522,7 @@ public class MyBean {
 </div>
 </div>
 <div class="paragraph">
-<p>You can bundle an <code>application.properties</code> inside your jar that provides a sensible
+<p>You can bundle an <code>application.properties</code> inside your JAR that provides a sensible
 default <code>name</code>. When running in production, an <code>application.properties</code> can be provided
 outside of your JAR that overrides <code>name</code>; and for one off testing you can launch with
 a specific command line switch (e.g. <code>java -jar app.jar --name="Spring"</code>).</p>
@@ -3214,7 +3269,7 @@ through the <code>DispatcherServlet</code>.</p>
 <div class="paragraph">
 <p>In addition to the &#8220;standard&#8221; static resource locations above, a special case is made for
 <a href="http://www.webjars.org/">Webjars content</a>. Any resources with a path in <code>/webjars/**</code> will
-be served from jar files if they are packaged in the Webjars format.</p>
+be served from JAR files if they are packaged in the Webjars format.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -4116,7 +4171,7 @@ classes that we provide (see the <code>META-INF/spring.factories</code> file).</
 <h4 id="_locating_auto_configuration_candidates">4.9.2. Locating auto-configuration candidates</h4>
 <div class="paragraph">
 <p>Spring Boot checks for the presence of a <code>META-INF/spring.factories</code> file within your
-published jar. The file should list your configuration classes under the
+published JAR. The file should list your configuration classes under the
 <code>org.springframework.boot.autoconfigure.EnableAutoConfiguration</code> key.</p>
 </div>
 <div class="listingblock">
@@ -4829,7 +4884,7 @@ You can change the search path by settings a <code>shell.commandpathpatterns</co
 </table>
 </div>
 <div class="paragraph">
-<p>Here is a simple hello world command that could be loaded from
+<p>Here is a simple &#8220;hello world&#8221; command that could be loaded from
 <code>src/main/resources/commands/Hello.groovy</code></p>
 </div>
 <div class="listingblock">
@@ -5349,7 +5404,316 @@ To git@heroku.com:agile-sierra-1405.git
 <div class="sect1">
 <h2 id="_spring_boot_cli">7. Spring Boot CLI</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The Spring Boot CLI is a command line tool that can be used if you want to quickly
+prototype with Spring. It allows you to run Groovy scripts, which means that you have a
+familiar Java-like syntax, without so much boilerplate code.</p>
+</div>
+<div class="sect2">
+<h3 id="_installing_the_cli">7.1. Installing the CLI</h3>
+<div class="paragraph">
+<p>The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
+Manually) or using Homebrew if you are an OSX user. See the XXX section for comprehensive
+installation instructions.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_the_cli">7.2. Using the CLI</h3>
+<div class="paragraph">
+<p>Once you have installed the CLI you can run it by typing <code>spring</code>. If you run <code>spring</code>
+without any arguments, a simple help screen is displayed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring
+usage: spring [--help] [--version]
+       &lt;command&gt; [&lt;args&gt;]
 
+Available commands are:
+
+  run [options] &lt;files&gt; [--] [args]
+    Run a spring groovy script
+
+  <em>... more command help is shown here</em></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can use <code>help</code> to get more details about any of the supported commands. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring help run
+spring run - Run a spring groovy script
+
+usage: spring run [options] &lt;files&gt; [--] [args]
+
+Option                     Description
+------                     -----------
+--autoconfigure [Boolean]  Add autoconfigure compiler
+                             transformations (default: true)
+--classpath, -cp           Additional classpath entries
+-e, --edit                 Open the file with the default system
+                             editor
+--no-guess-dependencies    Do not attempt to guess dependencies
+--no-guess-imports         Do not attempt to guess imports
+-q, --quiet                Quiet logging
+-v, --verbose              Verbose logging of dependency
+                             resolution
+--watch                    Watch the specified file for changes</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>version</code> command provides a quick way to check which version of Spring Boot you are
+using.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring version
+Spring CLI v1.0.0.BUILD-SNAPSHOT</pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_running_applications_using_the_cli">7.2.1. Running applications using the CLI</h4>
+<div class="paragraph">
+<p>You can compile and run Groovy source code using the <code>run</code> command. The Spring Boot CLI
+is completely self contained so you don&#8217;t need any external Groovy installation.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example &#8220;hello world&#8221; web application written in Groovy:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>@Controller
+class WebApplication {
+
+    @RequestMapping("/")
+    @ResponseBody
+    String home() {
+        return "Hello World!"
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_deduced_grab_dependencies">Deduced &#8220;grab&#8221; dependencies</h5>
+<div class="paragraph">
+<p>Standard Groovy includes a <code>@Grab</code> annotation which allows you to declare dependencies
+on a third-party libraries. This useful technique allows Groovy to download JARs in the
+same way as Maven or Gradle would; but without requiring you to use a build tool.</p>
+</div>
+<div class="paragraph">
+<p>Spring Boot extends this technique further, and will attempt to deduce which libraries
+to &#8220;grab&#8221; based on your code. For example, since the <code>WebApplication</code> code above uses
+<code>@Controller</code> annotations, &#8220;Tomcat&#8221; and &#8220;Spring MVC&#8221; will be grabbed.</p>
+</div>
+<div class="paragraph">
+<p>The following items are used as &#8220;grab hints&#8221;:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:50%;">
+<col style="width:50%;"> 
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Items</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Grabs</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>JdbcTemplate</code>, <code>NamedParameterJdbcTemplate</code>, <code>DataSource</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JDBC Application</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableJmsMessaging</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JMS Application</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Test</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JUnit</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableRabbitMessaging</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RabbitMQ</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableReactor</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Project Reactor</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">extends <code>Specification</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spock test</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableBatchProcessing</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Batch</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@MessageEndpoint</code> <code>@EnableIntegrationPatterns</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Integration</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableDeviceResolver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Mobile</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Controller</code> <code>@RestController</code> <code>@EnableWebMvc</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring MVC + Embedded Tomcat</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableWebSecurity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Security</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EnableTransactionManagement</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Transaction Management</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+See subclasses of <code>CompilerAutoConfiguration</code> in the Spring Boot CLI source code
+to understand exactly how customizations are applied.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_default_import_statements">Default import statements</h5>
+<div class="paragraph">
+<p>To help reduce the size of your Groovy code, several <code>import</code> statements are
+automatically included. Notice how the example above refers to <code>@Component</code>,
+<code>@Controller</code>, <code>@RequestMapping</code> and <code>@ResponseBody</code> without needing to use
+fully-qualified names or <code>import</code> statements.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Many Spring annotations will work without using <code>import</code> statements. Try running
+your application to see what fails, before adding imports.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_automatic_main_method">Automatic main method</h5>
+<div class="paragraph">
+<p>Unlike the equilvement Java application, you do not need to include a
+<code>public static void main(String[] args)</code> method with your <code>Groovy</code> scripts. A
+<code>SpringApplication</code> is automatically created with your compiled code acting as the
+<code>source</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_testing_your_code">7.2.2. Testing your code</h4>
+<div class="paragraph">
+<p>The <code>test</code> command allows you to compile and run tests for your application. Typical
+usage looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring test app.groovy tests.groovy
+Total: 1, Success: 1, : Failures: 0
+Passed? true</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example, <code>tests.groovy</code> contains JUnit <code>@Test</code> methods or Spock <code>Specification</code>
+classes. All the common framework annotations and static methods should be available to
+you without having to <code>import</code> them.</p>
+</div>
+<div class="paragraph">
+<p>Here is the <code>test.groovy</code> file that we used above:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>class ApplicationTests {
+
+    @Test
+    void homeSaysHello() {
+        assertEquals("Hello World", new WebApplication().home())
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you have more than one test source files, you might prefer to organize them
+into a <code>test</code> directory.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applications_with_multiple_source_files">7.2.3. Applications with multiple source files</h4>
+<div class="paragraph">
+<p>You can use &#8220;shell globbing&#8221; with all commands that accept file input. This allows you
+to easily use multiple files from a single directory, e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring run *.groovy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This technique can also be useful if you want to segregate your &#8220;test&#8221; or &#8220;spec&#8221; code
+from the main application code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring test app/*.groovy test/*.groovy</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_packaging_your_application">7.2.4. Packaging your application</h4>
+<div class="paragraph">
+<p>You can use the <code>jar</code> command to package your application into a self-contained
+executable JAR file. For example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ spring jar my-app.jar *.groovy</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The resulting JAR will contain the classes produced by compiling the application and all
+of the application&#8217;s dependencies such that it can then be run using <code>java -jar</code>. The JAR
+file will also contain entries from the application&#8217;s classpath.</p>
+</div>
+<div class="paragraph">
+<p>See the output of <code>spring help jar</code> for more information.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_using_the_embedded_shell">7.2.5. Using the embedded shell</h4>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_developing_application_with_the_groovy_beans_dsl">7.3. Developing application with the Groovy beans DSL</h3>
+
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -5365,7 +5729,7 @@ build system. If you are just getting started, you might want to read XXX first.
 <h3 id="_spring_boot_maven_plugin">8.1. Spring Boot Maven plugin</h3>
 <div class="paragraph">
 <p>The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
-package executable jar or war archives and run an application in-place. To use it you
+package executable JAR or WAR archives and run an application in-place. To use it you
 must be using Maven 3 (or better).</p>
 </div>
 <div class="sect3">
@@ -5443,7 +5807,7 @@ you can run the plugin on its own, but only if the package goal is used as well,
 </div>
 </div>
 <div class="sect3">
-<h4 id="_packaging_executable_jar_and_war_files">8.1.2. Packaging executable jar and war files</h4>
+<h4 id="_packaging_executable_jar_and_war_files">8.1.2. Packaging executable JAR and WAR files</h4>
 <div class="paragraph">
 <p>Once <code>spring-boot-maven-plugin</code> has been included in your <code>pom.xml</code> it will automatically
 attempt to rewrite archives to make them executable using the <code>spring-boot:repackage</code>
@@ -7885,7 +8249,7 @@ application for more details of which features are switched on in that specific 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-09 23:38:28 PDT
+Last updated 2014-03-10 11:54:59 PDT
 </div>
 </div>
 </body>
