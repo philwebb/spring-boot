@@ -353,139 +353,186 @@
 <li><a href="#_error_handling">5.9. Error Handling</a></li>
 </ul>
 </li>
-<li><a href="#_spring_boot_gradle_plugin">6. Spring Boot Gradle plugin</a></li>
-<li><a href="#_spring_boot_maven_plugin">7. Spring Boot Maven plugin</a></li>
-<li><a href="#_deploying_to_the_cloud">8. Deploying to the cloud</a></li>
+<li><a href="#_deploying_to_the_cloud">6. Deploying to the cloud</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_cloud_foundry">8.1. Cloud Foundry</a></li>
+<li><a href="#_cloud_foundry">6.1. Cloud Foundry</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_binding_to_services">8.1.1. Binding to services</a></li>
+<li><a href="#_binding_to_services">6.1.1. Binding to services</a></li>
 </ul>
 </li>
-<li><a href="#_heroku">8.2. Heroku</a></li>
+<li><a href="#_heroku">6.2. Heroku</a></li>
 </ul>
 </li>
-<li><a href="#_spring_boot_cli">9. Spring Boot CLI</a></li>
-<li><a href="#__how_to_guides">10. &#8220;How-to&#8221; guides</a></li>
+<li><a href="#_spring_boot_cli">7. Spring Boot CLI</a></li>
+<li><a href="#_build_tool_plugins">8. Build tool plugins</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_spring_boot_application">10.1. Spring Boot application</a></li>
+<li><a href="#_spring_boot_maven_plugin">8.1. Spring Boot Maven plugin</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_troubleshoot_auto_configuration">10.1.1. Troubleshoot auto-configuration</a></li>
-<li><a href="#_customize_the_environment_or_applicationcontext_before_it_starts">10.1.2. Customize the Environment or ApplicationContext before it starts</a></li>
-<li><a href="#build-hierarchy">10.1.3. Build an ApplicationContext hierarchy (adding a parent or root context)</a></li>
-<li><a href="#_create_a_non_web_application">10.1.4. Create a non-web application</a></li>
+<li><a href="#_including_the_plugin">8.1.1. Including the plugin</a></li>
+<li><a href="#_packaging_executable_jar_and_war_files">8.1.2. Packaging executable jar and war files</a></li>
+<li><a href="#_repackage_configuration">8.1.3. Repackage configuration</a></li>
+<li>
+<ul class="sectlevel4">
+<li><a href="#_required_parameters">Required parameters</a></li>
+<li><a href="#_optional_parameters">Optional parameters</a></li>
 </ul>
 </li>
-<li><a href="#_properties_configuration">10.2. Properties &amp; configuration</a></li>
-<li>
-<ul class="sectlevel3">
-<li><a href="#_externalize_the_configuration_of_springapplication">10.2.1. Externalize the configuration of SpringApplication</a></li>
-<li><a href="#_change_the_location_of_external_properties_of_an_application">10.2.2. Change the location of external properties of an application</a></li>
-<li><a href="#_use_short_command_line_arguments">10.2.3. Use &#8220;short&#8221; command line arguments</a></li>
-<li><a href="#_use_yaml_for_external_properties">10.2.4. Use YAML for external properties</a></li>
-<li><a href="#_set_the_active_spring_profiles">10.2.5. Set the active Spring profiles</a></li>
-<li><a href="#_change_configuration_depending_on_the_environment">10.2.6. Change configuration depending on the environment</a></li>
-<li><a href="#discover-options">10.2.7. Discover built-in options for external properties</a></li>
+<li><a href="#_running_applications">8.1.4. Running applications</a></li>
+<li><a href="#_run_configuration">8.1.5. Run configuration</a></li>
+<li><a href="#_required_parameters_2">8.1.6. Required parameters</a></li>
+<li><a href="#_optional_parameters_2">8.1.7. Optional parameters</a></li>
 </ul>
 </li>
-<li><a href="#_embedded_servlet_containers">10.3. Embedded servlet containers</a></li>
+<li><a href="#_spring_boot_gradle_plugin">8.2. Spring Boot Gradle plugin</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_add_a_servlet_filter_or_servletcontextlistener_to_an_application">10.3.1. Add a Servlet, Filter or ServletContextListener to an application</a></li>
-<li><a href="#_change_the_http_port">10.3.2. Change the HTTP port</a></li>
-<li><a href="#_use_a_random_unassigned_http_port">10.3.3. Use a random unassigned HTTP port</a></li>
-<li><a href="#_discover_the_http_port_at_runtime">10.3.4. Discover the HTTP port at runtime</a></li>
-<li><a href="#_configure_tomcat">10.3.5. Configure Tomcat</a></li>
-<li><a href="#_terminate_ssl_in_tomcat">10.3.6. Terminate SSL in Tomcat</a></li>
-<li><a href="#_use_jetty_instead_of_tomcat">10.3.7. Use Jetty instead of Tomcat</a></li>
-<li><a href="#_configure_jetty">10.3.8. Configure Jetty</a></li>
-<li><a href="#_use_tomcat_8">10.3.9. Use Tomcat 8</a></li>
-<li><a href="#_use_jetty_9">10.3.10. Use Jetty 9</a></li>
+<li><a href="#_including_the_plugin_2">8.2.1. Including the plugin</a></li>
+<li><a href="#_declaring_dependencies_without_versions">8.2.2. Declaring dependencies without versions</a></li>
+<li><a href="#_packaging_executable_jar_and_war_files_2">8.2.3. Packaging executable JAR and WAR files</a></li>
+<li><a href="#_running_a_project_in_place">8.2.4. Running a Project in Place</a></li>
+<li><a href="#_repackage_configuration_2">8.2.5. Repackage configuration</a></li>
+<li><a href="#_repackage_with_custom_gradle_configuration">8.2.6. Repackage with custom Gradle configuration</a></li>
+<li>
+<ul class="sectlevel4">
+<li><a href="#_configuration_options">Configuration options</a></li>
 </ul>
 </li>
-<li><a href="#_spring_mvc">10.4. Spring MVC</a></li>
-<li>
-<ul class="sectlevel3">
-<li><a href="#_write_a_json_rest_service">10.4.1. Write a JSON REST service</a></li>
-<li><a href="#_customize_the_jackson_objectmapper">10.4.2. Customize the Jackson ObjectMapper</a></li>
-<li><a href="#message-converters">10.4.3. Customize the @ResponseBody rendering</a></li>
-<li><a href="#_switch_off_the_spring_mvc_dispatcherservlet">10.4.4. Switch off the Spring MVC DispatcherServlet</a></li>
-<li><a href="#_switch_off_the_default_mvc_configuration">10.4.5. Switch off the Default MVC configuration</a></li>
+<li><a href="#_understanding_how_the_gradle_plugin_works">8.2.7. Understanding how the Gradle plugin works</a></li>
 </ul>
 </li>
-<li><a href="#_logging_2">10.5. Logging</a></li>
+<li><a href="#_supporting_other_build_systems">8.3. Supporting other build systems</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_configure_logback_for_logging">10.5.1. Configure Logback for logging</a></li>
-<li><a href="#_configure_log4j_for_logging">10.5.2. Configure Log4j for logging</a></li>
+<li><a href="#_repackaging_archives">8.3.1. Repackaging archives</a></li>
+<li><a href="#_nested_libraries">8.3.2. Nested libraries</a></li>
+<li><a href="#_finding_a_main_class">8.3.3. Finding a main class</a></li>
+<li><a href="#_example_repackage_implementation">8.3.4. Example repackage implementation</a></li>
 </ul>
 </li>
-<li><a href="#_data_access">10.6. Data Access</a></li>
-<li>
-<ul class="sectlevel3">
-<li><a href="#_configure_a_datasource_2">10.6.1. Configure a DataSource</a></li>
-<li><a href="#_use_spring_data_repositories">10.6.2. Use Spring Data repositories</a></li>
-<li><a href="#_separate_entity_definitions_from_spring_configuration">10.6.3. Separate @Entity definitions from Spring configuration</a></li>
-<li><a href="#_configure_jpa_properties">10.6.4. Configure JPA properties</a></li>
-<li><a href="#_use_a_traditional_persistence_xml">10.6.5. Use a traditional persistence.xml</a></li>
 </ul>
 </li>
-<li><a href="#_database_initialization">10.7. Database initialization</a></li>
+<li><a href="#__how_to_guides">9. &#8220;How-to&#8221; guides</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_spring_boot_application">9.1. Spring Boot application</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_initialize_a_database_using_jpa">10.7.1. Initialize a database using JPA</a></li>
-<li><a href="#_initialize_a_database_using_hibernate">10.7.2. Initialize a database using Hibernate</a></li>
-<li><a href="#_initialize_a_database_using_spring_jdbc">10.7.3. Initialize a database using Spring JDBC</a></li>
-<li><a href="#_initialize_a_spring_batch_database">10.7.4. Initialize a Spring Batch database</a></li>
-<li><a href="#_use_a_higher_level_datababse_migration_tool">10.7.5. Use a higher level datababse migration tool</a></li>
+<li><a href="#_troubleshoot_auto_configuration">9.1.1. Troubleshoot auto-configuration</a></li>
+<li><a href="#_customize_the_environment_or_applicationcontext_before_it_starts">9.1.2. Customize the Environment or ApplicationContext before it starts</a></li>
+<li><a href="#build-hierarchy">9.1.3. Build an ApplicationContext hierarchy (adding a parent or root context)</a></li>
+<li><a href="#_create_a_non_web_application">9.1.4. Create a non-web application</a></li>
 </ul>
 </li>
-<li><a href="#_batch_applications">10.8. Batch applications</a></li>
+<li><a href="#_properties_configuration">9.2. Properties &amp; configuration</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_execute_spring_batch_jobs_on_startup">10.8.1. Execute Spring Batch jobs on startup</a></li>
+<li><a href="#_externalize_the_configuration_of_springapplication">9.2.1. Externalize the configuration of SpringApplication</a></li>
+<li><a href="#_change_the_location_of_external_properties_of_an_application">9.2.2. Change the location of external properties of an application</a></li>
+<li><a href="#_use_short_command_line_arguments">9.2.3. Use &#8220;short&#8221; command line arguments</a></li>
+<li><a href="#_use_yaml_for_external_properties">9.2.4. Use YAML for external properties</a></li>
+<li><a href="#_set_the_active_spring_profiles">9.2.5. Set the active Spring profiles</a></li>
+<li><a href="#_change_configuration_depending_on_the_environment">9.2.6. Change configuration depending on the environment</a></li>
+<li><a href="#discover-options">9.2.7. Discover built-in options for external properties</a></li>
 </ul>
 </li>
-<li><a href="#_actuator">10.9. Actuator</a></li>
+<li><a href="#_embedded_servlet_containers">9.3. Embedded servlet containers</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_change_the_http_port_or_address_of_the_actuator_endpoints">10.9.1. Change the HTTP port or address of the actuator endpoints</a></li>
-<li><a href="#_customize_the_whitelabel_error_page">10.9.2. Customize the &#8220;whitelabel&#8221; error page</a></li>
+<li><a href="#_add_a_servlet_filter_or_servletcontextlistener_to_an_application">9.3.1. Add a Servlet, Filter or ServletContextListener to an application</a></li>
+<li><a href="#_change_the_http_port">9.3.2. Change the HTTP port</a></li>
+<li><a href="#_use_a_random_unassigned_http_port">9.3.3. Use a random unassigned HTTP port</a></li>
+<li><a href="#_discover_the_http_port_at_runtime">9.3.4. Discover the HTTP port at runtime</a></li>
+<li><a href="#_configure_tomcat">9.3.5. Configure Tomcat</a></li>
+<li><a href="#_terminate_ssl_in_tomcat">9.3.6. Terminate SSL in Tomcat</a></li>
+<li><a href="#_use_jetty_instead_of_tomcat">9.3.7. Use Jetty instead of Tomcat</a></li>
+<li><a href="#_configure_jetty">9.3.8. Configure Jetty</a></li>
+<li><a href="#_use_tomcat_8">9.3.9. Use Tomcat 8</a></li>
+<li><a href="#_use_jetty_9">9.3.10. Use Jetty 9</a></li>
 </ul>
 </li>
-<li><a href="#_security">10.10. Security</a></li>
+<li><a href="#_spring_mvc">9.4. Spring MVC</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_secure_an_application">10.10.1. Secure an application</a></li>
-<li><a href="#_switch_off_the_spring_boot_security_configuration">10.10.2. Switch off the Spring Boot security configuration</a></li>
-<li><a href="#_change_the_authenticationmanager_and_add_user_accounts">10.10.3. Change the AuthenticationManager and add user accounts</a></li>
-<li><a href="#_enable_https">10.10.4. Enable HTTPS</a></li>
+<li><a href="#_write_a_json_rest_service">9.4.1. Write a JSON REST service</a></li>
+<li><a href="#_customize_the_jackson_objectmapper">9.4.2. Customize the Jackson ObjectMapper</a></li>
+<li><a href="#message-converters">9.4.3. Customize the @ResponseBody rendering</a></li>
+<li><a href="#_switch_off_the_spring_mvc_dispatcherservlet">9.4.4. Switch off the Spring MVC DispatcherServlet</a></li>
+<li><a href="#_switch_off_the_default_mvc_configuration">9.4.5. Switch off the Default MVC configuration</a></li>
 </ul>
 </li>
-<li><a href="#_hot_swapping_2">10.11. Hot swapping</a></li>
+<li><a href="#_logging_2">9.5. Logging</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_reload_static_content">10.11.1. Reload static content</a></li>
-<li><a href="#_reload_thymeleaf_templates_without_restarting_the_container">10.11.2. Reload Thymeleaf templates without restarting the container</a></li>
-<li><a href="#_reload_java_classes_without_restarting_the_container">10.11.3. Reload Java classes without restarting the container</a></li>
+<li><a href="#_configure_logback_for_logging">9.5.1. Configure Logback for logging</a></li>
+<li><a href="#_configure_log4j_for_logging">9.5.2. Configure Log4j for logging</a></li>
 </ul>
 </li>
-<li><a href="#_build">10.12. Build</a></li>
+<li><a href="#_data_access">9.6. Data Access</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_build_an_executable_archive_with_ant">10.12.1. Build an executable archive with Ant</a></li>
+<li><a href="#_configure_a_datasource_2">9.6.1. Configure a DataSource</a></li>
+<li><a href="#_use_spring_data_repositories">9.6.2. Use Spring Data repositories</a></li>
+<li><a href="#_separate_entity_definitions_from_spring_configuration">9.6.3. Separate @Entity definitions from Spring configuration</a></li>
+<li><a href="#_configure_jpa_properties">9.6.4. Configure JPA properties</a></li>
+<li><a href="#_use_a_traditional_persistence_xml">9.6.5. Use a traditional persistence.xml</a></li>
 </ul>
 </li>
-<li><a href="#_traditional_deployment">10.13. Traditional deployment</a></li>
+<li><a href="#_database_initialization">9.7. Database initialization</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_create_a_deployable_war_file">10.13.1. Create a deployable WAR file</a></li>
-<li><a href="#_create_a_deployable_war_file_for_older_servlet_containers">10.13.2. Create a deployable WAR file for older servlet containers</a></li>
-<li><a href="#_convert_an_existing_application_to_spring_boot">10.13.3. Convert an existing application to Spring Boot</a></li>
+<li><a href="#_initialize_a_database_using_jpa">9.7.1. Initialize a database using JPA</a></li>
+<li><a href="#_initialize_a_database_using_hibernate">9.7.2. Initialize a database using Hibernate</a></li>
+<li><a href="#_initialize_a_database_using_spring_jdbc">9.7.3. Initialize a database using Spring JDBC</a></li>
+<li><a href="#_initialize_a_spring_batch_database">9.7.4. Initialize a Spring Batch database</a></li>
+<li><a href="#_use_a_higher_level_datababse_migration_tool">9.7.5. Use a higher level datababse migration tool</a></li>
+</ul>
+</li>
+<li><a href="#_batch_applications">9.8. Batch applications</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_execute_spring_batch_jobs_on_startup">9.8.1. Execute Spring Batch jobs on startup</a></li>
+</ul>
+</li>
+<li><a href="#_actuator">9.9. Actuator</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_change_the_http_port_or_address_of_the_actuator_endpoints">9.9.1. Change the HTTP port or address of the actuator endpoints</a></li>
+<li><a href="#_customize_the_whitelabel_error_page">9.9.2. Customize the &#8220;whitelabel&#8221; error page</a></li>
+</ul>
+</li>
+<li><a href="#_security">9.10. Security</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_secure_an_application">9.10.1. Secure an application</a></li>
+<li><a href="#_switch_off_the_spring_boot_security_configuration">9.10.2. Switch off the Spring Boot security configuration</a></li>
+<li><a href="#_change_the_authenticationmanager_and_add_user_accounts">9.10.3. Change the AuthenticationManager and add user accounts</a></li>
+<li><a href="#_enable_https">9.10.4. Enable HTTPS</a></li>
+</ul>
+</li>
+<li><a href="#_hot_swapping_2">9.11. Hot swapping</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_reload_static_content">9.11.1. Reload static content</a></li>
+<li><a href="#_reload_thymeleaf_templates_without_restarting_the_container">9.11.2. Reload Thymeleaf templates without restarting the container</a></li>
+<li><a href="#_reload_java_classes_without_restarting_the_container">9.11.3. Reload Java classes without restarting the container</a></li>
+</ul>
+</li>
+<li><a href="#_build">9.12. Build</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_build_an_executable_archive_with_ant">9.12.1. Build an executable archive with Ant</a></li>
+</ul>
+</li>
+<li><a href="#_traditional_deployment">9.13. Traditional deployment</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_create_a_deployable_war_file">9.13.1. Create a deployable WAR file</a></li>
+<li><a href="#_create_a_deployable_war_file_for_older_servlet_containers">9.13.2. Create a deployable WAR file for older servlet containers</a></li>
+<li><a href="#_convert_an_existing_application_to_spring_boot">9.13.3. Convert an existing application to Spring Boot</a></li>
 </ul>
 </li>
 </ul>
@@ -498,7 +545,7 @@
 <li><a href="#_from_the_spring_boot_actuator_module">From the &#8220;spring-boot-actuator&#8221; module</a></li>
 </ul>
 </li>
-<li><a href="#_executable_jars">Appendix C: Executable JARs</a></li>
+<li><a href="#_the_executable_jar_format">Appendix C: The executable JAR format</a></li>
 </ul>
 </div>
 </div>
@@ -5061,19 +5108,7 @@ or Jetty on the classpath), but then the API is the same.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_spring_boot_gradle_plugin">6. Spring Boot Gradle plugin</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_spring_boot_maven_plugin">7. Spring Boot Maven plugin</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_deploying_to_the_cloud">8. Deploying to the cloud</h2>
+<h2 id="_deploying_to_the_cloud">6. Deploying to the cloud</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Spring Boot&#8217;s executable JARs are ready-made for most popular cloud PaaS
@@ -5100,7 +5135,7 @@ to run packaged within it.</p>
 developed in the Getting Started section up and running on Cloud Foundry and Heroku.</p>
 </div>
 <div class="sect2">
-<h3 id="_cloud_foundry">8.1. Cloud Foundry</h3>
+<h3 id="_cloud_foundry">6.1. Cloud Foundry</h3>
 <div class="paragraph">
 <p>Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry buildpack has excellent support for Spring applications,
@@ -5169,7 +5204,7 @@ able to hit the application at the URI provided:
 <code>http://$YOURAPP.cfapps.io/</code>.</p>
 </div>
 <div class="sect3">
-<h4 id="_binding_to_services">8.1.1. Binding to services</h4>
+<h4 id="_binding_to_services">6.1.1. Binding to services</h4>
 <div class="paragraph">
 <p>By default, meta-data about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
@@ -5222,7 +5257,7 @@ Heroku too!
 </div>
 </div>
 <div class="sect2">
-<h3 id="_heroku">8.2. Heroku</h3>
+<h3 id="_heroku">6.2. Heroku</h3>
 <div class="paragraph">
 <p>Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
 <code>Procfile</code>, which provides the incantation required to deploy an application. Heroku
@@ -5312,21 +5347,705 @@ To git@heroku.com:agile-sierra-1405.git
 </div>
 </div>
 <div class="sect1">
-<h2 id="_spring_boot_cli">9. Spring Boot CLI</h2>
+<h2 id="_spring_boot_cli">7. Spring Boot CLI</h2>
 <div class="sectionbody">
 
 </div>
 </div>
 <div class="sect1">
-<h2 id="__how_to_guides">10. &#8220;How-to&#8221; guides</h2>
+<h2 id="_build_tool_plugins">8. Build tool plugins</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
+variety of features, including the packaging executable JARs. The section provides
+more details on both plugins, as well as some help should you need to extend a differnt
+build system. If you are just getting started, you might want to read XXX first.</p>
+</div>
+<div class="sect2">
+<h3 id="_spring_boot_maven_plugin">8.1. Spring Boot Maven plugin</h3>
+<div class="paragraph">
+<p>The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
+package executable jar or war archives and run an application in-place. To use it you
+must be using Maven 3 (or better).</p>
+</div>
+<div class="sect3">
+<h4 id="_including_the_plugin">8.1.1. Including the plugin</h4>
+<div class="paragraph">
+<p>To use the Spring Boot Maven Plugin simply include the appropriate XML in the <code>plugins</code>
+section of your <code>pom.xml</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;!-- ... --&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;1.0.0.BUILD-SNAPSHOT&lt;/version&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;repackage&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This configuration will repackage a JAR or WAR that is built in the <code>package</code> phase of
+the Maven lifecycle, so</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn package
+$ ls target/*.jar
+target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>will reveal the result. If you don&#8217;t include the <code>&lt;execution/&gt;</code> configuration as above
+you can run the plugin on its own, but only if the package goal is used as well, e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn package spring-boot:repackage</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>will have the same effect as above.</p>
+</div>
+<div class="paragraph">
+<p>If you are using a milestone or snapshot release you will also need to add appropriate
+<code>pluginRepository</code> elements:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;pluginRepositories&gt;
+    &lt;pluginRepository&gt;
+        &lt;id&gt;spring-snapshots&lt;/id&gt;
+        &lt;url&gt;http://repo.spring.io/snapshot&lt;/url&gt;
+    &lt;/pluginRepository&gt;
+    &lt;pluginRepository&gt;
+        &lt;id&gt;spring-milestones&lt;/id&gt;
+        &lt;url&gt;http://repo.spring.io/milestone&lt;/url&gt;
+    &lt;/pluginRepository&gt;
+&lt;/pluginRepositories&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_packaging_executable_jar_and_war_files">8.1.2. Packaging executable jar and war files</h4>
+<div class="paragraph">
+<p>Once <code>spring-boot-maven-plugin</code> has been included in your <code>pom.xml</code> it will automatically
+attempt to rewrite archives to make them executable using the <code>spring-boot:repackage</code>
+goal. You should configure your project to build a JAR or WAR (as appropriate) using the
+usual <code>packaging</code> element:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;!-- ... --&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+    &lt;!-- ... --&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your existing archive will be enhanced by Spring Boot during the <code>package</code> phase. The
+main class that you want to launch can either be specified using a configuration option,
+or by adding a <code>Main-Class</code> attribute to the manifest in the usual way. If you don&#8217;t
+specify a main class the plugin will search for a class with a
+<code>public static void main(String[] args)</code> method.</p>
+</div>
+<div class="paragraph">
+<p>To build and run a project artifact, you do something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mvn package
+$ java -jar target/mymodule-0.0.1-SNAPSHOT.jar</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_repackage_configuration">8.1.3. Repackage configuration</h4>
+<div class="paragraph">
+<p>The following configuration options are available for the <code>spring-boot:repackage</code> goal:</p>
+</div>
+<div class="sect4">
+<h5 id="_required_parameters">Required parameters</h5>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:57%;">
+<col style="width:14%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>outputDirectory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory containing the generated archive.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.build.directory}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>finalName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of the generated archive.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.build.finalName}</code></p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<div class="sect4">
+<h5 id="_optional_parameters">Optional parameters</h5>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:71%;"> 
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>classifier</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Classifier to add to the artifact generated. If given, the artifact will be attached. If
+ this is not given, it will merely be written to the output directory according to the
+ <code>finalName</code>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mainClass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the main class. If not specified the first compiled class found that contains
+ a <code>main</code> method will be used.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>layout</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of archive (which corresponds to how the dependencies are laid out inside it).
+ Defaults to a guess based on the archive type.</p></td>
+</tr>
+</tbody>
+</table>
+
+<div class="paragraph">
+<p>The plugin rewrites your manifest, and in particular it manages the <code>Main-Class</code> and
+<code>Start-Class</code> entries, so if the defaults don&#8217;t work you have to configure those there
+(not in the jar plugin). The <code>Main-Class</code> in the manifest is actually controlled by the
+<code>layout</code> property of the boot plugin, e.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint xml language-xml"><code>&lt;plugin&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0.BUILD-SNAPSHOT&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;mainClass&gt;${start-class}&lt;/mainClass&gt;
+        &lt;layout&gt;ZIP&lt;/layout&gt;
+    &lt;/configuration&gt;
+    &lt;executions&gt;
+        &lt;execution&gt;
+            &lt;goals&gt;
+                &lt;goal&gt;repackage&lt;/goal&gt;
+            &lt;/goals&gt;
+        &lt;/execution&gt;
+    &lt;/executions&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The layout property defaults to a guess based on the archive type (JAR or WAR). For the
+<code>PropertiesLauncher</code> the layout is &#8220;ZIP&#8221; (even though the output might be a JAR file).</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_running_applications">8.1.4. Running applications</h4>
+<div class="paragraph">
+<p>The Spring Boot Maven Plugin includes a <code>run</code> goal which can be used to launch your
+application from the command line. Type the following from the root of your Maven
+project:</p>
+</div>
+<div class="paragraph">
+<p>[indent=0</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>	$ mvn spring-boot:run</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, any <code>src/main/resources</code> folder will be added to the application classpath
+when you run via the maven plugin. This allows hot refreshing of resources which can be
+very useful when web applications. For example, you can work on HTML, CSS or JavaScipt
+files and see your changes immediately without recompiling your application. It is also
+a helpful way of allowing your front end developers to work without needing to download
+and install a Java IDE.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_run_configuration">8.1.5. Run configuration</h4>
+<div class="paragraph">
+<p>The following configuration options are available for the <code>spring-boot:run</code> goal:</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_required_parameters_2">8.1.6. Required parameters</h4>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:57%;">
+<col style="width:14%;"> 
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>classesDirectrory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">File</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Directory containing the classes and resource files that should be packaged into the
+ archive.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.build.outputDirectory}</code></p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+<div class="sect3">
+<h4 id="_optional_parameters_2">8.1.7. Optional parameters</h4>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:57%;">
+<col style="width:14%;"> 
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>arguments</code> or <code>-Drun.arguments</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String[]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Arguments that should be passed to the application.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>addResources</code> or <code>-Drun.addResources</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Add Maven resources to the classpath directly, this allows live in-place editing or
+ resources. Since resources will be added directly, and via the target/classes folder
+ they will appear twice if <code>ClassLoader.getResources()</code> is called. In practice, however,
+ most applications call <code>ClassLoader.getResource()</code> which will always return the first
+ resource</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mainClass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the main class. If not specified the first compiled class found that
+ contains a <em>main</em> method will be used.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>folders</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String[]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Folders that should be added to the classpath.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>${project.build.outputDirectory}</code></p></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spring_boot_gradle_plugin">8.2. Spring Boot Gradle plugin</h3>
+<div class="paragraph">
+<p>The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
+package executable jar or war archives, run Spring Boot applications and remove version
+information from your <code>build.gradle</code> file.</p>
+</div>
+<div class="sect3">
+<h4 id="_including_the_plugin_2">8.2.1. Including the plugin</h4>
+<div class="paragraph">
+<p>To use the Spring Boot Gradle Plugin simply include a <code>buildscript</code> dependency and apply
+the <code>spring-boot</code> plugin:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.BUILD-SNAPSHOT")
+    }
+}
+apply plugin: 'spring-boot'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you are using a milestone or snapshot release you will also need to add appropriate
+<code>repositories</code> reference:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>buildscript {
+    repositories {
+        maven.url "http://repo.spring.io/snapshot"
+        maven.url "http://repo.spring.io/milestone"
+    }
+    // ...
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_declaring_dependencies_without_versions">8.2.2. Declaring dependencies without versions</h4>
+<div class="paragraph">
+<p>The <code>spring-boot</code> plugin will register a custom Gradle <code>ResolutionStrategy</code> with your
+build that allows you to omit version numbers when declaring dependencies to known
+artifacts. All artifacts with a <code>org.springframework.boot</code> group ID, and any of the
+artifacts declared in the <code>managementDependencies</code> section of the <code>spring-dependencies</code>
+POM can have their version number resolved automatically.</p>
+</div>
+<div class="paragraph">
+<p>Simply declare dependencies in the usual way, but leave the version number empty:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.thymeleaf:thymeleaf-spring4")
+    compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_packaging_executable_jar_and_war_files_2">8.2.3. Packaging executable JAR and WAR files</h4>
+<div class="paragraph">
+<p>Once the <code>spring-boot</code> plugin has been applied to your project it will automatically
+attempt to rewrite archives to make them executable using the <code>bootRepackage</code> task. You
+should configure your project to build a jar or war (as appropriate) in the usual way.</p>
+</div>
+<div class="paragraph">
+<p>The main class that you want to launch can either be specified using a configuration
+option, or by adding a <code>Main-Class</code> attribute to the manifest. If you don&#8217;t specify a
+main class the plugin will search for a class with a
+<code>public static void main(String[] args)</code> method.</p>
+</div>
+<div class="paragraph">
+<p>To build and run a project artifact, you do something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gradle build
+$ java -jar build/libs/mymodule-0.0.1-SNAPSHOT.jar</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_running_a_project_in_place">8.2.4. Running a Project in Place</h4>
+<div class="paragraph">
+<p>To run a project in place without building a jar first you can use the "bootRun" task:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ gradle bootRun</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Running this way makes your static classpath resources (i.e. in <code>src/main/resources</code> by
+default) reloadable in the live application, which can be helpful at development time.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_repackage_configuration_2">8.2.5. Repackage configuration</h4>
+<div class="paragraph">
+<p>The gradle plugin automatically extends your build script DSL with a <code>springBoot</code> element
+for configuration. Simply set the appropriate properties as you would any other Gradle
+extension:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>springBoot {
+    backupSource = false
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_repackage_with_custom_gradle_configuration">8.2.6. Repackage with custom Gradle configuration</h4>
+<div class="paragraph">
+<p>Sometimes it may be more appropriate to not package default dependencies resolved from
+<code>compile</code>, <code>runtime</code> and <code>provided</code> scopes. If created executable jar file
+is intended to be run as it is you need to have all dependencies in it, however
+if a plan is to explode a jar file and run main class manually you may already
+have some of the libraries available via <code>CLASSPATH</code>. This is a situation where
+you can repackage boot jar with a different set of dependencies. Using a custom
+configuration will automatically disable dependency resolving from
+<code>compile</code>, <code>runtime</code> and <code>provided</code> scopes. Custom configuration can be either
+defined globally inside <code>springBoot</code> or per task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task clientJar(type: Jar) {
+    appendix = 'client'
+    from sourceSets.main.output
+    exclude('**/*Something*')
+}
+
+task clientBoot(type: BootRepackage, dependsOn: clientJar) {
+    withJarTask = clientJar
+    customConfiguration = "mycustomconfiguration"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In above example we created a new <code>clientJar</code> Jar task to package a customized
+file set from your compiled sources. Then we created a new <code>clientBoot</code>
+BootRepackage task and instructed it to work with only <code>clientJar</code> task and
+<code>mycustomconfiguration</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>configurations {
+    mycustomconfiguration.exclude group: 'log4j'
+}
+
+dependencies {
+    mycustomconfiguration configurations.runtime
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Configuration we are referring to in <code>BootRepackage</code> is a normal Gradle configuration. In
+the above example we created a new configuration named <code>mycustomconfiguration</code> instructing
+it to derive from a <code>runtime</code> and exclude <code>log4j</code> group. If <code>clientBoot</code> task is executed,
+repackaged boot jar will have all dependencies from a runtime but no log4j jars.</p>
+</div>
+<div class="sect4">
+<h5 id="_configuration_options">Configuration options</h5>
+<div class="paragraph">
+<p>The following configuration options are available:</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:14%;">
+<col style="width:14%;">
+<col style="width:57%;">
+<col style="width:14%;"> 
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default Value</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mainClass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The main class that should be run. If not specified the value from the manifest will be
+ used, or if no manifest entry is the archive will be searched for a suitable class.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>providedConfiguration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the provided configuration.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>providedRuntime</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>backupSource</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If the original source archive should be backed-up before being repackaged.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>customConfiguration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name of the custom configuration.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">layout</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The type of archive (which corresponds to how the dependencies are laid out inside it).
+ Defaults to a guess based on the archive type.</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="sect3">
+<h4 id="_understanding_how_the_gradle_plugin_works">8.2.7. Understanding how the Gradle plugin works</h4>
+<div class="paragraph">
+<p>When <code>spring-boot</code> is applied to your Gradle project a default task named <code>bootRepackage</code>
+is created automatically. Boot repackage task depends on Gradle <code>assemble</code> task and when
+executed, it tries to find all jar artifacts whose qualifier is empty (i.e. tests and
+sources jars are automatically skipped).</p>
+</div>
+<div class="paragraph">
+<p>Because on default every repackage task execution will find all created jar artifacts,
+the order of Gradle task execution is important. This is not going to be an issue if
+you have a normal project setup where only one jar file is created. However if you are
+planning to create more complex project setup with custom <code>Jar</code> and <code>BootRepackage</code>
+tasks, there are few tweaks to consider.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>jar.enabled = false
+bootRepackage.enabled = false</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example simply disables default <code>jar</code> and <code>bootRepackage</code> tasks. This would be
+all right if you are just creating custom jar files out from your project. You could also
+just disable default <code>bootRepackage</code> task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>bootRepackage.withJarTask = jar</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above example simply instructs default <code>bootRepackage</code> task to only work with a
+default <code>jar</code> task.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint groovy language-groovy"><code>task bootJars
+bootJars.dependsOn = [clientBoot1,clientBoot2,clientBoot3]
+build.dependsOn(bootJars)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you still have a default project setup where main jar file is created and repackaged
+to be used with boot and you still want to create additional custom jar files out from
+your project, you could simple combine you custom repackage tasks together and create
+dependency to your build so that <code>bootJars</code> task would be run after the default
+<code>bootRepackage</code> task is executed.</p>
+</div>
+<div class="paragraph">
+<p>All the above tweaks are usually used to avoid situation where already created boot jar
+is repackaged again. Repackaging an existing boot jar will not break anything but you may
+get unnecessary dependencies in it.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_supporting_other_build_systems">8.3. Supporting other build systems</h3>
+<div class="paragraph">
+<p>If you want to use a build tool other than Maven or Gradle you will likely need to develop
+your own plugin. Executable JARs need to follow a specific format and certain entries need
+to be written in an uncompressed form.</p>
+</div>
+<div class="paragraph">
+<p>The Spring Boot Maven and Gradle plugins both make use of <code>spring-boot-loader-tools</code> to
+actually generate JARs. You are also free to use this library directly yourself if you
+need to.</p>
+</div>
+<div class="sect3">
+<h4 id="_repackaging_archives">8.3.1. Repackaging archives</h4>
+<div class="paragraph">
+<p>To repackage an existing archive so that it becomes a self-contained executable archive
+use <code>org.springframework.boot.loader.tools.Repackager</code>. The <code>Repackager</code> class takes a
+single constructor argument that refers to an existing JAR or WAR archive. Use one of the
+two available <code>repackage()</code> methods to either replace the original file or write to a new
+destination. Various settings can also be configured on the repackager before it is
+run.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nested_libraries">8.3.2. Nested libraries</h4>
+<div class="paragraph">
+<p>When repackaging an archive you can include references to dependency files using the
+<code>org.springframework.boot.loader.tools.Libraries</code> interface. We don&#8217;t provide any
+concrete implementations of <code>Libraries</code> here as they are usually build system specific.</p>
+</div>
+<div class="paragraph">
+<p>If your archive already includes libraries you can use <code>Libraries.NONE</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_finding_a_main_class">8.3.3. Finding a main class</h4>
+<div class="paragraph">
+<p>If you don&#8217;t use <code>Repackager.setMainClass()</code> to specify a main class, the repackager will
+use <a href="http://asm.ow2.org/">ASM</a> to read class files and attempt to find a suitable class.
+The first class with a <code>public static void main(String[] args)</code> method will be used.
+Searching is performed using a breadth first algorithm, with the assumption that the main
+class will appear high in the package structure.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_example_repackage_implementation">8.3.4. Example repackage implementation</h4>
+<div class="paragraph">
+<p>Here is a typical example repackage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint java language-java"><code>Repackager repackager = new Repackager(sourceJarFile);
+repackager.setBackupSource(false);
+repackager.repackage(new Libraries() {
+            @Override
+            public void doWithLibraries(LibraryCallback callback) throws IOException {
+                // Build system specific implementation, callback for each dependency
+                // callback.library(nestedFile, LibraryScope.COMPILE);
+            }
+        });</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__how_to_guides">9. &#8220;How-to&#8221; guides</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This section provides answers to some common &#8220;how do I do that&#8230;&#8221; types of questions.</p>
 </div>
 <div class="sect2">
-<h3 id="_spring_boot_application">10.1. Spring Boot application</h3>
+<h3 id="_spring_boot_application">9.1. Spring Boot application</h3>
 <div class="sect3">
-<h4 id="_troubleshoot_auto_configuration">10.1.1. Troubleshoot auto-configuration</h4>
+<h4 id="_troubleshoot_auto_configuration">9.1.1. Troubleshoot auto-configuration</h4>
 <div class="paragraph">
 <p>The Spring Boot auto-configuration tries it&#8217;s best to &#8220;do the right thing&#8221;, but
 sometimes things fail and it can be hard to tell why.</p>
@@ -5380,7 +6099,7 @@ response to SpEL expressions, normally evaluated with place-holders resolved fro
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_environment_or_applicationcontext_before_it_starts">10.1.2. Customize the Environment or ApplicationContext before it starts</h4>
+<h4 id="_customize_the_environment_or_applicationcontext_before_it_starts">9.1.2. Customize the Environment or ApplicationContext before it starts</h4>
 <div class="paragraph">
 <p>A <code>SpringApplication</code> has <code>ApplicationListeners</code> and <code>ApplicationContextInitializers</code> that
 are used to apply customizations to the context or environment. Spring Boot loads a number
@@ -5410,11 +6129,11 @@ by the <code>ApplicationContext</code> as well. See XXX for a complete list.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="build-hierarchy">10.1.3. Build an ApplicationContext hierarchy (adding a parent or root context)</h4>
+<h4 id="build-hierarchy">9.1.3. Build an ApplicationContext hierarchy (adding a parent or root context)</h4>
 
 </div>
 <div class="sect3">
-<h4 id="_create_a_non_web_application">10.1.4. Create a non-web application</h4>
+<h4 id="_create_a_non_web_application">9.1.4. Create a non-web application</h4>
 <div class="paragraph">
 <p>Not all Spring applications have to be web applications (or web services). If you want to
 execute some code in a <code>main</code> method, but also bootstrap a Spring application to set up
@@ -5431,9 +6150,9 @@ Application code that you want to run as your business logic can be implemented 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_properties_configuration">10.2. Properties &amp; configuration</h3>
+<h3 id="_properties_configuration">9.2. Properties &amp; configuration</h3>
 <div class="sect3">
-<h4 id="_externalize_the_configuration_of_springapplication">10.2.1. Externalize the configuration of SpringApplication</h4>
+<h4 id="_externalize_the_configuration_of_springapplication">9.2.1. Externalize the configuration of SpringApplication</h4>
 <div class="paragraph">
 <p>A <code>SpringApplication</code> has bean properties (mainly setters) so you can use its Java API as
 you create the application to modify its behavior. Or you can externalize the
@@ -5452,7 +6171,7 @@ not be a web application.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_location_of_external_properties_of_an_application">10.2.2. Change the location of external properties of an application</h4>
+<h4 id="_change_the_location_of_external_properties_of_an_application">9.2.2. Change the location of external properties of an application</h4>
 <div class="paragraph">
 <p>By default properties from different sources are added to the Spring <code>Environment</code> in a
 defined order, and the precedence for resolution is:</p>
@@ -5506,7 +6225,7 @@ extension are also added to the list by default.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_short_command_line_arguments">10.2.3. Use &#8220;short&#8221; command line arguments</h4>
+<h4 id="_use_short_command_line_arguments">9.2.3. Use &#8220;short&#8221; command line arguments</h4>
 <div class="paragraph">
 <p>Some people like to use (for example) <code>--port=9000</code> instead of <code>--server.port=9000</code> to
 set configuration properties on the command line. You can easily enable this by using
@@ -5533,7 +6252,7 @@ automatically and Spring can bind to capitalized synonyms for <code>Environment<
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_yaml_for_external_properties">10.2.4. Use YAML for external properties</h4>
+<h4 id="_use_yaml_for_external_properties">9.2.4. Use YAML for external properties</h4>
 <div class="paragraph">
 <p>YAML is a superset of JSON and as such is a very convenient syntax for storing external
 properties in a hierarchical format. E.g.</p>
@@ -5571,7 +6290,7 @@ server.port: 9000</pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_set_the_active_spring_profiles">10.2.5. Set the active Spring profiles</h4>
+<h4 id="_set_the_active_spring_profiles">9.2.5. Set the active Spring profiles</h4>
 <div class="paragraph">
 <p>The Spring <code>Environment</code> has an API for this, but normally you would set a System profile
 (<code>spring.profiles.active</code>) or an OS environment variable (<code>SPRING_PROFILES_ACTIVE</code>). E.g.
@@ -5598,7 +6317,7 @@ be used to augment the profiles without changing the defaults.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_configuration_depending_on_the_environment">10.2.6. Change configuration depending on the environment</h4>
+<h4 id="_change_configuration_depending_on_the_environment">9.2.6. Change configuration depending on the environment</h4>
 <div class="paragraph">
 <p>A YAML file is actually a sequence of documents separated by <code>---</code> lines, and each
 document is parsed separately to a flattened map.</p>
@@ -5645,7 +6364,7 @@ to specify profile-specific values.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="discover-options">10.2.7. Discover built-in options for external properties</h4>
+<h4 id="discover-options">9.2.7. Discover built-in options for external properties</h4>
 <div class="paragraph">
 <p>Spring Boot binds external properties from <code>application.properties</code> (or <code>.yml</code>) (and
 other places) into an application at runtime.  There is not (and technically cannot be)
@@ -5668,9 +6387,9 @@ for <code>@ConfigurationProperties</code> and <code>@Value</code> annotations, a
 </div>
 </div>
 <div class="sect2">
-<h3 id="_embedded_servlet_containers">10.3. Embedded servlet containers</h3>
+<h3 id="_embedded_servlet_containers">9.3. Embedded servlet containers</h3>
 <div class="sect3">
-<h4 id="_add_a_servlet_filter_or_servletcontextlistener_to_an_application">10.3.1. Add a Servlet, Filter or ServletContextListener to an application</h4>
+<h4 id="_add_a_servlet_filter_or_servletcontextlistener_to_an_application">9.3.1. Add a Servlet, Filter or ServletContextListener to an application</h4>
 <div class="paragraph">
 <p><code>Servlet</code>, <code>Filter</code>, <code>ServletContextListener</code> and the other listeners supported by the
 Servlet spec can be added to your application as <code>@Bean</code> definitions. Be very careful that
@@ -5687,7 +6406,7 @@ the underlying component.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_http_port">10.3.2. Change the HTTP port</h4>
+<h4 id="_change_the_http_port">9.3.2. Change the HTTP port</h4>
 <div class="paragraph">
 <p>In a standalone application the main HTTP port defaults to 8080, but can be set with
 <code>server.port</code> (e.g. in <code>application.properties</code> or as a System property). Thanks to
@@ -5704,13 +6423,13 @@ source code.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_random_unassigned_http_port">10.3.3. Use a random unassigned HTTP port</h4>
+<h4 id="_use_a_random_unassigned_http_port">9.3.3. Use a random unassigned HTTP port</h4>
 <div class="paragraph">
 <p>To scan for a free port (using OS natives to prevent clashes) use <code>server.port=0</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_discover_the_http_port_at_runtime">10.3.4. Discover the HTTP port at runtime</h4>
+<h4 id="_discover_the_http_port_at_runtime">9.3.4. Discover the HTTP port at runtime</h4>
 <div class="paragraph">
 <p>You can access the port the server is running on from log output or from the
 <code>EmbeddedWebApplicationContext</code> via its <code>EmbeddedServletContainer</code>. The best way to get
@@ -5720,7 +6439,7 @@ out of the event wehen it is published.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_tomcat">10.3.5. Configure Tomcat</h4>
+<h4 id="_configure_tomcat">9.3.5. Configure Tomcat</h4>
 <div class="paragraph">
 <p>Generally you can follow the advice from <a href="#discover-options">Discover built-in options for external properties</a> about
 <code>@ConfigurationProperties</code> (<code>ServerProperties</code> is the main one here), but also look at
@@ -5731,7 +6450,7 @@ nuclear option is to add your own <code>TomcatEmbeddedServletContainerFactory</c
 </div>
 </div>
 <div class="sect3">
-<h4 id="_terminate_ssl_in_tomcat">10.3.6. Terminate SSL in Tomcat</h4>
+<h4 id="_terminate_ssl_in_tomcat">9.3.6. Terminate SSL in Tomcat</h4>
 <div class="paragraph">
 <p>Add a <code>EmbeddedServletContainerCustomizer</code> and in that add a <code>TomcatConnectorCustomizer</code>
 that sets up the connector to be secure:</p>
@@ -5781,7 +6500,7 @@ private static class MyCustomizer implements EmbeddedServletContainerCustomizer 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_jetty_instead_of_tomcat">10.3.7. Use Jetty instead of Tomcat</h4>
+<h4 id="_use_jetty_instead_of_tomcat">9.3.7. Use Jetty instead of Tomcat</h4>
 <div class="paragraph">
 <p>The Spring Boot starters (<code>spring-boot-starter-web</code> in particular) use Tomcat as an
 embedded container by default. You need to exclude those dependencies and include the
@@ -5827,7 +6546,7 @@ dependencies {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_jetty">10.3.8. Configure Jetty</h4>
+<h4 id="_configure_jetty">9.3.8. Configure Jetty</h4>
 <div class="paragraph">
 <p>Generally you can follow the advice [here](#discover.options) about
 <code>@ConfigurationProperties</code> (<code>ServerProperties</code> is the main one here), but also look at
@@ -5837,7 +6556,7 @@ of ways. Or the nuclear option is to add your own <code>JettyEmbeddedServletCont
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_tomcat_8">10.3.9. Use Tomcat 8</h4>
+<h4 id="_use_tomcat_8">9.3.9. Use Tomcat 8</h4>
 <div class="paragraph">
 <p>Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support
 Java 1.6 out of the box). You should only need to change the classpath to use Tomcat 8
@@ -5846,7 +6565,7 @@ shows you how to do that in Maven.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_jetty_9">10.3.10. Use Jetty 9</h4>
+<h4 id="_use_jetty_9">9.3.10. Use Jetty 9</h4>
 <div class="paragraph">
 <p>Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so we can support
 Java 1.6 out of the box). You should only need to change the classpath to use Jetty 9
@@ -5884,9 +6603,9 @@ change the version properties, e.g. for a simple webapp or service:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_spring_mvc">10.4. Spring MVC</h3>
+<h3 id="_spring_mvc">9.4. Spring MVC</h3>
 <div class="sect3">
-<h4 id="_write_a_json_rest_service">10.4.1. Write a JSON REST service</h4>
+<h4 id="_write_a_json_rest_service">9.4.1. Write a JSON REST service</h4>
 <div class="paragraph">
 <p>Any Spring <code>@RestController</code> in a Spring Boot application should render JSON response by
 default as long as Jackson2 is on the classpath. For example:</p>
@@ -5912,7 +6631,7 @@ a JAXB object) because browsers tend to send accept headers that prefer XML.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_jackson_objectmapper">10.4.2. Customize the Jackson ObjectMapper</h4>
+<h4 id="_customize_the_jackson_objectmapper">9.4.2. Customize the Jackson ObjectMapper</h4>
 <div class="paragraph">
 <p>Spring MVC (client and server side) uses <code>HttpMessageConverters</code> to negotiate content
 conversion in an HTTP exchange. If Jackson is on the classpath you already get a default
@@ -5943,7 +6662,7 @@ message converters.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="message-converters">10.4.3. Customize the @ResponseBody rendering</h4>
+<h4 id="message-converters">9.4.3. Customize the @ResponseBody rendering</h4>
 <div class="paragraph">
 <p>Spring uses <code>HttpMessageConverters</code> to render <code>@ResponseBody</code> (or responses from
 <code>@RestControllers</code>). You can contribute additional converters by simply adding beans of
@@ -5968,7 +6687,7 @@ then you can take control completely and do everything manually using
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_spring_mvc_dispatcherservlet">10.4.4. Switch off the Spring MVC DispatcherServlet</h4>
+<h4 id="_switch_off_the_spring_mvc_dispatcherservlet">9.4.4. Switch off the Spring MVC DispatcherServlet</h4>
 <div class="paragraph">
 <p>Spring Boot wants to serve all content from the root of your application <code>/</code> down. If you
 would rather map your own servlet to that URL you can do it, but of course you may lose
@@ -5979,7 +6698,7 @@ you want to switch it off and not replace it.)</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_default_mvc_configuration">10.4.5. Switch off the Default MVC configuration</h4>
+<h4 id="_switch_off_the_default_mvc_configuration">9.4.5. Switch off the Default MVC configuration</h4>
 <div class="paragraph">
 <p>The easiest way to take complete control over MVC configuration is to provide your own
 <code>@Configuration</code> with the <code>@EnableWebMvc</code> annotation. This will leave all MVC
@@ -5988,9 +6707,9 @@ configuration in your hands.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_logging_2">10.5. Logging</h3>
+<h3 id="_logging_2">9.5. Logging</h3>
 <div class="sect3">
-<h4 id="_configure_logback_for_logging">10.5.1. Configure Logback for logging</h4>
+<h4 id="_configure_logback_for_logging">9.5.1. Configure Logback for logging</h4>
 <div class="paragraph">
 <p>Spring Boot has no mandatory logging dependence, except for the <code>commons-logging</code> API, of
 which there are many implementations to choose from. To use <a href="http://logback.qos.ch">Logback</a>
@@ -6053,7 +6772,7 @@ for details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_log4j_for_logging">10.5.2. Configure Log4j for logging</h4>
+<h4 id="_configure_log4j_for_logging">9.5.2. Configure Log4j for logging</h4>
 <div class="paragraph">
 <p>Spring Boot supports <a href="http://logging.apache.org/log4j/1.x/">Log4j</a> for logging
 configuration, but it has to be on the classpath. If you are using the starter poms for
@@ -6101,9 +6820,9 @@ action.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_data_access">10.6. Data Access</h3>
+<h3 id="_data_access">9.6. Data Access</h3>
 <div class="sect3">
-<h4 id="_configure_a_datasource_2">10.6.1. Configure a DataSource</h4>
+<h4 id="_configure_a_datasource_2">9.6.1. Configure a DataSource</h4>
 <div class="paragraph">
 <p>See XXX.</p>
 </div>
@@ -6114,7 +6833,7 @@ for more details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_spring_data_repositories">10.6.2. Use Spring Data repositories</h4>
+<h4 id="_use_spring_data_repositories">9.6.2. Use Spring Data repositories</h4>
 <div class="paragraph">
 <p>Spring Data can create implementations for you of <code>@Repository</code> interfaces of various
 flavours. Spring Boot will handle all of that for you as long as those <code>@Repositories</code>
@@ -6135,7 +6854,7 @@ annotation (from Spring Data JPA).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_separate_entity_definitions_from_spring_configuration">10.6.3. Separate @Entity definitions from Spring configuration</h4>
+<h4 id="_separate_entity_definitions_from_spring_configuration">9.6.3. Separate @Entity definitions from Spring configuration</h4>
 <div class="paragraph">
 <p>Spring Boot tries to guess the location of your <code>@Entity</code> definitions, based on the
 <code>@EnableAutoConfiguration</code> it finds. To get more control, you can use the <code>@EntityScan</code>
@@ -6155,7 +6874,7 @@ public class Application {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_configure_jpa_properties">10.6.4. Configure JPA properties</h4>
+<h4 id="_configure_jpa_properties">9.6.4. Configure JPA properties</h4>
 <div class="paragraph">
 <p>Spring JPA already provides some vendor-independent configuration options (e.g. for SQL
 logging) and Spring Boot exposes those, and a few more for hibernate as external
@@ -6184,7 +6903,7 @@ for more details.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_traditional_persistence_xml">10.6.5. Use a traditional persistence.xml</h4>
+<h4 id="_use_a_traditional_persistence_xml">9.6.5. Use a traditional persistence.xml</h4>
 <div class="paragraph">
 <p>Spring doesn&#8217;t require the use of XML to configure the JPA provider, and Spring Boot
 assumes you want to take advantage of that feature. If you prefer to use <code>persistence.xml</code>
@@ -6199,13 +6918,13 @@ for the default settings.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_database_initialization">10.7. Database initialization</h3>
+<h3 id="_database_initialization">9.7. Database initialization</h3>
 <div class="paragraph">
 <p>An SQL database can be initialized in different ways depending on what your stack is. Or
 of course you can do it manually as long as the database is in a server.</p>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_jpa">10.7.1. Initialize a database using JPA</h4>
+<h4 id="_initialize_a_database_using_jpa">9.7.1. Initialize a database using JPA</h4>
 <div class="paragraph">
 <p>JPA has features for DDL generation, and these can be set up to run on startup against the
 database. This is controlled through two external properties:</p>
@@ -6224,7 +6943,7 @@ behavior in a more fine-grained way. See below for more detail.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_hibernate">10.7.2. Initialize a database using Hibernate</h4>
+<h4 id="_initialize_a_database_using_hibernate">9.7.2. Initialize a database using Hibernate</h4>
 <div class="paragraph">
 <p>You can set <code>spring.jpa.hibernate.ddl-auto</code> explicitly and the standard Hibernate property
 values are <code>none</code>, <code>validate</code>, <code>update</code>, <code>create-drop</code>. Spring Boot chooses a default
@@ -6243,7 +6962,7 @@ not something you want to be on the classpath in production. It is a Hibernate f
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_database_using_spring_jdbc">10.7.3. Initialize a database using Spring JDBC</h4>
+<h4 id="_initialize_a_database_using_spring_jdbc">9.7.3. Initialize a database using Spring JDBC</h4>
 <div class="paragraph">
 <p>Spring JDBC has a <code>DataSource</code> initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations <code>schema.sql</code> and <code>data.sql</code> (in the root of the
@@ -6260,7 +6979,7 @@ there, so there would be no need to prevent the application from running, for in
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialize_a_spring_batch_database">10.7.4. Initialize a Spring Batch database</h4>
+<h4 id="_initialize_a_spring_batch_database">9.7.4. Initialize a Spring Batch database</h4>
 <div class="paragraph">
 <p>If you are using Spring Batch then it comes pre-packaged with SQL initialization scripts
 for most popular database platforms. Spring Boot will detect your database type, and
@@ -6272,7 +6991,7 @@ initialization explicitly using <code>spring.batch.initializer.enabled=false</co
 </div>
 </div>
 <div class="sect3">
-<h4 id="_use_a_higher_level_datababse_migration_tool">10.7.5. Use a higher level datababse migration tool</h4>
+<h4 id="_use_a_higher_level_datababse_migration_tool">9.7.5. Use a higher level datababse migration tool</h4>
 <div class="paragraph">
 <p>Spring Boot works fine with higher level migration tools <a href="http://flywaydb.org/">Flyway</a>
 (SQL-based) and <a href="http://www.liquibase.org/">Liquibase</a> (XML). In general we prefer
@@ -6282,9 +7001,9 @@ independence: usually only one or at most couple of platforms is needed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_batch_applications">10.8. Batch applications</h3>
+<h3 id="_batch_applications">9.8. Batch applications</h3>
 <div class="sect3">
-<h4 id="_execute_spring_batch_jobs_on_startup">10.8.1. Execute Spring Batch jobs on startup</h4>
+<h4 id="_execute_spring_batch_jobs_on_startup">9.8.1. Execute Spring Batch jobs on startup</h4>
 <div class="paragraph">
 <p>Spring Batch autoconfiguration is enabled by adding <code>@EnableBatchProcessing</code>
 (from Spring Batch) somewhere in your context.</p>
@@ -6311,9 +7030,9 @@ for more details.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_actuator">10.9. Actuator</h3>
+<h3 id="_actuator">9.9. Actuator</h3>
 <div class="sect3">
-<h4 id="_change_the_http_port_or_address_of_the_actuator_endpoints">10.9.1. Change the HTTP port or address of the actuator endpoints</h4>
+<h4 id="_change_the_http_port_or_address_of_the_actuator_endpoints">9.9.1. Change the HTTP port or address of the actuator endpoints</h4>
 <div class="paragraph">
 <p>In a standalone application the Actuator HTTP port defaults to the same as the main HTTP
 port. To make the application listen on a different port set the external property
@@ -6328,7 +7047,7 @@ source code.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_customize_the_whitelabel_error_page">10.9.2. Customize the &#8220;whitelabel&#8221; error page</h4>
+<h4 id="_customize_the_whitelabel_error_page">9.9.2. Customize the &#8220;whitelabel&#8221; error page</h4>
 <div class="paragraph">
 <p>The Actuator installs a &#8220;whitelabel&#8221; error page that you will see in browser client if
 you encounter a server error (machine clients consuming JSON and other media types should
@@ -6344,9 +7063,9 @@ a simple way of doing that.  Look at <code>ErrorMvcAutoConfiguration</code> for 
 </div>
 </div>
 <div class="sect2">
-<h3 id="_security">10.10. Security</h3>
+<h3 id="_security">9.10. Security</h3>
 <div class="sect3">
-<h4 id="_secure_an_application">10.10.1. Secure an application</h4>
+<h4 id="_secure_an_application">9.10.1. Secure an application</h4>
 <div class="paragraph">
 <p>Web applications will be secure by default (with Basic authentication on all endpoints) if
 Spring Security is on the classpath. To add method-level security to a web application you
@@ -6360,7 +7079,7 @@ via <code>SecurityProperties</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_switch_off_the_spring_boot_security_configuration">10.10.2. Switch off the Spring Boot security configuration</h4>
+<h4 id="_switch_off_the_spring_boot_security_configuration">9.10.2. Switch off the Spring Boot security configuration</h4>
 <div class="paragraph">
 <p>If you define a <code>@Configuration</code> with <code>@EnableWebSecurity</code> anywhere in your application
 it will switch off the default webapp security settings in Spring Boot. To tweak the
@@ -6370,7 +7089,7 @@ for details of available settings).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_change_the_authenticationmanager_and_add_user_accounts">10.10.3. Change the AuthenticationManager and add user accounts</h4>
+<h4 id="_change_the_authenticationmanager_and_add_user_accounts">9.10.3. Change the AuthenticationManager and add user accounts</h4>
 <div class="paragraph">
 <p>If you provide a <code>@Bean</code> of type <code>AuthenticationManager</code> the default one will not be
 created, so you have the full feature set of Spring Security available (e.g.
@@ -6404,7 +7123,7 @@ before the default one in Spring Boot (which has very low precedence).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enable_https">10.10.4. Enable HTTPS</h4>
+<h4 id="_enable_https">9.10.4. Enable HTTPS</h4>
 <div class="paragraph">
 <p>Ensuring that all your main endpoints are only available over HTTPS is an important
 chore for any application.  If you are using Tomcat as a servlet container, then the
@@ -6434,9 +7153,9 @@ requests). To switch that on in a Spring Boot application you just need to set
 </div>
 </div>
 <div class="sect2">
-<h3 id="_hot_swapping_2">10.11. Hot swapping</h3>
+<h3 id="_hot_swapping_2">9.11. Hot swapping</h3>
 <div class="sect3">
-<h4 id="_reload_static_content">10.11.1. Reload static content</h4>
+<h4 id="_reload_static_content">9.11.1. Reload static content</h4>
 <div class="paragraph">
 <p>There are several options. Running in an IDE (especially with debugging on) is a good way
 to do development (all modern IDEs allow reloading of static resources and usually also
@@ -6446,14 +7165,14 @@ css/js compiler process if you are writing that code with higher level tools.</p
 </div>
 </div>
 <div class="sect3">
-<h4 id="_reload_thymeleaf_templates_without_restarting_the_container">10.11.2. Reload Thymeleaf templates without restarting the container</h4>
+<h4 id="_reload_thymeleaf_templates_without_restarting_the_container">9.11.2. Reload Thymeleaf templates without restarting the container</h4>
 <div class="paragraph">
 <p>If you are using Thymeleaf, then set <code>spring.thymeleaf.cache=false</code>. See
 <code>ThymeleafAutoConfiguration</code> for other template customization options.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_reload_java_classes_without_restarting_the_container">10.11.3. Reload Java classes without restarting the container</h4>
+<h4 id="_reload_java_classes_without_restarting_the_container">9.11.3. Reload Java classes without restarting the container</h4>
 <div class="paragraph">
 <p>Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode, so if you make a
 change that doesn&#8217;t affect class or method signatures it should reload cleanly with no
@@ -6469,9 +7188,9 @@ would only ever be a development time trick probably).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_build">10.12. Build</h3>
+<h3 id="_build">9.12. Build</h3>
 <div class="sect3">
-<h4 id="_build_an_executable_archive_with_ant">10.12.1. Build an executable archive with Ant</h4>
+<h4 id="_build_an_executable_archive_with_ant">9.12.1. Build an executable archive with Ant</h4>
 <div class="paragraph">
 <p>To build with Ant you need to grab dependencies and compile and then create a JAR or WAR
 archive as normal.  To make it executable:</p>
@@ -6536,9 +7255,9 @@ the <code>Main-Class</code> is available).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_traditional_deployment">10.13. Traditional deployment</h3>
+<h3 id="_traditional_deployment">9.13. Traditional deployment</h3>
 <div class="sect3">
-<h4 id="_create_a_deployable_war_file">10.13.1. Create a deployable WAR file</h4>
+<h4 id="_create_a_deployable_war_file">9.13.1. Create a deployable WAR file</h4>
 <div class="paragraph">
 <p>Use the <code>SpringBootServletInitializer</code> base class, which is picked up by Spring&#8217;s
 Servlet 3.0 support on deployment. Add an extension of that to your project and build a
@@ -6555,7 +7274,7 @@ dependencies are marked as "provided" in Maven or Gradle. Here&#8217;s a Maven e
 </div>
 </div>
 <div class="sect3">
-<h4 id="_create_a_deployable_war_file_for_older_servlet_containers">10.13.2. Create a deployable WAR file for older servlet containers</h4>
+<h4 id="_create_a_deployable_war_file_for_older_servlet_containers">9.13.2. Create a deployable WAR file for older servlet containers</h4>
 <div class="paragraph">
 <p>Older Servlet containers don&#8217;t have support for the <code>ServletContextInitializer</code> bootstrap
 process used in Servlet 3.0. You can still use Spring and Spring Boot in these containers
@@ -6564,7 +7283,7 @@ an <code>ApplicationContext</code> via a <code>DispatcherServlet</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_convert_an_existing_application_to_spring_boot">10.13.3. Convert an existing application to Spring Boot</h4>
+<h4 id="_convert_an_existing_application_to_spring_boot">9.13.3. Convert an existing application to Spring Boot</h4>
 <div class="paragraph">
 <p>For a non-web application it should be easy (throw away the code that creates your
 <code>ApplicationContext</code> and replace it with calls to <code>SpringApplication</code> or
@@ -6964,8 +7683,8 @@ application for more details of which features are switched on in that specific 
 </div>
 <table class="tableblock frame-all grid-all" style="width:100%; ">
 <colgroup>
-<col style="width:50%;">
-<col style="width:50%;"> 
+<col style="width:80%;">
+<col style="width:20%;"> 
 </colgroup>
 <thead>
 <tr>
@@ -7089,8 +7808,8 @@ application for more details of which features are switched on in that specific 
 </div>
 <table class="tableblock frame-all grid-all" style="width:100%; ">
 <colgroup>
-<col style="width:50%;">
-<col style="width:50%;"> 
+<col style="width:80%;">
+<col style="width:20%;"> 
 </colgroup>
 <thead>
 <tr>
@@ -7158,7 +7877,7 @@ application for more details of which features are switched on in that specific 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_executable_jars">Appendix C: Executable JARs</h2>
+<h2 id="_the_executable_jar_format">Appendix C: The executable JAR format</h2>
 <div class="sectionbody">
 
 </div>
@@ -7166,7 +7885,7 @@ application for more details of which features are switched on in that specific 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-09 13:43:28 PDT
+Last updated 2014-03-09 23:38:28 PDT
 </div>
 </div>
 </body>
