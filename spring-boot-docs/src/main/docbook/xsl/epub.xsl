@@ -20,10 +20,11 @@ under the License.
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-				xmlns:xslthl="http://xslthl.sf.net"
-				exclude-result-prefixes="xslthl"
-				version='1.0'>
+		xmlns:xslthl="http://xslthl.sf.net"
+		exclude-result-prefixes="xslthl"
+		version='1.0'>
 
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/epub3/docbook.xsl"/>
+	<xsl:import href="urn:docbkx:stylesheet"/>
+	<xsl:import href="common.xsl"/>
 
 </xsl:stylesheet>

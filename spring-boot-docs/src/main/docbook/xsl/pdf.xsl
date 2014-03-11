@@ -20,9 +20,10 @@ under the License.
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+				xmlns:d="http://docbook.org/ns/docbook"
 				xmlns:fo="http://www.w3.org/1999/XSL/Format"
 				xmlns:xslthl="http://xslthl.sf.net"
-				exclude-result-prefixes="xslthl"
+				exclude-result-prefixes="xslthl d"
 				version='1.0'>
 
 	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
@@ -31,14 +32,6 @@ under the License.
 
 	<!-- Extensions -->
 	<xsl:param name="fop1.extensions" select="1"/>
-
-	<!-- resize the admon graphics. they're width 36pt by default
-	even though the graphics that ship with docbook are 24x24 -->
-	<xsl:template match="*" mode="admon.graphic.width">
-		<xsl:param name="node" select="."/>
-		<xsl:text>13pt</xsl:text>
-	</xsl:template>
-
 
 	<xsl:param name="paper.type" select="'A4'"/>
 	<xsl:param name="page.margin.top" select="'1cm'"/>
@@ -49,6 +42,11 @@ under the License.
 	<xsl:param name="region.after.extent" select="'1cm'"/>
 	<xsl:param name="page.margin.bottom" select="'1cm'"/>
 	<xsl:param name="title.margin.left" select="'0cm'"/>
+
+	<!-- allow break across pages -->
+	<xsl:attribute-set name="formal.object.properties">
+		<xsl:attribute name="keep-together.within-column">auto</xsl:attribute>
+	</xsl:attribute-set>
 
 	<!-- TITLE PAGE -->
 
@@ -130,6 +128,7 @@ under the License.
 		</xsl:attribute>
 		<xsl:attribute name="margin-left">-5em</xsl:attribute>
 		<xsl:attribute name="margin-right">-5em</xsl:attribute>
+		<xsl:attribute name="font-size">8pt</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:template name="header.content">
@@ -140,11 +139,11 @@ under the License.
 
 		<xsl:variable name="Version">
 			<xsl:choose>
-				<xsl:when test="//productname">
-					<xsl:value-of select="//productname"/><xsl:text> </xsl:text>
+				<xsl:when test="//title">
+					<xsl:value-of select="//title"/><xsl:text> </xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:text>please define productname in your docbook file!</xsl:text>
+					<xsl:text>please define title in your docbook file!</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
@@ -174,6 +173,12 @@ under the License.
 	</xsl:template>
 
 	<!-- FOOTER-->
+	<xsl:attribute-set name="footer.content.properties">
+		<xsl:attribute name="font-family">
+			<xsl:value-of select="$body.font.family"/>
+		</xsl:attribute>
+		<xsl:attribute name="font-size">8pt</xsl:attribute>
+	</xsl:attribute-set>
 
 	<xsl:template name="footer.content">
 		<xsl:param name="pageclass" select="''"/>
@@ -192,7 +197,14 @@ under the License.
 		</xsl:variable>
 
 		<xsl:variable name="Title">
-			<xsl:value-of select="//title"/>
+			<xsl:choose>
+				<xsl:when test="//productname">
+					<xsl:value-of select="//productname"/><xsl:text> </xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text>please define title in your docbook file!</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:variable>
 
 		<xsl:choose>
@@ -295,9 +307,9 @@ under the License.
 
 	<!-- Sections 1, 2 and 3 titles have a small bump factor and padding -->
 	<xsl:attribute-set name="section.title.level1.properties">
-		<xsl:attribute name="space-before.optimum">0.8em</xsl:attribute>
-		<xsl:attribute name="space-before.minimum">0.8em</xsl:attribute>
-		<xsl:attribute name="space-before.maximum">0.8em</xsl:attribute>
+		<xsl:attribute name="space-before.optimum">0.6em</xsl:attribute>
+		<xsl:attribute name="space-before.minimum">0.6em</xsl:attribute>
+		<xsl:attribute name="space-before.maximum">0.6em</xsl:attribute>
 		<xsl:attribute name="font-size">
 			<xsl:value-of select="$body.font.master * 1.5"/>
 			<xsl:text>pt</xsl:text>
@@ -306,10 +318,11 @@ under the License.
 		<xsl:attribute name="space-after.minimum">0.1em</xsl:attribute>
 		<xsl:attribute name="space-after.maximum">0.1em</xsl:attribute>
 	</xsl:attribute-set>
+
 	<xsl:attribute-set name="section.title.level2.properties">
-		<xsl:attribute name="space-before.optimum">0.6em</xsl:attribute>
-		<xsl:attribute name="space-before.minimum">0.6em</xsl:attribute>
-		<xsl:attribute name="space-before.maximum">0.6em</xsl:attribute>
+		<xsl:attribute name="space-before.optimum">0.4em</xsl:attribute>
+		<xsl:attribute name="space-before.minimum">0.4em</xsl:attribute>
+		<xsl:attribute name="space-before.maximum">0.4em</xsl:attribute>
 		<xsl:attribute name="font-size">
 			<xsl:value-of select="$body.font.master * 1.25"/>
 			<xsl:text>pt</xsl:text>
@@ -318,6 +331,7 @@ under the License.
 		<xsl:attribute name="space-after.minimum">0.1em</xsl:attribute>
 		<xsl:attribute name="space-after.maximum">0.1em</xsl:attribute>
 	</xsl:attribute-set>
+
 	<xsl:attribute-set name="section.title.level3.properties">
 		<xsl:attribute name="space-before.optimum">0.4em</xsl:attribute>
 		<xsl:attribute name="space-before.minimum">0.4em</xsl:attribute>
@@ -330,6 +344,7 @@ under the License.
 		<xsl:attribute name="space-after.minimum">0.1em</xsl:attribute>
 		<xsl:attribute name="space-after.maximum">0.1em</xsl:attribute>
 	</xsl:attribute-set>
+
 	<xsl:attribute-set name="section.title.level4.properties">
 		<xsl:attribute name="space-before.optimum">0.3em</xsl:attribute>
 		<xsl:attribute name="space-before.minimum">0.3em</xsl:attribute>
@@ -372,9 +387,9 @@ under the License.
 
 	<!-- Verbatim text formatting (programlistings) -->
 	<xsl:attribute-set name="monospace.verbatim.properties">
-		<xsl:attribute name="font-size">8pt</xsl:attribute>
+		<xsl:attribute name="font-size">7pt</xsl:attribute>
 		<xsl:attribute name="wrap-option">wrap</xsl:attribute>
-		<xsl:attribute name="keep-together.within-column">always</xsl:attribute>
+		<xsl:attribute name="keep-together.within-column">1</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="verbatim.properties">
@@ -418,7 +433,6 @@ under the License.
 		<xsl:attribute name="space-after.minimum">0.1em</xsl:attribute>
 		<xsl:attribute name="space-after.optimum">0.1em</xsl:attribute>
 		<xsl:attribute name="space-after.maximum">0.1em</xsl:attribute>
-		<xsl:attribute name="keep-together.within-column">always</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:attribute-set name="sidebar.properties">
@@ -517,6 +531,53 @@ under the License.
 			</xsl:choose>
 		</fo:basic-link>
 	</xsl:template>
+
+	<!-- admon -->
+	<xsl:param name="admon.graphics" select="0"/>
+
+	<xsl:attribute-set name="nongraphical.admonition.properties">
+		<xsl:attribute name="margin-left">0.1em</xsl:attribute>
+		<xsl:attribute name="margin-right">2em</xsl:attribute>
+		<xsl:attribute name="border-left-width">.75pt</xsl:attribute>
+		<xsl:attribute name="border-left-style">solid</xsl:attribute>
+		<xsl:attribute name="border-left-color">#5c5c4f</xsl:attribute>
+		<xsl:attribute name="padding-left">0.5em</xsl:attribute>
+		<xsl:attribute name="space-before.optimum">1.5em</xsl:attribute>
+		<xsl:attribute name="space-before.minimum">1.5em</xsl:attribute>
+		<xsl:attribute name="space-before.maximum">1.5em</xsl:attribute>
+		<xsl:attribute name="space-after.optimum">1.5em</xsl:attribute>
+		<xsl:attribute name="space-after.minimum">1.5em</xsl:attribute>
+		<xsl:attribute name="space-after.maximum">1.5em</xsl:attribute>
+	</xsl:attribute-set>
+
+    <xsl:attribute-set name="admonition.title.properties">
+		<xsl:attribute name="font-size">10pt</xsl:attribute>
+		<xsl:attribute name="font-weight">bold</xsl:attribute>
+		<xsl:attribute name="hyphenate">false</xsl:attribute>
+		<xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
+		<xsl:attribute name="margin-left">0</xsl:attribute>
+	</xsl:attribute-set>
+
+	<xsl:attribute-set name="admonition.properties">
+		<xsl:attribute name="space-before.optimum">0em</xsl:attribute>
+		<xsl:attribute name="space-before.minimum">0em</xsl:attribute>
+		<xsl:attribute name="space-before.maximum">0em</xsl:attribute>
+	</xsl:attribute-set>
+
+	<!-- Asciidoc -->
+	<xsl:template match="processing-instruction('asciidoc-br')">
+		<fo:block/>
+	</xsl:template>
+
+	<xsl:template match="processing-instruction('asciidoc-hr')">
+		<fo:block space-after="1em">
+			<fo:leader leader-pattern="rule" rule-thickness="0.5pt" rule-style="solid" leader-length.minimum="100%"/>
+		</fo:block>
+	</xsl:template>
+
+  <xsl:template match="processing-instruction('asciidoc-pagebreak')">
+    <fo:block break-after='page'/>
+  </xsl:template>
 
 	<!-- SYNTAX HIGHLIGHT -->
 

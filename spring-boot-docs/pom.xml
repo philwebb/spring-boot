@@ -92,7 +92,7 @@
 					<plugin>
 						<groupId>com.agilejava.docbkx</groupId>
 						<artifactId>docbkx-maven-plugin</artifactId>
-						<version>2.0.14</version>
+						<version>2.0.15</version>
 						<configuration>
 							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
 							<includes>index.xml</includes>
@@ -126,9 +126,8 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
-									<imgSrcPath>images/</imgSrcPath>
+									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
 									<postProcess>
 										<copy todir="${basedir}/target/site/reference/htmlsingle">
 											<fileset dir="${basedir}/target/docbook/htmlsingle">
@@ -153,13 +152,12 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
-									<chunkedOutput>true</chunkedOutput>
-									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
-									<imgSrcPath>images/</imgSrcPath>
+									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
+									<chunkedOutput>true</chunkedOutput>
 									<postProcess>
 										<copy todir="${basedir}/target/site/reference/html">
-											<fileset dir="${basedir}/target/docbook/html/index">
+											<fileset dir="${basedir}/target/docbook/html">
 												<include name="**/*.html" />
 											</fileset>
 										</copy>
@@ -181,9 +179,8 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
+									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
 									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
-									<admonGraphicsPath>${basedir}/src/main/docbook/images/</admonGraphicsPath>
-									<imgSrcPath>${basedir}/src/main/docbook</imgSrcPath>
 									<postProcess>
 										<copy todir="${basedir}/target/site/reference">
 											<fileset dir="${basedir}/target/docbook">
@@ -193,6 +190,17 @@
 										<move file="${basedir}/target/site/reference/pdf/index.pdf"
 											tofile="${basedir}/target/site/reference/pdf/spring-boot-reference.pdf" />
 									</postProcess>
+								</configuration>
+							</execution>
+							<execution>
+								<id>epub</id>
+								<goals>
+									<goal>generate-epub3</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
+									<htmlCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</htmlCustomization>
 								</configuration>
 							</execution>
 						</executions>
