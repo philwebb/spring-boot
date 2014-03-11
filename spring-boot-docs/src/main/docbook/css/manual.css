@@ -14,6 +14,7 @@ body {
 
 code {
 	font-size: 16px;
+	color: #6D180B;
 }
 
 :not(pre) > code {
@@ -138,17 +139,15 @@ div.table td {
 }
 
 .sidebar {
-	font-size: 14px;
 	line-height: 1.4;
-	float: right;
-	clear: both;
-	margin: 15px 0 30px 30px;
 	padding: 0 20px;
-	width: 33%;
 	background-color: #F8F8F8;
 	border: 1px solid #CCCCCC;
 	border-radius: 3px 3px 3px 3px;
-	float: right;
+}
+
+.sidebar p.title {
+	color: #6D180B;
 }
 
 pre.programlisting, pre.screen {
