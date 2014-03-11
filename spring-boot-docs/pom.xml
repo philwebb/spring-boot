@@ -129,12 +129,12 @@
 									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
 									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
 									<postProcess>
-										<copy todir="${basedir}/target/site/reference/htmlsingle">
+										<copy todir="${basedir}/target/contents/reference/htmlsingle">
 											<fileset dir="${basedir}/target/docbook/htmlsingle">
 												<include name="**/*.html" />
 											</fileset>
 										</copy>
-										<copy todir="${basedir}/target/site/reference/htmlsingle">
+										<copy todir="${basedir}/target/contents/reference/htmlsingle">
 											<fileset dir="${basedir}/src/main/docbook">
 												<include name="**/*.css" />
 												<include name="**/*.png" />
@@ -156,12 +156,12 @@
 									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
 									<chunkedOutput>true</chunkedOutput>
 									<postProcess>
-										<copy todir="${basedir}/target/site/reference/html">
+										<copy todir="${basedir}/target/contents/reference/html">
 											<fileset dir="${basedir}/target/docbook/html">
 												<include name="**/*.html" />
 											</fileset>
 										</copy>
-										<copy todir="${basedir}/target/site/reference/html">
+										<copy todir="${basedir}/target/contents/reference/html">
 											<fileset dir="${basedir}/src/main/docbook">
 												<include name="**/*.css" />
 												<include name="**/*.png" />
@@ -182,13 +182,13 @@
 									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
 									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
 									<postProcess>
-										<copy todir="${basedir}/target/site/reference">
+										<copy todir="${basedir}/target/contents/reference">
 											<fileset dir="${basedir}/target/docbook">
 												<include name="**/*.pdf" />
 											</fileset>
 										</copy>
-										<move file="${basedir}/target/site/reference/pdf/index.pdf"
-											tofile="${basedir}/target/site/reference/pdf/spring-boot-reference.pdf" />
+										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
+											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
 									</postProcess>
 								</configuration>
 							</execution>
@@ -199,8 +199,17 @@
 								</goals>
 								<phase>generate-resources</phase>
 								<configuration>
+									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
 									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
-									<htmlCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</htmlCustomization>
+									<postProcess>
+										<copy todir="${basedir}/target/contents/reference/epub">
+											<fileset dir="${basedir}/target/docbook">
+												<include name="**/*.epub" />
+											</fileset>
+										</copy>
+										<move file="${basedir}/target/contents/reference/epub/index.epub"
+											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
+									</postProcess>
 								</configuration>
 							</execution>
 						</executions>
@@ -222,8 +231,8 @@
 											<zipfileset
 												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
 												prefix="api" />
+											<fileset dir="${project.build.directory}/contents"/>
 										</zip>
-
 									</target>
 								</configuration>
 							</execution>
