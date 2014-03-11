@@ -146,26 +146,25 @@
 									</postProcess>
 								</configuration>
 							</execution>
-							<!--
 							<execution>
 								<id>html</id>
 								<goals>
 									<goal>generate-html</goal>
 								</goals>
-								<phase>package</phase>
+								<phase>generate-resources</phase>
 								<configuration>
 									<chunkedOutput>true</chunkedOutput>
-									<targetDirectory>${basedir}/target/docbkx/html</targetDirectory>
-									<htmlCustomization>${shared.resources}/docbkx/xsl/html-multipage.xsl</htmlCustomization>
+									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
+									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
 									<imgSrcPath>images/</imgSrcPath>
 									<postProcess>
-										<copy todir="${project.basedir}/target/site/reference/html">
-											<fileset dir="${project.basedir}/target/docbkx/html/index">
+										<copy todir="${basedir}/target/site/reference/html">
+											<fileset dir="${basedir}/target/docbook/html/index">
 												<include name="**/*.html" />
 											</fileset>
 										</copy>
-										<copy todir="${project.basedir}/target/site/reference/html">
-											<fileset dir="${shared.resources}/docbkx">
+										<copy todir="${basedir}/target/site/reference/html">
+											<fileset dir="${basedir}/src/main/docbook">
 												<include name="**/*.css" />
 												<include name="**/*.png" />
 												<include name="**/*.gif" />
@@ -180,22 +179,22 @@
 								<goals>
 									<goal>generate-pdf</goal>
 								</goals>
-								<phase>package</phase>
+								<phase>generate-resources</phase>
 								<configuration>
-									<admonGraphicsPath>${shared.resources}/docbkx/images/</admonGraphicsPath>
-									<imgSrcPath>${basedir}/src/docbkx/</imgSrcPath>
+									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
+									<admonGraphicsPath>${basedir}/src/main/docbook/images/</admonGraphicsPath>
+									<imgSrcPath>${basedir}/src/main/docbook</imgSrcPath>
 									<postProcess>
-										<copy todir="${project.basedir}/target/site/reference">
-											<fileset dir="${project.basedir}/target/docbkx">
+										<copy todir="${basedir}/target/site/reference">
+											<fileset dir="${basedir}/target/docbook">
 												<include name="**/*.pdf" />
 											</fileset>
 										</copy>
-										<move file="${project.basedir}/target/site/reference/pdf/index.pdf"
-											tofile="${project.basedir}/target/site/reference/pdf/${dist.id}-reference.pdf" />
+										<move file="${basedir}/target/site/reference/pdf/index.pdf"
+											tofile="${basedir}/target/site/reference/pdf/spring-boot-reference.pdf" />
 									</postProcess>
 								</configuration>
 							</execution>
-							-->
 						</executions>
 					</plugin>
 					<plugin>

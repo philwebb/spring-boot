@@ -782,10 +782,14 @@ As before, to gracefully exist the application hit `ctrl-c`.
 // **************************************************************************************
 [[using-boot]]
 = Using Spring Boot
+
+[partintro]
+--
 This section provides a brief overview of best-practices when using Spring Boot. There
 is nothing particularly special about Spring Boot, it is just another library that you
 can consume. There are, however, a few recommendations that when followed will make your
 development process just a little easier.
+--
 
 
 
@@ -1309,7 +1313,7 @@ This allows you to attach a debugger to your packaged application:
 
 
 
-[[using-boot--maven-plugin]]
+[[using-boot--running-with-the-maven-plugin]]
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
 and run your application. Applications run in an exploded form, and you can edit
@@ -1324,7 +1328,7 @@ resources for instant ``hot'' reload.
 
 
 
-[[using-boot--gradle-plugin]]
+[[using-boot--running-with-the-gradle-plugin]]
 === Using the Gradle plugin
 The Spring Boot Gradle plugin also includes a `run` goal which can be used to run
 your application in an exploded form. The `bootRun` task is added whenever you import
@@ -2977,10 +2981,14 @@ result of a SpEL expression.
 // **************************************************************************************
 [[production-ready-features]]
 = Production-ready features
+
+[partintro]
+--
 Spring Boot includes a number of additional features to help you monitor and manage your
 application when it's pushed to production. You can choose to manage and monitor your
 application using HTTP endpoints, with JMX or even by remote shell (SSH or Telnet).
 Auditing, health and metrics gathering can be automatically applied to your application.
+--
 
 
 
@@ -3717,6 +3725,9 @@ or Jetty on the classpath), but then the API is the same.
 // **************************************************************************************
 [[cloud-deployment]]
 = Deploying to the cloud
+
+[partintro]
+--
 Spring Boot's executable jars are ready-made for most popular cloud PaaS
 (platform-as-a-service) providers. These providers tend to require that you
 _`bring your own container'_; they manage application processes (not Java applications
@@ -3736,6 +3747,8 @@ to run packaged within it.
 
 In this section we'll look at what it takes to get the simple Boot application that we
 developed in the Getting Started section up and running on Cloud Foundry and Heroku.
+--
+
 
 
 [[cloud-deployment--cloud-foundry]]
@@ -3936,9 +3949,13 @@ That should be it! Your application should be up and running on Heroku.
 // **************************************************************************************
 [[cli]]
 = Spring Boot CLI
+
+[partintro]
+--
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
 prototype with Spring. It allows you to run Groovy scripts, which means that you have a
 familiar Java-like syntax, without so much boilerplate code.
+--
 
 
 
@@ -4246,10 +4263,14 @@ the top level, or you can put the beans DSL in a separate file if you prefer.
 // **************************************************************************************
 [[build-tool-plugins]]
 = Build tool plugins
+
+[partintro]
+--
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
 variety of features, including the packaging executable jars. The section provides
 more details on both plugins, as well as some help should you need to extend a differnt
 build system. If you are just getting started, you might want to read XXX first.
+--
 
 
 
@@ -4834,7 +4855,11 @@ Here is a typical example repackage:
 // **************************************************************************************
 [[howto]]
 = ``How-to'' guides
+
+[partintro]
+--
 This section provides answers to some common ``how do I do that...'' types of questions.
+--
 
 
 
