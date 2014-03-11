@@ -42,7 +42,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>
 							<execution>
@@ -84,6 +83,7 @@
 									<attributes>
 										<docinfo>true</docinfo>
 										<spring-boot-version>${project.version}</spring-boot-version>
+										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
 									</attributes>
 								</configuration>
 							</execution>
@@ -116,7 +116,7 @@
 								<classifier>resources</classifier>
 								<type>zip</type>
 								<scope>runtime</scope>
-  							</dependency>
+							</dependency>
 						</dependencies>
 						<executions>
 							<execution>
@@ -217,6 +217,29 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<groupId>ant</groupId>
+										<artifactId>ant</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-nodeps</artifactId>
+								<version>1.8.1</version>
+							</dependency>
+							<dependency>
+								<groupId>org.tigris.antelope</groupId>
+								<artifactId>antelopetasks</artifactId>
+								<version>3.2.10</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>package-and-attach-docs-zip</id>
@@ -231,8 +254,34 @@
 											<zipfileset
 												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
 												prefix="api" />
-											<fileset dir="${project.build.directory}/contents"/>
+											<fileset dir="${project.build.directory}/contents" />
 										</zip>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>setup-maven-properties</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<exportAntProperties>true</exportAntProperties>
+									<target>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<var name="version-type" value="${project.version}" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<stringutil string="${version-type}" property="spring-boot-repo">
+											<lowercase />
+										</stringutil>
 									</target>
 								</configuration>
 							</execution>

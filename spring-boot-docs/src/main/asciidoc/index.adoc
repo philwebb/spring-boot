@@ -6,6 +6,7 @@ Phillip Webb; Dave Syer; Josh Long
 :source-highlighter: prettify
 :numbered:
 :icons: font
+:spring-boot-repo: snapshot
 :sc-ext: java
 :sc-root: http://github.com/spring-projects/spring-boot/tree/master
 :sc-spring-boot: {sc-root}/spring-boot/src/main/java/org/springframework/boot
@@ -16,7 +17,6 @@ Phillip Webb; Dave Syer; Josh Long
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
-
 
 // ======================================================================================
 
