@@ -207,6 +207,11 @@ endif::[]
 Spring Boot is compatible with Gradle 1.6 or above. If you don't already have Gradle
 installed you can follow the instructions at http://www.gradle.org/.
 
+Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
+Typically your project will declare dependencies to one or more starter POMs. Spring Boot
+provides a useful Gradle plugin that can be used to simplify dependency declarations
+and to create executable jars.
+
 .Gradle Wrapper
 ****
 The Gradle Wrapper provides a nice way of ``obtaining'' Gradle when you need to build a
@@ -214,11 +219,6 @@ project. It's a small script and library that you commit alongside your code to 
 the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
 for details.
 ****
-
-Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
-Typically your project will declare dependencies to one or more starter POMs. Spring Boot
-provides a useful Gradle plugin that can be used to simplify dependency declarations
-and to create executable jars.
 
 Here is a typical `build.gradle` file:
 
@@ -4449,7 +4449,7 @@ The Spring Boot Maven Plugin includes a `run` goal which can be used to launch y
 application from the command line. Type the following from the root of your Maven
 project:
 
-[indent=0
+[indent=0]
 ----
 	$ mvn spring-boot:run
 ----

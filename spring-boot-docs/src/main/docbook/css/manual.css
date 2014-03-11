@@ -49,9 +49,17 @@ h1,h2,h3,h4,h5,h6 {
 	padding: 0;
 }
 
+h1,h2,h3 {
+	margin: 40px 0 10px;
+}
+
 h1 {
-	border-bottom: 1px solid #CCCCCC;
-	margin: 50px 0 30px;
+    margin: 70px 0 30px;
+    padding-top: 20px;
+}
+
+div.part h1 {
+    border-top: 1px dotted #CCCCCC;
 }
 
 h1,h1 code {
@@ -130,7 +138,7 @@ div.table {
 	text-align: center;
 }
 
-div.table table {
+div.table table, div.informaltable table {
 	display: table;
 	width: 100%;
 }
@@ -167,12 +175,18 @@ pre.programlisting, pre.screen {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
-	border: none !important;
+	border: 1px solid #DDDDDD !important;
+	border-radius: 4px !important;
+	border-collapse: separate !important;
+	line-height: 1.6;
+}
+
+table thead {
+	background: #F5F5F5;
 }
 
 table tr {
-	background-color: #FFFFFF;
-	border-top: 1px solid #CCCCCC;
+	border: none;
 	border-bottom: none;
 }
 
@@ -181,7 +195,7 @@ table th {
 }
 
 table th,table td {
-	border: 1px solid #CCCCCC !important;
+	border: none !important;
 	padding: 6px 13px;
 }
 
@@ -248,7 +262,7 @@ div.important,div.note,div.tip,div.warning {
 }
 
 div.toc {
-	line-height: 1.1;
+	line-height: 1.2;
 }
 
 dl,dt {
