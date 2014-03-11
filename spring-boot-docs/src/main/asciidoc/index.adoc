@@ -1,0 +1,265 @@
+= Spring Boot Reference Guide
+Phillip Webb; Dave Syer; Josh Long
+
+:javadoc-baseurl: http://docs.spring.io/spring/docs/current/javadoc-api
+
+
+
+
+
+// FIXME look at this for inspiration http://media.readthedocs.org/pdf/django/1.6.x/django.pdf
+
+
+
+
+
+
+
+
+// **************************************************************************************
+// **************************************************************************************
+[[boot-documentation]]
+== Spring Boot Documentation
+
+
+
+[[boot-documentation--getting-help]]
+=== Getting help
+Having trouble with Spring Boot, We'd like to help!
+
+* Try the How-to's -- they provide solutions to the most common questions
+* Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
+	the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
+	you are just starting out with Spring, try one of the http://spring.io/guides[guides]
+* Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+	tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues
+
+
+
+[[boot-documentation--first-steps]]
+=== First steps
+If you are just starting out...
+
+* From scratch
+* Tutorial
+* Advanced tutorial
+
+// FIXME
+// FIXME overview of all the chapters here
+
+
+
+
+
+
+
+
+// **************************************************************************************
+// **************************************************************************************
+[[getting-started]]
+== Getting started
+
+
+
+
+[[getting-started--introducing-spring-boot]]
+=== Introducing Spring Boot
+Spring Boot makes it easy to create stand-alone, production-grade Spring based
+Applications that can you can ``just run''. We take an opinionated view of the Spring
+platform and third-party libraries so you can get started with minimum fuss. Most Spring
+Boot applications need very little Spring configuration.
+
+You can use Spring Boot to create Java applications that can be started using `java -jar`
+or more traditional war deployments. We also provide a command line tool that runs ``spring
+scripts''.
+
+Our primary goals are:
+
+* Provide a radically faster and widely accessible getting started experience for all
+Spring development
+* Be opinionated out of the box, but get out of the way quickly as requirements start to
+diverge from the defaults
+* Provide a range of non-functional features that are common to large classes of projects
+(e.g. embedded servers, security, metrics, health checks, externalized configuration)
+* Absolutely no code generation and no requirement for XML configuration
+
+
+
+[[getting-started--installing-spring-boot]]
+=== Installing Spring Boot
+Spring Boot can be used with ``classic'' Java development tools or installed as a command
+line tool. Regardless, you will need http://www.java.com[Java SDK v1.6] or higher. You
+should check your current Java installation before you begin:
+
+[indent=0]
+----
+	$ java -version
+----
+
+If you are new to Java development, or if you just want to experiment with Spring Boot
+you might want to try the Spring Boot CLI first, otherwise, read on for ``classic''
+installation instructions.
+
+TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
+using the latest version of Java.
+
+[[getting-started--installation-instructions-for-java]]
+==== Installation instructions for the Java developer
+You can use Spring Boot in the same way as any standard java library. Simply include the
+appropriate `spring-boot-*.jar` files in your classpath. Spring Boot does not require
+any special tool integration, so you can use any IDE or text editor; and there is nothing
+special about a Spring Boot application, so you can run and debug as you would any other
+Java program.
+
+Although you _could_ just copy Spring Boot jars, we generally recommend that you use a
+build tool that support dependency management (such as Maven or Gradle).
+
+
+
+[[getting-started--maven-installation]]
+===== Maven installation
+Spring Boot is compatible with Apache Maven 3.0 or above. If you don't already have Maven
+installed you can follow the instructions at http://maven.apache.org.
+
+TIP: On many operating systems Maven can be installed via a package manager. If you're a
+OSX Homebrew user try `brew install maven`. Ubuntu users can run `sudo apt-get install maven`.
+
+Spring Boot dependencies use the `org.springframework.boot` `groupId`. Typically your
+Maven POM file will inherit from the `spring-boot-starter-parent` project and declare
+dependencies to one or more ``starter POMs''. Spring Boot also provides an optional Maven
+plugin to create executable jars.
+
+// FIXME link to starter section
+
+Here is a typical `pom.xml` file:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<modelVersion>4.0.0</modelVersion>
+
+		<groupId>com.example</groupId>
+		<artifactId>myproject</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+
+		<!-- Inherit defaults from Spring Boot -->
+		<parent>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-parent</artifactId>
+			<version>{spring-boot-version}</version>
+		</parent>
+
+		<!-- Add typical dependencies for a web application -->
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</dependency>
+		</dependencies>
+
+		<!-- Package as an executable jar -->
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</build>
+
+ifeval::["{spring-boot-repo}" != "release"]
+		<!-- Add Spring repoistories -->
+		<!-- (you don't need this if you are using a .RELEASE version) -->
+		<repositories>
+			<repository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+				<snapshots><enabled>true</enabled></snapshots>
+			</repository>
+			<repository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>spring-snapshots</id>
+				<url>http://repo.spring.io/snapshot</url>
+			</pluginRepository>
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<url>http://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
+endif::[]
+	</project>
+----
+
+// FIXME links here to later sections
+
+
+
+[[getting-started--gradle-installation]]
+===== Gradle installation
+Spring Boot is compatible with Gradle 1.6 or above. If you don't already have Gradle
+installed you can follow the instructions at http://www.gradle.org/.
+
+.Gradle Wrapper
+****
+The Gradle Wrapper provides a nice way of ``obtaining'' Gradle when you need to build a
+project. It's a small script and library that you commit alongside your code to bootstrap
+the build process. See http://www.gradle.org/docs/current/userguide/gradle_wrapper.html
+for details.
+****
+
+Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
+Typically your project will declare dependencies to one or more starter POMs. Spring Boot
+provides a useful Gradle plugin that can be used to simplify dependency declarations
+and to create executable jars.
+
+Here is a typical `build.gradle` file:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	buildscript {
+		repositories {
+			mavenCentral()
+ifndef::release[]
+			maven { url "http://repo.spring.io/snapshot" }
+			maven { url "http://repo.spring.io/milestone" }
+endif::release[]
+		}
+		dependencies {
+			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+		}
+	}
+
+	apply plugin: 'java'
+	apply plugin: 'spring-boot'
+
+	jar {
+		baseName = 'myproject'
+		version =  '0.0.1-SNAPSHOT'
+	}
+
+	repositories {
+		mavenCentral()
+ifndef::release[]
+		maven { url "http://repo.spring.io/snapshot" }
+		maven { url "http://repo.spring.io/milestone" }
+endif::release[]
+	}
+
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+		testCompile("junit:junit")
+	}
+----
+
+// FIXME links to later on
+
+
+

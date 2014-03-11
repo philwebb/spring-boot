@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -66,6 +67,138 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<version>0.1.4</version>
+						<executions>
+							<execution>
+								<id>generate-docbook</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<sourceDocumentName>index.adoc</sourceDocumentName>
+									<backend>docbook5</backend>
+									<doctype>book</doctype>
+									<attributes>
+										<docinfo>true</docinfo>
+										<spring-boot-version>${project.version}</spring-boot-version>
+									</attributes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.agilejava.docbkx</groupId>
+						<artifactId>docbkx-maven-plugin</artifactId>
+						<version>2.0.14</version>
+						<configuration>
+							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
+							<includes>index.xml</includes>
+							<xincludeSupported>true</xincludeSupported>
+							<chunkedOutput>false</chunkedOutput>
+							<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
+							<useExtensions>1</useExtensions>
+							<highlightSource>1</highlightSource>
+							<highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml</highlightXslthlConfig>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>net.sf.xslthl</groupId>
+								<artifactId>xslthl</artifactId>
+								<version>2.1.0</version>
+							</dependency>
+							<dependency>
+								<groupId>net.sf.docbook</groupId>
+								<artifactId>docbook-xml</artifactId>
+								<version>5.0-all</version>
+								<classifier>resources</classifier>
+								<type>zip</type>
+								<scope>runtime</scope>
+  							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>html-single</id>
+								<goals>
+									<goal>generate-html</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
+									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
+									<imgSrcPath>images/</imgSrcPath>
+									<postProcess>
+										<copy todir="${basedir}/target/site/reference/htmlsingle">
+											<fileset dir="${basedir}/target/docbook/htmlsingle">
+												<include name="**/*.html" />
+											</fileset>
+										</copy>
+										<copy todir="${basedir}/target/site/reference/htmlsingle">
+											<fileset dir="${basedir}/src/main/docbook">
+												<include name="**/*.css" />
+												<include name="**/*.png" />
+												<include name="**/*.gif" />
+												<include name="**/*.jpg" />
+											</fileset>
+										</copy>
+									</postProcess>
+								</configuration>
+							</execution>
+							<!--
+							<execution>
+								<id>html</id>
+								<goals>
+									<goal>generate-html</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<chunkedOutput>true</chunkedOutput>
+									<targetDirectory>${basedir}/target/docbkx/html</targetDirectory>
+									<htmlCustomization>${shared.resources}/docbkx/xsl/html-multipage.xsl</htmlCustomization>
+									<imgSrcPath>images/</imgSrcPath>
+									<postProcess>
+										<copy todir="${project.basedir}/target/site/reference/html">
+											<fileset dir="${project.basedir}/target/docbkx/html/index">
+												<include name="**/*.html" />
+											</fileset>
+										</copy>
+										<copy todir="${project.basedir}/target/site/reference/html">
+											<fileset dir="${shared.resources}/docbkx">
+												<include name="**/*.css" />
+												<include name="**/*.png" />
+												<include name="**/*.gif" />
+												<include name="**/*.jpg" />
+											</fileset>
+										</copy>
+									</postProcess>
+								</configuration>
+							</execution>
+							<execution>
+								<id>pdf</id>
+								<goals>
+									<goal>generate-pdf</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<admonGraphicsPath>${shared.resources}/docbkx/images/</admonGraphicsPath>
+									<imgSrcPath>${basedir}/src/docbkx/</imgSrcPath>
+									<postProcess>
+										<copy todir="${project.basedir}/target/site/reference">
+											<fileset dir="${project.basedir}/target/docbkx">
+												<include name="**/*.pdf" />
+											</fileset>
+										</copy>
+										<move file="${project.basedir}/target/site/reference/pdf/index.pdf"
+											tofile="${project.basedir}/target/site/reference/pdf/${dist.id}-reference.pdf" />
+									</postProcess>
+								</configuration>
+							</execution>
+							-->
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
@@ -77,8 +210,11 @@
 								</goals>
 								<configuration>
 									<target>
-										<zip destfile="${project.build.directory}/${project.name}-${project.version}.zip">
-											<zipfileset src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar" prefix="api" />
+										<zip
+											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
+											<zipfileset
+												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
+												prefix="api" />
 										</zip>
 
 									</target>
