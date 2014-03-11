@@ -10,10 +10,12 @@ body {
 	margin: 15px 30px;
 	font-family: Helvetica, Arial, Freesans, Clean, Sans-serif;
 	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
 }
 
 code {
 	font-size: 16px;
+	font-family: Consolas, "Liberation Mono", Courier, monospace;
 	color: #6D180B;
 }
 
@@ -43,7 +45,7 @@ h1,h2,h3,h4,h5,h6 {
 	color: #000000;
 	cursor: text;
 	font-weight: bold;
-	margin: 20px 0 10px;
+	margin: 30px 0 10px;
 	padding: 0;
 }
 
@@ -198,7 +200,33 @@ div.table-contents td p {
 div.important *,div.note *,div.tip *,div.warning *,div.navheader *,div.navfooter *,div.calloutlist * {
 	border: none !important;
 	background: none !important;
+	margin: 0;
 }
+
+div.important p,div.note p,div.tip p,div.warning p {
+	color: #6F6F6F;
+	line-height: 1.6;
+}
+
+div.important code,div.note code,div.tip code,div.warning code {
+	background-color: #F2F2F2 !important;
+    border: 1px solid #CCCCCC !important;
+    border-radius: 4px !important;
+    padding: 1px 3px 0 !important;
+    text-shadow: none !important;
+    white-space: nowrap !important;
+}
+
+
+.note th,.tip th,.warning th {
+	display: none;
+}
+
+.note tr:first-child td,.tip tr:first-child td,.warning tr:first-child td {
+	border-right: 1px solid #CCCCCC !important;
+	padding-top: 10px;
+}
+
 
 div.calloutlist p, div.calloutlist td {
 	padding: 0;
@@ -211,10 +239,12 @@ div.calloutlist > table > tbody > tr > td:first-child {
 }
 
 div.important,div.note,div.tip,div.warning {
-	margin-left: 40px !important;
+	margin-left: 0px !important;
 	margin-right: 20px !important;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 div.toc {
