@@ -8,7 +8,7 @@ application for more details of which features are switched on in that specific 
 
 
 
-[[auto-configuration-classes--from-autoconfigure-module]]
+[[auto-configuration-classes-from-autoconfigure-module]]
 === From the ``spring-boot-autoconfigure'' module
 The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
 
@@ -97,7 +97,7 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 
 
 
-[[auto-configuration-classes--from-actuator]]
+[[auto-configuration-classes-from-actuator]]
 === From the ``spring-boot-actuator'' module
 The following auto-configuration classes are from the `spring-boot-actuator` module:
 

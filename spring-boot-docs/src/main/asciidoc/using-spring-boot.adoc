@@ -11,7 +11,7 @@ development process just a little easier.
 
 
 
-[[using-boot--build-systems]]
+[[using-boot-build-systems]]
 == Build systems
 It is strongly recommended that you choose a build system that supports _dependency
 management_, and one that can consume artifacts published to the ``Maven Central''
@@ -21,7 +21,7 @@ particularly well supported.
 
 
 
-[[using-boot--maven]]
+[[using-boot-maven]]
 === Maven
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible
 defaults. The parent project provides the following features:
@@ -36,7 +36,7 @@ defaults. The parent project provides the following features:
 
 
 
-[[using-boot--maven-parent-pom]]
+[[using-boot-maven-parent-pom]]
 ==== Inheriting the starter parent
 To configure your project to inherit from the `spring-boot-starter-parent` simply set
 the `parent`:
@@ -56,7 +56,7 @@ if you import additional starters, you can safely omit the version number.
 
 
 
-[[using-boot--maven-your-own-parent]]
+[[using-boot-maven-your-own-parent]]
 ==== Using your own parent POM
 If you don't want to use the Spring Boot starter parent, you can use your own and still
 keep the benefit of the dependency management (but not the plugin management) using a
@@ -79,7 +79,7 @@ keep the benefit of the dependency management (but not the plugin management) us
 
 
 
-[[using-boot--maven-java-version]]
+[[using-boot-maven-java-version]]
 ==== Changing the Java version
 The `spring-boot-starter-parent` chooses fairly conservative Java compatibility. If you
 want to follow our recommendation and use a later Java version you can add a
@@ -94,7 +94,7 @@ want to follow our recommendation and use a later Java version you can add a
 
 
 
-[[using-boot--maven-plugin]]
+[[using-boot-maven-plugin]]
 ==== Using the Spring Boot Maven plugin
 Spring Boot includes a Maven plugin that can package the project as an executable jar, or
 run it from source code. Add the plugin to your `<plugins>` section if you want to use it:
@@ -118,7 +118,7 @@ want to change the settings in the parent.
 
 
 
-[[using-boot--gradle]]
+[[using-boot-gradle]]
 === Gradle
 Gradle users can directly import ``starter POMs'' in their `dependencies` section. Unlike
 Maven, there is no ``super parent'' to import.
@@ -160,7 +160,7 @@ to omit the version number for common dependencies:
 
 
 
-[[using-boot--ant]]
+[[using-boot-ant]]
 ===  Ant
 It is possible to build a Spring Boot project using Apache Ant, however, no special
 support or plugins are provided. Ant scripts can use the Ivy dependency system to import
@@ -171,7 +171,7 @@ See XXX for more complete instructions.
 
 
 
-[[using-boot--starter-poms]]
+[[using-boot-starter-poms]]
 === Starter POMs
 Starter POMs are a set of convenient dependency descriptors that you can include in your
 application. You get a one-stop-shop for all the Spring and related technology that you
@@ -286,14 +286,14 @@ swap specific technical facets.
 
 
 
-[[using-boot--structuring-your-code]]
+[[using-boot-structuring-your-code]]
 == Structuring your code
 Spring Boot does not require any specific code layout to work, however, there are some
 best practices that help.
 
 
 
-[[using-boot--using-the-default-package]]
+[[using-boot-using-the-default-package]]
 === Using the ``default'' package
 When a class doesn't include a `package` declaration it is considered to be in the
 ``default package''. The use of the ``default package'' is generally discouraged, and
@@ -306,7 +306,7 @@ and use a reversed domain name (for example, `com.example.project`).
 
 
 
-[[using-boot--locating-the-main-class]]
+[[using-boot-locating-the-main-class]]
 === Locating the main application class
 We generally recommend that you locate your main application class in a root package
 above other classes. The `@EnableAutoConfiguration` annotation is often placed on your
@@ -363,7 +363,7 @@ The `Application.java` file would declare the `main` method, along with the basi
 
 
 
-[[using-boot--configuration-classes]]
+[[using-boot-configuration-classes]]
 == Configuration classes
 Spring Boot favors Java-based configuration. Although it is possible to call
 `SpringApplication.run()` with an XML source, we generally recommend that your primary
@@ -376,7 +376,7 @@ Always try to use the equivalent Java-base configuration if possible. Searching 
 
 
 
-[[using-boot--importing-configuration]]
+[[using-boot-importing-configuration]]
 === Importing additional configuration classes
 You don't need to put all your `@Configuration` into a single class. The `@Import`
 annotation an be used to import additional configuration classes. Alternatively, you
@@ -385,7 +385,7 @@ can use `@ComponentScan` to automatically pickup all Spring components, includin
 
 
 
-[[using-boot--importing-xml-configuration]]
+[[using-boot-importing-xml-configuration]]
 === Importing XML configuration
 If you absolutely must use XML based configuration we recommend that you still start
 with a `@Configuration` class. You can then use an additional `@ImportResource`
@@ -393,7 +393,7 @@ annotation to load XML configuration files.
 
 
 
-[[using-boot--auto-configuration]]
+[[using-boot-auto-configuration]]
 == Auto-configuration
 Spring Boot auto-configuration attempts to automatically configure your Spring
 application based on the jar dependencies that you have added. For example, If
@@ -408,7 +408,7 @@ recommend that you add it to your primary `@Configuration` class.
 
 
 
-[[using-boot--replacing-auto-configuration]]
+[[using-boot-replacing-auto-configuration]]
 === Gradually replacing auto-configuration
 Auto-configuration is noninvasive,  at any point you can start to define your own
 configuration to replace specific parts of the auto-configuration. For example, if
@@ -422,7 +422,7 @@ report to the console.
 
 
 
-[[using-boot--disabling-specific-auto-configutation]]
+[[using-boot-disabling-specific-auto-configutation]]
 === Disabling specific auto-configuration
 If you find that specific auto-configure classes are being applied that you don't want
 you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
@@ -441,7 +441,7 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 
 
 
-[[using-boot--spring-beans-and-dependency-injection]]
+[[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and dependency injection
 You are free to use any the standard Spring Framework techniques to defines your beans
 and their injected dependencies. For simplicity, we often find that using `@ComponentScan`
@@ -480,7 +480,7 @@ required `RiskAssessor` bean.
 TIP: Notice how using constructor injection allows the `riskAssessor` field to be marked
 as `final`, indicating that it cannot be subsequently changed.
 
-[[using-boot--running-your-application]]
+[[using-boot-running-your-application]]
 == Running your application
 One of the biggest advantages of packaging your application as jar and using an embedded
 HTTP server is that you can run your application as you would any other. Debugging Spring
@@ -491,7 +491,7 @@ application as a war file you should refer to your server and IDE documentation.
 
 
 
-[[using-boot--running-from-an-ide]]
+[[using-boot-running-from-an-ide]]
 === Running from an IDE
 You can run a Spring Boot application from your IDE as a simple Java application, however,
 first you will need to import your project. Import steps will vary depending on your IDE
@@ -510,7 +510,7 @@ any existing instance is closed.
 
 
 
-[[using-boot--running-as-a-packaged-application]]
+[[using-boot-running-as-a-packaged-application]]
 === Running as a packaged application
 If you use the Spring Boot Maven or Gradle plugins to create an executable jar you can
 run your application using `java -jar`. For example:
@@ -531,7 +531,7 @@ This allows you to attach a debugger to your packaged application:
 
 
 
-[[using-boot--running-with-the-maven-plugin]]
+[[using-boot-running-with-the-maven-plugin]]
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
 and run your application. Applications run in an exploded form, and you can edit
@@ -546,7 +546,7 @@ resources for instant ``hot'' reload.
 
 
 
-[[using-boot--running-with-the-gradle-plugin]]
+[[using-boot-running-with-the-gradle-plugin]]
 === Using the Gradle plugin
 The Spring Boot Gradle plugin also includes a `run` goal which can be used to run
 your application in an exploded form. The `bootRun` task is added whenever you import
@@ -561,7 +561,7 @@ the `spring-boot-plugin`
 
 
 
-[[using-boot--hot-swapping]]
+[[using-boot-hot-swapping]]
 === Hot swapping
 Since Spring Boot applications are just plain Java application, JVM hot-swapping should
 work out of the box. JVM hot swapping is somewhat limited with bytecode that it can
@@ -575,7 +575,7 @@ See the Hot swapping ``How-to'' section for details.
 
 
 
-[[using-boot--packaging-for-production]]
+[[using-boot-packaging-for-production]]
 == Packaging your application for production
 Executable jars can be used for production deployment. As they are self contained, they
 are also ideally suited for cloud-based deployment.
@@ -587,7 +587,7 @@ or JMX end-points; consider adding `spring-boot-actuator`. See XXX
 
 
 
-[[using-boot--whats-next]]
+[[using-boot-whats-next]]
 == What to read next
 
 // FIXME summary here, write this

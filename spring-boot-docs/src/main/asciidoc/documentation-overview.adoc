@@ -3,7 +3,7 @@
 
 
 
-[[boot-documentation--getting-help]]
+[[boot-documentation-getting-help]]
 == Getting help
 Having trouble with Spring Boot, We'd like to help!
 
@@ -17,7 +17,7 @@ Having trouble with Spring Boot, We'd like to help!
 
 
 
-[[boot-documentation--first-steps]]
+[[boot-documentation-first-steps]]
 == First steps
 If you are just starting out...
 

@@ -10,7 +10,7 @@ familiar Java-like syntax, without so much boilerplate code.
 
 
 
-[[cli--installation]]
+[[cli-installation]]
 == Installing the CLI
 The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
 Manually) or using Homebrew if you are an OSX user. See the XXX section for comprehensive
@@ -18,7 +18,7 @@ installation instructions.
 
 
 
-[[cli--using-the-cli]]
+[[cli-using-the-cli]]
 == Using the CLI
 Once you have installed the CLI you can run it by typing `spring`. If you run `spring`
 without any arguments, a simple help screen is displayed:
@@ -72,7 +72,7 @@ using.
 
 
 
-[[cli--run]]
+[[cli-run]]
 === Running applications using the CLI
 You can compile and run Groovy source code using the `run` command. The Spring Boot CLI
 is completely self contained so you don't need any external Groovy installation.
@@ -95,7 +95,7 @@ Here is an example ``hello world'' web application written in Groovy:
 
 
 
-[[cli--deduced-grab-annotations]]
+[[cli-deduced-grab-annotations]]
 ==== Deduced ``grab'' dependencies
 Standard Groovy includes a `@Grab` annotation which allows you to declare dependencies
 on a third-party libraries. This useful technique allows Groovy to download jars in the
@@ -152,7 +152,7 @@ to understand exactly how customizations are applied.
 
 
 
-[[cli--default-import-statements]]
+[[cli-default-import-statements]]
 ==== Default import statements
 To help reduce the size of your Groovy code, several `import` statements are
 automatically included. Notice how the example above refers to `@Component`,
@@ -164,7 +164,7 @@ your application to see what fails, before adding imports.
 
 
 
-[[cli--automatic-main-method]]
+[[cli-automatic-main-method]]
 ==== Automatic main method
 Unlike the equilvement Java application, you do not need to include a
 `public static void main(String[] args)` method with your `Groovy` scripts. A
@@ -173,7 +173,7 @@ Unlike the equilvement Java application, you do not need to include a
 
 
 
-[[cli--testing]]
+[[cli-testing]]
 === Testing your code
 The `test` command allows you to compile and run tests for your application. Typical
 usage looks like this:
@@ -208,7 +208,7 @@ into a `test` directory.
 
 
 
-[[cli--multiple-source-files]]
+[[cli-multiple-source-files]]
 === Applications with multiple source files
 You can use ``shell globbing'' with all commands that accept file input. This allows you
 to easily use multiple files from a single directory, e.g.
@@ -228,7 +228,7 @@ from the main application code:
 
 
 
-[[cli--jar]]
+[[cli-jar]]
 === Packaging your application
 You can use the `jar` command to package your application into a self-contained
 executable jar file. For example:
@@ -246,7 +246,7 @@ See the output of `spring help jar` for more information.
 
 
 
-[[cli--shell]]
+[[cli-shell]]
 === Using the embedded shell
 Spring Boot includes command-line completion scripts for BASH and zsh shells. If you
 don't use either of these shells (perhaps you are a Windows user) then you can use the
@@ -269,7 +269,7 @@ From inside the embedded shell you can run other commands directly:
 
 
 
-[[cli--groovy-beans-dsl]]
+[[cli-groovy-beans-dsl]]
 == Developing application with the Groovy beans DSL
 Spring Framework 4.0 has native support for a `beans{}` ``DSL'' (borrowed from
 http://grails.org/[Grails]),  and you can embed bean definitions in your Groovy

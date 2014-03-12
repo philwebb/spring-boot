@@ -11,7 +11,7 @@ curious about the underlying technology, this section provides some background.
 
 
 
-[[executable-jar--nested-jars]]
+[[executable-jar-nested-jars]]
 === Nested JARs
 Java does not provide any standard way to load nested jar files (i.e. jar files that
 are themselves contained within a jar). This can be problematic if you are looking
@@ -27,7 +27,7 @@ jars directly.
 
 
 
-[[executable-jar--jar-file-structure]]
+[[executable-jar-jar-file-structure]]
 ==== The executable jar file structure
 Spring Boot Loader compatible jar files should be structured in the following way:
 
@@ -55,7 +55,7 @@ Dependencies should be placed in a nested `lib` directory.
 
 
 
-[[executable-jar--war-file-structure]]
+[[executable-jar-war-file-structure]]
 ==== The executable war file structure
 Spring Boot Loader compatible war files should be structured in the following way:
 
@@ -90,7 +90,7 @@ a traditional web container should be placed in `WEB-INF/lib-provided`.
 
 
 
-[[executable-jar--jarfile]]
+[[executable-jar-jarfile]]
 === Spring Boot's ``JarFile'' class
 The core class used to support loading nested jars is
 `org.springframework.boot.loader.jar.JarFile`. It allows  you load jar
@@ -120,7 +120,7 @@ need to read all entry data into memory.
 
 
 
-[[executable-jar--jarfile-compatibility]]
+[[executable-jar-jarfile-compatibility]]
 ==== Compatibility with the standard Java ``JarFile''
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and
@@ -130,7 +130,7 @@ return a `URL` that opens a `java.net.JarURLConnection` compatible connection.
 
 
 
-[[executable-jar--launching]]
+[[executable-jar-launching]]
 === Launching executable jars
 The `org.springframework.boot.loader.Launcher` class is a special bootstrap class that
 is used as an executable jars main entry point. It is the actual `Main-Class` in your jar
@@ -148,7 +148,7 @@ setting an environment variable `LOADER_PATH` or `loader.path` in `application.p
 
 
 
-[[executable-jar--launcher-manifest]]
+[[executable-jar-launcher-manifest]]
 ==== Launcher manifest
 You need specify an appropriate `Launcher` as the `Main-Class` attribute of
 `META-INF/MANIFEST.MF`. The actual class that you want to launch (i.e. the class that
@@ -176,7 +176,7 @@ will be deduced from the nested jars.
 
 
 
-[[executable-jar--exploded-archives]]
+[[executable-jar-exploded-archives]]
 ==== Exploded archives
 Certain PaaS implementations may choose to unpack archives before they run. For example,
 Cloud Foundry operates in this way. You can run an unpacked archive by simply starting
@@ -190,7 +190,7 @@ the appropriate launcher:
 
 
 
-[[executable-jar--property-launcher-features]]
+[[executable-jar-property-launcher-features]]
 === PropertiesLauncher Features
 
 `PropertiesLauncher` has a few special features that can be enabled with external
@@ -246,14 +246,14 @@ Environment variables can be capitalized with underscore separators instead of p
 
 
 
-[[executable-jar--restrictions]]
+[[executable-jar-restrictions]]
 === Executable jar restrictions
 There are a number of restrictions that you need to consider when working with a Spring
 Boot Loader packaged application.
 
 
 
-[[executable-jar--zip-entry-compression]]
+[[executable-jar-zip-entry-compression]]
 ==== Zip entry compression
 The `ZipEntry` for a nested jar must be saved using the `ZipEntry.STORED` method. This
 is required so that we can seek directly to individual content within the nested jar.
@@ -262,7 +262,7 @@ entries in the outer jar.
 
 
 
-[[executable-jar--system-classloader]]
+[[executable-jar-system-classloader]]
 ==== System ClassLoader
 Launched applications should use `Thread.getContextClassLoader()` when loading classes
 (most libraries and frameworks will do this by default). Trying to load nested jar
@@ -272,7 +272,7 @@ consider a different logging implementation.
 
 
 
-[[executable-jar--alternatives]]
+[[executable-jar-alternatives]]
 === Alternative single jar solutions
 If the above restrictions mean that you cannot use Spring Boot Loader the following
 alternatives could be considered:

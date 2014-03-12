@@ -1,6 +1,6 @@
 // **************************************************************************************
 // **************************************************************************************
-[[production-ready-features]]
+[[production-ready]]
 = Production-ready features
 
 [partintro]
@@ -13,7 +13,7 @@ Auditing, health and metrics gathering can be automatically applied to your appl
 
 
 
-[[production-ready-features---enabling]]
+[[production-ready-enabling]]
 == Enabling production-ready features.
 The `spring-boot-actuator` project provides all of Spring Boot's production-ready
 features. The simplist way to enable the features is to add a dependency to the
@@ -138,7 +138,7 @@ that is being configured.
 
 
 
-[[production-ready-features---health]]
+[[production-ready-health]]
 === Custom health information
 The default information exposed by the `health` endpoint is a simple ``OK'' message. It
 is often useful to perform some additional health checks, for example you might check
@@ -169,7 +169,7 @@ database test.
 
 
 
-[[production-ready-features---application-info]]
+[[production-ready-application-info]]
 === Custom application info information
 You can customize the data exposed by the `info` endpoint by settings `info.*` Spring
 properties. All `Environment` properties under the info key will be automatically
@@ -214,7 +214,7 @@ fallbacks if the Maven resource filtering has for some reason not been switched 
 
 
 
-[[production-ready-features---git-commit-information]]
+[[production-ready-git-commit-information]]
 ==== Git commit information
 Another useful feature of the `info` endpoint is its ability to publish information
 about the state of your `git` source code repository when the project was built. If a
@@ -241,7 +241,7 @@ for Gradle users, although a little more work is required to generate the proper
 
 
 
-[[production-ready-features---monitoring]]
+[[production-ready-monitoring]]
 == Monitoring and management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator will auto-configure
 all non-sensitive endpoints to be exposed over HTTP. The default convention it to use the
@@ -249,7 +249,7 @@ all non-sensitive endpoints to be exposed over HTTP. The default convention it t
 
 
 
-[[production-ready-features---sensitive-endpoints]]
+[[production-ready-sensitive-endpoints]]
 === Exposing sensitive endpoints
 If you use ``Spring Security'' sensitive endpoints will also be exposed over HTTP. By
 default ``basic'' authentication will be used with the username `user` and a generated
@@ -271,7 +271,7 @@ in your `application.properties`:
 
 
 
-[[production-ready-features---customizing-management-server-context-path]]
+[[production-ready-customizing-management-server-context-path]]
 === Customizing the management server context path
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
@@ -287,7 +287,7 @@ The `application.properties` example above will change the endpoint from `/{id}`
 
 
 
-[[production-ready-features---customizing-management-server-port]]
+[[production-ready-customizing-management-server-port]]
 === Customizing the management server port
 Exposing management endpoints using the default HTTP port is a sensible choice for cloud
 based deployments. If, however, your application runs inside your own data center you
@@ -305,7 +305,7 @@ want to disable management security:
 
 
 
-[[production-ready-features---customizing-management-server-address]]
+[[production-ready-customizing-management-server-address]]
 === Customizing the management server address
 You can customize the address that the management endpoints are available on by
 setting the `management.security.address` property. This can be useful if you want to
@@ -326,7 +326,7 @@ connections:
 
 
 
-[[production-ready-features---disabling-http-endpoints]]
+[[production-ready-disabling-http-endpoints]]
 === Disabling HTTP endpoints
 If you don't want to expose endpoints over HTTP you can set the management port to `-1`:
 
@@ -337,7 +337,7 @@ If you don't want to expose endpoints over HTTP you can set the management port 
 
 
 
-[[production-ready-features---jmx]]
+[[production-ready-jmx]]
 == Monitoring and management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage
 applications. By default Spring Boot will expose management endpoints as JMX MBeans
@@ -345,7 +345,7 @@ under the `org.springframework.boot` domain.
 
 
 
-[[production-ready-features---custom-mbean-names]]
+[[production-ready-custom-mbean-names]]
 === Customizing MBean names
 By default, the name of the MBean is generated from the `id` of the endpoint. For example
 the `health` endpoint is exposed as `org.springframework.boot/Endpoint/HealthEndpoint`.
@@ -377,7 +377,7 @@ property:
 
 
 
-[[production-ready-features---jolokia]]
+[[production-ready-jolokia]]
 === Using Jolokia for JMX over HTTP
 Jolokia is a JMX-HTTP bridge giving an alternative method of accessing JMX beans. To
 use Jolokia, simply include a dependency to `org.jolokia:jolokia-core`. For example,
@@ -395,7 +395,7 @@ Jolokia can then be accessed using `/jolokia` on your management HTTP server.
 
 
 
-[[production-ready-features---customizing-jolokia]]
+[[production-ready-customizing-jolokia]]
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure using servlet
 parameters parameters. With Spring Boot you can use your `application.properties`, simply
@@ -408,7 +408,7 @@ prefix the paramter with `jolokia.config.`:
 
 
 
-[[production-ready-features---disabling-jolokia]]
+[[production-ready-disabling-jolokia]]
 ==== Disabling Jolokia
 If you are using Jolokia but you don't want Spring Boot to configure it, simply set the
 `endpoints.jolokia.enabled` property:
@@ -420,7 +420,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 
 
 
-[[production-ready-features---remote-shell]]
+[[production-ready-remote-shell]]
 == Monitoring and management using a remote shell
 Spring Boot supports an integrated Java shell called ``CRaSH''. You can use CRaSH to
 `ssh` or `telnet` into your running application. To enable remote shell support add a
@@ -439,7 +439,7 @@ on `org.crsh:crsh.shell.telnet`.
 
 
 
-[[production-ready-features---connecting-to-the-remote-shell]]
+[[production-ready-connecting-to-the-remote-shell]]
 === Connecting to the remote shell
 By default the remote shell will listen for connections on port `2000`. The default user
 is `user` and the default password will be randomly generated and displayed in the log
@@ -477,7 +477,7 @@ Type `help` for a list of commands. Spring boot provides `metrics`, `beans` and
 
 
 
-[[production-ready-features---remote-shell-credentials]]
+[[production-ready-remote-shell-credentials]]
 ==== Remote shell credentials
 You can use the `shell.auth.simple.username` and `shell.auth.simple.password` properties
 to configure custom connection credentials. It is also possible to use a
@@ -486,13 +486,13 @@ to configure custom connection credentials. It is also possible to use a
 
 
 
-[[production-ready-features---extending-the-remote-shell]]
+[[production-ready-extending-the-remote-shell]]
 === Extending the remote shell
 The remote shell can be extended in a number of interesting ways.
 
 
 
-[[production-ready-features---remote-commands]]
+[[production-ready-remote-commands]]
 ==== Remote shell commands
 You can write additional shell commands using Groovy or Java (see the CRaSH documentation
 for details). By default Spring Boot will search for commands in the following locations:
@@ -541,7 +541,7 @@ from your command:
 
 
 
-[[production-ready-features---remote-shell-plugins]]
+[[production-ready-remote-shell-plugins]]
 ==== Remote shell plugins
 In addition to new commands, it is also possible to extend other CRaSH shell features.
 All Spring Beans that extends `org.crsh.plugin.CRaSHPlugin` will be automatically
@@ -551,7 +551,7 @@ For more information please refer to the CRaSH reference documentation.
 
 
 
-[[production-ready-features---metrics]]
+[[production-ready-metrics]]
 == Metrics
 Spring Boot Actuator includes a metric service with ``gauge'' and ``counter'' support.
 A ``gauge'' records a single value; and a ``counter'' records a delta (an increment or
@@ -585,7 +585,7 @@ NOTE: In this example we are actually accessing the endpoint over HTTP using the
 
 
 
-[[production-ready-features---recording-metrics]]
+[[production-ready-recording-metrics]]
 === Recording your own metrics
 To record your own metrics inject a
 `org.springframework.boot.actuate.metrics.CounterService` and/or
@@ -635,7 +635,7 @@ box (the in-memory repository is the default) but you can also write your own. T
 
 
 
-[[production-ready-features---code-hale-metrics]]
+[[production-ready-code-hale-metrics]]
 === Coda Hale Metrics
 User of the Coda Hale ``Metrics'' library will automatically find the Spring Boot metrics
 are published to `com.codahale.metrics.MetricRegistry`. A default
@@ -648,7 +648,7 @@ type (e.g. `histogram.*`, `meter.*`).
 
 
 
-[[production-ready-features---metrics-message-channel-integration]]
+[[production-ready-metrics-message-channel-integration]]
 === Message channel integration
 If the ``Spring Messaging'' jar is on your classpath a `MessageChannel` called
 `metricsChannel` is automatically created (unless one already exists). All metric update
@@ -657,7 +657,7 @@ actions can be taken by clients subscribing to that channel.
 
 
 
-[[production-ready-features---auditing]]
+[[production-ready-auditing]]
 == Auditing
 Spring Boot Actuator has a flexible audit framework that will publish events once Spring
 Security is in play (authentication success and failure and access denied exceptions by
@@ -671,7 +671,7 @@ use that directly, or you can simply publish `AuditApplicationEvent` via the Spr
 
 
 
-[[production-ready-features---tracing]]
+[[production-ready-tracing]]
 == Tracing
 Tracing is automatically enable for all HTTP requests. You can view the `trace` endpoint
 and obtain basic information about the last few requests:
@@ -724,7 +724,7 @@ if needed.
 
 
 
-[[production-ready-features---error-handling]]
+[[production-ready-error-handling]]
 == Error Handling
 Spring Boot Actuator provides an `/error` mapping by default that handles all errors in a
 sensible way.  If you want more specific error pages for some conditions, the embedded

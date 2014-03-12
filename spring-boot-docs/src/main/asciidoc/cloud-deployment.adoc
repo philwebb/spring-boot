@@ -26,7 +26,7 @@ developed in the Getting Started section up and running on Cloud Foundry and Her
 
 
 
-[[cloud-deployment--cloud-foundry]]
+[[cloud-deployment-cloud-foundry]]
 == Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry buildpack has excellent support for Spring applications,
@@ -92,7 +92,7 @@ able to hit the application at the URI provided:
 
 
 
-[[cloud-deployment--cloud-foundry-services]]
+[[cloud-deployment-cloud-foundry-services]]
 === Binding to services
 By default, meta-data about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
@@ -132,7 +132,7 @@ Heroku too!
 
 
 
-[[cloud-deployment--heroku]]
+[[cloud-deployment-heroku]]
 == Heroku
 Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
 `Procfile`, which provides the incantation required to deploy an application. Heroku

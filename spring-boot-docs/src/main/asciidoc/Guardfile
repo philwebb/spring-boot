@@ -3,7 +3,7 @@ require 'erb'
 
 guard 'shell' do
 	watch(/.*\.adoc$/) {|m|
-		Asciidoctor.render_file(m[0],
+		Asciidoctor.render_file('index.adoc', \
 			:in_place => true, \
 			:safe => Asciidoctor::SafeMode::UNSAFE, \
 			:attributes=> { \
