@@ -1,6 +1,15 @@
 [[boot-features]]
 = Spring Boot features
 
+[partintro]
+--
+This section dives into the details of Spring Boot. Here you can learn about the key
+features that you will want to use and customize. If you haven't already, you might want
+to read the ``<<getting-started.adoc#getting-started>>'' and
+``<<using-spring-boot.adoc#using-boot>>'' sections so that you have a good grounding
+of the basics.
+--
+
 
 
 [[boot-features-spring-application]]

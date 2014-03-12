@@ -7,8 +7,11 @@ Phillip Webb; Dave Syer; Josh Long
 :numbered:
 :icons: font
 :spring-boot-repo: snapshot
+:github-tag: master
+:github-repo: spring-projects/spring-boot
+:github-raw: http://raw.github.com/{github-repo}/{github-tag}
+:github-code: http://github.com/{github-repo}/tree/{github-tag}
 :sc-ext: java
-:sc-root: http://github.com/spring-projects/spring-boot/tree/master
 :sc-spring-boot: {sc-root}/spring-boot/src/main/java/org/springframework/boot
 :sc-spring-boot-autoconfigure: {sc-root}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
 :sc-spring-boot-actuator: {sc-root}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
@@ -17,6 +20,7 @@ Phillip Webb; Dave Syer; Josh Long
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
 
 // ======================================================================================
 
@@ -38,3 +42,6 @@ include::appendix.adoc[]
 // FIXME how to use lombok
 // FIXME add security section
 // FIXME replace all github and javadoc links with attributes
+// FIXME move PDF copyright down
+// FIXME add part heading to PDF
+// FIXME add captions to all tables?
