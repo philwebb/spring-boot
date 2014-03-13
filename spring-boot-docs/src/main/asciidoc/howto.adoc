@@ -3,7 +3,17 @@
 
 [partintro]
 --
-This section provides answers to some common ``how do I do that...'' types of questions.
+This section provides answers to some common '``how do I do that...''' type of questions
+that often arise when using Spring Boot. This is by no means an exhaustive list, but it
+does cover quite a lot.
+
+If you are having a specific problem that we don't cover here, you might want to check out
+http://stackoverflow.com/tags/spring-boot[stackoverflow.com] to see if someone has
+already provided an answer; this is also a great place to ask new questions (please use
+the `spring-boot` tag).
+
+We're also more than happy to extend this section; If you want to add a ``how-to'' you
+can send us a {github-code}[pull request].
 --
 
 
@@ -20,9 +30,9 @@ sometimes things fail and it can be hard to tell why.
 
 There is a really useful `AutoConfigurationReport` available in any Spring Boot
 `ApplicationContext`. You will see it if you enable `DEBUG` logging output. If you use
-the Actuator there is also an endpoint `/autoconfig` that renders the report in JSON.
-Use that to debug the application and see what features have been added (and which not) by
-Spring Boot at runtime.
+the `spring-boot-actuator` there is also an `autoconfig` endpoint that renders the report
+in JSON. Use that to debug the application and see what features have been added (and
+which not) by Spring Boot at runtime.
 
 // FIXME link to full auto-config list + link to actuator
 
@@ -31,17 +41,17 @@ rules of thumb:
 
 * Look for classes called `*AutoConfiguration` and read their sources, in particular the
   `@Conditional*` annotations to find out what features they enable and when. Add
-  `--debug` to the command line or a System property `-Ddebug` to get a printout on the
+  `--debug` to the command line or a System property `-Ddebug` to get a log on the
   console of all the autoconfiguration decisions that were made in your app. In a running
-  Actuator app look at the `/autoconfig` endpoint (or the JMX equivalent) for the same
-  information.
+  Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
+  the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
-  https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c[`ServerProperties`]
+  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
   and read from there the available external configuration options. The
   `@ConfigurationProperties` has a `name` attribute which acts as a prefix to external
   properties, thus `ServerProperties` has `name="server"` and its configuration properties
   are `server.port`, `server.address` etc. In a running Actuator app look at the
-  `/configprops` endpoint or JMX equivalent.
+  `configprops` endpoint.
 * Look for use of `RelaxedEnvironment` to pull configuration values explicitly out of the
   `Environment`. It often is used with a prefix.
 * Look for `@Value` annotations that bind directly to the `Environment`. This is less
@@ -70,9 +80,9 @@ than one way to register additional ones:
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (even
 some before the context is created), and then registers the listeners for events published
-by the `ApplicationContext` as well. See XXX for a complete list.
-
-// FIXME
+by the `ApplicationContext` as well. See
+``<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>'' in the
+``<<spring-boot-features.adoc#boot-features>>'' section for a complete list.
 
 
 
@@ -283,18 +293,14 @@ other places) into an application at runtime.  There is not (and technically can
 an exhaustive list of all supported properties in a single location because contributions
 can come from additional jar files on your classpath.
 
-A running application with the Actuator features has a `/configprops` endpoint that shows
-all the bound and bindable properties available through `@ConfigurationProperties` (also
-exposed through JMX if you don't have a web endpoint).
+A running application with the Actuator features has a `configprops` endpoint that shows
+all the bound and bindable properties available through `@ConfigurationProperties`.
 
-There is a sample
-https://github.com/spring-projects/spring-boot/blob/master/docs/application.yml[`application.yml`]
-with a non-exhaustive and possibly inaccurate list of properties supported by Spring Boot
-vanilla with autoconfiguration. The definitive list comes from searching the source code
-for `@ConfigurationProperties` and `@Value` annotations, as well as the occasional use of
-`RelaxedEnvironment` (c.f. https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java?source=c#L65[here]).
-
-// FIXME add link
+The appendix includes an <<appendix-application-properties#common-application-properties,
+`application.properties`>> example with a list of the most common properties supported by
+Spring Boot. The definitive list comes from searching the source code for
+`@ConfigurationProperties` and `@Value` annotations, as well as the occasional use of
+`RelaxedEnvironment`.
 
 
 
@@ -329,8 +335,9 @@ environment variable).
 To switch off the HTTP endpoints completely, but still create a `WebApplicationContext`,
 use `server.port=-1` (this is sometimes useful for testing).
 
-For more detail look at the https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c[`ServerProperties`]
-source code.
+For more detail look at the
+{sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`] source
+code.
 
 
 
@@ -469,7 +476,7 @@ of ways. Or the nuclear option is to add your own `JettyEmbeddedServletContainer
 === Use Tomcat 8
 Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7 (so we can support
 Java 1.6 out of the box). You should only need to change the classpath to use Tomcat 8
-for it to work. The https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-websocket/pom.xml[websocket sample]
+for it to work. The {github-code}/spring-boot-samples/spring-boot-sample-websocket/pom.xml[websocket sample]
 shows you how to do that in Maven.
 
 
@@ -710,7 +717,7 @@ action.
 See XXX.
 
 To override the default settings just define a `@Bean` of your own of type `DataSource`.
-See https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`]
+See {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 for more details.
 
 
@@ -725,8 +732,8 @@ class.
 For many applications all you will need is to put the right Spring Data dependencies on
 your classpath (there is a `spring-boot-starter-data-jpa` for JPA and for Mongodb you
 only need to add `spring-datamongodb`), create some repository interfaces to handle your
-`@Entity` objects. Examples are in the https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa[JPA sample]
-or the https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb[Mongodb sample].
+`@Entity` objects. Examples are in the {github-code}/spring-boot-samples/spring-boot-sample-data-jpa[JPA sample]
+or the {github-code}/spring-boot-samples/spring-boot-sample-data-mongodb[Mongodb sample].
 
 Spring Boot tries to guess the location of your `@Repository` definitions, based on the
 `@EnableAutoConfiguration` it finds. To get more control, use the `@EnableJpaRepositories`
@@ -775,8 +782,8 @@ defaults depending on whether you are using an embedded database (`create-drop`)
 normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
 created.
 
-See https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`]
-and https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
+See {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[`HibernateJpaAutoConfiguration`]
+and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBaseConfiguration`]
 for more details.
 
 
@@ -879,17 +886,17 @@ Spring Batch autoconfiguration is enabled by adding `@EnableBatchProcessing`
 (from Spring Batch) somewhere in your context.
 
 By default it executes *all* `Jobs` in the application context on startup (see
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java[JobLauncherCommandLineRunner]
+{sc-spring-boot-autoconfigure}/batch/JobLauncherCommandLineRunner.{sc-ext}[JobLauncherCommandLineRunner]
 for details). You can narrow down to a specific job or jobs by specifying
 `spring.batch.job.names` (comma separated job name patterns).
 
 If the application context includes a `JobRegistry` then the jobs in
-`spring.batch.job.names` are looked up in the regsitry instead of bein autowired from the
+`spring.batch.job.names` are looked up in the registry instead of being autowired from the
 context. This is a common pattern with more complex systems where multiple jobs are
 defined in child contexts and registered centrally.
 
 See
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java[BatchAutoConfiguration]
+{sc-spring-boot-autoconfigure}/batch/BatchAutoConfiguration.{sc-ext}[BatchAutoConfiguration]
 and
 https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java[@EnableBatchProcessing]
 for more details.
@@ -910,7 +917,7 @@ an internal network for management and an external one for user applications) yo
 also set `management.address` to a valid IP address that the server is able to bind to.
 
 For more detail look at the
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/properties/ManagementServerProperties.java?source=c[`ManagementServerProperties`]
+{sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code.
 
 
@@ -953,7 +960,7 @@ via `SecurityProperties`.
 If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application
 it will switch off the default webapp security settings in Spring Boot. To tweak the
 defaults try setting properties in `security.*` (see
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/SecurityProperties.java[`SecurityProperties`]
+{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 for details of available settings).
 
 
@@ -1129,7 +1136,7 @@ The war file can also be executable if you use the Spring Boot build tools. In t
 the embedded container classes (to launch Tomcat for instance) have to be added to the
 war in a `lib-provided` directory. The tools will take care of that as long as the
 dependencies are marked as "provided" in Maven or Gradle. Here's a Maven example
-https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
+{github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
 
 
 

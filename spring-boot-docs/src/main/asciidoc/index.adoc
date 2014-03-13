@@ -15,6 +15,7 @@ Phillip Webb; Dave Syer; Josh Long
 :sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot
 :sc-spring-boot-autoconfigure: {github-code}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
 :sc-spring-boot-actuator: {github-code}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:sc-spring-boot-cli: {github-code}/spring-boot-cli/src/main/java/org/springframework/boot/cli
 :dc-ext: html
 :dc-root: http://docs.spring.io/spring-boot/docs/1.0.0.RC4/api
 :dc-spring-boot: {dc-root}/org/springframework/boot

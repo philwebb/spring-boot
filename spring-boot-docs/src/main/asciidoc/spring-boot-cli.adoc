@@ -13,8 +13,9 @@ familiar Java-like syntax, without so much boilerplate code.
 [[cli-installation]]
 == Installing the CLI
 The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
-Manually) or using Homebrew if you are an OSX user. See the XXX section for comprehensive
-installation instructions.
+Manually) or using Homebrew if you are an OSX user. See
+``<<getting-started.adoc#getting-started-installing-the-cli>>''
+in the ``Getting started'' section for comprehensive installation instructions.
 
 
 
@@ -111,44 +112,45 @@ The following items are used as ``grab hints'':
 | Items | Grabs
 
 |`JdbcTemplate`, `NamedParameterJdbcTemplate`, `DataSource`
-|JDBC Application
+|JDBC Application.
 
 |`@EnableJmsMessaging`
-|JMS Application
+|JMS Application.
 
 |`@Test`
-|JUnit
+|JUnit.
 
 |`@EnableRabbitMessaging`
-|RabbitMQ
+|RabbitMQ.
 
 |`@EnableReactor`
-|Project Reactor
+|Project Reactor.
 
 |extends `Specification`
-|Spock test
+|Spock test.
 
 |`@EnableBatchProcessing`
-|Spring Batch
+|Spring Batch.
 
 |`@MessageEndpoint` `@EnableIntegrationPatterns`
-|Spring Integration
+|Spring Integration.
 
 |`@EnableDeviceResolver`
-|Spring Mobile
+|Spring Mobile.
 
 |`@Controller` `@RestController` `@EnableWebMvc`
-|Spring MVC + Embedded Tomcat
+|Spring MVC + Embedded Tomcat.
 
 |`@EnableWebSecurity`
-|Spring Security
+|Spring Security.
 
 |`@EnableTransactionManagement`
-|Spring Transaction Management
+|Spring Transaction Management.
 |===
 
-TIP: See subclasses of `CompilerAutoConfiguration` in the Spring Boot CLI source code
-to understand exactly how customizations are applied.
+TIP: See subclasses of
+{sc-spring-boot-cli}/compiler/CompilerAutoConfiguration.{sc-ext}[`CompilerAutoConfiguration`]
+in the Spring Boot CLI source code to understand exactly how customizations are applied.
 
 
 
@@ -160,7 +162,7 @@ automatically included. Notice how the example above refers to `@Component`,
 fully-qualified names or `import` statements.
 
 TIP: Many Spring annotations will work without using `import` statements. Try running
-your application to see what fails, before adding imports.
+your application to see what fails before adding imports.
 
 
 
@@ -168,7 +170,7 @@ your application to see what fails, before adding imports.
 ==== Automatic main method
 Unlike the equilvement Java application, you do not need to include a
 `public static void main(String[] args)` method with your `Groovy` scripts. A
-`SpringApplication` is automatically created with your compiled code acting as the
+`SpringApplication` is automatically created, with your compiled code acting as the
 `source`.
 
 
@@ -239,7 +241,7 @@ executable jar file. For example:
 ----
 
 The resulting jar will contain the classes produced by compiling the application and all
-of the application's dependencies such that it can then be run using `java -jar`. The jar
+of the application's dependencies so that it can then be run using `java -jar`. The jar
 file will also contain entries from the application's classpath.
 
 See the output of `spring help jar` for more information.
@@ -267,7 +269,9 @@ From inside the embedded shell you can run other commands directly:
 	Spring CLI v{spring-boot-version}
 ----
 
-
+The embedded shell supports ANSI color output as well as `tab` completion. If you need
+to run a native command you can use the `$` prefix. Hitting `ctrl-c` will exit the
+embedded shell.
 
 [[cli-groovy-beans-dsl]]
 == Developing application with the Groovy beans DSL
@@ -302,3 +306,18 @@ external features like middleware declarations. For example:
 
 You can mix class declarations with `beans{}` in the same file as long as they stay at
 the top level, or you can put the beans DSL in a separate file if you prefer.
+
+
+
+[[cli-whats-next]]
+== What to read next
+There are some {github-code}/spring-boot-cli/samples[sample groovy
+scripts] available from the GitHub repository that you can use to try out the
+Spring Boot CLI. There is also extensive javadoc throughout the
+{sc-spring-boot-cli}[source code].
+
+If you find that you reach the limit of the CLI tool, you will probably want to look
+at converting your application to full Gradle or Maven built ``groovy project''. The
+next section covers Spring Boot's
+``<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>'' that you can
+use with Gradle or Maven.

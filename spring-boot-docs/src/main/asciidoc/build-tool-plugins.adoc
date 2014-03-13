@@ -4,9 +4,11 @@
 [partintro]
 --
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
-variety of features, including the packaging executable jars. The section provides
-more details on both plugins, as well as some help should you need to extend a differnt
-build system. If you are just getting started, you might want to read XXX first.
+variety of features, including the packaging of executable jars. The section provides
+more details on both plugins, as well as some help should you need to extend an
+unsupported build system. If you are just getting started, you might want to read
+``<<using-spring-boot.adoc#using-boot-build-systems>>'' from the
+<<using-spring-boot.adoc#using-boot>> section first.
 --
 
 
@@ -14,7 +16,7 @@ build system. If you are just getting started, you might want to read XXX first.
 [[build-tool-plugins-maven-plugin]]
 == Spring Boot Maven plugin
 The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
-package executable jar or war archives and run an application in-place. To use it you
+package executable jar or war archives and run an application ``in-place''. To use it you
 must be using Maven 3 (or better).
 
 
@@ -50,8 +52,9 @@ section of your `pom.xml`
 	</project>
 ----
 
-This configuration will repackage a jar or war that is built in the `package` phase of
-the Maven lifecycle, so
+This configuration will repackage a jar or war that is built during the `package` phase of
+the Maven lifecycle. The following example shows both the repackaged jar, as well as the
+original jar, in the `target` directory:
 
 [indent=0]
 ----
@@ -60,15 +63,16 @@ the Maven lifecycle, so
 	target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original
 ----
 
-will reveal the result. If you don't include the `<execution/>` configuration as above
-you can run the plugin on its own, but only if the package goal is used as well, e.g.
+
+If you don't include the `<execution/>` configuration as above, you can run the plugin on
+its own (but only if the package goal is used as well). For example:
 
 [indent=0]
 ----
 	$ mvn package spring-boot:repackage
+	$ ls target/*.jar
+	target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original
 ----
-
-will have the same effect as above.
 
 If you are using a milestone or snapshot release you will also need to add appropriate
 `pluginRepository` elements:
@@ -113,7 +117,7 @@ or by adding a `Main-Class` attribute to the manifest in the usual way. If you d
 specify a main class the plugin will search for a class with a
 `public static void main(String[] args)` method.
 
-To build and run a project artifact, you do something like this:
+To build and run a project artifact, you can type the following:
 
 [indent=0]
 ----
@@ -131,42 +135,35 @@ The following configuration options are available for the `spring-boot:repackage
 
 [[build-tool-plugins-maven-packaging-required-params]]
 ==== Required parameters
-[cols="1,1,4,1"]
+[cols="2,4"]
 |===
-|Name |Type |Description |Default Value
+|Name |Description
 
 |`outputDirectory`
-|File
-|Directory containing the generated archive.
-|`${project.build.directory}`
+|Directory containing the generated archive (defaults to `${project.build.directory}`).
 
 |`finalName`
-|String
-|Name of the generated archive.
-|`${project.build.finalName}`
+|Name of the generated archive (defaults to `${project.build.finalName}`).
 |===
 
 
 
 [[build-tool-plugins-maven-packaging-optional-params]]
 ==== Optional parameters
-[cols="1,1,5"]
+[cols="2,4"]
 |===
-|Name |Type |Description
+|Name |Description
 
 |`classifier`
-|String
 |Classifier to add to the artifact generated. If given, the artifact will be attached. If
  this is not given, it will merely be written to the output directory according to the
  `finalName`.
 
 |`mainClass`
-|String
-|The name of the main class. If not specified the first compiled class found that contains
- a `main` method will be used.
+|The name of the main class. If not specified will search for a single compiled class
+ that contains a `main` method.
 
 |`layout`
-|String
 |The type of archive (which corresponds to how the dependencies are laid out inside it).
  Defaults to a guess based on the archive type.
 |===
@@ -199,7 +196,8 @@ The plugin rewrites your manifest, and in particular it manages the `Main-Class`
 The layout property defaults to a guess based on the archive type (jar or war). For the
 `PropertiesLauncher` the layout is ``ZIP'' (even though the output might be a jar file).
 
-
+TIP: The executable jar format is <<appendix-executable-jar-format.adoc#executable-jar,
+described in the appendix>>.
 
 [[build-tool-plugins-maven-running-applications]]
 === Running applications
@@ -214,10 +212,10 @@ project:
 
 By default, any `src/main/resources` folder will be added to the application classpath
 when you run via the maven plugin. This allows hot refreshing of resources which can be
-very useful when web applications. For example, you can work on HTML, CSS or JavaScipt
-files and see your changes immediately without recompiling your application. It is also
-a helpful way of allowing your front end developers to work without needing to download
-and install a Java IDE.
+very useful when developing web applications. For example, you can work on HTML, CSS or
+JavaScipt files and see your changes immediately without recompiling your application. It
+is also a helpful way of allowing your front end developers to work without needing to
+download and install a Java IDE.
 
 
 
@@ -229,49 +227,40 @@ The following configuration options are available for the `spring-boot:run` goal
 
 [[build-tool-plugins-maven-run-configuration-required-params]]
 === Required parameters
-[cols="1,1,4,1"]
+[cols="2,4"]
 |===
-|Name |Type |Description |Default Value
+|Name |Description
 
 |`classesDirectrory`
-|File
 |Directory containing the classes and resource files that should be packaged into the
- archive.
-|`${project.build.outputDirectory}`
+ archive (defaults to `${project.build.outputDirectory}`).
 |===
 
 
 
 [[build-tool-plugins-maven-run-configuration-optional-params]]
 === Optional parameters
-[cols="1,1,4,1"]
+[cols="2,4"]
 |===
-|Name |Type |Description |Default Value
+|Name |Description
 
 |`arguments` or `-Drun.arguments`
-|String[]
 |Arguments that should be passed to the application.
-|
 
 |`addResources` or `-Drun.addResources`
-|boolean
 |Add Maven resources to the classpath directly, this allows live in-place editing or
  resources. Since resources will be added directly, and via the target/classes folder
  they will appear twice if `ClassLoader.getResources()` is called. In practice, however,
  most applications call `ClassLoader.getResource()` which will always return the first
- resource
-| true
+ resource (defaults to `true`).
 
 |`mainClass`
-|String
 |The name of the main class. If not specified the first compiled class found that
  contains a 'main' method will be used.
-|
 
 |`folders`
-|String[]
-|Folders that should be added to the classpath.
-|`${project.build.outputDirectory}`
+|Folders that should be added to the classpath (defaults to
+ `${project.build.outputDirectory}`).
 |===
 
 
@@ -279,8 +268,8 @@ The following configuration options are available for the `spring-boot:run` goal
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
-package executable jar or war archives, run Spring Boot applications and remove version
-information from your `build.gradle` file.
+package executable jar or war archives, run Spring Boot applications and omit version
+information from your `build.gradle` file for ``blessed'' dependencies.
 
 
 
@@ -318,9 +307,10 @@ If you are using a milestone or snapshot release you will also need to add appro
 [[build-tool-plugins-gradle-dependencies-without-versions]]
 === Declaring dependencies without versions
 The `spring-boot` plugin will register a custom Gradle `ResolutionStrategy` with your
-build that allows you to omit version numbers when declaring dependencies to known
+build that allows you to omit version numbers when declaring dependencies to ``blessed''
 artifacts. All artifacts with a `org.springframework.boot` group ID, and any of the
-artifacts declared in the `managementDependencies` section of the `spring-dependencies`
+artifacts declared in the `managementDependencies` section of the
+{github-code}/spring-boot-dependencies/pom.xml[`spring-dependencies`]
 POM can have their version number resolved automatically.
 
 Simply declare dependencies in the usual way, but leave the version number empty:
@@ -347,7 +337,7 @@ option, or by adding a `Main-Class` attribute to the manifest. If you don't spec
 main class the plugin will search for a class with a
 `public static void main(String[] args)` method.
 
-To build and run a project artifact, you do something like this:
+To build and run a project artifact, you can type the following:
 
 [indent=0]
 ----
@@ -373,7 +363,7 @@ default) reloadable in the live application, which can be helpful at development
 === Repackage configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
 for configuration. Simply set the appropriate properties as you would any other Gradle
-extension:
+extension (see below for a list of configuration options):
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -387,14 +377,16 @@ extension:
 [[build-tool-plugins-gradle-repackage-custom-configuration]]
 === Repackage with custom Gradle configuration
 Sometimes it may be more appropriate to not package default dependencies resolved from
-`compile`, `runtime` and `provided` scopes. If created executable jar file
-is intended to be run as it is you need to have all dependencies in it, however
-if a plan is to explode a jar file and run main class manually you may already
+`compile`, `runtime` and `provided` scopes. If the created executable jar file
+is intended to be run as it is, you need to have all dependencies nested inside it;
+however, if the plan is to explode a jar file and run main class manually, you may already
 have some of the libraries available via `CLASSPATH`. This is a situation where
-you can repackage boot jar with a different set of dependencies. Using a custom
+you can repackage your jar with a different set of dependencies.
+
+Using a custom
 configuration will automatically disable dependency resolving from
 `compile`, `runtime` and `provided` scopes. Custom configuration can be either
-defined globally inside `springBoot` or per task.
+defined globally (inside the `springBoot` section) or per task.
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -410,7 +402,7 @@ defined globally inside `springBoot` or per task.
 	}
 ----
 
-In above example we created a new `clientJar` Jar task to package a customized
+In above example, we created a new `clientJar` Jar task to package a customized
 file set from your compiled sources. Then we created a new `clientBoot`
 BootRepackage task and instructed it to work with only `clientJar` task and
 `mycustomconfiguration`.
@@ -426,10 +418,12 @@ BootRepackage task and instructed it to work with only `clientJar` task and
 	}
 ----
 
-Configuration we are referring to in `BootRepackage` is a normal Gradle configuration. In
-the above example we created a new configuration named `mycustomconfiguration` instructing
-it to derive from a `runtime` and exclude `log4j` group. If `clientBoot` task is executed,
-repackaged boot jar will have all dependencies from a runtime but no log4j jars.
+The configuration that we are referring to in `BootRepackage` is a normal
+http://www.gradle.org/docs/current/dsl/org.gradle.api.artifacts.Configuration.html[Gradle
+configuration]. In the above example we created a new configuration named
+`mycustomconfiguration` instructing it to derive from a `runtime` and exclude the `log4j`
+group. If the `clientBoot` task is executed, the repackaged boot jar will have all
+dependencies from `runtime` but no `log4j` jars.
 
 
 
@@ -437,36 +431,27 @@ repackaged boot jar will have all dependencies from a runtime but no log4j jars.
 ==== Configuration options
 The following configuration options are available:
 
-[cols="1,1,4,1"]
+[cols="2,4"]
 |===
-|Name |Type |Description |Default Value
+|Name |Description
 
 |`mainClass`
-|String
 |The main class that should be run. If not specified the value from the manifest will be
  used, or if no manifest entry is the archive will be searched for a suitable class.
-|
 
 |`providedConfiguration`
-|String
-|The name of the provided configuration.
-|`providedRuntime`
+|The name of the provided configuration (defaults to `providedRuntime`).
 
 |`backupSource`
-|boolean
-|If the original source archive should be backed-up before being repackaged.
-|`true`
+|If the original source archive should be backed-up before being repackaged (defaults
+ to `true`).
 
 |`customConfiguration`
-|String
 |The name of the custom configuration.
-|
 
-|layout
-|String
-|The type of archive (which corresponds to how the dependencies are laid out inside it).
- Defaults to a guess based on the archive type.
-|
+|`layout`
+|The type of archive, corresponding to how the dependencies are laid out inside
+ (defaults to a guess based on the archive type).
 |===
 
 
@@ -474,15 +459,18 @@ The following configuration options are available:
 [[build-tool-plugins-understanding-the-gradle-plugin]]
 === Understanding how the Gradle plugin works
 When `spring-boot` is applied to your Gradle project a default task named `bootRepackage`
-is created automatically. Boot repackage task depends on Gradle `assemble` task and when
-executed, it tries to find all jar artifacts whose qualifier is empty (i.e. tests and
+is created automatically. The `bootRepackage` task depends on Gradle `assemble` task, and
+when executed, it tries to find all jar artifacts whose qualifier is empty (i.e. tests and
 sources jars are automatically skipped).
 
-Because on default every repackage task execution will find all created jar artifacts,
-the order of Gradle task execution is important. This is not going to be an issue if
-you have a normal project setup where only one jar file is created. However if you are
-planning to create more complex project setup with custom `Jar` and `BootRepackage`
-tasks, there are few tweaks to consider.
+Due to the fact that `bootRepackage` finds 'all' created jar artifacts, the order of
+Gradle task execution is important. Most projects only create a single jar file, so
+usually this is not an issue; however, if you are planning to create a more complex
+project setup, with custom `Jar` and `BootRepackage` tasks, there are few tweaks to
+consider.
+
+If you are 'just' creating custom jar files from your project you can simply disables
+default `jar` and `bootRepackage` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -490,17 +478,18 @@ tasks, there are few tweaks to consider.
 	bootRepackage.enabled = false
 ----
 
-The above example simply disables default `jar` and `bootRepackage` tasks. This would be
-all right if you are just creating custom jar files out from your project. You could also
-just disable default `bootRepackage` task.
+Another option is to instruct the default `bootRepackage` task to only work with a
+default `jar` task.
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
 	bootRepackage.withJarTask = jar
 ----
 
-The above example simply instructs default `bootRepackage` task to only work with a
-default `jar` task.
+If you have a default project setup where the main jar file is created and repackaged,
+'and' you still want to create additional custom jars, you can combine your custom
+repackage tasks together and use `dependsOn` so that the `bootJars` task will run after
+the default `bootRepackage` task is executed:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -509,23 +498,19 @@ default `jar` task.
 	build.dependsOn(bootJars)
 ----
 
-If you still have a default project setup where main jar file is created and repackaged
-to be used with boot and you still want to create additional custom jar files out from
-your project, you could simple combine you custom repackage tasks together and create
-dependency to your build so that `bootJars` task would be run after the default
-`bootRepackage` task is executed.
-
-All the above tweaks are usually used to avoid situation where already created boot jar
-is repackaged again. Repackaging an existing boot jar will not break anything but you may
-get unnecessary dependencies in it.
+All the above tweaks are usually used to avoid situations where an already created boot
+jar is repackaged again. Repackaging an existing boot jar will not break anything, but
+you may find that it includes unnecessary dependencies.
 
 
 
 [[build-tool-plugins-other-build-systems]]
 == Supporting other build systems
-If you want to use a build tool other than Maven or Gradle you will likely need to develop
+If you want to use a build tool other than Maven or Gradle, you will likely need to develop
 your own plugin. Executable jars need to follow a specific format and certain entries need
-to be written in an uncompressed form.
+to be written in an uncompressed form (see the
+``<<appendix-executable-jar-format.adoc#executable-jar, executable jar format>>'' section
+in the appendix for details).
 
 The Spring Boot Maven and Gradle plugins both make use of `spring-boot-loader-tools` to
 actually generate jars. You are also free to use this library directly yourself if you
@@ -557,10 +542,9 @@ If your archive already includes libraries you can use `Libraries.NONE`.
 [[build-tool-plugins-find-a-main-class]]
 === Finding a main class
 If you don't use `Repackager.setMainClass()` to specify a main class, the repackager will
-use http://asm.ow2.org/[ASM] to read class files and attempt to find a suitable class.
-The first class with a `public static void main(String[] args)` method will be used.
-Searching is performed using a breadth first algorithm, with the assumption that the main
-class will appear high in the package structure.
+use http://asm.ow2.org/[ASM] to read class files and attempt to find a suitable class
+with a `public static void main(String[] args)` method. An exception is thrown if more
+than one candidate is found.
 
 
 
@@ -581,3 +565,14 @@ Here is a typical example repackage:
 			});
 ----
 
+
+
+[[using-boot-whats-next]]
+== What to read next
+If your interested to looking at how the build tool plugins were developed you can
+look at the {github-code}/spring-boot-tools[`spring-boot-tools`] module on GitHub. More
+technical details of the <<appendix-executable-jar-format.adoc#executable-jar, executable
+jar format>> are covered in the appendix.
+
+If you have specific build related questions, you can check out the
+``<<howto.adoc#howto, how-to>>'' guides.
