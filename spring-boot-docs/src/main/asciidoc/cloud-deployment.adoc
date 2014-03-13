@@ -20,8 +20,9 @@ divergence between deployment and production environments.
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs
 to run packaged within it.
 
-In this section we'll look at what it takes to get the simple Boot application that we
-developed in the Getting Started section up and running on Cloud Foundry and Heroku.
+In this section we'll look at what it takes to get the
+<<getting-started.adoc#getting-started-first-application, simple application that we
+developed>> in the ``Getting Started'' section up and running in the Cloud.
 --
 
 
@@ -30,7 +31,7 @@ developed in the Getting Started section up and running on Cloud Foundry and Her
 == Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
 specified. The Cloud Foundry buildpack has excellent support for Spring applications,
-including Spring Boot.  You can deploy stand-alone executable jar applications as well as
+including Spring Boot.  You can deploy stand-alone executable jar applications, as well as
 traditional `war` packaged applications.
 
 Once you've built your application (using, for example, `mvn clean install`) and
@@ -83,8 +84,8 @@ At this point `cf` will start uploading your application:
 	Push successful! App '_$YOURAPP_' available at http://_$YOURAPP_.cfapps.io
 ----
 
-Here I'm substituting `$YOURAPP` for whatever value you give `cf` when it asks for the
-`name` of your application.
+NOTE: Here we are substituting `$YOURAPP` for whatever value you give `cf` when it asks
+for the `name` of your application.
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be
 able to hit the application at the URI provided:
@@ -97,7 +98,7 @@ able to hit the application at the URI provided:
 By default, meta-data about the running application as well as service connection
 information is exposed to the application as environment variables (for example:
 `$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
-(any language and platform that can be supported as a buildpack) nature; process-scoped
+(any language and platform can be supported as a buildpack) nature; process-scoped
 environment variables are language agnostic.
 
 Environment variables don't always make for the easiest API so Spring Boot automatically
@@ -139,7 +140,7 @@ Heroku is another popular PaaS platform. To customize Heroku builds, you provide
 assigns a `port` for the Java application to use and then ensures that routing to the
 external URI works.
 
-You must configure your application listen to the correct port. This is a breeze with
+You must configure your application to listen on the correct port. This is a breeze with
 Spring Boot. Here's the `Procfile` for our starter REST application:
 
 [indent=0]
@@ -212,3 +213,33 @@ This should be everything you need. The most common workflow for Heroku deployme
 ----
 
 That should be it! Your application should be up and running on Heroku.
+
+
+
+[[cloud-deployment-cloudbees]]
+== CloudBees
+CloudBees provides cloud-based ``continuous integration'' and ``continuous delevery''
+services as well as Java PaaS hosting. https://github.com/msgilligan[Sean Gilligan]
+has contributed an excellent
+https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample[Spring Boot
+sample application] to the CloudBees community GitHub repository. The project includes
+an extensive  https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample/blob/master/README.asciidoc[README]
+that covers the steps that you need to follow when deploying to CloudBees.
+
+
+
+[[cloud-deployment]]
+== What to read next
+Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
+and http://www.cloudbees.com[CloudBees] web sites for more information about the kinds of
+features that a PaaS can offer. These are just three of the more popular Java PaaS
+providers, since Spring Boot is so amenable to cloud-based deployment you free to
+consider other providers as well.
+
+The next section goes on to cover the <<spring-boot-cli.adoc#cli, ``Spring Boot CLI''>>;
+or you can jump ahead to read about
+<<build-tool-plugins.adoc#build-tool-plugins, ``build tool plugins''>>.
+
+
+
+

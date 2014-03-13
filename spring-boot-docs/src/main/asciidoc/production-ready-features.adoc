@@ -54,60 +54,60 @@ Actuator endpoints allow you to monitor and interact with your application. Spri
 includes a number of built-in endpoints and you can also add your own. For example the
 `health` endpoint provides basic application health information.
 
-The way that enpoints are exposed will depend on the type of technology that choose.
+The way that enpoints are exposed will depend on the type of technology that you choose.
 Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
 to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
 
 The following endpoints are available:
 
-[cols="1,1,7"]
+[cols="2,5,1"]
 |===
-| ID | Sensitive | Description
+| ID | Description | Sensitive
 
 |`autoconfig`
-|true
 |Displays an auto-configuration report showing all auto-configuration candidates and the
  reason why they ``were'' or ``were not'' applied.
+|true
 
 |`beans`
-|true
 |Displays a complete list of all the Spring Beans in your application.
+|true
 
 |`configprops`
-|true
 |Displays a collated list of all `@ConfigurationProperties`.
+|true
 
 |`dump`
+|Performs a thread dump.
 |true
-|Performs a thread dump
 
 |`env`
-|true
 |Exposes properties from Spring's `ConfigurableEnvironment`.
+|true
 
 |`health`
-|false
 |Shows application health information (defaulting to a simple ``OK'' message).
+|false
 
 |`info`
-|false
 |Displays arbitrary application info.
+|false
 
 |`metrics`
-|true
 |Shows ``metrics'' information for the current application.
+|true
 
 |`mappings`
-|true
 |Displays a collated list of all `@RequestMapping` paths.
+|true
 
 |`shutdown`
+|Allows the application to be gracefully shutdown (not enabled by default).
 |true
-|Allows the application to be gracefully shutdown (not enabled by default)
 
 |`trace`
+|Displays trace information (by default the last few HTTP requests).
 |true
-|Displays trace information (by default the last few HTTP requests)
 |===
 
 NOTE: Depending on how an endpoint is exposed, the `sensitive` parameter may be used as
@@ -118,7 +118,7 @@ they are accessed over HTTP (or simply disabled if web security is not enabled).
 
 [[production-ready-customizing-endpoints]]
 === Customizing endpoints
-Endpoints can be customized using Spring properties. You can change the if an endpoint is
+Endpoints can be customized using Spring properties. You can change if an endpoint is
 `enabled`, if it is considered `sensitive` and even its `id`.
 
 For example, here is an `application.properties` that changes the sensitivity and id
@@ -143,7 +143,7 @@ is often useful to perform some additional health checks, for example you might 
 that a database connection works, or that a remote REST endpoint is functioning.
 
 To provide custom health information you can register a Spring bean that implements the
-`HealthIndicator` interface.
+{sc-spring-boot-actuator}/health/HealthIndicator.{sc-ext}[`HealthIndicator`] interface.
 
 [source,java,indent=0]
 ----
@@ -162,8 +162,9 @@ To provide custom health information you can register a Spring bean that impleme
 	}
 ----
 
-Spring Boot also provides a `SimpleHealthIndicator` implementation that attempts a simple
-database test.
+Spring Boot also provides a
+{sc-spring-boot-actuator}/health/SimpleHealthIndicator/{sc-ext}[`SimpleHealthIndicator`]
+implementation that attempts a simple database test.
 
 
 
@@ -180,8 +181,9 @@ exposed. For example, you could add the following to your `application.propertie
 	info.app.version: 1.0.0
 ----
 
-If you are using Maven, you can automatically populate info properties from the project
-using resource filtering. In your `pom.xml` you have (inside the `<build/>` element):
+If you are using Maven, you can automatically expand info properties from the Maven
+project using resource filtering. In your `pom.xml` you have (inside the `<build/>`
+element):
 
 [source,xml,indent=0]
 ----
@@ -208,7 +210,7 @@ You can then refer to your Maven ``project properties'' via placeholders, e.g.
 ----
 
 NOTE: In the above example we used `project.*` to set some values to be used as
-fallbacks if the Maven resource filtering has for some reason not been switched on.
+fallbacks if the Maven resource filtering has not been switched on for some reason.
 
 
 
@@ -253,7 +255,7 @@ If you use ``Spring Security'' sensitive endpoints will also be exposed over HTT
 default ``basic'' authentication will be used with the username `user` and a generated
 password.
 
-TIP: Generated passwords a logged as the application starts. Search for ``Using default
+TIP: Generated passwords are logged as the application starts. Search for ``Using default
 password for application endpoints''.
 
 You can use Spring properties to change the username and passsword and to change the
@@ -345,12 +347,12 @@ under the `org.springframework.boot` domain.
 
 [[production-ready-custom-mbean-names]]
 === Customizing MBean names
-By default, the name of the MBean is generated from the `id` of the endpoint. For example
+The name of the MBean is usually generated from the `id` of the endpoint. For example
 the `health` endpoint is exposed as `org.springframework.boot/Endpoint/HealthEndpoint`.
 
 If your application contains more than one Spring `ApplicationContext` you may find that
 names clash. To solve this problem you can set the `endpoints.jmx.uniqueNames` property
-so that MBean names are always unique.
+to `true` so that MBean names are always unique.
 
 You can also customize the JMX domain under which endpoints are exposed. Here is an
 example `application.properties`:
@@ -366,7 +368,7 @@ example `application.properties`:
 [[production-ready-disable-jmx-endpoints]]
 === Disabling JMX endpoints
 If you don't want to expose endpoints over JMX you can set the `spring.jmx.enabled`
-property:
+property to `false`:
 
 [indent=0]
 ----
@@ -396,8 +398,8 @@ Jolokia can then be accessed using `/jolokia` on your management HTTP server.
 [[production-ready-customizing-jolokia]]
 ==== Customizing Jolokia
 Jolokia has a number of settings that you would traditionally configure using servlet
-parameters parameters. With Spring Boot you can use your `application.properties`, simply
-prefix the paramter with `jolokia.config.`:
+parameters. With Spring Boot you can use your `application.properties`, simply prefix the
+parameter with `jolokia.config.`:
 
 [indent=0]
 ----
@@ -409,7 +411,7 @@ prefix the paramter with `jolokia.config.`:
 [[production-ready-disabling-jolokia]]
 ==== Disabling Jolokia
 If you are using Jolokia but you don't want Spring Boot to configure it, simply set the
-`endpoints.jolokia.enabled` property:
+`endpoints.jolokia.enabled` property to `false`:
 
 [indent=0]
 ----
@@ -449,7 +451,7 @@ output, you should see a message like this:
 ----
 
 Linux and OSX users can use `ssh` to connect to the remote shell, Windows users can
-download and install PuTTY.
+download and install http://www.putty.org/[PuTTY].
 
 [indent=0,subs="attributes"]
 ----
@@ -480,7 +482,9 @@ Type `help` for a list of commands. Spring boot provides `metrics`, `beans` and
 You can use the `shell.auth.simple.username` and `shell.auth.simple.password` properties
 to configure custom connection credentials. It is also possible to use a
 ``Spring Security'' `AuthenticationManager` to handle login duties. See the
-`CrshAutoConfiguration` and `ShellProperties` Javadoc for full details.
+{dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[`CrshAutoConfiguration`]
+and {dc-spring-boot-actuator}/autoconfigure/ShellProperties.{dc-ext}[`ShellProperties`]
+Javadoc for full details.
 
 
 
@@ -523,7 +527,7 @@ Here is a simple ``hello world'' command that could be loaded from
 Spring Boot adds some additional attributes to `InvocationContext` that you can access
 from your command:
 
-[cols="1,3"]
+[cols="2,3"]
 |===
 | Attribute Name | Description
 
@@ -545,13 +549,14 @@ In addition to new commands, it is also possible to extend other CRaSH shell fea
 All Spring Beans that extends `org.crsh.plugin.CRaSHPlugin` will be automatically
 registered with the shell.
 
-For more information please refer to the CRaSH reference documentation.
+For more information please refer to the http://www.crashub.org/[CRaSH reference
+documentation].
 
 
 
 [[production-ready-metrics]]
 == Metrics
-Spring Boot Actuator includes a metric service with ``gauge'' and ``counter'' support.
+Spring Boot Actuator includes a metrics service with ``gauge'' and ``counter'' support.
 A ``gauge'' records a single value; and a ``counter'' records a delta (an increment or
 decrement). Metrics for all HTTP requests are automatically recorded, so if you hit the
 `metrics` endpoint should should see a response similar to this:
@@ -586,8 +591,8 @@ NOTE: In this example we are actually accessing the endpoint over HTTP using the
 [[production-ready-recording-metrics]]
 === Recording your own metrics
 To record your own metrics inject a
-`org.springframework.boot.actuate.metrics.CounterService` and/or
-`org.springframework.boot.actuate.metrics.GaugeService` into
+{sc-spring-boot-actuator}/metrics/CounterService.{sc-ext}[`CounterService`] and/or
+{sc-spring-boot-actuator}/metrics/GaugeService.{sc-ext}[`GaugeService`] into
 your bean. The `CounterService` exposes `increment`, `decrement` and `reset` methods; the
 `GaugeService` provides a `submit` method.
 
@@ -624,24 +629,26 @@ http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitorin
 
 [[production-ready-metric-repositories]]
 === Metric repositories
-Metric service implementations are usually bound to a `MetricRepoistory`. A
-`MetricRepoistory` is responsible for storing and retrieving metric information. Spring
+Metric service implementations are usually bound to a
+{sc-spring-boot-actuator}/metrics/repository/MetricRepository.{sc-ext}[`MetricRepository`].
+A `MetricRepository` is responsible for storing and retrieving metric information. Spring
 Boot provides an `InMemoryMessageRespository` and a `RedisMetricRepository` out of the
 box (the in-memory repository is the default) but you can also write your own. The
 `MetricRepository` interface is actually composed of higher level `MetricReader` and
-`MetricWriter` interfaced. For full details refer to the Javadoc.
+`MetricWriter` interfaces. For full details refer to the
+{dc-spring-boot-actuator}/metrics/repository/MetricRepository.{dc-ext}[Javadoc].
 
 
 
 [[production-ready-code-hale-metrics]]
 === Coda Hale Metrics
-User of the Coda Hale ``Metrics'' library will automatically find the Spring Boot metrics
-are published to `com.codahale.metrics.MetricRegistry`. A default
-`com.codahale.metrics.MetricRegistry` Spring bean will be created when you declare a
-dependency to the `com.codahale.metrics:metrics-core` library; you can also register you
+User of the http://metrics.codahale.com/[Coda Hale ``Metrics'' library] will automatically
+find that Spring Boot metrics are published to `com.codahale.metrics.MetricRegistry`. A
+default `com.codahale.metrics.MetricRegistry` Spring bean will be created when you declare
+a dependency to the `com.codahale.metrics:metrics-core` library; you can also register you
 own `@Bean` instance if you need customizations.
 
-Users can create Codahale metrics by prefixing their metric names with the appropriate
+Users can create Coda Hale metrics by prefixing their metric names with the appropriate
 type (e.g. `histogram.*`, `meter.*`).
 
 
@@ -658,14 +665,14 @@ actions can be taken by clients subscribing to that channel.
 [[production-ready-auditing]]
 == Auditing
 Spring Boot Actuator has a flexible audit framework that will publish events once Spring
-Security is in play (authentication success and failure and access denied exceptions by
-default). This can be very useful for reporting, and also to implement a lock-out policy
-based on authentication failures.
+Security is in play (``authentication success'', ``failure'' and ``access denied''
+exceptions by default). This can be very useful for reporting, and also to implement a
+lock-out policy based on authentication failures.
 
 You can also choose to use the audit services for your own business events. To do that
 you can either inject the existing `AuditEventRepository` into your own components and
 use that directly, or you can simply publish `AuditApplicationEvent` via the Spring
-`ApplicationContext` (using `ApplicationEventPublisherAware`).
+`ApplicationEventPublisher` (using `ApplicationEventPublisherAware`).
 
 
 
@@ -711,9 +718,9 @@ and obtain basic information about the last few requests:
 [[production-ready-custom-tracing]]
 === Custom tracing
 If you need to trace additional events you can inject a
-`org.springframework.boot.actuate.trace.TraceRepository` into your Spring Beans.
-The `add` method accepts a single `Map` structure that will be converted to JSON and
-logged.
+{sc-spring-boot-actuator}/trace/TraceRepository.{sc-ext}[`TraceRepository`] into your
+Spring Beans. The `add` method accepts a single `Map` structure that will be converted to
+JSON and logged.
 
 By default an `InMemoryTraceRepository` will be used that stores the last 100 events. You
 can define your own instance of the `InMemoryTraceRepository` bean if you need to expand
@@ -728,7 +735,15 @@ Spring Boot Actuator provides an `/error` mapping by default that handles all er
 sensible way.  If you want more specific error pages for some conditions, the embedded
 servlet containers support a uniform Java DSL for customizing the error handling.
 
-To do this you have to have picked a container implementation (by including either Tomcat
-or Jetty on the classpath), but then the API is the same.
 
-//FIXME TODO: finish this, possibly move.
+
+[[production-ready-whats-next]]
+== What to read next
+If you want to explore some of the concepts discussed in this chapter, you can take a
+look at the actuator {github-code}/spring-boot-samples[sample applications]. You also
+might want to read about graphing tools such as http://graphite.wikidot.com/[Graphite].
+
+Otherwise, you can continue on, to read about <<cloud-deployment.adoc#cloud-deployment,
+``cloud deployment options''>> or jump ahead
+for some in depth information about Spring Boot's
+<<build-tool-plugins.adoc#build-tool-plugins, ``build tool plugins''>>.
