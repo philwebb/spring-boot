@@ -1,9 +1,9 @@
-== Contributing to Spring Boot
+= Contributing to Spring Boot
 Spring Boot is released under the non-restrictive Apache 2.0 license. If you would like
 to contribute something, or simply want to hack on the code this document should help
 you get started.
 
-=== Sign the Contributor License Agreement
+== Sign the Contributor License Agreement
 Before we accept a non-trivial patch or pull request we will need you to sign the
 https://support.springsource.com/spring_committer_signup[contributor's agreement].
 Signing the contributor's agreement does not grant anyone commit rights to the main
@@ -11,7 +11,7 @@ repository, but it does mean that we can accept your contributions, and you will
 author credit if we do.  Active contributors might be asked to join the core team, and
 given the ability to merge pull requests.
 
-=== Code Conventions and Housekeeping
+== Code Conventions and Housekeeping
 None of these is essential for a pull request, but they will all help.  They can also be
 added after the original pull request but before a merge.
 
@@ -31,7 +31,7 @@ added after the original pull request but before a merge.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
 
-=== Working with the code
+== Working with the code
 If you don't have an IDE preference we would recommend that you use
 http://www.springsource.com/developer/sts[Spring Tools Suite] or
 http://eclipse.org[Eclipse] when working with the code. We use the
@@ -139,7 +139,7 @@ from the `file` menu.
 === Importing into other IDEs
 Maven is well supported by most Java IDEs. Refer to you vendor documentation.
 
-=== Integration tests
+== Integration tests
 The sample application are used as integration tests during the build (when you
 `mvn install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
 they cannot be called directly, and so instead are launched via the
