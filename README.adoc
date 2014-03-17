@@ -19,6 +19,8 @@ diverge from the defaults
 (e.g. embedded servers, security, metrics, health checks, externalized configuration)
 * Absolutely no code generation and no requirement for XML configuration
 
+
+
 == Installation and Getting Started
 The {docs}/htmlsingle/[reference documentation] includes detailed
 {docs}/htmlsingle/#getting-started-installing-spring-boot[installation instructions]
@@ -53,6 +55,23 @@ Here is a quick teaser of a Spring Boot application:
 	}
 ----
 
+
+
+== Getting help
+Having trouble with Spring Boot, We'd like to help!
+
+* Check the {docs}/htmlsingle/[reference documentation], especially the
+  {docs}/htmlsingle/#howto[How-to's] -- they provide solutions to the most common
+  questions.
+* Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
+  the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
+  you are just starting out with Spring, try one of the http://spring.io/guides[guides].
+* Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+  tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
+
+
+
 == Building from Source
 You don't need to build from source to use Spring Boot (binaries in
 http://repo.spring.io[repo.spring.io], but if you want to try out the latest and greatest,
@@ -73,8 +92,12 @@ https://support.springsource.com/spring_committer_signup[Contributor's Agreement
 before your first change however trivial. (Or if you filed such an agreement already for
 another project just mention that in your pull request.)_
 
+
+
 == Modules
 There are a number of modules in Spring Boot, here is a quick overview:
+
+
 
 === spring-boot
 The main library providing features that support the other parts of Spring Boot,
@@ -88,6 +111,8 @@ appropriate Spring `ApplicationContext`
 * Convenience `ApplicationContext` initializers, including support for sensible logging
 defaults
 
+
+
 === spring-boot-autoconfigure
 Spring Boot can configure large parts of common applications based on the content
 of their classpath. A single `@EnableAutoConfiguration` annotation triggers
@@ -98,6 +123,8 @@ Auto-configuration attempts to deduce which beans a user might need. For example
 then they probably want an in-memory database to be defined. Auto-configuration will
 always back away as the user starts to define their own beans.
 
+
+
 === spring-boot-starters
 Starters are a set of convenient dependency descriptors that you can include in
 your application. You get a one-stop-shop for all the Spring and related technology
@@ -106,10 +133,14 @@ dependency descriptors. For example, if you want to get started using Spring and
 database access just include the `spring-boot-starter-data-jpa` dependency in your
 project, and you are good to go.
 
+
+
 === spring-boot-cli
 The Spring command line application compiles and runs Groovy source, making it super
 easy to write the absolute minimum of code to get an application running. Spring CLI
 can also watch files, automatically recompiling and restarting when they change.
+
+
 
 === spring-boot-actuator
 Spring Boot Actuator provides additional auto-configuration to decorate your application
@@ -119,12 +150,16 @@ logging, externalized configuration, management endpoints, an audit abstraction,
 more. If you want to switch off the built in features, or extend or replace them, it
 makes that really easy as well.
 
+
+
 === spring-boot-loader
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file
 that can be launched using `java -jar`. Generally you will not need to use
 `spring-boot-loader` directly, but instead work with the
 link:spring-boot-tools/spring-boot-gradle-plugin[Gradle] or
 link:spring-boot-tools/spring-boot-maven-plugin[Maven] plugin.
+
+
 
 == Samples
 Groovy samples for use with the command line application are available in
@@ -162,6 +197,8 @@ java samples are provided:
 * link:spring-boot-samples/spring-boot-sample-xml[spring-boot-sample-xml]
   -- Example show how Spring Boot can be mixed with traditional XML configuration (we
   generally recommend using Java `@Configuration` whenever possible)
+
+
 
 == Guides
 The http://spring.io/[spring.io] site contains several guides that show how to use Spring
