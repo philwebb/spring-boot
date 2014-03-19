@@ -150,8 +150,6 @@ public class JarFileTests {
 		assertThat(jarURLConnection.getContentLength(), greaterThan(1));
 		assertThat(jarURLConnection.getContent(), sameInstance((Object) this.jarFile));
 		assertThat(jarURLConnection.getContentType(), equalTo("x-java/jar"));
-		assertThat(jarURLConnection.getJarFileURL().toString(), equalTo("jar:file:"
-				+ this.rootJarFile));
 	}
 
 	@Test
@@ -214,10 +212,8 @@ public class JarFileTests {
 		URL url = nestedJarFile.getUrl();
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/nested.jar!/"));
-		JarURLConnection conn = (JarURLConnection) url.openConnection();
-		assertThat(conn.getJarFile(), sameInstance(nestedJarFile));
-		assertThat(conn.getJarFileURL().toString(), equalTo("jar:file:"
-				+ this.rootJarFile.getPath() + "!/nested.jar"));
+		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
+				sameInstance(nestedJarFile));
 	}
 
 	@Test
@@ -308,6 +304,7 @@ public class JarFileTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	public void verifySignedJar() throws Exception {
 		String classpath = System.getProperty("java.class.path");
 		String[] entries = classpath.split(System.getProperty("path.separator"));
