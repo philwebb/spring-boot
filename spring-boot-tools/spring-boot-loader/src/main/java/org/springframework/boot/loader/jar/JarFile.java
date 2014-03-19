@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.data.RandomAccessDataFile;
+import org.springframework.boot.loader.data.RandomAccessDataMappedFile;
 import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
@@ -69,7 +69,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
-	private final RandomAccessDataFile rootFile;
+	private final RandomAccessDataMappedFile rootFile;
 
 	private final RandomAccessData data;
 
@@ -94,7 +94,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @throws IOException
 	 */
 	public JarFile(File file, JarEntryFilter... filters) throws IOException {
-		this(new RandomAccessDataFile(file), filters);
+		this(new RandomAccessDataMappedFile(file), filters);
 	}
 
 	/**
@@ -103,7 +103,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	JarFile(RandomAccessDataFile file, JarEntryFilter... filters) throws IOException {
+	JarFile(RandomAccessDataMappedFile file, JarEntryFilter... filters)
+			throws IOException {
 		this(file, file.getFile().getAbsolutePath(), file, filters);
 	}
 
@@ -116,8 +117,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
-			JarEntryFilter... filters) throws IOException {
+	private JarFile(RandomAccessDataMappedFile rootFile, String name,
+			RandomAccessData data, JarEntryFilter... filters) throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.name = name;
@@ -167,7 +168,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 	}
 
-	protected final RandomAccessDataFile getRootJarFile() {
+	protected final RandomAccessDataMappedFile getRootJarFile() {
 		return this.rootFile;
 	}
 
