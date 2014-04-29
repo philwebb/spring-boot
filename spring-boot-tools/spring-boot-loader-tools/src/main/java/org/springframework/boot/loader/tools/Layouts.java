@@ -19,7 +19,9 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Common {@link Layout}s.
@@ -55,6 +57,14 @@ public class Layouts {
 	 */
 	public static class Jar implements Layout {
 
+		private static final Set<LibraryScope> SUPPORTED_SCOPES;
+		static {
+			Set<LibraryScope> set = new HashSet<LibraryScope>();
+			set.add(LibraryScope.COMPILE);
+			set.add(LibraryScope.RUNTIME);
+			SUPPORTED_SCOPES = Collections.unmodifiableSet(set);
+		}
+
 		@Override
 		public String getLauncherClassName() {
 			return "org.springframework.boot.loader.JarLauncher";
@@ -62,7 +72,7 @@ public class Layouts {
 
 		@Override
 		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return "lib/";
+			return (SUPPORTED_SCOPES.contains(scope) ? "lib/" : null);
 		}
 
 		@Override
@@ -92,6 +102,7 @@ public class Layouts {
 		public String getLauncherClassName() {
 			return null;
 		}
+
 	}
 
 	/**

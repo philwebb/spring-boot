@@ -87,13 +87,29 @@ public class Verify {
 
 		protected final void assertHasEntryNameStartingWith(
 				Map<String, ZipEntry> entries, String value) {
+			if (!hasEntryNameStartingWith(entries, value)) {
+				throw new IllegalStateException("Expected entry starting with " + value);
+			}
+		}
+
+		protected final void assertNoEntryNameStartingWith(Map<String, ZipEntry> entries,
+				String value) {
+			if (hasEntryNameStartingWith(entries, value)) {
+				throw new IllegalStateException("Expected no entry starting with "
+						+ value);
+			}
+		}
+
+		private final boolean hasEntryNameStartingWith(Map<String, ZipEntry> entries,
+				String value) {
 			for (String name : entries.keySet()) {
 				if (name.startsWith(value)) {
-					return;
+					return true;
 				}
 			}
-			throw new IllegalStateException("Expected entry starting with " + value);
+			return false;
 		}
+
 	}
 
 	private static class JarArchiveVerification extends AbstractArchiveVerification {
@@ -111,7 +127,7 @@ public class Verify {
 			super.verifyZipEntries(zipFile, entries);
 			assertHasEntryNameStartingWith(entries, "lib/spring-context");
 			assertHasEntryNameStartingWith(entries, "lib/spring-core");
-			assertHasEntryNameStartingWith(entries, "lib/javax.servlet-api-3.0.1.jar");
+			assertNoEntryNameStartingWith(entries, "lib/javax.servlet-api-3.0.1.jar");
 			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
 					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", entries.containsKey("org/"
