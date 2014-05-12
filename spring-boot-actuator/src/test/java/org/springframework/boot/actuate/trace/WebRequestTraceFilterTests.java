@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.trace;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.web.BasicErrorController;
+import org.springframework.boot.autoconfigure.web.DefaulErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -76,7 +76,7 @@ public class WebRequestTraceFilterTests {
 
 	@Test
 	public void filterHasError() {
-		this.filter.setErrorController(new BasicErrorController());
+		this.filter.setErrorAttributes(new DefaulErrorAttributes());
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.setStatus(500);

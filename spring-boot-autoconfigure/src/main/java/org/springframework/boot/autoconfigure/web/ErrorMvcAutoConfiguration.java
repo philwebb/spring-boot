@@ -73,9 +73,15 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	private String errorPath = "/error";
 
 	@Bean
+	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
+	public DefaulErrorAttributes errorAttributes() {
+		return new DefaulErrorAttributes();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
-	public BasicErrorController basicErrorController() {
-		return new BasicErrorController();
+	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
+		return new BasicErrorController(errorAttributes);
 	}
 
 	@Override
