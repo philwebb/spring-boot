@@ -17,14 +17,21 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Table;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
+import org.springframework.boot.orm.jpa.hibernate.ExtendedHibernateJpaVendorAdapter;
+import org.springframework.boot.orm.jpa.hibernate.PropertyPlaceholderHibernateConfigurationPostProcessor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -47,11 +54,31 @@ import org.springframework.util.ClassUtils;
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
+	private Log logger = LogFactory.getLog(getClass());
+
 	@Override
 	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
-		return new HibernateJpaVendorAdapter();
+		try {
+			return new ExtendedHibernateJpaVendorAdapter();
+		}
+		catch (Error ex) {
+			this.logger.warn("Unable to use ExtendedHibernateJpaVendorAdapter");
+			this.logger.debug(ex);
+			return new HibernateJpaVendorAdapter();
+		}
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	public PropertyPlaceholderHibernateConfigurationPostProcessor propertyPlaceholderHibernateConfigurationPostProcessor() {
+		PropertyPlaceholderHibernateConfigurationPostProcessor postProcessor = new PropertyPlaceholderHibernateConfigurationPostProcessor();
+		postProcessor.addResolvableAttributes(Table.class, "schema");
+		return postProcessor;
+	}
+
+	/**
+	 * Condition to check for Hibernate
+	 */
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
 
 		private static String[] CLASS_NAMES = {

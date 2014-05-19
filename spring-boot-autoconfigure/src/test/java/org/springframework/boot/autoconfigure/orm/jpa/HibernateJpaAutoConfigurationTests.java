@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.orm.jpa.testwithplaceholder.CityWithPlaceHolder;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -31,6 +36,9 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  */
 public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
+
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Override
 	protected Class<?> getAutoConfigureClass() {
@@ -65,6 +73,20 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
 		assertThat(actual, not(equalTo("org.hibernate.cfg.EJB3NamingStrategy")));
+	}
+
+	@Test
+	public void schemaPropertyPlaceHolder() throws Exception {
+		setupTestConfiguration(WithPlaceHolderConfig.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "myschema=testschema");
+		this.context.refresh();
+		// FIXME find a way to get a SchemaExport and test
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(CityWithPlaceHolder.class)
+	protected static class WithPlaceHolderConfig {
+
 	}
 
 }
