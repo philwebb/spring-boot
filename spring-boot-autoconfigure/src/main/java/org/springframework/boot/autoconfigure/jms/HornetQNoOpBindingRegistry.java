@@ -24,7 +24,7 @@ import org.hornetq.spi.core.naming.BindingRegistry;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
-class HornetQNoOpBindingRegistry implements BindingRegistry {
+public class HornetQNoOpBindingRegistry implements BindingRegistry {
 
 	@Override
 	public Object lookup(String name) {

@@ -62,7 +62,6 @@ import org.springframework.util.ClassUtils;
 @Configuration
 @AutoConfigureBefore(JmsTemplateAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, HornetQJMSClient.class })
-@ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties(HornetQProperties.class)
 public class HornetQAutoConfiguration {
 
@@ -71,6 +70,12 @@ public class HornetQAutoConfiguration {
 	@Autowired
 	private HornetQProperties properties;
 
+	/**
+	 * Create the {@link ConnectionFactory} to use if none is provided. If no
+	 * {@linkplain HornetQProperties#getMode() mode} has been explicitly set,
+	 * connect to the embedded server if it has been requested or to a broker
+	 * available on the local machine with the default settings otherwise.
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public ConnectionFactory jmsConnectionFactory() {
@@ -78,12 +83,15 @@ public class HornetQAutoConfiguration {
 		if (mode == null) {
 			mode = deduceMode();
 		}
-		if (this.properties.getMode() == HornetQMode.embedded) {
+		if (mode == HornetQMode.embedded) {
 			return createEmbeddedConnectionFactory();
 		}
 		return createNettyConnectionFactory();
 	}
 
+	/**
+	 * Deduce the {@link HornetQMode} to use if none has been set.
+	 */
 	private HornetQMode deduceMode() {
 		if (this.properties.getEmbedded().isEnabled()
 				&& ClassUtils.isPresent(EMBEDDED_JMS_CLASS, null)) {
@@ -101,9 +109,9 @@ public class HornetQAutoConfiguration {
 			return new HornetQConnectionFactory(serviceLocator);
 		}
 		catch (NoClassDefFoundError ex) {
-			throw new IllegalStateException("Unable to create emedded "
-					+ "HornetQ connection, ensure that the hornet-jms-server.jar "
-					+ "is the classpath", ex);
+			throw new IllegalStateException("Unable to create InVM "
+					+ "HornetQ connection, ensure that hornet-jms-server.jar "
+					+ "is in the classpath", ex);
 		}
 	}
 
@@ -118,11 +126,11 @@ public class HornetQAutoConfiguration {
 	}
 
 	/**
-	 * Configuration used to create the embedded hornet server.
+	 * Configuration used to create the embedded HornetQ server.
 	 */
 	@Configuration
 	@ConditionalOnClass(name = EMBEDDED_JMS_CLASS)
-	@ConditionalOnExpression("${spring.hornetq.embedded.enabled:true}")
+	@ConditionalOnExpression("${spring.hornetq.embedded.enabled:false}")
 	static class EmbeddedServerConfiguration {
 
 		@Autowired

@@ -97,7 +97,8 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedConnectionFactory() {
-		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded");
+		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
+				"spring.hornetq.embedded.enabled:true");
 
 		HornetQProperties properties = this.context.getBean(HornetQProperties.class);
 		assertEquals(HornetQMode.embedded, properties.getMode());
@@ -115,8 +116,26 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	@Test
+	public void nettyConnectionFactoryByDefault() {
+		// No mode is specified
+		load(EmptyConfiguration.class);
+		HornetQConnectionFactory connectionFactory = this.context
+				.getBean(HornetQConnectionFactory.class);
+		assertNettyConnectionFactory(connectionFactory, "localhost", 5445);
+	}
+
+	@Test
+	public void embeddedConnectionFactoryIfEmbeddedServiceEnabled() {
+		// No mode enabled, embedded server required
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true");
+		HornetQConnectionFactory connectionFactory = this.context
+				.getBean(HornetQConnectionFactory.class);
+		assertInVmConnectionFactory(connectionFactory);
+	}
+
+	@Test
 	public void embeddedServerWithDestinations() {
-		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
 				"spring.hornetq.embedded.queues=Queue1,Queue2",
 				"spring.hornetq.embedded.topics=Topic1");
 
@@ -131,7 +150,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServerWithDestinationConfig() {
-		load(DestinationConfiguration.class, "spring.hornetq.mode:embedded");
+		load(DestinationConfiguration.class, "spring.hornetq.embedded.enabled:true");
 
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("sampleQueue", true);
@@ -140,7 +159,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
-		load(CustomJmsConfiguration.class, "spring.hornetq.mode:embedded",
+		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.enabled:true",
 				"spring.hornetq.embedded.queues=Queue1,Queue2"); // Ignored with custom
 																	// config
 		DestinationChecker checker = new DestinationChecker(this.context);
@@ -152,7 +171,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomHornetQConfiguration() {
-		load(CustomHornetQConfiguration.class, "spring.hornetq.mode:embedded");
+		load(CustomHornetQConfiguration.class, "spring.hornetq.embedded.enabled:true");
 		org.hornetq.core.config.Configuration configuration = this.context
 				.getBean(org.hornetq.core.config.Configuration.class);
 		assertEquals("customFooBar", configuration.getName());
@@ -163,7 +182,7 @@ public class HornetQAutoConfigurationTests {
 		File dataFolder = this.folder.newFolder();
 
 		// Start the server and post a message to some queue
-		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
 				"spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());
@@ -179,7 +198,7 @@ public class HornetQAutoConfigurationTests {
 		this.context.close(); // Shutdown the broker
 
 		// Start the server again and check if our message is still here
-		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
 				"spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());

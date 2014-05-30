@@ -28,7 +28,7 @@ import org.hornetq.core.server.JournalType;
 import org.springframework.boot.autoconfigure.jms.HornetQProperties.Embedded;
 
 /**
- * Factory class to create a Hornet {@link Configuration} from {@link HornetQProperties}.
+ * Factory class to create a HornetQ {@link Configuration} from {@link HornetQProperties}.
  * 
  * @author Stephane Nicol
  * @author Phillip Webb
@@ -38,7 +38,7 @@ class HornetQEmbeddedConfigurationFactory {
 
 	private Log logger = LogFactory.getLog(HornetQAutoConfiguration.class);
 
-	private Embedded properties;
+	private final Embedded properties;
 
 	public HornetQEmbeddedConfigurationFactory(HornetQProperties properties) {
 		this.properties = properties.getEmbedded();
@@ -67,8 +67,8 @@ class HornetQEmbeddedConfigurationFactory {
 
 		// HORNETQ-1143
 		if (this.properties.isDefaultClusterPassword()) {
-			this.logger.info("\n\nUsing default HornetQ cluster password: "
-					+ this.properties.getClusterPassword() + "\n\n");
+			this.logger.debug("Using default HornetQ cluster password: "
+					+ this.properties.getClusterPassword());
 		}
 
 		configuration.setClusterPassword(this.properties.getClusterPassword());
