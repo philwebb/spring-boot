@@ -57,7 +57,7 @@ public class DataSourceInitializationTests {
 
 	@Test
 	public void testDefaultDataSourceDoesNotExists() throws Exception {
-		this.context.register(DataSourceInitialization.class,
+		this.context.register(DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);

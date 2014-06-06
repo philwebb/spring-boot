@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceInitialization.DataSourceInitializedEvent;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializedEvent;
 import org.springframework.context.ApplicationContext;
 
 public class DataSourceInitializedPublisher implements BeanPostProcessor {
