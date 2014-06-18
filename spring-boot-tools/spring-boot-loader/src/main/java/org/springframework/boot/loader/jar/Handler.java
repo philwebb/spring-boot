@@ -23,6 +23,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +56,8 @@ public class Handler extends URLStreamHandler {
 		}
 		OPEN_CONNECTION_METHOD = method;
 	}
+
+	private static Map<String, JarFile> rootFileCache = new ConcurrentHashMap<String, JarFile>();
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -149,11 +153,16 @@ public class Handler extends URLStreamHandler {
 
 	private JarFile getRootJarFile(String name) throws IOException {
 		try {
-			if (!name.startsWith(FILE_PROTOCOL)) {
-				throw new IllegalStateException("Not a file URL");
+			JarFile jarFile = rootFileCache.get(name);
+			if (jarFile == null) {
+				if (!name.startsWith(FILE_PROTOCOL)) {
+					throw new IllegalStateException("Not a file URL");
+				}
+				String path = name.substring(FILE_PROTOCOL.length());
+				jarFile = new JarFile(new File(path));
+				rootFileCache.put(name, jarFile);
 			}
-			String path = name.substring(FILE_PROTOCOL.length());
-			return new JarFile(new File(path));
+			return jarFile;
 		}
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);
