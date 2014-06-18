@@ -33,6 +33,10 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
+	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException();
+
+	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
+
 	static final String PROTOCOL = "jar";
 
 	static final String SEPARATOR = "!/";
@@ -49,6 +53,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private URL jarFileUrl;
 
+	private final String jarFileUrlSpec;
+
 	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
 		super(new URL(buildRootUrl(jarFile)));
 		this.url = url;
@@ -64,13 +70,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 			this.jarEntryName = decode(spec.substring(separator + 2));
 		}
 
-		String container = spec.substring(0, separator);
-		if (container.indexOf(SEPARATOR) == -1) {
-			this.jarFileUrl = new URL(container);
-		}
-		else {
-			this.jarFileUrl = new URL("jar:" + container);
-		}
+		this.jarFileUrlSpec = spec.substring(0, separator);
 	}
 
 	@Override
@@ -78,6 +78,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarEntryName != null) {
 			this.jarEntryData = this.jarFile.getJarEntryData(this.jarEntryName);
 			if (this.jarEntryData == null) {
+				if (Boolean.TRUE.equals(useFastExceptions.get())) {
+					throw FILE_NOT_FOUND_EXCEPTION;
+				}
 				throw new FileNotFoundException("JAR entry " + this.jarEntryName
 						+ " not found in " + this.jarFile.getName());
 			}
@@ -103,6 +106,19 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public URL getJarFileURL() {
+		if (this.jarFileUrl == null) {
+			try {
+				if (this.jarFileUrlSpec.indexOf(SEPARATOR) == -1) {
+					this.jarFileUrl = new URL(this.jarFileUrlSpec);
+				}
+				else {
+					this.jarFileUrl = new URL("jar:" + this.jarFileUrlSpec);
+				}
+			}
+			catch (MalformedURLException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
 		return this.jarFileUrl;
 	}
 
@@ -199,5 +215,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 					+ source.substring(i) + "\"");
 		}
 		return ((char) ((hi << 4) + lo));
+	}
+
+	static void setUseFastExceptions(boolean useFastExceptions) {
+		JarURLConnection.useFastExceptions.set(useFastExceptions);
 	}
 }

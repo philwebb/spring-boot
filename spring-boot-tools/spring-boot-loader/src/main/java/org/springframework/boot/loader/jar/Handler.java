@@ -177,4 +177,14 @@ public class Handler extends URLStreamHandler {
 		}
 		return jarFile.getNestedJarFile(jarEntry);
 	}
+
+	/**
+	 * Set if a generic static exception can be thrown when a URL cannot be connected.
+	 * This optimization is used during class loading to save creating lots of exceptions
+	 * which are then swallowed.
+	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
+	 */
+	public static void setUseFastConnectionExceptions(boolean useFastConnectionExceptions) {
+		JarURLConnection.setUseFastExceptions(useFastConnectionExceptions);
+	}
 }
