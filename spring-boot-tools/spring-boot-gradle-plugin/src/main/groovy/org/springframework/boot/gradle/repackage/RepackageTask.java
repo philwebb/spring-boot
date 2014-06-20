@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
@@ -91,7 +90,10 @@ public class RepackageTask extends DefaultTask {
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
 
-	private class RepackageAction implements Action<Jar> {
+	/**
+	 * Action to repackage JARs.
+	 */
+	private class RepackageAction extends MainJarTaskAction {
 
 		private final SpringBootPluginExtension extension;
 
@@ -104,40 +106,43 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		@Override
-		public void execute(Jar archive) {
-			// if withJarTask is set, compare tasks and bail out if we didn't match
+		protected void executeAgainstMainJarTask(Jar jarTask) {
 			if (RepackageTask.this.withJarTask != null
-					&& !archive.equals(RepackageTask.this.withJarTask)) {
+					&& !jarTask.equals(RepackageTask.this.withJarTask)) {
 				return;
 			}
+			File file = jarTask.getArchivePath();
+			if (file.exists()) {
+				repackage(file);
+			}
+		}
 
-			if ("".equals(archive.getClassifier())) {
-				File file = archive.getArchivePath();
-				if (file.exists()) {
-					Repackager repackager = new LoggingRepackager(file);
-					File out = RepackageTask.this.outputFile;
-					if (out != null) {
-						try {
-							FileCopyUtils.copy(file, out);
-						}
-						catch (IOException ex) {
-							throw new IllegalStateException(ex.getMessage(), ex);
-						}
-						file = out;
-					}
-					RepackageTask.this.outputFile = file;
-					setMainClass(repackager);
-					if (this.extension.convertLayout() != null) {
-						repackager.setLayout(this.extension.convertLayout());
-					}
-					repackager.setBackupSource(this.extension.isBackupSource());
-					try {
-						repackager.repackage(file, this.libraries);
-					}
-					catch (IOException ex) {
-						throw new IllegalStateException(ex.getMessage(), ex);
-					}
-				}
+		private void repackage(File file) {
+			File outputFile = RepackageTask.this.outputFile;
+			if (outputFile != null) {
+				copy(file, outputFile);
+				file = outputFile;
+			}
+			Repackager repackager = new LoggingRepackager(file);
+			setMainClass(repackager);
+			if (this.extension.convertLayout() != null) {
+				repackager.setLayout(this.extension.convertLayout());
+			}
+			repackager.setBackupSource(this.extension.isBackupSource());
+			try {
+				repackager.repackage(file, this.libraries);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
+			}
+		}
+
+		private void copy(File source, File dest) {
+			try {
+				FileCopyUtils.copy(source, dest);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
 			}
 		}
 
@@ -158,6 +163,9 @@ public class RepackageTask extends DefaultTask {
 		}
 	}
 
+	/**
+	 * {@link Repackager} that also logs when searching takes too long.
+	 */
 	private class LoggingRepackager extends Repackager {
 
 		public LoggingRepackager(File source) {
