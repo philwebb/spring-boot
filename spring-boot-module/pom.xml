@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-dependencies</artifactId>
+		<artifactId>spring-boot-parent</artifactId>
 		<version>1.2.0.BUILD-SNAPSHOT</version>
-		<relativePath>../spring-boot-dependencies</relativePath>
+		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-module</artifactId>
 	<packaging>pom</packaging>
@@ -42,6 +42,13 @@
 	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>1.2.0.BUILD-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency>
