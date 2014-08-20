@@ -7,10 +7,10 @@
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
-	<artifactId>spring-boot-parent</artifactId>
+	<artifactId>spring-boot-module</artifactId>
 	<packaging>pom</packaging>
-	<name>Spring Boot Parent</name>
-	<description>Spring Boot Parent</description>
+	<name>Spring Boot Module</name>
+	<description>Spring Boot Module</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
