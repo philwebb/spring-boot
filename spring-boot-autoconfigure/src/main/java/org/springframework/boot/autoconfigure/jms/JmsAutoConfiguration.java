@@ -77,8 +77,8 @@ public class JmsAutoConfiguration {
 	@ConditionalOnBean(JmsListenerAnnotationBeanPostProcessor.class)
 	protected static class AnnotationDrivenConfiguration {
 
-		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 		@Bean
+		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 		public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 				ConnectionFactory connectionFactory) {
 			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();

@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +47,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class JmsAutoConfigurationTests {
 
+	private static final String ACTIVEMQ_EMBEDDED_URL = "vm://localhost?broker.persistent=false";
+
+	private static final String ACTIVEMQ_NETWORK_URL = "tcp://localhost:61616";
+
 	private AnnotationConfigApplicationContext context;
 
 	@Test
@@ -60,7 +63,7 @@ public class JmsAutoConfigurationTests {
 				.getBean(JmsMessagingTemplate.class);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
 		assertEquals(jmsTemplate, messagingTemplate.getJmsTemplate());
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
+		assertEquals(ACTIVEMQ_EMBEDDED_URL,
 				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
 						.getBrokerURL());
 		assertFalse("No listener container factory should be created by default",
@@ -158,7 +161,7 @@ public class JmsAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
+		assertEquals(ACTIVEMQ_NETWORK_URL,
 				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
 						.getBrokerURL());
 	}
@@ -188,8 +191,7 @@ public class JmsAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
-				factory.getBrokerURL());
+		assertEquals(ACTIVEMQ_EMBEDDED_URL, factory.getBrokerURL());
 	}
 
 	@Test
@@ -204,8 +206,7 @@ public class JmsAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
-				factory.getBrokerURL());
+		assertEquals(ACTIVEMQ_NETWORK_URL, factory.getBrokerURL());
 	}
 
 	@Test
@@ -249,6 +250,7 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration2 {
+
 		@Bean
 		ConnectionFactory connectionFactory() {
 			return new ActiveMQConnectionFactory() {
@@ -257,10 +259,12 @@ public class JmsAutoConfigurationTests {
 				}
 			};
 		}
+
 	}
 
 	@Configuration
 	protected static class TestConfiguration3 {
+
 		@Bean
 		JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
 			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
@@ -272,6 +276,7 @@ public class JmsAutoConfigurationTests {
 
 	@Configuration
 	protected static class TestConfiguration4 implements BeanPostProcessor {
+
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName)
 				throws BeansException {
@@ -287,6 +292,7 @@ public class JmsAutoConfigurationTests {
 				throws BeansException {
 			return bean;
 		}
+
 	}
 
 	@Configuration
