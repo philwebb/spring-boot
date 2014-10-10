@@ -78,9 +78,10 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		Set<URL> copy = new LinkedHashSet<URL>(urls.length);
+		Set<URL> copy = new LinkedHashSet<URL>(urls.length+10);
 		ClassLoader loader = getDefaultClassLoader();
 		if (loader instanceof URLClassLoader) {
+			System.out.println("archive "+getArchive().getUrl());
 			for (URL url : ((URLClassLoader) loader).getURLs()) {
 				if (addDefaultClassloaderUrl(urls, url)) {
 					copy.add(url);
@@ -94,8 +95,10 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	private boolean addDefaultClassloaderUrl(URL[] urls, URL url) {
+		System.out.println("url = " + url);
 		String jarUrl = "jar:" + url + "!/";
 		for (URL nestedUrl : urls) {
+			System.out.println("nested = "+nestedUrl);
 			if (nestedUrl.equals(url) || nestedUrl.toString().equals(jarUrl)) {
 				return false;
 			}
