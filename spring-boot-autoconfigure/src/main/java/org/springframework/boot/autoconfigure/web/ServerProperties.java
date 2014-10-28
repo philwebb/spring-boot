@@ -33,7 +33,6 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -60,7 +59,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private String contextPath;
 
-	private Ssl ssl;
+	private Sll ssl;
 
 	@NotNull
 	private String servletPath = "/";
@@ -135,11 +134,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.sessionTimeout = sessionTimeout;
 	}
 
-	public Ssl getSsl() {
+	public Sll getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(Ssl ssl) {
+	public void setSsl(Sll ssl) {
 		this.ssl = ssl;
 	}
 
@@ -381,4 +380,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		}
 
 	}
+
+	public static class Sll extends org.springframework.boot.context.embedded.Ssl {
+
+	}
+
 }
