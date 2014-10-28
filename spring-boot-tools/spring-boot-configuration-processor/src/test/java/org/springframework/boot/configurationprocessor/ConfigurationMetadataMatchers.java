@@ -67,17 +67,20 @@ public class ConfigurationMetadataMatchers {
 
 		private final String description;
 
+		private final Object defaultValue;
+
 		public ContainsItemMatcher(Class<?> itemType, String name) {
-			this(itemType, name, null, null, null);
+			this(itemType, name, null, null, null, null);
 		}
 
 		public ContainsItemMatcher(Class<?> itemType, String name, String dataType,
-				Class<?> sourceType, String description) {
+				Class<?> sourceType, String description, Object defaultValue) {
 			this.itemType = itemType;
 			this.name = name;
 			this.dataType = dataType;
 			this.sourceType = sourceType;
 			this.description = description;
+			this.defaultValue = defaultValue;
 		}
 
 		@Override
@@ -92,14 +95,23 @@ public class ConfigurationMetadataMatchers {
 					throw new IllegalStateException(
 							"GroupMetadata items have no data type");
 				}
-				if (!this.dataType
-						.equals(((PropertyMetadata) itemMetadata).getDataType())) {
+				if (!this.dataType.equals(((PropertyMetadata) itemMetadata).getDataType())) {
 					return false;
 				}
 			}
 			if (this.sourceType != null
 					&& !this.sourceType.getName().equals(itemMetadata.getSourceType())) {
 				return false;
+			}
+			if (this.defaultValue != null) {
+				if (!(itemMetadata instanceof PropertyMetadata)) {
+					throw new IllegalStateException(
+							"GroupMetadata items have no default value");
+				}
+				if (!this.defaultValue.equals(((PropertyMetadata) itemMetadata)
+						.getDefaultValue())) {
+					return false;
+				}
 			}
 			if (this.description != null
 					&& !this.description.equals(itemMetadata.getDescription())) {
@@ -129,6 +141,9 @@ public class ConfigurationMetadataMatchers {
 			if (this.sourceType != null) {
 				description.appendText(" sourceType ").appendValue(this.sourceType);
 			}
+			if (this.defaultValue != null) {
+				description.appendText(" defaultValue ").appendValue(this.defaultValue);
+			}
 			if (this.description != null) {
 				description.appendText(" description ").appendValue(this.description);
 			}
@@ -136,22 +151,27 @@ public class ConfigurationMetadataMatchers {
 
 		public ContainsItemMatcher ofDataType(Class<?> dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType.getName(),
-					this.sourceType, this.description);
+					this.sourceType, this.description, this.defaultValue);
 		}
 
 		public ContainsItemMatcher ofDataType(String dataType) {
 			return new ContainsItemMatcher(this.itemType, this.name, dataType,
-					this.sourceType, this.description);
+					this.sourceType, this.description, this.defaultValue);
 		}
 
 		public ContainsItemMatcher fromSource(Class<?> sourceType) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.dataType,
-					sourceType, this.description);
+					sourceType, this.description, this.defaultValue);
+		}
+
+		public ContainsItemMatcher withDefaultValue(Object defaultValue) {
+			return new ContainsItemMatcher(this.itemType, this.name, this.dataType,
+					this.sourceType, this.description, defaultValue);
 		}
 
 		public ContainsItemMatcher withDescription(String description) {
 			return new ContainsItemMatcher(this.itemType, this.name, this.dataType,
-					this.sourceType, description);
+					this.sourceType, description, this.defaultValue);
 		}
 
 		private ItemMetadata getFirstPropertyWithName(ConfigurationMetadata metadata,

@@ -65,11 +65,13 @@ public class JsonMarshaller {
 		jsonObject.put("name", itemMetadata.getName());
 		putIfPresent(jsonObject, "sourceType", itemMetadata.getSourceType());
 		if (itemMetadata instanceof PropertyMetadata) {
-			putIfPresent(jsonObject, "dataType",
-					((PropertyMetadata) itemMetadata).getDataType());
+			putIfPresent(jsonObject, "dataType", ((PropertyMetadata) itemMetadata).getDataType());
 		}
 		putIfPresent(jsonObject, "sourceMethod", itemMetadata.getSourceMethod());
 		putIfPresent(jsonObject, "description", itemMetadata.getDescription());
+		if (itemMetadata instanceof PropertyMetadata) {
+			putIfPresent(jsonObject, "defaultValue", ((PropertyMetadata) itemMetadata).getDefaultValue());
+		}
 		return jsonObject;
 	}
 
@@ -112,7 +114,9 @@ public class JsonMarshaller {
 		String sourceType = object.optString("sourceType", null);
 		String sourceMethod = object.optString("sourceMethod", null);
 		String description = object.optString("description", null);
-		return new PropertyMetadata(name, dataType, sourceType, sourceMethod, description);
+		Object defaultValue = object.opt("defaultValue");
+		return new PropertyMetadata(name, dataType, sourceType, sourceMethod,
+				description, defaultValue);
 	}
 
 	private String toString(InputStream inputStream) throws IOException {

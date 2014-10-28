@@ -28,15 +28,20 @@ public final class PropertyMetadata extends ItemMetadata {
 
 	private final String dataType;
 
+	private final Object defaultValue;
+
 	public PropertyMetadata(String name, String dataType, String sourceType,
-			String sourceMethod, String description) {
+			String sourceMethod, String description, Object defaultValue) {
 		super(name, sourceType, sourceMethod, description);
 		this.dataType = dataType;
+		this.defaultValue = defaultValue;
 	}
 
 	public PropertyMetadata(String prefix, String name, String dataType,
-			String sourceType, String sourceMethod, String description) {
+			String sourceType, String sourceMethod, String description,
+			Object defaultValue) {
 		super(prefix, name, sourceType, sourceMethod, description);
+		this.defaultValue = defaultValue;
 		this.dataType = dataType;
 	}
 
@@ -44,10 +49,15 @@ public final class PropertyMetadata extends ItemMetadata {
 		return this.dataType;
 	}
 
+	public Object getDefaultValue() {
+		return this.defaultValue;
+	}
+
 	@Override
 	protected void buildToString(StringBuilder string) {
 		buildToStringProperty(string, "dataType", this.dataType);
-		super.buildToString(string);
+super.buildToString(string);
+		buildToStringProperty(string, "defaultValue", this.defaultValue);
 	}
 
 }
