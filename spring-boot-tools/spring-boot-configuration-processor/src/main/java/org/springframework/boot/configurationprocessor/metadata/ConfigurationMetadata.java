@@ -50,8 +50,8 @@ public class ConfigurationMetadata {
 	}
 
 	/**
-	 * All all properties from another {@link ConfigurationMetadata}.
-	 * @param metadata
+	 * Add all properties from another {@link ConfigurationMetadata}.
+	 * @param metadata the {@link ConfigurationMetadata} instance to merge
 	 */
 	public void addAll(ConfigurationMetadata metadata) {
 		this.properties.addAll(metadata.getProperties());

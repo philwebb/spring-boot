@@ -21,7 +21,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 
 import org.junit.Test;
-import org.springframework.boot.configurationprocessor.ConfigurationMetadataAnnotationProcessor;
+
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.method.EmptyTypeMethodConfig;
 import org.springframework.boot.configurationsample.method.InvalidMethodConfig;
@@ -37,12 +37,9 @@ import org.springframework.boot.configurationsample.specific.InnerClassAnnotated
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassRootConfig;
 
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.*;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.

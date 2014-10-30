@@ -98,7 +98,7 @@ public class JsonMarshaller {
 		StringBuilder out = new StringBuilder();
 		InputStreamReader reader = new InputStreamReader(inputStream, UTF_8);
 		char[] buffer = new char[BUFFER_SIZE];
-		int bytesRead = -1;
+		int bytesRead;
 		while ((bytesRead = reader.read(buffer)) != -1) {
 			out.append(buffer, 0, bytesRead);
 		}
@@ -117,7 +117,7 @@ public class JsonMarshaller {
 		public JSONObject put(String key, Object value) throws JSONException {
 			this.keys.add(key);
 			return super.put(key, value);
-		};
+		}
 
 		@Override
 		public Set keySet() {

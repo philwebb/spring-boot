@@ -39,11 +39,10 @@ public class TestCompiler {
 	private final StandardJavaFileManager fileManager;
 
 	public TestCompiler() {
-		this(ToolProvider.getSystemJavaCompiler(), Thread.currentThread()
-				.getContextClassLoader());
+		this(ToolProvider.getSystemJavaCompiler());
 	}
 
-	public TestCompiler(JavaCompiler compiler, ClassLoader classLoader) {
+	public TestCompiler(JavaCompiler compiler) {
 		this.compiler = compiler;
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
 	}

@@ -46,7 +46,7 @@ public interface FieldValuesParser {
 	};
 
 	/**
-	 * Returns the field values for the given element.
+	 * Return the field values for the given element.
 	 * @param element the element to inspect
 	 * @return a map of field names to values.
 	 * @throws Exception if the values cannot be extracted

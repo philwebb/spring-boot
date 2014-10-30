@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * @author Phillip Webb
  * @since 1.2.0
  */
-public class ReflectionWrapper {
+class ReflectionWrapper {
 
 	private final Class<?> type;
 

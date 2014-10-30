@@ -93,10 +93,6 @@ class TypeUtils {
 		return type.toString();
 	}
 
-	public boolean isCollectionOrMap(Element element) {
-		return isCollectionOrMap(element == null ? null : element.asType());
-	}
-
 	public boolean isCollectionOrMap(TypeMirror type) {
 		return this.env.getTypeUtils().isAssignable(type, this.collectionType)
 				|| this.env.getTypeUtils().isAssignable(type, this.mapType);

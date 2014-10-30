@@ -23,8 +23,8 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertThat;
-import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
+import static org.junit.Assert.*;
+import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.*;
 
 /**
  * Tests for {@link JsonMarshaller}.
@@ -44,7 +44,6 @@ public class JsonMarshallerTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		System.out.println(outputStream.toString());
 		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(
 				outputStream.toByteArray()));
 		assertThat(read,

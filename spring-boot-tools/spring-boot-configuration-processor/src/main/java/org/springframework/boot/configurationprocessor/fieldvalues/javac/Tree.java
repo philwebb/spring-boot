@@ -28,9 +28,9 @@ import java.lang.reflect.Proxy;
  */
 class Tree extends ReflectionWrapper {
 
-	private final Class<?> treeVistorType = findClass("com.sun.source.tree.TreeVisitor");
+	private final Class<?> treeVisitorType = findClass("com.sun.source.tree.TreeVisitor");
 
-	private final Method acceptMethod = findMethod("accept", this.treeVistorType,
+	private final Method acceptMethod = findMethod("accept", this.treeVisitorType,
 			Object.class);
 
 	private final Method GET_CLASS_TREE_MEMBERS = findMethod(
@@ -42,7 +42,7 @@ class Tree extends ReflectionWrapper {
 
 	public void accept(TreeVisitor visitor) throws Exception {
 		this.acceptMethod.invoke(getInstance(), Proxy.newProxyInstance(getInstance()
-				.getClass().getClassLoader(), new Class<?>[] { this.treeVistorType },
+				.getClass().getClassLoader(), new Class<?>[] { this.treeVisitorType},
 				new TreeVisitorInvocationHandler(visitor)), 0);
 	}
 
