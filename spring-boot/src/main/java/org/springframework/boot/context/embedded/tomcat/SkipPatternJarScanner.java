@@ -104,6 +104,10 @@ class SkipPatternJarScanner extends StandardJarScanner {
 			StandardJarScanFilter filter = new StandardJarScanFilter();
 			filter.setTldSkip(pattern.asCommaDelimitedString());
 			this.jarScanner.setJarScanFilter(filter);
+			this.jarScanner.setScanAllDirectories(false);
+			this.jarScanner.setScanAllFiles(false);
+			this.jarScanner.setScanBootstrapClassPath(false);
+			this.jarScanner.setScanClassPath(false);
 		}
 
 	}

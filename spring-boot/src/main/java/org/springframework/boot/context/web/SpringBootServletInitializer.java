@@ -26,6 +26,7 @@ import org.springframework.boot.builder.ParentContextApplicationContextInitializ
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -75,7 +76,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 		}
-		SpringApplicationBuilder application = new SpringApplicationBuilder();
+		SpringApplicationBuilder application = new ServletApplicationBuilder();
 		if (parent != null) {
 			application.initializers(new ParentContextApplicationContextInitializer(
 					parent));
@@ -84,6 +85,10 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				servletContext));
 		application.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		application = configure(application);
+		if (application instanceof ServletApplicationBuilder) {
+			((ServletApplicationBuilder) application)
+					.addSourceIfNoneConfigured(getClass());
+		}
 		// Ensure error pages are registered
 		application.sources(ErrorPageFilter.class);
 		return (WebApplicationContext) application.run();
@@ -99,6 +104,34 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 */
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application;
+	}
+
+	/**
+	 * {@link SpringApplicationBuilder} used with {@link SpringBootServletInitializer}
+	 */
+	private static class ServletApplicationBuilder extends SpringApplicationBuilder {
+
+		private boolean hasSources;
+
+		@Override
+		public SpringApplicationBuilder sources(Class<?>... sources) {
+			this.hasSources = (this.hasSources || !ObjectUtils.isEmpty(sources));
+			return super.sources(sources);
+
+		}
+
+		@Override
+		public SpringApplicationBuilder sources(Object... sources) {
+			this.hasSources = (this.hasSources || !ObjectUtils.isEmpty(sources));
+			return super.sources(sources);
+		}
+
+		public void addSourceIfNoneConfigured(Class<?> source) {
+			if (!this.hasSources) {
+				sources(source);
+			}
+		}
+
 	}
 
 }

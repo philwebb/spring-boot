@@ -120,7 +120,6 @@ public class SpringApplicationBuilder {
 	 * @return an application context created from the current state
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-
 		if (this.parent != null) {
 			// If there is a parent don't register a shutdown hook
 			if (!this.registerShutdownHookApplied) {
@@ -130,12 +129,10 @@ public class SpringApplicationBuilder {
 			initializers(new ParentContextApplicationContextInitializer(
 					this.parent.run(args)));
 		}
-
 		if (this.running.get()) {
 			// If already created we just return the existing context
 			return this.context;
 		}
-
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
@@ -143,9 +140,7 @@ public class SpringApplicationBuilder {
 				this.context = this.application.run(args);
 			}
 		}
-
 		return this.context;
-
 	}
 
 	/**
@@ -155,7 +150,6 @@ public class SpringApplicationBuilder {
 	 * @return the child application builder
 	 */
 	public SpringApplicationBuilder child(Object... sources) {
-
 		SpringApplicationBuilder child = new SpringApplicationBuilder();
 		child.sources(sources);
 
@@ -176,7 +170,6 @@ public class SpringApplicationBuilder {
 		this.application.setSources(this.sources);
 
 		return child;
-
 	}
 
 	/**
