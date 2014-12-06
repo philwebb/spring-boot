@@ -7,10 +7,10 @@
 		<artifactId>spring-boot-deployment-tests</artifactId>
 		<version>1.2.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-deployment-wildfly</artifactId>
+	<artifactId>spring-boot-deployment-test-tomcat</artifactId>
 	<packaging>war</packaging>
-	<name>Spring Boot WildFly Deployment</name>
-	<description>Spring Boot WildFly Deployment</description>
+	<name>Spring Boot Tomcat Deployment Test</name>
+	<description>Spring Boot Tomcat Deployment Test</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -18,7 +18,6 @@
 	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<wildfly.version>8.2.0.Final</wildfly.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -63,15 +62,14 @@
 				<version>1.4.11</version>
 				<configuration>
 					<container>
-						<containerId>wildfly8x</containerId>
+						<containerId>tomcat8x</containerId>
 						<zipUrlInstaller>
-							<url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</url>
+							<url>http://mirrors.ibiblio.org/apache/tomcat/tomcat-8/v${tomcat.version}/bin/apache-tomcat-${tomcat.version}.zip</url>
 						</zipUrlInstaller>
 					</container>
 					<configuration>
 						<properties>
 							<cargo.servlet.port>${appserver.port}</cargo.servlet.port>
-							<cargo.jboss.configuration>standalone-full</cargo.jboss.configuration>
 						</properties>
 					</configuration>
 					<deployables>

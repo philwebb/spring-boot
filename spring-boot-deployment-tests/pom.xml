@@ -20,6 +20,8 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-deployment-wildfly</module>
+		<module>spring-boot-deployment-test-tomee</module>
+		<module>spring-boot-deployment-test-tomcat</module>
+		<module>spring-boot-deployment-test-wildfly</module>
 	</modules>
 </project>
