@@ -16,17 +16,24 @@
 
 package sample;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -45,8 +52,12 @@ public class SampleHateoasApplicationTests {
 
 	@Test
 	public void hasHalLinks() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + this.port + "/customers/1", String.class);
+		RestTemplate restTemplate = new TestRestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(new MediaType("application", "hal+json")));
+		String url = "http://localhost:" + this.port + "/customers/1";
+		ResponseEntity<String> entity = restTemplate.exchange(url, HttpMethod.GET,
+				new HttpEntity<String>("parameters", headers), String.class);
 		assertThat(entity.getStatusCode(), equalTo(HttpStatus.OK));
 		assertThat(entity.getBody(), startsWith("{\"id\":1,\"firstName\":\"Oliver\""
 				+ ",\"lastName\":\"Gierke\""));
