@@ -16,13 +16,20 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
-import javax.servlet.ServletContext;
+import java.util.Set;
 
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
+import org.eclipse.jetty.plus.annotation.ContainerInitializer;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
 
@@ -33,38 +40,85 @@ import org.springframework.util.Assert;
  */
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {
 
-	private final ContextHandler contextHandler;
+	private static final Class<?>[] NO_CLASSES = {};
 
-	private final ServletContextInitializer[] initializers;
+	private final ContainerInitializer initializer;
 
 	/**
 	 * Create a new {@link ServletContextInitializerConfiguration}.
 	 * @param contextHandler the Jetty ContextHandler
 	 * @param initializers the initializers that should be invoked
+	 * @deprecated since 1.2.1 in favor of
+	 * {@link #ServletContextInitializerConfiguration(ServletContextInitializer...)}
 	 */
+	@Deprecated
 	public ServletContextInitializerConfiguration(ContextHandler contextHandler,
 			ServletContextInitializer... initializers) {
-		Assert.notNull(contextHandler, "Jetty ContextHandler must not be null");
-		Assert.notNull(initializers, "Initializers must not be null");
-		this.contextHandler = contextHandler;
-		this.initializers = initializers;
+		this(initializers);
+	}
 
+	/**
+	 * Create a new {@link ServletContextInitializerConfiguration}.
+	 * @param initializers the initializers that should be invoked
+	 */
+	public ServletContextInitializerConfiguration(
+			ServletContextInitializer... initializers) {
+		Assert.notNull(initializers, "Initializers must not be null");
+		this.initializer = createContainerInitializer(initializers);
+	}
+
+	private ContainerInitializer createContainerInitializer(
+			final ServletContextInitializer[] initializers) {
+		return createContainerInitializer(new ServletContainerInitializer() {
+			@Override
+			public void onStartup(Set<Class<?>> classes, ServletContext servletContext)
+					throws ServletException {
+				for (ServletContextInitializer initializer : initializers) {
+					initializer.onStartup(servletContext);
+				}
+			}
+		});
+	}
+
+	private ContainerInitializer createContainerInitializer(
+			ServletContainerInitializer target) {
+		try {
+			return new ContainerInitializer(target, NO_CLASSES);
+		}
+		catch (NoSuchMethodError ex) {
+			return createJetty8ContainerInitializer(target);
+		}
+	}
+
+	private ContainerInitializer createJetty8ContainerInitializer(
+			ServletContainerInitializer target) {
+		try {
+			BeanWrapper wrapper = new BeanWrapperImpl(ContainerInitializer.class);
+			wrapper.setPropertyValue("target", target);
+			return (ContainerInitializer) wrapper.getWrappedInstance();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to create ContainerInitializer", ex);
+		}
 	}
 
 	@Override
 	public void configure(WebAppContext context) throws Exception {
-		context.addBean(new InitializerListener(), true);
+		context.addBean(new InitializerListener(context), true);
 	}
 
 	private class InitializerListener extends AbstractLifeCycle {
 
+		private final WebAppContext context;
+
+		public InitializerListener(WebAppContext context) {
+			this.context = context;
+		}
+
 		@Override
 		protected void doStart() throws Exception {
-			ServletContext servletContext = ServletContextInitializerConfiguration.this.contextHandler
-					.getServletContext();
-			for (ServletContextInitializer initializer : ServletContextInitializerConfiguration.this.initializers) {
-				initializer.onStartup(servletContext);
-			}
+			ServletContextInitializerConfiguration.this.initializer
+					.callStartup(this.context);
 		}
 	}
 
