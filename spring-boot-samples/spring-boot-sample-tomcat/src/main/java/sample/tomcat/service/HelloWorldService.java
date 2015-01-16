@@ -26,7 +26,12 @@ public class HelloWorldService {
 	private String name;
 
 	public String getHelloMessage() {
+		testName();
 		return "Hello " + this.name;
+	}
+
+	public void testName() {
+		System.out.println("Hello");
 	}
 
 }
