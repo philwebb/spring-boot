@@ -16,9 +16,14 @@
 
 package org.springframework.boot.reload;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
+import java.util.Arrays;
+
+import org.springframework.boot.reload.watch.FileChangeListener;
+import org.springframework.boot.reload.watch.FileSystemWatcher;
 
 /**
  * @author Phillip Webb
@@ -26,6 +31,8 @@ import java.net.URLClassLoader;
 public class SpringBootReload {
 
 	private Thread thread;
+
+	private Launcher launcher;
 
 	private String[] args;
 
@@ -40,11 +47,14 @@ public class SpringBootReload {
 			Method mainMethod = findMainMethod();
 			ClassLoader classLoader = this.thread.getContextClassLoader();
 			ClassLoaderUrls urls = new ClassLoaderUrls((URLClassLoader) classLoader);
+			// Create a file system watcher and register the URLs of interest
+			FileSystemWatcher fsw = new FileSystemWatcher(new ChangeListener());
+			fsw.register(urls.getReloadable());
 			URLClassLoader fixedClassLoader = new URLClassLoader(urls.getFixed(),
 					classLoader.getParent());
-			Launcher launcher = new Launcher(fixedClassLoader, urls.getReloadable(),
+			this.launcher = new Launcher(fixedClassLoader, urls.getReloadable(),
 					mainMethod, this.args, this.thread.getUncaughtExceptionHandler());
-			launcher.launch();
+			this.launcher.launch();
 			exitThread();
 		}
 		catch (Exception ex) {
@@ -52,6 +62,16 @@ public class SpringBootReload {
 				throw (SilentExitException) ex;
 			}
 			new ReloadUnavailableException(ex).printStackTrace();
+		}
+	}
+
+	private class ChangeListener implements FileChangeListener {
+		@Override
+		public void filesChanged(File... files) {
+			System.out.println("Changes: " + Arrays.toString(files));
+			// Perhaps make different decisions depending on what was changed (e.g.
+			// javascript resources vs class files)
+			SpringBootReload.this.launcher.restart();
 		}
 	}
 
