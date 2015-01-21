@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,50 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
+ * Parent last (child first) classloader for the specified URLs.
+ *
  * @author Phillip Webb
+ * @author Andy Clement
  */
 public class ReloadClassLoader extends URLClassLoader {
 
-	/**
-	 * @param urls
-	 * @param parent
-	 */
 	public ReloadClassLoader(URL[] urls, ClassLoader parent) {
-		super(urls);
-		// TODO Auto-generated constructor stub
+		super(urls, parent);
 	}
 
+	@Override
+	public URL getResource(String name) {
+		URL resource = findResource(name);
+		if (resource == null) {
+			ClassLoader parent = getParent();
+			if (parent != null) {
+				resource = parent.getResource(name);
+			}
+		}
+		return resource;
+	}
+
+	@Override
+	public synchronized Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
+		Class<?> clz = findLoadedClass(name);
+		if (clz == null) {
+			try {
+				clz = findClass(name);
+			}
+			catch (ClassNotFoundException cnfe) {
+				ClassLoader parent = getParent();
+				if (parent != null) {
+					clz = parent.loadClass(name);
+				}
+				else {
+					clz = getSystemClassLoader().loadClass(name);
+				}
+			}
+		}
+		if (resolve) {
+			resolveClass(clz);
+		}
+		return clz;
+	}
 }
