@@ -22,8 +22,8 @@ import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 
-import org.springframework.boot.reload.watch.FileChangeListener;
-import org.springframework.boot.reload.watch.FileSystemWatcher;
+import org.springframework.boot.reload.watchx.FileChangeListener;
+import org.springframework.boot.reload.watchx.FileSystemWatcher;
 
 /**
  * @author Phillip Webb

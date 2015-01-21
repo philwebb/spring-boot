@@ -168,6 +168,8 @@ public class SpringApplication {
 
 	private boolean logStartupInfo = true;
 
+	private boolean useReloader = true;
+
 	private boolean addCommandLineProperties = true;
 
 	private Banner banner;
@@ -264,6 +266,10 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		if (this.useReloader) {
+			Reloader.apply(args);
+		}
+
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
@@ -758,11 +764,22 @@ public class SpringApplication {
 
 	/**
 	 * Sets if the application information should be logged when the application starts.
-	 * Defaults to {@code true}
+	 * Defaults to {@code true}.
 	 * @param logStartupInfo if startup info should be logged.
 	 */
 	public void setLogStartupInfo(boolean logStartupInfo) {
 		this.logStartupInfo = logStartupInfo;
+	}
+
+	/**
+	 * Sets if {@link Reloader} strategies found on the classpath should be automatically
+	 * applied when the application starts. Reloader implementations may re-initialize the
+	 * main thread and often assume that the arguments passed to the SpringApplication are
+	 * the same as those passed into the main method.Defaults to {@code true}.
+	 * @param useReloader the useReloader to set
+	 */
+	public void setUseReloader(boolean useReloader) {
+		this.useReloader = useReloader;
 	}
 
 	/**
