@@ -17,9 +17,13 @@
 package org.springframework.boot.reload;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.IdentityHashMap;
+
+import org.springframework.util.ReflectionUtils;
 
 /**
  * @author pwebb
@@ -79,6 +83,26 @@ public class Launcher {
 			}
 		}
 
+	}
+
+	private static void shutdown() {
+		try {
+			Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
+			Method runHooksMethod = ReflectionUtils.findMethod(hooksClass, "runHooks");
+			runHooksMethod.setAccessible(true);
+			runHooksMethod.invoke(null);
+			Field hooksField = hooksClass.getDeclaredField("hooks");
+			hooksField.setAccessible(true);
+			hooksField.set(null, new IdentityHashMap());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void restart() {
+		shutdown();
+		launch();
 	}
 
 }
