@@ -37,4 +37,10 @@ public class SampleController {
 		return this.helloWorldService.getHelloMessage() + " " + new Date().getTime();
 	}
 
+	// @RequestMapping("/greet")
+	// @ResponseBody
+	// public String greet() {
+	// return "hey!";
+	// }
+
 }

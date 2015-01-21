@@ -50,10 +50,8 @@ public class SpringBootReload {
 			// Create a file system watcher and register the URLs of interest
 			FileSystemWatcher fsw = new FileSystemWatcher(new ChangeListener());
 			fsw.register(urls.getReloadable());
-			URLClassLoader fixedClassLoader = new URLClassLoader(urls.getFixed(),
-					classLoader.getParent());
-			this.launcher = new Launcher(fixedClassLoader, urls.getReloadable(),
-					mainMethod, this.args, this.thread.getUncaughtExceptionHandler());
+			this.launcher = new Launcher(classLoader, urls.getReloadable(), mainMethod,
+					this.args, this.thread.getUncaughtExceptionHandler());
 			this.launcher.launch();
 			exitThread();
 		}
@@ -80,8 +78,11 @@ public class SpringBootReload {
 			throw new IllegalStateException("Thread must be named 'main'");
 		}
 		String classLoaderName = this.thread.getContextClassLoader().getClass().getName();
-		if (!classLoaderName.contains("AppClassLoader")) {
-			throw new IllegalStateException("Thread must use an AppClassLoader");
+		if (!classLoaderName.contains("AppClassLoader")
+				&& !classLoaderName.contains("LaunchedURLClassLoader")) {
+			throw new IllegalStateException(
+					"Thread must use an AppClassLoader/LaunchedURLClassLoader, not a: "
+							+ classLoaderName);
 		}
 	}
 
@@ -105,6 +106,15 @@ public class SpringBootReload {
 	}
 
 	private void exitThread() {
+		// TODO When running on CF, I seem to have issues with exiting the thread, so this
+		// horrible block just keeps it around doing nothing...
+		for (int i = 0; i < 100; i++) {
+			try {
+				Thread.sleep(10000);
+			}
+			catch (Exception e) {
+			}
+		}
 		this.thread.setUncaughtExceptionHandler(new SilentUncaughtExceptionHandler(
 				this.thread.getUncaughtExceptionHandler()));
 		throw new SilentExitException();

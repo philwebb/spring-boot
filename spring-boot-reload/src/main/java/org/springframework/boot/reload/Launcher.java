@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,17 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.IdentityHashMap;
 
 import org.springframework.util.ReflectionUtils;
 
 /**
  * @author pwebb
+ * @author Andy Clement
  */
 public class Launcher {
 
-	private final URLClassLoader fixedClassLoader;
+	private final ClassLoader fixedClassLoader;
 
 	private final URL[] reloadableUrls;
 
@@ -40,7 +40,7 @@ public class Launcher {
 
 	private String[] args;
 
-	public Launcher(URLClassLoader fixedClassLoader, URL[] reloadableUrls,
+	public Launcher(ClassLoader fixedClassLoader, URL[] reloadableUrls,
 			Method mainMethod, String[] args, UncaughtExceptionHandler exceptionHandler) {
 		this.fixedClassLoader = fixedClassLoader;
 		this.reloadableUrls = reloadableUrls;
