@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.xreload;
 
 import java.net.URL;
 import java.net.URLClassLoader;

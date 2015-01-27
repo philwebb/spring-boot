@@ -28,6 +28,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.boot.reload.log.Log;
+
 /**
  * A LiveReload server.
  *
@@ -35,6 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see <a href="http://livereload.com">livereload.com</a>
  */
 public class LiveReloadServer {
+
+	private static final int PORT = 35729;
 
 	private static final int READ_TIMEOUT = 4000;
 
@@ -48,7 +52,8 @@ public class LiveReloadServer {
 	private List<Connection> connections = new ArrayList<Connection>();
 
 	public void start() throws IOException {
-		this.serverSocket = new ServerSocket(35729);
+		Log.debug("Starting live reload server on port " + PORT);
+		this.serverSocket = new ServerSocket(PORT);
 		this.listenThread = new Thread() {
 			@Override
 			public void run() {
@@ -66,6 +71,7 @@ public class LiveReloadServer {
 				connection.reload();
 			}
 			catch (Exception ex) {
+				Log.debug("Unable to send reload message", ex);
 			}
 		}
 	}
@@ -83,11 +89,13 @@ public class LiveReloadServer {
 							handleConnection(socket, inputStream);
 						}
 						catch (Exception ex) {
+							Log.debug("Error ex", ex);
 						}
 					}
 				});
 			}
 			catch (IOException ex) {
+				Log.debug("Error y", ex);
 			}
 		}
 		while (!this.serverSocket.isClosed());
@@ -153,6 +161,7 @@ public class LiveReloadServer {
 
 	// FIXME delete
 	public static void main(String[] args) throws IOException {
+		Log.setEnabled(true);
 		LiveReloadServer liveReloadServer = new LiveReloadServer();
 		liveReloadServer.start();
 		for (int i = 0; i < 10; i++) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.xreload;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -22,8 +22,9 @@ import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 
-import org.springframework.boot.reload.watchx.FileChangeListener;
-import org.springframework.boot.reload.watchx.FileSystemWatcher;
+import org.springframework.boot.reload.ReloadClassLoader;
+import org.springframework.boot.xreload.watchx.FileChangeListener;
+import org.springframework.boot.xreload.watchx.FileSystemWatcher;
 
 /**
  * @author Phillip Webb

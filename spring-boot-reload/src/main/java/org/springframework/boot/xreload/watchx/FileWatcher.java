@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload.watchx;
+package org.springframework.boot.xreload.watchx;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;

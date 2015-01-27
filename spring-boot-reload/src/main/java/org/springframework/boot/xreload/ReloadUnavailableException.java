@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
-
-import java.lang.Thread.UncaughtExceptionHandler;
+package org.springframework.boot.xreload;
 
 /**
- * {@link UncaughtExceptionHandler} decorator that ignores {@link SilentExitException}.
+ * Exception thrown when reloading cannot be applied.
  *
  * @author Phillip Webb
  */
-public class SilentUncaughtExceptionHandler implements UncaughtExceptionHandler {
+public class ReloadUnavailableException extends RuntimeException {
 
-	private final UncaughtExceptionHandler delegate;
-
-	public SilentUncaughtExceptionHandler(UncaughtExceptionHandler delegate) {
-		this.delegate = delegate;
-	}
-
-	@Override
-	public void uncaughtException(Thread thread, Throwable exception) {
-		if (exception instanceof SilentExitException) {
-			return;
-		}
-		if (this.delegate != null) {
-			this.delegate.uncaughtException(thread, exception);
-		}
+	public ReloadUnavailableException(Exception cause) {
+		super(cause);
 	}
 
 }

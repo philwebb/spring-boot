@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.xreload;
 
 /**
  * Exception used to silently exit a running thread.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.xreload;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.IdentityHashMap;
 
+import org.springframework.boot.reload.ReloadClassLoader;
 import org.springframework.util.ReflectionUtils;
 
 /**

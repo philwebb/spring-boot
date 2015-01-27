@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,36 +34,27 @@ public class ReloadClassLoader extends URLClassLoader {
 	@Override
 	public URL getResource(String name) {
 		URL resource = findResource(name);
-		if (resource == null) {
-			ClassLoader parent = getParent();
-			if (parent != null) {
-				resource = parent.getResource(name);
-			}
+		if (resource != null) {
+			return resource;
 		}
-		return resource;
+		return getParent().getResource(name);
 	}
 
 	@Override
-	public synchronized Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
-		Class<?> clz = findLoadedClass(name);
-		if (clz == null) {
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+		Class<?> loadedClass = findLoadedClass(name);
+		if (loadedClass == null) {
 			try {
-				clz = findClass(name);
+				loadedClass = findClass(name);
 			}
-			catch (ClassNotFoundException cnfe) {
-				ClassLoader parent = getParent();
-				if (parent != null) {
-					clz = parent.loadClass(name);
-				}
-				else {
-					clz = getSystemClassLoader().loadClass(name);
-				}
+			catch (ClassNotFoundException ex) {
+				loadedClass = getParent().loadClass(name);
 			}
 		}
 		if (resolve) {
-			resolveClass(clz);
+			resolveClass(loadedClass);
 		}
-		return clz;
+		return loadedClass;
 	}
+
 }

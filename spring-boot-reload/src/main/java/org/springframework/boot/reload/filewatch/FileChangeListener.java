@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.filewatch;
+
+import java.util.Set;
 
 /**
- * Exception thrown when reloading cannot be applied.
+ * Callback interface when file changes are detected.
  *
+ * @author Andy Clement
  * @author Phillip Webb
  */
-public class ReloadUnavailableException extends RuntimeException {
+public interface FileChangeListener {
 
-	public ReloadUnavailableException(Exception cause) {
-		super(cause);
-	}
+	/**
+	 * Called when files have been changed.
+	 * @param changeSet a set of the {@link ChangedFiles}
+	 */
+	void onChange(Set<ChangedFiles> changeSet);
 
 }

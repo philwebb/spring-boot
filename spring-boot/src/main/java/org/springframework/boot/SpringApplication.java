@@ -777,6 +777,7 @@ public class SpringApplication {
 	 * main thread and often assume that the arguments passed to the SpringApplication are
 	 * the same as those passed into the main method.Defaults to {@code true}.
 	 * @param useReloader the useReloader to set
+	 * @since 1.3.0
 	 */
 	public void setUseReloader(boolean useReloader) {
 		this.useReloader = useReloader;
