@@ -27,8 +27,8 @@ import java.net.URLClassLoader;
  */
 public class ReloadClassLoader extends URLClassLoader {
 
-	public ReloadClassLoader(URL[] urls, ClassLoader parent) {
-		super(urls, parent);
+	public ReloadClassLoader(ReloadableUrls reloadableUrls, ClassLoader parent) {
+		super(reloadableUrls.toArray(), parent);
 	}
 
 	@Override

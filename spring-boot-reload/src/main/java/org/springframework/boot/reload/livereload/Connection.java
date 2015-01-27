@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.boot.reload.livereload.Frame.Type;
+import org.springframework.boot.reload.log.Log;
 
 /**
  * A {@link LiveReloadServer} connection.
@@ -67,8 +68,10 @@ class Connection {
 		}
 	}
 
-	public void reload() throws IOException {
+	public void triggerReload() throws IOException {
+		// FIXME paths
 		if (this.webSocket) {
+			Log.debug("Triggering LiveReload");
 			writeWebSocketFrame(new Frame("{\"command\":\"reload\",\"path\":\"/\"}"));
 		}
 	}
@@ -94,7 +97,10 @@ class Connection {
 				writeWebSocketFrame(new Frame(Type.PONG));
 			}
 			else if (frame.getType() == Frame.Type.CLOSE) {
-				throw new IOException("Connection closed");
+				throw new ConnectionClosedException();
+			}
+			else if (frame.getType() == Frame.Type.TEXT) {
+				Log.debug("Recieved LiveReload text frame " + frame);
 			}
 			else {
 				throw new IOException("Unexpected Frame Type " + frame.getType());

@@ -186,8 +186,8 @@ public class FileSystemWatcher {
 				Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
 				for (final Map.Entry<File, Set<File>> entry : this.changed.entrySet()) {
 					if (!entry.getValue().isEmpty()) {
-						Log.debug("Detected changes in " + entry.getKey() + " "
-								+ entry.getKey());
+						Log.debug("Detected changes in " + entry.getKey() + " : "
+								+ entry.getValue());
 						changeSet.add(new ChangedFiles(entry.getKey(), entry.getValue()));
 					}
 				}

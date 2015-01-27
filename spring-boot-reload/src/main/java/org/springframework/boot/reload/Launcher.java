@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.springframework.boot.xreload;
+package org.springframework.boot.reload;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.IdentityHashMap;
-
-import org.springframework.boot.reload.ReloadClassLoader;
-import org.springframework.util.ReflectionUtils;
 
 /**
- * @author pwebb
+ * @author Phillip Webb
  * @author Andy Clement
  */
-public class Launcher {
+class Launcher {
 
-	private final ClassLoader fixedClassLoader;
+	private final ClassLoader applicationClassLoader;
 
-	private final URL[] reloadableUrls;
+	private final ReloadableUrls reloadableUrls;
 
 	private final String mainClassName;
 
@@ -41,44 +34,45 @@ public class Launcher {
 
 	private String[] args;
 
-	public Launcher(ClassLoader fixedClassLoader, URL[] reloadableUrls,
+	public Launcher(ClassLoader applicationClassLoader, ReloadableUrls reloadableUrls,
 			Method mainMethod, String[] args, UncaughtExceptionHandler exceptionHandler) {
-		this.fixedClassLoader = fixedClassLoader;
+		this.applicationClassLoader = applicationClassLoader;
 		this.reloadableUrls = reloadableUrls;
 		this.mainClassName = mainMethod.getDeclaringClass().getName();
 		this.args = args;
 		this.exceptionHandler = exceptionHandler;
 	}
 
-	public void launch() {
+	public void launch() throws InterruptedException {
 		ReloadClassLoader classLoader = new ReloadClassLoader(this.reloadableUrls,
-				this.reloadable);
+				this.applicationClassLoader);
 		LaunchThread launchThread = new LaunchThread(this.mainClassName, this.args);
 		launchThread.setContextClassLoader(classLoader);
 		launchThread.setUncaughtExceptionHandler(this.exceptionHandler);
 		launchThread.setName("main (reloadable)");
 		launchThread.start();
+		launchThread.join();
 	}
 
-	public void restart() {
-		shutdown();
-		launch();
-	}
-
-	private static void shutdown() {
-		try {
-			Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
-			Method runHooksMethod = ReflectionUtils.findMethod(hooksClass, "runHooks");
-			runHooksMethod.setAccessible(true);
-			runHooksMethod.invoke(null);
-			Field hooksField = hooksClass.getDeclaredField("hooks");
-			hooksField.setAccessible(true);
-			hooksField.set(null, new IdentityHashMap());
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	// private void shutdown() {
+	// try {
+	// Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
+	// Method runHooksMethod = ReflectionUtils.findMethod(hooksClass, "runHooks");
+	// runHooksMethod.setAccessible(true);
+	// runHooksMethod.invoke(null);
+	// Field hooksField = hooksClass.getDeclaredField("hooks");
+	// hooksField.setAccessible(true);
+	// hooksField.set(null, new IdentityHashMap());
+	// }
+	// catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	// }
+	//
+	// public void restart() {
+	// shutdown();
+	// launch();
+	// }
 
 	private static class LaunchThread extends Thread {
 

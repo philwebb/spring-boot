@@ -16,7 +16,16 @@
 
 package org.springframework.boot.reload;
 
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.springframework.boot.Reloader;
+import org.springframework.boot.reload.filewatch.FileSystemWatcher;
+import org.springframework.boot.reload.livereload.LiveReloadServer;
 import org.springframework.boot.reload.log.Log;
 
 /**
@@ -26,14 +35,121 @@ import org.springframework.boot.reload.log.Log;
  */
 public class SpringBootReloader extends Reloader {
 
+	private final Thread thread;
+
+	private final ClassLoader classLoader;
+
+	private final ReloadProperties properties;
+
+	private LiveReloadServer liveReloadServer;
+
+	private Launcher launcher;
+
+	public SpringBootReloader() {
+		this.thread = Thread.currentThread();
+		this.classLoader = this.thread.getContextClassLoader();
+		this.properties = new ReloadProperties();
+	}
+
 	@Override
 	protected void start(String[] args) {
-		ReloadProperties properties = new ReloadProperties();
-		Log.setEnabled(properties.isDebug());
+		if (this.classLoader instanceof ReloadClassLoader) {
+			Log.debug("Reload support is already active");
+			return;
+		}
+		Log.setEnabled(this.properties.isDebug());
+		try {
+			doStart(args);
+		}
+		catch (SilentExitException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			Log.debug("Unable to start SpringBootReloader", ex);
+		}
+	}
+
+	private void doStart(String[] args) throws Exception {
 		Log.debug("Starting SpringBootReloader");
-		if (properties.isShowBanner()) {
+		assertIsMainThread();
+		Method mainMethod = findMainMethod();
+		ReloadableUrls reloadableUrls = ReloadableUrls
+				.fromUrlClassLoader((URLClassLoader) this.classLoader);
+		startLiveReloadServer();
+		startFileWatcher(reloadableUrls);
+		this.launcher = new Launcher(this.classLoader, reloadableUrls, mainMethod, args,
+				this.thread.getUncaughtExceptionHandler());
+		if (this.properties.isShowBanner()) {
 			ReloadBanner.print();
 		}
+		this.launcher.launch();
+		exitMainThread();
+	}
+
+	private void startLiveReloadServer() {
+		if (this.properties.isLiveReload()) {
+			try {
+				this.liveReloadServer = new LiveReloadServer();
+				this.liveReloadServer.start();
+			}
+			catch (Exception ex) {
+				Log.debug("Unable to start LiveReload server", ex);
+			}
+		}
+	}
+
+	private void startFileWatcher(ReloadableUrls reloadableUrls)
+			throws URISyntaxException {
+		FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
+		for (URL url : reloadableUrls) {
+			fileSystemWatcher.addSourceFolder(new File(url.toURI()));
+		}
+	}
+
+	private void assertIsMainThread() {
+		if (!"main".equals(this.thread.getName())) {
+			throw new IllegalStateException("Thread must be named 'main'");
+		}
+		String classLoaderName = this.thread.getContextClassLoader().getClass().getName();
+		if (!classLoaderName.contains("AppClassLoader")
+				&& !classLoaderName.contains("LaunchedURLClassLoader")) {
+			throw new IllegalStateException(
+					"Thread must use an AppClassLoader/LaunchedURLClassLoader, not a: "
+							+ classLoaderName);
+		}
+	}
+
+	private Method findMainMethod() {
+		for (StackTraceElement element : this.thread.getStackTrace()) {
+			if ("main".equals(element.getMethodName())) {
+				Method method = getMainMethod(element);
+				if (method != null) {
+					return method;
+				}
+			}
+		}
+		throw new IllegalStateException("Reload must be applied to the main method");
+	}
+
+	private Method getMainMethod(StackTraceElement element) {
+		try {
+			Class<?> elementClass = Class.forName(element.getClassName());
+			Method method = elementClass.getDeclaredMethod("main", String[].class);
+			if (Modifier.isStatic(method.getModifiers())) {
+				return method;
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
+		}
+		return null;
+	}
+
+	private void exitMainThread() {
+		Log.debug("Exiting original main thread");
+		this.thread.setUncaughtExceptionHandler(new SilentUncaughtExceptionHandler(
+				this.thread.getUncaughtExceptionHandler()));
+		throw new SilentExitException();
 	}
 
 }

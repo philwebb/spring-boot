@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -65,10 +66,10 @@ public class LiveReloadServer {
 		this.listenThread.start();
 	}
 
-	public synchronized void reload() {
+	public synchronized void triggerReload() {
 		for (Connection connection : this.connections) {
 			try {
-				connection.reload();
+				connection.triggerReload();
 			}
 			catch (Exception ex) {
 				Log.debug("Unable to send reload message", ex);
@@ -88,13 +89,19 @@ public class LiveReloadServer {
 						try {
 							handleConnection(socket, inputStream);
 						}
+						catch (ConnectionClosedException ex) {
+							Log.debug("LiveReload connection closed");
+						}
 						catch (Exception ex) {
-							Log.debug("Error ex", ex);
+							Log.debug("LiveReload error", ex);
 						}
 					}
 				});
 			}
-			catch (IOException ex) {
+			catch (SocketTimeoutException ex) {
+				// Ignore
+			}
+			catch (Exception ex) {
 				Log.debug("Error y", ex);
 			}
 		}
@@ -164,13 +171,14 @@ public class LiveReloadServer {
 		Log.setEnabled(true);
 		LiveReloadServer liveReloadServer = new LiveReloadServer();
 		liveReloadServer.start();
+		System.in.read();
 		for (int i = 0; i < 10; i++) {
 			try {
 				Thread.sleep(1500);
 			}
 			catch (InterruptedException e) {
 			}
-			liveReloadServer.reload();
+			liveReloadServer.triggerReload();
 		}
 
 	}

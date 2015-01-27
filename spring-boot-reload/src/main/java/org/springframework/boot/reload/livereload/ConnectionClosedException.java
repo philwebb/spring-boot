@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Provides "Hot Reload" features for Spring Boot.
- */
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.livereload;
 
+import java.io.IOException;
+
+/**
+ * Exception throw when the client closes the connection.
+ *
+ * @author Phillip Webb
+ */
+public class ConnectionClosedException extends IOException {
+
+	public ConnectionClosedException() {
+		super("Connection closed");
+	}
+
+}
