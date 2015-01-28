@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.reloader;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.IdentityHashMap;
 
 /**
+ * Launcher to start the application and possible restart it later.
+ *
  * @author Phillip Webb
  * @author Andy Clement
  */
@@ -43,10 +47,32 @@ class Launcher {
 		this.exceptionHandler = exceptionHandler;
 	}
 
-	public void launch() throws InterruptedException {
+	public void restart() throws InterruptedException {
+		// Use a non-deamon thread to ensure the the JVM doesn't exit
+		Thread restartThread = new Thread() {
+			@Override
+			public void run() {
+				try {
+					triggerShutdownHooks();
+					Launcher.this.start();
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+					throw new IllegalStateException(ex);
+				}
+			}
+		};
+		restartThread.setUncaughtExceptionHandler(this.exceptionHandler);
+		restartThread.setDaemon(false);
+		restartThread.start();
+		restartThread.join();
+	}
+
+	public void start() throws InterruptedException {
 		ReloadClassLoader classLoader = new ReloadClassLoader(this.reloadableUrls,
 				this.applicationClassLoader);
 		LaunchThread launchThread = new LaunchThread(this.mainClassName, this.args);
+		launchThread.setDaemon(false);
 		launchThread.setContextClassLoader(classLoader);
 		launchThread.setUncaughtExceptionHandler(this.exceptionHandler);
 		launchThread.setName("main (reloadable)");
@@ -54,25 +80,16 @@ class Launcher {
 		launchThread.join();
 	}
 
-	// private void shutdown() {
-	// try {
-	// Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
-	// Method runHooksMethod = ReflectionUtils.findMethod(hooksClass, "runHooks");
-	// runHooksMethod.setAccessible(true);
-	// runHooksMethod.invoke(null);
-	// Field hooksField = hooksClass.getDeclaredField("hooks");
-	// hooksField.setAccessible(true);
-	// hooksField.set(null, new IdentityHashMap());
-	// }
-	// catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	// }
-	//
-	// public void restart() {
-	// shutdown();
-	// launch();
-	// }
+	@SuppressWarnings("rawtypes")
+	private void triggerShutdownHooks() throws Exception {
+		Class<?> hooksClass = Class.forName("java.lang.ApplicationShutdownHooks");
+		Method runHooks = hooksClass.getDeclaredMethod("runHooks");
+		runHooks.setAccessible(true);
+		runHooks.invoke(null);
+		Field field = hooksClass.getDeclaredField("hooks");
+		field.setAccessible(true);
+		field.set(null, new IdentityHashMap());
+	}
 
 	private static class LaunchThread extends Thread {
 

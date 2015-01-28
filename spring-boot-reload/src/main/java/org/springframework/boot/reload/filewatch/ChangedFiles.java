@@ -18,6 +18,7 @@ package org.springframework.boot.reload.filewatch;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -31,6 +32,8 @@ public final class ChangedFiles {
 	private final File sourceFolder;
 
 	private final Set<File> files;
+
+	private Set<String> relativeNames;
 
 	public ChangedFiles(File sourceFolder, Set<File> files) {
 		this.sourceFolder = sourceFolder;
@@ -51,6 +54,23 @@ public final class ChangedFiles {
 	 */
 	public Set<File> getFiles() {
 		return this.files;
+	}
+
+	/**
+	 * The files names relative to the source folder.
+	 * @return the relative names
+	 */
+	public Set<String> getRelativeFileNames() {
+		if (this.relativeNames == null) {
+			Set<String> relativeNames = new LinkedHashSet<String>();
+			String sourcePath = this.sourceFolder.getAbsoluteFile().getPath();
+			for (File file : this.files) {
+				relativeNames.add(file.getAbsoluteFile().getPath()
+						.substring(sourcePath.length() + 1));
+			}
+			this.relativeNames = Collections.unmodifiableSet(relativeNames);
+		}
+		return this.relativeNames;
 	}
 
 	@Override

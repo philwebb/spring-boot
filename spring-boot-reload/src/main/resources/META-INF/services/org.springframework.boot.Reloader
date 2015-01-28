@@ -1,1 +1,1 @@
-org.springframework.boot.reload.SpringBootReloader
+org.springframework.boot.reload.reloader.SpringBootReloader

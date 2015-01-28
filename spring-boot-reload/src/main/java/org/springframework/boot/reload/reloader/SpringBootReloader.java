@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.reloader;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -22,8 +22,11 @@ import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Set;
 
 import org.springframework.boot.Reloader;
+import org.springframework.boot.reload.filewatch.ChangedFiles;
+import org.springframework.boot.reload.filewatch.FileChangeListener;
 import org.springframework.boot.reload.filewatch.FileSystemWatcher;
 import org.springframework.boot.reload.livereload.LiveReloadServer;
 import org.springframework.boot.reload.log.Log;
@@ -82,28 +85,8 @@ public class SpringBootReloader extends Reloader {
 		if (this.properties.isShowBanner()) {
 			ReloadBanner.print();
 		}
-		this.launcher.launch();
+		this.launcher.start();
 		exitMainThread();
-	}
-
-	private void startLiveReloadServer() {
-		if (this.properties.isLiveReload()) {
-			try {
-				this.liveReloadServer = new LiveReloadServer();
-				this.liveReloadServer.start();
-			}
-			catch (Exception ex) {
-				Log.debug("Unable to start LiveReload server", ex);
-			}
-		}
-	}
-
-	private void startFileWatcher(ReloadableUrls reloadableUrls)
-			throws URISyntaxException {
-		FileSystemWatcher fileSystemWatcher = new FileSystemWatcher();
-		for (URL url : reloadableUrls) {
-			fileSystemWatcher.addSourceFolder(new File(url.toURI()));
-		}
 	}
 
 	private void assertIsMainThread() {
@@ -143,6 +126,77 @@ public class SpringBootReloader extends Reloader {
 			// Ignore
 		}
 		return null;
+	}
+
+	private void startLiveReloadServer() {
+		if (this.properties.isLiveReload()) {
+			try {
+				this.liveReloadServer = new LiveReloadServer();
+				this.liveReloadServer.start();
+			}
+			catch (Exception ex) {
+				Log.debug("Unable to start LiveReload server", ex);
+			}
+		}
+	}
+
+	private void startFileWatcher(ReloadableUrls reloadableUrls)
+			throws URISyntaxException {
+		FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(
+				!this.properties.isKeepAlive());
+		for (URL url : reloadableUrls) {
+			fileSystemWatcher.addSourceFolder(new File(url.toURI()));
+		}
+		fileSystemWatcher.addListener(new FileChangeListener() {
+			@Override
+			public void onChange(Set<ChangedFiles> changeSet) {
+				SpringBootReloader.this.onChange(changeSet);
+			}
+		});
+	}
+
+	private void onChange(Set<ChangedFiles> changeSet) {
+		try {
+			if (isRestartRequired(changeSet)) {
+				this.launcher.restart();
+			}
+			triggerLiveReload();
+		}
+		catch (Exception ex) {
+			Log.debug("Error restarting ", ex);
+		}
+	}
+
+	private boolean isRestartRequired(Set<ChangedFiles> changeSet) {
+		for (ChangedFiles changedFiles : changeSet) {
+			for (String file : changedFiles.getRelativeFileNames()) {
+				if (!isNonRestarting(file)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isNonRestarting(String file) {
+		for (String folder : this.properties.getNonRestartingFolders()) {
+			folder = (folder.endsWith("/") ? folder : folder + "/");
+			if (file.startsWith(folder)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void triggerLiveReload() {
+		try {
+			if (this.liveReloadServer != null) {
+				this.liveReloadServer.triggerReload();
+			}
+		}
+		catch (Exception ex) {
+			Log.debug("Error triggering live reload ", ex);
+		}
 	}
 
 	private void exitMainThread() {

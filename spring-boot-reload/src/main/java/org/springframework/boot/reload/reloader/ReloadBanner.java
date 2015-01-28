@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.xreload;
-
-import org.springframework.boot.Reloader;
+package org.springframework.boot.reload.reloader;
 
 /**
- * {@link Reloader} implementation that replaces the classloader to offer dynamic
- * reloading.
+ * Banner printed when reloading is enabled.
  *
  * @author Phillip Webb
- * @since 1.3.0
  */
-public class DefaultReloader extends Reloader {
+public class ReloadBanner {
+
+	private static final String LINE = " +++++++++++++++++++++++++++++++++++++++"
+			+ "++++++++++++++++++++++++++++++++++";
 
 	private static final String[] BANNER = new String[] {
-			" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",
 			"                              _                 _                         ",
 			"   /\\    |_ _  _ _  _ |_. _  |_) _ | _  _  _|  (_ _  _ |_ | _  _|         ",
 			"  /—-\\!_|| (_)| | |(_|| |(_  | \\(/_|(_)(_|(_|  (_| |(_||_)|(/_(_| . . . .",
-			"                                                                          ",
-			"  Monitoring for local file changes.  LiveReload Server Started           ",
-			"                                                                          ",
-			" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" };
+			"                                                                          " };
 
-	private ReloadLog log = new ReloadLog();
-
-	@Override
-	protected void start(String[] args) {
-
-	}
-
-	private void assertIsMainThread() {
+	public static void print() {
+		System.out.println(LINE);
+		for (String line : BANNER) {
+			System.out.println(line);
+		}
+		System.out.println(LINE);
 	}
 
 }

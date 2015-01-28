@@ -31,6 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.reload.filewatch.ChangedFiles;
+import org.springframework.boot.reload.filewatch.FileChangeListener;
+import org.springframework.boot.reload.filewatch.FileSystemWatcher;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;

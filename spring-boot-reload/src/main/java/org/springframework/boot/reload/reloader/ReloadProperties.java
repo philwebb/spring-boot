@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.reloader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,15 +22,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.xreload.DefaultReloader;
-
 /**
  * Properties loaded from {@code META-INF/reload.properties} and used to configure
- * {@link DefaultReloader}.
+ * {@link SpringBootReloader}.
  *
  * @author Phillip Webb
  */
 public class ReloadProperties {
+
+	private static final String[] DEFAULT_NO_RESTART_FOLDERS = { "templates",
+			"resources", "static", "public" };
 
 	private final Map<?, ?> properties;
 
@@ -74,6 +75,11 @@ public class ReloadProperties {
 		return getProperty("keep-alive", Boolean.class, true);
 	}
 
+	public String[] getNonRestartingFolders() {
+		return getProperty("non-restarting-folders", String[].class,
+				DEFAULT_NO_RESTART_FOLDERS);
+	}
+
 	private <T> T getProperty(String name, Class<T> type, T defaultValue) {
 		Object value = this.properties.get(name);
 		return (value == null ? defaultValue : coerce(value, type));
@@ -83,6 +89,14 @@ public class ReloadProperties {
 	private <T> T coerce(Object value, Class<T> type) {
 		if (type.equals(String.class)) {
 			return (T) value.toString();
+		}
+		if (type.equals(String[].class)) {
+			String[] split = value.toString().split(",");
+			String[] result = new String[split.length];
+			for (int i = 0; i < split.length; i++) {
+				result[i] = split[i].trim();
+			}
+			return (T) result;
 		}
 		if (type.equals(Boolean.class)) {
 			return (T) Boolean.valueOf(value.toString());

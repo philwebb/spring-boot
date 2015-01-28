@@ -14,31 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.xreload;
-
-import java.lang.Thread.UncaughtExceptionHandler;
+package org.springframework.boot.reload.reloader;
 
 /**
- * {@link UncaughtExceptionHandler} decorator that ignores {@link SilentExitException}.
+ * Exception used to silently exit a running thread.
  *
  * @author Phillip Webb
+ * @see SilentUncaughtExceptionHandler
  */
-public class SilentUncaughtExceptionHandler implements UncaughtExceptionHandler {
-
-	private final UncaughtExceptionHandler delegate;
-
-	public SilentUncaughtExceptionHandler(UncaughtExceptionHandler delegate) {
-		this.delegate = delegate;
-	}
-
-	@Override
-	public void uncaughtException(Thread thread, Throwable exception) {
-		if (exception instanceof SilentExitException) {
-			return;
-		}
-		if (this.delegate != null) {
-			this.delegate.uncaughtException(thread, exception);
-		}
-	}
+public class SilentExitException extends RuntimeException {
 
 }

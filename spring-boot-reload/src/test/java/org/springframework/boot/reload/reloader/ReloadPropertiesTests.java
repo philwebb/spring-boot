@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload;
+package org.springframework.boot.reload.reloader;
 
 import org.junit.Test;
 
@@ -35,6 +35,8 @@ public class ReloadPropertiesTests {
 		assertThat(properties.isShowBanner(), equalTo(true));
 		assertThat(properties.isLiveReload(), equalTo(true));
 		assertThat(properties.isKeepAlive(), equalTo(true));
+		assertThat(properties.getNonRestartingFolders(), equalTo(new String[] {
+				"templates", "resources", "static", "public" }));
 	}
 
 	@Test
@@ -46,6 +48,8 @@ public class ReloadPropertiesTests {
 		assertThat(properties.isShowBanner(), equalTo(false));
 		assertThat(properties.isLiveReload(), equalTo(false));
 		assertThat(properties.isKeepAlive(), equalTo(false));
+		assertThat(properties.getNonRestartingFolders(),
+				equalTo(new String[] { "static" }));
 	}
 
 }
