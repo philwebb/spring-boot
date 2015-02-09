@@ -33,9 +33,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionEvaluationRepor
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -51,7 +58,7 @@ import static org.junit.Assert.assertThat;
  * @author Greg Turnquist
  * @author Phillip Webb
  */
-public class AutoConfigurationReportTests {
+public class ConditionEvaluationReportTests {
 
 	private DefaultListableBeanFactory beanFactory;
 
@@ -225,6 +232,20 @@ public class AutoConfigurationReportTests {
 		context.close();
 	}
 
+	@Test
+	public void negativeOuterPositiveInnerBean() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "test.present=true");
+		context.register(NegativeOuterConfig.class);
+		context.refresh();
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
+				.getBeanFactory());
+		Map<String, ConditionAndOutcomes> outcomes = report
+				.getConditionAndOutcomesBySource();
+		assertThat(context.containsBean("negativeOuterPositiveInnerBean"), equalTo(false));
+		System.out.println(outcomes);
+	}
+
 	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {
 		Iterator<ConditionAndOutcome> iterator = outcomes.iterator();
 		int numberOfOutcomesAdded = 0;
@@ -244,6 +265,54 @@ public class AutoConfigurationReportTests {
 	@Configurable
 	@Import(MultipartAutoConfiguration.class)
 	static class DuplicateConfig {
+
+	}
+
+	@Configuration
+	@Conditional(NoMatchCondition.class)
+	public static class NegativeOuterConfig {
+
+		@Configuration
+		@Conditional(MatchCondition.class)
+		public static class PositiveInnerConfig {
+
+			@Bean
+			public String negativeOuterPositiveInnerBean() {
+				return "negativeOuterPositiveInnerBean";
+			}
+
+		}
+	}
+
+	static class MatchCondition extends SpringBootCondition implements
+			ConfigurationCondition {
+
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
+		}
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			return ConditionOutcome.match("Test MatchCondition");
+		}
+
+	}
+
+	static class NoMatchCondition extends SpringBootCondition implements
+			ConfigurationCondition {
+
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
+		}
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			return ConditionOutcome.noMatch("Test NoMatchCondition");
+		}
 
 	}
 

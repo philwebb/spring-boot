@@ -244,6 +244,7 @@ public class ConditionEvaluationReport {
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			throw new UnsupportedOperationException();
 		}
+
 	}
 
 }
