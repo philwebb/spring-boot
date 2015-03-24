@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.cache.configuration.Configuration;
@@ -35,16 +36,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * A mock {@link CachingProvider} that exposes a JSR-107 cache manager
- * for testing purposes.
+ * A mock {@link CachingProvider} that exposes a JSR-107 cache manager for testing
+ * purposes.
  *
  * @author Stephane Nicoll
  */
 public class MockCachingProvider implements CachingProvider {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public CacheManager getCacheManager(URI uri, ClassLoader classLoader, Properties properties) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public CacheManager getCacheManager(URI uri, ClassLoader classLoader,
+			Properties properties) {
 		CacheManager cacheManager = mock(CacheManager.class);
 		final Map<String, Cache> caches = new HashMap<String, Cache>();
 		when(cacheManager.getCacheNames()).thenReturn(caches.keySet());
@@ -55,16 +57,18 @@ public class MockCachingProvider implements CachingProvider {
 				return caches.get(cacheName);
 			}
 		});
-		when(cacheManager.createCache(anyString(), any(Configuration.class))).then(new Answer<Cache>() {
-			@Override
-			public Cache answer(InvocationOnMock invocationOnMock) throws Throwable {
-				String cacheName = (String) invocationOnMock.getArguments()[0];
-				Cache cache = mock(Cache.class);
-				when(cache.getName()).thenReturn(cacheName);
-				caches.put(cacheName, cache);
-				return cache;
-			}
-		});
+		when(cacheManager.createCache(anyString(), any(Configuration.class))).then(
+				new Answer<Cache>() {
+					@Override
+					public Cache answer(InvocationOnMock invocationOnMock)
+							throws Throwable {
+						String cacheName = (String) invocationOnMock.getArguments()[0];
+						Cache cache = mock(Cache.class);
+						when(cache.getName()).thenReturn(cacheName);
+						caches.put(cacheName, cache);
+						return cache;
+					}
+				});
 		return cacheManager;
 	}
 
@@ -95,17 +99,14 @@ public class MockCachingProvider implements CachingProvider {
 
 	@Override
 	public void close() {
-
 	}
 
 	@Override
 	public void close(ClassLoader classLoader) {
-
 	}
 
 	@Override
 	public void close(URI uri, ClassLoader classLoader) {
-
 	}
 
 	@Override

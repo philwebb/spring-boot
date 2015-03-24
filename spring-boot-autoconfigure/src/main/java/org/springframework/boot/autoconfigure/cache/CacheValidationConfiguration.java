@@ -23,10 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Make sure to throw a dedicated exception message if no cache manager could
- * have been configured. Note that this configuration class is imported if
- * {@code EnableCaching} has been set and no {@link CacheManager} could have
- * been auto-configured.
+ * Make sure to throw a dedicated exception message if no cache manager could have been
+ * configured. Note that this configuration class is imported if {@code EnableCaching} has
+ * been set and no {@link CacheManager} could have been auto-configured.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -40,8 +39,10 @@ class CacheValidationConfiguration {
 
 	@Bean
 	public CacheManager cacheManager() {
-		throw new IllegalStateException("No cache manager could be auto-configured, check your " +
-				"configuration (caching mode is '" + this.cacheProperties.getMode() + "')");
+		throw new IllegalStateException(
+				"No cache manager could be auto-configured, check your "
+						+ "configuration (caching mode is '"
+						+ this.cacheProperties.getMode() + "')");
 	}
 
 }

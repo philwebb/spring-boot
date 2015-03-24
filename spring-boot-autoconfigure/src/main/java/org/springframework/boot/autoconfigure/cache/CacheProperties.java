@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * Configuration properties for the cache abstraction.
@@ -33,22 +34,20 @@ import org.springframework.core.io.Resource;
 public class CacheProperties {
 
 	/**
-	 * Cache mode (can be "auto", "generic", "ehcache", "hazelcast",
-	 * "jcache", "redis", "guava", "simple" or "none"). Auto-detected
-	 * according to the environment by default.
+	 * Cache mode (can be "auto", "generic", "ehcache", "hazelcast", "jcache", "redis",
+	 * "guava", "simple" or "none"). Auto-detected according to the environment by
+	 * default.
 	 */
 	private String mode = "auto";
 
 	/**
-	 * The location of the configuration file to use to initialize the cache
-	 * library.
+	 * The location of the configuration file to use to initialize the cache library.
 	 */
 	private Resource config;
 
 	/**
-	 * Comma-separated list of cache names to create if supported by the
-	 * underlying cache manager. Usually, this disables the ability to
-	 * create additional caches on-the-fly.
+	 * Comma-separated list of cache names to create if supported by the underlying cache
+	 * manager. Usually, this disables the ability to create additional caches on-the-fly.
 	 */
 	private final List<String> cacheNames = new ArrayList<String>();
 
@@ -57,7 +56,7 @@ public class CacheProperties {
 	private final Guava guava = new Guava();
 
 	public String getMode() {
-		return mode;
+		return this.mode;
 	}
 
 	public void setMode(String mode) {
@@ -65,7 +64,7 @@ public class CacheProperties {
 	}
 
 	public Resource getConfig() {
-		return config;
+		return this.config;
 	}
 
 	public void setConfig(Resource config) {
@@ -73,31 +72,28 @@ public class CacheProperties {
 	}
 
 	public List<String> getCacheNames() {
-		return cacheNames;
+		return this.cacheNames;
 	}
 
 	public JCache getJcache() {
-		return jcache;
+		return this.jcache;
 	}
 
 	public Guava getGuava() {
-		return guava;
+		return this.guava;
 	}
 
 	/**
 	 * Resolve the config location if set.
 	 * @return the location or {@code null} if it is not set
-	 * @throws IllegalArgumentException if the config attribute is set to a unknown location
+	 * @throws IllegalArgumentException if the config attribute is set to a unknown
+	 * location
 	 */
 	public Resource resolveConfigLocation() {
 		if (this.config != null) {
-			if (this.config.exists()) {
-				return this.config;
-			}
-			else {
-				throw new IllegalArgumentException("Cache configuration field defined by " +
-						"'spring.cache.config' does not exist " + this.config);
-			}
+			Assert.isTrue(this.config.exists(), "Cache configuration field defined by "
+					+ "'spring.cache.config' does not exist " + this.config);
+			return this.config;
 		}
 		return null;
 	}
@@ -108,14 +104,14 @@ public class CacheProperties {
 	public static class JCache {
 
 		/**
-		 * Fully qualified name of the CachingProvider implementation to use to
-		 * retrieve the JSR-107 compliant cache manager. Only needed if more than
-		 * one JSR-107 implementation is available on the classpath.
+		 * Fully qualified name of the CachingProvider implementation to use to retrieve
+		 * the JSR-107 compliant cache manager. Only needed if more than one JSR-107
+		 * implementation is available on the classpath.
 		 */
 		private String provider;
 
 		public String getProvider() {
-			return provider;
+			return this.provider;
 		}
 
 		public void setProvider(String provider) {
@@ -136,12 +132,13 @@ public class CacheProperties {
 		private String spec;
 
 		public String getSpec() {
-			return spec;
+			return this.spec;
 		}
 
 		public void setSpec(String spec) {
 			this.spec = spec;
 		}
+
 	}
 
 }

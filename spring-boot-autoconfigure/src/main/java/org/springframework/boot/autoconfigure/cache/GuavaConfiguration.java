@@ -18,11 +18,7 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.util.List;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheBuilderSpec;
-import com.google.common.cache.CacheLoader;
 import org.apache.commons.collections.CollectionUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,6 +28,10 @@ import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheBuilderSpec;
+import com.google.common.cache.CacheLoader;
 
 /**
  * Guava cache configuration.
@@ -70,7 +70,6 @@ class GuavaConfiguration {
 	private GuavaCacheManager createCacheManager() {
 		GuavaCacheManager cacheManager = new GuavaCacheManager();
 		String spec = this.cacheProperties.getGuava().getSpec();
-
 		if (StringUtils.hasText(spec)) {
 			cacheManager.setCacheSpecification(spec);
 		}
@@ -84,7 +83,6 @@ class GuavaConfiguration {
 		if (this.cacheLoader != null) {
 			cacheManager.setCacheLoader(this.cacheLoader);
 		}
-
 		return cacheManager;
 	}
 

@@ -18,12 +18,6 @@ package org.springframework.boot.autoconfigure.cache;
 
 import java.io.IOException;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.spring.cache.HazelcastCacheManager;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -42,21 +36,26 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.cache.HazelcastCacheManager;
+
 /**
- * Hazelcast cache configuration. Only kick in if a configuration file location
- * is set or if a default configuration file exists (either placed in the default
- * location or set via the {@value #CONFIG_SYSTEM_PROPERTY} system property).
+ * Hazelcast cache configuration. Only kick in if a configuration file location is set or
+ * if a default configuration file exists (either placed in the default location or set
+ * via the {@value #CONFIG_SYSTEM_PROPERTY} system property).
  *
  * @author Stephane Nicoll
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnMissingBean(CacheManager.class)
-@ConditionalOnClass({HazelcastInstance.class, HazelcastCacheManager.class})
+@ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @Conditional(HazelcastConfiguration.ConfigAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "hazelcast", matchIfMissing = true)
 class HazelcastConfiguration {
-
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
@@ -74,15 +73,13 @@ class HazelcastConfiguration {
 			Config cfg = new XmlConfigBuilder(location.getURL()).build();
 			return Hazelcast.newHazelcastInstance(cfg);
 		}
-		else {
-			return Hazelcast.newHazelcastInstance();
-		}
+		return Hazelcast.newHazelcastInstance();
 	}
 
-
 	/**
-	 * Determines if the Hazelcast configuration is available. This either kick in if a default
-	 * configuration has been found or if property referring to the file to use has been set.
+	 * Determines if the Hazelcast configuration is available. This either kick in if a
+	 * default configuration has been found or if property referring to the file to use
+	 * has been set.
 	 */
 	static class ConfigAvailableCondition extends AnyNestedCondition {
 
@@ -92,10 +89,12 @@ class HazelcastConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.cache", name = "config")
 		static class CacheLocationProperty {
+
 		}
 
 		@Conditional(BootstrapConfigurationAvailableCondition.class)
 		static class DefaultConfigurationAvailable {
+
 		}
 
 	}
@@ -105,18 +104,22 @@ class HazelcastConfiguration {
 		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
 			if (System.getProperty(CONFIG_SYSTEM_PROPERTY) != null) {
-				return ConditionOutcome.match("System property '" + CONFIG_SYSTEM_PROPERTY + "' is set.");
+				return ConditionOutcome.match("System property '"
+						+ CONFIG_SYSTEM_PROPERTY + "' is set.");
 			}
-			if (resourceLoader.getResource("file:./hazelcast.xml").exists()) {
-				return ConditionOutcome.match("hazelcast.xml found in the working directory.");
+			if (this.resourceLoader.getResource("file:./hazelcast.xml").exists()) {
+				return ConditionOutcome
+						.match("hazelcast.xml found in the working directory.");
 			}
-			if (resourceLoader.getResource("classpath:/hazelcast.xml").exists()) {
+			if (this.resourceLoader.getResource("classpath:/hazelcast.xml").exists()) {
 				return ConditionOutcome.match("hazelcast.xml found in the classpath.");
 			}
-			return ConditionOutcome.noMatch("No hazelcast.xml file found and system property '"
-					+ CONFIG_SYSTEM_PROPERTY + "' is not set.");
+			return ConditionOutcome
+					.noMatch("No hazelcast.xml file found and system property '"
+							+ CONFIG_SYSTEM_PROPERTY + "' is not set.");
 		}
 	}
 

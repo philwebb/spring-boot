@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Generic cache configuration based on arbitrary {@link Cache} instances
- * defined in the context.
+ * Generic cache configuration based on arbitrary {@link Cache} instances defined in the
+ * context.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

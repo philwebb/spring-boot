@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for the cache abstraction. Creates
- * a {@link CacheManager} if necessary when caching is enabled via {@link EnableCaching}.
+ * {@link EnableAutoConfiguration Auto-configuration} for the cache abstraction. Creates a
+ * {@link CacheManager} if necessary when caching is enabled via {@link EnableCaching}.
  * <p>
  * Cache store can be auto-detected or specified explicitly via configuration.
  *
@@ -46,15 +46,11 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnMissingBean(CacheManager.class)
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-@Import({GenericCacheConfiguration.class,
-		EhCacheCacheConfiguration.class,
-		HazelcastConfiguration.class,
-		JCacheCacheConfiguration.class,
-		RedisCacheConfiguration.class,
-		GuavaConfiguration.class,
-		SimpleCacheConfiguration.class,
-		NoOpCacheConfiguration.class,
-		CacheValidationConfiguration.class})
+@Import({ GenericCacheConfiguration.class, EhCacheCacheConfiguration.class,
+		HazelcastConfiguration.class, JCacheCacheConfiguration.class,
+		RedisCacheConfiguration.class, GuavaConfiguration.class,
+		SimpleCacheConfiguration.class, NoOpCacheConfiguration.class,
+		CacheValidationConfiguration.class })
 public class CacheAutoConfiguration {
 
 }

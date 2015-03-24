@@ -33,15 +33,15 @@ import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.io.Resource;
 
 /**
- * EhCache cache configuration. Only kick in if a configuration file location
- * is set or if a default configuration file exists.
+ * EhCache cache configuration. Only kick in if a configuration file location is set or if
+ * a default configuration file exists.
  *
  * @author Eddú Meléndez
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
-@ConditionalOnClass({CacheManager.class, EhCacheCacheManager.class})
+@ConditionalOnClass({ CacheManager.class, EhCacheCacheManager.class })
 @Conditional(EhCacheCacheConfiguration.ConfigAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "ehcache", matchIfMissing = true)
 class EhCacheCacheConfiguration {
@@ -56,14 +56,13 @@ class EhCacheCacheConfiguration {
 			return new EhCacheCacheManager(
 					EhCacheManagerUtils.buildCacheManager(location));
 		}
-		return new EhCacheCacheManager(
-				EhCacheManagerUtils.buildCacheManager());
+		return new EhCacheCacheManager(EhCacheManagerUtils.buildCacheManager());
 	}
 
-
 	/**
-	 * Determine if the EhCache configuration is available. This either kick in if a default
-	 * configuration has been found or if property referring to the file to use has been set.
+	 * Determine if the EhCache configuration is available. This either kick in if a
+	 * default configuration has been found or if property referring to the file to use
+	 * has been set.
 	 */
 	static class ConfigAvailableCondition extends AnyNestedCondition {
 
@@ -73,10 +72,12 @@ class EhCacheCacheConfiguration {
 
 		@ConditionalOnProperty(prefix = "spring.cache", name = "config")
 		static class CacheLocationProperty {
+
 		}
 
-		@ConditionalOnResource(resources = {"classpath:/ehcache.xml"})
+		@ConditionalOnResource(resources = { "classpath:/ehcache.xml" })
 		static class DefaultConfigurationAvailable {
+
 		}
 
 	}

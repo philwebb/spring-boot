@@ -19,13 +19,13 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
 import org.apache.commons.collections.CollectionUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingBean({org.springframework.cache.CacheManager.class})
+@ConditionalOnMissingBean({ org.springframework.cache.CacheManager.class })
 @ConditionalOnClass(Caching.class)
 @Conditional(JCacheCacheConfiguration.JCacheAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "jcache", matchIfMissing = true)
@@ -66,7 +66,8 @@ class JCacheCacheConfiguration {
 
 	@Bean
 	public JCacheCacheManager cacheManager() {
-		CacheManager cacheManager = createCacheManager(this.cacheProperties.getJcache().getProvider());
+		CacheManager cacheManager = createCacheManager(this.cacheProperties.getJcache()
+				.getProvider());
 		List<String> cacheNames = this.cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			for (String cacheName : cacheNames) {
@@ -81,9 +82,7 @@ class JCacheCacheConfiguration {
 		if (StringUtils.hasText(cachingProvider)) {
 			return Caching.getCachingProvider(cachingProvider).getCacheManager();
 		}
-		else {
-			return Caching.getCachingProvider().getCacheManager();
-		}
+		return Caching.getCachingProvider().getCacheManager();
 	}
 
 	private javax.cache.configuration.Configuration<?, ?> getDefaultCacheConfiguration() {
@@ -103,8 +102,9 @@ class JCacheCacheConfiguration {
 	}
 
 	/**
-	 * Determines if JCache is available. This either kick in if a default {@link CachingProvider}
-	 * has been found or if the property referring to the provider to use has been set.
+	 * Determines if JCache is available. This either kick in if a default
+	 * {@link CachingProvider} has been found or if the property referring to the provider
+	 * to use has been set.
 	 */
 	static class JCacheAvailableCondition extends AnyNestedCondition {
 
@@ -114,10 +114,12 @@ class JCacheCacheConfiguration {
 
 		@Conditional(DefaultCachingProviderAvailableCondition.class)
 		static class DefaultCachingProviderAvailable {
+
 		}
 
 		@ConditionalOnProperty(prefix = "spring.cache.jcache", name = "provider")
 		static class CachingProviderProperty {
+
 		}
 
 	}
@@ -125,15 +127,15 @@ class JCacheCacheConfiguration {
 	static class DefaultCachingProviderAvailableCondition extends SpringBootCondition {
 
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
 			int cachingProvidersCount = getCachingProvidersCount();
 			if (cachingProvidersCount == 1) {
-				return ConditionOutcome.match("Default JSR-107 compliant provider found.");
+				return ConditionOutcome
+						.match("Default JSR-107 compliant provider found.");
 			}
-			else {
-				return ConditionOutcome.noMatch("No default JSR-107 compliant provider(s) " +
-						"found (" + cachingProvidersCount + " provider(s) detected).");
-			}
+			return ConditionOutcome.noMatch("No default JSR-107 compliant provider(s) "
+					+ "found (" + cachingProvidersCount + " provider(s) detected).");
 		}
 
 		private int getCachingProvidersCount() {
@@ -141,15 +143,14 @@ class JCacheCacheConfiguration {
 			if (cachingProviders instanceof Collection<?>) {
 				return ((Collection<?>) cachingProviders).size();
 			}
-			else {
-				int count = 0;
-				Iterator<CachingProvider> it = cachingProviders.iterator();
-				while (it.hasNext()) {
-					count++;
-				}
-				return count;
+			int count = 0;
+			Iterator<CachingProvider> it = cachingProviders.iterator();
+			while (it.hasNext()) {
+				count++;
 			}
+			return count;
 		}
+
 	}
 
 }
