@@ -21,6 +21,7 @@ import net.sf.ehcache.CacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -39,7 +40,7 @@ import org.springframework.core.io.Resource;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingCache
+@ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @ConditionalOnClass({ CacheManager.class, EhCacheCacheManager.class })
 @Conditional(EhCacheCacheConfiguration.ConfigAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "ehcache", matchIfMissing = true)

@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheAspectSupport;
+import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -43,7 +44,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
-@ConditionalOnMissingBean(CacheManager.class)
+@ConditionalOnMissingBean({ CacheManager.class, CacheResolver.class })
 @EnableConfigurationProperties(CacheProperties.class)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @Import({ GenericCacheConfiguration.class, EhCacheCacheConfiguration.class,

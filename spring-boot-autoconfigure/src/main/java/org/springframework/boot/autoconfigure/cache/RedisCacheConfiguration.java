@@ -20,7 +20,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -33,7 +35,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingCache
+@ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnBean(RedisTemplate.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "redis", matchIfMissing = true)
 class RedisCacheConfiguration {

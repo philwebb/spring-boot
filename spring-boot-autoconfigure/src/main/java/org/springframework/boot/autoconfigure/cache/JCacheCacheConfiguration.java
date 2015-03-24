@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.cache.jcache.JCacheCacheManager;
@@ -48,7 +49,7 @@ import org.springframework.util.StringUtils;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingCache
+@ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @ConditionalOnClass(Caching.class)
 @Conditional(JCacheCacheConfiguration.JCacheAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "jcache", matchIfMissing = true)

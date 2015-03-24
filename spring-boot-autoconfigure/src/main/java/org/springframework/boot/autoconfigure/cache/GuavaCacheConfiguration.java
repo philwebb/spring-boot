@@ -21,7 +21,9 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +40,7 @@ import com.google.common.cache.CacheLoader;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingCache
+@ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnClass(CacheBuilder.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "guava", matchIfMissing = true)
 class GuavaCacheConfiguration {

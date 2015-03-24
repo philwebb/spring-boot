@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingCache
+@ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "none", matchIfMissing = false)
 class NoOpCacheConfiguration {
 

@@ -106,8 +106,9 @@ public class CacheAutoConfigurationTests {
 	@Test
 	public void cacheManagerFromSupportBackOff() {
 		load(CustomCacheManagerFromSupportConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CacheManager.class);
+		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
+		assertThat(cacheManager.getCacheNames(), contains("custom1"));
+		assertThat(cacheManager.getCacheNames(), hasSize(1));
 	}
 
 	@Test
@@ -494,6 +495,8 @@ public class CacheAutoConfigurationTests {
 			CachingConfigurerSupport {
 
 		@Override
+		@Bean
+		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheManager cacheManager() {
 			return new ConcurrentMapCacheManager("custom1");
 		}
@@ -516,6 +519,8 @@ public class CacheAutoConfigurationTests {
 	static class CustomCacheResolverConfiguration extends CachingConfigurerSupport {
 
 		@Override
+		@Bean
+		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
 			return new CacheResolver() {
 
