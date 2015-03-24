@@ -43,7 +43,7 @@ import org.springframework.core.io.Resource;
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @ConditionalOnClass({ CacheManager.class, EhCacheCacheManager.class })
 @Conditional(EhCacheCacheConfiguration.ConfigAvailableCondition.class)
-@ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "ehcache", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "ehcache", matchIfMissing = true)
 class EhCacheCacheConfiguration {
 
 	@Autowired

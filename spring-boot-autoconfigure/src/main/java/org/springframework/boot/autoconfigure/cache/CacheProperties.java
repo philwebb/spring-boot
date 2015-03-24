@@ -38,7 +38,7 @@ public class CacheProperties {
 	 * "guava", "simple" or "none"). Auto-detected according to the environment by
 	 * default.
 	 */
-	private String mode = "auto";
+	private String type = "auto";
 
 	/**
 	 * The location of the configuration file to use to initialize the cache library.
@@ -55,12 +55,12 @@ public class CacheProperties {
 
 	private final Guava guava = new Guava();
 
-	public String getMode() {
-		return this.mode;
+	public String getType() {
+		return this.type;
 	}
 
-	public void setMode(String mode) {
-		this.mode = mode;
+	public void setType(String mode) {
+		this.type = mode;
 	}
 
 	public Resource getConfig() {

@@ -42,7 +42,7 @@ class CacheValidationConfiguration {
 		throw new IllegalStateException(
 				"No cache manager could be auto-configured, check your "
 						+ "configuration (caching mode is '"
-						+ this.cacheProperties.getMode() + "')");
+						+ this.cacheProperties.getType() + "')");
 	}
 
 }

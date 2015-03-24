@@ -37,7 +37,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnBean(RedisTemplate.class)
-@ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "redis", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "redis", matchIfMissing = true)
 class RedisCacheConfiguration {
 
 	@Autowired

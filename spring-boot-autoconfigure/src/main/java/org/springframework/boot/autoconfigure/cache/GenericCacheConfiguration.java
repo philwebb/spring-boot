@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnBean(Cache.class)
-@ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "generic", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "generic", matchIfMissing = true)
 class GenericCacheConfiguration {
 
 	@Bean

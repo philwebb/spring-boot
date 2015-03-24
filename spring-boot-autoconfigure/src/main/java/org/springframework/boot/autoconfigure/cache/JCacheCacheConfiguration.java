@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean({ org.springframework.cache.CacheManager.class })
 @ConditionalOnClass(Caching.class)
 @Conditional(JCacheCacheConfiguration.JCacheAvailableCondition.class)
-@ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "jcache", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "jcache", matchIfMissing = true)
 class JCacheCacheConfiguration {
 
 	@Autowired

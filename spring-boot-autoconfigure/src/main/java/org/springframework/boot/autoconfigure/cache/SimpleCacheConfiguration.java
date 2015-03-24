@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnMissingBean(CacheManager.class)
-@ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "simple", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "simple", matchIfMissing = true)
 class SimpleCacheConfiguration {
 
 	@Autowired
