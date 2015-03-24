@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.cache.configuration.CompleteConfiguration;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
@@ -31,12 +34,15 @@ import org.springframework.boot.autoconfigure.cache.support.MockCachingProvider;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.guava.GuavaCache;
 import org.springframework.cache.guava.GuavaCacheManager;
+import org.springframework.cache.interceptor.CacheOperationInvocationContext;
+import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
@@ -95,6 +101,20 @@ public class CacheAutoConfigurationTests {
 		ConcurrentMapCacheManager cacheManager = validateCacheManager(ConcurrentMapCacheManager.class);
 		assertThat(cacheManager.getCacheNames(), contains("custom1"));
 		assertThat(cacheManager.getCacheNames(), hasSize(1));
+	}
+
+	@Test
+	public void cacheManagerFromSupportBackOff() {
+		load(CustomCacheManagerFromSupportConfiguration.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(CacheManager.class);
+	}
+
+	@Test
+	public void cacheResolverBackOff() throws Exception {
+		load(CustomCacheResolverConfiguration.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(CacheManager.class);
 	}
 
 	@Test
@@ -469,12 +489,44 @@ public class CacheAutoConfigurationTests {
 	}
 
 	@Configuration
+	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
+	static class CustomCacheManagerFromSupportConfiguration extends
+			CachingConfigurerSupport {
+
+		@Override
+		public CacheManager cacheManager() {
+			return new ConcurrentMapCacheManager("custom1");
+		}
+
+	}
+
+	@Configuration
 	@EnableCaching
 	static class GuavaCacheBuilderConfiguration {
 
 		@Bean
 		CacheBuilder<Object, Object> cacheBuilder() {
 			return CacheBuilder.newBuilder().recordStats();
+		}
+
+	}
+
+	@Configuration
+	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
+	static class CustomCacheResolverConfiguration extends CachingConfigurerSupport {
+
+		@Override
+		public CacheResolver cacheResolver() {
+			return new CacheResolver() {
+
+				@Override
+				public Collection<? extends Cache> resolveCaches(
+						CacheOperationInvocationContext<?> context) {
+					return Collections.singleton(mock(Cache.class));
+				}
+
+			};
+
 		}
 
 	}

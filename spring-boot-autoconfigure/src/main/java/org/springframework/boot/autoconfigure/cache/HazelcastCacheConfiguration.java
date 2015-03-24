@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -51,7 +49,7 @@ import com.hazelcast.spring.cache.HazelcastCacheManager;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingBean(CacheManager.class)
+@ConditionalOnMissingCache
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @Conditional(HazelcastCacheConfiguration.ConfigAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "hazelcast", matchIfMissing = true)

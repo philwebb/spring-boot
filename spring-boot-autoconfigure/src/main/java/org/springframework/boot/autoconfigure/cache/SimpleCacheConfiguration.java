@@ -19,9 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnMissingBean(CacheManager.class)
+@ConditionalOnMissingCache
 @ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "simple", matchIfMissing = true)
 class SimpleCacheConfiguration {
 

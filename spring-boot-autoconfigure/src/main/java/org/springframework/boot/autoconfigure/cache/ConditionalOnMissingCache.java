@@ -16,25 +16,28 @@
 
 package org.springframework.boot.autoconfigure.cache;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.cache.support.NoOpCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cache.CacheManager;
 
 /**
- * No op cache configuration used to disable caching via configuration.
+ * Condition to check if a cache configuration should be applied.
  *
+ * @author Phillip Webb
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
-@ConditionalOnMissingCache
-@ConditionalOnProperty(prefix = "spring.cache", value = "type", havingValue = "none", matchIfMissing = false)
-class NoOpCacheConfiguration {
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@ConditionalOnMissingBean(CacheManager.class)
+@interface ConditionalOnMissingCache {
 
-	@Bean
-	public NoOpCacheManager cacheManager() {
-		return new NoOpCacheManager();
-	}
+	// FIXME also check CachingConfigurer for Manager/Resolver
 
 }
