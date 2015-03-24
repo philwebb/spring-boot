@@ -53,9 +53,9 @@ import com.hazelcast.spring.cache.HazelcastCacheManager;
 @Configuration
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
-@Conditional(HazelcastConfiguration.ConfigAvailableCondition.class)
+@Conditional(HazelcastCacheConfiguration.ConfigAvailableCondition.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "hazelcast", matchIfMissing = true)
-class HazelcastConfiguration {
+class HazelcastCacheConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 

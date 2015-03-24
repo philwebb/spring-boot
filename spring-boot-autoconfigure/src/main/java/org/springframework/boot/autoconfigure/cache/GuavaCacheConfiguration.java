@@ -43,7 +43,7 @@ import com.google.common.cache.CacheLoader;
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnClass(CacheBuilder.class)
 @ConditionalOnProperty(prefix = "spring.cache", value = "mode", havingValue = "guava", matchIfMissing = true)
-class GuavaConfiguration {
+class GuavaCacheConfiguration {
 
 	@Autowired
 	private CacheProperties cacheProperties;
