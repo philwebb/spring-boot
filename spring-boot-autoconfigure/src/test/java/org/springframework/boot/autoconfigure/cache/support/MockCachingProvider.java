@@ -30,10 +30,10 @@ import javax.cache.spi.CachingProvider;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * A mock {@link CachingProvider} that exposes a JSR-107 cache manager for testing
@@ -49,22 +49,22 @@ public class MockCachingProvider implements CachingProvider {
 			Properties properties) {
 		CacheManager cacheManager = mock(CacheManager.class);
 		final Map<String, Cache> caches = new HashMap<String, Cache>();
-		when(cacheManager.getCacheNames()).thenReturn(caches.keySet());
-		when(cacheManager.getCache(anyString())).thenAnswer(new Answer<Cache>() {
+		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
+		given(cacheManager.getCache(anyString())).willAnswer(new Answer<Cache>() {
 			@Override
 			public Cache answer(InvocationOnMock invocationOnMock) throws Throwable {
 				String cacheName = (String) invocationOnMock.getArguments()[0];
 				return caches.get(cacheName);
 			}
 		});
-		when(cacheManager.createCache(anyString(), any(Configuration.class))).then(
+		given(cacheManager.createCache(anyString(), any(Configuration.class))).will(
 				new Answer<Cache>() {
 					@Override
 					public Cache answer(InvocationOnMock invocationOnMock)
 							throws Throwable {
 						String cacheName = (String) invocationOnMock.getArguments()[0];
 						Cache cache = mock(Cache.class);
-						when(cache.getName()).thenReturn(cacheName);
+						given(cache.getName()).willReturn(cacheName);
 						caches.put(cacheName, cache);
 						return cache;
 					}
