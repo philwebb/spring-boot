@@ -44,6 +44,7 @@ import org.springframework.cache.guava.GuavaCacheManager;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
+import org.springframework.cache.jcache.config.JCacheConfigurerSupport;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -516,12 +517,28 @@ public class CacheAutoConfigurationTests {
 
 	@Configuration
 	@Import({ GenericCacheConfiguration.class, RedisCacheConfiguration.class })
-	static class CustomCacheResolverConfiguration extends CachingConfigurerSupport {
+	static class CustomCacheResolverConfiguration extends JCacheConfigurerSupport {
 
 		@Override
 		@Bean
 		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
 		public CacheResolver cacheResolver() {
+			return new CacheResolver() {
+
+				@Override
+				public Collection<? extends Cache> resolveCaches(
+						CacheOperationInvocationContext<?> context) {
+					return Collections.singleton(mock(Cache.class));
+				}
+
+			};
+
+		}
+
+		@Override
+		@Bean
+		// The @Bean annotation is important, see CachingConfigurerSupport Javadoc
+		public CacheResolver exceptionCacheResolver() {
 			return new CacheResolver() {
 
 				@Override
