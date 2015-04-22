@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
@@ -33,6 +34,8 @@ import org.springframework.boot.reload.log.Log;
  * A {@link LiveReloadServer} connection.
  */
 class Connection {
+
+	private static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
 	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile(
 			"^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
@@ -119,7 +122,6 @@ class Connection {
 		frame.write(this.outputStream);
 	}
 
-	@SuppressWarnings("restriction")
 	private String getWebsocketAcceptResponse() throws NoSuchAlgorithmException {
 		Matcher matcher = WEBSOCKET_KEY_PATTERN.matcher(this.header);
 		if (!matcher.find()) {
@@ -128,7 +130,7 @@ class Connection {
 		String response = matcher.group(1).trim() + WEBSOCKET_GUID;
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 		messageDigest.update(response.getBytes(), 0, response.length());
-		return new sun.misc.BASE64Encoder().encode(messageDigest.digest());
+		// FIXME SPR-12938
+		return new String(Base64.encode(messageDigest.digest()), DEFAULT_CHARSET);
 	}
-
 }
