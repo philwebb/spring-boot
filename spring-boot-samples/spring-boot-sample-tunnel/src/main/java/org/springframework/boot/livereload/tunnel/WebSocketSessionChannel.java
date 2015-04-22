@@ -40,7 +40,7 @@ public class WebSocketSessionChannel implements WritableByteChannel {
 
 	public WebSocketSessionChannel(WebSocketSession session) {
 		this.session = session;
-		new Thread(new Writer(), "WebSocket Session Writer").start();
+		// new Thread(new Writer(), "WebSocket Session Writer").start();
 	}
 
 	@Override
@@ -56,8 +56,9 @@ public class WebSocketSessionChannel implements WritableByteChannel {
 	@Override
 	public int write(ByteBuffer src) throws IOException {
 		int remaining = src.remaining();
-		this.buffers.add(src);
-		// this.session.sendMessage(new BinaryMessage(src));
+		// this.buffers.add(src);
+		// System.out.println("Sending " + remaining);
+		this.session.sendMessage(new BinaryMessage(src));
 		return remaining;
 	}
 

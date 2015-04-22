@@ -37,7 +37,7 @@ import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler
  */
 public class TunnelServerWebSocketHandler extends BinaryWebSocketHandler {
 
-	private static final int BUFFER_SIZE = 1025 * 4;
+	private static final int BUFFER_SIZE = 1025 * 2;
 
 	private final int connectionPort;
 

@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  */
 public class TunnelClient {
 
-	private static final int BUFFER_SIZE = 1025 * 4;
+	private static final int BUFFER_SIZE = 1025 * 2;
 
 	private final int listenPort;
 
