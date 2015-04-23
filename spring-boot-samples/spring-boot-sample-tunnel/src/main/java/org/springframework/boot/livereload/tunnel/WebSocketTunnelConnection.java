@@ -68,7 +68,6 @@ public class WebSocketTunnelConnection implements TunnelConnection {
 		@Override
 		protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message)
 				throws Exception {
-			// System.out.println("Received " + message.getPayloadLength());
 			this.channel.write(message.getPayload());
 		}
 

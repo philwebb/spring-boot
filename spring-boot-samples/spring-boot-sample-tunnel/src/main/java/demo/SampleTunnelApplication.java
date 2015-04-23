@@ -21,6 +21,7 @@ import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.boot.livereload.tunnel.TunnelServerHttpFilter;
 import org.springframework.boot.livereload.tunnel.TunnelServerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -40,6 +41,9 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 
 	@SuppressWarnings("restriction")
 	private Integer getDebugPort() {
+		if (false) {
+			return 5000;
+		}
 		String property = sun.misc.VMSupport.getAgentProperties().getProperty(
 				"sun.jdwp.listenerAddress");
 		if (property == null) {
@@ -58,6 +62,12 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 	public TunnelServerWebSocketHandler tunnelWebSocketHandler() {
 		int port = getDebugPort();
 		return new TunnelServerWebSocketHandler(port);
+	}
+
+	@Bean
+	public TunnelServerHttpFilter tunnelServerHttpFilter() {
+		int port = getDebugPort();
+		return new TunnelServerHttpFilter(port);
 	}
 
 	public static void main(String[] args) {
