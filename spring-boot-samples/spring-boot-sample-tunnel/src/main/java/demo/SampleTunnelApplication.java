@@ -42,6 +42,9 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 	private Integer getDebugPort() {
 		String property = sun.misc.VMSupport.getAgentProperties().getProperty(
 				"sun.jdwp.listenerAddress");
+		if (property == null) {
+			return -1;
+		}
 		System.out.println(property);
 		return Integer.valueOf(property.split(":")[1]);
 	}
