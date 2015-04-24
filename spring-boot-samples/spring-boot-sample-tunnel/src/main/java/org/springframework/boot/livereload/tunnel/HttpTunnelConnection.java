@@ -35,7 +35,7 @@ import org.springframework.util.StreamUtils;
 
 public class HttpTunnelConnection implements TunnelConnection {
 
-	private static final int BUFFER_SIZE = 1024 * 2;
+	private static final int BUFFER_SIZE = 1024 * 20;
 
 	private static final ThreadFactory THREAD_FACTORY = new NamedThreadFactory(
 			"HTTP tunnel connection", true);
@@ -49,7 +49,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 			this.url = new URL(url);
 		}
 		catch (MalformedURLException ex) {
-			throw new IllegalArgumentException("Malfoemed URL " + url, ex);
+			throw new IllegalArgumentException("Malformed URL " + url, ex);
 		}
 	}
 
@@ -84,7 +84,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		@Override
 		public int write(ByteBuffer src) throws IOException {
-			// System.out.println("Sending data " + src.remaining());
+			System.out.println("> " + HexString.toString(src));
+			log("Sending data " + src.remaining());
 			int size = src.remaining();
 			this.executor.execute(new Dunno(src));
 			return size;
@@ -110,7 +111,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 				finally {
 					int active = ConnectionManager.this.activeConnectionCount
 							.decrementAndGet();
-					// System.out.println("Connect " + active);
+					log("Now active " + active);
 					if (active < 1) {
 						ConnectionManager.this.executor.execute(new Dunno(null));
 					}
@@ -120,20 +121,22 @@ public class HttpTunnelConnection implements TunnelConnection {
 			private void sendAndRecieveData() throws IOException {
 				HttpURLConnection connection = openConnection();
 				if (this.output != null) {
-					connection.setDoOutput(true);
-					// System.out.println("Sending " + this.output.remaining());
-					connection.setFixedLengthStreamingMode(this.output.remaining());
-					OutputStream outputStream = connection.getOutputStream();
-					WritableByteChannel request = Channels.newChannel(outputStream);
-					while (this.output.hasRemaining()) {
-						// System.out.println("Writing to the data");
-						request.write(this.output);
+					synchronized (ConnectionManager.this.responseChannel) {
+						connection.setDoOutput(true);
+						log("Sending " + this.output.remaining());
+						connection.setFixedLengthStreamingMode(this.output.remaining());
+						OutputStream outputStream = connection.getOutputStream();
+						WritableByteChannel request = Channels.newChannel(outputStream);
+						while (this.output.hasRemaining()) {
+							log("Writing to the data");
+							request.write(this.output);
+						}
+						outputStream.close();
+						this.output = null;
 					}
-					outputStream.close();
-					this.output = null;
 				}
 				else {
-					// System.out.println("Nothing to send");
+					log("Nothing to send");
 				}
 				InputStream inputStream = connection.getInputStream();
 				try {
@@ -145,8 +148,13 @@ public class HttpTunnelConnection implements TunnelConnection {
 			}
 
 			private void forwardResponse(InputStream inputStream) throws IOException {
-				StreamUtils.copy(inputStream,
-						Channels.newOutputStream(ConnectionManager.this.responseChannel));
+				synchronized (ConnectionManager.this.responseChannel) {
+					byte[] copyToByteArray = StreamUtils.copyToByteArray(inputStream);
+					log("Got from remote " + copyToByteArray.length);
+					ByteBuffer wrap = ByteBuffer.wrap(copyToByteArray);
+					System.out.println("< " + HexString.toString(wrap));
+					ConnectionManager.this.responseChannel.write(wrap);
+				}
 			}
 
 			private HttpURLConnection openConnection() throws IOException {
@@ -156,4 +164,6 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	}
 
+	public static void log(String string) {
+	}
 }

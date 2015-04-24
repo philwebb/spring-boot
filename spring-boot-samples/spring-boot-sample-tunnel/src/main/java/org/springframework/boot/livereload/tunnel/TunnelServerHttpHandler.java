@@ -41,11 +41,11 @@ import org.springframework.util.Assert;
  */
 public class TunnelServerHttpHandler {
 
-	private static final int BUFFER_SIZE = 1024 * 2;
+	private static final int BUFFER_SIZE = 1024 * 4;
 
-	private static final int DEFAULT_LONG_POLL_TIMEOUT = 1000;
+	private static final int DEFAULT_LONG_POLL_TIMEOUT = 1000 * 15;
 
-	private static final int DEFAULT_DISCONNECT_TIMEOUT = 1000 * 10;
+	private static final int DEFAULT_DISCONNECT_TIMEOUT = 1000 * 30;
 
 	private int connectionPort;
 
@@ -96,9 +96,10 @@ public class TunnelServerHttpHandler {
 
 		public void add(WebConnection webConnection) throws IOException {
 			ByteBuffer payload = webConnection.getPayload();
-			// System.out.println("Adding connection "
-			// + (payload == null ? "no" : payload.remaining()) + " in payload");
+			log("Adding connection " + (payload == null ? "no" : payload.remaining())
+					+ " in payload");
 			if (payload != null) {
+				System.out.println("< " + HexString.toString(payload));
 				this.socketChannel.write(payload);
 			}
 			this.webConnections.add(webConnection);
@@ -132,6 +133,7 @@ public class TunnelServerHttpHandler {
 			while (true) {
 				ByteBuffer payload = readFromSocket();
 				if (payload != null) {
+					System.out.println("> " + HexString.toString(payload));
 					this.webConnections.respond(payload);
 				}
 				this.webConnections.cleanupStaleConnections();
@@ -141,18 +143,18 @@ public class TunnelServerHttpHandler {
 		private ByteBuffer readFromSocket() throws IOException {
 			try {
 				ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-				// System.out.println("Blocked on read");
+				log("Blocked on read");
 				ReadableByteChannel channel = Channels.newChannel(this.socketChannel
 						.socket().getInputStream());
 				int amountRead = channel.read(buffer);
 				// int amountRead = this.socketChannel.read(buffer);
-				// System.out.println("Read " + amountRead + " from socket");
+				log("Read " + amountRead + " from socket");
 				Assert.state(amountRead != -1);
 				buffer.flip();
 				return (amountRead > 0 ? buffer : null);
 			}
 			catch (SocketTimeoutException ex) {
-				// System.out.println("Got a socket read timeout");
+				log("Got a socket read timeout");
 				return null;
 			}
 		}
@@ -184,7 +186,7 @@ public class TunnelServerHttpHandler {
 
 		public void respond(ByteBuffer buffer) throws IOException {
 			WebConnection connection = pollForConnection();
-			// System.out.println("Responding " + this.connections.size());
+			log("Responding " + this.connections.size());
 			connection.respondWithPayload(buffer);
 		}
 
@@ -202,12 +204,12 @@ public class TunnelServerHttpHandler {
 
 		public void cleanupStaleConnections() {
 			synchronized (this) {
-				// System.out.println("Cleaning stale " + this.connections.size());
+				log("Cleaning stale " + this.connections.size());
 				Iterator<WebConnection> iterator = this.connections.iterator();
 				while (iterator.hasNext()) {
 					WebConnection connection = iterator.next();
 					if (connection.hasTimedOut()) {
-						// System.out.println("Cleaning timeout");
+						log("Cleaning timeout");
 						connection.respondWithNoData();
 						iterator.remove();
 					}
@@ -217,11 +219,11 @@ public class TunnelServerHttpHandler {
 				}
 				if (this.connections.isEmpty()) {
 					try {
-						// System.out.println("Waiting for fresh connection");
+						log("Waiting for fresh connection");
 						wait(TunnelServerHttpHandler.this.diconnectTimeout);
 					}
 					catch (InterruptedException ex) {
-						// System.out.println("Interrupted");
+						log("Interrupted");
 						ex.printStackTrace();
 						// Either because an item was add or a timeout
 					}
@@ -281,6 +283,9 @@ public class TunnelServerHttpHandler {
 			return (System.currentTimeMillis() - this.createTime) > timeout;
 		}
 
+	}
+
+	public static void log(String string) {
 	}
 
 }
