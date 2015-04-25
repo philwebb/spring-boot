@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.livereload.tunnel;
+package org.springframework.boot.developertools.tunnel.server;
 
 import java.io.IOException;
 
@@ -24,22 +24,16 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Servlet Filter to manage a HTTP tunnel server.
+ *
  * @author Phillip Webb
+ * @since 1.3.0
  */
-public class TunnelServerHttpFilter implements Filter {
+public class HttpTunnelServerFilter implements Filter {
 
-	private final TunnelServerHttpHandler httpHandler;
-
-	public TunnelServerHttpFilter(int port) {
-		this(new TunnelServerHttpHandler(port));
-	}
-
-	public TunnelServerHttpFilter(TunnelServerHttpHandler httpHandler) {
-		this.httpHandler = httpHandler;
+	public HttpTunnelServerFilter() {
 	}
 
 	@Override
@@ -49,16 +43,6 @@ public class TunnelServerHttpFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		if (request instanceof HttpServletRequest
-				&& response instanceof HttpServletResponse) {
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			HttpServletResponse httpResponse = (HttpServletResponse) response;
-			if (httpRequest.getRequestURI().endsWith("/httptunnel")) {
-				this.httpHandler.handleHttp(httpRequest, httpResponse);
-				return;
-			}
-		}
-		chain.doFilter(request, response);
 	}
 
 	@Override
