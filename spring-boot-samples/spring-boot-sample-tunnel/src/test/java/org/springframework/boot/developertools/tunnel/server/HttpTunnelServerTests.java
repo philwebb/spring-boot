@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer.HttpConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;
@@ -46,7 +47,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyInt;
@@ -266,25 +266,10 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void httpConnectionPayloadBytes() throws Exception {
-		this.servletRequest.setContent("hello".getBytes());
-		HttpConnection connection = new HttpConnection(this.request, this.response);
-		ByteBuffer payload = connection.getPayload();
-		assertThat(payload.array(), equalTo("hello".getBytes()));
-	}
-
-	@Test
-	public void httpConnectionNoPayload() throws Exception {
-		HttpConnection connection = new HttpConnection(this.request, this.response);
-		ByteBuffer payload = connection.getPayload();
-		assertThat(payload, nullValue());
-	}
-
-	@Test
 	public void httpConnectionRespondWithPayload() throws Exception {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
 		connection.waitForResponse();
-		connection.respond(ByteBuffer.wrap("hello".getBytes()), 1);
+		connection.respond(new HttpTunnelPayload(1, ByteBuffer.wrap("hello".getBytes())));
 		assertThat(this.servletResponse.getStatus(), equalTo(200));
 		assertThat(this.servletResponse.getContentAsString(), equalTo("hello"));
 		assertThat(this.servletResponse.getHeader(SEQ_HEADER), equalTo("1"));

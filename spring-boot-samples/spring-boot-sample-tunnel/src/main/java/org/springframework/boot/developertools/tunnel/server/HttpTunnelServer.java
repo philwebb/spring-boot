@@ -17,21 +17,17 @@
 package org.springframework.boot.developertools.tunnel.server;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayload;
+import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;
@@ -105,12 +101,8 @@ public class HttpTunnelServer {
 
 	private static final long DEFAULT_DISCONNECT_TIMEOUT = 30 * SECONDS;
 
-	private static final int BUFFER_SIZE = 1024 * 10;
-
 	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application",
 			"x-disconnect");
-
-	private static final String SEQ_HEADER = "x-seq";
 
 	private static final Log logger = LogFactory.getLog(HttpTunnelServer.class);
 
@@ -204,18 +196,17 @@ public class HttpTunnelServer {
 
 		private final Deque<HttpConnection> httpConnections;
 
+		private final HttpTunnelPayloadForwarder payloadForwarder;
+
 		private boolean closed;
 
 		private AtomicLong responseSeq = new AtomicLong();
-
-		private long lastRequestSeq = 0;
-
-		private Map<Long, ByteBuffer> pendingForwards = new HashMap<Long, ByteBuffer>();
 
 		public ServerThread(ByteChannel targetServer) {
 			Assert.notNull(targetServer, "TargetServer must not be null");
 			this.targetServer = targetServer;
 			this.httpConnections = new ArrayDeque<HttpConnection>(2);
+			this.payloadForwarder = new HttpTunnelPayloadForwarder(targetServer);
 		}
 
 		@Override
@@ -238,28 +229,17 @@ public class HttpTunnelServer {
 
 		private void readAndForwardTargetServerData() throws IOException {
 			while (this.targetServer.isOpen()) {
-				ByteBuffer payload = getTargetServerData();
+				ByteBuffer data = HttpTunnelPayload.getPayloadData(this.targetServer);
 				synchronized (this.httpConnections) {
-					if (payload != null) {
+					if (data != null) {
 						HttpConnection connection = getOrWaitForHttpConnection(DequeOperation.POLL_FIRST);
-						connection.respond(payload, this.responseSeq.incrementAndGet());
+						HttpTunnelPayload payload = new HttpTunnelPayload(
+								this.responseSeq.incrementAndGet(), data);
+						connection.respond(payload);
 					}
 					closeStaleHttpConnections();
 					getOrWaitForHttpConnection(DequeOperation.PEEK_FIRST);
 				}
-			}
-		}
-
-		private ByteBuffer getTargetServerData() throws IOException {
-			ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-			try {
-				int amountRead = this.targetServer.read(buffer);
-				Assert.state(amountRead != -1, "Target server connection closed");
-				buffer.flip();
-				return buffer;
-			}
-			catch (SocketTimeoutException ex) {
-				return null;
 			}
 		}
 
@@ -338,30 +318,10 @@ public class HttpTunnelServer {
 				this.targetServer.close();
 				interrupt();
 			}
-			ByteBuffer payload = httpConnection.getPayload();
+			ServerHttpRequest request = httpConnection.getRequest();
+			HttpTunnelPayload payload = HttpTunnelPayload.read(request);
 			if (payload != null) {
-				synchronized (this.targetServer) {
-					forwardToTargetServer(httpConnection.getRequestSeq(), payload);
-				}
-			}
-		}
-
-		private void forwardToTargetServer(Long seq, ByteBuffer payload)
-				throws IOException {
-			Assert.notNull(seq, "Missing " + SEQ_HEADER + " header from request");
-			if (this.lastRequestSeq != seq - 1) {
-				Assert.state(this.pendingForwards.size() < 10,
-						"Too many requests pending");
-				this.pendingForwards.put(seq, payload);
-				return;
-			}
-			while (payload.hasRemaining()) {
-				this.targetServer.write(payload);
-			}
-			this.lastRequestSeq = seq;
-			ByteBuffer pendingForward = this.pendingForwards.get(seq + 1);
-			if (pendingForward != null) {
-				forwardToTargetServer(seq + 1, pendingForward);
+				this.payloadForwarder.forward(payload);
 			}
 		}
 
@@ -428,15 +388,15 @@ public class HttpTunnelServer {
 		}
 
 		/**
-		 * Return the underlying request (used for testing)
+		 * Return the underlying request.
 		 * @return the request
 		 */
-		protected final ServerHttpRequest getRequest() {
+		public final ServerHttpRequest getRequest() {
 			return this.request;
 		}
 
 		/**
-		 * Return the underlying response (used for testing)
+		 * Return the underlying response.
 		 * @return the response
 		 */
 		protected final ServerHttpResponse getResponse() {
@@ -480,29 +440,6 @@ public class HttpTunnelServer {
 					.getContentType());
 		}
 
-		public Long getRequestSeq() {
-			String headerValue = this.request.getHeaders().getFirst(SEQ_HEADER);
-			return (headerValue == null ? null : Long.valueOf(headerValue));
-		}
-
-		/**
-		 * @return the payload from the HTTP request.
-		 * @throws IOException
-		 */
-		public ByteBuffer getPayload() throws IOException {
-			long length = this.request.getHeaders().getContentLength();
-			if (length <= 0) {
-				return null;
-			}
-			ReadableByteChannel body = Channels.newChannel(this.request.getBody());
-			ByteBuffer payload = ByteBuffer.allocate((int) length);
-			while (payload.hasRemaining()) {
-				body.read(payload);
-			}
-			payload.flip();
-			return payload;
-		}
-
 		/**
 		 * Send a HTTP status response.
 		 * @param status the status to send
@@ -510,32 +447,19 @@ public class HttpTunnelServer {
 		 */
 		public void respond(HttpStatus status) throws IOException {
 			Assert.notNull(status, "Status must not be null");
-			respond(status, null, -1);
+			this.response.setStatusCode(status);
+			complete();
 		}
 
 		/**
-		 * Set a payload response
+		 * Send a payload response.
 		 * @param payload the payload to send
-		 * @param seq the sequence number of the response
 		 * @throws IOException
 		 */
-		public void respond(ByteBuffer payload, long seq) throws IOException {
+		public void respond(HttpTunnelPayload payload) throws IOException {
 			Assert.notNull(payload, "Payload must not be null");
-			respond(HttpStatus.OK, payload, seq);
-		}
-
-		private void respond(HttpStatus status, ByteBuffer payload, long seq)
-				throws IOException {
-			this.response.setStatusCode(status);
-			if (payload != null) {
-				this.response.getHeaders().setContentLength(payload.remaining());
-				this.response.getHeaders().add(SEQ_HEADER, Long.toString(seq));
-				WritableByteChannel body = Channels.newChannel(this.response.getBody());
-				while (payload.hasRemaining()) {
-					body.write(payload);
-				}
-				body.close();
-			}
+			this.response.setStatusCode(HttpStatus.OK);
+			payload.write(this.response);
 			complete();
 		}
 
