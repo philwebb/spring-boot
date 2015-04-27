@@ -15,6 +15,7 @@
  */
 
 /**
+ * Client side TCP tunnel support.
  */
 package org.springframework.boot.developertools.tunnel.client;
 

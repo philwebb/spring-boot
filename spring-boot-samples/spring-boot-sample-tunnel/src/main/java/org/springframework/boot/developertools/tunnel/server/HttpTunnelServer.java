@@ -25,7 +25,10 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +40,62 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * A server that can be used to tunnel TCP traffic over HTTP.
+ * A server that can be used to tunnel TCP traffic over HTTP. Similar in design to the <a
+ * href="http://xmpp.org/extensions/xep-0124.html">Bidirectional-streams Over Synchronous
+ * HTTP (BOSH)</a> XMPP extension protocol, the server uses long polling with HTTP
+ * requests held open until a response is available. A typical traffic pattern would be as
+ * follows:
+ *
+ * <pre>
+ * [ CLIENT ]                      [ SERVER ]
+ *     | (a) Initial empty request     |
+ *     |------------------------------}|
+ *     | (b) Data I                    |
+ *  --}|------------------------------}|---}
+ *     | Response I (a)                |
+ *  {--|<------------------------------|{---
+ *     |                               |
+ *     | (c) Data II                   |
+ *  --}|------------------------------}|---}
+ *     | Response II (b)               |
+ *  {--|{------------------------------|{---
+ *     .                               .
+ *     .                               .
+ * </pre>
+ *
+ * Each incoming request is held open to be used to carry the next available response. The
+ * server will hold at most two connections open at any given time.
+ * <p>
+ * Requests should be made using HTTP POST, with any payload contained in the body. The
+ * following response codes can be returned from the server:
+ * <p>
+ * <table>
+ * <tr>
+ * <th>Status</th>
+ * <th>Meaning</th>
+ * </tr>
+ * <tr>
+ * <td>200 (OK)</td>
+ * <td>Data payload response.</td>
+ * </tr>
+ * <tr>
+ * <td>204 (No Content)</td>
+ * <td>The long poll has timed out and the client should start a new request.</td>
+ * </tr>
+ * <tr>
+ * <td>410 (Gone)</td>
+ * <td>The target server has disconnected.</td>
+ * </tr>
+ * </table>
+ * <p>
+ * Requests and responses that contain payloads include a {@code x-seq} header that
+ * contains a running sequence number (used to ensure data is applied in the correct
+ * order). The first request containing a payload should have a {@code x-seq} value of
+ * {@code 1}.
  *
  * @author Phillip Webb
  * @since 1.3.0
+ * @see org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection
  */
 public class HttpTunnelServer {
 
@@ -54,6 +109,8 @@ public class HttpTunnelServer {
 
 	private static final MediaType DISCONNECT_MEDIA_TYPE = new MediaType("application",
 			"x-disconnect");
+
+	private static final String SEQ_HEADER = "x-seq";
 
 	private static final Log logger = LogFactory.getLog(HttpTunnelServer.class);
 
@@ -111,6 +168,9 @@ public class HttpTunnelServer {
 		}
 	}
 
+	/**
+	 * Called when the server thread exits.
+	 */
 	void clearServerThread() {
 		synchronized (this) {
 			this.serverThread = null;
@@ -127,6 +187,15 @@ public class HttpTunnelServer {
 	}
 
 	/**
+	 * Set the maximum amount of time to wait for a client before closing the connection.
+	 * @param disconnectTimeout the disconnect timeout in milliseconds
+	 */
+	public void setDisconnectTimeout(long disconnectTimeout) {
+		Assert.isTrue(disconnectTimeout > 0, "DisconnectTimeout must be a positive value");
+		this.disconnectTimeout = disconnectTimeout;
+	}
+
+	/**
 	 * The main server thread used to transfer tunnel traffic.
 	 */
 	protected class ServerThread extends Thread {
@@ -136,6 +205,12 @@ public class HttpTunnelServer {
 		private final Deque<HttpConnection> httpConnections;
 
 		private boolean closed;
+
+		private AtomicLong responseSeq = new AtomicLong();
+
+		private long lastRequestSeq = 0;
+
+		private Map<Long, ByteBuffer> pendingForwards = new HashMap<Long, ByteBuffer>();
 
 		public ServerThread(ByteChannel targetServer) {
 			Assert.notNull(targetServer, "TargetServer must not be null");
@@ -166,9 +241,11 @@ public class HttpTunnelServer {
 				ByteBuffer payload = getTargetServerData();
 				synchronized (this.httpConnections) {
 					if (payload != null) {
-						getOrWaitForHttpConnection().respond(payload);
+						HttpConnection connection = getOrWaitForHttpConnection(DequeOperation.POLL_FIRST);
+						connection.respond(payload, this.responseSeq.incrementAndGet());
 					}
 					closeStaleHttpConnections();
+					getOrWaitForHttpConnection(DequeOperation.PEEK_FIRST);
 				}
 			}
 		}
@@ -176,8 +253,8 @@ public class HttpTunnelServer {
 		private ByteBuffer getTargetServerData() throws IOException {
 			ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 			try {
-				Assert.state(this.targetServer.read(buffer) != -1,
-						"Target server connection closed");
+				int amountRead = this.targetServer.read(buffer);
+				Assert.state(amountRead != -1, "Target server connection closed");
 				buffer.flip();
 				return buffer;
 			}
@@ -186,16 +263,16 @@ public class HttpTunnelServer {
 			}
 		}
 
-		private HttpConnection getOrWaitForHttpConnection() {
+		private HttpConnection getOrWaitForHttpConnection(DequeOperation operation) {
 			synchronized (this.httpConnections) {
-				HttpConnection httpConnection = this.httpConnections.pollFirst();
+				HttpConnection httpConnection = operation.apply(this.httpConnections);
 				if (httpConnection == null) {
 					try {
 						wait(HttpTunnelServer.this.disconnectTimeout);
 					}
 					catch (InterruptedException ex) {
 					}
-					httpConnection = this.httpConnections.pollFirst();
+					httpConnection = operation.apply(this.httpConnections);
 					Assert.state(httpConnection != null, "Timeout waiting for HTTP");
 				}
 				return httpConnection;
@@ -237,6 +314,11 @@ public class HttpTunnelServer {
 			}
 		}
 
+		/**
+		 * Handle an incoming {@link HttpConnection}.
+		 * @param httpConnection the connection to handle.
+		 * @throws IOException
+		 */
 		public void handleIncomingHttp(HttpConnection httpConnection) throws IOException {
 			if (this.closed) {
 				httpConnection.respond(HttpStatus.GONE);
@@ -258,11 +340,51 @@ public class HttpTunnelServer {
 			}
 			ByteBuffer payload = httpConnection.getPayload();
 			if (payload != null) {
-				while (payload.hasRemaining()) {
-					this.targetServer.write(payload);
+				synchronized (this.targetServer) {
+					forwardToTargetServer(httpConnection.getRequestSeq(), payload);
 				}
 			}
 		}
+
+		private void forwardToTargetServer(Long seq, ByteBuffer payload)
+				throws IOException {
+			Assert.notNull(seq, "Missing " + SEQ_HEADER + " header from request");
+			if (this.lastRequestSeq != seq - 1) {
+				Assert.state(this.pendingForwards.size() < 10,
+						"Too many requests pending");
+				this.pendingForwards.put(seq, payload);
+				return;
+			}
+			while (payload.hasRemaining()) {
+				this.targetServer.write(payload);
+			}
+			this.lastRequestSeq = seq;
+			ByteBuffer pendingForward = this.pendingForwards.get(seq + 1);
+			if (pendingForward != null) {
+				forwardToTargetServer(seq + 1, pendingForward);
+			}
+		}
+
+	}
+
+	/**
+	 * Operations that can be performed on a {@link Deque}.
+	 */
+	protected static enum DequeOperation {
+		POLL_FIRST {
+			@Override
+			public <E> E apply(Deque<E> deque) {
+				return deque.pollFirst();
+			}
+		},
+		PEEK_FIRST {
+			@Override
+			public <E> E apply(Deque<E> deque) {
+				return deque.peekFirst();
+			}
+		};
+
+		public abstract <E> E apply(Deque<E> deque);
 	}
 
 	/**
@@ -287,6 +409,11 @@ public class HttpTunnelServer {
 			this.async = startAsync();
 		}
 
+		/**
+		 * Start asynchronous support or if unavailble return {@code null} to cause
+		 * {@link #waitForResponse()} to block.
+		 * @return the async request control
+		 */
 		protected ServerHttpAsyncRequestControl startAsync() {
 			try {
 				// Try to use async to save blocking
@@ -300,10 +427,18 @@ public class HttpTunnelServer {
 			}
 		}
 
+		/**
+		 * Return the underlying request (used for testing)
+		 * @return the request
+		 */
 		protected final ServerHttpRequest getRequest() {
 			return this.request;
 		}
 
+		/**
+		 * Return the underlying response (used for testing)
+		 * @return the response
+		 */
 		protected final ServerHttpResponse getResponse() {
 			return this.response;
 		}
@@ -336,9 +471,18 @@ public class HttpTunnelServer {
 			}
 		}
 
+		/**
+		 * Detect if the request is actually a signal to disconnect.
+		 * @return if the request is a signal to disconnect
+		 */
 		public boolean isDisconnectRequest() {
 			return DISCONNECT_MEDIA_TYPE.equals(this.request.getHeaders()
 					.getContentType());
+		}
+
+		public Long getRequestSeq() {
+			String headerValue = this.request.getHeaders().getFirst(SEQ_HEADER);
+			return (headerValue == null ? null : Long.valueOf(headerValue));
 		}
 
 		/**
@@ -366,23 +510,26 @@ public class HttpTunnelServer {
 		 */
 		public void respond(HttpStatus status) throws IOException {
 			Assert.notNull(status, "Status must not be null");
-			respond(status, null);
+			respond(status, null, -1);
 		}
 
 		/**
 		 * Set a payload response
 		 * @param payload the payload to send
+		 * @param seq the sequence number of the response
 		 * @throws IOException
 		 */
-		public void respond(ByteBuffer payload) throws IOException {
+		public void respond(ByteBuffer payload, long seq) throws IOException {
 			Assert.notNull(payload, "Payload must not be null");
-			respond(HttpStatus.OK, payload);
+			respond(HttpStatus.OK, payload, seq);
 		}
 
-		private void respond(HttpStatus status, ByteBuffer payload) throws IOException {
+		private void respond(HttpStatus status, ByteBuffer payload, long seq)
+				throws IOException {
 			this.response.setStatusCode(status);
 			if (payload != null) {
 				this.response.getHeaders().setContentLength(payload.remaining());
+				this.response.getHeaders().add(SEQ_HEADER, Long.toString(seq));
 				WritableByteChannel body = Channels.newChannel(this.response.getBody());
 				while (payload.hasRemaining()) {
 					body.write(payload);
@@ -392,6 +539,9 @@ public class HttpTunnelServer {
 			complete();
 		}
 
+		/**
+		 * Called when a request is complete.
+		 */
 		protected void complete() {
 			if (this.async != null) {
 				this.async.complete();
@@ -399,7 +549,7 @@ public class HttpTunnelServer {
 			else {
 				synchronized (this) {
 					this.complete = true;
-					notify();
+					notifyAll();
 				}
 			}
 		}

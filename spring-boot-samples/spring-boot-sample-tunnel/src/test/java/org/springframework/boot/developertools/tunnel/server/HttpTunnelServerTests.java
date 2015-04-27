@@ -18,11 +18,13 @@ package org.springframework.boot.developertools.tunnel.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.Channels;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
@@ -64,6 +66,8 @@ public class HttpTunnelServerTests {
 
 	private static final byte[] NO_DATA = {};
 
+	private static final String SEQ_HEADER = "x-seq";
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -89,7 +93,9 @@ public class HttpTunnelServerTests {
 		given(this.serverConnection.open(anyInt())).willAnswer(new Answer<ByteChannel>() {
 			@Override
 			public ByteChannel answer(InvocationOnMock invocation) throws Throwable {
-				return HttpTunnelServerTests.this.serverChannel;
+				MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
+				channel.setTimeout((Integer) invocation.getArguments()[0]);
+				return channel;
 			}
 		});
 		this.servletRequest = new MockHttpServletRequest();
@@ -115,14 +121,14 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
-	public void customLongPollTimeout() throws Exception {
+	public void longPollTimeout() throws Exception {
 		this.server.setLongPollTimeout(800);
 		this.server.handle(this.request, this.response);
 		verify(this.serverConnection, times(1)).open(800);
 	}
 
 	@Test
-	public void customLongPollTimeoutMustBePositiveValue() throws Exception {
+	public void longPollTimeoutMustBePositiveValue() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("LongPollTimeout must be a positive value");
 		this.server.setLongPollTimeout(0);
@@ -130,6 +136,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void initialRequestIsSentToServer() throws Exception {
+		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
 		this.serverChannel.disconnect();
@@ -139,6 +146,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void intialRequestIsUsedForFirstServerResponse() throws Exception {
+		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
 		this.serverChannel.send("hello");
@@ -160,26 +168,26 @@ public class HttpTunnelServerTests {
 	public void typicalReqestResponseTraffic() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
-		MockHttpConnection h2 = new MockHttpConnection("hello server");
+		MockHttpConnection h2 = new MockHttpConnection("hello server", 1);
 		this.server.handle(h2);
 		this.serverChannel.verifyReceived("hello server");
 		this.serverChannel.send("hello client");
-		h1.verifyReceived("hello client");
-		MockHttpConnection h3 = new MockHttpConnection("1+1");
+		h1.verifyReceived("hello client", 1);
+		MockHttpConnection h3 = new MockHttpConnection("1+1", 2);
 		this.server.handle(h3);
 		this.serverChannel.send("=2");
-		h2.verifyReceived("=2");
-		MockHttpConnection h4 = new MockHttpConnection("1+2");
+		h2.verifyReceived("=2", 2);
+		MockHttpConnection h4 = new MockHttpConnection("1+2", 3);
 		this.server.handle(h4);
 		this.serverChannel.send("=3");
-		h3.verifyReceived("=3");
+		h3.verifyReceived("=3", 3);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
 	}
 
 	@Test
 	public void clientIsAwareOfServerClose() throws Exception {
-		MockHttpConnection h1 = new MockHttpConnection("1");
+		MockHttpConnection h1 = new MockHttpConnection("1", 1);
 		this.server.handle(h1);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
@@ -190,7 +198,7 @@ public class HttpTunnelServerTests {
 	public void clientCanCloseServer() throws Exception {
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
-		MockHttpConnection h2 = new MockHttpConnection("DISCONNECT");
+		MockHttpConnection h2 = new MockHttpConnection("DISCONNECT", 1);
 		h2.getServletRequest().addHeader("Content-Type", "application/x-disconnect");
 		this.server.handle(h2);
 		this.server.getServerThread().join();
@@ -200,11 +208,11 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void neverMoreThanTwoHttpConnections() throws Exception {
-		MockHttpConnection h1 = new MockHttpConnection("1");
+		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
-		MockHttpConnection h2 = new MockHttpConnection("2");
+		MockHttpConnection h2 = new MockHttpConnection("1", 2);
 		this.server.handle(h2);
-		MockHttpConnection h3 = new MockHttpConnection("3");
+		MockHttpConnection h3 = new MockHttpConnection("2", 3);
 		this.server.handle(h3);
 		h1.waitForResponse();
 		assertThat(h1.getServletResponse().getStatus(), equalTo(204));
@@ -213,14 +221,49 @@ public class HttpTunnelServerTests {
 	}
 
 	@Test
+	public void requestRecievedOutOfOrder() throws Exception {
+		MockHttpConnection h1 = new MockHttpConnection();
+		MockHttpConnection h2 = new MockHttpConnection("1+2", 1);
+		MockHttpConnection h3 = new MockHttpConnection("+3", 2);
+		this.server.handle(h1);
+		this.server.handle(h3);
+		this.server.handle(h2);
+		this.serverChannel.verifyReceived("1+2+3");
+		this.serverChannel.disconnect();
+		this.server.getServerThread().join();
+	}
+
+	@Test
 	public void httpConnectionsAreClosedAfterLongPollTimeout() throws Exception {
+		this.server.setLongPollTimeout(100);
+		MockHttpConnection h1 = new MockHttpConnection();
+		this.server.handle(h1);
+		MockHttpConnection h2 = new MockHttpConnection();
+		this.server.handle(h2);
+		Thread.sleep(200);
+		this.serverChannel.disconnect();
+		this.server.getServerThread().join();
+		assertThat(h1.getServletResponse().getStatus(), equalTo(204));
+		assertThat(h2.getServletResponse().getStatus(), equalTo(204));
 	}
 
 	@Test
 	public void disconnectTimeout() throws Exception {
+		this.server.setDisconnectTimeout(100);
+		this.server.setLongPollTimeout(100);
+		MockHttpConnection h1 = new MockHttpConnection();
+		this.server.handle(h1);
+		this.serverChannel.send("hello");
+		this.server.getServerThread().join();
+		assertThat(this.serverChannel.isOpen(), equalTo(false));
 	}
 
-	// HttpConnection Tests
+	@Test
+	public void disconnectTimeoutMustBePositive() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("DisconnectTimeout must be a positive value");
+		this.server.setDisconnectTimeout(0);
+	}
 
 	@Test
 	public void httpConnectionPayloadBytes() throws Exception {
@@ -241,9 +284,10 @@ public class HttpTunnelServerTests {
 	public void httpConnectionRespondWithPayload() throws Exception {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
 		connection.waitForResponse();
-		connection.respond(ByteBuffer.wrap("hello".getBytes()));
+		connection.respond(ByteBuffer.wrap("hello".getBytes()), 1);
 		assertThat(this.servletResponse.getStatus(), equalTo(200));
 		assertThat(this.servletResponse.getContentAsString(), equalTo("hello"));
+		assertThat(this.servletResponse.getHeader(SEQ_HEADER), equalTo("1"));
 	}
 
 	@Test
@@ -312,17 +356,23 @@ public class HttpTunnelServerTests {
 
 		private static final ByteBuffer DISCONNECT = ByteBuffer.wrap(NO_DATA);
 
+		private int timeout;
+
 		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<ByteBuffer>();
 
 		private ByteArrayOutputStream written = new ByteArrayOutputStream();
 
 		private AtomicBoolean open = new AtomicBoolean(true);
 
-		public void send(String content) {
-			willSend(content.getBytes());
+		public void setTimeout(int timeout) {
+			this.timeout = timeout;
 		}
 
-		public void willSend(byte[] bytes) {
+		public void send(String content) {
+			send(content.getBytes());
+		}
+
+		public void send(byte[] bytes) {
 			this.outgoing.addLast(ByteBuffer.wrap(bytes));
 		}
 
@@ -344,7 +394,11 @@ public class HttpTunnelServerTests {
 		@Override
 		public int read(ByteBuffer dst) throws IOException {
 			try {
-				ByteBuffer bytes = this.outgoing.takeFirst();
+				ByteBuffer bytes = this.outgoing.pollFirst(this.timeout,
+						TimeUnit.MILLISECONDS);
+				if (bytes == null) {
+					throw new SocketTimeoutException();
+				}
 				if (bytes == DISCONNECT) {
 					this.open.set(false);
 					return -1;
@@ -381,16 +435,21 @@ public class HttpTunnelServerTests {
 
 	}
 
+	/**
+	 * Mock {@link HttpConnection}.
+	 */
 	private static class MockHttpConnection extends HttpConnection {
-
-		public MockHttpConnection(String content) {
-			this();
-			getServletRequest().setContent(content.getBytes());
-		}
 
 		public MockHttpConnection() {
 			super(new ServletServerHttpRequest(new MockHttpServletRequest()),
 					new ServletServerHttpResponse(new MockHttpServletResponse()));
+		}
+
+		public MockHttpConnection(String content, int seq) {
+			this();
+			MockHttpServletRequest request = getServletRequest();
+			request.setContent(content.getBytes());
+			request.addHeader(SEQ_HEADER, String.valueOf(seq));
 		}
 
 		@Override
@@ -415,9 +474,12 @@ public class HttpTunnelServerTests {
 					.getServletResponse();
 		}
 
-		public void verifyReceived(String expected) throws Exception {
+		public void verifyReceived(String expectedContent, int expectedSeq)
+				throws Exception {
 			waitForServletResponse();
-			assertThat(getServletResponse().getContentAsString(), equalTo(expected));
+			MockHttpServletResponse resp = getServletResponse();
+			assertThat(resp.getContentAsString(), equalTo(expectedContent));
+			assertThat(resp.getHeader(SEQ_HEADER), equalTo(String.valueOf(expectedSeq)));
 		}
 
 		public void waitForServletResponse() throws InterruptedException {
@@ -429,5 +491,7 @@ public class HttpTunnelServerTests {
 	}
 
 	// FIXME deal with a second IP connection?
+
+	// FIXME add encryption support
 
 }

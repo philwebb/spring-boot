@@ -27,6 +27,12 @@ import java.nio.channels.ByteChannel;
  */
 public interface TargetServerConnection {
 
-	ByteChannel open(int socketTimeout) throws IOException;
+	/**
+	 * Open a connection to the target server with the specified timeout.
+	 * @param timeout the read timeout
+	 * @return a {@link ByteChannel} providing read/write access to the server
+	 * @throws IOException
+	 */
+	ByteChannel open(int timeout) throws IOException;
 
 }

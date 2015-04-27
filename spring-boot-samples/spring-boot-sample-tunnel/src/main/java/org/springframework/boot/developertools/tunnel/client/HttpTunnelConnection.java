@@ -16,10 +16,22 @@
 
 package org.springframework.boot.developertools.tunnel.client;
 
+import java.io.Closeable;
+import java.nio.channels.WritableByteChannel;
+
 /**
+ * {@link TunnelConnection} implementation that uses HTTP to transfer data.
  * @author Phillip Webb
  * @since 1.3.0
+ * @see TunnelClient
+ * @see org.springframework.boot.developertools.tunnel.server.HttpTunnelServer
  */
-public class HttpTunnelConnection {
+public class HttpTunnelConnection implements TunnelConnection {
+
+	@Override
+	public WritableByteChannel open(WritableByteChannel incomingChannel,
+			Closeable closeable) throws Exception {
+		return null;
+	}
 
 }

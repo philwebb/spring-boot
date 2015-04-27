@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * Socket based {@link TargetServerConnection}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class SocketTargetServerConnection implements TargetServerConnection {
 
