@@ -62,8 +62,9 @@ import org.springframework.util.Assert;
  * Each incoming request is held open to be used to carry the next available response. The
  * server will hold at most two connections open at any given time.
  * <p>
- * Requests should be made using HTTP POST, with any payload contained in the body. The
- * following response codes can be returned from the server:
+ * Requests should be made using HTTP GET or POST (depending if there is a payload), with
+ * any payload contained in the body. The following response codes can be returned from
+ * the server:
  * <p>
  * <table>
  * <tr>
@@ -77,6 +78,10 @@ import org.springframework.util.Assert;
  * <tr>
  * <td>204 (No Content)</td>
  * <td>The long poll has timed out and the client should start a new request.</td>
+ * </tr>
+ * <tr>
+ * <td>429 (Too many requests)</td>
+ * <td>There are already enough connections open, this one can be dropped.</td>
  * </tr>
  * <tr>
  * <td>410 (Gone)</td>
@@ -248,7 +253,8 @@ public class HttpTunnelServer {
 				HttpConnection httpConnection = operation.apply(this.httpConnections);
 				if (httpConnection == null) {
 					try {
-						wait(HttpTunnelServer.this.disconnectTimeout);
+						this.httpConnections
+								.wait(HttpTunnelServer.this.disconnectTimeout);
 					}
 					catch (InterruptedException ex) {
 					}
@@ -305,9 +311,11 @@ public class HttpTunnelServer {
 			}
 			synchronized (this.httpConnections) {
 				while (this.httpConnections.size() > 1) {
-					this.httpConnections.removeFirst().respond(HttpStatus.NO_CONTENT);
+					this.httpConnections.removeFirst().respond(
+							HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.httpConnections.addLast(httpConnection);
+				this.httpConnections.notify();
 			}
 			forwardToTargetServer(httpConnection);
 		}
@@ -319,7 +327,7 @@ public class HttpTunnelServer {
 				interrupt();
 			}
 			ServerHttpRequest request = httpConnection.getRequest();
-			HttpTunnelPayload payload = HttpTunnelPayload.read(request);
+			HttpTunnelPayload payload = HttpTunnelPayload.get(request);
 			if (payload != null) {
 				this.payloadForwarder.forward(payload);
 			}
@@ -459,7 +467,7 @@ public class HttpTunnelServer {
 		public void respond(HttpTunnelPayload payload) throws IOException {
 			Assert.notNull(payload, "Payload must not be null");
 			this.response.setStatusCode(HttpStatus.OK);
-			payload.write(this.response);
+			payload.assignTo(this.response);
 			complete();
 		}
 

@@ -82,6 +82,8 @@ public class TunnelClientTests {
 		SocketChannel channel = SocketChannel
 				.open(new InetSocketAddress(this.listenPort));
 		channel.close();
+		client.getServerThread().stopAcceptingConnections();
+		client.getServerThread().join(2000);
 		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
 		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
 	}

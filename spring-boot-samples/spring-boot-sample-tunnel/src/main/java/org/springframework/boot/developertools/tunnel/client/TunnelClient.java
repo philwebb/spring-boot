@@ -82,12 +82,18 @@ public class TunnelClient {
 		}
 	}
 
+	protected final ServerThread getServerThread() {
+		return this.serverThread;
+	}
+
 	/**
 	 * The main server thread.
 	 */
 	protected class ServerThread extends Thread {
 
 		private final ServerSocketChannel serverSocketChannel;
+
+		private boolean acceptConnections = true;
 
 		public ServerThread(ServerSocketChannel serverSocketChannel) {
 			this.serverSocketChannel = serverSocketChannel;
@@ -97,13 +103,14 @@ public class TunnelClient {
 
 		public void close() throws IOException {
 			this.serverSocketChannel.close();
+			this.acceptConnections = false;
 			interrupt();
 		}
 
 		@Override
 		public void run() {
 			try {
-				while (true) {
+				while (this.acceptConnections) {
 					SocketChannel socket = this.serverSocketChannel.accept();
 					try {
 						handleConnection(socket);
@@ -138,6 +145,10 @@ public class TunnelClient {
 			finally {
 				outputChannel.close();
 			}
+		}
+
+		protected void stopAcceptingConnections() {
+			this.acceptConnections = false;
 		}
 	}
 

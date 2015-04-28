@@ -26,6 +26,7 @@ import java.nio.channels.WritableByteChannel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -74,15 +75,17 @@ public class HttpTunnelPayload {
 	}
 
 	/**
-	 * @param response
+	 * @param message
 	 * @throws IOException
 	 */
-	public void write(HttpOutputMessage response) throws IOException {
-		HttpHeaders headers = response.getHeaders();
+	public void assignTo(HttpOutputMessage message) throws IOException {
+		// System.out.println("Sending " + HexString.toString(getData()));
+		HttpHeaders headers = message.getHeaders();
 		ByteBuffer payloadData = getData();
 		headers.setContentLength(payloadData.remaining());
 		headers.add(SEQ_HEADER, Long.toString(getSequence()));
-		WritableByteChannel body = Channels.newChannel(response.getBody());
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		WritableByteChannel body = Channels.newChannel(message.getBody());
 		while (payloadData.hasRemaining()) {
 			body.write(payloadData);
 		}
@@ -92,22 +95,23 @@ public class HttpTunnelPayload {
 	/**
 	 * Return the {@link HttpTunnelPayload} for the given message or {@code null} if there
 	 * is no payload.
-	 * @param request the HTTP request
+	 * @param message the HTTP message
 	 * @return the payload or {@code null}
 	 * @throws IOException
 	 */
-	public static HttpTunnelPayload read(HttpInputMessage request) throws IOException {
-		long length = request.getHeaders().getContentLength();
+	public static HttpTunnelPayload get(HttpInputMessage message) throws IOException {
+		long length = message.getHeaders().getContentLength();
 		if (length <= 0) {
 			return null;
 		}
-		String seqHeader = request.getHeaders().getFirst(SEQ_HEADER);
+		String seqHeader = message.getHeaders().getFirst(SEQ_HEADER);
 		Assert.state(StringUtils.hasLength(seqHeader), "Missing sequence header");
-		ReadableByteChannel body = Channels.newChannel(request.getBody());
+		ReadableByteChannel body = Channels.newChannel(message.getBody());
 		ByteBuffer payload = ByteBuffer.allocate((int) length);
 		while (payload.hasRemaining()) {
 			body.read(payload);
 		}
+		body.close();
 		payload.flip();
 		return new HttpTunnelPayload(Long.valueOf(seqHeader), payload);
 	}

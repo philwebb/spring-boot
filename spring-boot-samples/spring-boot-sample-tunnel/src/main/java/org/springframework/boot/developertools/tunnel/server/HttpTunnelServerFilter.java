@@ -24,6 +24,13 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
 
 /**
  * Servlet Filter to manage a HTTP tunnel server.
@@ -33,9 +40,14 @@ import javax.servlet.ServletResponse;
  */
 public class HttpTunnelServerFilter implements Filter {
 
-	// FIXME write this
+	private final HttpTunnelServer httpHandler;
 
-	public HttpTunnelServerFilter() {
+	public HttpTunnelServerFilter(int port) {
+		this(new HttpTunnelServer(new SocketTargetServerConnection(port)));
+	}
+
+	public HttpTunnelServerFilter(HttpTunnelServer httpHandler) {
+		this.httpHandler = httpHandler;
 	}
 
 	@Override
@@ -45,6 +57,18 @@ public class HttpTunnelServerFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+		if (request instanceof HttpServletRequest
+				&& response instanceof HttpServletResponse) {
+			ServerHttpRequest httpRequest = new ServletServerHttpRequest(
+					(HttpServletRequest) request);
+			ServerHttpResponse httpResponse = new ServletServerHttpResponse(
+					(HttpServletResponse) response);
+			if (httpRequest.getURI().toString().endsWith("/httptunnel")) {
+				this.httpHandler.handle(httpRequest, httpResponse);
+				return;
+			}
+		}
+		chain.doFilter(request, response);
 	}
 
 	@Override

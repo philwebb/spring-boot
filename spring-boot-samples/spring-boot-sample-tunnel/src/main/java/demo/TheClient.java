@@ -16,10 +16,9 @@
 
 package demo;
 
-import org.springframework.boot.livereload.tunnel.HttpTunnelConnection;
-import org.springframework.boot.livereload.tunnel.TunnelClient;
-import org.springframework.boot.livereload.tunnel.TunnelConnection;
-import org.springframework.boot.livereload.tunnel.WebSocketTunnelConnection;
+import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
+import org.springframework.boot.developertools.tunnel.client.TunnelClient;
+import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
 
 /**
  * @author pwebb
@@ -33,8 +32,10 @@ public class TheClient {
 		// String url = "http://localhost:8080/httptunnel";
 		String url = "http://tunnel.cfapps.io/httptunnel";
 		// TunnelConnection tunnelConnection = new WebSocketTunnelConnection(url);
-		TunnelConnection tunnelConnection = (url.startsWith("ws") ? new WebSocketTunnelConnection(
-				url) : new HttpTunnelConnection(url));
+		// TunnelConnection tunnelConnection = (url.startsWith("ws") ? new
+		// WebSocketTunnelConnection(
+		// url) : new HttpTunnelConnection(url));
+		TunnelConnection tunnelConnection = (new HttpTunnelConnection(url));
 		TunnelClient client = new TunnelClient(8000, tunnelConnection);
 		client.start();
 		while (true) {

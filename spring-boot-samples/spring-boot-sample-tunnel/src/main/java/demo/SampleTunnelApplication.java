@@ -21,7 +21,7 @@ import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.livereload.tunnel.HttpTunnelServerFilter;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerFilter;
 import org.springframework.boot.livereload.tunnel.TunnelServerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;

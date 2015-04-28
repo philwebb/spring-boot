@@ -23,11 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -35,7 +31,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.HttpHeaders;
+import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayload;
+import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayloadForwarder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -53,8 +50,6 @@ import org.springframework.util.Assert;
  * @see org.springframework.boot.developertools.tunnel.server.HttpTunnelServer
  */
 public class HttpTunnelConnection implements TunnelConnection {
-
-	private static final String SEQ_HEADER = "x-seq";
 
 	private static Log logger = LogFactory.getLog(HttpTunnelConnection.class);
 
@@ -82,21 +77,23 @@ public class HttpTunnelConnection implements TunnelConnection {
 	}
 
 	@Override
-	public WritableByteChannel open(WritableByteChannel incomingChannel,
-			Closeable closeable) throws Exception {
+	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable)
+			throws Exception {
 		return new TunnelChannel(incomingChannel, closeable);
 	}
 
-	protected final ClientHttpRequest createRequest() throws IOException {
-		return this.requestFactory.createRequest(this.uri, HttpMethod.POST);
+	protected final ClientHttpRequest createRequest(boolean hasPayload)
+			throws IOException {
+		HttpMethod method = (hasPayload ? HttpMethod.POST : HttpMethod.GET);
+		return this.requestFactory.createRequest(this.uri, method);
 	}
 
 	/**
 	 * A {@link WritableByteChannel} used to transfer traffic.
 	 */
-	private class TunnelChannel implements WritableByteChannel {
+	protected class TunnelChannel implements WritableByteChannel {
 
-		private final WritableByteChannel incomingChannel;
+		private final HttpTunnelPayloadForwarder forwarder;
 
 		private final Closeable closeable;
 
@@ -104,17 +101,13 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private AtomicLong requestSeq = new AtomicLong();
 
-		private long lastRequestSeq = 0;
-
-		private Map<Long, ByteBuffer> pendingForwards = new HashMap<Long, ByteBuffer>();
-
 		private final ExecutorService executor = Executors
 				.newCachedThreadPool(new TunnelThreadFactory());
 
 		public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
-			this.incomingChannel = incomingChannel;
+			this.forwarder = new HttpTunnelPayloadForwarder(incomingChannel);
 			this.closeable = closeable;
-			openNewConnection(null, -1);
+			openNewConnection(null);
 		}
 
 		@Override
@@ -131,19 +124,22 @@ public class HttpTunnelConnection implements TunnelConnection {
 		}
 
 		@Override
-		public synchronized int write(ByteBuffer src) throws IOException {
+		public int write(ByteBuffer src) throws IOException {
 			int size = src.remaining();
-			openNewConnection(src, this.requestSeq.incrementAndGet());
+			if (size > 0) {
+				openNewConnection(new HttpTunnelPayload(
+						this.requestSeq.incrementAndGet(), src));
+			}
 			return size;
 		}
 
-		private void openNewConnection(final ByteBuffer payload, final long seq) {
+		private synchronized void openNewConnection(final HttpTunnelPayload payload) {
 			this.executor.execute(new Runnable() {
 
 				@Override
 				public void run() {
 					try {
-						sendAndReceive(payload, seq);
+						sendAndReceive(payload);
 					}
 					catch (IOException ex) {
 						logger.trace("Unexpected connection error", ex);
@@ -162,51 +158,29 @@ public class HttpTunnelConnection implements TunnelConnection {
 			});
 		}
 
-		private void sendAndReceive(ByteBuffer payload, long seq) throws IOException {
-			ClientHttpRequest request = createRequest();
+		private void sendAndReceive(HttpTunnelPayload payload) throws IOException {
+			ClientHttpRequest request = createRequest(payload != null);
 			if (payload != null) {
-				sendPayload(payload, seq, request);
+				payload.assignTo(request);
 			}
 			handleResponse(request.execute());
 		}
 
-		private void sendPayload(ByteBuffer payload, long seq, ClientHttpRequest request)
-				throws IOException {
-			HttpHeaders headers = request.getHeaders();
-			headers.setContentLength(payload.remaining());
-			headers.add(SEQ_HEADER, Long.toString(seq));
-			WritableByteChannel body = Channels.newChannel(request.getBody());
-			while (payload.hasRemaining()) {
-				body.write(payload);
-			}
-			body.close();
-		}
-
 		private void handleResponse(ClientHttpResponse response) throws IOException {
-			// FIXME payload
-			// Confinue
-			// disconnect
+			if (response.getStatusCode() == HttpStatus.GONE) {
+				close();
+				return;
+
+			}
 			if (response.getStatusCode() == HttpStatus.OK) {
-				synchronized (this.incomingChannel) {
-					forwardResponse(getPayload(response));
+				HttpTunnelPayload payload = HttpTunnelPayload.get(response);
+				if (payload != null) {
+					this.forwarder.forward(payload);
 				}
 			}
-		}
-
-		private ByteBuffer getPayload(ClientHttpResponse response) throws IOException {
-			long length = response.getHeaders().getContentLength();
-			Assert.state(length >= 0, "No content length provided");
-			ReadableByteChannel body = Channels.newChannel(response.getBody());
-			ByteBuffer payload = ByteBuffer.allocate((int) length);
-			while (payload.hasRemaining()) {
-				body.read(payload);
+			if (response.getStatusCode() != HttpStatus.TOO_MANY_REQUESTS) {
+				openNewConnection(null);
 			}
-			payload.flip();
-			return payload;
-		}
-
-		private void forwardResponse(ByteBuffer payload) {
-
 		}
 
 	}

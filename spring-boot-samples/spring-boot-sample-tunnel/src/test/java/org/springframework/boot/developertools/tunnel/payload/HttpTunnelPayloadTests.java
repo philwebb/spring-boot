@@ -79,41 +79,41 @@ public class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	public void writeToResponse() throws Exception {
+	public void assignTo() throws Exception {
 		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(2, data);
 		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 		HttpOutputMessage response = new ServletServerHttpResponse(servletResponse);
-		payload.write(response);
+		payload.assignTo(response);
 		assertThat(servletResponse.getHeader("x-seq"), equalTo("2"));
 		assertThat(servletResponse.getContentAsString(), equalTo("hello"));
 	}
 
 	@Test
-	public void readNoData() throws Exception {
+	public void getNoData() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
-		HttpTunnelPayload payload = HttpTunnelPayload.read(request);
+		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
 		assertThat(payload, nullValue());
 	}
 
 	@Test
-	public void readWithMissingHeader() throws Exception {
+	public void getWithMissingHeader() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Missing sequence header");
-		HttpTunnelPayload.read(request);
+		HttpTunnelPayload.get(request);
 	}
 
 	@Test
-	public void readWithData() throws Exception {
+	public void getWithData() throws Exception {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		servletRequest.addHeader("x-seq", 123);
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
-		HttpTunnelPayload payload = HttpTunnelPayload.read(request);
+		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
 		assertThat(payload.getSequence(), equalTo(123L));
 		assertThat(payload.getData().array(), equalTo("hello".getBytes()));
 	}

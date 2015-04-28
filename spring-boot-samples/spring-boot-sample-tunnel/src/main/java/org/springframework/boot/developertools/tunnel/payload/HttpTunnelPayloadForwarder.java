@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelPayloadForwarder {
 
-	private static final int MAXIMUM_QUEUE_SIZE = 10;
+	private static final int MAXIMUM_QUEUE_SIZE = 100;
 
 	private final WritableByteChannel targetChannel;
 
@@ -61,6 +61,7 @@ public class HttpTunnelPayloadForwarder {
 			this.queue.put(seq, buffer);
 			return;
 		}
+		// System.out.println("Forwarding " + HexString.toString(buffer));
 		while (buffer.hasRemaining()) {
 			this.targetChannel.write(buffer);
 		}
