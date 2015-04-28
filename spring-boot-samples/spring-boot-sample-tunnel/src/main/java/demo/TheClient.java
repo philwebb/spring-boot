@@ -29,8 +29,8 @@ public class TheClient {
 		// String url = "ws://localhost:8080/tunnel";
 		// String url = "ws://192.168.1.56:8080/tunnel";
 		// String url = "wss://tunnel.cfapps.io:4443/tunnel";
-		// String url = "http://localhost:8080/httptunnel";
-		String url = "http://tunnel.cfapps.io/httptunnel";
+		String url = "http://localhost:8080/httptunnel";
+		// String url = "http://tunnel.cfapps.io/httptunnel";
 		// TunnelConnection tunnelConnection = new WebSocketTunnelConnection(url);
 		// TunnelConnection tunnelConnection = (url.startsWith("ws") ? new
 		// WebSocketTunnelConnection(

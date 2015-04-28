@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayloadForwarder;
-import org.springframework.boot.livereload.tunnel.HexString;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;
@@ -208,6 +207,8 @@ public class HttpTunnelServer {
 
 		private AtomicLong responseSeq = new AtomicLong();
 
+		private long lastHttpRequestTime;
+
 		public ServerThread(ByteChannel targetServer) {
 			Assert.notNull(targetServer, "TargetServer must not be null");
 			this.targetServer = targetServer;
@@ -235,42 +236,37 @@ public class HttpTunnelServer {
 
 		private void readAndForwardTargetServerData() throws IOException {
 			while (this.targetServer.isOpen()) {
+				closeStaleHttpConnections();
 				ByteBuffer data = HttpTunnelPayload.getPayloadData(this.targetServer);
 				synchronized (this.httpConnections) {
 					if (data != null) {
-						System.out.println("Getting for " + HexString.toString(data));
-						HttpConnection connection = getOrWaitForHttpConnection(DequeOperation.POLL_FIRST);
-						System.out.println("Got a connection");
+						HttpConnection connection = getOrWaitForHttpConnection();
 						HttpTunnelPayload payload = new HttpTunnelPayload(
 								this.responseSeq.incrementAndGet(), data);
 						connection.respond(payload);
 					}
-					closeStaleHttpConnections();
-					// getOrWaitForHttpConnection(DequeOperation.PEEK_FIRST);
 				}
 			}
 		}
 
-		private HttpConnection getOrWaitForHttpConnection(DequeOperation operation) {
+		private HttpConnection getOrWaitForHttpConnection() {
 			synchronized (this.httpConnections) {
-				HttpConnection httpConnection = operation.apply(this.httpConnections);
-				if (httpConnection == null) {
-					new Exception().printStackTrace();
-					System.out.println("Wait");
+				HttpConnection httpConnection = this.httpConnections.pollFirst();
+				while (httpConnection == null) {
 					try {
-						this.httpConnections
-								.wait(HttpTunnelServer.this.disconnectTimeout);
+						this.httpConnections.wait(HttpTunnelServer.this.longPollTimeout);
 					}
 					catch (InterruptedException ex) {
+						closeHttpConnections();
 					}
-					httpConnection = operation.apply(this.httpConnections);
-					Assert.state(httpConnection != null, "Timeout waiting for HTTP");
+					httpConnection = this.httpConnections.pollFirst();
 				}
 				return httpConnection;
 			}
 		}
 
 		private void closeStaleHttpConnections() throws IOException {
+			checkNotDisconnected();
 			synchronized (this.httpConnections) {
 				Iterator<HttpConnection> iterator = this.httpConnections.iterator();
 				while (iterator.hasNext()) {
@@ -281,6 +277,12 @@ public class HttpTunnelServer {
 					}
 				}
 			}
+		}
+
+		private void checkNotDisconnected() {
+			long timeout = HttpTunnelServer.this.disconnectTimeout;
+			long duration = System.currentTimeMillis() - this.lastHttpRequestTime;
+			Assert.state(duration < timeout, "Disconnect timeout");
 		}
 
 		private void closeHttpConnections() {
@@ -319,8 +321,8 @@ public class HttpTunnelServer {
 					this.httpConnections.removeFirst().respond(
 							HttpStatus.TOO_MANY_REQUESTS);
 				}
+				this.lastHttpRequestTime = System.currentTimeMillis();
 				this.httpConnections.addLast(httpConnection);
-				System.out.println("Notify");
 				this.httpConnections.notify();
 			}
 			forwardToTargetServer(httpConnection);
@@ -339,26 +341,6 @@ public class HttpTunnelServer {
 			}
 		}
 
-	}
-
-	/**
-	 * Operations that can be performed on a {@link Deque}.
-	 */
-	protected static enum DequeOperation {
-		POLL_FIRST {
-			@Override
-			public <E> E apply(Deque<E> deque) {
-				return deque.pollFirst();
-			}
-		},
-		PEEK_FIRST {
-			@Override
-			public <E> E apply(Deque<E> deque) {
-				return deque.peekFirst();
-			}
-		};
-
-		public abstract <E> E apply(Deque<E> deque);
 	}
 
 	/**

@@ -61,7 +61,6 @@ public class HttpTunnelPayloadForwarder {
 			this.queue.put(seq, buffer);
 			return;
 		}
-		// System.out.println("Forwarding " + HexString.toString(buffer));
 		while (buffer.hasRemaining()) {
 			this.targetChannel.write(buffer);
 		}

@@ -27,8 +27,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 
@@ -59,12 +57,11 @@ public class HttpTunnelServerFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		if (request instanceof HttpServletRequest
 				&& response instanceof HttpServletResponse) {
-			ServerHttpRequest httpRequest = new ServletServerHttpRequest(
-					(HttpServletRequest) request);
-			ServerHttpResponse httpResponse = new ServletServerHttpResponse(
-					(HttpServletResponse) response);
-			if (httpRequest.getURI().toString().endsWith("/httptunnel")) {
-				this.httpHandler.handle(httpRequest, httpResponse);
+			HttpServletRequest servletRequest = (HttpServletRequest) request;
+			HttpServletResponse servletResponse = (HttpServletResponse) response;
+			if (servletRequest.getRequestURI().endsWith("/httptunnel")) {
+				this.httpHandler.handle(new ServletServerHttpRequest(servletRequest),
+						new ServletServerHttpResponse(servletResponse));
 				return;
 			}
 		}

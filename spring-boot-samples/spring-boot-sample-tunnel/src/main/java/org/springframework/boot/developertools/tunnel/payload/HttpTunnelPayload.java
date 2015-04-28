@@ -79,7 +79,6 @@ public class HttpTunnelPayload {
 	 * @throws IOException
 	 */
 	public void assignTo(HttpOutputMessage message) throws IOException {
-		// System.out.println("Sending " + HexString.toString(getData()));
 		HttpHeaders headers = message.getHeaders();
 		ByteBuffer payloadData = getData();
 		headers.setContentLength(payloadData.remaining());
