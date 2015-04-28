@@ -23,6 +23,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -41,6 +43,10 @@ public class HttpTunnelPayload {
 	private static final String SEQ_HEADER = "x-seq";
 
 	private static final int BUFFER_SIZE = 1024 * 10;
+
+	final protected static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+
+	private static final Log logger = LogFactory.getLog(HttpTunnelPayload.class);
 
 	private final long sequence;
 
@@ -67,28 +73,32 @@ public class HttpTunnelPayload {
 	}
 
 	/**
-	 * Return the payload data.
-	 * @return the payload data
-	 */
-	public ByteBuffer getData() {
-		return this.data;
-	}
-
-	/**
 	 * @param message
 	 * @throws IOException
 	 */
 	public void assignTo(HttpOutputMessage message) throws IOException {
+		Assert.notNull(message, "Message must not be null");
 		HttpHeaders headers = message.getHeaders();
-		ByteBuffer payloadData = getData();
-		headers.setContentLength(payloadData.remaining());
+		headers.setContentLength(this.data.remaining());
 		headers.add(SEQ_HEADER, Long.toString(getSequence()));
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		WritableByteChannel body = Channels.newChannel(message.getBody());
-		while (payloadData.hasRemaining()) {
-			body.write(payloadData);
+		while (this.data.hasRemaining()) {
+			body.write(this.data);
 		}
 		body.close();
+	}
+
+	/**
+	 * Write the content of this payload to the given target channel.
+	 * @param channel the channel to write to
+	 * @throws IOException
+	 */
+	public void writeTo(WritableByteChannel channel) throws IOException {
+		Assert.notNull(channel, "Channel must not be null");
+		while (this.data.hasRemaining()) {
+			channel.write(this.data);
+		}
 	}
 
 	/**
@@ -134,6 +144,41 @@ public class HttpTunnelPayload {
 		catch (InterruptedIOException ex) {
 			return null;
 		}
+	}
+
+	/**
+	 * Log incoming payload information at trace level to aid diagnostics.
+	 */
+	public void logIncoming() {
+		log("< ");
+	}
+
+	/**
+	 * Log incoming payload information at trace level to aid diagnostics.
+	 */
+	public void logOutgoing() {
+		log("> ");
+	}
+
+	private void log(String prefix) {
+		if (logger.isTraceEnabled()) {
+			logger.trace(prefix + toHexString());
+		}
+	}
+
+	/**
+	 * Return the payload as a hexadecimal string.
+	 * @return the payload as a hex string
+	 */
+	public String toHexString() {
+		byte[] bytes = this.data.array();
+		char[] hex = new char[this.data.remaining() * 2];
+		for (int i = this.data.position(); i < this.data.remaining(); i++) {
+			int b = bytes[i] & 0xFF;
+			hex[i * 2] = HEX_CHARS[b >>> 4];
+			hex[i * 2 + 1] = HEX_CHARS[b & 0x0F];
+		}
+		return new String(hex);
 	}
 
 }

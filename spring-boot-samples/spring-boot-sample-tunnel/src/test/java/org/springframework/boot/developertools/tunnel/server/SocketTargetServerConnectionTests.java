@@ -53,7 +53,14 @@ public class SocketTargetServerConnectionTests {
 	public void setup() throws IOException {
 		this.port = SocketUtils.findAvailableTcpPort();
 		this.server = new MockServer(this.port);
-		this.connection = new SocketTargetServerConnection(this.port);
+		this.connection = new SocketTargetServerConnection(new PortProvider() {
+
+			@Override
+			public int getPort() {
+				return SocketTargetServerConnectionTests.this.port;
+			}
+
+		});
 	}
 
 	@Test

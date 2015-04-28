@@ -17,6 +17,7 @@
 package org.springframework.boot.developertools.tunnel.server;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.util.ArrayDeque;
@@ -145,8 +146,13 @@ public class HttpTunnelServer {
 	 * @throws IOException
 	 */
 	protected void handle(HttpConnection httpConnection) throws IOException {
-		getServerThread().handleIncomingHttp(httpConnection);
-		httpConnection.waitForResponse();
+		try {
+			getServerThread().handleIncomingHttp(httpConnection);
+			httpConnection.waitForResponse();
+		}
+		catch (ConnectException ex) {
+			httpConnection.respond(HttpStatus.GONE);
+		}
 	}
 
 	/**
@@ -240,9 +246,10 @@ public class HttpTunnelServer {
 				ByteBuffer data = HttpTunnelPayload.getPayloadData(this.targetServer);
 				synchronized (this.httpConnections) {
 					if (data != null) {
-						HttpConnection connection = getOrWaitForHttpConnection();
 						HttpTunnelPayload payload = new HttpTunnelPayload(
 								this.responseSeq.incrementAndGet(), data);
+						payload.logIncoming();
+						HttpConnection connection = getOrWaitForHttpConnection();
 						connection.respond(payload);
 					}
 				}

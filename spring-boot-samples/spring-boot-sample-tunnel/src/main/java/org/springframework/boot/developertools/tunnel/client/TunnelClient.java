@@ -62,6 +62,7 @@ public class TunnelClient {
 		Assert.state(this.serverThread == null, "Server already started");
 		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 		serverSocketChannel.bind(new InetSocketAddress(this.listenPort));
+		logger.trace("Listening for TCP traffic to tunnel on port " + this.listenPort);
 		this.serverThread = new ServerThread(serverSocketChannel);
 		this.serverThread.start();
 	}

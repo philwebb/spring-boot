@@ -17,7 +17,6 @@
 package org.springframework.boot.developertools.tunnel.payload;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class HttpTunnelPayloadForwarder {
 
 	private long lastRequestSeq = 0;
 
-	private final Map<Long, ByteBuffer> queue = new HashMap<Long, ByteBuffer>();
+	private final Map<Long, HttpTunnelPayload> queue = new HashMap<Long, HttpTunnelPayload>();
 
 	/**
 	 * Create a new {@link HttpTunnelPayloadForwarder} instance.
@@ -50,24 +49,20 @@ public class HttpTunnelPayloadForwarder {
 		this.targetChannel = targetChannel;
 	}
 
-	public void forward(HttpTunnelPayload payload) throws IOException {
-		doForward(payload.getSequence(), payload.getData());
-	}
-
-	private synchronized void doForward(long seq, ByteBuffer buffer) throws IOException {
+	public synchronized void forward(HttpTunnelPayload payload) throws IOException {
+		long seq = payload.getSequence();
 		if (this.lastRequestSeq != seq - 1) {
 			Assert.state(this.queue.size() < MAXIMUM_QUEUE_SIZE,
 					"Too many messages queued");
-			this.queue.put(seq, buffer);
+			this.queue.put(seq, payload);
 			return;
 		}
-		while (buffer.hasRemaining()) {
-			this.targetChannel.write(buffer);
-		}
+		payload.logOutgoing();
+		payload.writeTo(this.targetChannel);
 		this.lastRequestSeq = seq;
-		ByteBuffer queuedItem = this.queue.get(seq + 1);
+		HttpTunnelPayload queuedItem = this.queue.get(seq + 1);
 		if (queuedItem != null) {
-			doForward(seq + 1, queuedItem);
+			forward(queuedItem);
 		}
 	}
 

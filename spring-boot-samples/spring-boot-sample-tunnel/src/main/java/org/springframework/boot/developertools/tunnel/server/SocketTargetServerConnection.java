@@ -25,8 +25,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 
-import org.springframework.util.Assert;
-
 /**
  * Socket based {@link TargetServerConnection}.
  *
@@ -35,20 +33,16 @@ import org.springframework.util.Assert;
  */
 public class SocketTargetServerConnection implements TargetServerConnection {
 
-	private final SocketAddress address;
+	private final PortProvider portProvider;
 
-	public SocketTargetServerConnection(int port) {
-		this(new InetSocketAddress(port));
-	}
-
-	public SocketTargetServerConnection(SocketAddress address) {
-		Assert.notNull(address, "Address must not be null");
-		this.address = address;
+	public SocketTargetServerConnection(PortProvider portProvider) {
+		this.portProvider = portProvider;
 	}
 
 	@Override
 	public ByteChannel open(int socketTimeout) throws IOException {
-		SocketChannel channel = SocketChannel.open(this.address);
+		SocketAddress address = new InetSocketAddress(this.portProvider.getPort());
+		SocketChannel channel = SocketChannel.open(address);
 		channel.socket().setSoTimeout(socketTimeout);
 		return new TimeoutAwareChannel(channel);
 	}

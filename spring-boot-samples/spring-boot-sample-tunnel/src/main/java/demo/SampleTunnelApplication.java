@@ -22,6 +22,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerFilter;
+import org.springframework.boot.developertools.tunnel.server.PortProvider;
 import org.springframework.boot.livereload.tunnel.TunnelServerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
@@ -40,17 +41,22 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 	}
 
 	@SuppressWarnings("restriction")
-	private Integer getDebugPort() {
-		if (false) {
-			return 5000;
-		}
-		String property = sun.misc.VMSupport.getAgentProperties().getProperty(
-				"sun.jdwp.listenerAddress");
-		if (property == null) {
-			return -1;
-		}
-		System.out.println(property);
-		return Integer.valueOf(property.split(":")[1]);
+	private PortProvider getDebugPortProvider() {
+		return new PortProvider() {
+			@Override
+			public int getPort() {
+				if (false) {
+					return 5000;
+				}
+				String property = sun.misc.VMSupport.getAgentProperties().getProperty(
+						"sun.jdwp.listenerAddress");
+				if (property == null) {
+					return -1;
+				}
+				System.out.println(property);
+				return Integer.valueOf(property.split(":")[1]);
+			}
+		};
 	}
 
 	@Bean
@@ -60,14 +66,13 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 
 	@Bean
 	public TunnelServerWebSocketHandler tunnelWebSocketHandler() {
-		int port = getDebugPort();
+		int port = getDebugPortProvider().getPort();
 		return new TunnelServerWebSocketHandler(port);
 	}
 
 	@Bean
 	public HttpTunnelServerFilter tunnelServerHttpFilter() {
-		int port = getDebugPort();
-		return new HttpTunnelServerFilter(port);
+		return new HttpTunnelServerFilter(getDebugPortProvider());
 	}
 
 	public static void main(String[] args) {

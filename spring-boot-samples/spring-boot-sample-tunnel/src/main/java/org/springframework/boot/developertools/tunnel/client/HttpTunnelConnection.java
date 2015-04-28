@@ -64,6 +64,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory) {
 		Assert.notNull(url, "URL must not be null");
 		Assert.hasLength(url, "URL must not be empty");
+		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
 			this.uri = new URL(url).toURI();
 		}
@@ -79,6 +80,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 	@Override
 	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable)
 			throws Exception {
+		logger.trace("Opening HTTP tunnel to " + this.uri);
 		return new TunnelChannel(incomingChannel, closeable);
 	}
 
@@ -161,6 +163,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 		private void sendAndReceive(HttpTunnelPayload payload) throws IOException {
 			ClientHttpRequest request = createRequest(payload != null);
 			if (payload != null) {
+				payload.logIncoming();
 				payload.assignTo(request);
 			}
 			handleResponse(request.execute());
@@ -170,7 +173,6 @@ public class HttpTunnelConnection implements TunnelConnection {
 			if (response.getStatusCode() == HttpStatus.GONE) {
 				close();
 				return;
-
 			}
 			if (response.getStatusCode() == HttpStatus.OK) {
 				HttpTunnelPayload payload = HttpTunnelPayload.get(response);

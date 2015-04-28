@@ -18,6 +18,7 @@ package org.springframework.boot.developertools.tunnel.payload;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -73,9 +74,9 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void getData() throws Exception {
-		ByteBuffer data = ByteBuffer.allocate(1);
+		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, data);
-		assertThat(payload.getData(), equalTo(data));
+		assertThat(getData(payload), equalTo(data.array()));
 	}
 
 	@Test
@@ -115,7 +116,7 @@ public class HttpTunnelPayloadTests {
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
 		assertThat(payload.getSequence(), equalTo(123L));
-		assertThat(payload.getData().array(), equalTo("hello".getBytes()));
+		assertThat(getData(payload), equalTo("hello".getBytes()));
 	}
 
 	@Test
@@ -138,6 +139,13 @@ public class HttpTunnelPayloadTests {
 				.willThrow(new SocketTimeoutException());
 		ByteBuffer payload = HttpTunnelPayload.getPayloadData(channel);
 		assertThat(payload, nullValue());
+	}
+
+	private byte[] getData(HttpTunnelPayload payload) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		WritableByteChannel channel = Channels.newChannel(out);
+		payload.writeTo(channel);
+		return out.toByteArray();
 	}
 
 }

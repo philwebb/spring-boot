@@ -40,7 +40,7 @@ public class HttpTunnelServerFilter implements Filter {
 
 	private final HttpTunnelServer httpHandler;
 
-	public HttpTunnelServerFilter(int port) {
+	public HttpTunnelServerFilter(PortProvider port) {
 		this(new HttpTunnelServer(new SocketTargetServerConnection(port)));
 	}
 
