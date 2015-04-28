@@ -13,30 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.springframework.boot.livereload.tunnel;
-
-import java.util.concurrent.ThreadFactory;
-
 /**
  * @author pwebb
  */
-public class NamedThreadFactory implements ThreadFactory {
-
-	private final String name;
-
-	private final boolean daemon;
-
-	public NamedThreadFactory(String name, boolean daemon) {
-		this.name = name;
-		this.daemon = daemon;
-	}
-
-	@Override
-	public Thread newThread(Runnable runnable) {
-		Thread thread = new Thread(runnable, this.name);
-		thread.setDaemon(this.daemon);
-		return thread;
-	}
-
-}
+package org.springframework.boot.developertools.tunnel.todo;

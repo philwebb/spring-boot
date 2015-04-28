@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.livereload.tunnel;
+package org.springframework.boot.developertools.tunnel.todo;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -36,6 +36,9 @@ import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler
  * @author Phillip Webb
  */
 public class TunnelServerWebSocketHandler extends BinaryWebSocketHandler {
+
+	// FIXME consider if we want this and write tests.
+	// FIXME we'd also need to add a filter to start the thing
 
 	private static final int BUFFER_SIZE = 1025 * 2;
 

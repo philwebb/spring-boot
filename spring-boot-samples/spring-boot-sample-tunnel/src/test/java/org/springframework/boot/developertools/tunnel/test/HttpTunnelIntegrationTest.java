@@ -43,7 +43,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Full integration tests for HTTP tunneling.
+ * Simple integration tests for HTTP tunneling.
  *
  * @author Phillip Webb
  */

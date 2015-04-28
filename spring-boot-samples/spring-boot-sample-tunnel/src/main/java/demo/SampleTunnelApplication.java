@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerFilter;
 import org.springframework.boot.developertools.tunnel.server.PortProvider;
-import org.springframework.boot.livereload.tunnel.TunnelServerWebSocketHandler;
+import org.springframework.boot.developertools.tunnel.todo.TunnelServerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;

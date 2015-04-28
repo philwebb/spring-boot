@@ -19,8 +19,7 @@ package demo;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
-import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.developertools.tunnel.todo.WebSocketTunnelConnection;
 
 /**
  * @author pwebb
@@ -28,18 +27,18 @@ import org.springframework.boot.logging.LoggingSystem;
 public class TheClient {
 
 	public static void main(String[] args) throws Exception {
-		LoggingSystem.get(TheClient.class.getClassLoader()).setLogLevel(
-				"org.springframework", LogLevel.TRACE);
+		// LoggingSystem.get(TheClient.class.getClassLoader()).setLogLevel(
+		// "org.springframework", LogLevel.TRACE);
+
+		// String url = "http://localhost:8080/httptunnel";
 		// String url = "ws://localhost:8080/tunnel";
-		// String url = "ws://192.168.1.56:8080/tunnel";
+
+		String url = "http://tunnel.cfapps.io/httptunnel";
 		// String url = "wss://tunnel.cfapps.io:4443/tunnel";
-		String url = "http://localhost:8080/httptunnel";
-		// String url = "http://tunnel.cfapps.io/httptunnel";
+
 		// TunnelConnection tunnelConnection = new WebSocketTunnelConnection(url);
-		// TunnelConnection tunnelConnection = (url.startsWith("ws") ? new
-		// WebSocketTunnelConnection(
-		// url) : new HttpTunnelConnection(url));
-		TunnelConnection tunnelConnection = (new HttpTunnelConnection(url));
+		TunnelConnection tunnelConnection = (url.startsWith("ws") ? new WebSocketTunnelConnection(
+				url) : new HttpTunnelConnection(url));
 		TunnelClient client = new TunnelClient(8000, tunnelConnection);
 		client.start();
 		while (true) {

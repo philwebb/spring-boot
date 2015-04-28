@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.livereload.tunnel;
+package org.springframework.boot.developertools.tunnel.todo;
 
 import java.io.Closeable;
 import java.nio.channels.WritableByteChannel;
 
+import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
@@ -32,6 +33,8 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
  * @author Phillip Webb
  */
 public class WebSocketTunnelConnection implements TunnelConnection {
+
+	// FIXME consider if we want this and write tests.
 
 	private final String url;
 

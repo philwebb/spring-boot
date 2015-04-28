@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.livereload.tunnel;
+package org.springframework.boot.developertools.tunnel.todo;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -29,6 +29,8 @@ import org.springframework.web.socket.WebSocketSession;
  * @author Phillip Webb
  */
 public class WebSocketSessionChannel implements WritableByteChannel {
+
+	// FIXME consider if we want this and write tests.
 
 	private WebSocketSession session;
 
