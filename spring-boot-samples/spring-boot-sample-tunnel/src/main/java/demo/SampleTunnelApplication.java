@@ -21,7 +21,7 @@ import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerFilter;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.PortProvider;
 import org.springframework.boot.developertools.tunnel.todo.TunnelServerWebSocketHandler;
 import org.springframework.context.annotation.Bean;
@@ -71,8 +71,8 @@ public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
 	}
 
 	@Bean
-	public HttpTunnelServerFilter tunnelServerHttpFilter() {
-		return new HttpTunnelServerFilter(getDebugPortProvider());
+	public HttpTunnelFilter tunnelServerHttpFilter() {
+		return new HttpTunnelFilter(getDebugPortProvider());
 	}
 
 	public static void main(String[] args) {

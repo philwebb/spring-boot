@@ -34,7 +34,7 @@ public class Remote {
 	@SuppressWarnings("restriction")
 	private static void someCrap() throws Exception {
 
-		dump(sun.misc.VMSupport.getAgentProperties());
+		// dump(sun.misc.VMSupport.getAgentProperties());
 
 		// ApplicationPid pid = new ApplicationPid();
 		// // FIXME find jar
