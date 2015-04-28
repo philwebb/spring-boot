@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
@@ -57,11 +57,14 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	private final ClientHttpRequestFactory requestFactory;
 
+	private final Executor executor;
+
 	public HttpTunnelConnection(String url) {
-		this(url, new SimpleClientHttpRequestFactory());
+		this(url, new SimpleClientHttpRequestFactory(), null);
 	}
 
-	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory) {
+	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
+			Executor executor) {
 		Assert.notNull(url, "URL must not be null");
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
@@ -75,6 +78,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		this.requestFactory = requestFactory;
+		this.executor = (executor == null ? Executors
+				.newCachedThreadPool(new TunnelThreadFactory()) : executor);
 	}
 
 	@Override
@@ -102,9 +107,6 @@ public class HttpTunnelConnection implements TunnelConnection {
 		private boolean open = true;
 
 		private AtomicLong requestSeq = new AtomicLong();
-
-		private final ExecutorService executor = Executors
-				.newCachedThreadPool(new TunnelThreadFactory());
 
 		public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
 			this.forwarder = new HttpTunnelPayloadForwarder(incomingChannel);
@@ -136,7 +138,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 		}
 
 		private synchronized void openNewConnection(final HttpTunnelPayload payload) {
-			this.executor.execute(new Runnable() {
+			HttpTunnelConnection.this.executor.execute(new Runnable() {
 
 				@Override
 				public void run() {

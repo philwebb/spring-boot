@@ -26,6 +26,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.util.Assert;
 
 /**
@@ -35,7 +36,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class TunnelClient {
+public class TunnelClient implements SmartInitializingSingleton {
 
 	private static final int BUFFER_SIZE = 1024 * 10;
 
@@ -52,6 +53,18 @@ public class TunnelClient {
 		Assert.notNull(tunnelConnection, "TunnelConnection must not be null");
 		this.listenPort = listenPort;
 		this.tunnelConnection = tunnelConnection;
+	}
+
+	@Override
+	public void afterSingletonsInstantiated() {
+		if (this.serverThread == null) {
+			try {
+				start();
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
 	}
 
 	/**
@@ -73,6 +86,7 @@ public class TunnelClient {
 	 */
 	public synchronized void stop() throws IOException {
 		if (this.serverThread != null) {
+			logger.trace("Closing tunnel client on port " + this.listenPort);
 			this.serverThread.close();
 			try {
 				this.serverThread.join(2000);
@@ -130,6 +144,8 @@ public class TunnelClient {
 			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(
 					socketChannel, socketChannel);
 			try {
+				logger.trace("Accepted connection to tunnel client from "
+						+ socketChannel.getRemoteAddress());
 				while (true) {
 					ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					int amountRead = socketChannel.read(buffer);

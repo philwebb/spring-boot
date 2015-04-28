@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  * Utility class that forwards {@link HttpTunnelPayload} instances to a destination
- * channel respecting sequence order.
+ * channel, respecting sequence order.
  *
  * @author Phillip Webb
  * @since 1.3.0
