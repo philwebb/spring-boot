@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.developertools.tunnel.payload.HttpTunnelPayloadForwarder;
+import org.springframework.boot.livereload.tunnel.HexString;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpAsyncRequestControl;
@@ -237,13 +238,15 @@ public class HttpTunnelServer {
 				ByteBuffer data = HttpTunnelPayload.getPayloadData(this.targetServer);
 				synchronized (this.httpConnections) {
 					if (data != null) {
+						System.out.println("Getting for " + HexString.toString(data));
 						HttpConnection connection = getOrWaitForHttpConnection(DequeOperation.POLL_FIRST);
+						System.out.println("Got a connection");
 						HttpTunnelPayload payload = new HttpTunnelPayload(
 								this.responseSeq.incrementAndGet(), data);
 						connection.respond(payload);
 					}
 					closeStaleHttpConnections();
-					getOrWaitForHttpConnection(DequeOperation.PEEK_FIRST);
+					// getOrWaitForHttpConnection(DequeOperation.PEEK_FIRST);
 				}
 			}
 		}
@@ -252,6 +255,8 @@ public class HttpTunnelServer {
 			synchronized (this.httpConnections) {
 				HttpConnection httpConnection = operation.apply(this.httpConnections);
 				if (httpConnection == null) {
+					new Exception().printStackTrace();
+					System.out.println("Wait");
 					try {
 						this.httpConnections
 								.wait(HttpTunnelServer.this.disconnectTimeout);
@@ -315,6 +320,7 @@ public class HttpTunnelServer {
 							HttpStatus.TOO_MANY_REQUESTS);
 				}
 				this.httpConnections.addLast(httpConnection);
+				System.out.println("Notify");
 				this.httpConnections.notify();
 			}
 			forwardToTargetServer(httpConnection);

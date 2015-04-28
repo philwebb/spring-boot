@@ -73,7 +73,7 @@ public class HttpTunnelPayloadForwarderTests {
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Too many messages queued");
-		for (int i = 2; i < 13; i++) {
+		for (int i = 2; i < 130; i++) {
 			forwarder.forward(payload(i, "data" + i));
 		}
 	}

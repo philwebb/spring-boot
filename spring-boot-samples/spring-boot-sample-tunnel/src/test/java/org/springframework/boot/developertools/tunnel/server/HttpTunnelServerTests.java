@@ -149,6 +149,7 @@ public class HttpTunnelServerTests {
 		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
+		System.out.println("sending");
 		this.serverChannel.send("hello");
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
@@ -235,6 +236,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void httpConnectionsAreClosedAfterLongPollTimeout() throws Exception {
+		this.server.setDisconnectTimeout(200);
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
