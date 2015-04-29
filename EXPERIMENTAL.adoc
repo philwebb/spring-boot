@@ -1,0 +1,91 @@
+= Spring Boot Experimental Code
+
+This is an experimental branch of Spring Boot containing mad ideas and prototypes.
+
+== Building
+Since this branch shares a version number with published snapshots you'll need to build
+it locally. Remember that snapshots expire after 24 hours so build the project entirely
+before you try to use a specific sub-module.
+
+The quickest way to build is:
+
+[source,bash,indent=0]
+----
+	$ mvn clean install -DskipTests
+	$ mvn clean package -f spring-boot-samples/pom.xml -DskipTests
+----
+
+== Remote Debug via HTTP Tunnel
+The `spring-boot-developer-tools` contains auto-configuration for remote debug tunneling.
+See `spring-boot-sample-tunnel` for an example. To enable tunneling you need to add
+a dependency to the `spring-boot-developer-tools` project and set
+`spring.developertools.remote.enabled=true` in your `application.properties` file.
+
+You also need to start the remote app with the Java flags
+`-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n`
+
+For Cloud Foundry use the following `manifest.yml`:
+
+[source,yaml,indent=0]
+----
+	---
+	  env:
+	    JAVA_OPTS: "-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n"
+----
+
+For Cloud Foundry apps you also need to disable fully executable JARs:
+
+[source,xml,indent=0]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>demo.SampleTunnelApplication</mainClass>
+					<executable>false</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Once your app is pushed and running you need to start the local side of the tunnel. To
+do that you need to have the project imported into your IDE. Edit the `run` configuration
+of your project so that it uses the project classpath but runs the class
+`org.springframework.boot.developertools.remote.RemoteSpringApplication`. The first
+argument of the app needs to be the remote endpoint. For example in eclipse to run the
+remote connection for `spring-boot-sample-tunnel`:
+
+* Import the project (as a Maven project)
+* Select `Run`, `Run configurations...`
+* Click the `New` button
+* Browse for the `spring-boot-sample-tunnel` project
+* Type `org.springframework.boot.developertools.remote.RemoteSpringApplication` as the
+  main class
+* In the `Arguments` tab add the remote url to the `Program Arguemnts`
+  (e.g. `http://myapp.cfapps.io`)
+
+If you run the app you should see the following:
+
+[indent=0]
+----
+	  .   ____          _                                              __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` |        | _ \___ _ __  ___| |_ ___ \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| []::::::[]   / -_) '  \/ _ \  _/ -_) ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, |        |_|_\___|_|_|_\___/\__\___|/ / / /
+	 =========|_|==============|___/===================================/_/_/_/
+	 :: Spring Boot Remote ::
+
+	2015-04-29 09:49:55.465  INFO 41679 --- [           main] o.s.b.d.remote.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 41679 (/Users/pwebb/projects/spring-boot/code/spring-boot-developer-tools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code/spring-boot-samples/spring-boot-sample-tunnel)
+	2015-04-29 09:49:55.498  INFO 41679 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@49fc609f: startup date [Wed Apr 29 09:49:55 PDT 2015]; root of context hierarchy
+	2015-04-29 09:49:55.867  INFO 41679 --- [           main] o.s.b.d.remote.RemoteSpringApplication   : Started RemoteSpringApplication in 0.657 seconds (JVM running for 1.006)
+----
+
+Now you can attach a remote debugger to `localhost` port `8000` and it should forward
+traffic via HTTP to the remote server.
+
+
+
