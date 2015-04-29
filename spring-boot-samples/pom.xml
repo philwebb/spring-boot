@@ -63,7 +63,6 @@
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-testng</module>
 		<module>spring-boot-sample-tomcat</module>
-		<module>spring-boot-tomcat-include</module>
 		<module>spring-boot-sample-tomcat-jsp</module>
 		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>

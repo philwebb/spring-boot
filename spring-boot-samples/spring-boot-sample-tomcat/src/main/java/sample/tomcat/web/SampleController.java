@@ -16,8 +16,6 @@
 
 package sample.tomcat.web;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,13 +32,7 @@ public class SampleController {
 	@RequestMapping("/")
 	@ResponseBody
 	public String helloWorld() {
-		return this.helloWorldService.getHelloMessage() + " " + new Date().getTime();
+		return this.helloWorldService.getHelloMessage();
 	}
-
-	// @RequestMapping("/greet")
-	// @ResponseBody
-	// public String greet() {
-	// return "hey!";
-	// }
 
 }
