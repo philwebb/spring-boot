@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package io.spring.boot;
-
 /**
- * @author pwebb
+ * Provides developer tools for a remote Spring Boot application.
  */
-public class BootRemote {
+package org.springframework.boot.developertools.remote;
 
-}

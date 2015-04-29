@@ -16,64 +16,12 @@
 
 package demo;
 
-import java.util.Collections;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
-import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
-import org.springframework.boot.developertools.tunnel.server.PortProvider;
-import org.springframework.boot.developertools.tunnel.todo.TunnelServerWebSocketHandler;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;
 
 @SpringBootApplication
 public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
-
-	@Bean
-	public SimpleUrlHandlerMapping handlerMapping() {
-		SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-		mapping.setOrder(Integer.MIN_VALUE + 1);
-		mapping.setUrlMap(Collections.singletonMap("/tunnel",
-				websocketTunnelHttpRequestHandler()));
-		return mapping;
-	}
-
-	@SuppressWarnings("restriction")
-	private PortProvider getDebugPortProvider() {
-		return new PortProvider() {
-			@Override
-			public int getPort() {
-				if (false) {
-					return 5000;
-				}
-				String property = sun.misc.VMSupport.getAgentProperties().getProperty(
-						"sun.jdwp.listenerAddress");
-				if (property == null) {
-					return -1;
-				}
-				System.out.println(property);
-				return Integer.valueOf(property.split(":")[1]);
-			}
-		};
-	}
-
-	@Bean
-	public WebSocketHttpRequestHandler websocketTunnelHttpRequestHandler() {
-		return new WebSocketHttpRequestHandler(tunnelWebSocketHandler());
-	}
-
-	@Bean
-	public TunnelServerWebSocketHandler tunnelWebSocketHandler() {
-		int port = getDebugPortProvider().getPort();
-		return new TunnelServerWebSocketHandler(port);
-	}
-
-	@Bean
-	public HttpTunnelFilter tunnelServerHttpFilter() {
-		return new HttpTunnelFilter(getDebugPortProvider());
-	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleTunnelApplication.class, args);
