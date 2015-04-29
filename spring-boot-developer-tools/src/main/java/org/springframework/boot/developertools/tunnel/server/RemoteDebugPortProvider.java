@@ -18,6 +18,7 @@ package org.springframework.boot.developertools.tunnel.server;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.lang.UsesUnsafeJava;
 import org.springframework.util.Assert;
 
 /**
@@ -39,6 +40,7 @@ public class RemoteDebugPortProvider implements PortProvider {
 		return getRemoteDebugPort() != -1;
 	}
 
+	@UsesUnsafeJava
 	@SuppressWarnings("restriction")
 	private static int getRemoteDebugPort() {
 		String property = sun.misc.VMSupport.getAgentProperties().getProperty(

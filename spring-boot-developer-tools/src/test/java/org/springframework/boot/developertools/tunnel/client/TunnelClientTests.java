@@ -109,9 +109,12 @@ public class TunnelClientTests {
 		TunnelClientListener listener = mock(TunnelClientListener.class);
 		client.addListener(listener);
 		client.start();
-		SocketChannel.open(new InetSocketAddress(this.listenPort));
+		SocketChannel channel = SocketChannel
+				.open(new InetSocketAddress(this.listenPort));
+		channel.close();
+		client.getServerThread().stopAcceptingConnections();
+		client.getServerThread().join(2000);
 		verify(listener).onOpen(any(SocketChannel.class));
-		client.stop();
 		verify(listener).onClose(any(SocketChannel.class));
 	}
 

@@ -77,7 +77,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 	public synchronized void start() throws IOException {
 		Assert.state(this.serverThread == null, "Server already started");
 		ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		serverSocketChannel.bind(new InetSocketAddress(this.listenPort));
+		serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
 		logger.trace("Listening for TCP traffic to tunnel on port " + this.listenPort);
 		this.serverThread = new ServerThread(serverSocketChannel);
 		this.serverThread.start();
@@ -158,7 +158,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
 			try {
 				logger.trace("Accepted connection to tunnel client from "
-						+ socketChannel.getRemoteAddress());
+						+ socketChannel.socket().getRemoteSocketAddress());
 				while (true) {
 					ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					int amountRead = socketChannel.read(buffer);
@@ -189,15 +189,19 @@ public class TunnelClient implements SmartInitializingSingleton {
 
 		private final SocketChannel socketChannel;
 
+		private boolean closed = false;
+
 		public SocketCloseable(SocketChannel socketChannel) {
 			this.socketChannel = socketChannel;
 		}
 
 		@Override
 		public void close() throws IOException {
-			this.socketChannel.close();
-			TunnelClient.this.listeners.fireCloseEvent(this.socketChannel);
+			if (!this.closed) {
+				this.socketChannel.close();
+				TunnelClient.this.listeners.fireCloseEvent(this.socketChannel);
+				this.closed = true;
+			}
 		}
-
 	}
 }
