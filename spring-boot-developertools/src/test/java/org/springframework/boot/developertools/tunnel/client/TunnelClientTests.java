@@ -32,6 +32,9 @@ import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TunnelClient}.
@@ -98,6 +101,18 @@ public class TunnelClientTests {
 		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
 		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
 		assertThat(channel.read(ByteBuffer.allocate(1)), equalTo(-1));
+	}
+
+	@Test
+	public void addListener() throws Exception {
+		TunnelClient client = new TunnelClient(this.listenPort, this.tunnelConnection);
+		TunnelClientListener listener = mock(TunnelClientListener.class);
+		client.addListener(listener);
+		client.start();
+		SocketChannel.open(new InetSocketAddress(this.listenPort));
+		verify(listener).onOpen(any(SocketChannel.class));
+		client.stop();
+		verify(listener).onClose(any(SocketChannel.class));
 	}
 
 	private static class MockTunnelConnection implements TunnelConnection {

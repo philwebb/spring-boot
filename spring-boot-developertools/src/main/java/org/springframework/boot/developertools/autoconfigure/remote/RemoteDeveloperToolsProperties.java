@@ -58,9 +58,11 @@ public class RemoteDeveloperToolsProperties {
 
 	public static class Debug {
 
+		public static final Integer DEFAULT_LOCAL_PORT = 8000;
+
 		private boolean enabled = true;
 
-		private int localPort = 8000;
+		private int localPort = DEFAULT_LOCAL_PORT;
 
 		public boolean getEnabled() {
 			return this.enabled;

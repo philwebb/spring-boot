@@ -16,6 +16,7 @@
 
 package org.springframework.boot.developertools.tunnel.client;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -45,6 +46,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 	private final int listenPort;
 
 	private final TunnelConnection tunnelConnection;
+
+	private TunnelClientListeners listeners = new TunnelClientListeners();
 
 	private ServerThread serverThread;
 
@@ -101,6 +104,14 @@ public class TunnelClient implements SmartInitializingSingleton {
 		return this.serverThread;
 	}
 
+	public void addListener(TunnelClientListener listener) {
+		this.listeners.addListener(listener);
+	}
+
+	public void removeListener(TunnelClientListener listener) {
+		this.listeners.removeListener(listener);
+	}
+
 	/**
 	 * The main server thread.
 	 */
@@ -141,8 +152,10 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 
 		private void handleConnection(SocketChannel socketChannel) throws Exception {
+			Closeable closeable = new SocketCloseable(socketChannel);
 			WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(
-					socketChannel, socketChannel);
+					socketChannel, closeable);
+			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
 			try {
 				logger.trace("Accepted connection to tunnel client from "
 						+ socketChannel.getRemoteAddress());
@@ -169,4 +182,22 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 	}
 
+	/**
+	 * {@link Closeable} used to close a {@link SocketChannel} and fire an event.
+	 */
+	private class SocketCloseable implements Closeable {
+
+		private final SocketChannel socketChannel;
+
+		public SocketCloseable(SocketChannel socketChannel) {
+			this.socketChannel = socketChannel;
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.socketChannel.close();
+			TunnelClient.this.listeners.fireCloseEvent(this.socketChannel);
+		}
+
+	}
 }
