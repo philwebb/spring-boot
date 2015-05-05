@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
 /**
- * Launcher to start the application and possible restart it later.
+ * Launcher to start the application and possibly restart it later.
  *
  * @author Phillip Webb
  * @author Andy Clement
