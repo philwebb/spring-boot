@@ -58,6 +58,12 @@ public abstract class Launcher {
 		try {
 			JarFile.registerUrlProtocolHandler();
 			ClassLoader classLoader = createClassLoader(getClassPathArchives());
+			if (classLoader instanceof RestartableClassLoader) {
+				RestartableClassLoader restartableClassLoader = (RestartableClassLoader) classLoader;
+				Thread thread = createRunnerThread(args, getClass().getName(), getClass()
+						.getClassLoader());
+				restartableClassLoader.setRestarter(new LauncherRestarter(thread));
+			}
 			launch(args, getMainClass(), classLoader);
 		}
 		catch (Exception ex) {
@@ -101,11 +107,16 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
+		createRunnerThread(args, mainClass, classLoader).start();
+	}
+
+	private Thread createRunnerThread(String[] args, String mainClass,
+			ClassLoader classLoader) throws Exception {
 		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
 		Thread runnerThread = new Thread(runner);
 		runnerThread.setContextClassLoader(classLoader);
 		runnerThread.setName(Thread.currentThread().getName());
-		runnerThread.start();
+		return runnerThread;
 	}
 
 	/**
@@ -152,6 +163,32 @@ public abstract class Launcher {
 					"Unable to determine code source archive from " + root);
 		}
 		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
+	}
+
+	private static class LauncherRestarter implements Restarter {
+
+		private final Thread thread;
+
+		public LauncherRestarter(Thread thread) {
+			this.thread = thread;
+		}
+
+		@Override
+		public void restart() {
+			try {
+				this.thread.start();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			super.finalize();
+			System.out.println("GC the restarter");
+		}
+
 	}
 
 }

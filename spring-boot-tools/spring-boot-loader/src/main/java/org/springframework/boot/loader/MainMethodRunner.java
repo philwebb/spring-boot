@@ -43,8 +43,11 @@ public class MainMethodRunner implements Runnable {
 	@Override
 	public void run() {
 		try {
+			System.gc();
 			Class<?> mainClass = Thread.currentThread().getContextClassLoader()
 					.loadClass(this.mainClassName);
+			System.out.println("Starting " + this.mainClassName + " with CL "
+					+ mainClass.getClassLoader());
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 			if (mainMethod == null) {
 				throw new IllegalStateException(this.mainClassName

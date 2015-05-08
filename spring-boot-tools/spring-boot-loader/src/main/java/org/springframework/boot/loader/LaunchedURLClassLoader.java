@@ -35,11 +35,14 @@ import org.springframework.lang.UsesJava7;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class LaunchedURLClassLoader extends URLClassLoader {
+public class LaunchedURLClassLoader extends URLClassLoader implements
+		RestartableClassLoader {
 
 	private static LockProvider LOCK_PROVIDER = setupLockProvider();
 
 	private final ClassLoader rootClassLoader;
+
+	private Restarter restarter;
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
@@ -49,6 +52,32 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.rootClassLoader = findRootClassLoader(parent);
+	}
+
+	@Override
+	public void setRestarter(Restarter restarter) {
+		this.restarter = restarter;
+	}
+
+	@Override
+	public void restart() {
+		if (this.restarter == null) {
+			throw new IllegalStateException("Unable to restart");
+		}
+		try {
+			close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.restarter.restart();
+	}
+
+	//
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		System.out.println("************************************************* FINALIZE");
 	}
 
 	private ClassLoader findRootClassLoader(ClassLoader classLoader) {
