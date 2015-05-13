@@ -269,67 +269,14 @@ public class SpringApplication {
 		if (this.useReloader) {
 			Reloader.apply(args);
 		}
-
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
-
-		System.setProperty(
-				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
-						Boolean.toString(this.headless)));
-
-		Collection<SpringApplicationRunListener> runListeners = getRunListeners(args);
-		for (SpringApplicationRunListener runListener : runListeners) {
-			runListener.started();
-		}
-
+		configureHeadlessProperty();
+		SpringApplicationRunListeners listeners = getRunListeners(args);
+		listeners.started();
 		try {
-			// Create and configure the environment
-			ConfigurableEnvironment environment = getOrCreateEnvironment();
-			configureEnvironment(environment, args);
-			for (SpringApplicationRunListener runListener : runListeners) {
-				runListener.environmentPrepared(environment);
-			}
-			if (this.showBanner) {
-				printBanner(environment);
-			}
-
-			// Create, load, refresh and run the ApplicationContext
-			context = createApplicationContext();
-			if (this.registerShutdownHook) {
-				try {
-					context.registerShutdownHook();
-				}
-				catch (AccessControlException ex) {
-					// Not allowed in some environments.
-				}
-			}
-			context.setEnvironment(environment);
-			postProcessApplicationContext(context);
-			applyInitializers(context);
-			for (SpringApplicationRunListener runListener : runListeners) {
-				runListener.contextPrepared(context);
-			}
-			if (this.logStartupInfo) {
-				logStartupInfo(context.getParent() == null);
-			}
-
-			// Load the sources
-			Set<Object> sources = getSources();
-			Assert.notEmpty(sources, "Sources must not be empty");
-			load(context, sources.toArray(new Object[sources.size()]));
-			for (SpringApplicationRunListener runListener : runListeners) {
-				runListener.contextLoaded(context);
-			}
-
-			// Refresh the context
-			refresh(context);
-			afterRefresh(context, args);
-			for (SpringApplicationRunListener runListener : runListeners) {
-				runListener.finished(context, null);
-			}
-
+			context = doRun(listeners, args);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(
@@ -339,9 +286,7 @@ public class SpringApplication {
 		}
 		catch (Throwable ex) {
 			try {
-				for (SpringApplicationRunListener runListener : runListeners) {
-					finishWithException(runListener, context, ex);
-				}
+				listeners.finished(context, ex);
 				this.log.error("Application startup failed", ex);
 			}
 			finally {
@@ -354,11 +299,64 @@ public class SpringApplication {
 		}
 	}
 
-	private Collection<SpringApplicationRunListener> getRunListeners(String[] args) {
-		List<SpringApplicationRunListener> listeners = new ArrayList<SpringApplicationRunListener>();
-		listeners.addAll(getSpringFactoriesInstances(SpringApplicationRunListener.class,
-				new Class<?>[] { SpringApplication.class, String[].class }, this, args));
-		return listeners;
+	/**
+	 * @param listeners
+	 * @param args
+	 * @return
+	 */
+	private ConfigurableApplicationContext doRun(SpringApplicationRunListeners listeners,
+			String... args) {
+		ConfigurableApplicationContext context;
+		// Create and configure the environment
+		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		configureEnvironment(environment, args);
+		listeners.environmentPrepared(environment);
+		if (this.showBanner) {
+			printBanner(environment);
+		}
+
+		// Create, load, refresh and run the ApplicationContext
+		context = createApplicationContext();
+		if (this.registerShutdownHook) {
+			try {
+				context.registerShutdownHook();
+			}
+			catch (AccessControlException ex) {
+				// Not allowed in some environments.
+			}
+		}
+		context.setEnvironment(environment);
+		postProcessApplicationContext(context);
+		applyInitializers(context);
+		listeners.contextPrepared(context);
+		if (this.logStartupInfo) {
+			logStartupInfo(context.getParent() == null);
+		}
+
+		// Load the sources
+		Set<Object> sources = getSources();
+		Assert.notEmpty(sources, "Sources must not be empty");
+		load(context, sources.toArray(new Object[sources.size()]));
+		listeners.contextLoaded(context);
+
+		// Refresh the context
+		refresh(context);
+		afterRefresh(context, args);
+		listeners.finished(context, null);
+		return context;
+	}
+
+	private void configureHeadlessProperty() {
+		System.setProperty(
+				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
+				System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS,
+						Boolean.toString(this.headless)));
+	}
+
+	private SpringApplicationRunListeners getRunListeners(String[] args) {
+		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
+		return new SpringApplicationRunListeners(this.log, getSpringFactoriesInstances(
+				SpringApplicationRunListener.class, types, this, args));
 	}
 
 	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
@@ -686,23 +684,6 @@ public class SpringApplication {
 
 	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
 		runCommandLineRunners(context, args);
-	}
-
-	private void finishWithException(SpringApplicationRunListener runListener,
-			ConfigurableApplicationContext context, Throwable exception) {
-		try {
-			runListener.finished(context, exception);
-		}
-		catch (Exception ex) {
-			if (this.log.isDebugEnabled()) {
-				this.log.error("Error handling failed", ex);
-			}
-			else {
-				String message = ex.getMessage();
-				message = (message == null ? "no error message" : message);
-				this.log.warn("Error handling failed (" + message + ")");
-			}
-		}
 	}
 
 	/**
