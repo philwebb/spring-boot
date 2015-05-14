@@ -18,21 +18,22 @@ package org.springframework.boot.developertools.filewatch;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
  * A collections of files from a specific source folder that have changed.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  * @see FileChangeListener
+ * @see ChangedFiles
  */
-public final class ChangedFiles {
+public final class ChangedFiles implements Iterable<ChangedFile> {
 
 	private final File sourceFolder;
 
 	private final Set<ChangedFile> files;
-
-	private Set<String> relativeNames;
 
 	public ChangedFiles(File sourceFolder, Set<ChangedFile> files) {
 		this.sourceFolder = sourceFolder;
@@ -47,6 +48,11 @@ public final class ChangedFiles {
 		return this.sourceFolder;
 	}
 
+	@Override
+	public Iterator<ChangedFile> iterator() {
+		return getFiles().iterator();
+	}
+
 	/**
 	 * The files that have been changed.
 	 * @return the changed files
@@ -54,24 +60,6 @@ public final class ChangedFiles {
 	public Set<ChangedFile> getFiles() {
 		return this.files;
 	}
-
-	// FIXME
-	// /**
-	// * The files names relative to the source folder.
-	// * @return the relative names
-	// */
-	// public Set<String> getRelativeFileNames() {
-	// if (this.relativeNames == null) {
-	// Set<String> relativeNames = new LinkedHashSet<String>();
-	// String sourcePath = this.sourceFolder.getAbsoluteFile().getPath();
-	// for (File file : this.files) {
-	// relativeNames.add(file.getAbsoluteFile().getPath()
-	// .substring(sourcePath.length() + 1));
-	// }
-	// this.relativeNames = Collections.unmodifiableSet(relativeNames);
-	// }
-	// return this.relativeNames;
-	// }
 
 	@Override
 	public int hashCode() {

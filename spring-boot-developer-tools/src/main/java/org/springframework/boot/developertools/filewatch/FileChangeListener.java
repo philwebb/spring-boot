@@ -23,6 +23,7 @@ import java.util.Set;
  *
  * @author Andy Clement
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public interface FileChangeListener {
 

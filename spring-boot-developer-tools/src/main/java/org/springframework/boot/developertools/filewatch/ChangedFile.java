@@ -24,6 +24,8 @@ import org.springframework.util.Assert;
  * A single file that has changed.
  *
  * @author Phillip Webb
+ * @since 1.3.0
+ * @see ChangedFiles
  */
 public final class ChangedFile {
 

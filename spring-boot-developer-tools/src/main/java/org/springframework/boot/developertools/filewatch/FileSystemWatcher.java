@@ -17,10 +17,7 @@
 package org.springframework.boot.developertools.filewatch;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -28,196 +25,144 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.developertools.filewatch.ChangedFile.Type;
+import org.springframework.util.Assert;
 
 /**
  * Watches specific folders for file changes.
  *
  * @author Andy Clement
  * @author Phillip Webb
+ * @see FileChangeListener
+ * @since 1.3.0
  */
 public class FileSystemWatcher {
 
-	private static final org.apache.commons.logging.Log logger = LogFactory
-			.getLog(FileSystemWatcher.class);
+	private static final long DEFAULT_IDLE_TIME = 1000;
 
-	// Timings should account for the fact that some file systems only support second
-	// granularity
+	private static final long DEFAULT_QUIET_TIME = 200;
 
-	private static final long IDLE_TIME = 1000;
+	private List<FileChangeListener> listeners = new ArrayList<FileChangeListener>();
 
-	private static final long QUIET_TIME = 200;
+	private final boolean daemon;
 
-	private static final Set<String> DOT_FOLDERS = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(".", "..")));
+	private final long idleTime;
 
-	private final List<FileChangeListener> listeners = new ArrayList<FileChangeListener>();
+	private final long quietTime;
 
-	private final Set<File> sourceFolders = new LinkedHashSet<File>();
+	private Thread watchThread;
 
-	private long modifiedAfterTime;
+	private volatile boolean running = true;
 
-	/**
-	 * Create a new {@link FileSystemWatcher} instance.
-	 * @param listeners {@link FileChangeListener}s to be added
-	 */
-	public FileSystemWatcher(FileChangeListener... listeners) {
-		this(true, listeners);
+	private Map<File, FolderSnapshot> folders = new LinkedHashMap<File, FolderSnapshot>();
+
+	public FileSystemWatcher() {
+		this(true, DEFAULT_IDLE_TIME, DEFAULT_QUIET_TIME);
 	}
 
-	/**
-	 * Create a new {@link FileSystemWatcher} instance.
-	 * @param daemon if a daemon thread should be used to watch for changes
-	 * @param listeners {@link FileChangeListener}s to be added
-	 */
-	public FileSystemWatcher(boolean daemon, FileChangeListener... listeners) {
-		this(System.currentTimeMillis() + 800, daemon, listeners);
+	public FileSystemWatcher(boolean daemon, long idleTime, long quietTime) {
+		this.daemon = daemon;
+		this.idleTime = idleTime;
+		this.quietTime = quietTime;
 	}
 
-	/**
-	 * Create a new {@link FileSystemWatcher} for testing.
-	 * @param daemon if a daemon thread should be used to watch for changes
-	 * @param modifiedAfterTime the time that files must have been modified after
-	 * @param listeners {@link FileChangeListener}s to be added
-	 */
-	protected FileSystemWatcher(long modifiedAfterTime, boolean daemon,
-			FileChangeListener... listeners) {
-		this.modifiedAfterTime = modifiedAfterTime;
-		for (FileChangeListener listener : listeners) {
-			addListener(listener);
+	public synchronized void addListener(FileChangeListener fileChangeListener) {
+		Assert.notNull(fileChangeListener, "FileChangeListener must not be null");
+		checkNotStarted();
+		this.listeners.add(fileChangeListener);
+	}
+
+	public synchronized void addSourceFolder(File folder) {
+		Assert.notNull(folder, "Folder must not be null");
+		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
+		checkNotStarted();
+		this.folders.put(folder, null);
+	}
+
+	private void checkNotStarted() {
+		Assert.state(this.watchThread == null, "FileSystemWatcher already started");
+	}
+
+	public synchronized void start() {
+		saveInitalSnapshots();
+		if (this.watchThread == null) {
+			this.watchThread = new Thread() {
+				@Override
+				public void run() {
+					while (FileSystemWatcher.this.running) {
+						try {
+							scan();
+						}
+						catch (InterruptedException ex) {
+						}
+					}
+				};
+			};
+			this.watchThread.setName("File Watcher");
+			this.watchThread.setDaemon(this.daemon);
+			this.running = true;
+			this.watchThread.start();
 		}
-		Thread watchThread = new Thread() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						scan();
-					}
-					catch (InterruptedException ex) {
-					}
-				}
-			}
-		};
-		watchThread.setDaemon(daemon);
-		watchThread.setName("File Watcher");
-		watchThread.start();
+	}
+
+	private void saveInitalSnapshots() {
+		for (File folder : this.folders.keySet()) {
+			this.folders.put(folder, new FolderSnapshot(folder));
+		}
 	}
 
 	private void scan() throws InterruptedException {
-		Thread.sleep(IDLE_TIME - QUIET_TIME);
-		Scanner scanner = new Scanner();
-		synchronized (this) {
-			final long after = this.modifiedAfterTime;
-			boolean found;
-			do {
-				Thread.sleep(QUIET_TIME);
-				final long before = System.currentTimeMillis();
-				found = false;
-				for (File sourceFolder : this.sourceFolders) {
-					found |= scanner.scan(sourceFolder, new FileFilter() {
-						@Override
-						public boolean accept(File file) {
-							return (file.isFile() && ((file.lastModified() > after) && (file
-									.lastModified() <= before)));
-						}
-					});
-				}
-				if (!found && scanner.hasChanges()) {
-					this.modifiedAfterTime = before;
-				}
-			}
-			while (found);
-			scanner.fireListeners(this.listeners);
+		Thread.sleep(this.idleTime - this.quietTime);
+		Set<FolderSnapshot> previous;
+		Set<FolderSnapshot> current = new HashSet<FolderSnapshot>(this.folders.values());
+		do {
+			previous = current;
+			current = getCurrentSnapshots();
+			Thread.sleep(this.quietTime);
 		}
-	};
-
-	/**
-	 * Add a source folder to be monitored.
-	 * @param sourceFolder the folder to monitor
-	 */
-	public synchronized void addSourceFolder(File sourceFolder) {
-		if (sourceFolder == null || !sourceFolder.isDirectory()) {
-			throw new IllegalArgumentException("source must be a folder");
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Watching " + sourceFolder + " for changes");
-		}
-		this.sourceFolders.add(sourceFolder);
+		while (!previous.equals(current));
+		updateSnapshots(current);
 	}
 
-	/**
-	 * Add a {@link FileChangeListener} that will be informed when files change
-	 * @param listener the {@link FileChangeListener}
-	 */
-	public void addListener(FileChangeListener listener) {
-		this.listeners.add(listener);
+	private Set<FolderSnapshot> getCurrentSnapshots() {
+		Set<FolderSnapshot> snapshots = new LinkedHashSet<FolderSnapshot>();
+		for (File folder : this.folders.keySet()) {
+			snapshots.add(new FolderSnapshot(folder));
+		}
+		return snapshots;
 	}
 
-	/**
-	 * Tracks files that have changed.
-	 */
-	private static class Scanner {
-
-		private final Map<File, Set<File>> changed = new LinkedHashMap<File, Set<File>>();
-
-		public boolean scan(File sourceFolder, FileFilter filter) {
-			Set<File> files = this.changed.get(sourceFolder);
-			if (files == null) {
-				files = new LinkedHashSet<File>();
-				this.changed.put(sourceFolder, files);
-			}
-			return collectFilesRecursively(sourceFolder, filter, files);
-		}
-
-		private boolean collectFilesRecursively(File folder, FileFilter filter,
-				Set<File> files) {
-			boolean result = false;
-			File[] children = folder.listFiles();
-			if (children != null) {
-				for (File child : children) {
-					if (filter.accept(child)) {
-						result |= files.add(child);
-					}
-					if (child.isDirectory() && !DOT_FOLDERS.contains(child.getName())) {
-						result |= collectFilesRecursively(child, filter, files);
-					}
-				}
-			}
-			return result;
-		}
-
-		public void fireListeners(List<FileChangeListener> listeners) {
-			if (hasChanges()) {
-				Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
-				for (final Map.Entry<File, Set<File>> entry : this.changed.entrySet()) {
-					if (!entry.getValue().isEmpty()) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Detected changes in " + entry.getKey() + " : "
-									+ entry.getValue());
-						}
-						Set<ChangedFile> files = new LinkedHashSet<ChangedFile>();
-						for (File file : entry.getValue()) {
-							files.add(new ChangedFile(file, Type.MODIFY));
-						}
-						changeSet.add(new ChangedFiles(entry.getKey(), files));
-					}
-				}
-				for (FileChangeListener listener : listeners) {
-					listener.onChange(changeSet);
-				}
+	private void updateSnapshots(Set<FolderSnapshot> snapshots) {
+		Map<File, FolderSnapshot> updated = new LinkedHashMap<File, FolderSnapshot>();
+		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
+		for (FolderSnapshot snapshot : snapshots) {
+			FolderSnapshot previous = this.folders.get(snapshot.getFolder());
+			updated.put(snapshot.getFolder(), snapshot);
+			ChangedFiles changedFiles = previous.getChangedFiles(snapshot);
+			if (!changedFiles.getFiles().isEmpty()) {
+				changeSet.add(changedFiles);
 			}
 		}
-
-		private boolean hasChanges() {
-			for (Set<File> files : this.changed.values()) {
-				if (!files.isEmpty()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
+		fireListeners(changeSet);
+		this.folders = updated;
 	}
 
+	private void fireListeners(Set<ChangedFiles> changeSet) {
+		for (FileChangeListener listener : this.listeners) {
+			listener.onChange(changeSet);
+		}
+	}
+
+	public synchronized void stop() {
+		Thread thread = this.watchThread;
+		if (thread != null) {
+			this.running = false;
+			try {
+				thread.join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			this.watchThread = null;
+		}
+	}
 }
