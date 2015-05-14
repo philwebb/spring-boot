@@ -23,30 +23,28 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;
+import org.springframework.boot.developertools.tunnel.server.SecuredServerHttpRequestMatcher;
+import org.springframework.boot.developertools.tunnel.server.ServerHttpRequestMatcher;
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for remote development support.
  *
  * @author Phillip Webb
+ * @author Rob Winch
+ * @since 1.3.0
  */
 @Configuration
-@ConditionalOnProperty(prefix = "spring.developertools.remote", name = "enabled")
+@ConditionalOnProperty(prefix = "spring.developertools.remote", name = "secret")
 @EnableConfigurationProperties(RemoteDeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
 
@@ -57,7 +55,6 @@ public class RemoteDeveloperToolsAutoConfiguration {
 	 * Configuration for remote debug HTTP tunneling.
 	 */
 	@ConditionalOnClass(Filter.class)
-	@Conditional(RemoteDebugCondition.class)
 	@ConditionalOnProperty(prefix = "spring.developertools.remote.debug", name = "enabled", matchIfMissing = true)
 	static class RemoteDebugTunnelConfiguration {
 
@@ -72,27 +69,22 @@ public class RemoteDeveloperToolsAutoConfiguration {
 		}
 
 		@Bean
-		public HttpTunnelFilter remoteDebugHttpTunnelFilter(
+		@ConditionalOnMissingBean(name = "remoteDebugServerHttpRequestMatcher")
+		public ServerHttpRequestMatcher remoteDebugServerHttpRequestMatcher() {
+			String url = this.properties.getContextPath() + "/debug";
+			logger.info("Listening for remote debug traffic on " + url);
+			String secret = this.properties.getSecret();
+			String secretHeader = this.properties.getSecretHeaderName();
+			return new SecuredServerHttpRequestMatcher(url, secretHeader, secret);
+		}
+
+
+		@Bean
+		public HttpTunnelFilter remoteDebugHttpTunnelFilter(@Qualifier("remoteDebugServerHttpRequestMatcher") ServerHttpRequestMatcher matcher,
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
 			String url = this.properties.getContextPath() + "/debug";
 			logger.info("Listening for remote debug traffic on " + url);
-			return new HttpTunnelFilter(url, server);
-		}
-
-	}
-
-	/**
-	 * {@link Condition} to check if the application was started with remote debug.
-	 */
-	private static class RemoteDebugCondition extends SpringBootCondition {
-
-		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			if (RemoteDebugPortProvider.isRemoteDebugRunning()) {
-				return ConditionOutcome.match("Remote Debug running");
-			}
-			return ConditionOutcome.noMatch("Remote debug not running");
+			return new HttpTunnelFilter(matcher, server);
 		}
 
 	}

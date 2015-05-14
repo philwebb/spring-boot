@@ -39,7 +39,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -57,6 +59,9 @@ public class HttpTunnelFilterTests {
 	private HttpTunnelServer server;
 
 	@Mock
+	private ServerHttpRequestMatcher matcher;
+
+	@Mock
 	private FilterChain chain;
 
 	@Captor
@@ -70,35 +75,21 @@ public class HttpTunnelFilterTests {
 	@Before
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		this.filter = new HttpTunnelFilter("/tunnel", this.server);
+		this.filter = new HttpTunnelFilter(matcher, this.server);
 	}
 
 	@Test
-	public void urlMustNotBeNull() throws Exception {
+	public void matcherMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must not be null");
+		this.thrown.expectMessage("matcher must not be null");
 		new HttpTunnelFilter(null, this.server);
-	}
-
-	@Test
-	public void urlMustNotBeEmpty() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must not be empty");
-		new HttpTunnelFilter("", mock(HttpTunnelServer.class));
-	}
-
-	@Test
-	public void urlMustStartWithSlash() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must start with '/'");
-		new HttpTunnelFilter("tunnel", mock(HttpTunnelServer.class));
 	}
 
 	@Test
 	public void serverMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Server must not be null");
-		new HttpTunnelFilter("/tunnel", null);
+		new HttpTunnelFilter(matcher, null);
 	}
 
 	@Test
@@ -123,6 +114,7 @@ public class HttpTunnelFilterTests {
 	public void handleUrl() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/tunnel");
 		HttpServletResponse response = new MockHttpServletResponse();
+		when(matcher.matches(any(ServletServerHttpRequest.class))).thenReturn(true);
 		this.filter.doFilter(request, response, this.chain);
 		verify(this.server).handle(this.requestCaptor.capture(),
 				this.responseCaptor.capture());

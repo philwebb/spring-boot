@@ -19,7 +19,7 @@ The quickest way to build is:
 The `spring-boot-developer-tools` contains auto-configuration for remote debug tunneling.
 See `spring-boot-sample-tunnel` for an example. To enable tunneling you need to add
 a dependency to the `spring-boot-developer-tools` project and set
-`spring.developertools.remote.enabled=true` in your `application.properties` file.
+`spring.developertools.remote.secret=somesecret` in your `application.properties` file.
 
 You also need to start the remote app with the Java flags
 `-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n`

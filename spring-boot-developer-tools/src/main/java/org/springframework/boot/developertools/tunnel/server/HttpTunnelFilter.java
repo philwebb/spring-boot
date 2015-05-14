@@ -27,6 +27,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.util.Assert;
@@ -35,20 +37,18 @@ import org.springframework.util.Assert;
  * Servlet Filter that delegates to a {@link HttpTunnelServer}.
  *
  * @author Phillip Webb
+ * @author Rob Winch
  * @since 1.3.0
  */
 public class HttpTunnelFilter implements Filter {
-
-	private final String url;
+	private final ServerHttpRequestMatcher matcher;
 
 	private final HttpTunnelServer server;
 
-	public HttpTunnelFilter(String url, HttpTunnelServer server) {
-		Assert.notNull(url, "URL must not be null");
-		Assert.hasLength(url, "URL must not be empty");
-		Assert.isTrue(url.startsWith("/"), "URL must start with '/'");
+	public HttpTunnelFilter(ServerHttpRequestMatcher matcher, HttpTunnelServer server) {
 		Assert.notNull(server, "Server must not be null");
-		this.url = url;
+		Assert.notNull(matcher, "matcher must not be null");
+		this.matcher = matcher;
 		this.server = server;
 	}
 
@@ -61,11 +61,11 @@ public class HttpTunnelFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		if (request instanceof HttpServletRequest
 				&& response instanceof HttpServletResponse) {
-			HttpServletRequest servletRequest = (HttpServletRequest) request;
-			HttpServletResponse servletResponse = (HttpServletResponse) response;
-			if (servletRequest.getRequestURI().equals(this.url)) {
-				this.server.handle(new ServletServerHttpRequest(servletRequest),
-						new ServletServerHttpResponse(servletResponse));
+			ServerHttpRequest serverRequest = new ServletServerHttpRequest((HttpServletRequest) request);
+			if (this.matcher.matches(serverRequest)) {
+				ServerHttpResponse serverResponse = new ServletServerHttpResponse((HttpServletResponse) response);
+				this.server.handle(serverRequest,
+						serverResponse);
 				return;
 			}
 		}
