@@ -33,6 +33,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.developertools.autoconfigure.remote.RemoteDeveloperToolsProperties;
 import org.springframework.boot.developertools.remote.RemoteDebugHttpTunnelClientConfiguration.PortAvailableCondition;
+import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelClientListener;
@@ -46,6 +47,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * Configuration for remote debug client.
  *
  * @author Phillip Webb
+ * @author Rob Winch
+ * @since 1.3.0
  */
 @ConditionalOnProperty(prefix = "spring.developertools.remote.debug", name = "enabled", matchIfMissing = true)
 @ConditionalOnClass(Filter.class)
@@ -65,7 +68,19 @@ public class RemoteDebugHttpTunnelClientConfiguration {
 	@Bean
 	public TunnelClient remoteDebugTunnelClient() {
 		String url = this.remoteUrl + this.properties.getContextPath() + "/debug";
-		TunnelConnection tunnelConnection = new HttpTunnelConnection(url);
+
+		if(!url.startsWith("https://")) {
+			logger.warn("Your remote connection is insecure. You should use a URL starting with https://. Got " + this.remoteUrl);
+		}
+
+		String secretHeaderName = this.properties.getSecretHeaderName();
+		String secret = this.properties.getSecret();
+
+		if(secret == null) {
+			throw new IllegalStateException("The environment value spring.developertools.remote.secret is required to secure your connection.");
+		}
+
+		TunnelConnection tunnelConnection = new HttpTunnelConnection(url, new HeaderClientHttpRequestInterceptor(secretHeaderName, secret));
 		int localPort = this.properties.getDebug().getLocalPort();
 		TunnelClient client = new TunnelClient(localPort, tunnelConnection);
 		client.addListener(new InfoLogger());

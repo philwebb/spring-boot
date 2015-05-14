@@ -21,12 +21,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.developertools.tunnel.server.PortProvider;
+import org.springframework.boot.developertools.tunnel.server.SecuredServerHttpRequestMatcher;
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.developertools.tunnel.server.StaticPortProvider;
 import org.springframework.boot.developertools.tunnel.server.TargetServerConnection;
@@ -95,13 +97,14 @@ public class HttpTunnelIntegrationTest {
 			PortProvider port = new StaticPortProvider(this.httpServerPort);
 			TargetServerConnection connection = new SocketTargetServerConnection(port);
 			HttpTunnelServer server = new HttpTunnelServer(connection);
-			return new HttpTunnelFilter("/httptunnel", server);
+			SecuredServerHttpRequestMatcher matcher = new SecuredServerHttpRequestMatcher("/httptunnel", "X-AUTH-TOKEN", "secret");
+			return new HttpTunnelFilter(matcher, server);
 		}
 
 		@Bean
 		public TunnelClient tunnelClient() {
 			String url = "http://localhost:" + this.httpServerPort + "/httptunnel";
-			TunnelConnection connection = new HttpTunnelConnection(url);
+			TunnelConnection connection = new HttpTunnelConnection(url, new HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN", "secret"));
 			return new TunnelClient(this.clientPort, connection);
 		}
 

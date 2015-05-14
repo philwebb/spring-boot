@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -37,7 +38,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 
@@ -45,6 +48,7 @@ import org.springframework.util.Assert;
  * {@link TunnelConnection} implementation that uses HTTP to transfer data.
  *
  * @author Phillip Webb
+ * @author Rob Winch
  * @since 1.3.0
  * @see TunnelClient
  * @see org.springframework.boot.developertools.tunnel.server.HttpTunnelServer
@@ -59,8 +63,16 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	private final Executor executor;
 
-	public HttpTunnelConnection(String url) {
-		this(url, new SimpleClientHttpRequestFactory(), null);
+	/**
+	 * Creates a new instance
+	 *
+	 * @param url the URL to connect to
+	 * @param securityInterceptor the {@link ClientHttpRequestInterceptor} that populates
+	 * the security credentials (i.e. new
+	 * HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN","secret") ).
+	 */
+	public HttpTunnelConnection(String url, ClientHttpRequestInterceptor securityInterceptor) {
+		this(url, createRequestFactory(new SimpleClientHttpRequestFactory(), securityInterceptor), null);
 	}
 
 	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
@@ -188,6 +200,14 @@ public class HttpTunnelConnection implements TunnelConnection {
 		}
 
 	}
+
+	static ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory,
+			ClientHttpRequestInterceptor securityInterceptor) {
+		Assert.notNull(requestFactory, "requestFactory must not be null");
+		Assert.notNull(securityInterceptor, "securityInterceptor must not be null");
+		return new InterceptingClientHttpRequestFactory(requestFactory, Arrays.asList(securityInterceptor));
+	}
+
 
 	private static class TunnelThreadFactory implements ThreadFactory {
 
