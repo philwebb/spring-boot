@@ -64,15 +64,15 @@ public class HttpTunnelConnection implements TunnelConnection {
 	private final Executor executor;
 
 	/**
-	 * Creates a new instance
-	 *
+	 * Creates a new {@link HttpTunnelConnection} instance.
 	 * @param url the URL to connect to
 	 * @param securityInterceptor the {@link ClientHttpRequestInterceptor} that populates
 	 * the security credentials (i.e. new
 	 * HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN","secret") ).
 	 */
-	public HttpTunnelConnection(String url, ClientHttpRequestInterceptor securityInterceptor) {
-		this(url, createRequestFactory(new SimpleClientHttpRequestFactory(), securityInterceptor), null);
+	public HttpTunnelConnection(String url,
+			ClientHttpRequestInterceptor securityInterceptor) {
+		this(url, new SecureClientHttpRequestFactory(securityInterceptor), null);
 	}
 
 	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
@@ -83,7 +83,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 		try {
 			this.uri = new URL(url).toURI();
 		}
-		catch (URISyntaxException e) {
+		catch (URISyntaxException ex) {
 			throw new IllegalArgumentException("Malformed URL '" + url + "'");
 		}
 		catch (MalformedURLException ex) {
@@ -201,13 +201,32 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	}
 
-	static ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory,
-			ClientHttpRequestInterceptor securityInterceptor) {
-		Assert.notNull(requestFactory, "requestFactory must not be null");
-		Assert.notNull(securityInterceptor, "securityInterceptor must not be null");
-		return new InterceptingClientHttpRequestFactory(requestFactory, Arrays.asList(securityInterceptor));
-	}
+	// FIXME might be better to just make the Tunnel unaware of security
+	protected static class SecureClientHttpRequestFactory implements
+			ClientHttpRequestFactory {
 
+		private final ClientHttpRequestFactory delegate;
+
+		public SecureClientHttpRequestFactory(
+				ClientHttpRequestInterceptor securityInterceptor) {
+			this(new SimpleClientHttpRequestFactory(), securityInterceptor);
+		}
+
+		public SecureClientHttpRequestFactory(ClientHttpRequestFactory requestFactory,
+				ClientHttpRequestInterceptor securityInterceptor) {
+			Assert.notNull(requestFactory, "requestFactory must not be null");
+			Assert.notNull(securityInterceptor, "securityInterceptor must not be null");
+			this.delegate = new InterceptingClientHttpRequestFactory(requestFactory,
+					Arrays.asList(securityInterceptor));
+		}
+
+		@Override
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
+				throws IOException {
+			return this.delegate.createRequest(uri, httpMethod);
+		}
+
+	}
 
 	private static class TunnelThreadFactory implements ThreadFactory {
 

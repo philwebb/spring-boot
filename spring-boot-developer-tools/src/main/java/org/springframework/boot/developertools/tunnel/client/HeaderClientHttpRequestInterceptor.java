@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.developertools.tunnel.client;
 
 import java.io.IOException;
@@ -24,43 +25,37 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * <p>
- * Allows populating an arbitrary header with a value. For example, it might be used to provide an X-AUTH-TOKEN and value for security purposes.
- * </p>
+ * Allows populating an arbitrary header with a value. For example, it might be used to
+ * provide an X-AUTH-TOKEN and value for security purposes.
  *
  * @author Rob Winch
  * @since 1.3.0
  */
-public class HeaderClientHttpRequestInterceptor implements
-		ClientHttpRequestInterceptor {
+public class HeaderClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-	private final String headerName;
-	private final String headerValue;
+	private final String name;
+
+	private final String value;
 
 	/**
-	 * Creates a new instance
-	 *
+	 * Creates a new {@link HeaderClientHttpRequestInterceptor} instance.
 	 * @param headerName the header name to populate. Cannot be null or empty.
 	 * @param headerValue the header value to populate. Cannot be null or empty.
 	 */
 	public HeaderClientHttpRequestInterceptor(String headerName, String headerValue) {
-		assertNotNullEmpty(headerName, "headerName");
-		assertNotNullEmpty(headerValue, "headerValue");
-
-		this.headerName = headerName;
-		this.headerValue = headerValue;
+		Assert.notNull(headerName, "HeaderName" + " must not be null");
+		Assert.hasLength(headerName, "HeaderName" + " must not be empty");
+		Assert.notNull(headerValue, "HeaderValue" + " must not be null");
+		Assert.hasLength(headerValue, "HeaderValue" + " must not be empty");
+		this.name = headerName;
+		this.value = headerValue;
 	}
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 			ClientHttpRequestExecution execution) throws IOException {
-
-		request.getHeaders().add(headerName, headerValue);
+		request.getHeaders().add(this.name, this.value);
 		return execution.execute(request, body);
 	}
 
-	private static void assertNotNullEmpty(String value, String name) {
-		Assert.notNull(value, name + " must not be null");
-		Assert.hasLength(value, name + " must not be empty");
-	}
 }

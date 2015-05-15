@@ -39,9 +39,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -75,7 +75,7 @@ public class HttpTunnelFilterTests {
 	@Before
 	public void setup() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		this.filter = new HttpTunnelFilter(matcher, this.server);
+		this.filter = new HttpTunnelFilter(this.matcher, this.server);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class HttpTunnelFilterTests {
 	public void serverMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Server must not be null");
-		new HttpTunnelFilter(matcher, null);
+		new HttpTunnelFilter(this.matcher, null);
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class HttpTunnelFilterTests {
 	public void handleUrl() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/tunnel");
 		HttpServletResponse response = new MockHttpServletResponse();
-		when(matcher.matches(any(ServletServerHttpRequest.class))).thenReturn(true);
+		given(this.matcher.matches(any(ServletServerHttpRequest.class))).willReturn(true);
 		this.filter.doFilter(request, response, this.chain);
 		verify(this.server).handle(this.requestCaptor.capture(),
 				this.responseCaptor.capture());

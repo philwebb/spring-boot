@@ -41,13 +41,19 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public class HttpTunnelFilter implements Filter {
+
 	private final ServerHttpRequestMatcher matcher;
 
 	private final HttpTunnelServer server;
 
+	/**
+	 * Create a new {@link HttpTunnelFilter} instance.
+	 * @param matcher the matcher used to determine when a request will be handled
+	 * @param server the tunnel server implementation
+	 */
 	public HttpTunnelFilter(ServerHttpRequestMatcher matcher, HttpTunnelServer server) {
-		Assert.notNull(server, "Server must not be null");
 		Assert.notNull(matcher, "matcher must not be null");
+		Assert.notNull(server, "Server must not be null");
 		this.matcher = matcher;
 		this.server = server;
 	}
@@ -61,11 +67,12 @@ public class HttpTunnelFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		if (request instanceof HttpServletRequest
 				&& response instanceof HttpServletResponse) {
-			ServerHttpRequest serverRequest = new ServletServerHttpRequest((HttpServletRequest) request);
+			ServerHttpRequest serverRequest = new ServletServerHttpRequest(
+					(HttpServletRequest) request);
 			if (this.matcher.matches(serverRequest)) {
-				ServerHttpResponse serverResponse = new ServletServerHttpResponse((HttpServletResponse) response);
-				this.server.handle(serverRequest,
-						serverResponse);
+				ServerHttpResponse serverResponse = new ServletServerHttpResponse(
+						(HttpServletResponse) response);
+				this.server.handle(serverRequest, serverResponse);
 				return;
 			}
 		}

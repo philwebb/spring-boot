@@ -97,14 +97,16 @@ public class HttpTunnelIntegrationTest {
 			PortProvider port = new StaticPortProvider(this.httpServerPort);
 			TargetServerConnection connection = new SocketTargetServerConnection(port);
 			HttpTunnelServer server = new HttpTunnelServer(connection);
-			SecuredServerHttpRequestMatcher matcher = new SecuredServerHttpRequestMatcher("/httptunnel", "X-AUTH-TOKEN", "secret");
+			SecuredServerHttpRequestMatcher matcher = new SecuredServerHttpRequestMatcher(
+					"/httptunnel", "X-AUTH-TOKEN", "secret");
 			return new HttpTunnelFilter(matcher, server);
 		}
 
 		@Bean
 		public TunnelClient tunnelClient() {
 			String url = "http://localhost:" + this.httpServerPort + "/httptunnel";
-			TunnelConnection connection = new HttpTunnelConnection(url, new HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN", "secret"));
+			TunnelConnection connection = new HttpTunnelConnection(url,
+					new HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN", "secret"));
 			return new TunnelClient(this.clientPort, connection);
 		}
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.developertools.autoconfigure.remote;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,9 +28,6 @@ public class RemoteDeveloperToolsProperties {
 
 	public static final String DEFAULT_CONTEXT_PATH = "/~~~springboot~~~";
 
-	/**
-	 * The default value for {@link #getSecretHeaderName()}
-	 */
 	public static final String DEFAULT_SECRET_HEADER_NAME = "X-AUTH-TOKEN";
 
 	private Debug debug = new Debug();
@@ -59,37 +57,32 @@ public class RemoteDeveloperToolsProperties {
 	/**
 	 * Gets the secret required to be present in the header defined by
 	 * {@link #getSecretHeaderName()}.
-	 *
-	 * @return the secret required to be present in the header defined by
-	 * {@link #getSecretHeaderName()}
+	 * @return the secret that will be required
 	 */
 	public String getSecret() {
-		return secret;
+		return this.secret;
 	}
 
 	/**
 	 * Sets the secret required to be present in the header defined by
 	 * {@link #getSecretHeaderName()}.
-	 *
-	 * @param secret the secret that will be required.
+	 * @param secret the secret that will be required
 	 */
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
 	/**
-	 * Gets the header name that must have {@link #getSecret()}. The default is
+	 * Gets the name of the header used to contain the secret. The default is
 	 * {@link #DEFAULT_SECRET_HEADER_NAME}.
-	 *
-	 * @return the header name that must have {@link #getSecret()}
+	 * @return the name of the header used to contain the secret
 	 */
 	public String getSecretHeaderName() {
-		return secretHeaderName;
+		return this.secretHeaderName;
 	}
 
 	/**
-	 * Sets the header name that must have {@link #getSecret()}
-	 *
+	 * Sets the header name that must have {@link #getSecret()}.
 	 * @param secretHeaderName the header name that must have {@link #getSecret()}
 	 */
 	public void setSecretHeaderName(String secretHeaderName) {

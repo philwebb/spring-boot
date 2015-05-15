@@ -78,9 +78,9 @@ public class RemoteDeveloperToolsAutoConfiguration {
 			return new SecuredServerHttpRequestMatcher(url, secretHeader, secret);
 		}
 
-
 		@Bean
-		public HttpTunnelFilter remoteDebugHttpTunnelFilter(@Qualifier("remoteDebugServerHttpRequestMatcher") ServerHttpRequestMatcher matcher,
+		public HttpTunnelFilter remoteDebugHttpTunnelFilter(
+				@Qualifier("remoteDebugServerHttpRequestMatcher") ServerHttpRequestMatcher matcher,
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
 			String url = this.properties.getContextPath() + "/debug";
 			logger.info("Listening for remote debug traffic on " + url);

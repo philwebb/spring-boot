@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.developertools.tunnel.client;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+package org.springframework.boot.developertools.tunnel.client;
 
 import java.io.IOException;
 
@@ -34,13 +31,19 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+
 /**
+ * Tests for {@link HeaderClientHttpRequestInterceptor}.
  *
  * @author Rob Winch
  * @since 1.3.0
  */
 @RunWith(MockitoJUnitRunner.class)
 public class HeaderClientHttpRequestInterceptorTests {
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -62,57 +65,53 @@ public class HeaderClientHttpRequestInterceptorTests {
 
 	private MockHttpServletRequest httpRequest;
 
-
 	@Before
 	public void setup() throws IOException {
-		body = new byte[] {};
-		httpRequest = new MockHttpServletRequest();
-		request = new ServletServerHttpRequest(httpRequest);
-		headerName = "X-AUTH-TOKEN";
-		headerValue = "secret";
-
-		when(execution.execute(request, body)).thenReturn(response);
-
-		interceptor = new HeaderClientHttpRequestInterceptor(headerName, headerValue);
+		this.body = new byte[] {};
+		this.httpRequest = new MockHttpServletRequest();
+		this.request = new ServletServerHttpRequest(this.httpRequest);
+		this.headerName = "X-AUTH-TOKEN";
+		this.headerValue = "secret";
+		given(this.execution.execute(this.request, this.body)).willReturn(this.response);
+		this.interceptor = new HeaderClientHttpRequestInterceptor(this.headerName,
+				this.headerValue);
 	}
 
 	@Test
 	public void constructorNullHeaderName() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("headerName must not be null");
-
-		new HeaderClientHttpRequestInterceptor(null, headerValue);
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("HeaderName must not be null");
+		new HeaderClientHttpRequestInterceptor(null, this.headerValue);
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("headerName must not be empty");
-
-		new HeaderClientHttpRequestInterceptor("", headerValue);
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("HeaderName must not be empty");
+		new HeaderClientHttpRequestInterceptor("", this.headerValue);
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("headerValue must not be null");
-
-		new HeaderClientHttpRequestInterceptor(headerName, null);
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("HeaderValue must not be null");
+		new HeaderClientHttpRequestInterceptor(this.headerName, null);
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("headerValue must not be empty");
-
-		new HeaderClientHttpRequestInterceptor(headerName, "");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("HeaderValue must not be empty");
+		new HeaderClientHttpRequestInterceptor(this.headerName, "");
 	}
 
 	@Test
 	public void intercept() throws IOException {
-		ClientHttpResponse result = interceptor.intercept(request, body, execution);
-
-		assertThat(request.getHeaders().getFirst(headerName), equalTo(headerValue));
-		assertThat(result, equalTo(response));
+		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
+				this.execution);
+		assertThat(this.request.getHeaders().getFirst(this.headerName),
+				equalTo(this.headerValue));
+		assertThat(result, equalTo(this.response));
 	}
+
 }

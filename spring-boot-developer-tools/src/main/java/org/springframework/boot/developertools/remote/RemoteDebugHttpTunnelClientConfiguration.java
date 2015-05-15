@@ -42,9 +42,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
- * Configuration for remote debug client.
+ * Configuration for the remote debug client.
  *
  * @author Phillip Webb
  * @author Rob Winch
@@ -68,23 +69,29 @@ public class RemoteDebugHttpTunnelClientConfiguration {
 	@Bean
 	public TunnelClient remoteDebugTunnelClient() {
 		String url = this.remoteUrl + this.properties.getContextPath() + "/debug";
-
-		if(!url.startsWith("https://")) {
-			logger.warn("Your remote connection is insecure. You should use a URL starting with https://. Got " + this.remoteUrl);
-		}
-
-		String secretHeaderName = this.properties.getSecretHeaderName();
-		String secret = this.properties.getSecret();
-
-		if(secret == null) {
-			throw new IllegalStateException("The environment value spring.developertools.remote.secret is required to secure your connection.");
-		}
-
-		TunnelConnection tunnelConnection = new HttpTunnelConnection(url, new HeaderClientHttpRequestInterceptor(secretHeaderName, secret));
+		warnIfUsingInsecureUrl(url);
+		TunnelConnection tunnelConnection = new HttpTunnelConnection(url,
+				getSecurityInterceptor());
 		int localPort = this.properties.getDebug().getLocalPort();
 		TunnelClient client = new TunnelClient(localPort, tunnelConnection);
 		client.addListener(new InfoLogger());
 		return client;
+	}
+
+	private void warnIfUsingInsecureUrl(String url) {
+		if (logger.isWarnEnabled() && !url.startsWith("https://")) {
+			logger.warn("The connection to " + url
+					+ " is insecure. You should use a URL starting with 'https://'.");
+		}
+	}
+
+	private HeaderClientHttpRequestInterceptor getSecurityInterceptor() {
+		String secretHeaderName = this.properties.getSecretHeaderName();
+		String secret = this.properties.getSecret();
+		Assert.state(secret != null,
+				"The environment value 'spring.developertools.remote.secret' "
+						+ "is required to secure your connection.");
+		return new HeaderClientHttpRequestInterceptor(secretHeaderName, secret);
 	}
 
 	private static class InfoLogger implements TunnelClientListener {

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.developertools.tunnel.server;
 
-import static org.junit.Assert.assertFalse;
+package org.springframework.boot.developertools.tunnel.server;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,13 +23,16 @@ import org.junit.rules.ExpectedException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import static org.junit.Assert.assertFalse;
+
 /**
+ * Tests for {@link SecuredServletServerHttpRequestMatcherTests}.
  *
  * @author Rob Winch
  * @since 1.3.0
- *
  */
 public class SecuredServletServerHttpRequestMatcherTests {
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -49,71 +51,71 @@ public class SecuredServletServerHttpRequestMatcherTests {
 		this.url = "/tunnel";
 		this.secretHeaderName = "X-AUTH_TOKEN";
 		this.secret = "secret";
-		this.matcher = new SecuredServerHttpRequestMatcher(url, secretHeaderName, secret);
-		this.request = new MockHttpServletRequest("GET", url);
-		this.request.addHeader(secretHeaderName, secret);
+		this.matcher = new SecuredServerHttpRequestMatcher(this.url,
+				this.secretHeaderName, this.secret);
+		this.request = new MockHttpServletRequest("GET", this.url);
+		this.request.addHeader(this.secretHeaderName, this.secret);
 	}
-
 
 	@Test
 	public void constructorUrlMustNotBeEmpty() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("requestURI must not be empty");
-		new SecuredServerHttpRequestMatcher("", secretHeaderName, secret);
+		this.thrown.expectMessage("RequestURI must not be empty");
+		new SecuredServerHttpRequestMatcher("", this.secretHeaderName, this.secret);
 	}
 
 	@Test
 	public void constructorUrlMustStartWithSlash() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("requestURI must start with '/'");
-		new SecuredServerHttpRequestMatcher("tunnel", secretHeaderName, secret);
+		this.thrown.expectMessage("RequestURI must start with '/'");
+		new SecuredServerHttpRequestMatcher("tunnel", this.secretHeaderName, this.secret);
 	}
 
 	@Test
 	public void constructorSecretHeaderNameMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("secretHeaderName must not be null");
-		new SecuredServerHttpRequestMatcher(url, null, secret);
+		this.thrown.expectMessage("SecretHeaderName must not be null");
+		new SecuredServerHttpRequestMatcher(this.url, null, this.secret);
 	}
 
 	@Test
 	public void constructorSecretHeaderNameMustNotBeEmpty() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("secretHeaderName must not be empty");
-		new SecuredServerHttpRequestMatcher(url, "", secret);
+		this.thrown.expectMessage("SecretHeaderName must not be empty");
+		new SecuredServerHttpRequestMatcher(this.url, "", this.secret);
 	}
 
 	@Test
 	public void constructorSecretMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("expectedSecret must not be null");
-		new SecuredServerHttpRequestMatcher(url, secretHeaderName, null);
+		this.thrown.expectMessage("ExpectedSecret must not be null");
+		new SecuredServerHttpRequestMatcher(this.url, this.secretHeaderName, null);
 	}
 
 	@Test
 	public void constructorSecretMustNotBeEmpty() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("expectedSecret must not be empty");
-		new SecuredServerHttpRequestMatcher(url, secretHeaderName, "");
+		this.thrown.expectMessage("ExpectedSecret must not be empty");
+		new SecuredServerHttpRequestMatcher(this.url, this.secretHeaderName, "");
 	}
 
 	@Test
 	public void matchesIgnoresDifferentUrl() throws Exception {
-		request.setRequestURI(url + "invalid");
-		assertFalse(this.matcher.matches(new ServletServerHttpRequest(request)));
+		this.request.setRequestURI(this.url + "invalid");
+		assertFalse(this.matcher.matches(new ServletServerHttpRequest(this.request)));
 	}
 
 	@Test
 	public void matchesIgnoresDifferentSecret() throws Exception {
-		request = new MockHttpServletRequest("GET", url);
-		this.request.addHeader(secretHeaderName, secret + "invalid");
-		assertFalse(this.matcher.matches(new ServletServerHttpRequest(request)));
+		this.request = new MockHttpServletRequest("GET", this.url);
+		this.request.addHeader(this.secretHeaderName, this.secret + "invalid");
+		assertFalse(this.matcher.matches(new ServletServerHttpRequest(this.request)));
 	}
-
 
 	@Test
 	public void matchesIgnoresNoSecret() throws Exception {
-		request = new MockHttpServletRequest("GET", url);
-		assertFalse(this.matcher.matches(new ServletServerHttpRequest(request)));
+		this.request = new MockHttpServletRequest("GET", this.url);
+		assertFalse(this.matcher.matches(new ServletServerHttpRequest(this.request)));
 	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.developertools.remote;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+package org.springframework.boot.developertools.remote;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -45,7 +44,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.junit.Assert.assertEquals;
+
 /**
+ * Tests for {@link RemoteDebugHttpTunnelClientConfiguration}.
  *
  * @author Rob Winch
  * @since 1.3.0
@@ -54,10 +56,14 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringApplicationConfiguration(classes = RemoteDebugHttpTunnelClientConfigurationTests.BootApplication.class)
 @WebIntegrationTest
 public class RemoteDebugHttpTunnelClientConfigurationTests {
-	@Value("${local.server.port}")
-	int port;
 
-	AnnotationConfigApplicationContext context;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+	@Value("${local.server.port}")
+	private int port;
+
+	private AnnotationConfigApplicationContext context;
 
 	@After
 	public void close() {
@@ -68,47 +74,38 @@ public class RemoteDebugHttpTunnelClientConfigurationTests {
 
 	@Test
 	public void defaultSetup() {
-		context = new AnnotationConfigApplicationContext();
-		this.context.register(Config.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.developertools.remote.secret:supersecret");
-
-		Map<String, Object> source = Collections.<String,Object>singletonMap("remoteUrl", "http://localhost:"+port);
+		Map<String, Object> source = Collections.<String, Object> singletonMap(
+				"remoteUrl", "http://localhost:" + this.port);
 		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.refresh();
-
-
-		String url = "http://localhost:" + port + "/hello";
-
+		String url = "http://localhost:" + this.port + "/hello";
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
 				String.class);
-
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}
 
 	@Test
 	public void missingSecret() {
-		context = new AnnotationConfigApplicationContext();
-		this.context.register(Config.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context);
-
-		Map<String, Object> source = Collections.<String,Object>singletonMap("remoteUrl", "http://localhost:"+port);
+		Map<String, Object> source = Collections.<String, Object> singletonMap(
+				"remoteUrl", "http://localhost:" + this.port);
 		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
-
-		try {
-			this.context.refresh();
-			fail("Expected Exception");
-		} catch(Exception e) {
-			assertThat(e.getMessage(), containsString("The environment value spring.developertools.remote.secret is required to secure your connection."));
-		}
-
+		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("The environment value "
+				+ "'spring.developertools.remote.secret' "
+				+ "is required to secure your connection.");
+		this.context.refresh();
 	}
 
 	@Configuration
@@ -118,7 +115,7 @@ public class RemoteDebugHttpTunnelClientConfigurationTests {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration(exclude=RemoteDebugHttpTunnelClientConfiguration.class)
+	@EnableAutoConfiguration(exclude = RemoteDebugHttpTunnelClientConfiguration.class)
 	@RestController
 	static class BootApplication {
 
@@ -126,5 +123,7 @@ public class RemoteDebugHttpTunnelClientConfigurationTests {
 		public String hello() {
 			return "Hello World";
 		}
+
 	}
+
 }

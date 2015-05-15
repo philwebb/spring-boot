@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.developertools.autoconfigure.remote;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+package org.springframework.boot.developertools.autoconfigure.remote;
 
 import java.io.IOException;
 
@@ -44,24 +40,30 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 /**
+ * Tests for {@link RemoteDeveloperToolsAutoConfiguration}.
  *
  * @author Rob Winch
  * @since 1.3.0
  */
 public class RemoteDeveloperToolsAutoConfigurationTests {
 
-	AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigWebApplicationContext context;
 
-	MockHttpServletRequest request;
-	MockHttpServletResponse response;
-	MockFilterChain chain;
+	private MockHttpServletRequest request;
+
+	private MockHttpServletResponse response;
+
+	private MockFilterChain chain;
 
 	@Before
 	public void setup() {
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
-		chain = new MockFilterChain();
+		this.request = new MockHttpServletRequest();
+		this.response = new MockHttpServletResponse();
+		this.chain = new MockFilterChain();
 	}
 
 	@After
@@ -74,64 +76,52 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	@Test
 	public void defaultSetup() throws Exception {
 		loadContext("spring.developertools.remote.secret:supersecret");
-
 		HttpTunnelFilter filter = this.context.getBean(HttpTunnelFilter.class);
-
-		request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH + "/debug");
-		request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME, "supersecret");
-
-		filter.doFilter(request, response, chain);
-
+		this.request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH
+				+ "/debug");
+		this.request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME,
+				"supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnel(true);
 	}
 
 	@Test
 	public void invalidUrlInRequest() throws Exception {
 		loadContext("spring.developertools.remote.secret:supersecret");
-
 		HttpTunnelFilter filter = this.context.getBean(HttpTunnelFilter.class);
-
-		request.setRequestURI("/debug");
-		request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME, "supersecret");
-
-		filter.doFilter(request, response, chain);
-
+		this.request.setRequestURI("/debug");
+		this.request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME,
+				"supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnel(false);
 	}
 
 	@Test
 	public void missingSecretInConfigDisables() throws Exception {
 		loadContext("a:b");
-
 		String[] namesForType = this.context.getBeanNamesForType(HttpTunnelFilter.class);
-
 		assertThat(namesForType.length, equalTo(0));
 	}
 
 	@Test
 	public void missingSecretFromRequest() throws Exception {
 		loadContext("spring.developertools.remote.secret:supersecret");
-
 		HttpTunnelFilter filter = this.context.getBean(HttpTunnelFilter.class);
-
-		request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH + "/debug");
-
-		filter.doFilter(request, response, chain);
-
+		this.request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH
+				+ "/debug");
+		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnel(false);
 	}
 
 	@Test
 	public void invalidSecretInRequest() throws Exception {
 		loadContext("spring.developertools.remote.secret:supersecret");
-
 		HttpTunnelFilter filter = this.context.getBean(HttpTunnelFilter.class);
-
-		request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH + "/debug");
-		request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME, "invalid");
-
-		filter.doFilter(request, response, chain);
-
+		this.request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH
+				+ "/debug");
+		this.request.addHeader(RemoteDeveloperToolsProperties.DEFAULT_SECRET_HEADER_NAME,
+				"invalid");
+		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnel(false);
 	}
 
@@ -139,31 +129,23 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 	public void customHeaderName() throws Exception {
 		loadContext("spring.developertools.remote.secret:supersecret",
 				"spring.developertools.remote.secretHeaderName:customheader");
-
 		HttpTunnelFilter filter = this.context.getBean(HttpTunnelFilter.class);
-
-		request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH + "/debug");
-		request.addHeader("customheader", "supersecret");
-
-		filter.doFilter(request, response, chain);
-
+		this.request.setRequestURI(RemoteDeveloperToolsProperties.DEFAULT_CONTEXT_PATH
+				+ "/debug");
+		this.request.addHeader("customheader", "supersecret");
+		filter.doFilter(this.request, this.response, this.chain);
 		assertTunnel(true);
 	}
 
-	/**
-	 * Asserts that the request tunneled through
-	 *
-	 * @param value
-	 */
 	private void assertTunnel(boolean value) {
-		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked, equalTo(value));
+		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked,
+				equalTo(value));
 	}
 
-	private void loadContext(String...properties) {
+	private void loadContext(String... properties) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(Config.class,
-				ServerPropertiesAutoConfiguration.class,
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, properties);
 		this.context.refresh();
@@ -178,9 +160,11 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 			return new MockHttpTunnelServer(new SocketTargetServerConnection(
 					new RemoteDebugPortProvider()));
 		}
+
 	}
 
 	static class MockHttpTunnelServer extends HttpTunnelServer {
+
 		private boolean invoked;
 
 		public MockHttpTunnelServer(TargetServerConnection serverConnection) {
@@ -192,5 +176,7 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 				throws IOException {
 			this.invoked = true;
 		}
+
 	}
+
 }

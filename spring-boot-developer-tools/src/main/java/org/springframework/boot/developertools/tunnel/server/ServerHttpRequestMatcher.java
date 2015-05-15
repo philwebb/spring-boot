@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.developertools.tunnel.server;
 
 import org.springframework.http.server.ServerHttpRequest;
@@ -25,11 +26,13 @@ import org.springframework.http.server.ServerHttpRequest;
  */
 public interface ServerHttpRequestMatcher {
 
+	// FIXME possibly rename to filter
+
 	/**
 	 * Returns true of the {@link ServerHttpRequest} passed in is considered a match.
-	 *
-	 * @param request the {@link ServerHttpRequest} to evaluate.
-	 * @return true if the {@link ServerHttpRequest} passed in is considered a match, else false
+	 * @param request the {@link ServerHttpRequest} to evaluate
+	 * @return true if the {@link ServerHttpRequest} passed in is considered a match
 	 */
 	boolean matches(ServerHttpRequest request);
+
 }
