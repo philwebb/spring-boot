@@ -42,12 +42,9 @@ public class SecuredServerHttpRequestMatcher implements ServerHttpRequestMatcher
 	 */
 	public SecuredServerHttpRequestMatcher(String requestUri, String secretHeaderName,
 			String expectedSecret) {
-		Assert.notNull(requestUri, "RequestURI must not be null");
 		Assert.hasLength(requestUri, "RequestURI must not be empty");
 		Assert.isTrue(requestUri.startsWith("/"), "RequestURI must start with '/'");
-		Assert.notNull(secretHeaderName, "SecretHeaderName must not be null");
 		Assert.hasLength(secretHeaderName, "SecretHeaderName must not be empty");
-		Assert.notNull(expectedSecret, "ExpectedSecret must not be null");
 		Assert.hasLength(expectedSecret, "ExpectedSecret must not be empty");
 		this.requestUri = requestUri;
 		this.secretHeaderName = secretHeaderName;

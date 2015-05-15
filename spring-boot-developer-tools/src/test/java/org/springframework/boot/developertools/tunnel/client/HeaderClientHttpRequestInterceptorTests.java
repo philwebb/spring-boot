@@ -80,7 +80,7 @@ public class HeaderClientHttpRequestInterceptorTests {
 	@Test
 	public void constructorNullHeaderName() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderName must not be null");
+		this.thrown.expectMessage("HeaderName must not be empty");
 		new HeaderClientHttpRequestInterceptor(null, this.headerValue);
 	}
 
@@ -94,7 +94,7 @@ public class HeaderClientHttpRequestInterceptorTests {
 	@Test
 	public void constructorNullHeaderValue() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderValue must not be null");
+		this.thrown.expectMessage("HeaderValue must not be empty");
 		new HeaderClientHttpRequestInterceptor(this.headerName, null);
 	}
 

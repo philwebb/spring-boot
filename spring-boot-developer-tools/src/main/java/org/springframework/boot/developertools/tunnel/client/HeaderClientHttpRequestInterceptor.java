@@ -43,9 +43,7 @@ public class HeaderClientHttpRequestInterceptor implements ClientHttpRequestInte
 	 * @param headerValue the header value to populate. Cannot be null or empty.
 	 */
 	public HeaderClientHttpRequestInterceptor(String headerName, String headerValue) {
-		Assert.notNull(headerName, "HeaderName" + " must not be null");
 		Assert.hasLength(headerName, "HeaderName" + " must not be empty");
-		Assert.notNull(headerValue, "HeaderValue" + " must not be null");
 		Assert.hasLength(headerValue, "HeaderValue" + " must not be empty");
 		this.name = headerName;
 		this.value = headerValue;

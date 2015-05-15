@@ -74,7 +74,7 @@ public class SecuredServletServerHttpRequestMatcherTests {
 	@Test
 	public void constructorSecretHeaderNameMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SecretHeaderName must not be null");
+		this.thrown.expectMessage("SecretHeaderName must not be empty");
 		new SecuredServerHttpRequestMatcher(this.url, null, this.secret);
 	}
 
@@ -88,7 +88,7 @@ public class SecuredServletServerHttpRequestMatcherTests {
 	@Test
 	public void constructorSecretMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ExpectedSecret must not be null");
+		this.thrown.expectMessage("ExpectedSecret must not be empty");
 		new SecuredServerHttpRequestMatcher(this.url, this.secretHeaderName, null);
 	}
 
