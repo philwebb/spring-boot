@@ -142,7 +142,9 @@ public class FileSystemWatcher {
 				changeSet.add(changedFiles);
 			}
 		}
-		fireListeners(changeSet);
+		if (!changeSet.isEmpty()) {
+			fireListeners(changeSet);
+		}
 		this.folders = updated;
 	}
 

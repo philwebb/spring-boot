@@ -106,6 +106,7 @@ public class FileSystemWatcherTests {
 	public void addNestedFile() throws Exception {
 		File folder = startWithNewFolder();
 		File file = touch(new File(new File(folder, "sub"), "text.txt"));
+		Thread.sleep(200);
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		assertThat(changedFiles.getFiles(), contains(new ChangedFile(file, Type.ADD)));

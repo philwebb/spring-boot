@@ -236,7 +236,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void httpConnectionsAreClosedAfterLongPollTimeout() throws Exception {
-		this.server.setDisconnectTimeout(200);
+		this.server.setDisconnectTimeout(1000);
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
