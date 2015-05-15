@@ -1,0 +1,183 @@
+/*
+ * Copyright 2012-2015 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.developertools.reload;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Enumeration;
+
+import org.springframework.boot.developertools.reload.ClassLoaderFile.Kind;
+import org.springframework.util.Assert;
+
+/**
+ * Disposable {@link ClassLoader} used to support class reloading. Provides parent last
+ * loading for the specified URLs.
+ *
+ * @author Phillip Webb
+ * @author Andy Clement
+ * @since 1.3.0
+ */
+public class ReloadClassLoader extends URLClassLoader {
+
+	private ClassLoaderFileRepository updatedFiles;
+
+	public ReloadClassLoader(ClassLoader parent, URL[] urls) {
+		this(parent, ClassLoaderFileRepository.NONE, urls);
+	}
+
+	public ReloadClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
+			URL[] urls) {
+		super(urls, parent);
+		Assert.notNull(parent, "Parent must not be null");
+		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
+		this.updatedFiles = updatedFiles;
+	}
+
+	@Override
+	public Enumeration<URL> getResources(String name) throws IOException {
+		// Use the parent since we're shadowing resource and we don't want duplicates
+		Enumeration<URL> resources = getParent().getResources(name);
+		ClassLoaderFile file = this.updatedFiles.getFile(name);
+		if (file != null) {
+			// Assume that we're replacing just the first item
+			if (resources.hasMoreElements()) {
+				resources.nextElement();
+			}
+			if (file.getKind() != Kind.DELETED) {
+				return new CompoundEnumeration<URL>(createFileUrl(name, file), resources);
+			}
+		}
+		return resources;
+	}
+
+	@Override
+	public URL getResource(String name) {
+		ClassLoaderFile file = this.updatedFiles.getFile(name);
+		if (file != null && file.getKind() == Kind.DELETED) {
+			return null;
+		}
+		URL resource = findResource(name);
+		if (resource != null) {
+			return resource;
+		}
+		return getParent().getResource(name);
+	}
+
+	@Override
+	public URL findResource(final String name) {
+		final ClassLoaderFile file = this.updatedFiles.getFile(name);
+		if (file == null) {
+			return super.findResource(name);
+		}
+		if (file.getKind() == Kind.DELETED) {
+			return null;
+		}
+		return AccessController.doPrivileged(new PrivilegedAction<URL>() {
+			@Override
+			public URL run() {
+				return createFileUrl(name, file);
+			}
+		});
+	}
+
+	@Override
+	public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+		String path = name.replace('.', '/').concat(".class");
+		ClassLoaderFile file = this.updatedFiles.getFile(path);
+		if (file != null && file.getKind() == Kind.DELETED) {
+			throw new ClassNotFoundException(name);
+		}
+		Class<?> loadedClass = findLoadedClass(name);
+		if (loadedClass == null) {
+			try {
+				loadedClass = findClass(name);
+			}
+			catch (ClassNotFoundException ex) {
+				loadedClass = getParent().loadClass(name);
+			}
+		}
+		if (resolve) {
+			resolveClass(loadedClass);
+		}
+		return loadedClass;
+	}
+
+	@Override
+	protected Class<?> findClass(final String name) throws ClassNotFoundException {
+		String path = name.replace('.', '/').concat(".class");
+		final ClassLoaderFile file = this.updatedFiles.getFile(path);
+		if (file == null) {
+			return super.findClass(name);
+		}
+		if (file.getKind() == Kind.DELETED) {
+			throw new ClassNotFoundException(name);
+		}
+		return AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+			@Override
+			public Class<?> run() {
+				byte[] bytes = file.getContents();
+				return defineClass(name, bytes, 0, bytes.length);
+			}
+		});
+	}
+
+	private URL createFileUrl(String name, ClassLoaderFile file) {
+		try {
+			return new URL("reloaded", null, -1, "/" + name,
+					new ClassLoaderFileURLStreamHandler(file));
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	/**
+	 * Compound {@link Enumeration} that adds an additional item to the front.
+	 */
+	private static class CompoundEnumeration<E> implements Enumeration<E> {
+
+		private E firstElement;
+
+		private final Enumeration<E> enumeration;
+
+		public CompoundEnumeration(E firstElement, Enumeration<E> enumeration) {
+			this.firstElement = firstElement;
+			this.enumeration = enumeration;
+		}
+
+		@Override
+		public boolean hasMoreElements() {
+			return (this.firstElement != null || this.enumeration.hasMoreElements());
+		}
+
+		@Override
+		public E nextElement() {
+			if (this.firstElement == null) {
+				return this.enumeration.nextElement();
+			}
+			E element = this.firstElement;
+			this.firstElement = null;
+			return element;
+		}
+
+	}
+
+}
