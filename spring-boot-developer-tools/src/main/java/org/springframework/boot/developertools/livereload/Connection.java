@@ -51,6 +51,15 @@ class Connection {
 
 	private boolean webSocket;
 
+	private volatile boolean running = true;
+
+	/**
+	 * Create a new {@link Connection} instance.
+	 * @param socket the source socket
+	 * @param inputStream the socket input stream
+	 * @param outputStream the socket output stream
+	 * @throws IOException
+	 */
 	public Connection(Socket socket, InputStream inputStream, OutputStream outputStream)
 			throws IOException {
 		this.socket = socket;
@@ -59,6 +68,10 @@ class Connection {
 		this.header = this.inputStream.readHeader();
 	}
 
+	/**
+	 * Run the connection.
+	 * @throws Exception
+	 */
 	public void run() throws Exception {
 		if (this.header.contains("Upgrade: websocket")
 				&& this.header.contains("Sec-WebSocket-Version: 13")) {
@@ -79,14 +92,13 @@ class Connection {
 				+ "[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
 		this.webSocket = true;
-		while (!this.socket.isClosed()) {
+		while (this.running) {
 			readWebSocketFrame();
 		}
 	}
 
 	private void readWebSocketFrame() throws IOException {
 		try {
-			System.out.println("Read");
 			Frame frame = Frame.read(this.inputStream);
 			if (frame.getType() == Frame.Type.PING) {
 				writeWebSocketFrame(new Frame(Frame.Type.PONG));
@@ -110,6 +122,10 @@ class Connection {
 		}
 	}
 
+	/**
+	 * Trigger livereload for the client using this connection.
+	 * @throws IOException
+	 */
 	public void triggerReload() throws IOException {
 		if (this.webSocket) {
 			logger.debug("Triggering LiveReload");
@@ -132,7 +148,12 @@ class Connection {
 		return Base64Encoder.encode(messageDigest.digest());
 	}
 
+	/**
+	 * Close the connection.
+	 * @throws IOException
+	 */
 	public void close() throws IOException {
+		this.running = false;
 		this.socket.close();
 	}
 

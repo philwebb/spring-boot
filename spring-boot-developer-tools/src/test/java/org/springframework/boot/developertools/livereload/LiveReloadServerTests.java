@@ -81,10 +81,9 @@ public class LiveReloadServerTests {
 		WebSocketClient client = new WebSocketClient();
 		try {
 			Socket socket = openSocket(client, new Socket());
-			Thread.sleep(100);
 			this.server.triggerReload();
-			Thread.sleep(100);
-			// FIXME drop sleeps and close
+			Thread.sleep(200);
+			this.server.stop();
 			assertThat(socket.getMessages(0),
 					containsString("http://livereload.com/protocols/official-7"));
 			assertThat(socket.getMessages(1), containsString("command\":\"reload\""));
@@ -101,7 +100,8 @@ public class LiveReloadServerTests {
 			Socket socket = new Socket();
 			Driver driver = openSocket(client, new Driver(socket));
 			socket.getRemote().sendPing(NO_DATA);
-			Thread.sleep(100);
+			Thread.sleep(200);
+			this.server.stop();
 			assertThat(driver.getPongCount(), equalTo(1));
 		}
 		finally {
@@ -116,7 +116,17 @@ public class LiveReloadServerTests {
 
 	@Test
 	public void serverClose() throws Exception {
-		// FIXME
+		WebSocketClient client = new WebSocketClient();
+		try {
+			Socket socket = openSocket(client, new Socket());
+			Thread.sleep(200);
+			this.server.stop();
+			Thread.sleep(200);
+			assertThat(socket.getCloseStatus(), equalTo(1006));
+		}
+		finally {
+			client.stop();
+		}
 	}
 
 	private <T> T openSocket(WebSocketClient client, T socket) throws Exception,
@@ -169,5 +179,29 @@ public class LiveReloadServerTests {
 			this.closeStatus = statusCode;
 		}
 
+		public Integer getCloseStatus() {
+			return this.closeStatus;
+		}
+
 	}
+
+	/**
+	 * Useful main method for manual testing against a real browser.
+	 * @param args main args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		LiveReloadServer server = new LiveReloadServer();
+		server.start();
+		while (true) {
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			server.triggerReload();
+		}
+	}
+
 }

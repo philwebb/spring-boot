@@ -118,17 +118,11 @@ public class LiveReloadServer {
 	 * @throws IOException
 	 */
 	public synchronized void stop() throws IOException {
-		if (true) {
-			return;
-		}
 		if (this.listenThread != null) {
-			for (Connection connection : this.connections) {
-				connection.close();
-			}
-			this.connections.clear();
+			closeAllConnections();
 			try {
 				this.executor.shutdown();
-				this.executor.awaitTermination(2, TimeUnit.MINUTES);
+				this.executor.awaitTermination(1, TimeUnit.MINUTES);
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
@@ -145,25 +139,46 @@ public class LiveReloadServer {
 		}
 	}
 
-	public synchronized void triggerReload() {
-		for (Connection connection : this.connections) {
-			try {
-				connection.triggerReload();
-			}
-			catch (Exception ex) {
-				logger.debug("Unable to send reload message", ex);
+	private void closeAllConnections() throws IOException {
+		synchronized (this.connections) {
+			for (Connection connection : this.connections) {
+				connection.close();
 			}
 		}
 	}
 
-	private synchronized void addConnection(Connection connection) {
-		this.connections.add(connection);
+	/**
+	 * Trigger livereload of all connected clients.
+	 */
+	public void triggerReload() {
+		synchronized (this.connections) {
+			for (Connection connection : this.connections) {
+				try {
+					connection.triggerReload();
+				}
+				catch (Exception ex) {
+					logger.debug("Unable to send reload message", ex);
+				}
+			}
+		}
 	}
 
-	private synchronized void removeConnection(Connection connection) {
-		this.connections.remove(connection);
+	private void addConnection(Connection connection) {
+		synchronized (this.connections) {
+			this.connections.add(connection);
+		}
 	}
 
+	private void removeConnection(Connection connection) {
+		synchronized (this.connections) {
+			this.connections.remove(connection);
+		}
+	}
+
+	/**
+	 * {@link Runnable} to handle a single connection.
+	 * @see Connection
+	 */
 	private class ConnectionHandler implements Runnable {
 
 		private final Socket socket;
