@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.reload.classloader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,7 +24,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
 
-import org.springframework.boot.developertools.reload.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.Assert;
 
 /**

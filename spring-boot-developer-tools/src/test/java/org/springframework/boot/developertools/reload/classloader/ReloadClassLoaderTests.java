@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.reload.classloader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,7 +34,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.developertools.reload.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile;
+import org.springframework.boot.developertools.reload.classloader.ClassLoaderFiles;
+import org.springframework.boot.developertools.reload.classloader.ReloadClassLoader;
+import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 

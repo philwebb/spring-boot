@@ -15,7 +15,7 @@
  */
 
 /**
- * Reload support
+ * Classloaders used for reload support
  */
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.reload.classloader;
 

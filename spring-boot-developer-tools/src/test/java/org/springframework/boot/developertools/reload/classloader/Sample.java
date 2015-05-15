@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.reload.classloader;
 
 /**
  * A sample class used to test reloading.
- * 
+ *
  * @author Phillip Webb
  */
-public class SampleParent {
+public class Sample {
 
 }

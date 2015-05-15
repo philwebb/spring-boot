@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.reload.classloader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
