@@ -46,6 +46,7 @@ public class RestartClassLoader extends URLClassLoader {
 	public RestartClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
 			URL[] urls) {
 		super(urls, parent);
+		System.out.println("Dat parent is " + parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
 		this.updatedFiles = updatedFiles;
@@ -153,7 +154,8 @@ public class RestartClassLoader extends URLClassLoader {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		System.out.println("**************");
+		System.out
+				.println("************************************************************************************************************************************************************************");
 	}
 
 	/**

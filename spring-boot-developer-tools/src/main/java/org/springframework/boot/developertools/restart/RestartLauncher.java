@@ -30,25 +30,26 @@ class RestartLauncher {
 	private LaunchThread launchThread;
 
 	public RestartLauncher(String mainClassName, String[] args,
-			UncaughtExceptionHandler exceptionHandler) {
+			UncaughtExceptionHandler exceptionHandler, ClassLoader parentClassLoader,
+			URL[] urls) {
 		// We need to create the launch thread early to ensure that AccessController
 		// doesn't keep a reference to the RestartClassLoader (and therefore prevent GC)
 		System.out.println("Made a restartlauncher");
-		this.launchThread = new LaunchThread(mainClassName, args, exceptionHandler);
+		this.launchThread = new LaunchThread(mainClassName, args, exceptionHandler,
+				parentClassLoader, urls);
 	}
 
-	public synchronized void start(ClassLoader parentClassLoader, URL[] urls)
+	public void start(ClassLoader parentClassLoader, URL[] urls)
 			throws InterruptedException {
 		System.out.println("Starting the RestartLauncher");
-		RestartClassLoader classLoader = new RestartClassLoader(parentClassLoader, urls);
+		new Exception().printStackTrace();
 		LaunchThread launchThread = this.launchThread;
-		launchThread.setContextClassLoader(classLoader);
 		launchThread.start();
 		launchThread.join();
 		this.launchThread = launchThread.nextLaunchThread;
 	}
 
-	private class LaunchThread extends Thread {
+	private static class LaunchThread extends Thread {
 
 		private final String mainClassName;
 
@@ -56,20 +57,30 @@ class RestartLauncher {
 
 		private LaunchThread nextLaunchThread;
 
+		private URL[] urls;
+
+		private ClassLoader pc;
+
 		public LaunchThread(String mainClassName, String[] args,
-				UncaughtExceptionHandler exceptionHandler) {
+				UncaughtExceptionHandler exceptionHandler, ClassLoader parentClassLoader,
+				URL[] urls) {
 			this.mainClassName = mainClassName;
 			this.args = args;
+			this.urls = urls;
+			this.pc = parentClassLoader;
 			setName("main (restartable)");
 			setUncaughtExceptionHandler(exceptionHandler);
 			setDaemon(false);
+			setContextClassLoader(new RestartClassLoader(parentClassLoader, urls));
 		}
 
 		@Override
 		public void run() {
 			try {
+				System.gc();
 				this.nextLaunchThread = new LaunchThread(this.mainClassName, this.args,
-						getUncaughtExceptionHandler());
+						getUncaughtExceptionHandler(), this.pc, this.urls);
+				System.out.println(this.nextLaunchThread.getClass().getClassLoader());
 				Class<?> mainClass = getContextClassLoader()
 						.loadClass(this.mainClassName);
 				Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);

@@ -46,6 +46,12 @@ public class Restarter {
 
 	private RestartLauncher launcher;
 
+	private String mainMethodName;
+
+	private String[] args;
+
+	private Thread thread;
+
 	protected Restarter(String[] args) {
 		this(Thread.currentThread(), args);
 	}
@@ -54,10 +60,11 @@ public class Restarter {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		MainMethod mainMethod = new MainMethod(thread);
+		this.mainMethodName = mainMethod.getDeclaringClassName();
+		this.args = args;
+		this.thread = thread;
 		SilentUncaughtExceptionHandler.applyTo(thread);
 		this.classLoader = thread.getContextClassLoader();
-		this.launcher = new RestartLauncher(mainMethod.getDeclaringClassName(), args,
-				thread.getUncaughtExceptionHandler());
 		// FIXME ifNotAFatJar
 		// configure reloadable URLS
 		// start the launcher
@@ -66,10 +73,14 @@ public class Restarter {
 	}
 
 	private void initialize() {
+		System.out.println("Initialize Restarter");
 		try {
 			ChangeableUrls changeableUrls = ChangeableUrls
 					.fromUrlClassLoader((URLClassLoader) this.classLoader);
 			this.urls.addAll(changeableUrls.toList());
+			this.launcher = new RestartLauncher(this.mainMethodName, this.args,
+					this.thread.getUncaughtExceptionHandler(), this.classLoader,
+					changeableUrls.toArray());
 			start();
 			throw new SilentExitException();
 		}
@@ -112,8 +123,8 @@ public class Restarter {
 	}
 
 	private void stop() throws Exception {
-		Introspector.flushCaches();
 		triggerShutdownHooks();
+		Introspector.flushCaches();
 	}
 
 	@SuppressWarnings("rawtypes")

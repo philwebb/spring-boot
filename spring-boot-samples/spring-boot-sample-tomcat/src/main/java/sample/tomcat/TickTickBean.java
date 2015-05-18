@@ -23,7 +23,7 @@ public class TickTickBean implements Lifecycle, InitializingBean {
 		field.setAccessible(true);
 		ProtectionDomain[] d = (ProtectionDomain[]) field.get(context);
 		for (ProtectionDomain protectionDomain : d) {
-			System.out.println(protectionDomain);
+			System.err.println(protectionDomain);
 		}
 
 		this.t = new Thready();
