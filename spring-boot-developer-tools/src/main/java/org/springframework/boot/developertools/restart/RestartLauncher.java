@@ -27,45 +27,49 @@ import org.springframework.boot.developertools.restart.classloader.RestartClassL
  */
 class RestartLauncher {
 
-	private final String mainClassName;
-
-	private final String[] args;
-
-	private final UncaughtExceptionHandler exceptionHandler;
+	private LaunchThread launchThread;
 
 	public RestartLauncher(String mainClassName, String[] args,
 			UncaughtExceptionHandler exceptionHandler) {
-		this.mainClassName = mainClassName;
-		this.args = args;
-		this.exceptionHandler = exceptionHandler;
+		// We need to create the launch thread early to ensure that AccessController
+		// doesn't keep a reference to the RestartClassLoader (and therefore prevent GC)
+		System.out.println("Made a restartlauncher");
+		this.launchThread = new LaunchThread(mainClassName, args, exceptionHandler);
 	}
 
-	public void start(ClassLoader parentClassLoader, URL[] urls)
+	public synchronized void start(ClassLoader parentClassLoader, URL[] urls)
 			throws InterruptedException {
+		System.out.println("Starting the RestartLauncher");
 		RestartClassLoader classLoader = new RestartClassLoader(parentClassLoader, urls);
-		LaunchThread launchThread = new LaunchThread(this.mainClassName, this.args);
-		launchThread.setDaemon(false);
+		LaunchThread launchThread = this.launchThread;
 		launchThread.setContextClassLoader(classLoader);
-		launchThread.setUncaughtExceptionHandler(this.exceptionHandler);
-		launchThread.setName("main (restartable)");
 		launchThread.start();
 		launchThread.join();
+		this.launchThread = launchThread.nextLaunchThread;
 	}
 
-	private static class LaunchThread extends Thread {
+	private class LaunchThread extends Thread {
 
 		private final String mainClassName;
 
 		private final String[] args;
 
-		public LaunchThread(String mainClassName, String[] args) {
+		private LaunchThread nextLaunchThread;
+
+		public LaunchThread(String mainClassName, String[] args,
+				UncaughtExceptionHandler exceptionHandler) {
 			this.mainClassName = mainClassName;
 			this.args = args;
+			setName("main (restartable)");
+			setUncaughtExceptionHandler(exceptionHandler);
+			setDaemon(false);
 		}
 
 		@Override
 		public void run() {
 			try {
+				this.nextLaunchThread = new LaunchThread(this.mainClassName, this.args,
+						getUncaughtExceptionHandler());
 				Class<?> mainClass = getContextClassLoader()
 						.loadClass(this.mainClassName);
 				Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
