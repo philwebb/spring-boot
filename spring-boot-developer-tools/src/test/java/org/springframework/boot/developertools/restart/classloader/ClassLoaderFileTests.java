@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload.classloader;
+package org.springframework.boot.developertools.restart.classloader;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile;
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;

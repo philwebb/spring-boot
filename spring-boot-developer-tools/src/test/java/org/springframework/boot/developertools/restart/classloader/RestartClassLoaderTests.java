@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload.classloader;
+package org.springframework.boot.developertools.restart.classloader;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,10 +34,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile;
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFiles;
-import org.springframework.boot.developertools.reload.classloader.ReloadClassLoader;
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
+import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -46,14 +46,14 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ReloadClassLoader}.
+ * Tests for {@link RestartClassLoader}.
  *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-public class ReloadClassLoaderTests {
+public class RestartClassLoaderTests {
 
-	private static final String PACKAGE = ReloadClassLoaderTests.class.getPackage()
+	private static final String PACKAGE = RestartClassLoaderTests.class.getPackage()
 			.getName();
 
 	private static final String PACKAGE_PATH = PACKAGE.replace(".", "/");
@@ -72,7 +72,7 @@ public class ReloadClassLoaderTests {
 
 	private ClassLoaderFiles updatedFiles;
 
-	private ReloadClassLoader reloadClassLoader;
+	private RestartClassLoader reloadClassLoader;
 
 	@Before
 	public void setup() throws Exception {
@@ -82,7 +82,7 @@ public class ReloadClassLoaderTests {
 		URL[] urls = new URL[] { url };
 		this.parentClassLoader = new URLClassLoader(urls, classLoader);
 		this.updatedFiles = new ClassLoaderFiles();
-		this.reloadClassLoader = new ReloadClassLoader(this.parentClassLoader,
+		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader,
 				this.updatedFiles, urls);
 	}
 
@@ -103,14 +103,14 @@ public class ReloadClassLoaderTests {
 	public void parentMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Parent must not be null");
-		new ReloadClassLoader(null, new URL[] {});
+		new RestartClassLoader(null, new URL[] {});
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UpdatedFiles must not be null");
-		new ReloadClassLoader(this.parentClassLoader, null, new URL[] {});
+		new RestartClassLoader(this.parentClassLoader, null, new URL[] {});
 	}
 
 	@Test

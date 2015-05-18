@@ -15,7 +15,7 @@
  */
 
 /**
- * Reload support
+ * Application restart support
  */
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.restart;
 

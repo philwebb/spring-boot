@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload.classloader;
+package org.springframework.boot.developertools.restart.classloader;
 
 /**
  * A sample class used to test reloading.

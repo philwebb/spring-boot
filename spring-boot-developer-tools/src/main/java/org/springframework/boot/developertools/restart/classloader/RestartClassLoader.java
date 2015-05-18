@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload.classloader;
+package org.springframework.boot.developertools.restart.classloader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -24,31 +24,32 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
 
-import org.springframework.boot.developertools.reload.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.Assert;
 
 /**
- * Disposable {@link ClassLoader} used to support class reloading. Provides parent last
- * loading for the specified URLs.
+ * Disposable {@link ClassLoader} used to support application restarting. Provides parent
+ * last loading for the specified URLs.
  *
  * @author Phillip Webb
  * @author Andy Clement
  * @since 1.3.0
  */
-public class ReloadClassLoader extends URLClassLoader {
+public class RestartClassLoader extends URLClassLoader {
 
 	private ClassLoaderFileRepository updatedFiles;
 
-	public ReloadClassLoader(ClassLoader parent, URL[] urls) {
+	public RestartClassLoader(ClassLoader parent, URL[] urls) {
 		this(parent, ClassLoaderFileRepository.NONE, urls);
 	}
 
-	public ReloadClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
+	public RestartClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
 			URL[] urls) {
 		super(urls, parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
 		this.updatedFiles = updatedFiles;
+		System.out.println("Made a new cl");
 	}
 
 	@Override
@@ -147,6 +148,12 @@ public class ReloadClassLoader extends URLClassLoader {
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		System.out.println("**************");
 	}
 
 	/**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.restart;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -25,22 +25,22 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * A filtered collections of URLs which can be reloaded.
+ * A filtered collections of URLs which can be change after the application has started.
  *
  * @author Phillip Webb
  */
-class ReloadableUrls implements Iterable<URL> {
+class ChangeableUrls implements Iterable<URL> {
 
 	private static final String[] SKIPPED_PROJECTS = { "spring-boot",
-			"spring-boot-reload", "spring-boot-autoconfigure", "spring-boot-actuator",
-			"spring-boot-starter" };
+			"spring-boot-developer-tools", "spring-boot-autoconfigure",
+			"spring-boot-actuator", "spring-boot-starter" };
 
 	private static final Pattern STARTER_PATTERN = Pattern
 			.compile("\\/spring-boot-starter-[\\w-]+\\/");
 
 	private final List<URL> urls;
 
-	private ReloadableUrls(URL... urls) {
+	private ChangeableUrls(URL... urls) {
 		List<URL> reloadableUrls = new ArrayList<URL>(urls.length);
 		for (URL url : urls) {
 			if (isReloadable(url)) {
@@ -86,17 +86,21 @@ class ReloadableUrls implements Iterable<URL> {
 		return this.urls.toArray(new URL[this.urls.size()]);
 	}
 
+	public List<URL> toList() {
+		return Collections.unmodifiableList(this.urls);
+	}
+
 	@Override
 	public String toString() {
 		return this.urls.toString();
 	}
 
-	public static ReloadableUrls fromUrlClassLoader(URLClassLoader classLoader) {
+	public static ChangeableUrls fromUrlClassLoader(URLClassLoader classLoader) {
 		return fromUrls(classLoader.getURLs());
 	}
 
-	public static ReloadableUrls fromUrls(URL... urls) {
-		return new ReloadableUrls(urls);
+	public static ChangeableUrls fromUrls(URL... urls) {
+		return new ChangeableUrls(urls);
 	}
 
 }

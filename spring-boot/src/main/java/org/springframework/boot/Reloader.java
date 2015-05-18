@@ -32,6 +32,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  */
 public abstract class Reloader {
 
+	// FIXME delete
+
 	/**
 	 * Called to prepare the reloader. This method will be called for each located
 	 * {@link Reloader} before any {@link #start(String[])} methods are called.

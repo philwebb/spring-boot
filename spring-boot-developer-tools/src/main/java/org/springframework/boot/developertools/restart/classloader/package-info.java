@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
-
-import org.springframework.boot.Reloader;
-
 /**
- * @author Phillip Webb
+ * Classloaders used for reload support
  */
-public class LocalReloader extends Reloader {
+package org.springframework.boot.developertools.restart.classloader;
 
-	// FIXME name
-
-	@Override
-	protected void start(String[] args) {
-	}
-
-}

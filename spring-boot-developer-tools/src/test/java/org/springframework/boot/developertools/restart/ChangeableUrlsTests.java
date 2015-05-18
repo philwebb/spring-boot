@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.reload;
+package org.springframework.boot.developertools.restart;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +28,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ReloadableUrls}.
+ * Tests for {@link ChangeableUrls}.
  *
  * @author Phillip Webb
  */
-public class ReloadableUrlsTests {
+public class ChangeableUrlsTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -40,24 +40,24 @@ public class ReloadableUrlsTests {
 	@Test
 	public void folderUrl() throws Exception {
 		URL url = makeUrl("myproject");
-		assertThat(ReloadableUrls.fromUrls(url).size(), equalTo(1));
+		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(1));
 	}
 
 	@Test
 	public void fileUrl() throws Exception {
 		URL url = this.temporaryFolder.newFile().toURI().toURL();
-		assertThat(ReloadableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
 	}
 
 	@Test
 	public void httpUrl() throws Exception {
 		URL url = new URL("http://spring.io");
-		assertThat(ReloadableUrls.fromUrls(url).size(), equalTo(0));
+		assertThat(ChangeableUrls.fromUrls(url).size(), equalTo(0));
 	}
 
 	@Test
 	public void skipsUrls() throws Exception {
-		ReloadableUrls urls = ReloadableUrls
+		ChangeableUrls urls = ChangeableUrls
 				.fromUrls(makeUrl("spring-boot"), makeUrl("spring-boot-autoconfigure"),
 						makeUrl("spring-boot-actuator"), makeUrl("spring-boot-starter"),
 						makeUrl("spring-boot-starter-some-thing"));

@@ -277,6 +277,7 @@ public class SpringApplication {
 		listeners.started();
 		try {
 			context = doRun(listeners, args);
+
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(

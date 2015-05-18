@@ -111,7 +111,7 @@ public class SpringBootReloader extends Reloader {
 				}
 			}
 		}
-		throw new IllegalStateException("Reload must be applied to the main method");
+		throw new IllegalStateException("Unable to find main method");
 	}
 
 	private Method getMainMethod(StackTraceElement element) {
