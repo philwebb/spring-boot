@@ -38,6 +38,8 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
+import org.springframework.cglib.core.ClassNameReader;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -74,6 +76,8 @@ public class Restarter {
 
 	private Log logger = new DeferredLog();
 
+	private final boolean forceReferenceCleanup;
+
 	private final ClassLoader applicationClassLoader;
 
 	private final String mainClassName;
@@ -88,23 +92,26 @@ public class Restarter {
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
-	 * @param args the applicaton arguments
+	 * @param args the application arguments
+	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(String[] args) {
-		this(Thread.currentThread(), args);
+	protected Restarter(String[] args, boolean forceReferenceCleanup) {
+		this(Thread.currentThread(), args, forceReferenceCleanup);
 	}
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
 	 * @param thread the source thread
 	 * @param args the application arguments
+	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(Thread thread, String[] args) {
+	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		SilentExitExceptionHandler.setup(thread);
+		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.applicationClassLoader = thread.getContextClassLoader();
 		this.mainClassName = new MainMethod(thread).getDeclaringClassName();
 		this.args = args;
@@ -113,6 +120,7 @@ public class Restarter {
 	}
 
 	private void initialize() {
+		preInitializeLeakyClasses();
 		try {
 			ChangeableUrls changeableUrls = ChangeableUrls
 					.fromUrlClassLoader((URLClassLoader) this.applicationClassLoader);
@@ -128,6 +136,18 @@ public class Restarter {
 			this.logger.warn("Unable to initialize restarter", ex);
 		}
 		SilentExitExceptionHandler.exitCurrentThread();
+	}
+
+	private void preInitializeLeakyClasses() {
+		try {
+			Class<?> readerClass = ClassNameReader.class;
+			Field field = readerClass.getDeclaredField("EARLY_EXIT");
+			field.setAccessible(true);
+			((Throwable) field.get(null)).fillInStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
@@ -164,8 +184,9 @@ public class Restarter {
 	private void stop() throws Exception {
 		triggerShutdownHooks();
 		cleanupCaches();
-		System.gc();
-		forceOOM();
+		if (this.forceReferenceCleanup) {
+			forceReferenceCleanup();
+		}
 		System.gc();
 		System.runFinalization();
 	}
@@ -183,16 +204,14 @@ public class Restarter {
 
 	private void cleanupCaches() throws Exception {
 		Introspector.flushCaches();
-		cleanupReferenceCaches();
-		cleanupCglibCaches();
-		cleanupJvmCaches();
+		cleanupKnownCaches();
 	}
 
-	private void cleanupReferenceCaches() throws Exception {
+	private void cleanupKnownCaches() throws Exception {
 		// Whilst not strictly necessary it helps to cleanup soft reference caches
 		// early rather than waiting for memory limits to be reached
-		// clear(ResolvableType.class, "cache");
-		// clear("spring.framework.core.SerializableTypeWrapper", "cache");
+		clear(ResolvableType.class, "cache");
+		clear("org.springframework.core.SerializableTypeWrapper", "cache");
 		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
 		clear(CachedIntrospectionResults.class, "strongClassCache");
 		clear(CachedIntrospectionResults.class, "softClassCache");
@@ -200,41 +219,6 @@ public class Restarter {
 		clear(ReflectionUtils.class, "declaredMethodsCache");
 		clear(AnnotationUtils.class, "findAnnotationCache");
 		clear(AnnotationUtils.class, "annotatedInterfaceCache");
-	}
-
-	private void cleanupCglibCaches() throws Exception {
-		// cleanupCglibCache(Enhancer.class);
-		// cleanupCglibCache(FastClass.Generator.class);
-	}
-
-	private void cleanupCglibCache(Class<?> classType) throws NoSuchFieldException,
-			IllegalAccessException {
-		Field sourceField = classType.getDeclaredField("SOURCE");
-		sourceField.setAccessible(true);
-		Object source = sourceField.get(null);
-		Field mapField = source.getClass().getDeclaredField("cache");
-		mapField.setAccessible(true);
-		Map<?, ?> cache = ((Map<?, ?>) mapField.get(source));
-		cache.clear();
-		// for (Iterator<?> iterator = cache.keySet().iterator(); iterator.hasNext();) {
-		// if (iterator.next() instanceof RestartClassLoader) {
-		// iterator.remove();
-		// }
-		// }
-	}
-
-	public void forceOOM() {
-		try {
-			final List<long[]> memhog = new LinkedList<long[]>();
-			while (true) {
-				memhog.add(new long[102400]);
-			}
-		}
-		catch (final OutOfMemoryError e) {
-		}
-	}
-
-	private void cleanupJvmCaches() throws Exception {
 		clear("com.sun.naming.internal.ResourceManager", "propertiesCache");
 	}
 
@@ -264,6 +248,20 @@ public class Restarter {
 				}
 
 			}
+		}
+	}
+
+	/**
+	 * Cleanup any soft/weak references by forcing an {@link OutOfMemoryError} error.
+	 */
+	private void forceReferenceCleanup() {
+		try {
+			final List<long[]> memory = new LinkedList<long[]>();
+			while (true) {
+				memory.add(new long[102400]);
+			}
+		}
+		catch (final OutOfMemoryError ex) {
 		}
 	}
 
@@ -299,9 +297,22 @@ public class Restarter {
 	 * @param args main application arguments
 	 */
 	public static void initialize(String[] args) {
+		initialize(args, false);
+	}
+
+	/**
+	 * Initialize restart support for the current application. Called automatically by
+	 * {@link RestartApplicationListener} but can also be called directly if main
+	 * application arguments are not the same as those passed to the
+	 * {@link SpringApplication}.
+	 * @param args main application arguments
+	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
+	 * each restart. This will slow down restarts and is indended primarily for testing
+	 */
+	public static void initialize(String[] args, boolean forceReferenceCleanup) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
-				instance = new Restarter(args);
+				instance = new Restarter(args, forceReferenceCleanup);
 			}
 			instance.initialize();
 		}

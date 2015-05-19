@@ -96,6 +96,7 @@ public class SampleTomcatApplication {
 	}
 
 	public static void main(String[] args) {
+		Restarter.initialize(args, true);
 		SpringApplication.run(SampleTomcatApplication.class, args);
 	}
 
