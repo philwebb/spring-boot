@@ -16,14 +16,14 @@ public class TickTickBean implements Lifecycle, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		System.out.println("Start");
 
-		new RuntimeException("running the ticktick").printStackTrace();
+		// new RuntimeException("running the ticktick").printStackTrace();
 
 		AccessControlContext context = AccessController.getContext();
 		Field field = AccessControlContext.class.getDeclaredField("context");
 		field.setAccessible(true);
 		ProtectionDomain[] d = (ProtectionDomain[]) field.get(context);
 		for (ProtectionDomain protectionDomain : d) {
-			System.err.println(protectionDomain);
+			// System.err.println(protectionDomain);
 		}
 
 		this.t = new Thready();

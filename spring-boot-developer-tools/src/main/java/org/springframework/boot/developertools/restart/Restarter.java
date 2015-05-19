@@ -17,6 +17,7 @@
 package org.springframework.boot.developertools.restart;
 
 import java.beans.Introspector;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -24,33 +25,35 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * @author Phillip Webb
  */
 public class Restarter {
 
-	// Classloader Files
-	// The URLs
-	// The scope
-	// the restart method
-
 	private static Restarter instance;
 
-	private ClassLoader classLoader;
+	private final ClassLoader applicationClassLoader;
+
+	private final String mainClassName;
+
+	private final String[] args;
+
+	private UncaughtExceptionHandler exceptionHandler;
 
 	private List<URL> urls = new ArrayList<URL>();
 
-	private RestartLauncher launcher;
-
-	private String mainMethodName;
-
-	private String[] args;
-
-	private Thread thread;
+	private ActionThead actionThead;
 
 	protected Restarter(String[] args) {
 		this(Thread.currentThread(), args);
@@ -59,29 +62,26 @@ public class Restarter {
 	protected Restarter(Thread thread, String[] args) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
-		MainMethod mainMethod = new MainMethod(thread);
-		this.mainMethodName = mainMethod.getDeclaringClassName();
-		this.args = args;
-		this.thread = thread;
 		SilentUncaughtExceptionHandler.applyTo(thread);
-		this.classLoader = thread.getContextClassLoader();
-		// FIXME ifNotAFatJar
-		// configure reloadable URLS
-		// start the launcher
-		// exit the main thread
-		// else just wait for a restart
+		this.applicationClassLoader = thread.getContextClassLoader();
+		this.mainClassName = new MainMethod(thread).getDeclaringClassName();
+		this.args = args;
+		this.exceptionHandler = thread.getUncaughtExceptionHandler();
+		this.actionThead = new ActionThead();
 	}
 
 	private void initialize() {
 		System.out.println("Initialize Restarter");
 		try {
 			ChangeableUrls changeableUrls = ChangeableUrls
-					.fromUrlClassLoader((URLClassLoader) this.classLoader);
+					.fromUrlClassLoader((URLClassLoader) this.applicationClassLoader);
 			this.urls.addAll(changeableUrls.toList());
-			this.launcher = new RestartLauncher(this.mainMethodName, this.args,
-					this.thread.getUncaughtExceptionHandler(), this.classLoader,
-					changeableUrls.toArray());
-			start();
+			runAction(new Action() {
+				@Override
+				public void run() throws Exception {
+					start();
+				}
+			});
 			throw new SilentExitException();
 		}
 		catch (Exception ex) {
@@ -94,37 +94,29 @@ public class Restarter {
 	}
 
 	public void restart() {
-		// Use a non-deamon thread to ensure the the JVM doesn't exit
-		Thread restartThread = new Thread() {
+		runAction(new Action() {
 			@Override
-			public void run() {
-				try {
-					Restarter.this.stop();
-					Restarter.this.start();
-					System.gc();
-				}
-				catch (Exception ex) {
-					ex.printStackTrace();
-					throw new IllegalStateException(ex);
-				}
+			public void run() throws Exception {
+				Restarter.this.stop();
+				Restarter.this.start();
 			}
-		};
-		restartThread.setDaemon(false);
-		restartThread.start();
-		try {
-			restartThread.join();
-		}
-		catch (InterruptedException ex) {
-		}
+		});
 	}
 
 	private void start() throws Exception {
-		this.launcher.start(this.classLoader, getUrls());
+		RestartClassLoader classLoader = new RestartClassLoader(
+				this.applicationClassLoader, getUrls());
+		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
+				this.args, this.exceptionHandler);
+		launcher.start();
+		System.gc();
+		System.runFinalization();
+		launcher.join();
 	}
 
 	private void stop() throws Exception {
 		triggerShutdownHooks();
-		Introspector.flushCaches();
+		cleanupCaches();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -138,11 +130,45 @@ public class Restarter {
 		field.set(null, new IdentityHashMap());
 	}
 
+	private void cleanupCaches() throws Exception {
+		Introspector.flushCaches();
+		cleanupSoftReferenceCaches();
+	}
+
+	private void cleanupSoftReferenceCaches() throws Exception {
+		// Whilst not strictly necessary it helps to cleanup soft reference caches
+		// early rather than waiting for memory limits to be reached
+		clear(ResolvableType.class, "cache");
+		clear(CachedIntrospectionResults.class, "acceptedClassLoaders");
+		clear(CachedIntrospectionResults.class, "strongClassCache");
+		clear(CachedIntrospectionResults.class, "softClassCache");
+		clear(ReflectionUtils.class, "declaredFieldsCache");
+		clear(ReflectionUtils.class, "declaredMethodsCache");
+		clear(AnnotationUtils.class, "findAnnotationCache");
+		clear(AnnotationUtils.class, "annotatedInterfaceCache");
+	}
+
+	private void clear(Class<?> type, String fieldName) throws Exception {
+		Field field = type.getDeclaredField(fieldName);
+		field.setAccessible(true);
+		Object instance = field.get(null);
+		if (instance instanceof Set) {
+			((Set<?>) instance).clear();
+		}
+		if (instance instanceof Map) {
+			((Map<?, ?>) instance).clear();
+		}
+	}
+
 	private URL[] getUrls() {
 		return new ArrayList<URL>(this.urls).toArray(new URL[this.urls.size()]);
 	}
 
 	public void logStartupInformation() {
+	}
+
+	private synchronized void runAction(Action action) {
+		this.actionThead.run(action);
 	}
 
 	/**
@@ -168,6 +194,44 @@ public class Restarter {
 	public synchronized static Restarter getInstance() {
 		Assert.state(instance != null, "Restarter has not been initialized");
 		return instance;
+	}
+
+	private static interface Action {
+
+		void run() throws Exception;
+
+	}
+
+	private class ActionThead extends Thread {
+
+		private Action action;
+
+		public ActionThead() {
+			setDaemon(false);
+		}
+
+		@Override
+		public void run() {
+			try {
+				this.action.run();
+				Restarter.this.actionThead = new ActionThead();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		public void run(Action action) {
+			this.action = action;
+			start();
+			try {
+				join();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
+
 	}
 
 }
