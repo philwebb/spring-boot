@@ -133,6 +133,13 @@ public class DeferredLog implements Log {
 		this.lines.clear();
 	}
 
+	public static Log replay(Log source, Log destination) {
+		if (source instanceof DeferredLog) {
+			((DeferredLog) source).replayTo(destination);
+		}
+		return destination;
+	}
+
 	private static class Line {
 
 		private final LogLevel level;

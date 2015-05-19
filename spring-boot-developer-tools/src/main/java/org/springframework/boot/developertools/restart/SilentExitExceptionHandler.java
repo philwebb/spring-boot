@@ -19,15 +19,15 @@ package org.springframework.boot.developertools.restart;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
- * {@link UncaughtExceptionHandler} decorator that ignores {@link SilentExitException}.
+ * {@link UncaughtExceptionHandler} decorator that allows a thread to exit silently.
  *
  * @author Phillip Webb
  */
-class SilentUncaughtExceptionHandler implements UncaughtExceptionHandler {
+class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	private final UncaughtExceptionHandler delegate;
 
-	public SilentUncaughtExceptionHandler(UncaughtExceptionHandler delegate) {
+	public SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
 		this.delegate = delegate;
 	}
 
@@ -41,12 +41,20 @@ class SilentUncaughtExceptionHandler implements UncaughtExceptionHandler {
 		}
 	}
 
-	public static void applyTo(Thread thread) {
+	public static void setup(Thread thread) {
 		UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
-		if (!(handler instanceof SilentUncaughtExceptionHandler)) {
-			handler = new SilentUncaughtExceptionHandler(handler);
+		if (!(handler instanceof SilentExitExceptionHandler)) {
+			handler = new SilentExitExceptionHandler(handler);
 			thread.setUncaughtExceptionHandler(handler);
 		}
+	}
+
+	public static void exitCurrentThread() {
+		throw new SilentExitException();
+	}
+
+	private static class SilentExitException extends RuntimeException {
+
 	}
 
 }

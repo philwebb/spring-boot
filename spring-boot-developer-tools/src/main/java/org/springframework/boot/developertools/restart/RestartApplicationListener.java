@@ -27,8 +27,11 @@ import org.springframework.core.Ordered;
  * {@link ApplicationListener} to initialize the {@link Restarter}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
+ * @see Restarter
  */
-public class RestartApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
+public class RestartApplicationListener implements ApplicationListener<ApplicationEvent>,
+		Ordered {
 
 	private int order = HIGHEST_PRECEDENCE;
 
@@ -39,7 +42,7 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		}
 		if (event instanceof ApplicationReadyEvent
 				|| event instanceof ApplicationFailedEvent) {
-			Restarter.getInstance().logStartupInformation();
+			Restarter.getInstance().finish();
 		}
 	}
 

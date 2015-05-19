@@ -24,7 +24,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Enumeration;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.core.SmartClassLoader;
 import org.springframework.util.Assert;
 
 /**
@@ -35,7 +38,9 @@ import org.springframework.util.Assert;
  * @author Andy Clement
  * @since 1.3.0
  */
-public class RestartClassLoader extends URLClassLoader {
+public class RestartClassLoader extends URLClassLoader implements SmartClassLoader {
+
+	private static Log logger = LogFactory.getLog(RestartClassLoader.class);
 
 	private ClassLoaderFileRepository updatedFiles;
 
@@ -46,11 +51,12 @@ public class RestartClassLoader extends URLClassLoader {
 	public RestartClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
 			URL[] urls) {
 		super(urls, parent);
-		System.out.println("Dat parent is " + parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
 		this.updatedFiles = updatedFiles;
-		System.out.println("Made a new cl");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Created RestartClassLoader " + toString());
+		}
 	}
 
 	@Override
@@ -154,8 +160,17 @@ public class RestartClassLoader extends URLClassLoader {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		System.out
-				.println("************************************************************************************************************************************************************************");
+		// if (logger.isDebugEnabled()) {
+		// logger.debug("Finalized classloader " + toString());
+		// }
+		System.out.println("***********************************************************");
+		System.out.println(toString());
+		System.out.println("***********************************************************");
+	}
+
+	@Override
+	public boolean isClassReloadable(Class<?> classType) {
+		return (classType.getClassLoader() instanceof RestartClassLoader);
 	}
 
 	/**

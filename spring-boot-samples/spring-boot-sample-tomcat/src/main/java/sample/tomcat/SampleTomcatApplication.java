@@ -26,23 +26,25 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.developertools.restart.Restarter;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 
-//@SpringBootApplication
-//@Configuration
+@SpringBootApplication
+@Configuration
 public class SampleTomcatApplication {
 
 	private static Log logger = LogFactory.getLog(SampleTomcatApplication.class);
 
 	private byte[] bytes = new byte[1024 * 100];
 
-	@Bean
+	// @Bean
 	protected ServletContextListener listener() {
 		return new ServletContextListener() {
 
@@ -66,6 +68,10 @@ public class SampleTomcatApplication {
 			@Override
 			public void afterPropertiesSet() throws Exception {
 				Thread thread = new Thread() {
+					{
+						setName("MyRestart");
+					}
+
 					@Override
 					public void run() {
 						try {
@@ -84,12 +90,16 @@ public class SampleTomcatApplication {
 		};
 	}
 
-	@Bean
+	// @Bean
 	public TickTickBean tickBean() {
 		return new TickTickBean();
 	}
 
-	public static void ccmain(String[] args) {
+	public static void main(String[] args) {
+		SpringApplication.run(SampleTomcatApplication.class, args);
+	}
+
+	public static void xxxmain(String[] args) {
 		SpringApplication app = new SpringApplication(SampleTomcatApplication.class);
 		app.setWebEnvironment(false);
 		app.run(args);
@@ -114,7 +124,7 @@ public class SampleTomcatApplication {
 	}
 
 	@SuppressWarnings("resource")
-	public static void main(String[] args) throws Exception {
+	public static void ymain(String[] args) throws Exception {
 		Restarter.initialize(args);
 		SampleTomcatApplication application = new SampleTomcatApplication();
 		application.restartBean().afterPropertiesSet();
@@ -129,8 +139,11 @@ public class SampleTomcatApplication {
 		// ass(context);
 		// context.refresh();
 
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				Sometin.class);
+		GenericApplicationContext context = new GenericApplicationContext(); // AnnotationConfigApplicationContext();
+		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(context);
+		reader.register(Sometin.class);
+		// context.register(Wibble.class);
+		context.refresh();
 		context.registerShutdownHook();
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -148,8 +161,8 @@ public class SampleTomcatApplication {
 	 * @param context
 	 */
 	private static void ass(GenericApplicationContext context) {
-		// RootBeanDefinition beanDefinition = new RootBeanDefinition(String.class);
-		// context.registerBeanDefinition("test", beanDefinition);
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(String.class);
+		context.registerBeanDefinition("test", beanDefinition);
 
 		Set<BeanDefinitionHolder> set = AnnotationConfigUtils
 				.registerAnnotationConfigProcessors(context, null);
@@ -174,10 +187,10 @@ public class SampleTomcatApplication {
 
 	}
 
-	// @Configuration
+	@Configuration
 	public static class Sometin {
 
-		@Bean
+		// @Bean
 		public String hello() {
 			return "Hello";
 		}
