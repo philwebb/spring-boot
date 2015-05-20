@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.reload.autoconfigure;
+package org.springframework.boot.developertools.autoconfigure;
 
 import java.util.Collections;
 import java.util.HashMap;
