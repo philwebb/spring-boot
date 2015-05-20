@@ -82,7 +82,7 @@ public class LiveReloadServerTests {
 		try {
 			Socket socket = openSocket(client, new Socket());
 			this.server.triggerReload();
-			Thread.sleep(400);
+			Thread.sleep(500);
 			this.server.stop();
 			assertThat(socket.getMessages(0),
 					containsString("http://livereload.com/protocols/official-7"));

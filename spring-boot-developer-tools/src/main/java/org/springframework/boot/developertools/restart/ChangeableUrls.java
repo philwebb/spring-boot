@@ -86,10 +86,6 @@ class ChangeableUrls implements Iterable<URL> {
 		return this.urls.toArray(new URL[this.urls.size()]);
 	}
 
-	public List<URL> toList() {
-		return Collections.unmodifiableList(this.urls);
-	}
-
 	@Override
 	public String toString() {
 		return this.urls.toString();

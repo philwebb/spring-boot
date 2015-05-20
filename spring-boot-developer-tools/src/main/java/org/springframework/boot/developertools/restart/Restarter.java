@@ -23,14 +23,16 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,9 +80,9 @@ public class Restarter {
 
 	private final boolean forceReferenceCleanup;
 
-	private final ClassLoader applicationClassLoader;
-
 	private final String mainClassName;
+
+	private final ClassLoader applicationClassLoader;
 
 	private final String[] args;
 
@@ -88,44 +90,55 @@ public class Restarter {
 
 	private List<URL> urls = new ArrayList<URL>();
 
-	private ActionThead actionThead;
+	private BlockingDeque<ActionThead> actionThead = new LinkedBlockingDeque<ActionThead>();
 
-	/**
-	 * Internal constructor to create a new {@link Restarter} instance.
-	 * @param args the application arguments
-	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
-	 * @see #initialize(String[])
-	 */
-	protected Restarter(String[] args, boolean forceReferenceCleanup) {
-		this(Thread.currentThread(), args, forceReferenceCleanup);
-	}
+	private URL[] initialUrs;
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
 	 * @param thread the source thread
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
+	 * @param initializer
 	 * @see #initialize(String[])
 	 */
-	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup) {
+	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
+			RestartInitializer initializer) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
+		Assert.notNull(initializer, "Initializer must not be null");
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
+		this.initialUrs = initializer.getInitialUrls(thread);
+		this.mainClassName = getMainClassName(thread);
 		this.applicationClassLoader = thread.getContextClassLoader();
-		this.mainClassName = new MainMethod(thread).getDeclaringClassName();
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
-		this.actionThead = new ActionThead();
+		this.actionThead.add(new ActionThead());
 	}
 
-	private void initialize() {
-		preInitializeLeakyClasses();
+	private String getMainClassName(Thread thread) {
 		try {
-			ChangeableUrls changeableUrls = ChangeableUrls
-					.fromUrlClassLoader((URLClassLoader) this.applicationClassLoader);
-			this.urls.addAll(changeableUrls.toList());
-			runAction("Initialize", false, new Action() {
+			return new MainMethod(thread).getDeclaringClassName();
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
+	protected void initialize() {
+		preInitializeLeakyClasses();
+		if (this.initialUrs != null) {
+			this.urls.addAll(Arrays.asList(this.initialUrs));
+			immediateRestart();
+		}
+	}
+
+	private void immediateRestart() {
+		try {
+			System.out.println(">> Some wants immediate restart");
+			new Exception().printStackTrace();
+			runAction("Immediate Restart", true, new Action() {
 				@Override
 				public void run() throws Exception {
 					start();
@@ -138,6 +151,10 @@ public class Restarter {
 		SilentExitExceptionHandler.exitCurrentThread();
 	}
 
+	/**
+	 * CGLIB has a private exception field which needs to initialized early to ensure that
+	 * the stacktrace doesn't retain a reference to the RestartClassLoader.
+	 */
 	private void preInitializeLeakyClasses() {
 		try {
 			Class<?> readerClass = ClassNameReader.class;
@@ -154,6 +171,7 @@ public class Restarter {
 	 * Restart the running application.
 	 */
 	public void restart() {
+		System.out.println(">> Someone called restart");
 		runAction("Restart", false, new Action() {
 			@Override
 			public void run() throws Exception {
@@ -173,15 +191,17 @@ public class Restarter {
 	}
 
 	private void start() throws Exception {
+		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		RestartClassLoader classLoader = new RestartClassLoader(
 				this.applicationClassLoader, getUrls());
+		System.out.println("***** startig the relauncher");
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
 				this.args, this.exceptionHandler);
 		launcher.start();
 		launcher.join();
 	}
 
-	private void stop() throws Exception {
+	protected void stop() throws Exception {
 		triggerShutdownHooks();
 		cleanupCaches();
 		if (this.forceReferenceCleanup) {
@@ -285,19 +305,34 @@ public class Restarter {
 	 * @param join if the caller should block until the action completes
 	 * @param action the action to run
 	 */
-	private synchronized void runAction(String name, boolean join, Action action) {
-		this.actionThead.run(name, join, action);
+	private void runAction(String name, boolean join, Action action) {
+		try {
+			this.actionThead.takeFirst().run(name, join, action);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	/**
-	 * Initialize restart support for the current application. Called automatically by
-	 * {@link RestartApplicationListener} but can also be called directly if main
-	 * application arguments are not the same as those passed to the
-	 * {@link SpringApplication}.
+	 * Initialize restart support. See
+	 * {@link #initialize(String[], boolean, RestartInitializer)} for details.
 	 * @param args main application arguments
+	 * @see #initialize(String[], boolean, RestartInitializer)
 	 */
 	public static void initialize(String[] args) {
-		initialize(args, false);
+		initialize(args, false, new DefaultRestartInitializer());
+	}
+
+	/**
+	 * Initialize restart support. See
+	 * {@link #initialize(String[], boolean, RestartInitializer)} for details.
+	 * @param args main application arguments
+	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
+	 * @see #initialize(String[], boolean, RestartInitializer)
+	 */
+	public static void initialize(String[] args, boolean forceReferenceCleanup) {
+		initialize(args, forceReferenceCleanup, new DefaultRestartInitializer());
 	}
 
 	/**
@@ -307,12 +342,15 @@ public class Restarter {
 	 * {@link SpringApplication}.
 	 * @param args main application arguments
 	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
-	 * each restart. This will slow down restarts and is indended primarily for testing
+	 * each restart. This will slow down restarts and is intended primarily for testing
+	 * @param initializer the restart initializer
 	 */
-	public static void initialize(String[] args, boolean forceReferenceCleanup) {
+	public static void initialize(String[] args, boolean forceReferenceCleanup,
+			RestartInitializer initializer) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
-				instance = new Restarter(args, forceReferenceCleanup);
+				instance = new Restarter(Thread.currentThread(), args,
+						forceReferenceCleanup, initializer);
 			}
 			instance.initialize();
 		}
@@ -329,6 +367,13 @@ public class Restarter {
 	}
 
 	/**
+	 * Clear the instance.
+	 */
+	static void clearInstance() {
+		instance = null;
+	}
+
+	/**
 	 * An action that can be run by the {@link ActionThead}.
 	 */
 	private static interface Action {
@@ -339,7 +384,7 @@ public class Restarter {
 
 	/**
 	 * A {@link Thread} used to run actions without leaking classloader memory.
-	 * @see Restarter#runAction(Action)
+	 * @see Restarter#runAction(String, boolean, Action)
 	 */
 	private class ActionThead extends Thread {
 
@@ -352,11 +397,11 @@ public class Restarter {
 		@Override
 		public void run() {
 			try {
-				this.action.run();
 				// We are safe to refresh the ActionThread (and indirectly call
 				// AccessController.getContext()) since our stack doesn't include the
 				// RestartClassLoader
-				Restarter.this.actionThead = new ActionThead();
+				Restarter.this.actionThead.put(new ActionThead());
+				this.action.run();
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
