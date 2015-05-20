@@ -28,6 +28,18 @@ import java.net.URL;
 public interface RestartInitializer {
 
 	/**
+	 * {@link RestartInitializer} that doesn't return any URLs.
+	 */
+	public static final RestartInitializer NONE = new RestartInitializer() {
+
+		@Override
+		public URL[] getInitialUrls(Thread thread) {
+			return null;
+		}
+
+	};
+
+	/**
 	 * Return the initial set of URLs for the {@link Restarter} or {@code null} if no
 	 * initial restart is required.
 	 * @param thread the source thread

@@ -75,7 +75,6 @@ public class SampleTomcatApplication {
 					@Override
 					public void run() {
 						try {
-							System.gc();
 							Thread.sleep(2000);
 							Restarter.getInstance().restart();
 							System.out.println("Bye from the restarter");

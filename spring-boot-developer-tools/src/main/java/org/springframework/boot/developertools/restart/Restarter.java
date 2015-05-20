@@ -17,8 +17,6 @@
 package org.springframework.boot.developertools.restart;
 
 import java.beans.Introspector;
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -107,6 +105,7 @@ public class Restarter {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
+		this.logger.debug("Creating new Restarter for thread " + thread);
 		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.initialUrs = initializer.getInitialUrls(thread);
@@ -130,13 +129,13 @@ public class Restarter {
 		preInitializeLeakyClasses();
 		if (this.initialUrs != null) {
 			this.urls.addAll(Arrays.asList(this.initialUrs));
+			this.logger.debug("Immediately restarting application");
 			immediateRestart();
 		}
 	}
 
 	private void immediateRestart() {
 		try {
-			System.out.println(">> Some wants immediate restart");
 			new Exception().printStackTrace();
 			runAction("Immediate Restart", true, new Action() {
 				@Override
@@ -171,7 +170,7 @@ public class Restarter {
 	 * Restart the running application.
 	 */
 	public void restart() {
-		System.out.println(">> Someone called restart");
+		this.logger.debug("Restarting application");
 		runAction("Restart", false, new Action() {
 			@Override
 			public void run() throws Exception {
@@ -179,22 +178,16 @@ public class Restarter {
 				Restarter.this.start();
 			}
 		});
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		if (classLoader instanceof Closeable) {
-			try {
-				((Closeable) classLoader).close();
-			}
-			catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
 	}
 
 	private void start() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		RestartClassLoader classLoader = new RestartClassLoader(
-				this.applicationClassLoader, getUrls());
-		System.out.println("***** startig the relauncher");
+				this.applicationClassLoader, this.urls.toArray(new URL[this.urls.size()]));
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Starting application " + this.mainClassName
+					+ " with URLs " + Arrays.asList(classLoader.getURLs()));
+		}
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
 				this.args, this.exceptionHandler);
 		launcher.start();
@@ -202,6 +195,7 @@ public class Restarter {
 	}
 
 	protected void stop() throws Exception {
+		this.logger.debug("Stopping application");
 		triggerShutdownHooks();
 		cleanupCaches();
 		if (this.forceReferenceCleanup) {
@@ -283,10 +277,6 @@ public class Restarter {
 		}
 		catch (final OutOfMemoryError ex) {
 		}
-	}
-
-	private URL[] getUrls() {
-		return new ArrayList<URL>(this.urls).toArray(new URL[this.urls.size()]);
 	}
 
 	/**
