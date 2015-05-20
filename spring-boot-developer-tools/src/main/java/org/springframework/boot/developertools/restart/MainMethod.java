@@ -36,8 +36,6 @@ class MainMethod {
 
 	public MainMethod(Thread thread) {
 		Assert.notNull(thread, "Thread must not be null");
-		System.out.println(thread);
-		System.out.println(thread.getContextClassLoader());
 		this.method = getMainMethod(thread);
 	}
 

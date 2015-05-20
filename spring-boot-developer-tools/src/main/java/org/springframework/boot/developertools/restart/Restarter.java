@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -78,6 +80,8 @@ public class Restarter {
 
 	private final boolean forceReferenceCleanup;
 
+	private URL[] initialUrs;
+
 	private final String mainClassName;
 
 	private final ClassLoader applicationClassLoader;
@@ -88,9 +92,12 @@ public class Restarter {
 
 	private List<URL> urls = new ArrayList<URL>();
 
+	private Map<String, Object> attributes = Collections
+			.synchronizedMap(new HashMap<String, Object>());
+
 	private BlockingDeque<ActionThead> actionThead = new LinkedBlockingDeque<ActionThead>();
 
-	private URL[] initialUrs;
+	private boolean finished = false;
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -136,7 +143,6 @@ public class Restarter {
 
 	private void immediateRestart() {
 		try {
-			new Exception().printStackTrace();
 			runAction("Immediate Restart", true, new Action() {
 				@Override
 				public void run() throws Exception {
@@ -162,7 +168,7 @@ public class Restarter {
 			((Throwable) field.get(null)).fillInStackTrace();
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			this.logger.warn("Unable to pre-initialize classes", ex);
 		}
 	}
 
@@ -283,8 +289,15 @@ public class Restarter {
 	 * Called to finish {@link Restarter} initialization when application logging is
 	 * available.
 	 */
-	void finish() {
-		this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
+	synchronized void finish() {
+		if (!isFinished()) {
+			this.logger = DeferredLog.replay(this.logger, LogFactory.getLog(getClass()));
+			this.finished = true;
+		}
+	}
+
+	boolean isFinished() {
+		return this.finished;
 	}
 
 	/**
@@ -302,6 +315,22 @@ public class Restarter {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	/**
+	 * Return a synchronized map of attributes that remain between restarts.
+	 * @return the restarter attributes
+	 */
+	public Map<String, Object> getAttributes() {
+		return this.attributes;
+	}
+
+	/**
+	 * Return the initial set of URLs as configured by the {@link RestartInitializer}.
+	 * @return the initial URLs or {@code null}
+	 */
+	public URL[] getInitialUrs() {
+		return this.initialUrs;
 	}
 
 	/**

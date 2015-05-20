@@ -51,6 +51,10 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		return this.order;
 	}
 
+	/**
+	 * Set the order of the listener.
+	 * @param order the order of the listener
+	 */
 	public void setOrder(int order) {
 		this.order = order;
 	}
