@@ -31,8 +31,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,9 +98,11 @@ public class Restarter {
 
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
-	private BlockingDeque<ActionThead> actionThead = new LinkedBlockingDeque<ActionThead>();
+	private BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
 
 	private boolean finished = false;
+
+	private Lock stopLock = new ReentrantLock();
 
 	/**
 	 * Internal constructor to create a new {@link Restarter} instance.
@@ -120,7 +125,7 @@ public class Restarter {
 		this.applicationClassLoader = thread.getContextClassLoader();
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
-		this.actionThead.add(new ActionThead());
+		this.leakSafeThreads.add(new LeakSafeThread());
 	}
 
 	private String getMainClassName(Thread thread) {
@@ -145,11 +150,14 @@ public class Restarter {
 
 	private void immediateRestart() {
 		try {
-			runAction("Immediate Restart", true, new Action() {
+			getLeakSafeThread().callAndWait(new Callable<Void>() {
+
 				@Override
-				public void run() throws Exception {
+				public Void call() throws Exception {
 					start();
+					return null;
 				}
+
 			});
 		}
 		catch (Exception ex) {
@@ -174,14 +182,12 @@ public class Restarter {
 		}
 	}
 
+	/**
+	 * Return a {@link ThreadFactory} that can be used to create leak safe threads.
+	 * @return a leak safe thread factory
+	 */
 	public ThreadFactory getThreadFactory() {
-		// return new ThreadFactory() {
-		// @Override
-		// public Thread newThread(Runnable runnable) {
-		// runAction("Restarter Thread", true, new Action() {
-		// }
-		// };
-		return null;
+		return new LeakSafeThreadFactory();
 	}
 
 	/**
@@ -189,12 +195,15 @@ public class Restarter {
 	 */
 	public void restart() {
 		this.logger.debug("Restarting application");
-		runAction("Restart", false, new Action() {
+		getLeakSafeThread().call(new Callable<Void>() {
+
 			@Override
-			public void run() throws Exception {
+			public Void call() throws Exception {
 				Restarter.this.stop();
 				Restarter.this.start();
+				return null;
 			}
+
 		});
 	}
 
@@ -214,10 +223,16 @@ public class Restarter {
 
 	protected void stop() throws Exception {
 		this.logger.debug("Stopping application");
-		triggerShutdownHooks();
-		cleanupCaches();
-		if (this.forceReferenceCleanup) {
-			forceReferenceCleanup();
+		this.stopLock.lock();
+		try {
+			triggerShutdownHooks();
+			cleanupCaches();
+			if (this.forceReferenceCleanup) {
+				forceReferenceCleanup();
+			}
+		}
+		finally {
+			this.stopLock.unlock();
 		}
 		System.gc();
 		System.runFinalization();
@@ -312,20 +327,13 @@ public class Restarter {
 		return this.finished;
 	}
 
-	/**
-	 * Run a specific {@link Action} using an {@link ActionThead}. The action thread is
-	 * created early to ensure that {@code Thread.inheritedAccessControlContext} doesn't
-	 * accidentally keep a reference to the disposable {@link RestartClassLoader}.
-	 * @param name the name of the thread
-	 * @param join if the caller should block until the action completes
-	 * @param action the action to run
-	 */
-	private void runAction(String name, boolean join, Action action) {
+	private LeakSafeThread getLeakSafeThread() {
 		try {
-			this.actionThead.takeFirst().run(name, join, action);
+			return this.leakSafeThreads.takeFirst();
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -349,7 +357,7 @@ public class Restarter {
 	 * Return the initial set of URLs as configured by the {@link RestartInitializer}.
 	 * @return the initial URLs or {@code null}
 	 */
-	public URL[] getInitialUrs() {
+	public URL[] getInitialUrls() {
 		return this.initialUrs;
 	}
 
@@ -428,35 +436,43 @@ public class Restarter {
 		instance = null;
 	}
 
-	/**
-	 * An action that can be run by the {@link ActionThead}.
-	 */
-	private static interface Action {
+	private class LeakSafeThread extends Thread {
 
-		void run() throws Exception;
+		private Callable<?> callable;
 
-	}
+		private Object result;
 
-	/**
-	 * A {@link Thread} used to run actions without leaking classloader memory.
-	 * @see Restarter#runAction(String, boolean, Action)
-	 */
-	private class ActionThead extends Thread {
-
-		private Action action;
-
-		public ActionThead() {
+		public LeakSafeThread() {
 			setDaemon(false);
+		}
+
+		public void call(Callable<?> callable) {
+			this.callable = callable;
+			start();
+		}
+
+		@SuppressWarnings("unchecked")
+		public <V> V callAndWait(Callable<V> callable) {
+			this.callable = callable;
+			start();
+			try {
+				join();
+				return (V) this.result;
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException(ex);
+			}
 		}
 
 		@Override
 		public void run() {
+			// We are safe to refresh the ActionThread (and indirectly call
+			// AccessController.getContext()) since our stack doesn't include the
+			// RestartClassLoader
 			try {
-				// We are safe to refresh the ActionThread (and indirectly call
-				// AccessController.getContext()) since our stack doesn't include the
-				// RestartClassLoader
-				Restarter.this.actionThead.put(new ActionThead());
-				this.action.run();
+				Restarter.this.leakSafeThreads.put(new LeakSafeThread());
+				this.result = this.callable.call();
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -464,18 +480,22 @@ public class Restarter {
 			}
 		}
 
-		public void run(String name, boolean join, Action action) {
-			setName(name);
-			this.action = action;
-			start();
-			try {
-				if (join) {
-					join();
+	}
+
+	private class LeakSafeThreadFactory implements ThreadFactory {
+
+		@Override
+		public Thread newThread(final Runnable runnable) {
+			return getLeakSafeThread().callAndWait(new Callable<Thread>() {
+
+				@Override
+				public Thread call() throws Exception {
+					Thread thread = new Thread(runnable);
+					thread.setContextClassLoader(Restarter.this.applicationClassLoader);
+					return thread;
 				}
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
+
+			});
 		}
 
 	}

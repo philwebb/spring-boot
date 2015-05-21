@@ -37,7 +37,7 @@ class OnInitializedRestarterCondition extends SpringBootCondition {
 		if (restarter == null) {
 			return ConditionOutcome.noMatch("Restarter unavailable");
 		}
-		if (restarter.getInitialUrs() == null) {
+		if (restarter.getInitialUrls() == null) {
 			return ConditionOutcome.noMatch("Restarter initialized without URLs");
 		}
 		return ConditionOutcome.match("Restarter available and initialized");

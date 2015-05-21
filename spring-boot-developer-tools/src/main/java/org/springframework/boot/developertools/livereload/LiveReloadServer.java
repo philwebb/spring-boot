@@ -43,13 +43,18 @@ import org.springframework.util.Assert;
  */
 public class LiveReloadServer {
 
-	private static Log logger = LogFactory.getLog(LiveReloadServer.class);
+	/**
+	 * The default live reload server port.
+	 */
+	public static final int DEFAULT_PORT = 35729;
 
-	private static final int DEFAULT_PORT = 35729;
+	private static Log logger = LogFactory.getLog(LiveReloadServer.class);
 
 	private static final int READ_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(4);
 
 	private final int port;
+
+	private final ThreadFactory threadFactory;
 
 	private ServerSocket serverSocket;
 
@@ -68,11 +73,38 @@ public class LiveReloadServer {
 	}
 
 	/**
+	 * Create a new {@link LiveReloadServer} listening on the default port with a specific
+	 * {@link ThreadFactory}.
+	 * @param threadFactory the thread factory
+	 */
+	public LiveReloadServer(ThreadFactory threadFactory) {
+		this(DEFAULT_PORT, threadFactory);
+	}
+
+	/**
 	 * Create a new {@link LiveReloadServer} listening on the specified port.
 	 * @param port the listen port
 	 */
 	public LiveReloadServer(int port) {
+		this(port, new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable runnable) {
+				return new Thread(runnable);
+			}
+
+		});
+	}
+
+	/**
+	 * Create a new {@link LiveReloadServer} listening on the specified port with a
+	 * specific {@link ThreadFactory}.
+	 * @param port the listen port
+	 * @param threadFactory the thread factory
+	 */
+	public LiveReloadServer(int port, ThreadFactory threadFactory) {
 		this.port = port;
+		this.threadFactory = threadFactory;
 	}
 
 	/**
@@ -83,12 +115,14 @@ public class LiveReloadServer {
 		Assert.state(!isStarted(), "Server already started");
 		logger.debug("Starting live reload server on port " + this.port);
 		this.serverSocket = new ServerSocket(this.port);
-		this.listenThread = new Thread() {
+		this.listenThread = this.threadFactory.newThread(new Runnable() {
+
 			@Override
 			public void run() {
 				acceptConnections();
-			};
-		};
+			}
+
+		});
 		this.listenThread.setDaemon(true);
 		this.listenThread.setName("Live Reload Server");
 		this.listenThread.start();
