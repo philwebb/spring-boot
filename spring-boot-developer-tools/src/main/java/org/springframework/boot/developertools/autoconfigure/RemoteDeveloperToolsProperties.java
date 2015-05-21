@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.autoconfigure.remote;
+package org.springframework.boot.developertools.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -54,37 +54,18 @@ public class RemoteDeveloperToolsProperties {
 		this.debug = debug;
 	}
 
-	/**
-	 * Gets the secret required to be present in the header defined by
-	 * {@link #getSecretHeaderName()}.
-	 * @return the secret that will be required
-	 */
 	public String getSecret() {
 		return this.secret;
 	}
 
-	/**
-	 * Sets the secret required to be present in the header defined by
-	 * {@link #getSecretHeaderName()}.
-	 * @param secret the secret that will be required
-	 */
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
-	/**
-	 * Gets the name of the header used to contain the secret. The default is
-	 * {@link #DEFAULT_SECRET_HEADER_NAME}.
-	 * @return the name of the header used to contain the secret
-	 */
 	public String getSecretHeaderName() {
 		return this.secretHeaderName;
 	}
 
-	/**
-	 * Sets the header name that must have {@link #getSecret()}.
-	 * @param secretHeaderName the header name that must have {@link #getSecret()}
-	 */
 	public void setSecretHeaderName(String secretHeaderName) {
 		this.secretHeaderName = secretHeaderName;
 	}

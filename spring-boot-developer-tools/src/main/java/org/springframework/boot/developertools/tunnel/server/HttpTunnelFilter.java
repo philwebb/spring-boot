@@ -42,6 +42,8 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelFilter implements Filter {
 
+	// FIXME move and make generic
+
 	private final ServerHttpRequestMatcher matcher;
 
 	private final HttpTunnelServer server;

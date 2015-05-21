@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Provides developer tools for a remote Spring Boot application.
- */
-package org.springframework.boot.developertools.remote;
+package org.springframework.boot.developertools.remoteclient;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+/**
+ * @author Phillip Webb
+ */
+public class RemoteClientConfiguration {
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
+
+}

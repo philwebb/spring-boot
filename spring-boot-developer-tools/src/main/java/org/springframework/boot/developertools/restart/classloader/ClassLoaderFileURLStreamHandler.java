@@ -28,7 +28,7 @@ import java.net.URLStreamHandler;
  *
  * @author Phillip Webb
  */
-public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
+class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 	private ClassLoaderFile file;
 

@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remote;
+package org.springframework.boot.developertools;
 
+import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.boot.developertools.remoteclient.RemoteClientConfiguration;
 import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author Phillip Webb
+ * @since 1.3.0
+ * @see RemoteClientConfiguration
  */
-@Configuration
-@Import({ RemoteDebugHttpTunnelClientConfiguration.class })
 public class RemoteSpringApplication {
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
-	}
-
-	public static void main(String[] args) {
+	private void run(String[] args) {
 		SpringApplication application = new SpringApplication(
-				RemoteSpringApplication.class);
+				RemoteClientConfiguration.class);
 		application.setWebEnvironment(false);
-		ClassPathResource banner = new ClassPathResource("banner.txt",
-				RemoteSpringApplication.class);
-		application.setBanner(new ResourceBanner(banner));
+		application.setBanner(getBanner());
 		application.addListeners(new RemoteUrlPropertyExtractor());
 		application.run(args);
 		waitIndefinitely();
 	}
 
-	private static void waitIndefinitely() {
+	private Banner getBanner() {
+		ClassPathResource banner = new ClassPathResource("remote-banner.txt",
+				RemoteSpringApplication.class);
+		return new ResourceBanner(banner);
+	}
+
+	private void waitIndefinitely() {
 		while (true) {
 			try {
 				Thread.sleep(1000);
@@ -56,6 +53,10 @@ public class RemoteSpringApplication {
 			catch (InterruptedException ex) {
 			}
 		}
+	}
+
+	public static void main(String[] args) {
+		new RemoteSpringApplication().run(args);
 	}
 
 }

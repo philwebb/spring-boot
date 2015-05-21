@@ -16,8 +16,6 @@
 
 package org.springframework.boot.developertools.restart;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.ApplicationContextInitializer;
@@ -31,8 +29,6 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class RestartScopeInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-	private static final Log logger = LogFactory.getLog(RestartScopeInitializer.class);
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {

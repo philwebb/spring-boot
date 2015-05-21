@@ -26,7 +26,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Tests for {@link SecuredServletServerHttpRequestMatcherTests}.
+ * Tests for {@link SecuredServerHttpRequestMatcher}.
  *
  * @author Rob Winch
  * @since 1.3.0

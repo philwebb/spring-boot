@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remote;
+package org.springframework.boot.developertools.remoteclient;
 
 import java.nio.channels.SocketChannel;
 
@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.developertools.autoconfigure.remote.RemoteDeveloperToolsProperties;
-import org.springframework.boot.developertools.remote.RemoteDebugHttpTunnelClientConfiguration.PortAvailableCondition;
+import org.springframework.boot.developertools.autoconfigure.RemoteDeveloperToolsProperties;
+import org.springframework.boot.developertools.remoteclient.RemoteDebugHttpTunnelClientConfiguration.PortAvailableCondition;
 import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
@@ -55,7 +55,9 @@ import org.springframework.util.Assert;
 @ConditionalOnClass(Filter.class)
 @EnableConfigurationProperties(RemoteDeveloperToolsProperties.class)
 @Conditional(PortAvailableCondition.class)
-public class RemoteDebugHttpTunnelClientConfiguration {
+class RemoteDebugHttpTunnelClientConfiguration {
+
+	// FIXME move
 
 	private static Log logger = LogFactory
 			.getLog(RemoteDebugHttpTunnelClientConfiguration.class);

@@ -477,8 +477,4 @@ public class HttpTunnelServerTests {
 
 	}
 
-	// FIXME deal with a second IP connection?
-
-	// FIXME add encryption support
-
 }

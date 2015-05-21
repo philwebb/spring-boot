@@ -16,6 +16,9 @@
 
 package org.springframework.boot.developertools.restart.classloader;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,26 +28,93 @@ import org.springframework.util.Assert;
 
 /**
  * {@link ClassLoaderFileRepository} that maintains a collection of
- * {@link ClassLoaderFile} items.
+ * {@link ClassLoaderFile} items grouped by source folders.
  *
  * @author Phillip Webb
  * @since 1.3.0
  * @see ClassLoaderFile
  * @see ClassLoaderRepository
  */
-public class ClassLoaderFiles implements ClassLoaderFileRepository {
+public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable {
 
-	private final Map<String, ClassLoaderFile> files = new LinkedHashMap<String, ClassLoaderFile>();
+	private static final long serialVersionUID = 1;
+
+	private final Map<String, SourceFolder> sourceFolders = new LinkedHashMap<String, SourceFolder>();
 
 	public void addFile(String name, ClassLoaderFile file) {
+		addFile("", name, file);
+	}
+
+	public void addFile(String sourceFolder, String name, ClassLoaderFile file) {
+		Assert.notNull(sourceFolder, "SourceFolder must not be null");
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(file, "File must not be null");
-		this.files.put(name, file);
+		removeAll(name);
+		getOrCreateSourceFolder(sourceFolder).add(name, file);
+	}
+
+	private void removeAll(String name) {
+		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
+			sourceFolder.remove(name);
+		}
+	}
+
+	protected final SourceFolder getOrCreateSourceFolder(String name) {
+		SourceFolder sourceFolder = this.sourceFolders.get(name);
+		if (sourceFolder == null) {
+			sourceFolder = new SourceFolder(name);
+			this.sourceFolders.put(name, sourceFolder);
+		}
+		return sourceFolder;
+	}
+
+	public Collection<SourceFolder> getSourceFolders() {
+		return Collections.unmodifiableCollection(this.sourceFolders.values());
 	}
 
 	@Override
 	public ClassLoaderFile getFile(String name) {
-		return this.files.get(name);
+		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
+			ClassLoaderFile file = sourceFolder.get(name);
+			if (file != null) {
+				return file;
+			}
+		}
+		return null;
+	}
+
+	public static class SourceFolder implements Serializable {
+
+		private static final long serialVersionUID = 1;
+
+		private final String name;
+
+		private final Map<String, ClassLoaderFile> files = new LinkedHashMap<String, ClassLoaderFile>();
+
+		SourceFolder(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void add(String name, ClassLoaderFile file) {
+			this.files.put(name, file);
+		}
+
+		public ClassLoaderFile get(String name) {
+			return this.files.get(name);
+		}
+
+		public void remove(String name) {
+			this.files.remove(name);
+		}
+
+		public Collection<ClassLoaderFile> getFiles() {
+			return Collections.unmodifiableCollection(this.files.values());
+		}
+
 	}
 
 }

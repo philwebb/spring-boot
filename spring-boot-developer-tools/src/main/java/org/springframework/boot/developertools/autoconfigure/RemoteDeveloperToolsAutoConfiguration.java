@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.autoconfigure.remote;
+package org.springframework.boot.developertools.autoconfigure;
 
 import javax.servlet.Filter;
 

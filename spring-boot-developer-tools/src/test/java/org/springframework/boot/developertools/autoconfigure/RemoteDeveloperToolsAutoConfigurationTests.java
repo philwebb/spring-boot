@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.autoconfigure.remote;
+package org.springframework.boot.developertools.autoconfigure;
 
 import java.io.IOException;
 
@@ -23,6 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.developertools.autoconfigure.RemoteDeveloperToolsAutoConfiguration;
+import org.springframework.boot.developertools.autoconfigure.RemoteDeveloperToolsProperties;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;

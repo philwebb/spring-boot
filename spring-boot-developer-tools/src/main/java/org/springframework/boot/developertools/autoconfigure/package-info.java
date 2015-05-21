@@ -15,6 +15,7 @@
  */
 
 /**
+ * Auto-configuration for {@code spring-boot-developer-tools}.
  */
 package org.springframework.boot.developertools.autoconfigure;
 

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remote;
+package org.springframework.boot.developertools;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.developertools.RemoteUrlPropertyExtractor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 

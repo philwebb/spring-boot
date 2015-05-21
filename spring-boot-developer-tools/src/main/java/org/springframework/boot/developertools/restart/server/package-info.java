@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
+ * @author pwebb
  */
-package org.springframework.boot.developertools.autoconfigure.remote;
-
+package org.springframework.boot.developertools.restart.server;

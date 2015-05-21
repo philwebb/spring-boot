@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remote;
+package org.springframework.boot.developertools;
 
 import java.net.URI;
 import java.net.URISyntaxException;

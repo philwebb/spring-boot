@@ -27,6 +27,7 @@ import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.developertools.classpath.PatternClassPathRestartStrategy;
+import org.springframework.boot.developertools.filewatch.ChangedFiles;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.developertools.restart.RestartScope;
@@ -80,6 +81,11 @@ public class LocalDeveloperToolsAutoConfiguration {
 
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
+
+			for (ChangedFiles changedFiles : event.getChangeSet()) {
+				System.out.println(changedFiles.getSourceFolder().getPath());
+			}
+
 			if (!event.isRestartRequired()) {
 				managedLiveReloadServer().triggerReload();
 			}

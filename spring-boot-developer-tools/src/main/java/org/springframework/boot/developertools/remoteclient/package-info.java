@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.server;
-
-import org.springframework.http.server.ServerHttpRequest;
-
 /**
- * Strategy to determine if a particular ServerHttpRequest matches or not.
- *
- * @author Rob Winch
- * @since 1.3.0
+ * Client support for a remotely running Spring Boot application.
  */
-public interface ServerHttpRequestMatcher {
+package org.springframework.boot.developertools.remoteclient;
 
-	// FIXME move
-	// FIXME possibly rename to filter
-
-	/**
-	 * Returns true of the {@link ServerHttpRequest} passed in is considered a match.
-	 * @param request the {@link ServerHttpRequest} to evaluate
-	 * @return true if the {@link ServerHttpRequest} passed in is considered a match
-	 */
-	boolean matches(ServerHttpRequest request);
-
-}

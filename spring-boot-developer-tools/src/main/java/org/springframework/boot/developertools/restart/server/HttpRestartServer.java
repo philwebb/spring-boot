@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.server;
+package org.springframework.boot.developertools.restart.server;
 
+import java.io.IOException;
+
+import org.springframework.boot.developertools.restart.Restarter;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 
 /**
- * Strategy to determine if a particular ServerHttpRequest matches or not.
+ * A HTTP server that can be used to upload updated {@link ClassLoaderFiles} and trigger
+ * restarts.
  *
- * @author Rob Winch
+ * @author Phillip Webb
  * @since 1.3.0
  */
-public interface ServerHttpRequestMatcher {
+public class HttpRestartServer {
 
-	// FIXME move
-	// FIXME possibly rename to filter
+	private ClassLoaderFiles a;
 
-	/**
-	 * Returns true of the {@link ServerHttpRequest} passed in is considered a match.
-	 * @param request the {@link ServerHttpRequest} to evaluate
-	 * @return true if the {@link ServerHttpRequest} passed in is considered a match
-	 */
-	boolean matches(ServerHttpRequest request);
+	private Restarter r;
+
+	public void handle(ServerHttpRequest request, ServerHttpResponse response)
+			throws IOException {
+
+	}
 
 }

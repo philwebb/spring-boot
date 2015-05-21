@@ -16,6 +16,8 @@
 
 package org.springframework.boot.developertools.restart.classloader;
 
+import java.io.Serializable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -26,7 +28,9 @@ import org.springframework.util.Assert;
  * @see ClassLoaderFileRepository
  * @since 1.3.0
  */
-public class ClassLoaderFile {
+public class ClassLoaderFile implements Serializable {
+
+	private static final long serialVersionUID = 1;
 
 	private final Kind kind;
 
