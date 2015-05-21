@@ -20,10 +20,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -31,13 +28,13 @@ import org.springframework.core.annotation.Order;
  * @author Phillip Webb
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class LiveReloadServerManager {
+class ManagedLiveReloadServer {
 
-	private static final Log logger = LogFactory.getLog(LiveReloadServerManager.class);
+	private static final Log logger = LogFactory.getLog(ManagedLiveReloadServer.class);
 
 	private LiveReloadServer server;
 
-	public LiveReloadServerManager(LiveReloadServer server) {
+	public ManagedLiveReloadServer(LiveReloadServer server) {
 		this.server = server;
 	}
 
@@ -48,6 +45,8 @@ class LiveReloadServerManager {
 				if (!this.server.isStarted()) {
 					this.server.start();
 				}
+				logger.info("LiveReload server is running on port "
+						+ this.server.getPort());
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to start LiveReload server");
@@ -57,16 +56,8 @@ class LiveReloadServerManager {
 		}
 	}
 
-	@EventListener
-	public void onContextRefreshed(ContextRefreshedEvent event) {
+	public void triggerReload() {
 		if (this.server != null) {
-			this.server.triggerReload();
-		}
-	}
-
-	@EventListener
-	public void onClassPathChanged(ClassPathChangedEvent event) {
-		if (!event.isRestartRequired() && this.server != null) {
 			this.server.triggerReload();
 		}
 	}

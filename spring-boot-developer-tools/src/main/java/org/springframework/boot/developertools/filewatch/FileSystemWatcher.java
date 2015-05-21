@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
  */
 public class FileSystemWatcher {
 
-	private static final long DEFAULT_IDLE_TIME = 600;
+	private static final long DEFAULT_IDLE_TIME = 400;
 
 	private static final long DEFAULT_QUIET_TIME = 200;
 

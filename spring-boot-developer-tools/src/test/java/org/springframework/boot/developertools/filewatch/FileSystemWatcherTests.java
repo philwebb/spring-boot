@@ -99,7 +99,8 @@ public class FileSystemWatcherTests {
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles(), contains(new ChangedFile(file, Type.ADD)));
+		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		assertThat(changedFiles.getFiles(), contains(expected));
 	}
 
 	@Test
@@ -109,7 +110,8 @@ public class FileSystemWatcherTests {
 		Thread.sleep(200);
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles(), contains(new ChangedFile(file, Type.ADD)));
+		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		assertThat(changedFiles.getFiles(), contains(expected));
 	}
 
 	@Test
@@ -120,6 +122,7 @@ public class FileSystemWatcherTests {
 		Thread.sleep(200);
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stop();
+		Thread.sleep(200);
 		assertThat(this.changes.size(), equalTo(2));
 	}
 
@@ -145,7 +148,8 @@ public class FileSystemWatcherTests {
 		File file = touch(new File(folder, "test2.txt"));
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles(), contains(new ChangedFile(file, Type.ADD)));
+		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		assertThat(changedFiles.getFiles(), contains(expected));
 	}
 
 	@Test
@@ -162,12 +166,12 @@ public class FileSystemWatcherTests {
 		assertThat(change.size(), equalTo(2));
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceFolder().equals(folder1)) {
-				ChangedFile file = new ChangedFile(file1, Type.ADD);
+				ChangedFile file = new ChangedFile(folder1, file1, Type.ADD);
 				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
 						changedFiles.getFiles());
 			}
 			else {
-				ChangedFile file = new ChangedFile(file2, Type.ADD);
+				ChangedFile file = new ChangedFile(folder2, file2, Type.ADD);
 				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
 						changedFiles.getFiles());
 			}
@@ -189,7 +193,8 @@ public class FileSystemWatcherTests {
 		File file = touch(new File(folder, "test.txt"));
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles(), contains(new ChangedFile(file, Type.ADD)));
+		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
+		assertThat(changedFiles.getFiles(), contains(expected));
 		assertEquals(this.changes.get(0), listener2Changes);
 	}
 
@@ -207,9 +212,9 @@ public class FileSystemWatcherTests {
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		Set<ChangedFile> actual = changedFiles.getFiles();
 		Set<ChangedFile> expected = new HashSet<ChangedFile>();
-		expected.add(new ChangedFile(modify, Type.MODIFY));
-		expected.add(new ChangedFile(delete, Type.DELETE));
-		expected.add(new ChangedFile(add, Type.ADD));
+		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
+		expected.add(new ChangedFile(folder, delete, Type.DELETE));
+		expected.add(new ChangedFile(folder, add, Type.ADD));
 		assertEquals(expected, actual);
 	}
 

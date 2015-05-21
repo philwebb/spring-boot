@@ -32,7 +32,7 @@ public class InMemoryMessageRepository implements MessageRepository {
 	public InMemoryMessageRepository() {
 		Message msg = new Message();
 		msg.setId(123L);
-		msg.setSummary("Phil");
+		msg.setSummary("Phil Webb");
 		save(msg);
 	}
 

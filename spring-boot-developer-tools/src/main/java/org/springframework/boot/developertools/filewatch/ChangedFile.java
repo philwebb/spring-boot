@@ -29,18 +29,23 @@ import org.springframework.util.Assert;
  */
 public final class ChangedFile {
 
+	private final File sourceFolder;
+
 	private final File file;
 
 	private final Type type;
 
 	/**
 	 * Create a new {@link ChangedFile} instance.
+	 * @param sourceFolder the source folder
 	 * @param file the file
 	 * @param type the type of change
 	 */
-	public ChangedFile(File file, Type type) {
+	public ChangedFile(File sourceFolder, File file, Type type) {
+		Assert.notNull(sourceFolder, "SourceFolder must not be null");
 		Assert.notNull(file, "File must not be null");
 		Assert.notNull(type, "Type must not be null");
+		this.sourceFolder = sourceFolder;
 		this.file = file;
 		this.type = type;
 	}
@@ -59,6 +64,18 @@ public final class ChangedFile {
 	 */
 	public Type getType() {
 		return this.type;
+	}
+
+	/**
+	 * Return the name of the file relative to the source folder.
+	 * @return the relative name
+	 */
+	public String getRelativeName() {
+		String folderName = this.sourceFolder.getAbsoluteFile().getPath();
+		String fileName = this.file.getAbsoluteFile().getPath();
+		Assert.state(fileName.startsWith(folderName), "The file " + fileName
+				+ " is not contained in the source folder " + folderName);
+		return fileName.substring(folderName.length() + 1);
 	}
 
 	@Override

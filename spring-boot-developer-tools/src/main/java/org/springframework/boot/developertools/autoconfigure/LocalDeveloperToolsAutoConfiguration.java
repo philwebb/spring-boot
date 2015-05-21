@@ -17,21 +17,23 @@
 package org.springframework.boot.developertools.autoconfigure;
 
 import java.net.URL;
-import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.classpath.ClassPathRestartStrategy;
-import org.springframework.boot.developertools.filewatch.ChangedFile;
+import org.springframework.boot.developertools.classpath.PatternClassPathRestartStrategy;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.developertools.restart.RestartScope;
 import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
 /**
@@ -42,58 +44,82 @@ import org.springframework.context.event.EventListener;
  */
 @Configuration
 @ConditionalOnInitializedRestarter
+@EnableConfigurationProperties(DeveloperToolsProperties.class)
 public class LocalDeveloperToolsAutoConfiguration {
 
-	@Autowired(required = false)
-	private LiveReloadServer liveReloadServer;
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
-		URL[] urls = Restarter.getInstance().getInitialUrls();
-		System.out.println(Arrays.asList(urls));
-		return new ClassPathFileSystemWatcher(classPathRestartStrategy(), urls);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ClassPathRestartStrategy classPathRestartStrategy() {
-		return new ClassPathRestartStrategy() {
-
-			@Override
-			public boolean isRestartRequired(ChangedFile file) {
-				System.out.println(file.getFile().getName());
-				return (file.getFile().getName().endsWith(".class"));
-			}
-
-		};
-	}
-
-	@EventListener
-	public void onClassPathChanged(ClassPathChangedEvent event) {
-		if (event.isRestartRequired()) {
-			Restarter.getInstance().restart();
-		}
-	}
+	@Autowired
+	private DeveloperToolsProperties properties;
 
 	@Bean
 	public static LocalDeveloperPropertyDefaultsPostProcessor localDeveloperPropertyDefaultsPostProcessor() {
 		return new LocalDeveloperPropertyDefaultsPostProcessor();
 	}
 
-	@Bean
-	@RestartScope
-	@ConditionalOnMissingBean
-	public LiveReloadServer liveReloadServer() {
-		// FIXME enable + port?
-		return new LiveReloadServer(Restarter.getInstance().getThreadFactory());
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.developertools.livereload", name = "enabled", matchIfMissing = true)
+	static class LiveReloadConfiguration {
+
+		@Autowired
+		private DeveloperToolsProperties properties;
+
+		@Autowired(required = false)
+		private LiveReloadServer liveReloadServer;
+
+		@Bean
+		@RestartScope
+		@ConditionalOnMissingBean
+		public LiveReloadServer liveReloadServer() {
+			return new LiveReloadServer(this.properties.getLivereload().getPort(),
+					Restarter.getInstance().getThreadFactory());
+		}
+
+		@EventListener
+		public void onContextRefreshed(ContextRefreshedEvent event) {
+			managedLiveReloadServer().triggerReload();
+		}
+
+		@EventListener
+		public void onClassPathChanged(ClassPathChangedEvent event) {
+			if (!event.isRestartRequired()) {
+				managedLiveReloadServer().triggerReload();
+			}
+		}
+
+		@Bean
+		public ManagedLiveReloadServer managedLiveReloadServer() {
+			return new ManagedLiveReloadServer(this.liveReloadServer);
+		}
+
 	}
 
-	@Bean
-	public LiveReloadServerManager liveReloadServerManager() {
-		return new LiveReloadServerManager(this.liveReloadServer);
-	}
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring.developertools.restart", name = "enabled", matchIfMissing = true)
+	static class RestartConfiguration {
 
-	// FIXME it would be nice if we could capture a real exit to gracefully close the LRS
+		@Autowired
+		private DeveloperToolsProperties properties;
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
+			URL[] urls = Restarter.getInstance().getInitialUrls();
+			return new ClassPathFileSystemWatcher(classPathRestartStrategy(), urls);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public ClassPathRestartStrategy classPathRestartStrategy() {
+			return new PatternClassPathRestartStrategy(this.properties.getRestart()
+					.getExclude());
+		}
+
+		@EventListener
+		public void onClassPathChanged(ClassPathChangedEvent event) {
+			if (event.isRestartRequired()) {
+				Restarter.getInstance().restart();
+			}
+		}
+
+	}
 
 }

@@ -392,7 +392,7 @@ public class Restarter {
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer) {
-		initialize(args, forceReferenceCleanup, new DefaultRestartInitializer(), true);
+		initialize(args, forceReferenceCleanup, initializer, true);
 	}
 
 	/**

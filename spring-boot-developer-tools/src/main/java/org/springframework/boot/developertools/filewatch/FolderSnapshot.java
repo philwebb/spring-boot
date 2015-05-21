@@ -75,23 +75,24 @@ class FolderSnapshot {
 
 	public ChangedFiles getChangedFiles(FolderSnapshot snapshot) {
 		Assert.notNull(snapshot, "Snapshot must not be null");
-		Assert.isTrue(snapshot.folder.equals(this.folder),
-				"Snapshot source folder must be '" + this.folder + "'");
+		File folder = this.folder;
+		Assert.isTrue(snapshot.folder.equals(folder), "Snapshot source folder must be '"
+				+ folder + "'");
 		Set<ChangedFile> changes = new LinkedHashSet<ChangedFile>();
 		Map<File, FileSnapshot> previousFiles = getFilesMap();
 		for (FileSnapshot currentFile : snapshot.files) {
 			FileSnapshot previousFile = previousFiles.remove(currentFile.getFile());
 			if (previousFile == null) {
-				changes.add(new ChangedFile(currentFile.getFile(), Type.ADD));
+				changes.add(new ChangedFile(folder, currentFile.getFile(), Type.ADD));
 			}
 			else if (!previousFile.equals(currentFile)) {
-				changes.add(new ChangedFile(currentFile.getFile(), Type.MODIFY));
+				changes.add(new ChangedFile(folder, currentFile.getFile(), Type.MODIFY));
 			}
 		}
 		for (FileSnapshot previousFile : previousFiles.values()) {
-			changes.add(new ChangedFile(previousFile.getFile(), Type.DELETE));
+			changes.add(new ChangedFile(folder, previousFile.getFile(), Type.DELETE));
 		}
-		return new ChangedFiles(this.folder, changes);
+		return new ChangedFiles(folder, changes);
 	}
 
 	private Map<File, FileSnapshot> getFilesMap() {

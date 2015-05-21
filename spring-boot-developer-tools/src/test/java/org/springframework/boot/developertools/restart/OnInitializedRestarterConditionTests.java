@@ -81,17 +81,6 @@ public class OnInitializedRestarterConditionTests {
 		}
 	}
 
-	@Configuration
-	public static class Config {
-
-		@Bean
-		@ConditionalOnInitializedRestarter
-		public String bean() {
-			return "bean";
-		}
-
-	}
-
 	public static class TestInitialized {
 
 		public static void main(String... args) {
@@ -109,4 +98,14 @@ public class OnInitializedRestarterConditionTests {
 
 	}
 
+	@Configuration
+	public static class Config {
+
+		@Bean
+		@ConditionalOnInitializedRestarter
+		public String bean() {
+			return "bean";
+		}
+
+	}
 }

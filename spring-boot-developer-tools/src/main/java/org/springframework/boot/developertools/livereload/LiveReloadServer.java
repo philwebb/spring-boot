@@ -136,6 +136,14 @@ public class LiveReloadServer {
 		return this.listenThread != null;
 	}
 
+	/**
+	 * Return the port that the server is listening on
+	 * @return the server port
+	 */
+	public int getPort() {
+		return this.port;
+	}
+
 	private void acceptConnections() {
 		do {
 			try {

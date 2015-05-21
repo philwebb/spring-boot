@@ -28,6 +28,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -115,7 +116,8 @@ public class RemoteDebugHttpTunnelClientConfigurationTests {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration(exclude = RemoteDebugHttpTunnelClientConfiguration.class)
+	@EnableAutoConfiguration(exclude = { RemoteDebugHttpTunnelClientConfiguration.class,
+			ThymeleafAutoConfiguration.class })
 	@RestController
 	static class BootApplication {
 

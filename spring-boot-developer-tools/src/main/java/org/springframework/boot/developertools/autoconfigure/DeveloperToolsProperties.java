@@ -15,9 +15,96 @@
  */
 
 package org.springframework.boot.developertools.autoconfigure;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * @author pwebb
+ * Configuration properties for developer tools.
+ *
+ * @author Phillip Webb
+ * @since 1.3.0
  */
+@ConfigurationProperties(prefix = "spring.developertools")
 public class DeveloperToolsProperties {
+
+	private static final String DEFAULT_RESTART_EXCLUDES = "META-INF/resources/**,resource/**,static/**,public/**,templates/**";
+
+	private Restart restart = new Restart();
+
+	private Livereload livereload = new Livereload();
+
+	public Restart getRestart() {
+		return this.restart;
+	}
+
+	public Livereload getLivereload() {
+		return this.livereload;
+	}
+
+	/**
+	 * Restart properties
+	 */
+	public static class Restart {
+
+		/**
+		 * Enable automatic restart.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Patterns that should be excluding for triggering a full restart.
+		 */
+		private String exclude = DEFAULT_RESTART_EXCLUDES;
+
+		public boolean getEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(String exclude) {
+			this.exclude = exclude;
+		}
+
+	}
+
+	/**
+	 * LiveReload properties
+	 */
+	public static class Livereload {
+
+		/**
+		 * Enable a livereload.com compatible server.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Server port.
+		 */
+		private int port = 35729;
+
+		public boolean getEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public int getPort() {
+			return this.port;
+		}
+
+		public void setPort(int port) {
+			this.port = port;
+		}
+
+	}
 
 }

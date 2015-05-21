@@ -200,7 +200,7 @@ public class LiveReloadServerTests {
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			server.triggerReload();
+			// server.triggerReload();
 		}
 	}
 

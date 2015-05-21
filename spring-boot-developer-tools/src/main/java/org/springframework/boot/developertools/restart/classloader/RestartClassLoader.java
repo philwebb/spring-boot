@@ -159,7 +159,6 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 	@Override
 	protected void finalize() throws Throwable {
-		System.out.println("*************************************");
 		if (logger.isDebugEnabled()) {
 			logger.debug("Finalized classloader " + toString());
 		}

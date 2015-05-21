@@ -49,7 +49,7 @@ class Connection {
 
 	private final String header;
 
-	private boolean webSocket;
+	private volatile boolean webSocket;
 
 	private volatile boolean running = true;
 
@@ -66,6 +66,7 @@ class Connection {
 		this.inputStream = new ConnectionInputStream(inputStream);
 		this.outputStream = new ConnectionOutputStream(outputStream);
 		this.header = this.inputStream.readHeader();
+		logger.debug("Established livereload connection [" + this.header + "]");
 	}
 
 	/**
@@ -91,6 +92,7 @@ class Connection {
 		new Frame("{\"command\":\"hello\",\"protocols\":"
 				+ "[\"http://livereload.com/protocols/official-7\"],"
 				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
+		Thread.sleep(100);
 		this.webSocket = true;
 		while (this.running) {
 			readWebSocketFrame();
