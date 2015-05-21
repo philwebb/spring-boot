@@ -80,7 +80,7 @@ public class LiveReloadServer {
 	 * @throws IOException
 	 */
 	public synchronized void start() throws IOException {
-		Assert.state(this.listenThread == null, "Server already started");
+		Assert.state(!isStarted(), "Server already started");
 		logger.debug("Starting live reload server on port " + this.port);
 		this.serverSocket = new ServerSocket(this.port);
 		this.listenThread = new Thread() {
@@ -92,6 +92,14 @@ public class LiveReloadServer {
 		this.listenThread.setDaemon(true);
 		this.listenThread.setName("Live Reload Server");
 		this.listenThread.start();
+	}
+
+	/**
+	 * Return if the server has been started.
+	 * @return {@code true} if the server is running
+	 */
+	public synchronized boolean isStarted() {
+		return this.listenThread != null;
 	}
 
 	private void acceptConnections() {

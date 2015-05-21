@@ -16,13 +16,10 @@
 
 package org.springframework.boot.developertools.autoconfigure;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.developertools.filewatch.FileSystemWatcher;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
 import org.springframework.boot.developertools.restart.ConditionalOnInitializedRestarter;
-import org.springframework.boot.developertools.restart.RestartScope;
-import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,26 +33,25 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnInitializedRestarter
 public class LocalDeveloperToolsAutoConfiguration {
 
+	@Autowired(required = false)
+	private LiveReloadServer liveReloadServer;
+
 	@Bean
 	public static LocalDeveloperPropertyDefaultsPostProcessor localDeveloperPropertyDefaultsPostProcessor() {
 		return new LocalDeveloperPropertyDefaultsPostProcessor();
 	}
 
-	@Bean
-	@RestartScope
-	@ConditionalOnMissingBean
-	public LiveReloadServer liveReloadServer() {
-		// FIXME config + enabled
-		// FIXME wrap this in something else to deal with port exceptions? Or just listen?
-		return new LiveReloadServer();
-	}
-
-	public FileSystemWatcher classpathFileSystemWatcher() {
-		FileSystemWatcher watcher = new FileSystemWatcher();
-		// FIXME watcher.addSourceFolder(folder);
-		Restarter.getInstance().getInitialUrs();
-		// FIXME watcher.addListener(fileChangeListener);
-		return null;
-	}
+	// @Bean
+	// @RestartScope
+	// @ConditionalOnMissingBean
+	// public LiveReloadServer liveReloadServer() {
+	// // FIXME enable + port?
+	// return new LiveReloadServer();
+	// }
+	//
+	// @Bean
+	// public LiveReloadServerManager liveReloadServerManager() {
+	// return new LiveReloadServerManager(this.liveReloadServer);
+	// }
 
 }

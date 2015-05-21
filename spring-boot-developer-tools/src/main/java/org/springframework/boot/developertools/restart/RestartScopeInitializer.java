@@ -16,8 +16,6 @@
 
 package org.springframework.boot.developertools.restart;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.ObjectFactory;
@@ -45,26 +43,16 @@ public class RestartScopeInitializer implements
 
 		@Override
 		public Object get(String name, ObjectFactory<?> objectFactory) {
-			Map<String, Object> attributes = Restarter.getInstance().getAttributes();
-			synchronized (attributes) {
-				if (attributes.containsKey(name)) {
-					return attributes.get(name);
-				}
-				Object attribute = objectFactory.getObject();
-				attributes.put(name, attribute);
-				return attribute;
-			}
+			return Restarter.getInstance().getOrAddAttribute(name, objectFactory);
 		}
 
 		@Override
 		public Object remove(String name) {
-			return Restarter.getInstance().getAttributes().remove(name);
+			return Restarter.getInstance().removeAttribute(name);
 		}
 
 		@Override
 		public void registerDestructionCallback(String name, Runnable callback) {
-			logger.warn("Unable to add destruction callbacks to bean " + name
-					+ " in restart scope");
 		}
 
 		@Override

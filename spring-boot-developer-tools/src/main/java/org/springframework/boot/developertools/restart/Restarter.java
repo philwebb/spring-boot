@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -33,10 +32,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
@@ -92,8 +93,7 @@ public class Restarter {
 
 	private List<URL> urls = new ArrayList<URL>();
 
-	private Map<String, Object> attributes = Collections
-			.synchronizedMap(new HashMap<String, Object>());
+	private Map<String, Object> attributes = new HashMap<String, Object>();
 
 	private BlockingDeque<ActionThead> actionThead = new LinkedBlockingDeque<ActionThead>();
 
@@ -172,6 +172,16 @@ public class Restarter {
 		catch (Exception ex) {
 			this.logger.warn("Unable to pre-initialize classes", ex);
 		}
+	}
+
+	public ThreadFactory getThreadFactory() {
+		// return new ThreadFactory() {
+		// @Override
+		// public Thread newThread(Runnable runnable) {
+		// runAction("Restarter Thread", true, new Action() {
+		// }
+		// };
+		return null;
 	}
 
 	/**
@@ -319,12 +329,20 @@ public class Restarter {
 		}
 	}
 
-	/**
-	 * Return a synchronized map of attributes that remain between restarts.
-	 * @return the restarter attributes
-	 */
-	public Map<String, Object> getAttributes() {
-		return this.attributes;
+	public Object getOrAddAttribute(final String name,
+			final ObjectFactory<?> objectFactory) {
+		synchronized (this.attributes) {
+			if (!this.attributes.containsKey(name)) {
+				this.attributes.put(name, objectFactory.getObject());
+			}
+			return this.attributes.get(name);
+		}
+	}
+
+	public Object removeAttribute(String name) {
+		synchronized (this.attributes) {
+			return this.attributes.remove(name);
+		}
 	}
 
 	/**
