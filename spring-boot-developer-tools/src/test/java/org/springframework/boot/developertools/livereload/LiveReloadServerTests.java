@@ -136,6 +136,7 @@ public class LiveReloadServerTests {
 		URI uri = new URI("ws://localhost:" + this.port + "/livereload");
 		Session session = client.connect(socket, uri, request).get();
 		session.getRemote().sendString(HANDSHAKE);
+		Thread.sleep(200);
 		return socket;
 	}
 
