@@ -48,6 +48,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(RemoteDeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
 
+	// FIXME move
+
 	private static final Log logger = LogFactory
 			.getLog(RemoteDeveloperToolsAutoConfiguration.class);
 

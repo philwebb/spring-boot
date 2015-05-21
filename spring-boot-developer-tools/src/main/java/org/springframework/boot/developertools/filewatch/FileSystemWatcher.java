@@ -18,6 +18,7 @@ package org.springframework.boot.developertools.filewatch;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -143,7 +144,7 @@ public class FileSystemWatcher {
 			}
 		}
 		if (!changeSet.isEmpty()) {
-			fireListeners(changeSet);
+			fireListeners(Collections.unmodifiableSet(changeSet));
 		}
 		this.folders = updated;
 	}

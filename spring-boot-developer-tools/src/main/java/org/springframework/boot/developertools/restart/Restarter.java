@@ -132,12 +132,14 @@ public class Restarter {
 		}
 	}
 
-	protected void initialize() {
+	protected void initialize(boolean restartOnInitialize) {
 		preInitializeLeakyClasses();
 		if (this.initialUrs != null) {
 			this.urls.addAll(Arrays.asList(this.initialUrs));
-			this.logger.debug("Immediately restarting application");
-			immediateRestart();
+			if (restartOnInitialize) {
+				this.logger.debug("Immediately restarting application");
+				immediateRestart();
+			}
 		}
 	}
 
@@ -355,6 +357,19 @@ public class Restarter {
 	}
 
 	/**
+	 * Initialize restart support. See
+	 * {@link #initialize(String[], boolean, RestartInitializer)} for details.
+	 * @param args main application arguments
+	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
+	 * @param initializer the restart initializer
+	 * @see #initialize(String[], boolean, RestartInitializer)
+	 */
+	public static void initialize(String[] args, boolean forceReferenceCleanup,
+			RestartInitializer initializer) {
+		initialize(args, forceReferenceCleanup, new DefaultRestartInitializer(), true);
+	}
+
+	/**
 	 * Initialize restart support for the current application. Called automatically by
 	 * {@link RestartApplicationListener} but can also be called directly if main
 	 * application arguments are not the same as those passed to the
@@ -363,15 +378,17 @@ public class Restarter {
 	 * @param forceReferenceCleanup if forcing of soft/weak reference should happen on
 	 * each restart. This will slow down restarts and is intended primarily for testing
 	 * @param initializer the restart initializer
+	 * @param restartOnInitialize if the restarter should be restarted immediately when
+	 * the {@link RestartInitializer} returns non {@code null} results
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+			RestartInitializer initializer, boolean restartOnInitialize) {
 		if (instance == null) {
 			synchronized (Restarter.class) {
 				instance = new Restarter(Thread.currentThread(), args,
 						forceReferenceCleanup, initializer);
 			}
-			instance.initialize();
+			instance.initialize(restartOnInitialize);
 		}
 	}
 
@@ -386,9 +403,10 @@ public class Restarter {
 	}
 
 	/**
-	 * Clear the instance.
+	 * Clear the instance. Primarily provided for tests and not usually used in
+	 * application code.
 	 */
-	static void clearInstance() {
+	public static void clearInstance() {
 		instance = null;
 	}
 

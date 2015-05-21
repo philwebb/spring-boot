@@ -38,7 +38,7 @@ public final class ChangedFile {
 	 * @param file the file
 	 * @param type the type of change
 	 */
-	ChangedFile(File file, Type type) {
+	public ChangedFile(File file, Type type) {
 		Assert.notNull(file, "File must not be null");
 		Assert.notNull(type, "Type must not be null");
 		this.file = file;
