@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.management.loading.ClassLoaderRepository;
 
@@ -40,6 +42,20 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	private static final long serialVersionUID = 1;
 
 	private final Map<String, SourceFolder> sourceFolders = new LinkedHashMap<String, SourceFolder>();
+
+	/**
+	 * Add all elements items from the specified {@link ClassLoaderFiles} to this
+	 * instance.
+	 * @param files the files to add
+	 */
+	public void addAll(ClassLoaderFiles files) {
+		Assert.notNull(files, "Files must not be null");
+		for (SourceFolder folder : files.getSourceFolders()) {
+			for (Map.Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
+				addFile(folder.getName(), entry.getKey(), entry.getValue());
+			}
+		}
+	}
 
 	public void addFile(String name, ClassLoaderFile file) {
 		addFile("", name, file);
@@ -93,6 +109,10 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 		SourceFolder(String name) {
 			this.name = name;
+		}
+
+		protected Set<Entry<String, ClassLoaderFile>> getFilesEntrySet() {
+			return this.files.entrySet();
 		}
 
 		public String getName() {

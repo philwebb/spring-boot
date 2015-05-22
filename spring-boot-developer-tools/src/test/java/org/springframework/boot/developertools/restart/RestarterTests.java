@@ -127,4 +127,6 @@ public class RestarterTests {
 
 	}
 
+	// FIXME test add files add URLs
+
 }

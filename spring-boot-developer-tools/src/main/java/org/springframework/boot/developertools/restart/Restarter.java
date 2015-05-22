@@ -21,11 +21,12 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.developertools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
 import org.springframework.cglib.core.ClassNameReader;
@@ -63,7 +65,7 @@ import org.springframework.util.ReflectionUtils;
  * {@link #initialize(String[])} directly if your SpringApplication arguments are not
  * identical to your main method arguments.
  * <p>
- * By default, application running in an IDE (i.e. those not packaged as "fat jars") will
+ * By default, applications running in an IDE (i.e. those not packaged as "fat jars") will
  * automatically detect URLs that can change. It's also possible to manually configure
  * URLs or class file updates for remote restart scenarios.
  *
@@ -75,8 +77,6 @@ import org.springframework.util.ReflectionUtils;
  * @see #restart()
  */
 public class Restarter {
-
-	// FIXME DC links when URLs and classfiles can be configured
 
 	private static Restarter instance;
 
@@ -94,7 +94,9 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private List<URL> urls = new ArrayList<URL>();
+	private Set<URL> urls = new LinkedHashSet<URL>();
+
+	private ClassLoaderFiles classLoaderFiles;
 
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
@@ -183,6 +185,24 @@ public class Restarter {
 	}
 
 	/**
+	 * Add additional URLs to be includes in the next restart.
+	 * @param urls the urls to add
+	 */
+	public void addUrls(Collection<URL> urls) {
+		Assert.notNull(urls, "Urls must not be null");
+		this.urls.addAll(urls);
+	}
+
+	/**
+	 * Add additional {@link ClassLoaderFiles} to be included in the next restart.
+	 * @param files the files to add
+	 */
+	public void addClassLoaderFiles(ClassLoaderFiles files) {
+		Assert.notNull(files, "Files must not be null");
+		this.classLoaderFiles.addAll(files);
+	}
+
+	/**
 	 * Return a {@link ThreadFactory} that can be used to create leak safe threads.
 	 * @return a leak safe thread factory
 	 */
@@ -210,7 +230,8 @@ public class Restarter {
 	private void start() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		RestartClassLoader classLoader = new RestartClassLoader(
-				this.applicationClassLoader, this.urls.toArray(new URL[this.urls.size()]));
+				this.applicationClassLoader, this.classLoaderFiles,
+				this.urls.toArray(new URL[this.urls.size()]));
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName
 					+ " with URLs " + Arrays.asList(classLoader.getURLs()));
@@ -436,6 +457,9 @@ public class Restarter {
 		instance = null;
 	}
 
+	/**
+	 * Thread that is created early so not to retain the {@link RestartClassLoader}.
+	 */
 	private class LeakSafeThread extends Thread {
 
 		private Callable<?> callable;
@@ -482,6 +506,9 @@ public class Restarter {
 
 	}
 
+	/**
+	 * {@link ThreadFactory} that creates a leak safe thead.
+	 */
 	private class LeakSafeThreadFactory implements ThreadFactory {
 
 		@Override

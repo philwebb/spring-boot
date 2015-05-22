@@ -16,6 +16,9 @@
 
 package sample.ui;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +43,17 @@ public class SampleWebUiApplication {
 	}
 
 	public static void main(String[] args) throws Exception {
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		while (loader != null) {
+			System.out.println("Loader " + loader + " " + loader.getClass());
+			if (loader instanceof URLClassLoader) {
+				for (URL url : ((URLClassLoader) loader).getURLs()) {
+					System.out.println(url.toURI());
+				}
+			}
+			System.out.println("----");
+			loader = loader.getParent();
+		}
 		SpringApplication.run(SampleWebUiApplication.class, args);
 	}
 

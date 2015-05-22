@@ -135,4 +135,24 @@ public class ClassLoaderFilesTests {
 		assertThat(readObject.getFile("myfile"), notNullValue());
 	}
 
+	@Test
+	public void addAll() throws Exception {
+		ClassLoaderFile file1 = new ClassLoaderFile(Kind.ADDED, new byte[10]);
+		this.files.addFile("a", "myfile1", file1);
+		ClassLoaderFiles toAdd = new ClassLoaderFiles();
+		ClassLoaderFile file2 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
+		ClassLoaderFile file3 = new ClassLoaderFile(Kind.MODIFIED, new byte[10]);
+		toAdd.addFile("a", "myfile2", file2);
+		toAdd.addFile("b", "myfile3", file3);
+		this.files.addAll(toAdd);
+		Iterator<SourceFolder> sourceFolders = this.files.getSourceFolders().iterator();
+		SourceFolder sourceFolder1 = sourceFolders.next();
+		SourceFolder sourceFolder2 = sourceFolders.next();
+		assertThat(sourceFolders.hasNext(), equalTo(false));
+		assertThat(sourceFolder1.getName(), equalTo("a"));
+		assertThat(sourceFolder2.getName(), equalTo("b"));
+		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder1.getFiles()),
+				equalTo(Arrays.asList(file1, file2)));
+	}
+
 }

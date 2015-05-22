@@ -17,11 +17,15 @@
 package org.springframework.boot.developertools.restart.server;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
-import org.springframework.boot.developertools.restart.Restarter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.util.Assert;
 
 /**
  * A HTTP server that can be used to upload updated {@link ClassLoaderFiles} and trigger
@@ -29,16 +33,47 @@ import org.springframework.http.server.ServerHttpResponse;
  *
  * @author Phillip Webb
  * @since 1.3.0
+ * @see RestartServer
  */
 public class HttpRestartServer {
 
-	private ClassLoaderFiles a;
+	private static final Log logger = LogFactory.getLog(HttpRestartServer.class);
 
-	private Restarter r;
+	private final RestartServer server;
+
+	/**
+	 * Create a new {@link HttpRestartServer} instance.
+	 * @param sourceFolderUrlFilter the source filter used to link remote folder to the
+	 * local classpath
+	 */
+	public HttpRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
+		Assert.notNull(sourceFolderUrlFilter, "SourceFolderUrlFilter must not be null");
+		this.server = new RestartServer(sourceFolderUrlFilter);
+	}
+
+	/**
+	 * Create a new {@link HttpRestartServer} instance.
+	 * @param restartServer the underlying restart server
+	 */
+	public HttpRestartServer(RestartServer restartServer) {
+		Assert.notNull(restartServer, "RestartServer must not be null");
+		this.server = restartServer;
+	}
 
 	public void handle(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
-
+		try {
+			Assert.state(request.getHeaders().getContentLength() > 0, "No content");
+			ObjectInputStream objectInputStream = new ObjectInputStream(request.getBody());
+			ClassLoaderFiles files = (ClassLoaderFiles) objectInputStream.readObject();
+			objectInputStream.close();
+			this.server.updateAndRestart(files);
+			response.setStatusCode(HttpStatus.OK);
+		}
+		catch (Exception ex) {
+			logger.warn("Unable to handler restart server HTTP request", ex);
+			response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }
