@@ -16,19 +16,23 @@
 
 package org.springframework.boot.developertools.remote.client;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.junit.Test;
 
 /**
+ * Tests for {@link ClassPathChangeUploader}.
+ *
  * @author Phillip Webb
  */
-@Configuration
-public class RemoteClientConfiguration {
+public class ClassPathChangeUploaderTests {
 
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-		return new PropertySourcesPlaceholderConfigurer();
+	@Test
+	public void urlMustNotBeNull() throws Exception {
+
+	}
+
+	@Test
+	public void requestFactoryMustNotBeNull() throws Exception {
+
 	}
 
 }

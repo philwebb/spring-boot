@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.autoconfigure;
+package org.springframework.boot.developertools.tunnel.server;
 
 import java.io.IOException;
 
 import org.springframework.boot.developertools.remote.server.Handler;
-import org.springframework.boot.developertools.restart.server.HttpRestartServer;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * Adapts {@link HttpRestartServer} to a {@link Handler}.
+ * Adapts a {@link HttpTunnelServer} to a {@link Handler}.
  *
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class HttpRestartServerHandler implements Handler {
+public class HttpTunnelServerHandler implements Handler {
 
-	// FIXME where to live
+	private HttpTunnelServer server;
 
-	private final HttpRestartServer server;
-
-	public HttpRestartServerHandler(HttpRestartServer server) {
+	public HttpTunnelServerHandler(HttpTunnelServer server) {
 		Assert.notNull(server, "Server must not be null");
 		this.server = server;
 	}

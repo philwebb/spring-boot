@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.developertools.autoconfigure.HttpTunnelServerHandler;
 import org.springframework.boot.developertools.remote.server.AccessManager;
 import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
@@ -35,6 +34,7 @@ import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnectio
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerHandler;
 import org.springframework.boot.developertools.tunnel.server.PortProvider;
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.developertools.tunnel.server.StaticPortProvider;

@@ -38,8 +38,10 @@ import org.springframework.boot.developertools.remote.server.HttpHeaderAccessMan
 import org.springframework.boot.developertools.remote.server.UrlHandlerMapper;
 import org.springframework.boot.developertools.restart.server.DefaultSourceFolderUrlFilter;
 import org.springframework.boot.developertools.restart.server.HttpRestartServer;
+import org.springframework.boot.developertools.restart.server.HttpRestartServerHandler;
 import org.springframework.boot.developertools.restart.server.SourceFolderUrlFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
+import org.springframework.boot.developertools.tunnel.server.HttpTunnelServerHandler;
 import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.context.annotation.Bean;
