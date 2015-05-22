@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remoteclient;
+package org.springframework.boot.developertools.remote.client;
 
 import java.nio.channels.SocketChannel;
 
@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.developertools.autoconfigure.RemoteDeveloperToolsProperties;
-import org.springframework.boot.developertools.remoteclient.RemoteDebugHttpTunnelClientConfiguration.PortAvailableCondition;
+import org.springframework.boot.developertools.remote.client.RemoteDebugHttpTunnelClientConfiguration.PortAvailableCondition;
 import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;

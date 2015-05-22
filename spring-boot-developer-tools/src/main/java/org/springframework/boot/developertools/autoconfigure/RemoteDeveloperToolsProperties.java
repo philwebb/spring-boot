@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.developertools.remote")
 public class RemoteDeveloperToolsProperties {
 
-	public static final String DEFAULT_CONTEXT_PATH = "/~~~springboot~~~";
+	public static final String DEFAULT_CONTEXT_PATH = "/~springboot";
 
 	public static final String DEFAULT_SECRET_HEADER_NAME = "X-AUTH-TOKEN";
 

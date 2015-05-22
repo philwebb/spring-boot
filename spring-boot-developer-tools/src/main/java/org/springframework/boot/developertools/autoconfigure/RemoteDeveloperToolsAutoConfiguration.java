@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProvider;
@@ -45,18 +46,21 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "spring.developertools.remote", name = "secret")
+@ConditionalOnClass(Filter.class)
 @EnableConfigurationProperties(RemoteDeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
-
-	// FIXME move
 
 	private static final Log logger = LogFactory
 			.getLog(RemoteDeveloperToolsAutoConfiguration.class);
 
+	@Bean
+	public DispatcherFilter springBoorRemoteDispatcherFilter() {
+		return null;
+	}
+
 	/**
 	 * Configuration for remote debug HTTP tunneling.
 	 */
-	@ConditionalOnClass(Filter.class)
 	@ConditionalOnProperty(prefix = "spring.developertools.remote.debug", name = "enabled", matchIfMissing = true)
 	static class RemoteDebugTunnelConfiguration {
 

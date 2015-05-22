@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.remoteclient;
+package org.springframework.boot.developertools.remote.client;
 
 import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.filewatch.ChangedFile;

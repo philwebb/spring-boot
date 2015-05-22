@@ -14,8 +14,28 @@
  * limitations under the License.
  */
 
-/**
- * Client support for a remotely running Spring Boot application.
- */
-package org.springframework.boot.developertools.remoteclient;
+package org.springframework.boot.developertools.remote.server;
 
+import java.io.IOException;
+
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+
+/**
+ * A single handler that is able to process an incoming remote server request.
+ *
+ * @author Phillip Webb
+ * @since 1.3.0
+ */
+public interface Handler {
+
+	/**
+	 * Handle the request.
+	 * @param request the request
+	 * @param response the response
+	 * @throws IOException
+	 */
+	void handle(ServerHttpRequest request, ServerHttpResponse response)
+			throws IOException;
+
+}

@@ -56,7 +56,6 @@ public class LocalDeveloperToolsAutoConfiguration {
 		return new LocalDeveloperPropertyDefaultsPostProcessor();
 	}
 
-	@Configuration
 	@ConditionalOnProperty(prefix = "spring.developertools.livereload", name = "enabled", matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
@@ -98,7 +97,6 @@ public class LocalDeveloperToolsAutoConfiguration {
 
 	}
 
-	@Configuration
 	@ConditionalOnProperty(prefix = "spring.developertools.restart", name = "enabled", matchIfMissing = true)
 	static class RestartConfiguration {
 

@@ -19,7 +19,7 @@ package org.springframework.boot.developertools;
 import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.developertools.remoteclient.RemoteClientConfiguration;
+import org.springframework.boot.developertools.remote.client.RemoteClientConfiguration;
 import org.springframework.core.io.ClassPathResource;
 
 /**
