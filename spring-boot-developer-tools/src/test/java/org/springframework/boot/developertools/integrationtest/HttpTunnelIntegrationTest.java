@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.test;
+package org.springframework.boot.developertools.integrationtest;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.developertools.autoconfigure.HttpTunnelServerHandler;
+import org.springframework.boot.developertools.remote.server.AccessManager;
+import org.springframework.boot.developertools.remote.server.Dispatcher;
+import org.springframework.boot.developertools.remote.server.DispatcherFilter;
+import org.springframework.boot.developertools.remote.server.HandlerMapper;
+import org.springframework.boot.developertools.remote.server.UrlHandlerMapper;
 import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
-import org.springframework.boot.developertools.tunnel.server.HttpTunnelFilter;
 import org.springframework.boot.developertools.tunnel.server.HttpTunnelServer;
 import org.springframework.boot.developertools.tunnel.server.PortProvider;
-import org.springframework.boot.developertools.tunnel.server.SecuredServerHttpRequestMatcher;
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.boot.developertools.tunnel.server.StaticPortProvider;
 import org.springframework.boot.developertools.tunnel.server.TargetServerConnection;
@@ -93,13 +100,15 @@ public class HttpTunnelIntegrationTest {
 		}
 
 		@Bean
-		public HttpTunnelFilter filter() {
+		public DispatcherFilter filter() {
 			PortProvider port = new StaticPortProvider(this.httpServerPort);
 			TargetServerConnection connection = new SocketTargetServerConnection(port);
 			HttpTunnelServer server = new HttpTunnelServer(connection);
-			SecuredServerHttpRequestMatcher matcher = new SecuredServerHttpRequestMatcher(
-					"/httptunnel", "X-AUTH-TOKEN", "secret");
-			return new HttpTunnelFilter(matcher, server);
+			HandlerMapper mapper = new UrlHandlerMapper("/httptunnel",
+					new HttpTunnelServerHandler(server));
+			Collection<HandlerMapper> mappers = Collections.singleton(mapper);
+			Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
+			return new DispatcherFilter(dispatcher);
 		}
 
 		@Bean

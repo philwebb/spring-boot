@@ -28,8 +28,11 @@ import org.springframework.util.Assert;
  * Adapts {@link HttpRestartServer} to a {@link Handler}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
-class HttpRestartServerHandler implements Handler {
+public class HttpRestartServerHandler implements Handler {
+
+	// FIXME where to live
 
 	private final HttpRestartServer server;
 

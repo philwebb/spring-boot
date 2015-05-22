@@ -32,10 +32,10 @@ public class UrlHandlerMapper implements HandlerMapper {
 
 	private final Handler hander;
 
-	public UrlHandlerMapper(String requestUri, Handler handler) {
-		Assert.hasLength(requestUri, "RequestURI must not be empty");
-		Assert.isTrue(requestUri.startsWith("/"), "RequestURI must start with '/'");
-		this.requestUri = requestUri;
+	public UrlHandlerMapper(String url, Handler handler) {
+		Assert.hasLength(url, "URL must not be empty");
+		Assert.isTrue(url.startsWith("/"), "URL must start with '/'");
+		this.requestUri = url;
 		this.hander = handler;
 	}
 

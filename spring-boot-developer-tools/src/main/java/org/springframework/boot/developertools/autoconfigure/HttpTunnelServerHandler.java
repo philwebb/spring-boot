@@ -28,8 +28,11 @@ import org.springframework.util.Assert;
  * Adapts a {@link HttpTunnelServer} to a {@link Handler}.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
-class HttpTunnelServerHandler implements Handler {
+public class HttpTunnelServerHandler implements Handler {
+
+	// FIXME where to live
 
 	private HttpTunnelServer server;
 
