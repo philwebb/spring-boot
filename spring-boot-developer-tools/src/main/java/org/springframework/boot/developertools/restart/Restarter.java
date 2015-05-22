@@ -94,13 +94,13 @@ public class Restarter {
 
 	private final UncaughtExceptionHandler exceptionHandler;
 
-	private Set<URL> urls = new LinkedHashSet<URL>();
+	private final Set<URL> urls = new LinkedHashSet<URL>();
 
-	private ClassLoaderFiles classLoaderFiles;
+	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
-	private Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new HashMap<String, Object>();
 
-	private BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
+	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<LeakSafeThread>();
 
 	private boolean finished = false;
 
