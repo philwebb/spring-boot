@@ -24,12 +24,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,19 +32,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.developertools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection.SecureClientHttpRequestFactory;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection.TunnelChannel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.mock.http.client.MockClientHttpRequest;
-import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -98,7 +90,7 @@ public class HttpTunnelConnectionTests {
 	@Test
 	public void urlMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("URL must not be null");
+		this.thrown.expectMessage("URL must not be empty");
 		new HttpTunnelConnection(null, this.securityInterceptor);
 	}
 
@@ -208,101 +200,6 @@ public class HttpTunnelConnectionTests {
 		@Override
 		public void execute(Runnable command) {
 			command.run();
-		}
-
-	}
-
-	private class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
-
-		private AtomicLong seq = new AtomicLong();
-
-		private Deque<Response> responses = new ArrayDeque<Response>();
-
-		private List<MockRequest> executedRequests = new ArrayList<MockRequest>();
-
-		@Override
-		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
-				throws IOException {
-			return new MockRequest(uri, httpMethod);
-		}
-
-		public void willRespond(HttpStatus... response) {
-			for (HttpStatus status : response) {
-				this.responses.add(new Response(0, null, status));
-			}
-		}
-
-		public void willRespond(String... response) {
-			for (String payload : response) {
-				this.responses.add(new Response(0, payload.getBytes(), HttpStatus.OK));
-			}
-		}
-
-		public void willRespondAfterDelay(int delay, HttpStatus status) {
-			this.responses.add(new Response(delay, null, status));
-		}
-
-		public List<MockRequest> getExecutedRequests() {
-			return this.executedRequests;
-		}
-
-		private class MockRequest extends MockClientHttpRequest {
-
-			public MockRequest(URI uri, HttpMethod httpMethod) {
-				super(httpMethod, uri);
-			}
-
-			@Override
-			protected ClientHttpResponse executeInternal() throws IOException {
-				MockClientHttpRequestFactory.this.executedRequests.add(this);
-				Response response = MockClientHttpRequestFactory.this.responses
-						.pollFirst();
-				if (response == null) {
-					response = new Response(0, null, HttpStatus.GONE);
-				}
-				return response.asHttpResponse(MockClientHttpRequestFactory.this.seq);
-			}
-
-		}
-
-	}
-
-	private static class Response {
-
-		private final int delay;
-
-		private final byte[] payload;
-
-		private final HttpStatus status;
-
-		public Response(int delay, byte[] payload, HttpStatus status) {
-			this.delay = delay;
-			this.payload = payload;
-			this.status = status;
-		}
-
-		public ClientHttpResponse asHttpResponse(AtomicLong seq) {
-			MockClientHttpResponse httpResponse = new MockClientHttpResponse(
-					this.payload, this.status);
-			waitForDelay();
-			if (this.payload != null) {
-				httpResponse.getHeaders().setContentLength(this.payload.length);
-				httpResponse.getHeaders().setContentType(
-						MediaType.APPLICATION_OCTET_STREAM);
-				httpResponse.getHeaders().add("x-seq",
-						Long.toString(seq.incrementAndGet()));
-			}
-			return httpResponse;
-		}
-
-		private void waitForDelay() {
-			if (this.delay > 0) {
-				try {
-					Thread.sleep(this.delay);
-				}
-				catch (InterruptedException ex) {
-				}
-			}
 		}
 
 	}

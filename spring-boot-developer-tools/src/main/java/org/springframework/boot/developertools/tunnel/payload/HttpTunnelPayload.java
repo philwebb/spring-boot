@@ -73,7 +73,8 @@ public class HttpTunnelPayload {
 	}
 
 	/**
-	 * @param message
+	 * Assign this payload to the given {@link HttpOutputMessage}.
+	 * @param message the message to assign this payload to
 	 * @throws IOException
 	 */
 	public void assignTo(HttpOutputMessage message) throws IOException {

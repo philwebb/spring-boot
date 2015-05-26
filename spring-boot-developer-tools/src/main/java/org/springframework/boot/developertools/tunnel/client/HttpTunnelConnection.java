@@ -77,7 +77,6 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
 			Executor executor) {
-		Assert.notNull(url, "URL must not be null");
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.notNull(requestFactory, "RequestFactory must not be null");
 		try {
