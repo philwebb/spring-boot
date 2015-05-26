@@ -226,6 +226,19 @@ public class LiveReloadServer {
 	}
 
 	/**
+	 * Factory method used to create the {@link Connection}.
+	 * @param socket the source socket
+	 * @param inputStream the socket input stream
+	 * @param outputStream the socket output stream
+	 * @return a connection
+	 * @throws IOException
+	 */
+	protected Connection createConnection(Socket socket, InputStream inputStream,
+			OutputStream outputStream) throws IOException {
+		return new Connection(socket, inputStream, outputStream);
+	}
+
+	/**
 	 * {@link Runnable} to handle a single connection.
 	 * @see Connection
 	 */
@@ -260,7 +273,7 @@ public class LiveReloadServer {
 				try {
 					OutputStream outputStream = this.socket.getOutputStream();
 					try {
-						Connection connection = new Connection(this.socket,
+						Connection connection = createConnection(this.socket,
 								this.inputStream, outputStream);
 						runConnection(connection);
 					}

@@ -17,6 +17,8 @@
 package org.springframework.boot.developertools.livereload;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -39,6 +41,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -55,11 +58,11 @@ public class LiveReloadServerTests {
 
 	private int port = SocketUtils.findAvailableTcpPort();
 
-	private LiveReloadServer server;
+	private MonitoredLiveReloadServer server;
 
 	@Before
 	public void setup() throws Exception {
-		this.server = new LiveReloadServer(this.port);
+		this.server = new MonitoredLiveReloadServer(this.port);
 		this.server.start();
 	}
 
@@ -111,7 +114,15 @@ public class LiveReloadServerTests {
 
 	@Test
 	public void clientClose() throws Exception {
-		// FIXME
+		WebSocketClient client = new WebSocketClient();
+		try {
+			Socket socket = openSocket(client, new Socket());
+			socket.getSession().close();
+		}
+		finally {
+			client.stop();
+		}
+		assertThat(this.server.getClosedExceptions().size(), greaterThan(0));
 	}
 
 	@Test
@@ -201,8 +212,51 @@ public class LiveReloadServerTests {
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			// server.triggerReload();
+			server.triggerReload();
 		}
+	}
+
+	/**
+	 * {@link LiveReloadServer} with additional monitoring.
+	 */
+	private static class MonitoredLiveReloadServer extends LiveReloadServer {
+
+		private List<ConnectionClosedException> closedExceptions = new ArrayList<ConnectionClosedException>();
+
+		public MonitoredLiveReloadServer(int port) {
+			super(port);
+		}
+
+		@Override
+		protected Connection createConnection(java.net.Socket socket,
+				InputStream inputStream, OutputStream outputStream) throws IOException {
+			return new MonitoredConnection(socket, inputStream, outputStream);
+		}
+
+		public List<ConnectionClosedException> getClosedExceptions() {
+			return this.closedExceptions;
+		}
+
+		private class MonitoredConnection extends Connection {
+
+			public MonitoredConnection(java.net.Socket socket, InputStream inputStream,
+					OutputStream outputStream) throws IOException {
+				super(socket, inputStream, outputStream);
+			}
+
+			@Override
+			public void run() throws Exception {
+				try {
+					super.run();
+				}
+				catch (ConnectionClosedException ex) {
+					MonitoredLiveReloadServer.this.closedExceptions.add(ex);
+					throw ex;
+				}
+			}
+
+		}
+
 	}
 
 }
