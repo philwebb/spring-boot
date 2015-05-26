@@ -98,7 +98,7 @@ class RemoteDebugHttpTunnelClientConfiguration {
 
 		@Override
 		public void onClose(SocketChannel socket) {
-			logger.info("Remote debug connection close");
+			logger.info("Remote debug connection closed");
 		}
 
 	}
