@@ -99,14 +99,19 @@ public class RemoteClientConfiguration {
 	}
 
 	@PostConstruct
-	public void logInsecureConnectionWarning() {
-		if (logger.isWarnEnabled() && !this.remoteUrl.startsWith("https://")) {
+	private void logWarnings() {
+		RemoteDeveloperToolsProperties remoteProperties = this.properties.getRemote();
+		if (!remoteProperties.getDebug().isEnabled()
+				&& !remoteProperties.getRestart().isEnabled()) {
+			logger.warn("Remote restart and debug are both disabled.");
+		}
+		if (!this.remoteUrl.startsWith("https://")) {
 			logger.warn("The connection to " + this.remoteUrl
 					+ " is insecure. You should use a URL starting with 'https://'.");
 		}
 	}
 
-	// FIXME post contruct hook to make sure something useful is available and the
+	// FIXME post construct hook to make sure something useful is available and the
 	// password is set
 
 	/**
@@ -141,16 +146,17 @@ public class RemoteClientConfiguration {
 
 	}
 
-	// FIXME merge these configs
-
 	/**
-	 * Restart configuration.
+	 * Client configuration for remote update and restarts.
 	 */
-	@ConditionalOnProperty(prefix = "spring.developertools.restart", name = "enabled", matchIfMissing = true)
-	static class RestartConfiguration {
+	@ConditionalOnProperty(prefix = "spring.developertools.remote.restart", name = "enabled", matchIfMissing = true)
+	static class RemoteRestartClientConfiguration {
 
 		@Autowired
 		private DeveloperToolsProperties properties;
+
+		@Value("${remoteUrl}")
+		private String remoteUrl;
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -169,20 +175,6 @@ public class RemoteClientConfiguration {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart()
 					.getExclude());
 		}
-
-	}
-
-	/**
-	 * Client configuration for remote update and restarts.
-	 */
-	@ConditionalOnProperty(prefix = "spring.developertools.remote.restart", name = "enabled", matchIfMissing = true)
-	static class RemoteRestartClientConfiguration {
-
-		@Autowired
-		private DeveloperToolsProperties properties;
-
-		@Value("${remoteUrl}")
-		private String remoteUrl;
 
 		@Bean
 		public ClassPathChangeUploader classPathChangeUploader(

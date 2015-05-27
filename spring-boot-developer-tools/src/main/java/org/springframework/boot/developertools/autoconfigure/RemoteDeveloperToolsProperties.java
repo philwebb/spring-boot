@@ -45,6 +45,8 @@ public class RemoteDeveloperToolsProperties {
 	 */
 	private String secretHeaderName = DEFAULT_SECRET_HEADER_NAME;
 
+	private Restart restart = new Restart();
+
 	private Debug debug = new Debug();
 
 	public String getContextPath() {
@@ -71,8 +73,29 @@ public class RemoteDeveloperToolsProperties {
 		this.secretHeaderName = secretHeaderName;
 	}
 
+	public Restart getRestart() {
+		return this.restart;
+	}
+
 	public Debug getDebug() {
 		return this.debug;
+	}
+
+	public static class Restart {
+
+		/**
+		 * Enable remote restart
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 	public static class Debug {
@@ -89,7 +112,7 @@ public class RemoteDeveloperToolsProperties {
 		 */
 		private int localPort = DEFAULT_LOCAL_PORT;
 
-		public boolean getEnabled() {
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 

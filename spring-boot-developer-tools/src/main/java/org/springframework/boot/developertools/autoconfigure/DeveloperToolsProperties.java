@@ -62,7 +62,7 @@ public class DeveloperToolsProperties {
 		 */
 		private String exclude = DEFAULT_RESTART_EXCLUDES;
 
-		public boolean getEnabled() {
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
@@ -95,7 +95,7 @@ public class DeveloperToolsProperties {
 		 */
 		private int port = 35729;
 
-		public boolean getEnabled() {
+		public boolean isEnabled() {
 			return this.enabled;
 		}
 
