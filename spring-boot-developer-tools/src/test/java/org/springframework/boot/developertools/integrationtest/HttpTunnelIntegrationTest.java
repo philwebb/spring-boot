@@ -29,7 +29,6 @@ import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.remote.server.HandlerMapper;
 import org.springframework.boot.developertools.remote.server.UrlHandlerMapper;
-import org.springframework.boot.developertools.tunnel.client.HeaderClientHttpRequestInterceptor;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection;
 import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.developertools.tunnel.client.TunnelConnection;
@@ -46,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -115,7 +115,7 @@ public class HttpTunnelIntegrationTest {
 		public TunnelClient tunnelClient() {
 			String url = "http://localhost:" + this.httpServerPort + "/httptunnel";
 			TunnelConnection connection = new HttpTunnelConnection(url,
-					new HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN", "secret"));
+					new SimpleClientHttpRequestFactory());
 			return new TunnelClient(this.clientPort, connection);
 		}
 

@@ -60,6 +60,12 @@ public class HttpRestartServer {
 		this.server = restartServer;
 	}
 
+	/**
+	 * Handle a server request.
+	 * @param request the request
+	 * @param response the response
+	 * @throws IOException
+	 */
 	public void handle(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
 		try {

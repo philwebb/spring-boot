@@ -190,7 +190,7 @@ public class Restarter {
 	 */
 	public void addUrls(Collection<URL> urls) {
 		Assert.notNull(urls, "Urls must not be null");
-		this.urls.addAll(urls);
+		this.urls.addAll(ChangeableUrls.fromUrls(urls).toList());
 	}
 
 	/**
@@ -229,12 +229,13 @@ public class Restarter {
 
 	private void start() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
-		RestartClassLoader classLoader = new RestartClassLoader(
-				this.applicationClassLoader, this.classLoaderFiles,
-				this.urls.toArray(new URL[this.urls.size()]));
+		ClassLoader parent = this.applicationClassLoader;
+		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
+		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
+		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName
-					+ " with URLs " + Arrays.asList(classLoader.getURLs()));
+					+ " with URLs " + Arrays.asList(urls));
 		}
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
 				this.args, this.exceptionHandler);
@@ -390,6 +391,17 @@ public class Restarter {
 	 */
 	public static void initialize(String[] args) {
 		initialize(args, false, new DefaultRestartInitializer());
+	}
+
+	/**
+	 * Initialize restart support. See
+	 * {@link #initialize(String[], boolean, RestartInitializer)} for details.
+	 * @param args main application arguments
+	 * @param initializer the restart initializer
+	 * @see #initialize(String[], boolean, RestartInitializer)
+	 */
+	public static void initialize(String[] args, RestartInitializer initializer) {
+		initialize(args, false, initializer, true);
 	}
 
 	/**

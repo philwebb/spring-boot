@@ -56,11 +56,11 @@ class LocalDeveloperPropertyDefaultsPostProcessor implements BeanFactoryPostProc
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
 			throws BeansException {
 		if (this.environment instanceof ConfigurableEnvironment) {
-			doshit((ConfigurableEnvironment) this.environment);
+			postProcessEnvironment((ConfigurableEnvironment) this.environment);
 		}
 	}
 
-	private void doshit(ConfigurableEnvironment environment) {
+	private void postProcessEnvironment(ConfigurableEnvironment environment) {
 		PropertySource<?> propertySource = new MapPropertySource("refresh", PROPERTIES);
 		environment.getPropertySources().addFirst(propertySource);
 	}

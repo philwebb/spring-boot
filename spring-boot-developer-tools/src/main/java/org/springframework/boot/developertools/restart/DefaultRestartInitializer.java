@@ -83,7 +83,7 @@ public class DefaultRestartInitializer implements RestartInitializer {
 
 	/**
 	 * Return the URLs that should be used with initialization.
-	 * @param thread the source thream
+	 * @param thread the source thread
 	 * @return the URLs
 	 */
 	protected URL[] getUrls(Thread thread) {

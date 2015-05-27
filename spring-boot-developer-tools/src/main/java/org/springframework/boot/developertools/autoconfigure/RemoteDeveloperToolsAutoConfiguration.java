@@ -57,20 +57,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(prefix = "spring.developertools.remote", name = "secret")
 @ConditionalOnClass(Filter.class)
-@EnableConfigurationProperties(RemoteDeveloperToolsProperties.class)
+@EnableConfigurationProperties(DeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
 
 	private static final Log logger = LogFactory
 			.getLog(RemoteDeveloperToolsAutoConfiguration.class);
 
 	@Autowired
-	private RemoteDeveloperToolsProperties properties;
+	private DeveloperToolsProperties properties;
 
 	@Bean
 	@ConditionalOnMissingBean
 	public AccessManager remoteDeveloperToolsAccessManager() {
-		return new HttpHeaderAccessManager(this.properties.getSecretHeaderName(),
-				this.properties.getSecret());
+		RemoteDeveloperToolsProperties remoteProperties = this.properties.getRemote();
+		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(),
+				remoteProperties.getSecret());
 	}
 
 	@Bean
@@ -88,7 +89,7 @@ public class RemoteDeveloperToolsAutoConfiguration {
 	static class RemoteRestartConfiguration {
 
 		@Autowired
-		private RemoteDeveloperToolsProperties properties;
+		private DeveloperToolsProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -106,8 +107,8 @@ public class RemoteDeveloperToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteRestartHanderMapper")
 		public UrlHandlerMapper remoteRestartHanderMapper(HttpRestartServer server) {
-			String url = this.properties.getContextPath() + "/restart";
-			logger.info("Listening for remote restart updates on " + url);
+			String url = this.properties.getRemote().getContextPath() + "/restart";
+			logger.warn("Listening for remote restart updates on " + url);
 			Handler handler = new HttpRestartServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
 		}
@@ -121,14 +122,14 @@ public class RemoteDeveloperToolsAutoConfiguration {
 	static class RemoteDebugTunnelConfiguration {
 
 		@Autowired
-		private RemoteDeveloperToolsProperties properties;
+		private DeveloperToolsProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "remoteDebugHanderMapper")
 		public UrlHandlerMapper remoteDebugHanderMapper(
 				@Qualifier("remoteDebugHttpTunnelServer") HttpTunnelServer server) {
-			String url = this.properties.getContextPath() + "/debug";
-			logger.info("Listening for remote debug traffic on " + url);
+			String url = this.properties.getRemote().getContextPath() + "/debug";
+			logger.warn("Listening for remote debug traffic on " + url);
 			Handler handler = new HttpTunnelServerHandler(server);
 			return new UrlHandlerMapper(url, handler);
 		}

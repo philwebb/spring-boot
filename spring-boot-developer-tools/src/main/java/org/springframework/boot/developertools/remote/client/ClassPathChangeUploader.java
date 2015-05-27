@@ -34,8 +34,10 @@ import org.springframework.boot.developertools.restart.classloader.ClassLoaderFi
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.context.ApplicationListener;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -46,6 +48,7 @@ import org.springframework.util.FileCopyUtils;
  * Listens and pushes any classpath updates to a remote endpoint.
  *
  * @author Phillip Webb
+ * @since 1.3.0
  */
 public class ClassPathChangeUploader implements
 		ApplicationListener<ClassPathChangedEvent> {
@@ -85,7 +88,9 @@ public class ClassPathChangeUploader implements
 			ClientHttpRequest request = this.requestFactory.createRequest(this.uri,
 					HttpMethod.POST);
 			byte[] bytes = serialize(classLoaderFiles);
-			request.getHeaders().setContentLength(bytes.length);
+			HttpHeaders headers = request.getHeaders();
+			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+			headers.setContentLength(bytes.length);
 			FileCopyUtils.copy(bytes, request.getBody());
 			ClientHttpResponse response = request.execute();
 			Assert.state(response.getStatusCode() == HttpStatus.OK, "Unexpected "
@@ -106,15 +111,15 @@ public class ClassPathChangeUploader implements
 
 	private ClassLoaderFiles getClassLoaderFiles(ClassPathChangedEvent event)
 			throws IOException {
-		ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
+		ClassLoaderFiles files = new ClassLoaderFiles();
 		for (ChangedFiles changedFiles : event.getChangeSet()) {
 			String sourceFolder = changedFiles.getSourceFolder().getAbsolutePath();
 			for (ChangedFile changedFile : changedFiles) {
-				classLoaderFiles.addFile(sourceFolder, changedFile.getRelativeName(),
+				files.addFile(sourceFolder, changedFile.getRelativeName(),
 						asClassLoaderFile(changedFile));
 			}
 		}
-		return classLoaderFiles;
+		return files;
 	}
 
 	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile) throws IOException {

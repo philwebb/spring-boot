@@ -79,8 +79,8 @@ public class RestartClassLoaderTests {
 		URL[] urls = new URL[] { url };
 		this.parentClassLoader = new URLClassLoader(urls, classLoader);
 		this.updatedFiles = new ClassLoaderFiles();
-		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader,
-				this.updatedFiles, urls);
+		this.reloadClassLoader = new RestartClassLoader(this.parentClassLoader, urls,
+				this.updatedFiles);
 	}
 
 	private File createSampleJarFile() throws IOException {
@@ -107,7 +107,7 @@ public class RestartClassLoaderTests {
 	public void updatedFilesMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("UpdatedFiles must not be null");
-		new RestartClassLoader(this.parentClassLoader, null, new URL[] {});
+		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
 	}
 
 	@Test

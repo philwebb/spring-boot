@@ -19,6 +19,7 @@ package org.springframework.boot.developertools.restart;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +87,10 @@ class ChangeableUrls implements Iterable<URL> {
 		return this.urls.toArray(new URL[this.urls.size()]);
 	}
 
+	public List<URL> toList() {
+		return Collections.unmodifiableList(this.urls);
+	}
+
 	@Override
 	public String toString() {
 		return this.urls.toString();
@@ -93,6 +98,10 @@ class ChangeableUrls implements Iterable<URL> {
 
 	public static ChangeableUrls fromUrlClassLoader(URLClassLoader classLoader) {
 		return fromUrls(classLoader.getURLs());
+	}
+
+	public static ChangeableUrls fromUrls(Collection<URL> urls) {
+		return fromUrls(new ArrayList<URL>(urls).toArray(new URL[urls.size()]));
 	}
 
 	public static ChangeableUrls fromUrls(URL... urls) {

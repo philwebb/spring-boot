@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.developertools.filewatch.FileChangeListener;
 import org.springframework.boot.developertools.filewatch.FileSystemWatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -57,10 +56,22 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 		this(new FileSystemWatcher(), null, urls);
 	}
 
+	/**
+	 * Create a new {@link ClassPathFileSystemWatcher} instance.
+	 * @param restartStrategy the classpath restart strategy
+	 * @param urls the URLs to watch
+	 */
 	public ClassPathFileSystemWatcher(ClassPathRestartStrategy restartStrategy, URL[] urls) {
 		this(new FileSystemWatcher(), restartStrategy, urls);
 	}
 
+	/**
+	 * Create a new {@link ClassPathFileSystemWatcher} instance.
+	 * @param fileSystemWatcher the underlying {@link FileSystemWatcher} used to monitor
+	 * the local file system
+	 * @param restartStrategy the classpath restart strategy
+	 * @param urls the URLs to watch
+	 */
 	protected ClassPathFileSystemWatcher(FileSystemWatcher fileSystemWatcher,
 			ClassPathRestartStrategy restartStrategy, URL[] urls) {
 		Assert.notNull(fileSystemWatcher, "FileSystemWatcher must not be null");
@@ -87,10 +98,6 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 				logger.trace("Unable to watch classpath URL " + url, ex);
 			}
 		}
-	}
-
-	public void addListener(FileChangeListener fileChangeListener) {
-		this.fileSystemWatcher.addListener(fileChangeListener);
 	}
 
 	@Override

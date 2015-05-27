@@ -43,6 +43,8 @@ import static org.mockito.Mockito.mock;
  */
 public class ClassLoaderFilesTests {
 
+	// FIXME ClassLoaderFiles(ClassLoaderFiles)
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 

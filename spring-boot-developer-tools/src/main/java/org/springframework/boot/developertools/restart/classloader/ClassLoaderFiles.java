@@ -41,7 +41,24 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 
 	private static final long serialVersionUID = 1;
 
-	private final Map<String, SourceFolder> sourceFolders = new LinkedHashMap<String, SourceFolder>();
+	private final Map<String, SourceFolder> sourceFolders;
+
+	/**
+	 * Create a new {@link ClassLoaderFiles} instance.
+	 */
+	public ClassLoaderFiles() {
+		this.sourceFolders = new LinkedHashMap<String, SourceFolder>();
+	}
+
+	/**
+	 * Create a new {@link ClassLoaderFiles} instance.
+	 * @param classLoaderFiles the source classloader files.
+	 */
+	public ClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
+		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		this.sourceFolders = new LinkedHashMap<String, SourceFolder>(
+				classLoaderFiles.sourceFolders);
+	}
 
 	/**
 	 * Add all elements items from the specified {@link ClassLoaderFiles} to this
@@ -57,10 +74,21 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		}
 	}
 
+	/**
+	 * Add a single {@link ClassLoaderFile} to the collection.
+	 * @param name the name of the file
+	 * @param file the file to add
+	 */
 	public void addFile(String name, ClassLoaderFile file) {
 		addFile("", name, file);
 	}
 
+	/**
+	 * Add a single {@link ClassLoaderFile} to the collection.
+	 * @param sourceFolder the source folder of the file
+	 * @param name the name of the file
+	 * @param file the file to add
+	 */
 	public void addFile(String sourceFolder, String name, ClassLoaderFile file) {
 		Assert.notNull(sourceFolder, "SourceFolder must not be null");
 		Assert.notNull(name, "Name must not be null");
@@ -75,6 +103,11 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		}
 	}
 
+	/**
+	 * Get or create a {@link SourceFolder} with the given name.
+	 * @param name the name of the folder
+	 * @return an existing or newly added {@link SourceFolder}
+	 */
 	protected final SourceFolder getOrCreateSourceFolder(String name) {
 		SourceFolder sourceFolder = this.sourceFolders.get(name);
 		if (sourceFolder == null) {
@@ -84,6 +117,11 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		return sourceFolder;
 	}
 
+	/**
+	 * Return all {@link SourceFolder SourceFolders} that have been added to the
+	 * collection.
+	 * @return a collection of {@link SourceFolder} items
+	 */
 	public Collection<SourceFolder> getSourceFolders() {
 		return Collections.unmodifiableCollection(this.sourceFolders.values());
 	}
@@ -99,6 +137,9 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		return null;
 	}
 
+	/**
+	 * An individual source folder that is being managed by the collection.
+	 */
 	public static class SourceFolder implements Serializable {
 
 		private static final long serialVersionUID = 1;
@@ -115,22 +156,31 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 			return this.files.entrySet();
 		}
 
+		protected final void add(String name, ClassLoaderFile file) {
+			this.files.put(name, file);
+		}
+
+		protected final void remove(String name) {
+			this.files.remove(name);
+		}
+
+		protected final ClassLoaderFile get(String name) {
+			return this.files.get(name);
+		}
+
+		/**
+		 * Return the name of the source folder.
+		 * @return the name of the source folder
+		 */
 		public String getName() {
 			return this.name;
 		}
 
-		public void add(String name, ClassLoaderFile file) {
-			this.files.put(name, file);
-		}
-
-		public ClassLoaderFile get(String name) {
-			return this.files.get(name);
-		}
-
-		public void remove(String name) {
-			this.files.remove(name);
-		}
-
+		/**
+		 * Return all {@link ClassLoaderFile ClassLoaderFiles} in the collection that are
+		 * contained in this source folder.
+		 * @return the files contained in the source folder
+		 */
 		public Collection<ClassLoaderFile> getFiles() {
 			return Collections.unmodifiableCollection(this.files.values());
 		}

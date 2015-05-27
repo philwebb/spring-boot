@@ -25,10 +25,12 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Scope;
 
 /**
- * Restart Scope Annotation.
+ * Restart {@code @Scope} Annotation used to indicate that a bean shoul remain beteen
+ * restarts.
  *
  * @author Phillip Webb
  * @since 1.3.0
+ * @see RestartScopeInitializer
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

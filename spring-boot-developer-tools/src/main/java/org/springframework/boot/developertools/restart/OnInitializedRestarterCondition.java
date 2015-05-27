@@ -23,7 +23,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * {@link Condition} that checks that a {@link Restarter} is available an initialzied.
+ * {@link Condition} that checks that a {@link Restarter} is available an initialized.
  *
  * @author Phillip Webb
  * @see ConditionalOnInitializedRestarter

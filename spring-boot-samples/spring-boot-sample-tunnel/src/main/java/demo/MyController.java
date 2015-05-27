@@ -24,7 +24,7 @@ public class MyController {
 
 	@RequestMapping("/hello")
 	public String get() {
-		return "Hello";
+		return "Hello 12";
 	}
 
 }

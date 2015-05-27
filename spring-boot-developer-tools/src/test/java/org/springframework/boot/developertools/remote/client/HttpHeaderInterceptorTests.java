@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.client;
+package org.springframework.boot.developertools.remote.client;
 
 import java.io.IOException;
 
@@ -36,22 +36,22 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link HeaderClientHttpRequestInterceptor}.
+ * Tests for {@link HttpHeaderInterceptor}.
  *
  * @author Rob Winch
  * @since 1.3.0
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HeaderClientHttpRequestInterceptorTests {
+public class HttpHeaderInterceptorTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private String headerName;
+	private String name;
 
-	private String headerValue;
+	private String value;
 
-	private HeaderClientHttpRequestInterceptor interceptor;
+	private HttpHeaderInterceptor interceptor;
 
 	private HttpRequest request;
 
@@ -70,47 +70,45 @@ public class HeaderClientHttpRequestInterceptorTests {
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
 		this.request = new ServletServerHttpRequest(this.httpRequest);
-		this.headerName = "X-AUTH-TOKEN";
-		this.headerValue = "secret";
+		this.name = "X-AUTH-TOKEN";
+		this.value = "secret";
 		given(this.execution.execute(this.request, this.body)).willReturn(this.response);
-		this.interceptor = new HeaderClientHttpRequestInterceptor(this.headerName,
-				this.headerValue);
+		this.interceptor = new HttpHeaderInterceptor(this.name, this.value);
 	}
 
 	@Test
 	public void constructorNullHeaderName() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderName must not be empty");
-		new HeaderClientHttpRequestInterceptor(null, this.headerValue);
+		this.thrown.expectMessage("Name must not be empty");
+		new HttpHeaderInterceptor(null, this.value);
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderName must not be empty");
-		new HeaderClientHttpRequestInterceptor("", this.headerValue);
+		this.thrown.expectMessage("Name must not be empty");
+		new HttpHeaderInterceptor("", this.value);
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderValue must not be empty");
-		new HeaderClientHttpRequestInterceptor(this.headerName, null);
+		this.thrown.expectMessage("Value must not be empty");
+		new HttpHeaderInterceptor(this.name, null);
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HeaderValue must not be empty");
-		new HeaderClientHttpRequestInterceptor(this.headerName, "");
+		this.thrown.expectMessage("Value must not be empty");
+		new HttpHeaderInterceptor(this.name, "");
 	}
 
 	@Test
 	public void intercept() throws IOException {
 		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
 				this.execution);
-		assertThat(this.request.getHeaders().getFirst(this.headerName),
-				equalTo(this.headerValue));
+		assertThat(this.request.getHeaders().getFirst(this.name), equalTo(this.value));
 		assertThat(result, equalTo(this.response));
 	}
 

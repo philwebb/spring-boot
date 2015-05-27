@@ -21,23 +21,32 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 /**
+ * Manages an optional {@link LiveReloadServer}. The {@link LiveReloadServer} may
+ * gracefully fail to start (e.g. because of a port conflict) or may be omitted entirely.
+ *
  * @author Phillip Webb
+ * @since 1.3.0
  */
-@Order(Ordered.LOWEST_PRECEDENCE)
-class ManagedLiveReloadServer {
+public class OptionalLiveReloadServer {
 
-	private static final Log logger = LogFactory.getLog(ManagedLiveReloadServer.class);
+	private static final Log logger = LogFactory.getLog(OptionalLiveReloadServer.class);
 
 	private LiveReloadServer server;
 
-	public ManagedLiveReloadServer(LiveReloadServer server) {
+	/**
+	 * Create a new {@link OptionalLiveReloadServer} instance.
+	 * @param server the server to manage or {@code null}
+	 */
+	public OptionalLiveReloadServer(LiveReloadServer server) {
 		this.server = server;
 	}
 
+	/**
+	 * {@link PostConstruct} method to start the server if possible.
+	 * @throws Exception
+	 */
 	@PostConstruct
 	public void startServer() throws Exception {
 		if (this.server != null) {
@@ -56,6 +65,9 @@ class ManagedLiveReloadServer {
 		}
 	}
 
+	/**
+	 * Trigger LiveReload if the server is up an running.
+	 */
 	public void triggerReload() {
 		if (this.server != null) {
 			this.server.triggerReload();

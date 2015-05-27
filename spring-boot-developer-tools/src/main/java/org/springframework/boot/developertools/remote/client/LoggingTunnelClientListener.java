@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.client;
+package org.springframework.boot.developertools.remote.client;
 
 import java.nio.channels.SocketChannel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.developertools.tunnel.client.TunnelClientListener;
+
 /**
- * Listener that can be used to receive {@link TunnelClient} events.
+ * {@link TunnelClientListener} to log open/close events.
  *
  * @author Phillip Webb
- * @since 1.3.0
  */
-public interface TunnelClientListener {
+class LoggingTunnelClientListener implements TunnelClientListener {
 
-	/**
-	 * Called when a socket channel is opened.
-	 * @param socket the socket channel
-	 */
-	void onOpen(SocketChannel socket);
+	private static final Log logger = LogFactory
+			.getLog(LoggingTunnelClientListener.class);
 
-	/**
-	 * Called when a socket channel is closed.
-	 * @param socket the socket channel
-	 */
-	void onClose(SocketChannel socket);
+	@Override
+	public void onOpen(SocketChannel socket) {
+		logger.info("Remote debug connection established");
+	}
+
+	@Override
+	public void onClose(SocketChannel socket) {
+		logger.info("Remote debug connection closed");
+	}
 
 }

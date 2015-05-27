@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -38,10 +37,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -64,17 +60,20 @@ public class HttpTunnelConnection implements TunnelConnection {
 	private final Executor executor;
 
 	/**
-	 * Creates a new {@link HttpTunnelConnection} instance.
+	 * Create a new {@link HttpTunnelConnection} instance.
 	 * @param url the URL to connect to
-	 * @param securityInterceptor the {@link ClientHttpRequestInterceptor} that populates
-	 * the security credentials (i.e. new
-	 * HeaderClientHttpRequestInterceptor("X-AUTH-TOKEN","secret") ).
+	 * @param requestFactory the HTTP request factory
 	 */
-	public HttpTunnelConnection(String url,
-			ClientHttpRequestInterceptor securityInterceptor) {
-		this(url, new SecureClientHttpRequestFactory(securityInterceptor), null);
+	public HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory) {
+		this(url, requestFactory, null);
 	}
 
+	/**
+	 * Create a new {@link HttpTunnelConnection} instance.
+	 * @param url the URL to connect to
+	 * @param requestFactory the HTTP request factory
+	 * @param executor the executor used to handle connections
+	 */
 	protected HttpTunnelConnection(String url, ClientHttpRequestFactory requestFactory,
 			Executor executor) {
 		Assert.hasLength(url, "URL must not be empty");
@@ -200,33 +199,9 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	}
 
-	// FIXME might be better to just make the Tunnel unaware of security
-	protected static class SecureClientHttpRequestFactory implements
-			ClientHttpRequestFactory {
-
-		private final ClientHttpRequestFactory delegate;
-
-		public SecureClientHttpRequestFactory(
-				ClientHttpRequestInterceptor securityInterceptor) {
-			this(new SimpleClientHttpRequestFactory(), securityInterceptor);
-		}
-
-		public SecureClientHttpRequestFactory(ClientHttpRequestFactory requestFactory,
-				ClientHttpRequestInterceptor securityInterceptor) {
-			Assert.notNull(requestFactory, "requestFactory must not be null");
-			Assert.notNull(securityInterceptor, "securityInterceptor must not be null");
-			this.delegate = new InterceptingClientHttpRequestFactory(requestFactory,
-					Arrays.asList(securityInterceptor));
-		}
-
-		@Override
-		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
-				throws IOException {
-			return this.delegate.createRequest(uri, httpMethod);
-		}
-
-	}
-
+	/**
+	 * {@link ThreadFactory} used to create the tunnel thread.
+	 */
 	private static class TunnelThreadFactory implements ThreadFactory {
 
 		@Override

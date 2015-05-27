@@ -33,6 +33,10 @@ public class HttpTunnelServerHandler implements Handler {
 
 	private HttpTunnelServer server;
 
+	/**
+	 * Create a new {@link HttpTunnelServerHandler} instance.
+	 * @param server the server to adapt
+	 */
 	public HttpTunnelServerHandler(HttpTunnelServer server) {
 		Assert.notNull(server, "Server must not be null");
 		this.server = server;

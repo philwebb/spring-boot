@@ -28,7 +28,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * Dispatcher used to route incoming remote server requests to a {@link Handler}.
+ * Dispatcher used to route incoming remote server requests to a {@link Handler}. Similar
+ * to {@code DispatchServlet} in Spring MVC but separate to ensure that remote support can
+ * be used regardless of any web framework.
  *
  * @author Phillip Webb
  * @since 1.3.0

@@ -32,6 +32,11 @@ public class UrlHandlerMapper implements HandlerMapper {
 
 	private final Handler hander;
 
+	/**
+	 * Create a new {@link UrlHandlerMapper}.
+	 * @param url the URL to map
+	 * @param handler the handler to use
+	 */
 	public UrlHandlerMapper(String url, Handler handler) {
 		Assert.hasLength(url, "URL must not be empty");
 		Assert.isTrue(url.startsWith("/"), "URL must start with '/'");

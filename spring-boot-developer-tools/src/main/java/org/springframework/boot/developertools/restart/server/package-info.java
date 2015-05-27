@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * @author pwebb
+ * Remote restart server
  */
 package org.springframework.boot.developertools.restart.server;
+

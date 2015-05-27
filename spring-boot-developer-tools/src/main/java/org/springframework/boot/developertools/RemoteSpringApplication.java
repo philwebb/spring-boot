@@ -20,9 +20,17 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.developertools.remote.client.RemoteClientConfiguration;
+import org.springframework.boot.developertools.restart.RestartInitializer;
+import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.core.io.ClassPathResource;
 
 /**
+ * Application that can be used to establish a link to remotely running Spring Boot code.
+ * Allows remote debugging and remote updates (if enabled). This class should be launched
+ * from within your IDE and should have the same classpath configuration as the locally
+ * developed application. The remote URL of the application should be provided as a
+ * non-option argument.
+ *
  * @author Phillip Webb
  * @since 1.3.0
  * @see RemoteClientConfiguration
@@ -30,6 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 public class RemoteSpringApplication {
 
 	private void run(String[] args) {
+		Restarter.initialize(args, RestartInitializer.NONE);
 		SpringApplication application = new SpringApplication(
 				RemoteClientConfiguration.class);
 		application.setWebEnvironment(false);
@@ -55,6 +64,11 @@ public class RemoteSpringApplication {
 		}
 	}
 
+	/**
+	 * Run the {@link RemoteSpringApplication}.
+	 * @param args the program arguments (including the remote URL as a non-option
+	 * argument)
+	 */
 	public static void main(String[] args) {
 		new RemoteSpringApplication().run(args);
 	}

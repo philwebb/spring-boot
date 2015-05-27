@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.tunnel.client;
+package org.springframework.boot.developertools.remote.client;
 
 import java.io.IOException;
 
@@ -25,28 +25,29 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 
 /**
- * Allows populating an arbitrary header with a value. For example, it might be used to
- * provide an X-AUTH-TOKEN and value for security purposes.
+ * {@link ClientHttpRequestInterceptor} to populate arbitrary HTTP headers with a value.
+ * For example, it might be used to provide an X-AUTH-TOKEN and value for security
+ * purposes.
  *
  * @author Rob Winch
  * @since 1.3.0
  */
-public class HeaderClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+public class HttpHeaderInterceptor implements ClientHttpRequestInterceptor {
 
 	private final String name;
 
 	private final String value;
 
 	/**
-	 * Creates a new {@link HeaderClientHttpRequestInterceptor} instance.
-	 * @param headerName the header name to populate. Cannot be null or empty.
-	 * @param headerValue the header value to populate. Cannot be null or empty.
+	 * Creates a new {@link HttpHeaderInterceptor} instance.
+	 * @param name the header name to populate. Cannot be null or empty.
+	 * @param value the header value to populate. Cannot be null or empty.
 	 */
-	public HeaderClientHttpRequestInterceptor(String headerName, String headerValue) {
-		Assert.hasLength(headerName, "HeaderName" + " must not be empty");
-		Assert.hasLength(headerValue, "HeaderValue" + " must not be empty");
-		this.name = headerName;
-		this.value = headerValue;
+	public HttpHeaderInterceptor(String name, String value) {
+		Assert.hasLength(name, "Name must not be empty");
+		Assert.hasLength(value, "Value" + " must not be empty");
+		this.name = name;
+		this.value = value;
 	}
 
 	@Override

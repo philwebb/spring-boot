@@ -56,22 +56,42 @@ public class FileSystemWatcher {
 
 	private Map<File, FolderSnapshot> folders = new LinkedHashMap<File, FolderSnapshot>();
 
+	/**
+	 * Create a new {@link FileSystemWatcher} instance.
+	 */
 	public FileSystemWatcher() {
 		this(true, DEFAULT_IDLE_TIME, DEFAULT_QUIET_TIME);
 	}
 
+	/**
+	 * Create a new {@link FileSystemWatcher} instance.
+	 * @param daemon if a daemon thread used to monitor changes
+	 * @param idleTime the amount of time to wait between checking for changes
+	 * @param quietTime the amount of time required after a change has been detected to
+	 * ensure that updates have completed
+	 */
 	public FileSystemWatcher(boolean daemon, long idleTime, long quietTime) {
 		this.daemon = daemon;
 		this.idleTime = idleTime;
 		this.quietTime = quietTime;
 	}
 
+	/**
+	 * Add listener for file change events. Cannot be called after the watcher has been
+	 * {@link #start() started}.
+	 * @param fileChangeListener the listener to add
+	 */
 	public synchronized void addListener(FileChangeListener fileChangeListener) {
 		Assert.notNull(fileChangeListener, "FileChangeListener must not be null");
 		checkNotStarted();
 		this.listeners.add(fileChangeListener);
 	}
 
+	/**
+	 * Add a source folder to monitor. Cannot be called after the watcher has been
+	 * {@link #start() started}.
+	 * @param folder the folder to monitor
+	 */
 	public synchronized void addSourceFolder(File folder) {
 		Assert.notNull(folder, "Folder must not be null");
 		Assert.isTrue(folder.isDirectory(), "Folder must not be a file");
@@ -83,6 +103,9 @@ public class FileSystemWatcher {
 		Assert.state(this.watchThread == null, "FileSystemWatcher already started");
 	}
 
+	/**
+	 * Start monitoring the source folder for changes.
+	 */
 	public synchronized void start() {
 		saveInitalSnapshots();
 		if (this.watchThread == null) {
@@ -155,6 +178,9 @@ public class FileSystemWatcher {
 		}
 	}
 
+	/**
+	 * Stop monitoring the source folders.
+	 */
 	public synchronized void stop() {
 		Thread thread = this.watchThread;
 		if (thread != null) {

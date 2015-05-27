@@ -19,8 +19,6 @@ package org.springframework.boot.developertools.tunnel.client;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
@@ -33,21 +31,13 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.developertools.test.MockClientHttpRequestFactory;
-import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection.SecureClientHttpRequestFactory;
 import org.springframework.boot.developertools.tunnel.client.HttpTunnelConnection.TunnelChannel;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,9 +64,6 @@ public class HttpTunnelConnectionTests {
 	@Mock
 	private Closeable closeable;
 
-	@Mock
-	private ClientHttpRequestInterceptor securityInterceptor;
-
 	private MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
 
 	@Before
@@ -91,27 +78,27 @@ public class HttpTunnelConnectionTests {
 	public void urlMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
-		new HttpTunnelConnection(null, this.securityInterceptor);
+		new HttpTunnelConnection(null, this.requestFactory);
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("URL must not be empty");
-		new HttpTunnelConnection("", this.securityInterceptor);
+		new HttpTunnelConnection("", this.requestFactory);
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Malformed URL 'htttttp:///ttest'");
-		new HttpTunnelConnection("htttttp:///ttest", this.securityInterceptor);
+		new HttpTunnelConnection("htttttp:///ttest", this.requestFactory);
 	}
 
 	@Test
-	public void securityInterceptorMustNotBeNull() {
+	public void requestFactoryMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("securityInterceptor must not be null");
+		this.thrown.expectMessage("RequestFactory must not be null");
 		new HttpTunnelConnection(this.url, null);
 	}
 
@@ -154,34 +141,6 @@ public class HttpTunnelConnectionTests {
 		write(channel, "hello");
 		assertThat(this.incommingData.toString(), equalTo("hi"));
 		assertThat(this.requestFactory.getExecutedRequests().size(), greaterThan(10));
-	}
-
-	@Test
-	public void createRequestDelegatesToInterceptor() throws IOException,
-			URISyntaxException {
-		ClientHttpRequestFactory factory = new SecureClientHttpRequestFactory(
-				this.requestFactory, this.securityInterceptor);
-		ClientHttpRequest createRequest = factory.createRequest(new URI(this.url),
-				HttpMethod.GET);
-		createRequest.execute();
-		verify(this.securityInterceptor).intercept(any(HttpRequest.class),
-				any(byte[].class), any(ClientHttpRequestExecution.class));
-	}
-
-	@Test
-	public void createRequestDelegatesRequestFactoryMustNotBeNull() throws IOException,
-			URISyntaxException {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("requestFactory must not be null");
-		new SecureClientHttpRequestFactory(null, this.securityInterceptor);
-	}
-
-	@Test
-	public void createRequestDelegatesInterceptorMustNotBeNull() throws IOException,
-			URISyntaxException {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("securityInterceptor must not be null");
-		new SecureClientHttpRequestFactory(this.requestFactory, null);
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {

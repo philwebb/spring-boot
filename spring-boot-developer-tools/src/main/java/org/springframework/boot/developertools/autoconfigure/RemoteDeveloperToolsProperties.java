@@ -16,27 +16,36 @@
 
 package org.springframework.boot.developertools.autoconfigure;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 /**
+ * Configuration properties for remote Spring Boot applications.
+ *
  * @author Phillip Webb
  * @author Rob Winch
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.developertools.remote")
 public class RemoteDeveloperToolsProperties {
 
-	public static final String DEFAULT_CONTEXT_PATH = "/~springboot";
+	public static final String DEFAULT_CONTEXT_PATH = "/.~~spring-boot!~";
 
 	public static final String DEFAULT_SECRET_HEADER_NAME = "X-AUTH-TOKEN";
 
-	private Debug debug = new Debug();
-
+	/**
+	 * Context path used to handle the remote connection.
+	 */
 	private String contextPath = DEFAULT_CONTEXT_PATH;
 
+	/**
+	 * A shared secret required to establish a connection (required to enable remote
+	 * support).
+	 */
 	private String secret;
 
+	/**
+	 * HTTP header used to transfer the shared secret.
+	 */
 	private String secretHeaderName = DEFAULT_SECRET_HEADER_NAME;
+
+	private Debug debug = new Debug();
 
 	public String getContextPath() {
 		return this.contextPath;
@@ -44,14 +53,6 @@ public class RemoteDeveloperToolsProperties {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
-	}
-
-	public Debug getDebug() {
-		return this.debug;
-	}
-
-	public void setDebug(Debug debug) {
-		this.debug = debug;
 	}
 
 	public String getSecret() {
@@ -70,12 +71,22 @@ public class RemoteDeveloperToolsProperties {
 		this.secretHeaderName = secretHeaderName;
 	}
 
+	public Debug getDebug() {
+		return this.debug;
+	}
+
 	public static class Debug {
 
 		public static final Integer DEFAULT_LOCAL_PORT = 8000;
 
+		/**
+		 * Enable remote debug support.
+		 */
 		private boolean enabled = true;
 
+		/**
+		 * Local remote debug server port.
+		 */
 		private int localPort = DEFAULT_LOCAL_PORT;
 
 		public boolean getEnabled() {

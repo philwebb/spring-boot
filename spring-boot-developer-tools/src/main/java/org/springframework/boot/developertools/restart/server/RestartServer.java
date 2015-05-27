@@ -21,6 +21,8 @@ import java.net.URLClassLoader;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles.SourceFolder;
@@ -34,6 +36,8 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public class RestartServer {
+
+	private static final Log logger = LogFactory.getLog(RestartServer.class);
 
 	private final SourceFolderUrlFilter sourceFolderUrlFilter;
 
@@ -82,6 +86,10 @@ public class RestartServer {
 			if (classLoader instanceof URLClassLoader) {
 				for (URL url : ((URLClassLoader) classLoader).getURLs()) {
 					if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
+						if (logger.isDebugEnabled()) {
+							logger.debug("URL " + url + " matched against source folder "
+									+ sourceFolder);
+						}
 						urls.add(url);
 					}
 				}
@@ -91,6 +99,11 @@ public class RestartServer {
 		return urls;
 	}
 
+	/**
+	 * Called to restart the application.
+	 * @param urls the updated URLs
+	 * @param files the updated files
+	 */
 	protected void restart(Set<URL> urls, ClassLoaderFiles files) {
 		Restarter restarter = Restarter.getInstance();
 		restarter.addUrls(urls);

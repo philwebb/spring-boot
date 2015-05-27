@@ -35,6 +35,9 @@ public class RestartScopeInitializer implements
 		applicationContext.getBeanFactory().registerScope("restart", new RestartScope());
 	}
 
+	/**
+	 * {@link Scope} that stores beans as {@link Restarter} attributes.
+	 */
 	private static class RestartScope implements Scope {
 
 		@Override

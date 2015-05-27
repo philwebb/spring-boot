@@ -44,12 +44,24 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 	private ClassLoaderFileRepository updatedFiles;
 
+	/**
+	 * Create a new {@link RestartClassLoader} instance.
+	 * @param parent the parent classloader
+	 * @param urls the urls managed by the classloader
+	 */
 	public RestartClassLoader(ClassLoader parent, URL[] urls) {
-		this(parent, ClassLoaderFileRepository.NONE, urls);
+		this(parent, urls, ClassLoaderFileRepository.NONE);
 	}
 
-	public RestartClassLoader(ClassLoader parent, ClassLoaderFileRepository updatedFiles,
-			URL[] urls) {
+	/**
+	 * Create a new {@link RestartClassLoader} instance.
+	 * @param parent the parent classloader
+	 * @param updatedFiles any files that have been updated since the JARs referenced in
+	 * URLs were created.
+	 * @param urls the urls managed by the classloader
+	 */
+	public RestartClassLoader(ClassLoader parent, URL[] urls,
+			ClassLoaderFileRepository updatedFiles) {
 		super(urls, parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");

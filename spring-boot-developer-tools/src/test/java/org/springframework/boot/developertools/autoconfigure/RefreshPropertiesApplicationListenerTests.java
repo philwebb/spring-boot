@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.developertools.classpath;
+package org.springframework.boot.developertools.autoconfigure;
 
-import org.springframework.boot.developertools.filewatch.ChangedFile;
+import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 /**
- * Strategy interface used to determine when a changed classpath file should trigger a
- * full application restart. For example, static web resources might not require a full
- * restart where as class files would.
+ * Tests for {@link RefreshPropertiesApplicationListener}.
  *
  * @author Phillip Webb
- * @since 1.3.0
- * @see PatternClassPathRestartStrategy
  */
-public interface ClassPathRestartStrategy {
+public class RefreshPropertiesApplicationListenerTests {
 
-	/**
-	 * Return true if a full restart is required.
-	 * @param file the changed file
-	 * @return {@code true} if a full restart is required
-	 */
-	boolean isRestartRequired(ChangedFile file);
+	// FIXME
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
 
 }

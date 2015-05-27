@@ -22,6 +22,8 @@ import org.springframework.boot.lang.UsesUnsafeJava;
 import org.springframework.util.Assert;
 
 /**
+ * {@link PortProvider} that provides the port being used by the Java remote debugging.
+ *
  * @author Phillip Webb
  */
 public class RemoteDebugPortProvider implements PortProvider {

@@ -28,6 +28,12 @@ import java.net.URL;
  */
 public interface SourceFolderUrlFilter {
 
+	/**
+	 * Determine if the specified URL matches a source folder.
+	 * @param sourceFolder the source folder
+	 * @param url the URL to check
+	 * @return {@code true} if the URL matches
+	 */
 	boolean isMatch(String sourceFolder, URL url);
 
 }
