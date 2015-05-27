@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,17 @@
  * limitations under the License.
  */
 
-package sample.ui;
+package demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 
 @SpringBootApplication
-public class SampleWebUiApplication {
+public class SampleDeveloperToolsApplication extends WebMvcAutoConfigurationAdapter {
 
-	@Bean
-	public MessageRepository messageRepository() {
-		return new InMemoryMessageRepository();
-	}
-
-	@Bean
-	public Converter<String, Message> messageConverter() {
-		return new Converter<String, Message>() {
-			@Override
-			public Message convert(String id) {
-				return messageRepository().findMessage(Long.valueOf(id));
-			}
-		};
-	}
-
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleWebUiApplication.class, args);
+	public static void main(String[] args) {
+		SpringApplication.run(SampleDeveloperToolsApplication.class, args);
 	}
 
 }

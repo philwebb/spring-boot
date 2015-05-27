@@ -16,15 +16,8 @@
 
 package demo;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+public class Message {
 
-@RestController
-public class MyController {
-
-	@RequestMapping("/hello")
-	public String get() {
-		return "Hello 12";
-	}
+	public static String MESSAGE = "Hello";
 
 }

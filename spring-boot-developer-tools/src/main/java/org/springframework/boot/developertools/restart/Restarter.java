@@ -232,7 +232,8 @@ public class Restarter {
 		ClassLoader parent = this.applicationClassLoader;
 		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
-		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles);
+		ClassLoader classLoader = new RestartClassLoader(parent, urls, updatedFiles,
+				this.logger);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Starting application " + this.mainClassName
 					+ " with URLs " + Arrays.asList(urls));

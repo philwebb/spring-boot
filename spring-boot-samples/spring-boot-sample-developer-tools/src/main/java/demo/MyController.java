@@ -16,15 +16,19 @@
 
 package demo;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-@SpringBootApplication
-public class SampleTunnelApplication extends WebMvcAutoConfigurationAdapter {
+@Controller
+public class MyController {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleTunnelApplication.class, args);
+	@RequestMapping("/")
+	public ModelAndView get() {
+		ModelMap model = new ModelMap("message", Message.MESSAGE);
+		return new ModelAndView("hello", model);
+
 	}
 
 }

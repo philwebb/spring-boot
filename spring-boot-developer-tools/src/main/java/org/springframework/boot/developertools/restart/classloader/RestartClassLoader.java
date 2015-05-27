@@ -40,9 +40,9 @@ import org.springframework.util.Assert;
  */
 public class RestartClassLoader extends URLClassLoader implements SmartClassLoader {
 
-	private static Log logger = LogFactory.getLog(RestartClassLoader.class);
+	private final Log logger;
 
-	private ClassLoaderFileRepository updatedFiles;
+	private final ClassLoaderFileRepository updatedFiles;
 
 	/**
 	 * Create a new {@link RestartClassLoader} instance.
@@ -62,10 +62,25 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 */
 	public RestartClassLoader(ClassLoader parent, URL[] urls,
 			ClassLoaderFileRepository updatedFiles) {
+		this(parent, urls, updatedFiles, LogFactory.getLog(RestartClassLoader.class));
+	}
+
+	/**
+	 * Create a new {@link RestartClassLoader} instance.
+	 * @param parent the parent classloader
+	 * @param updatedFiles any files that have been updated since the JARs referenced in
+	 * URLs were created.
+	 * @param urls the urls managed by the classloader
+	 * @param logger the logger used for messages
+	 */
+	public RestartClassLoader(ClassLoader parent, URL[] urls,
+			ClassLoaderFileRepository updatedFiles, Log logger) {
 		super(urls, parent);
 		Assert.notNull(parent, "Parent must not be null");
 		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
+		Assert.notNull(logger, "Logger must not be null");
 		this.updatedFiles = updatedFiles;
+		this.logger = logger;
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created RestartClassLoader " + toString());
 		}
@@ -171,8 +186,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 
 	@Override
 	protected void finalize() throws Throwable {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Finalized classloader " + toString());
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Finalized classloader " + toString());
 		}
 		super.finalize();
 	}

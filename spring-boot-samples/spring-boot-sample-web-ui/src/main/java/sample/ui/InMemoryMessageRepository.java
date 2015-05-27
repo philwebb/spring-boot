@@ -29,13 +29,6 @@ public class InMemoryMessageRepository implements MessageRepository {
 
 	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<Long, Message>();
 
-	public InMemoryMessageRepository() {
-		Message msg = new Message();
-		msg.setId(123L);
-		msg.setSummary("Phil Webb");
-		save(msg);
-	}
-
 	@Override
 	public Iterable<Message> findAll() {
 		return this.messages.values();
