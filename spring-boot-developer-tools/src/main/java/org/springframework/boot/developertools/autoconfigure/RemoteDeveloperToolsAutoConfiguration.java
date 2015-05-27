@@ -46,6 +46,7 @@ import org.springframework.boot.developertools.tunnel.server.RemoteDebugPortProv
 import org.springframework.boot.developertools.tunnel.server.SocketTargetServerConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.ServerHttpRequest;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for remote development support.
@@ -56,7 +57,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "spring.developertools.remote", name = "secret")
-@ConditionalOnClass(Filter.class)
+@ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
 @EnableConfigurationProperties(DeveloperToolsProperties.class)
 public class RemoteDeveloperToolsAutoConfiguration {
 
@@ -99,7 +100,7 @@ public class RemoteDeveloperToolsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public HttpRestartServer httpRestartServer(
+		public HttpRestartServer remoteRestartHttpRestartServer(
 				SourceFolderUrlFilter sourceFolderUrlFilter) {
 			return new HttpRestartServer(sourceFolderUrlFilter);
 		}

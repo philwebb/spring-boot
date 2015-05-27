@@ -83,4 +83,5 @@ public class RestartApplicationListenerTests {
 		}
 		assertThat(Restarter.getInstance().isFinished(), equalTo(true));
 	}
+
 }

@@ -462,6 +462,14 @@ public class Restarter {
 	}
 
 	/**
+	 * Set the restarter instance (useful for testing).
+	 * @param instance the instance to set
+	 */
+	final static void setInstance(Restarter instance) {
+		Restarter.instance = instance;
+	}
+
+	/**
 	 * Clear the instance. Primarily provided for tests and not usually used in
 	 * application code.
 	 */

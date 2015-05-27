@@ -144,4 +144,5 @@ public class ClassPathChangeUploaderTests {
 				new ByteArrayInputStream(bytes));
 		return (ClassLoaderFiles) objectInputStream.readObject();
 	}
+
 }

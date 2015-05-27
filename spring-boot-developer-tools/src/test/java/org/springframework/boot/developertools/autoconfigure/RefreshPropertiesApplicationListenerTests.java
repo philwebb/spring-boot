@@ -17,8 +17,15 @@
 package org.springframework.boot.developertools.autoconfigure;
 
 import org.junit.Test;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.mock.env.MockEnvironment;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RefreshPropertiesApplicationListener}.
@@ -27,10 +34,23 @@ import static org.junit.Assert.fail;
  */
 public class RefreshPropertiesApplicationListenerTests {
 
-	// FIXME
+	private RefreshPropertiesApplicationListener listener = new RefreshPropertiesApplicationListener();
+
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void getOrder() throws Exception {
+		assertThat(this.listener.getOrder(),
+				greaterThan(ConfigFileApplicationListener.DEFAULT_ORDER));
+	}
+
+	@Test
+	public void addsPropertiesOnApplicationEnvironmentPrepared() throws Exception {
+		SpringApplication application = new SpringApplication();
+		String[] args = {};
+		ConfigurableEnvironment environment = new MockEnvironment();
+		ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+				application, args, environment);
+		this.listener.onApplicationEvent(event);
+		assertThat(environment.getProperty("spring.thymeleaf.cache"), equalTo("false"));
 	}
 
 }

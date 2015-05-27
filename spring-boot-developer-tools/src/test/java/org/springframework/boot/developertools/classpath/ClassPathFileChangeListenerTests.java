@@ -105,4 +105,5 @@ public class ClassPathFileChangeListenerTests {
 		assertThat(actualEvent.getChangeSet(), equalTo(changeSet));
 		assertThat(actualEvent.isRestartRequired(), equalTo(restart));
 	}
+
 }

@@ -16,13 +16,12 @@
 
 package org.springframework.boot.developertools.restart;
 
-import java.net.URL;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.developertools.autoconfigure.MockRestartInitializer;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -114,15 +113,6 @@ public class RestarterTests {
 			}
 			catch (InterruptedException ex) {
 			}
-		}
-
-	}
-
-	private static class MockRestartInitializer implements RestartInitializer {
-
-		@Override
-		public URL[] getInitialUrls(Thread thread) {
-			return new URL[] {};
 		}
 
 	}

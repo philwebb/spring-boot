@@ -157,6 +157,9 @@ public class RemoteClientConfiguration {
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
 			URL[] urls = restartInitializer.getInitialUrls(Thread.currentThread());
+			if (urls == null) {
+				urls = new URL[0];
+			}
 			return new ClassPathFileSystemWatcher(classPathRestartStrategy(), urls);
 		}
 

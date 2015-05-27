@@ -71,6 +71,6 @@ public class ChangeableUrlsTests {
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();
-
 	}
+
 }
