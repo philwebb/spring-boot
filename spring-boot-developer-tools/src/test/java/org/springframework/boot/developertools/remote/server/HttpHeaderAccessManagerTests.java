@@ -16,6 +16,7 @@
 
 package org.springframework.boot.developertools.remote.server;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,6 +48,7 @@ public class HttpHeaderAccessManagerTests {
 
 	private HttpHeaderAccessManager manager;
 
+	@Before
 	public void setup() {
 		this.request = new MockHttpServletRequest("GET", "/");
 		this.serverRequest = new ServletServerHttpRequest(this.request);

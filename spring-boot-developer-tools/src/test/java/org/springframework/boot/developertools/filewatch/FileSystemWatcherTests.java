@@ -97,6 +97,7 @@ public class FileSystemWatcherTests {
 	public void addFile() throws Exception {
 		File folder = startWithNewFolder();
 		File file = touch(new File(folder, "test.txt"));
+		Thread.sleep(200);
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
@@ -146,6 +147,7 @@ public class FileSystemWatcherTests {
 		this.watcher.addSourceFolder(folder);
 		this.watcher.start();
 		File file = touch(new File(folder, "test2.txt"));
+		Thread.sleep(200);
 		this.watcher.stop();
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
