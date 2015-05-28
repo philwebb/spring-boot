@@ -23,19 +23,22 @@ import org.springframework.transaction.TransactionStatus;
  * Adapts a Spring transaction for JOOQ.
  *
  * @author Lukas Eder
- *
+ * @author Phillip Webb
  * @see <a
  * href="https://github.com/jOOQ/jOOQ/commit/7940d705ac056317125fb61de4eb871d44c37144#diff-5c89ff190c177a4c2170e3f9648714cc">Original
  * source</a>
  */
 class SpringTransaction implements Transaction {
-	private final TransactionStatus txStatus;
 
-	public SpringTransaction(TransactionStatus txStatus) {
-		this.txStatus = txStatus;
+	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
+
+	private final TransactionStatus transactionStatus;
+
+	public SpringTransaction(TransactionStatus transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
 
 	public TransactionStatus getTxStatus() {
-		return txStatus;
+		return this.transactionStatus;
 	}
 }

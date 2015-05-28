@@ -49,44 +49,39 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for JOOQ.
  *
  * @author Andreas Ahlenstorf
+ * @since 1.3.0
  */
 @Configuration
-@ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(DSLContext.class)
+@ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class JooqAutoConfiguration {
 
-	@Configuration
-	public static class JooqDataSourceConfiguration {
-		@Bean
-		@ConditionalOnMissingBean(DataSourceConnectionProvider.class)
-		public DataSourceConnectionProvider dataSourceConnectionProvider(
-				DataSource dataSource) {
-			return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(
-					dataSource));
-		}
+	@Bean
+	@ConditionalOnMissingBean(DataSourceConnectionProvider.class)
+	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
+		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(
+				dataSource));
+	}
 
-		@Bean
-		@ConditionalOnBean(PlatformTransactionManager.class)
-		public TransactionProvider transactionProvider(
-				PlatformTransactionManager txManager) {
-			return new SpringTransactionProvider(txManager);
-		}
+	@Bean
+	@ConditionalOnBean(PlatformTransactionManager.class)
+	public TransactionProvider transactionProvider(PlatformTransactionManager txManager) {
+		return new SpringTransactionProvider(txManager);
+	}
 
-		@Bean
-		public ExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
-			return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
-		}
+	@Bean
+	public ExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
+		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(DSLContext.class)
 	@EnableConfigurationProperties(JooqProperties.class)
-	@AutoConfigureAfter(JooqDataSourceConfiguration.class)
 	public static class DslContextConfiguration {
 
 		@Autowired
-		private JooqProperties jooqProperties = new JooqProperties();
+		private JooqProperties properties = new JooqProperties();
 
 		@Autowired
 		private ConnectionProvider connectionProvider;
@@ -115,33 +110,28 @@ public class JooqAutoConfiguration {
 		}
 
 		@Bean
-		public org.jooq.Configuration prepareConfiguration() {
+		@ConditionalOnMissingBean
+		public org.jooq.Configuration jooqConfiguration() {
 			org.jooq.Configuration configuration = new DefaultConfiguration();
-
-			configuration.set(connectionProvider);
-
-			if (transactionProvider != null) {
-				configuration.set(transactionProvider);
+			configuration.set(this.connectionProvider);
+			if (this.transactionProvider != null) {
+				configuration.set(this.transactionProvider);
 			}
-
-			if (recordMapperProvider != null) {
-				configuration.set(recordMapperProvider);
+			if (this.recordMapperProvider != null) {
+				configuration.set(this.recordMapperProvider);
 			}
-
-			configuration.set(recordListenerProviders);
-			configuration.set(executeListenerProviders);
-			configuration.set(visitListenerProviders);
-
-			if (!StringUtils.isEmpty(jooqProperties.getSqlDialect())) {
-				configuration.set(SQLDialect.valueOf(jooqProperties.getSqlDialect()));
+			configuration.set(this.recordListenerProviders);
+			configuration.set(this.executeListenerProviders);
+			configuration.set(this.visitListenerProviders);
+			if (!StringUtils.isEmpty(this.properties.getSqlDialect())) {
+				configuration.set(SQLDialect.valueOf(this.properties.getSqlDialect()));
 			}
-
-			if (settings != null) {
-				configuration.set(settings);
+			if (this.settings != null) {
+				configuration.set(this.settings);
 			}
-
 			return configuration;
 		}
 
 	}
+
 }

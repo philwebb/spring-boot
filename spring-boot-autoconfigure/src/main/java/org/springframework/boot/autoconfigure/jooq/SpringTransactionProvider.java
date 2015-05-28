@@ -33,28 +33,35 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  */
 class SpringTransactionProvider implements TransactionProvider {
 
-	private final PlatformTransactionManager txManager;
+	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
 
-	SpringTransactionProvider(PlatformTransactionManager txManager) {
-		this.txManager = txManager;
+	private final PlatformTransactionManager transactionManager;
+
+	SpringTransactionProvider(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@Override
-	public void begin(TransactionContext ctx) {
-		TransactionStatus txStatus = txManager
-				.getTransaction(new DefaultTransactionDefinition(
-						TransactionDefinition.PROPAGATION_NESTED));
-
-		ctx.transaction(new SpringTransaction(txStatus));
+	public void begin(TransactionContext context) {
+		TransactionDefinition definition = new DefaultTransactionDefinition(
+				TransactionDefinition.PROPAGATION_NESTED);
+		TransactionStatus status = this.transactionManager.getTransaction(definition);
+		context.transaction(new SpringTransaction(status));
 	}
 
 	@Override
 	public void commit(TransactionContext ctx) {
-		txManager.commit(((SpringTransaction) ctx.transaction()).getTxStatus());
+		this.transactionManager.commit(getTransactionStatus(ctx));
 	}
 
 	@Override
 	public void rollback(TransactionContext ctx) {
-		txManager.rollback(((SpringTransaction) ctx.transaction()).getTxStatus());
+		this.transactionManager.rollback(getTransactionStatus(ctx));
 	}
+
+	private TransactionStatus getTransactionStatus(TransactionContext ctx) {
+		SpringTransaction transaction = (SpringTransaction) ctx.transaction();
+		return transaction.getTxStatus();
+	}
+
 }

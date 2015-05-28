@@ -16,32 +16,29 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
-import org.jooq.SQLDialect;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for the JOOQ database library.
  *
  * @author Andreas Ahlenstorf
+ * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.datasource.jooq")
 public class JooqProperties {
 
+	/**
+	 * SQLDialect JOOQ used when communicating with the configured datasource, e.g.
+	 * "POSTGRES".
+	 */
 	private String sqlDialect;
 
-	/**
-	 * The {@link SQLDialect} JOOQ should use when communicating with the configured
-	 * datasource, e.g. "POSTGRES".
-	 */
 	public String getSqlDialect() {
-		return sqlDialect;
+		return this.sqlDialect;
 	}
 
-	/**
-	 * The {@link SQLDialect} JOOQ should use when communicating with the configured
-	 * datasource, e.g. "POSTGRES".
-	 */
 	public void setSqlDialect(String sqlDialect) {
 		this.sqlDialect = sqlDialect;
 	}
+
 }
