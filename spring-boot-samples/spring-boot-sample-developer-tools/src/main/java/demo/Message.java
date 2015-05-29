@@ -18,6 +18,6 @@ package demo;
 
 public class Message {
 
-	public static String MESSAGE = "Message 2";
+	public static String MESSAGE = "Message CF";
 
 }

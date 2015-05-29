@@ -164,7 +164,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 			this.name = name;
 		}
 
-		protected Set<Entry<String, ClassLoaderFile>> getFilesEntrySet() {
+		public Set<Entry<String, ClassLoaderFile>> getFilesEntrySet() {
 			return this.files.entrySet();
 		}
 

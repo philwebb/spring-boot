@@ -16,6 +16,9 @@
 
 package demo;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
@@ -24,6 +27,10 @@ import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvc
 public class SampleDeveloperToolsApplication extends WebMvcAutoConfigurationAdapter {
 
 	public static void main(String[] args) {
+		RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+		System.out.println(runtimeMXBean.getBootClassPath());
+		System.out.println(runtimeMXBean.getClassPath());
+		System.out.println(runtimeMXBean.getInputArguments());
 		SpringApplication.run(SampleDeveloperToolsApplication.class, args);
 	}
 

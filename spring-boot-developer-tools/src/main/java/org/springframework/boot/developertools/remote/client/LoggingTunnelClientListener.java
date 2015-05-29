@@ -34,7 +34,7 @@ class LoggingTunnelClientListener implements TunnelClientListener {
 
 	@Override
 	public void onOpen(SocketChannel socket) {
-		logger.info("Remote debug connection established");
+		logger.info("Remote debug connection opened");
 	}
 
 	@Override

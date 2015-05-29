@@ -17,17 +17,22 @@
 package org.springframework.boot.developertools.restart.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.restart.Restarter;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile;
+import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles.SourceFolder;
 import org.springframework.util.Assert;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -75,11 +80,74 @@ public class RestartServer {
 	 */
 	public void updateAndRestart(ClassLoaderFiles files) {
 		Set<URL> urls = new LinkedHashSet<URL>();
+		Set<URL> classLoaderUrls = getClassLoaderUrls();
 		for (SourceFolder folder : files.getSourceFolders()) {
-			urls.addAll(getClassPathUrls(folder.getName()));
+			for (Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
+				for (URL url : classLoaderUrls) {
+					if (updateFileSystem(url, entry.getKey(), entry.getValue())) {
+						urls.add(url);
+					}
+				}
+			}
+			urls.addAll(getMatchingUrls(classLoaderUrls, folder.getName()));
 		}
 		updateTimeStamp(urls);
 		restart(urls, files);
+
+	}
+
+	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
+		if (!isFolderUrl(url.toString())) {
+			return false;
+		}
+		try {
+			File folder = ResourceUtils.getFile(url);
+			File file = new File(folder, name);
+			if (file.exists() && file.canWrite()) {
+				if (classLoaderFile.getKind() == Kind.DELETED) {
+					return file.delete();
+				}
+				FileCopyUtils.copy(classLoaderFile.getContents(), file);
+				return true;
+			}
+		}
+		catch (IOException ex) {
+			// Ignore
+		}
+		return false;
+	}
+
+	private boolean isFolderUrl(String urlString) {
+		return urlString.startsWith("file:") && urlString.endsWith("/");
+	}
+
+	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceFolder) {
+		Set<URL> matchingUrls = new LinkedHashSet<URL>();
+		for (URL url : urls) {
+			if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("URL " + url + " matched against source folder "
+							+ sourceFolder);
+				}
+				matchingUrls.add(url);
+			}
+		}
+		return matchingUrls;
+	}
+
+	private Set<URL> getClassLoaderUrls() {
+		Set<URL> urls = new LinkedHashSet<URL>();
+		ClassLoader classLoader = this.classLoader;
+		while (classLoader != null) {
+			if (classLoader instanceof URLClassLoader) {
+				for (URL url : ((URLClassLoader) classLoader).getURLs()) {
+					urls.add(url);
+				}
+			}
+			classLoader = classLoader.getParent();
+		}
+		return urls;
+
 	}
 
 	private void updateTimeStamp(Iterable<URL> urls) {
@@ -99,26 +167,6 @@ public class RestartServer {
 		catch (Exception ex) {
 			// Ignore
 		}
-	}
-
-	private Set<URL> getClassPathUrls(String sourceFolder) {
-		Set<URL> urls = new LinkedHashSet<URL>();
-		ClassLoader classLoader = this.classLoader;
-		while (classLoader != null) {
-			if (classLoader instanceof URLClassLoader) {
-				for (URL url : ((URLClassLoader) classLoader).getURLs()) {
-					if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("URL " + url + " matched against source folder "
-									+ sourceFolder);
-						}
-						urls.add(url);
-					}
-				}
-			}
-			classLoader = classLoader.getParent();
-		}
-		return urls;
 	}
 
 	/**

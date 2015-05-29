@@ -90,7 +90,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	private void addUrl(URL url) {
 		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
 			try {
-				File file = new File(url.toURI());
+				File file = new File(url.toURI()); // FIXME use ResourceUtils.getFile
 				this.fileSystemWatcher.addSourceFolder(file);
 			}
 			catch (Exception ex) {
