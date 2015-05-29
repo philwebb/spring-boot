@@ -158,11 +158,9 @@ public class RestartServer {
 
 	private void updateTimeStamp(URL url) {
 		try {
-			if (ResourceUtils.isJarURL(url)) {
-				URL actualUrl = ResourceUtils.extractJarFileURL(url);
-				File file = ResourceUtils.getFile(actualUrl, "Jar URL");
-				file.setLastModified(System.currentTimeMillis());
-			}
+			URL actualUrl = ResourceUtils.extractJarFileURL(url);
+			File file = ResourceUtils.getFile(actualUrl, "Jar URL");
+			file.setLastModified(System.currentTimeMillis());
 		}
 		catch (Exception ex) {
 			// Ignore

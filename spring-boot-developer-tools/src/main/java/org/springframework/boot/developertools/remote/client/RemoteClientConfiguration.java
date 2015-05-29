@@ -205,7 +205,7 @@ public class RemoteClientConfiguration {
 	 */
 	@ConditionalOnProperty(prefix = "spring.developertools.remote.debug", name = "enabled", matchIfMissing = true)
 	@ConditionalOnClass(Filter.class)
-	@Conditional(PortAvailableCondition.class)
+	@Conditional(LocalDebugPortAvailableCondition.class)
 	static class RemoteDebugTunnelClientConfiguration {
 
 		@Autowired

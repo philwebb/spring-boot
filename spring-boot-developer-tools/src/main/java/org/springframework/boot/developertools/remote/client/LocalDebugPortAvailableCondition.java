@@ -28,7 +28,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Condition used to check that the actual local port is available.
  */
-class PortAvailableCondition extends SpringBootCondition {
+class LocalDebugPortAvailableCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -40,9 +40,9 @@ class PortAvailableCondition extends SpringBootCondition {
 			port = RemoteDeveloperToolsProperties.Debug.DEFAULT_LOCAL_PORT;
 		}
 		if (isPortAvailable(port)) {
-			return ConditionOutcome.match("Debug local port availble");
+			return ConditionOutcome.match("Local debug port availble");
 		}
-		return ConditionOutcome.noMatch("Debug local port not availble");
+		return ConditionOutcome.noMatch("Local debug port unavailble");
 	}
 
 	private boolean isPortAvailable(int port) {

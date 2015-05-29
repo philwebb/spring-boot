@@ -16,6 +16,8 @@
 
 package org.springframework.boot.developertools.restart.server;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -25,11 +27,14 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
+import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,6 +46,9 @@ public class RestartServerTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
+
+	@Rule
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() throws Exception {
@@ -71,6 +79,43 @@ public class RestartServerTests {
 		assertThat(server.restartFiles, equalTo(files));
 	}
 
+	@Test
+	public void updateSetsJarLastModified() throws Exception {
+		long startTime = System.currentTimeMillis();
+		File folder = this.temp.newFolder();
+		File jarFile = new File(folder, "module-a.jar");
+		new FileOutputStream(jarFile).close();
+		jarFile.setLastModified(0);
+		URL url = jarFile.toURI().toURL();
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
+		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+		MockRestartServer server = new MockRestartServer(filter, classLoader);
+		ClassLoaderFiles files = new ClassLoaderFiles();
+		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, new byte[0]);
+		files.addFile("my/module-a", "ClassA.class", fileA);
+		server.updateAndRestart(files);
+		assertThat(jarFile.lastModified(), greaterThan(startTime - 1000));
+	}
+
+	@Test
+	public void updateReplacesLocalFilesWhenPossible() throws Exception {
+		// This is critical for Cloud Foundry support where the application is
+		// run exploded and resources can be found from the servlet root (outside of the
+		// classloader)
+		File folder = this.temp.newFolder();
+		File classFile = new File(folder, "ClassA.class");
+		FileCopyUtils.copy("abc".getBytes(), classFile);
+		URL url = folder.toURI().toURL();
+		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
+		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+		MockRestartServer server = new MockRestartServer(filter, classLoader);
+		ClassLoaderFiles files = new ClassLoaderFiles();
+		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, "def".getBytes());
+		files.addFile("my/module-a", "ClassA.class", fileA);
+		server.updateAndRestart(files);
+		assertThat(FileCopyUtils.copyToByteArray(classFile), equalTo("def".getBytes()));
+	}
+
 	private static class MockRestartServer extends RestartServer {
 
 		public MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter,
@@ -90,6 +135,4 @@ public class RestartServerTests {
 
 	}
 
-	// FIXME test update timestamps
-	// FIXME test direct fs updates
 }

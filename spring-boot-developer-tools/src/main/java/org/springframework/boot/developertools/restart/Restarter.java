@@ -195,11 +195,11 @@ public class Restarter {
 
 	/**
 	 * Add additional {@link ClassLoaderFiles} to be included in the next restart.
-	 * @param files the files to add
+	 * @param classLoaderFiles the files to add
 	 */
-	public void addClassLoaderFiles(ClassLoaderFiles files) {
-		Assert.notNull(files, "Files must not be null");
-		this.classLoaderFiles.addAll(files);
+	public void addClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
+		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		this.classLoaderFiles.addAll(classLoaderFiles);
 	}
 
 	/**
@@ -227,7 +227,11 @@ public class Restarter {
 		});
 	}
 
-	private void start() throws Exception {
+	/**
+	 * Start the application.
+	 * @throws Exception
+	 */
+	protected void start() throws Exception {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		ClassLoader parent = this.applicationClassLoader;
 		URL[] urls = this.urls.toArray(new URL[this.urls.size()]);
@@ -238,12 +242,25 @@ public class Restarter {
 			this.logger.debug("Starting application " + this.mainClassName
 					+ " with URLs " + Arrays.asList(urls));
 		}
+		relaunch(classLoader);
+	}
+
+	/**
+	 * Relaunch the application using the specified classloader.
+	 * @param classLoader the classloader to use
+	 * @throws Exception
+	 */
+	protected void relaunch(ClassLoader classLoader) throws Exception {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
 				this.args, this.exceptionHandler);
 		launcher.start();
 		launcher.join();
 	}
 
+	/**
+	 * Stop the application.
+	 * @throws Exception
+	 */
 	protected void stop() throws Exception {
 		this.logger.debug("Stopping application");
 		this.stopLock.lock();

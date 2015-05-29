@@ -43,8 +43,6 @@ import static org.mockito.Mockito.mock;
  */
 public class ClassLoaderFilesTests {
 
-	// FIXME ClassLoaderFiles(ClassLoaderFiles)
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
@@ -157,5 +155,30 @@ public class ClassLoaderFilesTests {
 				equalTo(Arrays.asList(file1, file2)));
 	}
 
-	// FIXME getSize
+	@Test
+	public void getSize() throws Exception {
+		this.files.addFile("s1", "n1", mock(ClassLoaderFile.class));
+		this.files.addFile("s1", "n2", mock(ClassLoaderFile.class));
+		this.files.addFile("s2", "n3", mock(ClassLoaderFile.class));
+		this.files.addFile("s2", "n1", mock(ClassLoaderFile.class));
+		assertThat(this.files.size(), equalTo(3));
+	}
+
+	@Test
+	public void classLoaderFilesMustNotBeNull() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("ClassLoaderFiles must not be null");
+		new ClassLoaderFiles(null);
+	}
+
+	@Test
+	public void constructFromExistingSet() throws Exception {
+		this.files.addFile("s1", "n1", mock(ClassLoaderFile.class));
+		this.files.addFile("s1", "n2", mock(ClassLoaderFile.class));
+		ClassLoaderFiles copy = new ClassLoaderFiles(this.files);
+		this.files.addFile("s2", "n3", mock(ClassLoaderFile.class));
+		assertThat(this.files.size(), equalTo(3));
+		assertThat(copy.size(), equalTo(2));
+	}
+
 }
