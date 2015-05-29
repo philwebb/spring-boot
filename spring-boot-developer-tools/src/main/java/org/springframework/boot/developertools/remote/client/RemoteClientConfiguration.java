@@ -19,6 +19,8 @@ package org.springframework.boot.developertools.remote.client;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
@@ -55,6 +57,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration used to connect to remote Spring Boot applications.
@@ -109,10 +112,11 @@ public class RemoteClientConfiguration {
 			logger.warn("The connection to " + this.remoteUrl
 					+ " is insecure. You should use a URL starting with 'https://'.");
 		}
+		if (!StringUtils.hasLength(remoteProperties.getSecret())) {
+			logger.warn("No 'spring.developertools.remote.secret' has been set, your "
+					+ "remote application probably wont accept connections.");
+		}
 	}
-
-	// FIXME post construct hook to make sure something useful is available and the
-	// password is set
 
 	/**
 	 * LiveReload configuration.
@@ -126,6 +130,14 @@ public class RemoteClientConfiguration {
 		@Autowired(required = false)
 		private LiveReloadServer liveReloadServer;
 
+		@Autowired
+		private ClientHttpRequestFactory clientHttpRequestFactory;
+
+		@Value("${remoteUrl}")
+		private String remoteUrl;
+
+		private Executor executor = Executors.newSingleThreadExecutor();
+
 		@Bean
 		@RestartScope
 		@ConditionalOnMissingBean
@@ -136,7 +148,9 @@ public class RemoteClientConfiguration {
 
 		@EventListener
 		public void onClassPathChanged(ClassPathChangedEvent event) {
-			optionalLiveReloadServer().triggerReload();
+			String url = this.remoteUrl + this.properties.getRemote().getContextPath();
+			this.executor.execute(new DelayedLiveReloadTrigger(
+					optionalLiveReloadServer(), this.clientHttpRequestFactory, url));
 		}
 
 		@Bean

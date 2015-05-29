@@ -126,6 +126,18 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 		return Collections.unmodifiableCollection(this.sourceFolders.values());
 	}
 
+	/**
+	 * Return the size of the collection.
+	 * @return the size of the collection
+	 */
+	public int size() {
+		int size = 0;
+		for (SourceFolder sourceFolder : this.sourceFolders.values()) {
+			size += sourceFolder.getFiles().size();
+		}
+		return size;
+	}
+
 	@Override
 	public ClassLoaderFile getFile(String name) {
 		for (SourceFolder sourceFolder : this.sourceFolders.values()) {

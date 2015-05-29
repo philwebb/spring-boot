@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.filewatch.ChangedFile;
 import org.springframework.boot.developertools.filewatch.ChangedFiles;
@@ -62,6 +64,8 @@ public class ClassPathChangeUploader implements
 		TYPE_MAPPINGS = Collections.unmodifiableMap(map);
 	}
 
+	private static final Log logger = LogFactory.getLog(ClassPathChangeUploader.class);
+
 	private final URI uri;
 
 	private final ClientHttpRequestFactory requestFactory;
@@ -92,13 +96,20 @@ public class ClassPathChangeUploader implements
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			headers.setContentLength(bytes.length);
 			FileCopyUtils.copy(bytes, request.getBody());
+			logUpload(classLoaderFiles);
 			ClientHttpResponse response = request.execute();
 			Assert.state(response.getStatusCode() == HttpStatus.OK, "Unexpected "
-					+ response.getStatusCode() + " respponse uploading class files");
+					+ response.getStatusCode() + " response uploading class files");
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private void logUpload(ClassLoaderFiles classLoaderFiles) {
+		int size = classLoaderFiles.size();
+		logger.info("Uploaded " + size + " class "
+				+ (size == 1 ? "resource" : "resources"));
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
@@ -126,7 +137,9 @@ public class ClassPathChangeUploader implements
 		ClassLoaderFile.Kind kind = TYPE_MAPPINGS.get(changedFile.getType());
 		byte[] bytes = (kind == Kind.DELETED ? null : FileCopyUtils
 				.copyToByteArray(changedFile.getFile()));
-		return new ClassLoaderFile(kind, bytes);
+		long lastModified = (kind == Kind.DELETED ? System.currentTimeMillis()
+				: changedFile.getFile().lastModified());
+		return new ClassLoaderFile(kind, lastModified, bytes);
 	}
 
 }

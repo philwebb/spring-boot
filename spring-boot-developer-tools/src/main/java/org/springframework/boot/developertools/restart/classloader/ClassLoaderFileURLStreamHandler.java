@@ -57,5 +57,11 @@ class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 					ClassLoaderFileURLStreamHandler.this.file.getContents());
 		}
 
+		@Override
+		public long getLastModified() {
+			return ClassLoaderFileURLStreamHandler.this.file.getLastModified();
+
+		}
+
 	}
 }

@@ -157,4 +157,5 @@ public class ClassLoaderFilesTests {
 				equalTo(Arrays.asList(file1, file2)));
 	}
 
+	// FIXME getSize
 }

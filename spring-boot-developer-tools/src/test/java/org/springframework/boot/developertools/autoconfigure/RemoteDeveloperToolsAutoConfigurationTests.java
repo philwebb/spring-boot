@@ -171,6 +171,17 @@ public class RemoteDeveloperToolsAutoConfigurationTests {
 		this.context.getBean("remoteDebugHanderMapper");
 	}
 
+	@Test
+	public void developerToolsHealthReturns200() throws Exception {
+		loadContext("spring.developertools.remote.secret:supersecret");
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		this.request.setRequestURI(DEFAULT_CONTEXT_PATH);
+		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
+		this.response.setStatus(500);
+		filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.response.getStatus(), equalTo(200));
+	}
+
 	private void assertTunnelInvoked(boolean value) {
 		assertThat(this.context.getBean(MockHttpTunnelServer.class).invoked,
 				equalTo(value));

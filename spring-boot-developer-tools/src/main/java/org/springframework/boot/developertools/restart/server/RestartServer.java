@@ -16,6 +16,7 @@
 
 package org.springframework.boot.developertools.restart.server;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedHashSet;
@@ -27,6 +28,7 @@ import org.springframework.boot.developertools.restart.Restarter;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.developertools.restart.classloader.ClassLoaderFiles.SourceFolder;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 
 /**
  * Server used to {@link Restarter restart} the current application with updated
@@ -76,7 +78,27 @@ public class RestartServer {
 		for (SourceFolder folder : files.getSourceFolders()) {
 			urls.addAll(getClassPathUrls(folder.getName()));
 		}
+		updateTimeStamp(urls);
 		restart(urls, files);
+	}
+
+	private void updateTimeStamp(Iterable<URL> urls) {
+		for (URL url : urls) {
+			updateTimeStamp(url);
+		}
+	}
+
+	private void updateTimeStamp(URL url) {
+		try {
+			if (ResourceUtils.isJarURL(url)) {
+				URL actualUrl = ResourceUtils.extractJarFileURL(url);
+				File file = ResourceUtils.getFile(actualUrl, "Jar URL");
+				file.setLastModified(System.currentTimeMillis());
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
+		}
 	}
 
 	private Set<URL> getClassPathUrls(String sourceFolder) {

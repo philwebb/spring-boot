@@ -90,4 +90,5 @@ public class RestartServerTests {
 
 	}
 
+	// FIXME test update timestamps
 }

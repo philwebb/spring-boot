@@ -35,6 +35,7 @@ import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.remote.server.Handler;
 import org.springframework.boot.developertools.remote.server.HandlerMapper;
 import org.springframework.boot.developertools.remote.server.HttpHeaderAccessManager;
+import org.springframework.boot.developertools.remote.server.HttpStatusHandler;
 import org.springframework.boot.developertools.remote.server.UrlHandlerMapper;
 import org.springframework.boot.developertools.restart.server.DefaultSourceFolderUrlFilter;
 import org.springframework.boot.developertools.restart.server.HttpRestartServer;
@@ -73,6 +74,12 @@ public class RemoteDeveloperToolsAutoConfiguration {
 		RemoteDeveloperToolsProperties remoteProperties = this.properties.getRemote();
 		return new HttpHeaderAccessManager(remoteProperties.getSecretHeaderName(),
 				remoteProperties.getSecret());
+	}
+
+	@Bean
+	public HandlerMapper remoteDeveloperToolsHealthCheckHandlerMapper() {
+		Handler handler = new HttpStatusHandler();
+		return new UrlHandlerMapper(this.properties.getRemote().getContextPath(), handler);
 	}
 
 	@Bean

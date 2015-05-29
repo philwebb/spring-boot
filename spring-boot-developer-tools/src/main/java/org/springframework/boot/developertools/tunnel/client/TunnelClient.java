@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  */
 public class TunnelClient implements SmartInitializingSingleton {
 
-	private static final int BUFFER_SIZE = 1024 * 10;
+	private static final int BUFFER_SIZE = 1024 * 100;
 
 	private static final Log logger = LogFactory.getLog(TunnelClient.class);
 

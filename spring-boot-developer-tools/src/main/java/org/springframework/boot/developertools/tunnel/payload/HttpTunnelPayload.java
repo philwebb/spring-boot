@@ -42,7 +42,7 @@ public class HttpTunnelPayload {
 
 	private static final String SEQ_HEADER = "x-seq";
 
-	private static final int BUFFER_SIZE = 1024 * 10;
+	private static final int BUFFER_SIZE = 1024 * 100;
 
 	final protected static char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 

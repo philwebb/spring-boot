@@ -36,11 +36,29 @@ public class ClassLoaderFile implements Serializable {
 
 	private final byte[] contents;
 
+	private final long lastModified;
+
+	/**
+	 * Create a new {@link ClassLoaderFile} instance.
+	 * @param kind the kind of file
+	 * @param contents the file contents
+	 */
 	public ClassLoaderFile(Kind kind, byte[] contents) {
+		this(kind, System.currentTimeMillis(), contents);
+	}
+
+	/**
+	 * Create a new {@link ClassLoaderFile} instance.
+	 * @param kind the kind of file
+	 * @param lastModified the last modified time
+	 * @param contents the file contents
+	 */
+	public ClassLoaderFile(Kind kind, long lastModified, byte[] contents) {
 		Assert.notNull(kind, "Kind must not be null");
 		Assert.isTrue(kind == Kind.DELETED ? contents == null : contents != null,
 				"Contents must " + (kind == Kind.DELETED ? "" : "not ") + "be null");
 		this.kind = kind;
+		this.lastModified = lastModified;
 		this.contents = contents;
 	}
 
@@ -50,6 +68,14 @@ public class ClassLoaderFile implements Serializable {
 	 */
 	public Kind getKind() {
 		return this.kind;
+	}
+
+	/**
+	 * Return the time that the file was last modified.
+	 * @return the last modified time
+	 */
+	public long getLastModified() {
+		return this.lastModified;
 	}
 
 	/**
