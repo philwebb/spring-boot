@@ -16,119 +16,173 @@
 
 package org.springframework.boot.developertools.remote.client;
 
-import java.util.Collections;
-import java.util.Map;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.developertools.autoconfigure.OptionalLiveReloadServer;
+import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
+import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
+import org.springframework.boot.developertools.filewatch.ChangedFiles;
+import org.springframework.boot.developertools.livereload.LiveReloadServer;
+import org.springframework.boot.developertools.remote.server.Dispatcher;
+import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
 import org.springframework.boot.developertools.restart.RestartScopeInitializer;
+import org.springframework.boot.developertools.tunnel.client.TunnelClient;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link RemoteClientConfiguration}.
  *
- * @author Rob Winch
  * @author Phillip Webb
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = RemoteClientConfigurationTests.BootApplication.class)
-@WebIntegrationTest
 public class RemoteClientConfigurationTests {
 
-	// FIXME refactor this test
+	@Rule
+	public MockRestarter restarter = new MockRestarter();
 
 	@Rule
-	public MockRestarter mockRestarter = new MockRestarter();
+	public OutputCapture output = new OutputCapture();
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Value("${local.server.port}")
-	private int port;
+	private AnnotationConfigEmbeddedWebApplicationContext context;
 
-	private AnnotationConfigApplicationContext context;
+	private static int remotePort = SocketUtils.findAvailableTcpPort();
 
 	@After
-	public void close() {
+	public void cleanup() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void defaultSetup() {
-		setupContext("spring.developertools.remote.secret:supersecret");
-		this.context.refresh();
-		String url = "http://localhost:" + this.port + "/hello";
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(url,
-				String.class);
-		assertThat(entity.getStatusCode(), equalTo(HttpStatus.OK));
-		assertThat(entity.getBody(), equalTo("Hello World"));
+	public void warnIfDebugAndRestartDisabled() throws Exception {
+		configure("spring.developertools.remote.debug.enabled:false",
+				"spring.developertools.remote.restart.enabled:false");
+		assertThat(this.output.toString(),
+				containsString("Remote restart and debug are both disabled"));
 	}
 
 	@Test
-	public void missingSecret() {
-		setupContext();
+	public void warnIfNotHttps() throws Exception {
+		configure("http://localhost", true);
+		assertThat(this.output.toString(), containsString("is insecure"));
+	}
+
+	@Test
+	public void doesntWarnIfUsingHttps() throws Exception {
+		configure("https://localhost", true);
+		assertThat(this.output.toString(), not(containsString("is insecure")));
+	}
+
+	@Test
+	public void failIfNoSecret() throws Exception {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("The environment value "
-				+ "'spring.developertools.remote.secret' "
-				+ "is required to secure your connection.");
+		this.thrown.expectMessage("required to secure your connection");
+		configure("http://localhost", false);
+	}
+
+	@Test
+	public void liveReloadOnClassPathChanged() throws Exception {
+		configure();
+		Set<ChangedFiles> changeSet = new HashSet<ChangedFiles>();
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
+		this.context.publishEvent(event);
+		Thread.sleep(1000);
+		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
+		verify(server).triggerReload();
+	}
+
+	@Test
+	public void liveReloadDisabled() throws Exception {
+		configure("spring.developertools.livereload.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(OptionalLiveReloadServer.class);
+	}
+
+	@Test
+	public void remoteRestartDisabled() throws Exception {
+		configure("spring.developertools.remote.restart.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(ClassPathFileSystemWatcher.class);
+	}
+
+	@Test
+	public void remoteDebugDisabled() throws Exception {
+		configure("spring.developertools.remote.debug.enabled:false");
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(TunnelClient.class);
+	}
+
+	private void configure(String... pairs) {
+		configure("http://localhost", true, pairs);
+	}
+
+	private void configure(String remoteUrl, boolean setSecret, String... pairs) {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		new RestartScopeInitializer().initialize(this.context);
+		this.context.register(Config.class, RemoteClientConfiguration.class);
+		String remoteUrlProperty = "remoteUrl:" + remoteUrl + ":"
+				+ RemoteClientConfigurationTests.remotePort;
+		EnvironmentTestUtils.addEnvironment(this.context, remoteUrlProperty);
+		EnvironmentTestUtils.addEnvironment(this.context, pairs);
+		if (setSecret) {
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.developertools.remote.secret:secret");
+		}
 		this.context.refresh();
 	}
 
-	private void setupContext(String... pairs) {
-		this.context = new AnnotationConfigApplicationContext();
-		new RestartScopeInitializer().initialize(this.context);
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, pairs);
-		Map<String, Object> source = Collections.<String, Object> singletonMap(
-				"remoteUrl", "http://localhost:" + this.port);
-		PropertySource<?> propertySource = new MapPropertySource("remoteUrl", source);
-		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
-	}
-
 	@Configuration
-	@Import(RemoteClientConfiguration.class)
 	static class Config {
 
-	}
+		@Bean
+		public TomcatEmbeddedServletContainerFactory tomcat() {
+			return new TomcatEmbeddedServletContainerFactory(remotePort);
+		}
 
-	@Configuration
-	@EnableAutoConfiguration(exclude = { RemoteClientConfiguration.class,
-			ThymeleafAutoConfiguration.class })
-	@RestController
-	static class BootApplication {
+		@Bean
+		public LiveReloadServer liveReloadServer() {
+			return mock(LiveReloadServer.class);
+		}
 
-		@RequestMapping
-		public String hello() {
-			return "Hello World";
+		@Bean
+		public DispatcherFilter dispatcherFilter() throws IOException {
+			return new DispatcherFilter(dispatcher());
+		}
+
+		public Dispatcher dispatcher() throws IOException {
+			Dispatcher dispatcher = mock(Dispatcher.class);
+			ServerHttpRequest anyRequest = (ServerHttpRequest) any();
+			ServerHttpResponse anyResponse = (ServerHttpResponse) any();
+			given(dispatcher.handle(anyRequest, anyResponse)).willReturn(true);
+			return dispatcher;
 		}
 
 	}

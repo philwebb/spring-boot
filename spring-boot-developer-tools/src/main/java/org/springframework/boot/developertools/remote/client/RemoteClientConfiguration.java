@@ -57,7 +57,6 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration used to connect to remote Spring Boot applications.
@@ -111,10 +110,6 @@ public class RemoteClientConfiguration {
 		if (!this.remoteUrl.startsWith("https://")) {
 			logger.warn("The connection to " + this.remoteUrl
 					+ " is insecure. You should use a URL starting with 'https://'.");
-		}
-		if (!StringUtils.hasLength(remoteProperties.getSecret())) {
-			logger.warn("No 'spring.developertools.remote.secret' has been set, your "
-					+ "remote application probably wont accept connections.");
 		}
 	}
 
@@ -173,7 +168,6 @@ public class RemoteClientConfiguration {
 		private String remoteUrl;
 
 		@Bean
-		@ConditionalOnMissingBean
 		public ClassPathFileSystemWatcher classPathFileSystemWatcher() {
 			DefaultRestartInitializer restartInitializer = new DefaultRestartInitializer();
 			URL[] urls = restartInitializer.getInitialUrls(Thread.currentThread());
@@ -184,7 +178,6 @@ public class RemoteClientConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
 		public ClassPathRestartStrategy classPathRestartStrategy() {
 			return new PatternClassPathRestartStrategy(this.properties.getRestart()
 					.getExclude());

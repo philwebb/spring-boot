@@ -16,7 +16,6 @@
 
 package org.springframework.boot.developertools.classpath;
 
-import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -28,6 +27,7 @@ import org.springframework.boot.developertools.filewatch.FileSystemWatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 
 /**
  * Encapsulates a {@link FileSystemWatcher} to watch the local classpath folders for
@@ -90,8 +90,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 	private void addUrl(URL url) {
 		if (url.getProtocol().equals("file") && url.getPath().endsWith("/")) {
 			try {
-				File file = new File(url.toURI()); // FIXME use ResourceUtils.getFile
-				this.fileSystemWatcher.addSourceFolder(file);
+				this.fileSystemWatcher.addSourceFolder(ResourceUtils.getFile(url));
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to watch classpath URL " + url);
