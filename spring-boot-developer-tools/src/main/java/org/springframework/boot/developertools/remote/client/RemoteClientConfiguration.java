@@ -19,7 +19,7 @@ package org.springframework.boot.developertools.remote.client;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
@@ -131,7 +131,7 @@ public class RemoteClientConfiguration {
 		@Value("${remoteUrl}")
 		private String remoteUrl;
 
-		private Executor executor = Executors.newSingleThreadExecutor();
+		private ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		@Bean
 		@RestartScope
@@ -151,6 +151,10 @@ public class RemoteClientConfiguration {
 		@Bean
 		public OptionalLiveReloadServer optionalLiveReloadServer() {
 			return new OptionalLiveReloadServer(this.liveReloadServer);
+		}
+
+		final ExecutorService getExecutor() {
+			return this.executor;
 		}
 
 	}

@@ -242,7 +242,7 @@ public class HttpTunnelServerTests {
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection();
 		this.server.handle(h2);
-		Thread.sleep(200);
+		Thread.sleep(400);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
 		assertThat(h1.getServletResponse().getStatus(), equalTo(204));

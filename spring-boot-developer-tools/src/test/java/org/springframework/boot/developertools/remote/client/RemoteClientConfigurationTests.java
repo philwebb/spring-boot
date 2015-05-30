@@ -19,6 +19,7 @@ package org.springframework.boot.developertools.remote.client;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -33,6 +34,7 @@ import org.springframework.boot.developertools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.developertools.classpath.ClassPathFileSystemWatcher;
 import org.springframework.boot.developertools.filewatch.ChangedFiles;
 import org.springframework.boot.developertools.livereload.LiveReloadServer;
+import org.springframework.boot.developertools.remote.client.RemoteClientConfiguration.LiveReloadConfiguration;
 import org.springframework.boot.developertools.remote.server.Dispatcher;
 import org.springframework.boot.developertools.remote.server.DispatcherFilter;
 import org.springframework.boot.developertools.restart.MockRestarter;
@@ -114,7 +116,10 @@ public class RemoteClientConfigurationTests {
 		Set<ChangedFiles> changeSet = new HashSet<ChangedFiles>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.context.publishEvent(event);
-		Thread.sleep(1000);
+		LiveReloadConfiguration configuration = this.context
+				.getBean(LiveReloadConfiguration.class);
+		configuration.getExecutor().shutdown();
+		configuration.getExecutor().awaitTermination(2, TimeUnit.SECONDS);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		verify(server).triggerReload();
 	}
