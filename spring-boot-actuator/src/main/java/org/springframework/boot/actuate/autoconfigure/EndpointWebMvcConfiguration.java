@@ -46,11 +46,10 @@ import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * @author Dave Syer
- *
  */
 @Configuration
 @EnableConfigurationProperties({ HealthMvcEndpointProperties.class,
-	EndpointCorsProperties.class })
+		EndpointCorsProperties.class })
 public class EndpointWebMvcConfiguration {
 
 	@Autowired
@@ -75,7 +74,8 @@ public class EndpointWebMvcConfiguration {
 		CorsConfiguration corsConfiguration = getCorsConfiguration(this.corsProperties);
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(endpoints,
 				corsConfiguration);
-		boolean disabled = this.managementServerProperties.getPort()!=null && this.managementServerProperties.getPort()==-1;
+		boolean disabled = this.managementServerProperties.getPort() != null
+				&& this.managementServerProperties.getPort() == -1;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
 			mapping.setPrefix(this.managementServerProperties.getContextPath());

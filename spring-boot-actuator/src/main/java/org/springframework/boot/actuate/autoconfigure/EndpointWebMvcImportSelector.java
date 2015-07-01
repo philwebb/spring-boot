@@ -29,9 +29,8 @@ import org.springframework.core.type.AnnotationMetadata;
  * Selects configuration classes for the Actuator MVC endpoints. Customize the MVC
  * endpoints by adding an entries to <code>/META-INF/spring.factories</code> under the
  * {@link EndpointWebMvcConfiguration} key.
- * 
- * @author Dave Syer
  *
+ * @author Dave Syer
  */
 public class EndpointWebMvcImportSelector implements DeferredImportSelector,
 		BeanClassLoaderAware {
@@ -49,7 +48,7 @@ public class EndpointWebMvcImportSelector implements DeferredImportSelector,
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
-		beanClassLoader = classLoader;
+		this.beanClassLoader = classLoader;
 	}
 
 }
