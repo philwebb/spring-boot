@@ -371,6 +371,18 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testBindingWithSquareBrancketMap() throws Exception {
+		this.context.register(ResourceBindingPropertiesWithSquareBracketMap.class);
+		this.context.refresh();
+
+		ResourceBindingPropertiesWithSquareBracketMap bean = this.context
+				.getBean(ResourceBindingPropertiesWithSquareBracketMap.class);
+
+		System.out.println(bean.getMymap());
+
+	}
+
+	@Test
 	public void testAnnotatedBean() {
 		EnvironmentTestUtils.addEnvironment(this.context, "external.name:bar",
 				"spam.name:foo");
@@ -699,5 +711,23 @@ public class EnableConfigurationPropertiesTests {
 		public Map<String, String> getMymap() {
 			return this.mymap;
 		}
+
 	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(locations = "${binding.location:classpath:squarebracketmap.yml}")
+	protected static class ResourceBindingPropertiesWithSquareBracketMap {
+
+		private Map<String, String> mymap;
+
+		public void setMymap(Map<String, String> mymap) {
+			this.mymap = mymap;
+		}
+
+		public Map<String, String> getMymap() {
+			return this.mymap;
+		}
+
+	}
+
 }

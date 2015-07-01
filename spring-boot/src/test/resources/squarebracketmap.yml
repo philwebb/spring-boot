@@ -1,0 +1,6 @@
+mymap:
+  'x A y': 'apple'
+  'x B y': 'ball'
+  'x [C] y': '[cat]'
+  "x [D] y": "[dog]"
+  x [E] y: "[eiffel tower]"
