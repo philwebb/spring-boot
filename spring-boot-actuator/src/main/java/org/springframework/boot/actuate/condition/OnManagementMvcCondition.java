@@ -37,6 +37,7 @@ import org.springframework.web.context.WebApplicationContext;
  * main context.
  *
  * @author Dave Syer
+ * @see ConditionalOnManagementMvcContext
  */
 class OnManagementMvcCondition extends SpringBootCondition {
 
@@ -73,11 +74,9 @@ class OnManagementMvcCondition extends SpringBootCondition {
 		if ((managementPort == null)
 				|| (serverPort == null && managementPort.equals(8080))
 				|| (managementPort != 0 && managementPort.equals(serverPort))) {
-			return new ConditionOutcome(true,
-					"The main context is the management context");
+			return ConditionOutcome.match("The main context is the management context");
 		}
-		return new ConditionOutcome(false,
-				"The main context is not the management context");
+		return ConditionOutcome.noMatch("The main context is not the management context");
 	}
 
 	private <T> T getBeanCarefully(ConditionContext context, Class<T> type) {

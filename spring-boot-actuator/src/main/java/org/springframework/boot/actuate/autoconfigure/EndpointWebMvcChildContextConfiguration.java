@@ -96,6 +96,26 @@ public class EndpointWebMvcChildContextConfiguration {
 		return dispatcherServlet;
 	}
 
+	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
+	public CompositeHandlerMapping compositeHandlerMapping() {
+		return new CompositeHandlerMapping();
+	}
+
+	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
+	public CompositeHandlerAdapter compositeHandlerAdapter() {
+		return new CompositeHandlerAdapter();
+	}
+
+	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
+	public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+		return new CompositeHandlerExceptionResolver();
+	}
+
+	@Bean
+	public ServerCustomization serverCustomization() {
+		return new ServerCustomization();
+	}
+
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
 	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
@@ -104,49 +124,6 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Bean
 	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
 		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
-	}
-
-	@Configuration
-	protected static class ServerCustomization implements
-			EmbeddedServletContainerCustomizer, Ordered {
-
-		@Value("${error.path:/error}")
-		private String errorPath = "/error";
-
-		@Autowired
-		private ListableBeanFactory beanFactory;
-
-		// This needs to be lazily initialized because EmbeddedServletContainerCustomizer
-		// instances get their callback very early in the context lifecycle.
-		private ManagementServerProperties managementServerProperties;
-
-		private ServerProperties server;
-
-		@Override
-		public int getOrder() {
-			return 0;
-		}
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer container) {
-			if (this.managementServerProperties == null) {
-				this.managementServerProperties = BeanFactoryUtils
-						.beanOfTypeIncludingAncestors(this.beanFactory,
-								ManagementServerProperties.class);
-				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
-						this.beanFactory, ServerProperties.class);
-			}
-			// Customize as per the parent context first (so e.g. the access logs go to
-			// the same place)
-			this.server.customize(container);
-			// Then reset the error pages
-			container.setErrorPages(Collections.<ErrorPage> emptySet());
-			// and add the management-specific bits
-			container.setPort(this.managementServerProperties.getPort());
-			container.setAddress(this.managementServerProperties.getAddress());
-			container.addErrorPages(new ErrorPage(this.errorPath));
-		}
-
 	}
 
 	/**
@@ -219,8 +196,49 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	@Configuration(DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
-	public static class CompositeHandlerMapping implements HandlerMapping {
+	static class ServerCustomization implements EmbeddedServletContainerCustomizer,
+			Ordered {
+
+		@Value("${error.path:/error}")
+		private String errorPath = "/error";
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		// This needs to be lazily initialized because EmbeddedServletContainerCustomizer
+		// instances get their callback very early in the context lifecycle.
+		private ManagementServerProperties managementServerProperties;
+
+		private ServerProperties server;
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			if (this.managementServerProperties == null) {
+				this.managementServerProperties = BeanFactoryUtils
+						.beanOfTypeIncludingAncestors(this.beanFactory,
+								ManagementServerProperties.class);
+				this.server = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+						this.beanFactory, ServerProperties.class);
+			}
+			// Customize as per the parent context first (so e.g. the access logs go to
+			// the same place)
+			this.server.customize(container);
+			// Then reset the error pages
+			container.setErrorPages(Collections.<ErrorPage> emptySet());
+			// and add the management-specific bits
+			container.setPort(this.managementServerProperties.getPort());
+			container.setAddress(this.managementServerProperties.getAddress());
+			container.addErrorPages(new ErrorPage(this.errorPath));
+		}
+
+	}
+
+	static class CompositeHandlerMapping implements HandlerMapping {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -252,8 +270,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	@Configuration(DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public static class CompositeHandlerAdapter implements HandlerAdapter {
+	static class CompositeHandlerAdapter implements HandlerAdapter {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -310,9 +327,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	@Configuration(DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-	public static class CompositeHandlerExceptionResolver implements
-			HandlerExceptionResolver {
+	static class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
