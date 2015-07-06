@@ -67,36 +67,9 @@ public class CassandraAutoConfiguration {
 					.getLoadBalancingPolicy()));
 		}
 		builder.withQueryOptions(getQueryOptions());
-
-		// Manage the reconnection policy
-		if (!StringUtils.isEmpty(this.properties.getReconnectionPolicy())) {
-			try {
-				Class reconnectionPolicyClass = ClassUtils.forName(
-						this.properties.getReconnectionPolicy(), null);
-				Object reconnectionPolicyInstance = reconnectionPolicyClass.newInstance();
-				ReconnectionPolicy userReconnectionPolicy = (ReconnectionPolicy) reconnectionPolicyInstance;
-				builder.withReconnectionPolicy(userReconnectionPolicy);
-			}
-			catch (ClassNotFoundException e) {
-				logger.warn(
-						"The reconnection policy could not be loaded, falling back to the default policy",
-						e);
-			}
-			catch (InstantiationException e) {
-				logger.warn(
-						"The reconnection policy could not be instanced, falling back to the default policy",
-						e);
-			}
-			catch (IllegalAccessException e) {
-				logger.warn(
-						"The reconnection policy could not be created, falling back to the default policy",
-						e);
-			}
-			catch (ClassCastException e) {
-				logger.warn(
-						"The reconnection policy does not implement the correct interface, falling back to the default policy",
-						e);
-			}
+		if (StringUtils.hasLength(this.properties.getReconnectionPolicy())) {
+			builder.withReconnectionPolicy(getReconnectionPolicy(this.properties
+					.getReconnectionPolicy()));
 		}
 
 		// Manage the retry policy
@@ -173,6 +146,12 @@ public class CassandraAutoConfiguration {
 		}
 		options.setFetchSize(this.properties.getFetchSize());
 		return options;
+	}
+
+	private ReconnectionPolicy getReconnectionPolicy(String reconnectionPolicy) {
+		Class<?> policyClass = ClassUtils.resolveClassName(reconnectionPolicy, null);
+		Assert.isAssignable(ReconnectionPolicy.class, policyClass);
+		return (ReconnectionPolicy) BeanUtils.instantiate(policyClass);
 	}
 
 }
