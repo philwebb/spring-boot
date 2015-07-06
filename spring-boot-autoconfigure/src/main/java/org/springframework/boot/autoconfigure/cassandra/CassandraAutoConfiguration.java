@@ -28,8 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 
@@ -56,7 +54,9 @@ public class CassandraAutoConfiguration {
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(this.properties.getClusterName())
 				.withPort(this.properties.getPort());
-		builder.withCompression(getCompression(this.properties.getCompression()));
+		if (this.properties.getCompression() != null) {
+			builder.withCompression(this.properties.getCompression());
+		}
 		if (this.properties.getLoadBalancingPolicy() != null) {
 			builder.withLoadBalancingPolicy(BeanUtils.instantiate(this.properties
 					.getLoadBalancingPolicy()));
@@ -89,22 +89,13 @@ public class CassandraAutoConfiguration {
 		return builder.build();
 	}
 
-	private Compression getCompression(CassandraProperties.Compression compression) {
-		if (compression == null) {
-			return Compression.NONE;
-		}
-		return Compression.valueOf(compression.name());
-	}
-
 	private QueryOptions getQueryOptions() {
 		QueryOptions options = new QueryOptions();
 		if (this.properties.getConsistencyLevel() != null) {
-			options.setConsistencyLevel(ConsistencyLevel.valueOf(this.properties
-					.getConsistencyLevel().name()));
+			options.setConsistencyLevel(this.properties.getConsistencyLevel());
 		}
 		if (this.properties.getSerialConsistencyLevel() != null) {
-			options.setSerialConsistencyLevel(ConsistencyLevel.valueOf(this.properties
-					.getSerialConsistencyLevel().name()));
+			options.setSerialConsistencyLevel(this.properties.getSerialConsistencyLevel());
 		}
 		options.setFetchSize(this.properties.getFetchSize());
 		return options;

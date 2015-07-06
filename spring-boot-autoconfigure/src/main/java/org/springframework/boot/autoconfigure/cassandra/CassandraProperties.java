@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions;
+import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
@@ -59,12 +61,12 @@ public class CassandraProperties {
 	/**
 	 * Queries consistency level.
 	 */
-	private Consistency consistencyLevel;
+	private ConsistencyLevel consistencyLevel;
 
 	/**
 	 * Queries serial consistency level.
 	 */
-	private Consistency serialConsistencyLevel;
+	private ConsistencyLevel serialConsistencyLevel;
 
 	/**
 	 * Queries default fetch size.
@@ -142,19 +144,19 @@ public class CassandraProperties {
 		this.loadBalancingPolicy = loadBalancingPolicy;
 	}
 
-	public Consistency getConsistencyLevel() {
+	public ConsistencyLevel getConsistencyLevel() {
 		return this.consistencyLevel;
 	}
 
-	public void setConsistencyLevel(Consistency consistency) {
+	public void setConsistencyLevel(ConsistencyLevel consistency) {
 		this.consistencyLevel = consistency;
 	}
 
-	public Consistency getSerialConsistencyLevel() {
+	public ConsistencyLevel getSerialConsistencyLevel() {
 		return this.serialConsistencyLevel;
 	}
 
-	public void setSerialConsistencyLevel(Consistency serialConsistency) {
+	public void setSerialConsistencyLevel(ConsistencyLevel serialConsistency) {
 		this.serialConsistencyLevel = serialConsistency;
 	}
 
@@ -213,18 +215,6 @@ public class CassandraProperties {
 
 	public void setKeyspaceName(String keyspaceName) {
 		this.keyspaceName = keyspaceName;
-	}
-
-	public static enum Compression {
-
-		NONE, SNAPPY, LZ4
-
-	}
-
-	public static enum Consistency {
-
-		ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE
-
 	}
 
 }
