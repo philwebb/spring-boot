@@ -18,12 +18,14 @@ package org.springframework.boot.autoconfigure.cassandra;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -60,37 +62,9 @@ public class CassandraAutoConfiguration {
 				.withClusterName(this.properties.getClusterName())
 				.withPort(this.properties.getPort());
 		builder.withCompression(getCompression(this.properties.getCompression()));
-
-		// Manage the load balancing policy
-		if (!StringUtils.isEmpty(this.properties.getLoadBalancingPolicy())) {
-			try {
-				Class loadBalancingPolicyClass = ClassUtils.forName(
-						this.properties.getLoadBalancingPolicy(), null);
-				Object loadBalancingPolicyInstance = loadBalancingPolicyClass
-						.newInstance();
-				LoadBalancingPolicy userLoadBalancingPolicy = (LoadBalancingPolicy) loadBalancingPolicyInstance;
-				builder.withLoadBalancingPolicy(userLoadBalancingPolicy);
-			}
-			catch (ClassNotFoundException e) {
-				logger.warn(
-						"The load balancing policy could not be loaded, falling back to the default policy",
-						e);
-			}
-			catch (InstantiationException e) {
-				logger.warn(
-						"The load balancing policy could not be instanced, falling back to the default policy",
-						e);
-			}
-			catch (IllegalAccessException e) {
-				logger.warn(
-						"The load balancing policy could not be created, falling back to the default policy",
-						e);
-			}
-			catch (ClassCastException e) {
-				logger.warn(
-						"The load balancing policy does not implement the correct interface, falling back to the default policy",
-						e);
-			}
+		if (StringUtils.hasLength(this.properties.getLoadBalancingPolicy())) {
+			builder.withLoadBalancingPolicy(getLoadBalancingPolicy(this.properties
+					.getLoadBalancingPolicy()));
 		}
 
 		// Manage query options
@@ -193,6 +167,12 @@ public class CassandraAutoConfiguration {
 			return Compression.NONE;
 		}
 		return Compression.valueOf(compression.name());
+	}
+
+	private LoadBalancingPolicy getLoadBalancingPolicy(String loadBalancingPolicy) {
+		Class<?> policyClass = ClassUtils.resolveClassName(loadBalancingPolicy, null);
+		Assert.isAssignable(LoadBalancingPolicy.class, policyClass);
+		return (LoadBalancingPolicy) BeanUtils.instantiate(policyClass);
 	}
 
 }
