@@ -66,21 +66,7 @@ public class CassandraAutoConfiguration {
 			builder.withLoadBalancingPolicy(getLoadBalancingPolicy(this.properties
 					.getLoadBalancingPolicy()));
 		}
-
-		// Manage query options
-		QueryOptions queryOptions = new QueryOptions();
-		if (this.properties.getConsistency() != null) {
-			ConsistencyLevel consistencyLevel = ConsistencyLevel.valueOf(this.properties
-					.getConsistency());
-			queryOptions.setConsistencyLevel(consistencyLevel);
-		}
-		if (this.properties.getSerialConsistency() != null) {
-			ConsistencyLevel serialConsistencyLevel = ConsistencyLevel
-					.valueOf(this.properties.getSerialConsistency());
-			queryOptions.setSerialConsistencyLevel(serialConsistencyLevel);
-		}
-		queryOptions.setFetchSize(this.properties.getFetchSize());
-		builder.withQueryOptions(queryOptions);
+		builder.withQueryOptions(getQueryOptions());
 
 		// Manage the reconnection policy
 		if (!StringUtils.isEmpty(this.properties.getReconnectionPolicy())) {
@@ -173,6 +159,20 @@ public class CassandraAutoConfiguration {
 		Class<?> policyClass = ClassUtils.resolveClassName(loadBalancingPolicy, null);
 		Assert.isAssignable(LoadBalancingPolicy.class, policyClass);
 		return (LoadBalancingPolicy) BeanUtils.instantiate(policyClass);
+	}
+
+	private QueryOptions getQueryOptions() {
+		QueryOptions options = new QueryOptions();
+		if (StringUtils.hasLength(this.properties.getConsistency())) {
+			options.setConsistencyLevel(ConsistencyLevel.valueOf(this.properties
+					.getConsistency()));
+		}
+		if (StringUtils.hasLength(this.properties.getSerialConsistency())) {
+			options.setSerialConsistencyLevel(ConsistencyLevel.valueOf(this.properties
+					.getSerialConsistency()));
+		}
+		options.setFetchSize(this.properties.getFetchSize());
+		return options;
 	}
 
 }
