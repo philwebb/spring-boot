@@ -71,36 +71,8 @@ public class CassandraAutoConfiguration {
 			builder.withReconnectionPolicy(getReconnectionPolicy(this.properties
 					.getReconnectionPolicy()));
 		}
-
-		// Manage the retry policy
-		if (!StringUtils.isEmpty(this.properties.getRetryPolicy())) {
-			try {
-				Class retryPolicyClass = ClassUtils.forName(
-						this.properties.getRetryPolicy(), null);
-				Object retryPolicyInstance = retryPolicyClass.newInstance();
-				RetryPolicy userRetryPolicy = (RetryPolicy) retryPolicyInstance;
-				builder.withRetryPolicy(userRetryPolicy);
-			}
-			catch (ClassNotFoundException e) {
-				logger.warn(
-						"The retry policy could not be loaded, falling back to the default policy",
-						e);
-			}
-			catch (InstantiationException e) {
-				logger.warn(
-						"The retry policy could not be instanced, falling back to the default policy",
-						e);
-			}
-			catch (IllegalAccessException e) {
-				logger.warn(
-						"The retry policy could not be created, falling back to the default policy",
-						e);
-			}
-			catch (ClassCastException e) {
-				logger.warn(
-						"The retry policy does not implement the correct interface, falling back to the default policy",
-						e);
-			}
+		if (StringUtils.hasLength(this.properties.getRetryPolicy())) {
+			builder.withRetryPolicy(getRetryPolicy(this.properties.getRetryPolicy()));
 		}
 
 		// Manage socket options
@@ -152,6 +124,12 @@ public class CassandraAutoConfiguration {
 		Class<?> policyClass = ClassUtils.resolveClassName(reconnectionPolicy, null);
 		Assert.isAssignable(ReconnectionPolicy.class, policyClass);
 		return (ReconnectionPolicy) BeanUtils.instantiate(policyClass);
+	}
+
+	private RetryPolicy getRetryPolicy(String retryPolicy) {
+		Class<?> policyClass = ClassUtils.resolveClassName(retryPolicy, null);
+		Assert.isAssignable(RetryPolicy.class, policyClass);
+		return (RetryPolicy) BeanUtils.instantiate(policyClass);
 	}
 
 }
