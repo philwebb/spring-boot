@@ -84,9 +84,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (range != null) {
 			return getNextLongInRange(range);
 		}
-		byte[] bytes = new byte[32];
-		getSource().nextBytes(bytes);
-		return DigestUtils.md5DigestAsHex(bytes);
+		return getRandomBytes();
 	}
 
 	private String getRange(String type, String prefix) {
@@ -122,6 +120,12 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		}
 		return inclusiveLowerBound + Math.abs(getSource().nextLong())
 				% exclusiveUpperBound;
+	}
+
+	private Object getRandomBytes() {
+		byte[] bytes = new byte[32];
+		getSource().nextBytes(bytes);
+		return DigestUtils.md5DigestAsHex(bytes);
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
