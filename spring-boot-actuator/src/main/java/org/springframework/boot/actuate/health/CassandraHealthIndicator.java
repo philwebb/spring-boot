@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.util.Assert;
 
@@ -34,32 +32,34 @@ import com.datastax.driver.core.querybuilder.Select;
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
-	private static Log logger = LogFactory.getLog(CassandraHealthIndicator.class);
+	private CassandraAdminOperations cassandraAdminOperations;
 
-	private CassandraAdminOperations cassandraTemplate;
-
-	public CassandraHealthIndicator(CassandraAdminOperations cassandraTemplate) {
-		Assert.notNull(cassandraTemplate, "cassandraTemplate must not be null");
-		this.cassandraTemplate = cassandraTemplate;
+	/**
+	 * Create a new {@link CassandraHealthIndicator} instance.
+	 * @param cassandraAdminOperations the Cassandra admin operations
+	 */
+	public CassandraHealthIndicator(CassandraAdminOperations cassandraAdminOperations) {
+		Assert.notNull(cassandraAdminOperations,
+				"CassandraAdminOperations must not be null");
+		this.cassandraAdminOperations = cassandraAdminOperations;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		logger.debug("Initializing Cassandra health indicator");
 		try {
 			Select select = QueryBuilder.select("release_version")
 					.from("system", "local");
-			ResultSet results = this.cassandraTemplate.query(select);
+			ResultSet results = this.cassandraAdminOperations.query(select);
 			if (results.isExhausted()) {
 				builder.up();
 			}
 			else {
-				builder.up().withDetail("version", results.one().getString(0));
+				String version = results.one().getString(0);
+				builder.up().withDetail("version", version);
 			}
 		}
-		catch (Exception e) {
-			logger.debug("Cannot connect to Cassandra cluster. Error: {}", e);
-			builder.down(e);
+		catch (Exception ex) {
+			builder.down(ex);
 		}
 	}
 
