@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import com.datastax.driver.core.Cluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,26 +23,30 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.datastax.driver.core.Cluster;
+
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration} for Cassandra.
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
+ * Auto-configuration} for Cassandra.
  *
  * @author Julien Dubois
  * @since 1.3.0
  */
 @Configuration
-@ConditionalOnClass({Cluster.class})
+@ConditionalOnClass({ Cluster.class })
 @EnableConfigurationProperties(CassandraProperties.class)
 public class CassandraAutoConfiguration {
 
-    @Autowired
-    private CassandraProperties properties;
+	@Autowired
+	private CassandraProperties properties;
 
-    private Cluster cluster;
+	private Cluster cluster;
 
-    @Bean
-    @ConditionalOnMissingBean
-    public Cluster cluster() {
-        this.cluster = this.properties.createCluster();
-        return cluster;
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public Cluster cluster() {
+		this.cluster = this.properties.createCluster();
+		return this.cluster;
+	}
+
 }
