@@ -21,6 +21,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.datastax.driver.core.ProtocolOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.policies.LoadBalancingPolicy;
+import com.datastax.driver.core.policies.ReconnectionPolicy;
+import com.datastax.driver.core.policies.RetryPolicy;
 
 /**
  * Configuration properties for Cassandra.
@@ -51,7 +54,7 @@ public class CassandraProperties {
 	/**
 	 * Class name of the load balancing policy.
 	 */
-	private String loadBalancingPolicy;
+	private Class<? extends LoadBalancingPolicy> loadBalancingPolicy;
 
 	/**
 	 * Queries consistency level.
@@ -69,14 +72,14 @@ public class CassandraProperties {
 	private int fetchSize = QueryOptions.DEFAULT_FETCH_SIZE;
 
 	/**
-	 * Class name of the reconnection policy.
+	 * Reconnection policy class.
 	 */
-	private String reconnectionPolicy;
+	private Class<? extends ReconnectionPolicy> reconnectionPolicy;
 
 	/**
 	 * Class name of the retry policy.
 	 */
-	private String retryPolicy;
+	private Class<? extends RetryPolicy> retryPolicy;
 
 	/**
 	 * Socket option: connection time out.
@@ -130,11 +133,12 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	public String getLoadBalancingPolicy() {
+	public Class<? extends LoadBalancingPolicy> getLoadBalancingPolicy() {
 		return this.loadBalancingPolicy;
 	}
 
-	public void setLoadBalancingPolicy(String loadBalancingPolicy) {
+	public void setLoadBalancingPolicy(
+			Class<? extends LoadBalancingPolicy> loadBalancingPolicy) {
 		this.loadBalancingPolicy = loadBalancingPolicy;
 	}
 
@@ -162,19 +166,20 @@ public class CassandraProperties {
 		this.fetchSize = fetchSize;
 	}
 
-	public String getReconnectionPolicy() {
+	public Class<? extends ReconnectionPolicy> getReconnectionPolicy() {
 		return this.reconnectionPolicy;
 	}
 
-	public void setReconnectionPolicy(String reconnectionPolicy) {
+	public void setReconnectionPolicy(
+			Class<? extends ReconnectionPolicy> reconnectionPolicy) {
 		this.reconnectionPolicy = reconnectionPolicy;
 	}
 
-	public String getRetryPolicy() {
+	public Class<? extends RetryPolicy> getRetryPolicy() {
 		return this.retryPolicy;
 	}
 
-	public void setRetryPolicy(String retryPolicy) {
+	public void setRetryPolicy(Class<? extends RetryPolicy> retryPolicy) {
 		this.retryPolicy = retryPolicy;
 	}
 

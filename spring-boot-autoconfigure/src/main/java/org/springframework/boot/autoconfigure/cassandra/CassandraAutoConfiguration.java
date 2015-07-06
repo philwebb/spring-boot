@@ -25,8 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
@@ -34,9 +32,6 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.ReconnectionPolicy;
-import com.datastax.driver.core.policies.RetryPolicy;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -62,17 +57,18 @@ public class CassandraAutoConfiguration {
 				.withClusterName(this.properties.getClusterName())
 				.withPort(this.properties.getPort());
 		builder.withCompression(getCompression(this.properties.getCompression()));
-		if (StringUtils.hasLength(this.properties.getLoadBalancingPolicy())) {
-			builder.withLoadBalancingPolicy(getLoadBalancingPolicy(this.properties
+		if (this.properties.getLoadBalancingPolicy() != null) {
+			builder.withLoadBalancingPolicy(BeanUtils.instantiate(this.properties
 					.getLoadBalancingPolicy()));
 		}
 		builder.withQueryOptions(getQueryOptions());
-		if (StringUtils.hasLength(this.properties.getReconnectionPolicy())) {
-			builder.withReconnectionPolicy(getReconnectionPolicy(this.properties
+		if (this.properties.getReconnectionPolicy() != null) {
+			builder.withReconnectionPolicy(BeanUtils.instantiate(this.properties
 					.getReconnectionPolicy()));
 		}
-		if (StringUtils.hasLength(this.properties.getRetryPolicy())) {
-			builder.withRetryPolicy(getRetryPolicy(this.properties.getRetryPolicy()));
+		if (this.properties.getRetryPolicy() != null) {
+			builder.withRetryPolicy(BeanUtils.instantiate(this.properties
+					.getRetryPolicy()));
 		}
 
 		// Manage socket options
@@ -100,12 +96,6 @@ public class CassandraAutoConfiguration {
 		return Compression.valueOf(compression.name());
 	}
 
-	private LoadBalancingPolicy getLoadBalancingPolicy(String loadBalancingPolicy) {
-		Class<?> policyClass = ClassUtils.resolveClassName(loadBalancingPolicy, null);
-		Assert.isAssignable(LoadBalancingPolicy.class, policyClass);
-		return (LoadBalancingPolicy) BeanUtils.instantiate(policyClass);
-	}
-
 	private QueryOptions getQueryOptions() {
 		QueryOptions options = new QueryOptions();
 		if (this.properties.getConsistencyLevel() != null) {
@@ -118,18 +108,6 @@ public class CassandraAutoConfiguration {
 		}
 		options.setFetchSize(this.properties.getFetchSize());
 		return options;
-	}
-
-	private ReconnectionPolicy getReconnectionPolicy(String reconnectionPolicy) {
-		Class<?> policyClass = ClassUtils.resolveClassName(reconnectionPolicy, null);
-		Assert.isAssignable(ReconnectionPolicy.class, policyClass);
-		return (ReconnectionPolicy) BeanUtils.instantiate(policyClass);
-	}
-
-	private RetryPolicy getRetryPolicy(String retryPolicy) {
-		Class<?> policyClass = ClassUtils.resolveClassName(retryPolicy, null);
-		Assert.isAssignable(RetryPolicy.class, policyClass);
-		return (RetryPolicy) BeanUtils.instantiate(policyClass);
 	}
 
 }
