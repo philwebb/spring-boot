@@ -66,24 +66,27 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Generating random property for '" + name + "'");
 		}
-		String localName = name.substring(PREFIX.length());
-		if (localName.equals("int")) {
+		return getRandomValue(name.substring(PREFIX.length()));
+	}
+
+	private Object getRandomValue(String type) {
+		if (type.equals("int")) {
 			return getSource().nextInt();
 		}
-		if (localName.equals("long")) {
+		if (type.equals("long")) {
 			return getSource().nextLong();
 		}
-		if (localName.startsWith("int")) {
+		if (type.startsWith("int")) {
 			int beginRange = "int".length() + 1;
-			if (localName.length() > beginRange) {
-				String range = localName.substring(beginRange, localName.length() - 1);
+			if (type.length() > beginRange) {
+				String range = type.substring(beginRange, type.length() - 1);
 				return getNextIntInRange(range);
 			}
 		}
-		if (localName.startsWith("long")) {
+		if (type.startsWith("long")) {
 			int beginRange = "long".length() + 1;
-			if (localName.length() > beginRange) {
-				String range = localName.substring(beginRange, localName.length() - 1);
+			if (type.length() > beginRange) {
+				String range = type.substring(beginRange, type.length() - 1);
 				return getNextLongInRange(range);
 			}
 		}
