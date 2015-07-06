@@ -108,18 +108,12 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 	private long getNextLongInRange(String range) {
 		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-		long inclusiveLowerBound;
-		long exclusiveUpperBound;
 		if (tokens.length == 1) {
-			inclusiveLowerBound = 0;
-			exclusiveUpperBound = Long.parseLong(tokens[0]);
+			return Math.abs(getSource().nextLong()) % Long.parseLong(tokens[0]);
 		}
-		else {
-			inclusiveLowerBound = Long.parseLong(tokens[0]);
-			exclusiveUpperBound = Long.parseLong(tokens[1]) - inclusiveLowerBound;
-		}
-		return inclusiveLowerBound + Math.abs(getSource().nextLong())
-				% exclusiveUpperBound;
+		long lowerBound = Long.parseLong(tokens[0]);
+		long upperBound = Long.parseLong(tokens[1]) - lowerBound;
+		return lowerBound + Math.abs(getSource().nextLong()) % upperBound;
 	}
 
 	private Object getRandomBytes() {
