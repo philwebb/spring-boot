@@ -76,23 +76,27 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (type.equals("long")) {
 			return getSource().nextLong();
 		}
-		if (type.startsWith("int")) {
-			int beginRange = "int".length() + 1;
-			if (type.length() > beginRange) {
-				String range = type.substring(beginRange, type.length() - 1);
-				return getNextIntInRange(range);
-			}
+		String range = getRange(type, "int");
+		if (range != null) {
+			return getNextIntInRange(range);
 		}
-		if (type.startsWith("long")) {
-			int beginRange = "long".length() + 1;
-			if (type.length() > beginRange) {
-				String range = type.substring(beginRange, type.length() - 1);
-				return getNextLongInRange(range);
-			}
+		range = getRange(type, "long");
+		if (range != null) {
+			return getNextLongInRange(range);
 		}
 		byte[] bytes = new byte[32];
 		getSource().nextBytes(bytes);
 		return DigestUtils.md5DigestAsHex(bytes);
+	}
+
+	private String getRange(String type, String prefix) {
+		if (type.startsWith(prefix)) {
+			int startIndex = prefix.length() + 1;
+			if (type.length() > startIndex) {
+				return type.substring(startIndex, type.length() - 1);
+			}
+		}
+		return null;
 	}
 
 	private int getNextIntInRange(String range) {
