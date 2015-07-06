@@ -70,12 +70,7 @@ public class CassandraAutoConfiguration {
 			builder.withRetryPolicy(BeanUtils.instantiate(this.properties
 					.getRetryPolicy()));
 		}
-
-		// Manage socket options
-		SocketOptions socketOptions = new SocketOptions();
-		socketOptions.setConnectTimeoutMillis(this.properties.getConnectTimeoutMillis());
-		socketOptions.setReadTimeoutMillis(this.properties.getReadTimeoutMillis());
-		builder.withSocketOptions(socketOptions);
+		builder.withSocketOptions(getSocketOptions());
 
 		// Manage SSL
 		if (this.properties.isSsl()) {
@@ -98,6 +93,13 @@ public class CassandraAutoConfiguration {
 			options.setSerialConsistencyLevel(this.properties.getSerialConsistencyLevel());
 		}
 		options.setFetchSize(this.properties.getFetchSize());
+		return options;
+	}
+
+	private SocketOptions getSocketOptions() {
+		SocketOptions options = new SocketOptions();
+		options.setConnectTimeoutMillis(this.properties.getConnectTimeoutMillis());
+		options.setReadTimeoutMillis(this.properties.getReadTimeoutMillis());
 		return options;
 	}
 
