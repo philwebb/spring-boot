@@ -163,13 +163,13 @@ public class CassandraAutoConfiguration {
 
 	private QueryOptions getQueryOptions() {
 		QueryOptions options = new QueryOptions();
-		if (StringUtils.hasLength(this.properties.getConsistency())) {
+		if (this.properties.getConsistencyLevel() != null) {
 			options.setConsistencyLevel(ConsistencyLevel.valueOf(this.properties
-					.getConsistency()));
+					.getConsistencyLevel().name()));
 		}
-		if (StringUtils.hasLength(this.properties.getSerialConsistency())) {
+		if (this.properties.getSerialConsistencyLevel() != null) {
 			options.setSerialConsistencyLevel(ConsistencyLevel.valueOf(this.properties
-					.getSerialConsistency()));
+					.getSerialConsistencyLevel().name()));
 		}
 		options.setFetchSize(this.properties.getFetchSize());
 		return options;

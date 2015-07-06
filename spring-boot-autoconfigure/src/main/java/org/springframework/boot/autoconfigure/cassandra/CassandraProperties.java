@@ -56,12 +56,12 @@ public class CassandraProperties {
 	/**
 	 * Queries consistency level.
 	 */
-	private String consistency;
+	private Consistency consistencyLevel;
 
 	/**
 	 * Queries serial consistency level.
 	 */
-	private String serialConsistency;
+	private Consistency serialConsistencyLevel;
 
 	/**
 	 * Queries default fetch size.
@@ -138,20 +138,20 @@ public class CassandraProperties {
 		this.loadBalancingPolicy = loadBalancingPolicy;
 	}
 
-	public String getConsistency() {
-		return this.consistency;
+	public Consistency getConsistencyLevel() {
+		return this.consistencyLevel;
 	}
 
-	public void setConsistency(String consistency) {
-		this.consistency = consistency;
+	public void setConsistencyLevel(Consistency consistency) {
+		this.consistencyLevel = consistency;
 	}
 
-	public String getSerialConsistency() {
-		return this.serialConsistency;
+	public Consistency getSerialConsistencyLevel() {
+		return this.serialConsistencyLevel;
 	}
 
-	public void setSerialConsistency(String serialConsistency) {
-		this.serialConsistency = serialConsistency;
+	public void setSerialConsistencyLevel(Consistency serialConsistency) {
+		this.serialConsistencyLevel = serialConsistency;
 	}
 
 	public int getFetchSize() {
@@ -212,20 +212,14 @@ public class CassandraProperties {
 
 	public static enum Compression {
 
-		/**
-		 * No compression.
-		 */
-		NONE,
-
-		/**
-		 * Snappy compression.
-		 */
-		SNAPPY,
-
-		/**
-		 * LZ4 compression.
-		 */
-		LZ4
+		NONE, SNAPPY, LZ4
 
 	}
+
+	public static enum Consistency {
+
+		ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE
+
+	}
+
 }
