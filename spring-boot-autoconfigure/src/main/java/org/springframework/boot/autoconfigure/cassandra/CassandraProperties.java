@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.datastax.driver.core.ProtocolOptions;
@@ -33,8 +31,6 @@ import com.datastax.driver.core.SocketOptions;
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
 
-	private static final Log logger = LogFactory.getLog(CassandraProperties.class);
-
 	/**
 	 * Name of the Cassandra cluster.
 	 */
@@ -48,9 +44,9 @@ public class CassandraProperties {
 	private String contactPoints = "localhost";
 
 	/**
-	 * Compression supported by the Cassandra binary protocol: can be NONE, SNAPPY, LZ4.
+	 * Compression supported by the Cassandra binary protocol.
 	 */
-	private String compression = ProtocolOptions.Compression.NONE.name();
+	private Compression compression = Compression.NONE;
 
 	/**
 	 * Class name of the load balancing policy.
@@ -126,11 +122,11 @@ public class CassandraProperties {
 		this.contactPoints = contactPoints;
 	}
 
-	public String getCompression() {
+	public Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(String compression) {
+	public void setCompression(Compression compression) {
 		this.compression = compression;
 	}
 
@@ -214,4 +210,22 @@ public class CassandraProperties {
 		this.keyspaceName = keyspaceName;
 	}
 
+	public static enum Compression {
+
+		/**
+		 * No compression.
+		 */
+		NONE,
+
+		/**
+		 * Snappy compression.
+		 */
+		SNAPPY,
+
+		/**
+		 * LZ4 compression.
+		 */
+		LZ4
+
+	}
 }

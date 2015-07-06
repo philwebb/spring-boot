@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.ProtocolOptions;
+import com.datastax.driver.core.ProtocolOptions.Compression;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.LoadBalancingPolicy;
@@ -59,17 +59,7 @@ public class CassandraAutoConfiguration {
 		Cluster.Builder builder = Cluster.builder()
 				.withClusterName(this.properties.getClusterName())
 				.withPort(this.properties.getPort());
-
-		// Manage compression protocol
-		if (ProtocolOptions.Compression.SNAPPY.equals(this.properties.getCompression())) {
-			builder.withCompression(ProtocolOptions.Compression.SNAPPY);
-		}
-		else if (ProtocolOptions.Compression.LZ4.equals(this.properties.getCompression())) {
-			builder.withCompression(ProtocolOptions.Compression.LZ4);
-		}
-		else {
-			builder.withCompression(ProtocolOptions.Compression.NONE);
-		}
+		builder.withCompression(getCompression(this.properties.getCompression()));
 
 		// Manage the load balancing policy
 		if (!StringUtils.isEmpty(this.properties.getLoadBalancingPolicy())) {
@@ -196,6 +186,13 @@ public class CassandraAutoConfiguration {
 				.commaDelimitedListToStringArray(this.properties.getContactPoints()));
 
 		return builder.build();
+	}
+
+	private Compression getCompression(CassandraProperties.Compression compression) {
+		if (compression == null) {
+			return Compression.NONE;
+		}
+		return Compression.valueOf(compression.name());
 	}
 
 }
