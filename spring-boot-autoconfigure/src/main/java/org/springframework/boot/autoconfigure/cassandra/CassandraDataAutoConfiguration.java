@@ -20,7 +20,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,7 +37,16 @@ import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import com.datastax.driver.core.Cluster;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra support.
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
+ * Auto-configuration} for Spring Data's Cassandra support.
+ * <p/>
+ * Registers a
+ * {@link org.springframework.data.cassandra.config.CassandraSessionFactoryBean} a
+ * {@link org.springframework.data.cassandra.core.CassandraAdminOperations} a
+ * {@link org.springframework.data.cassandra.mapping.CassandraMappingContext} and a
+ * {@link org.springframework.data.cassandra.convert.CassandraConverter} beans if no other
+ * beans of the same type are configured.
+ * <p/>
  *
  * @author Julien Dubois
  * @since 1.3.0
@@ -89,5 +97,4 @@ public class CassandraDataAutoConfiguration {
 	public CassandraConverter cassandraConverter() throws Exception {
 		return new MappingCassandraConverter(cassandraMapping());
 	}
-
 }
