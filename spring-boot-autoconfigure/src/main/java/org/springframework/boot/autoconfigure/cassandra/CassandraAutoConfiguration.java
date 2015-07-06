@@ -16,10 +16,9 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,18 +31,16 @@ import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.SocketOptions;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
- * Auto-configuration} for Cassandra.
+ * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
  *
  * @author Julien Dubois
+ * @author Phillip Webb
  * @since 1.3.0
  */
 @Configuration
 @ConditionalOnClass({ Cluster.class })
 @EnableConfigurationProperties(CassandraProperties.class)
 public class CassandraAutoConfiguration {
-
-	private static final Log logger = LogFactory.getLog(CassandraAutoConfiguration.class);
 
 	@Autowired
 	private CassandraProperties properties;
@@ -71,16 +68,11 @@ public class CassandraAutoConfiguration {
 					.getRetryPolicy()));
 		}
 		builder.withSocketOptions(getSocketOptions());
-
-		// Manage SSL
 		if (this.properties.isSsl()) {
 			builder.withSSL();
 		}
-
-		// Manage the contact points
 		builder.addContactPoints(StringUtils
 				.commaDelimitedListToStringArray(this.properties.getContactPoints()));
-
 		return builder.build();
 	}
 

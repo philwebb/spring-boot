@@ -31,6 +31,7 @@ import com.datastax.driver.core.policies.RetryPolicy;
  * Configuration properties for Cassandra.
  *
  * @author Julien Dubois
+ * @author Phillip Webb
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
