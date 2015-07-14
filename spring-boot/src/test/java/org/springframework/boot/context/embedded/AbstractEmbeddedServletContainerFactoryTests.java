@@ -539,6 +539,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void persistSession() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPersistSession(true);
 		this.container = factory
 				.getEmbeddedServletContainer(sessionServletRegistration());
 		this.container.start();

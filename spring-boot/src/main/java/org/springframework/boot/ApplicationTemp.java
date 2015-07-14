@@ -17,9 +17,10 @@
 package org.springframework.boot;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.MessageDigest;
-import java.util.Random;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Provides access to an application specific temporary folder. Generally speaking
@@ -54,43 +55,29 @@ public class ApplicationTemp {
 
 	@Override
 	public String toString() {
-		try {
-			return getFolder().getAbsolutePath();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
+		return getFolder().getAbsolutePath();
 	}
 
-	public File getFolder() throws IOException {
+	public File getFolder() {
 		if (this.folder == null) {
-			this.folder = calculateFolder();
+			synchronized (this) {
+				byte[] hash = generateHash(this.sourceClass);
+				this.folder = new File(getTempDirectory(), toHexString(hash));
+				this.folder.mkdirs();
+				Assert.state(this.folder.exists(), "Unable to create temp folder "
+						+ this.folder);
+			}
 		}
 		return this.folder;
 	}
 
-	private File calculateFolder() throws IOException {
-		byte[] hash = generateHash(this.sourceClass);
-		File tempDirectory = getTempDirectory();
-		if (hash == null || tempDirectory == null || !tempDirectory.exists()) {
-			return getRealTempFolder();
-		}
-		return new File(tempDirectory, toHexString(hash));
-	}
-
 	private File getTempDirectory() {
-		String temp = System.getProperty("java.io.tmpdir");
-		return (temp == null ? null : new File(temp));
-	}
-
-	private File getRealTempFolder() throws IOException {
-		byte[] random = new byte[20];
-		new Random().nextBytes(random);
-		File temp = File.createTempFile(toHexString(random), null);
-		temp.delete();
-		temp.mkdir();
-		temp.deleteOnExit();
-		return temp;
+		String property = System.getProperty("java.io.tmpdir");
+		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
+		File file = new File(property);
+		Assert.state(file.exists(), "Temp folder " + file + " does not exist");
+		Assert.state(file.isDirectory(), "Temp location " + file + " is not a folder");
+		return file;
 	}
 
 	private byte[] generateHash(Class<?> sourceClass) {
@@ -108,7 +95,7 @@ public class ApplicationTemp {
 			return digest.digest();
 		}
 		catch (Exception ex) {
-			return null;
+			throw new IllegalStateException(ex);
 		}
 	}
 
