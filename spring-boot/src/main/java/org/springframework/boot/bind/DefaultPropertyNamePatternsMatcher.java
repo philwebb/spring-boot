@@ -84,5 +84,4 @@ class DefaultPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher 
 		}
 		return false;
 	}
-
 }
