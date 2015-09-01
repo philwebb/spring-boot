@@ -35,7 +35,19 @@
 			<version>${ant.version}</version>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+		<!-- The antunit tests require joda-time, we need it in the cache for IVY -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.joda</groupId>
+			<artifactId>joda-convert</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>

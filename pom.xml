@@ -48,6 +48,7 @@
 	</prerequisites>
 	<properties>
 		<main.basedir>${basedir}</main.basedir>
+		<testproxy></testproxy>
 	</properties>
 	<build>
 		<pluginManagement>
