@@ -160,13 +160,6 @@ public class JacksonAutoConfigurationTests {
 		assertThat(mapper.getDateFormat(), is(instanceOf(MyDateFormat.class)));
 	}
 
-	public static class MyDateFormat extends SimpleDateFormat {
-
-		public MyDateFormat() {
-			super("yyyy-MM-dd HH:mm:ss");
-		}
-	}
-
 	@Test
 	public void noCustomPropertyNamingStrategy() throws Exception {
 		this.context.register(JacksonAutoConfiguration.class);
@@ -417,6 +410,13 @@ public class JacksonAutoConfigurationTests {
 		DateTime dateTime = new DateTime(1436966242231L, DateTimeZone.UTC);
 		assertEquals("\"Koordinierte Universalzeit\"",
 				objectMapper.writeValueAsString(dateTime));
+	}
+
+	public static class MyDateFormat extends SimpleDateFormat {
+
+		public MyDateFormat() {
+			super("yyyy-MM-dd HH:mm:ss");
+		}
 	}
 
 	@Configuration
