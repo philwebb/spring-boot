@@ -22,6 +22,11 @@
 		<module name="NeedBraces" />
 		<module name="AvoidNestedBlocks" />
 
+		<module name="FinalClass" />
+		<module name="InterfaceIsType" />
+		<module name="HideUtilityClassConstructor" />
+		<module name="MutableException" />
+
 		<module name="RedundantImport" />
 		<module name="UnusedImports">
 			<property name="processJavadoc" value="true" />
