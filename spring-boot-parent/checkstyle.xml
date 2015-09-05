@@ -3,8 +3,10 @@
 <module name="Checker">
 	<module name="TreeWalker">
 		<module name="AnnotationUseStyle">
-			<property name="elementStyle" value="compact"/>
+			<property name="elementStyle" value="compact" />
 		</module>
+		<module name="MissingOverride" />
+		<module name="PackageAnnotation" />
 		<module name="RedundantImport" />
 		<module name="UnusedImports">
 			<property name="processJavadoc" value="true" />
@@ -19,9 +21,10 @@
 		<module name="NeedBraces" />
 		<module name="OneTopLevelClass" />
 		<module name="RegexpSinglelineJava">
-		    <property name="format" value="^\t* +\t*\S"/>
-		    <property name="message" value="Line has leading space characters; indentation should be performed with tabs only."/>
-		    <property name="ignoreComments" value="true"/>
+			<property name="format" value="^\t* +\t*\S" />
+			<property name="message"
+				value="Line has leading space characters; indentation should be performed with tabs only." />
+			<property name="ignoreComments" value="true" />
 		</module>
 	</module>
 </module>
