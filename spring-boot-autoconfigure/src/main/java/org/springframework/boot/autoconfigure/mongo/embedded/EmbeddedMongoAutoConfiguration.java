@@ -196,7 +196,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * A workaround for the lack of a {@code toString} implementation on
 	 * {@code GenericFeatureAwareVersion}.
 	 */
-	private static class ToStringFriendlyFeatureAwareVersion implements
+	private final static class ToStringFriendlyFeatureAwareVersion implements
 			IFeatureAwareVersion {
 
 		private final String version;

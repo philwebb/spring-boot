@@ -469,7 +469,7 @@ public class JacksonAutoConfigurationTests {
 
 	}
 
-	protected static class Foo {
+	protected static final class Foo {
 
 		private String name;
 

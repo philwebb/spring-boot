@@ -46,7 +46,7 @@ import org.springframework.boot.ansi.AnsiStyle;
  */
 @Plugin(name = "color", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "clr", "color" })
-public class ColorConverter extends LogEventPatternConverter {
+public final class ColorConverter extends LogEventPatternConverter {
 
 	private static final Map<String, AnsiElement> ELEMENTS;
 	static {
