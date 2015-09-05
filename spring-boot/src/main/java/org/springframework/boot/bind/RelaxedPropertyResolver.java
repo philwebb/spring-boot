@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 
 import static java.lang.String.format;
@@ -137,8 +136,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String)
-	 * @see PropertySourceUtils#getSubProperties(PropertySources, String, String)
+	 * @see PropertySourceUtils#getSubProperties
 	 */
 	public Map<String, Object> getSubProperties(String keyPrefix) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,
