@@ -193,6 +193,7 @@ public class MessageSourceAutoConfiguration {
 				}
 			}
 			catch (Throwable ex) {
+				// Ignore
 			}
 			ROOT_CLASSLOADER = classLoader;
 		}

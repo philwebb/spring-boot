@@ -110,6 +110,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				this.container.stop();
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 	}

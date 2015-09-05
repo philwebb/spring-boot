@@ -60,6 +60,7 @@ public class RemoteSpringApplication {
 				Thread.sleep(1000);
 			}
 			catch (InterruptedException ex) {
+				// Ignore
 			}
 		}
 	}

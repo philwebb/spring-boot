@@ -61,6 +61,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			this.context.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
