@@ -66,10 +66,10 @@
 			<property name="processJavadoc" value="true" />
 		</module>
 		<module name="ImportOrder">
-			<property name="groups" value="groovy,io,java,/^javax?\./,lombok,org,com,ch,*" />
+			<property name="groups" value="java,/^javax?\./,org,com,*" />
 			<property name="ordered" value="true" />
 			<property name="separated" value="true" />
-			<property name="option" value="under" />
+			<property name="option" value="bottom" />
 			<property name="sortStaticImportsAlphabetically" value="true" />
 		</module>
 
