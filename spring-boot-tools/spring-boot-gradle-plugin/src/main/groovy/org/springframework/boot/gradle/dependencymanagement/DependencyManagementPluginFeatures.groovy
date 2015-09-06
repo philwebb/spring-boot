@@ -16,11 +16,8 @@
 
 package org.springframework.boot.gradle.dependencymanagement;
 
-import io.spring.gradle.dependencymanagement.DependencyManagementExtension
-import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
-
-import org.gradle.api.Project
-import org.springframework.boot.gradle.PluginFeatures
+import org.gradle.api.Project;
+import org.springframework.boot.gradle.PluginFeatures;
 
 /**
  * {@link PluginFeatures} to configure dependency management

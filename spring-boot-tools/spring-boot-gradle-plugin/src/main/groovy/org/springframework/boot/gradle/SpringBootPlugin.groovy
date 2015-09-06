@@ -16,13 +16,8 @@
 
 package org.springframework.boot.gradle
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPlugin
-import org.springframework.boot.gradle.agent.AgentPluginFeatures
-import org.springframework.boot.gradle.dependencymanagement.DependencyManagementPluginFeatures
-import org.springframework.boot.gradle.repackage.RepackagePluginFeatures
-import org.springframework.boot.gradle.run.RunPluginFeatures
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 
 
 /**
