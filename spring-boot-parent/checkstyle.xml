@@ -76,10 +76,13 @@
 			<property name="file" value="${checkstyle.build.directory}/checkstyle-import-control.xml"/>
 		</module>
 
-		<module name="StringLiteralEquality" />
-		<module name="MultipleVariableDeclarations" />
-		<module name="NeedBraces" />
-		<module name="OneTopLevelClass" />
+		<module name="JavadocType">
+			<property name="scope" value="package"/>
+			<property name="authorFormat" value=".+\s.+"/>
+		</module>
+
+
+
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="^\t* +\t*\S" />
 			<property name="message"

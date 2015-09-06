@@ -9,4 +9,5 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]cli[\\/]command[\\/]" checks="ImportControl"/>
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl"/>
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl"/>
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="JavadocType"/>
 </suppressions>
