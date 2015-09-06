@@ -68,7 +68,6 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
-import static org.springframework.boot.configurationprocessor.MetadataStore.METADATA_PATH;
 
 /**
  * Tests for {@link ConfigurationMetadataAnnotationProcessor}.
@@ -348,8 +347,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergingOfAdditionalProperty() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty(null, "foo",
-				"java.lang.String", AdditionalMetadata.class.getName(), null, null, null,null);
+		ItemMetadata property = ItemMetadata.newProperty(null, "foo", "java.lang.String",
+				AdditionalMetadata.class.getName(), null, null, null, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata, containsProperty("simple.comparator"));
@@ -360,16 +359,15 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 
 	@Test
 	public void mergeExistingPropertyDefaultValue() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null,
-				null, null, null, true, null);
+		ItemMetadata property = ItemMetadata.newProperty("simple", "flag", null, null,
+				null, null, true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(
 				metadata,
 				containsProperty("simple.flag", Boolean.class)
 						.fromSource(SimpleProperties.class)
-						.withDescription("A simple flag.")
-						.withDefaultValue(is(true)));
+						.withDescription("A simple flag.").withDefaultValue(is(true)));
 		assertThat(metadata.getItems().size(), is(4));
 	}
 
@@ -382,8 +380,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(
 				metadata,
 				containsProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class)
-						.withDescription("A nice comparator."));
+						.fromSource(SimpleProperties.class).withDescription(
+								"A nice comparator."));
 		assertThat(metadata.getItems().size(), is(4));
 	}
 
@@ -397,23 +395,23 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(
 				metadata,
 				containsProperty("simple.comparator", "java.util.Comparator<?>")
-						.fromSource(SimpleProperties.class)
-						.withDeprecation("Don't use this.", "simple.complex-comparator"));
+						.fromSource(SimpleProperties.class).withDeprecation(
+								"Don't use this.", "simple.complex-comparator"));
 		assertThat(metadata.getItems().size(), is(4));
 	}
 
 	@Test
 	public void mergeExistingPropertyDeprecationOverride() throws Exception {
-		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name", null,
-				null, null, null, null, new ItemDeprecation("Don't use this.",
+		ItemMetadata property = ItemMetadata.newProperty("singledeprecated", "name",
+				null, null, null, null, null, new ItemDeprecation("Don't use this.",
 						"single.name"));
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(DeprecatedSingleProperty.class);
 		assertThat(
 				metadata,
 				containsProperty("singledeprecated.name", String.class.getName())
-						.fromSource(DeprecatedSingleProperty.class)
-						.withDeprecation("Don't use this.", "single.name"));
+						.fromSource(DeprecatedSingleProperty.class).withDeprecation(
+								"Don't use this.", "single.name"));
 		assertThat(metadata.getItems().size(), is(3));
 	}
 
@@ -492,10 +490,10 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void incrementalBuild() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
-		assertFalse(project.getOutputFile(METADATA_PATH).exists());
+		assertFalse(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
 
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertTrue(project.getOutputFile(METADATA_PATH).exists());
+		assertTrue(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
 
 		assertThat(metadata,
 				containsProperty("foo.counter").fromSource(FooProperties.class));

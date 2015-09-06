@@ -22,8 +22,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.util.Assert;
 
-import static java.lang.String.format;
-
 /**
  * {@link PropertyResolver} that attempts to resolve values using {@link RelaxedNames}.
  *
@@ -55,7 +53,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	public <T> T getRequiredProperty(String key, Class<T> targetType)
 			throws IllegalStateException {
 		T value = getProperty(key, targetType);
-		Assert.state(value != null, format("required key [%s] not found", key));
+		Assert.state(value != null, String.format("required key [%s] not found", key));
 		return value;
 	}
 
