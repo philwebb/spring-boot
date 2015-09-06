@@ -77,10 +77,10 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link CacheAutoConfiguration}.
@@ -617,7 +617,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public javax.cache.CacheManager customJCacheCacheManager() {
 			javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
-			when(cacheManager.getCacheNames()).thenReturn(
+			given(cacheManager.getCacheNames()).willReturn(
 					Collections.<String> emptyList());
 			return cacheManager;
 		}
@@ -652,8 +652,8 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public net.sf.ehcache.CacheManager customEhCacheCacheManager() {
 			net.sf.ehcache.CacheManager cacheManager = mock(net.sf.ehcache.CacheManager.class);
-			when(cacheManager.getStatus()).thenReturn(Status.STATUS_ALIVE);
-			when(cacheManager.getCacheNames()).thenReturn(new String[0]);
+			given(cacheManager.getStatus()).willReturn(Status.STATUS_ALIVE);
+			given(cacheManager.getCacheNames()).willReturn(new String[0]);
 			return cacheManager;
 		}
 
@@ -677,7 +677,7 @@ public class CacheAutoConfigurationTests {
 		@Bean
 		public ConfigurationBuilder configurationBuilder() {
 			ConfigurationBuilder builder = mock(ConfigurationBuilder.class);
-			when(builder.build()).thenReturn(new ConfigurationBuilder().build());
+			given(builder.build()).willReturn(new ConfigurationBuilder().build());
 			return builder;
 		}
 
