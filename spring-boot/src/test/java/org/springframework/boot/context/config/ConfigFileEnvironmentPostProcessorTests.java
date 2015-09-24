@@ -610,6 +610,15 @@ public class ConfigFileEnvironmentPostProcessorTests {
 	}
 
 	@Test
+	public void outerOverrideProfileSpecificProperties() throws Exception {
+		this.initializer.setSearchNames("outeroverridesprofile");
+		this.environment.setActiveProfiles("dev");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("outnoprofile"));
+	}
+
+	@Test
 	public void profileSubDocumentInProfileSpecificFile() throws Exception {
 		// gh-340
 		SpringApplication application = new SpringApplication(Config.class);

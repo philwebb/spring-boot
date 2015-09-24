@@ -320,9 +320,11 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 			// override any settings in the defaults when the list is reversed later).
 			this.profiles.add(null);
 
-			while (!this.profiles.isEmpty()) {
-				String profile = this.profiles.poll();
-				for (String location : getSearchLocations()) {
+			for (String location : getSearchLocations()) {
+				LinkedList<String> nextProfiles = new LinkedList<String>();
+				while (!this.profiles.isEmpty()) {
+					String profile = this.profiles.poll();
+					nextProfiles.add(profile);
 					if (!location.endsWith("/")) {
 						// location is a filename already, so don't search for more
 						// filenames
@@ -334,6 +336,7 @@ public class ConfigFileEnvironmentPostProcessor implements EnvironmentPostProces
 						}
 					}
 				}
+				this.profiles = Collections.asLifoQueue(nextProfiles);
 			}
 
 			addConfigurationProperties(this.propertiesLoader.getPropertySources());
