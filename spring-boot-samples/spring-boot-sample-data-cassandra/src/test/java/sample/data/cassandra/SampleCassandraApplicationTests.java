@@ -18,6 +18,7 @@ package sample.data.cassandra;
 
 import org.cassandraunit.spring.CassandraDataSet;
 import org.cassandraunit.spring.EmbeddedCassandra;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,9 +40,9 @@ import static org.junit.Assert.assertTrue;
 		IntegrationTestPropertiesListener.class,
 		OrderedCassandraTestExecutionListener.class })
 @SpringApplicationConfiguration(SampleCassandraApplication.class)
-@IntegrationTest("spring.data.cassandra.port=9142")
+@IntegrationTest("spring.data.cassandra.port=${cassandra.native_transport_port}")
 @CassandraDataSet(keyspace = "mykeyspace", value = "setup.cql")
-@EmbeddedCassandra
+@EmbeddedCassandra(configuration = EmbeddedCassandraServerHelper.CASSANDRA_RNDPORT_YML_FILE)
 public class SampleCassandraApplicationTests {
 
 	@ClassRule
