@@ -9,7 +9,12 @@
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 index:/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore"
     name="spring.boot"
-    label="Spring Boot Contributor">
+    label="Spring Boot">
+  <setupTask
+      xsi:type="setup:VariableTask"
+      name="checkout.location"
+      type="FOLDER"
+      label="Checkout Location"/>
   <setupTask
       xsi:type="jdt:JRETask"
       version="JavaSE-1.8"
@@ -87,6 +92,7 @@
   <setupTask
       xsi:type="git:GitCloneTask"
       id="git.clone"
+      location="${checkout.location}"
       remoteURI="spring-projects/spring-boot"
       pushURI="">
     <annotation
