@@ -3,17 +3,17 @@
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:git="http://www.eclipse.org/oomph/setup/git/1.0"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
+    xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/git/1.0 index:/models/Git.ecore http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore"
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore"
     name="spring.boot"
     label="Spring Boot">
   <setupTask
       xsi:type="setup:VariableTask"
-      name="checkout.location"
       type="FOLDER"
+      name="checkout.location"
       label="Checkout Location"/>
   <setupTask
       xsi:type="jdt:JRETask"
@@ -90,27 +90,16 @@
     </description>
   </setupTask>
   <setupTask
-      xsi:type="git:GitCloneTask"
-      id="git.clone"
-      location="${checkout.location}"
-      remoteURI="spring-projects/spring-boot"
-      pushURI="">
-    <annotation
-        source="http://www.eclipse.org/oomph/setup/InducedChoices">
-      <detail
-          key="inherit">
-        <value>github.remoteURIs</value>
-      </detail>
-      <detail
-          key="label">
-        <value>${scope.project.label} Github repository</value>
-      </detail>
-      <detail
-          key="target">
-        <value>remoteURI</value>
-      </detail>
-    </annotation>
-    <description>${scope.project.label}</description>
+      xsi:type="maven:MavenImportTask"
+      id="">
+    <sourceLocator
+        rootFolder="${checkout.location}"/>
+    <description></description>
+  </setupTask>
+  <setupTask
+      xsi:type="maven:MavenImportTask">
+    <sourceLocator
+        rootFolder="${checkout.location}/spring-boot-samples"/>
   </setupTask>
   <stream name="master"
       label="Master"/>
