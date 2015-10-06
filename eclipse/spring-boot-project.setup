@@ -66,6 +66,8 @@
     <requirement
         name="org.springframework.ide.eclipse.feature.feature.group"/>
     <requirement
+        name="org.springframework.ide.eclipse.maven.feature.feature.group"/>
+    <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.ext.feature.feature.group"/>
@@ -77,6 +79,10 @@
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
+    <requirement
+        name="org.codehaus.groovy.m2eclipse.feature.feature.group"/>
+    <requirement
+        name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <repository
         url="http://download.eclipse.org/technology/epp/packages/mars"/>
     <repository
@@ -87,6 +93,8 @@
         url="https://dl.bintray.com/philwebb/m2eclipse-maveneclipse"/>
     <repository
         url="http://dist.springsource.com/release/TOOLS/update/e4.5"/>
+    <repository
+        url="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5" />
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
@@ -148,8 +156,8 @@
           pattern="spring-boot-.*-test[s].*"/>
     </workingSet>
   </setupTask>
-  <stream name="master"
-      label="Master"/>
+  <stream name="default"
+      label="Default"/>
   <logicalProjectContainer
       xsi:type="setup:ProjectCatalog"
       href="index:/org.eclipse.setup#//@projectCatalogs[name='com.github']"/>
