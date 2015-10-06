@@ -155,8 +155,32 @@
         name="spring-boot-tests">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test[s].*"/>
+          pattern="spring-boot-.*-test.*"/>
     </workingSet>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.jdt.ui">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/content_assist_disabled_computers"
+        value="org.eclipse.jdt.ui.javaNoTypeProposalCategory$${0x0}org.eclipse.jdt.ui.javaTypeProposalCategory$${0x0}org.eclipse.jdt.ui.textProposalCategory$${0x0}org.eclipse.recommenders.calls.rcp.proposalCategory.templates$${0x0}"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.typefilter.enabled"
+        value="java.awt.*;"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.core.resources">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.core.resources/encoding"
+        value="UTF-8"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.core.resources/refresh.enabled"
+        value="false"/>
   </setupTask>
   <stream name="default"
       label="Default"/>
