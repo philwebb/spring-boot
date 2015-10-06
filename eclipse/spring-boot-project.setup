@@ -168,7 +168,11 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/org.eclipse.jdt.ui.typefilter.enabled"
-        value="java.awt.*;"/>
+        value="java.awt.*;org.hibernate.collection.*;"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/content_assist_favorite_static_members"
+        value="org.hamcrest.Matchers.*;org.junit.Assert.*;org.mockito.BDDMockito.*;org.mockito.Matchers.*;org.mockito.Mockito.*;org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
