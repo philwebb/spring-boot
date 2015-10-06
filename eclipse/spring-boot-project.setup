@@ -163,7 +163,11 @@
       name="de.loskutov.anyedit.AnyEditTools">
     <setupTask
         xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/showWhitespace"
+        key="/instance/de.loskutov.anyedit.AnyEditTools/org.eclipse.jdt.ui.editor.tab.width"
+        value="4"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/de.loskutov.anyedit.AnyEditTools/saveAndAddLine"
         value="true"/>
   </setupTask>
   <setupTask
@@ -204,6 +208,10 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/printMargin"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.editors/showWhitespaceCharacters"
         value="true"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
