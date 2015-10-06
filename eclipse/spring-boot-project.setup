@@ -207,6 +207,10 @@
       name="org.eclipse.ui.editors">
     <setupTask
         xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.editors/printMarginColumn"
+        value="90"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/lineNumberRuler"
         value="false"/>
     <setupTask
