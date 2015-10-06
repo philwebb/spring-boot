@@ -160,6 +160,14 @@
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
+      name="de.loskutov.anyedit.AnyEditTools">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/de.loskutov.anyedit.AnyEditTools/showWhitespace"
+        value="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
       name="org.eclipse.jdt.ui">
     <setupTask
         xsi:type="setup:PreferenceTask"
@@ -185,6 +193,30 @@
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.core.resources/refresh.enabled"
         value="false"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.ui.editors">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.editors/lineNumberRuler"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.editors/printMargin"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.editors/whitespaceCharacterAlphaValue"
+        value="20"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.ui.workbench">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.workbench/RUN_IN_BACKGROUND"
+        value="true"/>
   </setupTask>
   <stream name="default"
       label="Default"/>
