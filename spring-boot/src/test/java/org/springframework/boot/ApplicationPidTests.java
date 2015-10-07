@@ -32,6 +32,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ApplicationPid}.
+ *
  * @author Phillip Webb
  */
 public class ApplicationPidTests {
