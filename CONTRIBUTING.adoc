@@ -147,12 +147,12 @@ Spring Boot includes a `.setup` files which can be used with the Eclipse Install
 provision a new environment. To use the installer:
 
 * Download and run the latest Eclipse Installer from
-  http://www.eclipse.org/downloads/[eclipse.org/downloads/]
+  http://www.eclipse.org/downloads/[eclipse.org/downloads/].
 * Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
   install and click "`next`".
 * For the "`Project`" click on `+` to add a new setup file. Select "`Github Projects`"
-  and browser for `/eclipse/spring-boot-project.setup` from your locally cloned copy of
-  the source code. Click OK to add the setup file to the list.
+  and browser for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
+  copy of the source code. Click "`OK`" to add the setup file to the list.
 * Double-click on "`Spring Boot`" from the project list to add it to the list that will
   be provisioned then click "`next`".
 * Click show all variables and make sure that "`Checkout Location`" points to your locally
