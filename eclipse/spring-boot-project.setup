@@ -30,13 +30,15 @@
   <setupTask
       xsi:type="setup:EclipseIniTask"
       option="-Xmx"
-      value="1024m"
+      value="2048m"
       vm="true">
-    <description>
-      Set the heap space needed to work with the projects of
-      ${scope.project.label}
-    </description>
+    <description></description>
   </setupTask>
+  <setupTask
+      xsi:type="setup:EclipseIniTask"
+      option="-Xms"
+      value="512m"
+      vm="true"/>
   <setupTask
       xsi:type="setup:ResourceCreationTask"
       excludedTriggers="STARTUP MANUAL"
@@ -134,7 +136,7 @@
             pattern="spring-boot.*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets.3 //@setupTasks.8/@workingSets.2 //@setupTasks.8/@workingSets.4 //@setupTasks.8/@workingSets.1"/>
+            excludedWorkingSet="//@setupTasks.9/@workingSets.3 //@setupTasks.9/@workingSets.2 //@setupTasks.9/@workingSets.4 //@setupTasks.9/@workingSets.1"/>
       </predicate>
     </workingSet>
     <workingSet
@@ -229,6 +231,10 @@
   <setupTask
       xsi:type="setup:CompoundTask"
       name="org.eclipse.ui.workbench">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.ui.workbench/HeapStatus.showMax"
+        value="true"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.workbench/RUN_IN_BACKGROUND"
