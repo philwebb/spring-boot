@@ -85,7 +85,7 @@ public @interface ConditionalOnProperty {
 	 * Alias for {@link #name()}.
 	 * @return the names
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 	/**
 	 * A prefix that should be applied to each property. The prefix automatically ends
@@ -104,7 +104,7 @@ public @interface ConditionalOnProperty {
 	 * to separate words (e.g. {@code my-long-property}).
 	 * @return the names
 	 */
-	String[] name() default {};
+	String[]name() default {};
 
 	/**
 	 * The string representation of the expected value for the properties. If not

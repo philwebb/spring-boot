@@ -52,7 +52,7 @@ public @interface SpringBootApplication {
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
 	 */
-	Class<?>[] exclude() default {};
+	Class<?>[]exclude() default {};
 
 	/**
 	 * Exclude specific auto-configuration class names such that they will never be
@@ -60,7 +60,7 @@ public @interface SpringBootApplication {
 	 * @return the class names to exclude
 	 * @since 1.3.0
 	 */
-	String[] excludeName() default {};
+	String[]excludeName() default {};
 
 	/**
 	 * Base packages to scan for annotated components. Use {@link #scanBasePackageClasses}
@@ -69,7 +69,7 @@ public @interface SpringBootApplication {
 	 * @since 1.3.0
 	 */
 	@AliasFor(annotation = ComponentScan.class, attribute = "basePackages")
-	String[] scanBasePackages() default {};
+	String[]scanBasePackages() default {};
 
 	/**
 	 * Type-safe alternative to {@link #scanBasePackages} for specifying the packages to
@@ -81,6 +81,6 @@ public @interface SpringBootApplication {
 	 * @since 1.3.0
 	 */
 	@AliasFor(annotation = ComponentScan.class, attribute = "basePackageClasses")
-	Class<?>[] scanBasePackageClasses() default {};
+	Class<?>[]scanBasePackageClasses() default {};
 
 }

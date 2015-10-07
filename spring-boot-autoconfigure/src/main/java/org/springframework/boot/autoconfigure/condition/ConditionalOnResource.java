@@ -40,6 +40,6 @@ public @interface ConditionalOnResource {
 	 * The resources that must be present.
 	 * @return the resource paths that must be present.
 	 */
-	String[] resources() default {};
+	String[]resources() default {};
 
 }

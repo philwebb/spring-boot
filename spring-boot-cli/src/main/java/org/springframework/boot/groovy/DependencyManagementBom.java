@@ -38,6 +38,6 @@ public @interface DependencyManagementBom {
 	 * Maven bom that contains dependency management that will add to and override the
 	 * default dependency management.
 	 */
-	String[] value();
+	String[]value();
 
 }

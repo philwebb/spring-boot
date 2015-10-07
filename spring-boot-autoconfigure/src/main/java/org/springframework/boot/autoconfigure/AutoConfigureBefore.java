@@ -35,13 +35,13 @@ public @interface AutoConfigureBefore {
 	 * The auto-configure classes that should have not yet been applied.
 	 * @return the classes
 	 */
-	Class<?>[] value() default {};
+	Class<?>[]value() default {};
 
 	/**
 	 * The names of the auto-configure classes that should have not yet been applied.
 	 * @return the class names
 	 * @since 1.2.2
 	 */
-	String[] name() default {};
+	String[]name() default {};
 
 }

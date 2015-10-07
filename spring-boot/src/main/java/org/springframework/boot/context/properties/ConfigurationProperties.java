@@ -72,9 +72,9 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
-	 * Flag to indicate that an exception should be raised if a Validator is
-	 * available and validation fails. If it is set to false, validation errors will be swallowed.
-	 * They will be logged, but not propagated to the caller.
+	 * Flag to indicate that an exception should be raised if a Validator is available and
+	 * validation fails. If it is set to false, validation errors will be swallowed. They
+	 * will be logged, but not propagated to the caller.
 	 * @return the flag value (default true)
 	 */
 	boolean exceptionIfInvalid() default true;
@@ -86,7 +86,7 @@ public @interface ConfigurationProperties {
 	 * @return the path (or paths) of resources to bind to
 	 * @see #merge()
 	 */
-	String[] locations() default {};
+	String[]locations() default {};
 
 	/**
 	 * Flag to indicate that configuration loaded from the specified locations should be

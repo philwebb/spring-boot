@@ -60,6 +60,6 @@ public @interface IntegrationTest {
 	 * {@link Environment} before the test runs.
 	 * @return the environment properties
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 }

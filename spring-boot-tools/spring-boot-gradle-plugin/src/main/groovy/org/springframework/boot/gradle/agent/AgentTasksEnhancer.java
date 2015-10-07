@@ -27,13 +27,15 @@ import org.gradle.api.tasks.JavaExec;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 
 /**
- * Add a java agent to the "run" task if configured. You can add an agent in 3 ways (4 if
- * you want to use native gradle features as well):
+ * Add a java agent to the "run" task if configured. You can add an agent in 3
+ * ways (4 if you want to use native gradle features as well):
  *
  * <ol>
  * <li>Use "-Prun.agent=[path-to-jar]" on the gradle command line</li>
- * <li>Add an "agent" property (jar file) to the "springBoot" extension in build.gradle</li>
- * <li>As a special case springloaded is detected as a build script dependency</li>
+ * <li>Add an "agent" property (jar file) to the "springBoot" extension in
+ * build.gradle</li>
+ * <li>As a special case springloaded is detected as a build script dependency
+ * </li>
  * </ol>
  *
  * @author Dave Syer
@@ -59,8 +61,7 @@ public class AgentTasksEnhancer implements Action<Project> {
 
 	private void setup(Project project) {
 		project.getLogger().info("Configuring agent");
-		SpringBootPluginExtension extension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		this.noverify = extension.getNoverify();
 		this.agent = getAgent(project, extension);
 		if (this.agent == null) {
@@ -87,14 +88,12 @@ public class AgentTasksEnhancer implements Action<Project> {
 				if (source != null) {
 					try {
 						return new File(source.getLocation().toURI());
-					}
-					catch (URISyntaxException ex) {
+					} catch (URISyntaxException ex) {
 						return new File(source.getLocation().getPath());
 					}
 				}
 			}
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			// ignore;
 		}
 		return null;
@@ -114,8 +113,7 @@ public class AgentTasksEnhancer implements Action<Project> {
 			if (this.noverify != null && this.noverify) {
 				exec.jvmArgs("-noverify");
 			}
-			Iterable<?> defaultJvmArgs = exec.getConventionMapping().getConventionValue(
-					null, "jvmArgs", false);
+			Iterable<?> defaultJvmArgs = exec.getConventionMapping().getConventionValue(null, "jvmArgs", false);
 			if (defaultJvmArgs != null) {
 				exec.jvmArgs(defaultJvmArgs);
 			}

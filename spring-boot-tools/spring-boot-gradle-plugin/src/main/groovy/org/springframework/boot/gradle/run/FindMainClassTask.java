@@ -30,8 +30,8 @@ import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
- * Task to find and set the 'mainClassName' convention when it's missing by searching the
- * main source code.
+ * Task to find and set the 'mainClassName' convention when it's missing by
+ * searching the main source code.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -50,15 +50,13 @@ public class FindMainClassTask extends DefaultTask {
 	@TaskAction
 	public void setMainClassNameProperty() {
 		Project project = getProject();
-		if (!project.hasProperty("mainClassName")
-				|| project.property("mainClassName") == null) {
+		if (!project.hasProperty("mainClassName") || project.property("mainClassName") == null) {
 			String mainClass = findMainClass();
 			if (project.hasProperty("mainClassName")) {
 				project.setProperty("mainClassName", mainClass);
-			}
-			else {
-				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project
-						.getExtensions().getByName("ext");
+			} else {
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) project.getExtensions()
+						.getByName("ext");
 				extraProperties.set("mainClassName", mainClass);
 			}
 		}
@@ -70,14 +68,13 @@ public class FindMainClassTask extends DefaultTask {
 		String mainClass = null;
 
 		// Try the SpringBoot extension setting
-		SpringBootPluginExtension bootExtension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension bootExtension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		if (bootExtension.getMainClass() != null) {
 			mainClass = bootExtension.getMainClass();
 		}
 
-		ApplicationPluginConvention application = (ApplicationPluginConvention) project
-				.getConvention().getPlugins().get("application");
+		ApplicationPluginConvention application = (ApplicationPluginConvention) project.getConvention().getPlugins()
+				.get("application");
 
 		if (mainClass == null && application != null) {
 			// Try the Application extension setting
@@ -99,16 +96,11 @@ public class FindMainClassTask extends DefaultTask {
 		if (mainClass == null) {
 			// Search
 			if (this.mainClassSourceSetOutput != null) {
-				project.getLogger().debug(
-						"Looking for main in: "
-								+ this.mainClassSourceSetOutput.getClassesDir());
+				project.getLogger().debug("Looking for main in: " + this.mainClassSourceSetOutput.getClassesDir());
 				try {
-					mainClass = MainClassFinder
-							.findSingleMainClass(this.mainClassSourceSetOutput
-									.getClassesDir());
+					mainClass = MainClassFinder.findSingleMainClass(this.mainClassSourceSetOutput.getClassesDir());
 					project.getLogger().info("Computed main class: " + mainClass);
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					throw new IllegalStateException("Cannot find main class", ex);
 				}
 			}

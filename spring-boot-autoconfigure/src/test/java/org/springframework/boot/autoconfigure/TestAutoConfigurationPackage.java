@@ -36,6 +36,6 @@ import org.springframework.context.annotation.Import;
 @Import(TestAutoConfigurationPackageRegistrar.class)
 public @interface TestAutoConfigurationPackage {
 
-	Class<?> value();
+	Class<?>value();
 
 }

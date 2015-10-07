@@ -44,6 +44,6 @@ public @interface EnableConfigurationProperties {
 	 * Spring. Standard Spring Beans will also be scanned regardless of this value.
 	 * @return {@link ConfigurationProperties} beans to register
 	 */
-	Class<?>[] value() default {};
+	Class<?>[]value() default {};
 
 }

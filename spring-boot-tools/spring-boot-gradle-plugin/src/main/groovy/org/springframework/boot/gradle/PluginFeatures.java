@@ -28,7 +28,9 @@ public interface PluginFeatures {
 
 	/**
 	 * Apply the features to the specified project.
-	 * @param project the project to apply features to
+	 * 
+	 * @param project
+	 *            the project to apply features to
 	 */
 	void apply(Project project);
 

@@ -55,7 +55,7 @@ public @interface EntityScan {
 	 * {@code @EntityScan(basePackages="org.my.pkg")}.
 	 * @return the base packages to scan
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 	/**
 	 * Base packages to scan for annotated entities. {@link #value()} is an alias for (and
@@ -65,7 +65,7 @@ public @interface EntityScan {
 	 * package names.
 	 * @return the base packages to scan
 	 */
-	String[] basePackages() default {};
+	String[]basePackages() default {};
 
 	/**
 	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
@@ -75,6 +75,6 @@ public @interface EntityScan {
 	 * serves no purpose other than being referenced by this attribute.
 	 * @return classes form the base packages to scan
 	 */
-	Class<?>[] basePackageClasses() default {};
+	Class<?>[]basePackageClasses() default {};
 
 }

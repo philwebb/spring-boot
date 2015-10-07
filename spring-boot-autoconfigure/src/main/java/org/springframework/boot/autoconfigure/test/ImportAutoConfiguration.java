@@ -47,6 +47,6 @@ public @interface ImportAutoConfiguration {
 	 * The auto-configuration classes that should be imported.
 	 * @return the classes to import
 	 */
-	Class<?>[] value();
+	Class<?>[]value();
 
 }

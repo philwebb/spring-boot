@@ -79,7 +79,7 @@ public @interface EnableAutoConfiguration {
 	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 * @return the classes to exclude
 	 */
-	Class<?>[] exclude() default {};
+	Class<?>[]exclude() default {};
 
 	/**
 	 * Exclude specific auto-configuration class names such that they will never be
@@ -87,6 +87,6 @@ public @interface EnableAutoConfiguration {
 	 * @return the class names to exclude
 	 * @since 1.3.0
 	 */
-	String[] excludeName() default {};
+	String[]excludeName() default {};
 
 }

@@ -44,6 +44,6 @@ public @interface ConditionalOnJndi {
 	 * matches solely based on the presence of an {@link InitialContext}.
 	 * @return the JNDI locations
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 }

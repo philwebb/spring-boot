@@ -55,7 +55,7 @@ public @interface ServletComponentScan {
 	 * {@code @ServletComponentScan(basePackages="org.my.pkg")}.
 	 * @return the base packages to scan
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 	/**
 	 * Base packages to scan for annotated servlet components. {@link #value()} is an
@@ -65,7 +65,7 @@ public @interface ServletComponentScan {
 	 * package names.
 	 * @return the base packages to scan
 	 */
-	String[] basePackages() default {};
+	String[]basePackages() default {};
 
 	/**
 	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
@@ -73,6 +73,6 @@ public @interface ServletComponentScan {
 	 * scanned.
 	 * @return classes from the base packages to scan
 	 */
-	Class<?>[] basePackageClasses() default {};
+	Class<?>[]basePackageClasses() default {};
 
 }

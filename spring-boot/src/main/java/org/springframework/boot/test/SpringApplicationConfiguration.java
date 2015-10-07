@@ -53,7 +53,7 @@ public @interface SpringApplicationConfiguration {
 	 * @return the context configuration classes
 	 */
 	@AliasFor("classes")
-	Class<?>[] value() default {};
+	Class<?>[]value() default {};
 
 	/**
 	 * The context configuration locations.
@@ -61,7 +61,7 @@ public @interface SpringApplicationConfiguration {
 	 * @return the context configuration locations
 	 */
 	@AliasFor(annotation = ContextConfiguration.class, attribute = "locations")
-	String[] locations() default {};
+	String[]locations() default {};
 
 	/**
 	 * The context configuration classes.
@@ -69,7 +69,7 @@ public @interface SpringApplicationConfiguration {
 	 * @return the context configuration classes
 	 */
 	@AliasFor("value")
-	Class<?>[] classes() default {};
+	Class<?>[]classes() default {};
 
 	/**
 	 * The context configuration initializers.
@@ -77,7 +77,7 @@ public @interface SpringApplicationConfiguration {
 	 * @return the context configuration initializers
 	 */
 	@AliasFor(annotation = ContextConfiguration.class, attribute = "initializers")
-	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[] initializers() default {};
+	Class<? extends ApplicationContextInitializer<? extends ConfigurableApplicationContext>>[]initializers() default {};
 
 	/**
 	 * Should context locations be inherited.

@@ -52,9 +52,13 @@ class ProjectLibraries implements Libraries {
 	private String customConfigurationName = null;
 
 	/**
-	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
-	 * @param project the gradle project
-	 * @param extension the extension
+	 * Create a new {@link ProjectLibraries} instance of the specified
+	 * {@link Project}.
+	 * 
+	 * @param project
+	 *            the gradle project
+	 * @param extension
+	 *            the extension
 	 */
 	ProjectLibraries(Project project, SpringBootPluginExtension extension) {
 		this.project = project;
@@ -62,8 +66,11 @@ class ProjectLibraries implements Libraries {
 	}
 
 	/**
-	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
-	 * @param providedConfigurationName the providedConfigurationName to set
+	 * Set the name of the provided configuration. Defaults to
+	 * 'providedRuntime'.
+	 * 
+	 * @param providedConfigurationName
+	 *            the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {
 		this.providedConfigurationName = providedConfigurationName;
@@ -75,17 +82,14 @@ class ProjectLibraries implements Libraries {
 
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
-		Set<GradleLibrary> custom = getLibraries(this.customConfigurationName,
-				LibraryScope.CUSTOM);
+		Set<GradleLibrary> custom = getLibraries(this.customConfigurationName, LibraryScope.CUSTOM);
 		if (custom != null) {
 			libraries(custom, callback);
-		}
-		else {
+		} else {
 			Set<GradleLibrary> compile = getLibraries("compile", LibraryScope.COMPILE);
 			Set<GradleLibrary> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
 			runtime = minus(runtime, compile);
-			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName,
-					LibraryScope.PROVIDED);
+			Set<GradleLibrary> provided = getLibraries(this.providedConfigurationName, LibraryScope.PROVIDED);
 			if (provided != null) {
 				compile = minus(compile, provided);
 				runtime = minus(runtime, provided);
@@ -97,42 +101,36 @@ class ProjectLibraries implements Libraries {
 	}
 
 	private Set<GradleLibrary> getLibraries(String configurationName, LibraryScope scope) {
-		Configuration configuration = (configurationName == null ? null : this.project
-				.getConfigurations().findByName(configurationName));
+		Configuration configuration = (configurationName == null ? null
+				: this.project.getConfigurations().findByName(configurationName));
 		if (configuration == null) {
 			return null;
 		}
 		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
-		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration()
-				.getResolvedArtifacts()) {
+		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration().getResolvedArtifacts()) {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
 		}
 		libraries.addAll(getLibrariesForFileDependencies(configuration, scope));
 		return libraries;
 	}
 
-	private Set<GradleLibrary> getLibrariesForFileDependencies(
-			Configuration configuration, LibraryScope scope) {
+	private Set<GradleLibrary> getLibrariesForFileDependencies(Configuration configuration, LibraryScope scope) {
 		Set<GradleLibrary> libraries = new LinkedHashSet<GradleLibrary>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
 				for (File file : fileDependency.resolve()) {
-					libraries.add(new GradleLibrary(fileDependency.getGroup(), file,
-							scope));
+					libraries.add(new GradleLibrary(fileDependency.getGroup(), file, scope));
 				}
-			}
-			else if (dependency instanceof ProjectDependency) {
+			} else if (dependency instanceof ProjectDependency) {
 				ProjectDependency projectDependency = (ProjectDependency) dependency;
-				libraries.addAll(getLibrariesForFileDependencies(
-						projectDependency.getProjectConfiguration(), scope));
+				libraries.addAll(getLibrariesForFileDependencies(projectDependency.getProjectConfiguration(), scope));
 			}
 		}
 		return libraries;
 	}
 
-	private Set<GradleLibrary> minus(Set<GradleLibrary> source,
-			Set<GradleLibrary> toRemove) {
+	private Set<GradleLibrary> minus(Set<GradleLibrary> source, Set<GradleLibrary> toRemove) {
 		if (source == null || toRemove == null) {
 			return source;
 		}
@@ -149,8 +147,7 @@ class ProjectLibraries implements Libraries {
 		return result;
 	}
 
-	private void libraries(Set<GradleLibrary> libraries, LibraryCallback callback)
-			throws IOException {
+	private void libraries(Set<GradleLibrary> libraries, LibraryCallback callback) throws IOException {
 		if (libraries != null) {
 			Set<String> duplicates = getDuplicates(libraries);
 			for (GradleLibrary library : libraries) {
@@ -222,8 +219,7 @@ class ProjectLibraries implements Libraries {
 		private final ResolvedArtifact artifact;
 
 		ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
-			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(),
-					scope);
+			super(artifact.getModuleVersion().getId().getGroup(), artifact.getFile(), scope);
 			this.artifact = artifact;
 		}
 
@@ -231,8 +227,7 @@ class ProjectLibraries implements Libraries {
 		public boolean isUnpackRequired() {
 			if (ProjectLibraries.this.extension.getRequiresUnpack() != null) {
 				ModuleVersionIdentifier id = this.artifact.getModuleVersion().getId();
-				return ProjectLibraries.this.extension.getRequiresUnpack().contains(
-						id.getGroup() + ":" + id.getName());
+				return ProjectLibraries.this.extension.getRequiresUnpack().contains(id.getGroup() + ":" + id.getName());
 			}
 			return false;
 		}

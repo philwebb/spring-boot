@@ -44,14 +44,14 @@ public @interface ConditionalOnBean {
 	 * the classes specified is contained in the {@link ApplicationContext}.
 	 * @return the class types of beans to check
 	 */
-	Class<?>[] value() default {};
+	Class<?>[]value() default {};
 
 	/**
 	 * The class type names of bean that should be checked. The condition matches when any
 	 * of the classes specified is contained in the {@link ApplicationContext}.
 	 * @return the class type names of beans to check
 	 */
-	String[] type() default {};
+	String[]type() default {};
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
@@ -59,14 +59,14 @@ public @interface ConditionalOnBean {
 	 * {@link ApplicationContext}.
 	 * @return the class-level annotation types to check
 	 */
-	Class<? extends Annotation>[] annotation() default {};
+	Class<? extends Annotation>[]annotation() default {};
 
 	/**
 	 * The names of beans to check. The condition matches when any of the bean names
 	 * specified is contained in the {@link ApplicationContext}.
 	 * @return the name of beans to check
 	 */
-	String[] name() default {};
+	String[]name() default {};
 
 	/**
 	 * Strategy to decide if the application context hierarchy (parent contexts) should be

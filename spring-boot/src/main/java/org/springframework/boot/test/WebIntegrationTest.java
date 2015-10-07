@@ -51,7 +51,7 @@ public @interface WebIntegrationTest {
 	 * {@link Environment} before the test runs.
 	 * @return properties to add to the context
 	 */
-	String[] value() default {};
+	String[]value() default {};
 
 	/**
 	 * Convenience attribute that can be used to set a {@code server.port=0}

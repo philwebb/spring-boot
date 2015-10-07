@@ -91,24 +91,21 @@ public class RepackageTask extends DefaultTask {
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
-		SpringBootPluginExtension extension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = getLibraries();
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
 
 	public ProjectLibraries getLibraries() {
 		Project project = getProject();
-		SpringBootPluginExtension extension = project.getExtensions().getByType(
-				SpringBootPluginExtension.class);
+		SpringBootPluginExtension extension = project.getExtensions().getByType(SpringBootPluginExtension.class);
 		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		}
-		else if (extension.getCustomConfiguration() != null) {
+		} else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		return libraries;
@@ -123,8 +120,7 @@ public class RepackageTask extends DefaultTask {
 
 		private final ProjectLibraries libraries;
 
-		RepackageAction(SpringBootPluginExtension extension,
-				ProjectLibraries libraries) {
+		RepackageAction(SpringBootPluginExtension extension, ProjectLibraries libraries) {
 			this.extension = extension;
 			this.libraries = libraries;
 		}
@@ -137,8 +133,7 @@ public class RepackageTask extends DefaultTask {
 			}
 			Object withJarTask = RepackageTask.this.withJarTask;
 			if (!isTaskMatch(jarTask, withJarTask)) {
-				getLogger().info(
-						"Jar task not repackaged (didn't match withJarTask): " + jarTask);
+				getLogger().info("Jar task not repackaged (didn't match withJarTask): " + jarTask);
 				return;
 			}
 			File file = jarTask.getArchivePath();
@@ -151,11 +146,10 @@ public class RepackageTask extends DefaultTask {
 			if (withJarTask == null) {
 				if ("".equals(task.getClassifier())) {
 					Set<Object> tasksWithCustomRepackaging = new HashSet<Object>();
-					for (RepackageTask repackageTask : RepackageTask.this.getProject()
-							.getTasks().withType(RepackageTask.class)) {
+					for (RepackageTask repackageTask : RepackageTask.this.getProject().getTasks()
+							.withType(RepackageTask.class)) {
 						if (repackageTask.getWithJarTask() != null) {
-							tasksWithCustomRepackaging
-									.add(repackageTask.getWithJarTask());
+							tasksWithCustomRepackaging.add(repackageTask.getWithJarTask());
 						}
 					}
 					return !tasksWithCustomRepackaging.contains(task);
@@ -180,8 +174,7 @@ public class RepackageTask extends DefaultTask {
 			try {
 				LaunchScript launchScript = getLaunchScript();
 				repackager.repackage(file, this.libraries, launchScript);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException(ex.getMessage(), ex);
 			}
 		}
@@ -189,8 +182,7 @@ public class RepackageTask extends DefaultTask {
 		private void copy(File source, File dest) {
 			try {
 				FileCopyUtils.copy(source, dest);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException(ex.getMessage(), ex);
 			}
 		}
@@ -199,23 +191,19 @@ public class RepackageTask extends DefaultTask {
 			String mainClass;
 			if (getProject().hasProperty("mainClassName")) {
 				mainClass = (String) getProject().property("mainClassName");
-			}
-			else {
-				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject()
-						.getExtensions().getByName("ext");
+			} else {
+				ExtraPropertiesExtension extraProperties = (ExtraPropertiesExtension) getProject().getExtensions()
+						.getByName("ext");
 				mainClass = (String) extraProperties.get("mainClassName");
 			}
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
-			}
-			else if (this.extension.getMainClass() != null) {
+			} else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
-			}
-			else {
+			} else {
 				Task runTask = getProject().getTasks().findByName("run");
 				if (runTask != null && runTask.hasProperty("main")) {
-					mainClass = (String) getProject().getTasks().getByName("run")
-							.property("main");
+					mainClass = (String) getProject().getTasks().getByName("run").property("main");
 				}
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
@@ -223,8 +211,7 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private LaunchScript getLaunchScript() throws IOException {
-			if (this.extension.isExecutable()
-					|| this.extension.getEmbeddedLaunchScript() != null) {
+			if (this.extension.isExecutable() || this.extension.getEmbeddedLaunchScript() != null) {
 				return new DefaultLaunchScript(this.extension.getEmbeddedLaunchScript(),
 						this.extension.getEmbeddedLaunchScriptProperties());
 			}
@@ -247,14 +234,11 @@ public class RepackageTask extends DefaultTask {
 			long startTime = System.currentTimeMillis();
 			try {
 				return super.findMainMethod(source);
-			}
-			finally {
+			} finally {
 				long duration = System.currentTimeMillis() - startTime;
 				if (duration > FIND_WARNING_TIMEOUT) {
-					getLogger().warn(
-							"Searching for the main-class is taking "
-									+ "some time, consider using setting "
-									+ "'springBoot.mainClass'");
+					getLogger().warn("Searching for the main-class is taking " + "some time, consider using setting "
+							+ "'springBoot.mainClass'");
 				}
 			}
 		}

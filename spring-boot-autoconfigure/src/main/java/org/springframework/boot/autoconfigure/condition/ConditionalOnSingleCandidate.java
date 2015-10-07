@@ -52,7 +52,7 @@ public @interface ConditionalOnSingleCandidate {
 	 * , but it may be used instead of {@link #type()}.
 	 * @return the class type of the bean to check
 	 */
-	Class<?> value() default Object.class;
+	Class<?>value() default Object.class;
 
 	/**
 	 * The class type name of bean that should be checked. The condition matches if the

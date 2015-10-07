@@ -36,10 +36,10 @@ import org.springframework.boot.loader.tools.FileUtils;
 public class BootRunTask extends JavaExec {
 
 	/**
-	 * Whether or not resources (typically in {@code src/main/resources} are added
-	 * directly to the classpath. When enabled (the default), this allows live in-place
-	 * editing of resources. Duplicate resources are removed from the resource output
-	 * directory to prevent them from appearing twice if
+	 * Whether or not resources (typically in {@code src/main/resources} are
+	 * added directly to the classpath. When enabled (the default), this allows
+	 * live in-place editing of resources. Duplicate resources are removed from
+	 * the resource output directory to prevent them from appearing twice if
 	 * {@code ClassLoader.getResources()} is called.
 	 */
 	private boolean addResources = true;
@@ -55,7 +55,8 @@ public class BootRunTask extends JavaExec {
 	@Override
 	public void exec() {
 		if (System.console() != null) {
-			// Record that the console is available here for AnsiOutput to detect later
+			// Record that the console is available here for AnsiOutput to
+			// detect later
 			this.getEnvironment().put("spring.output.ansi.console-available", true);
 		}
 		addResourcesIfNecessary();
@@ -65,8 +66,7 @@ public class BootRunTask extends JavaExec {
 	private void addResourcesIfNecessary() {
 		if (this.addResources) {
 			SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
-			final File outputDir = (mainSourceSet == null ? null : mainSourceSet
-					.getOutput().getResourcesDir());
+			final File outputDir = (mainSourceSet == null ? null : mainSourceSet.getOutput().getResourcesDir());
 			final Set<File> resources = new LinkedHashSet<File>();
 			if (mainSourceSet != null) {
 				resources.addAll(mainSourceSet.getResources().getSrcDirs());

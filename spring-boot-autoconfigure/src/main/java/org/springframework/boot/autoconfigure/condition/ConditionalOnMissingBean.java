@@ -45,21 +45,21 @@ public @interface ConditionalOnMissingBean {
 	 * class specified is missing in the {@link ApplicationContext}.
 	 * @return the class types of beans to check
 	 */
-	Class<?>[] value() default {};
+	Class<?>[]value() default {};
 
 	/**
 	 * The class type names of bean that should be checked. The condition matches when
 	 * each class specified is missing in the {@link ApplicationContext}.
 	 * @return the class type names of beans to check
 	 */
-	String[] type() default {};
+	String[]type() default {};
 
 	/**
 	 * The class type of beans that should be ignored when identifying matching beans.
 	 * @return the class types of beans to ignore
 	 * @since 1.2.5
 	 */
-	Class<?>[] ignored() default {};
+	Class<?>[]ignored() default {};
 
 	/**
 	 * The class type names of beans that should be ignored when identifying matching
@@ -67,7 +67,7 @@ public @interface ConditionalOnMissingBean {
 	 * @return the class type names of beans to ignore
 	 * @since 1.2.5
 	 */
-	String[] ignoredType() default {};
+	String[]ignoredType() default {};
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
@@ -75,14 +75,14 @@ public @interface ConditionalOnMissingBean {
 	 * {@link ApplicationContext}.
 	 * @return the class-level annotation types to check
 	 */
-	Class<? extends Annotation>[] annotation() default {};
+	Class<? extends Annotation>[]annotation() default {};
 
 	/**
 	 * The names of beans to check. The condition matches when each bean name specified is
 	 * missing in the {@link ApplicationContext}.
 	 * @return the name of beans to check
 	 */
-	String[] name() default {};
+	String[]name() default {};
 
 	/**
 	 * Strategy to decide if the application context hierarchy (parent contexts) should be
