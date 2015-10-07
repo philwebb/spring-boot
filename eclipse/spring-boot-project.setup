@@ -90,7 +90,7 @@
     <requirement
         name="org.eclipse.mylyn.github.feature.feature.group"/>
     <repository
-        url="http://download.eclipse.org/technology/epp/packages/mars"/>
+        url="http://download.eclipse.org/technology/epp/packages/mars/R"/>
     <repository
         url="http://download.eclipse.org/releases/mars"/>
     <repository
@@ -255,6 +255,10 @@
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.m2e.core/eclipse.m2.updateIndexes"
         value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.m2e.core/eclipse.m2.defaultPomEditorPage"
+        value="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
