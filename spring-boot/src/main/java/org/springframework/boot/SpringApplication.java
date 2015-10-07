@@ -163,7 +163,8 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
-	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org.springframework.web.context.ConfigurableWebEnvironment";
+	private static final String CONFIGURABLE_WEB_ENVIRONMENT_CLASS = "org."
+			+ "springframework.web.context.ConfigurableWebEnvironment";
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
