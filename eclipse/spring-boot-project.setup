@@ -290,6 +290,14 @@
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
+      name="org.eclipse.wst.xml.core">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.wst.xml.core/indicateNoGrammar"
+        value="-1"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
       name="org.springframework.ide.eclipse.core">
     <setupTask
         xsi:type="setup:PreferenceTask"
