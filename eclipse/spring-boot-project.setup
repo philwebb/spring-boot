@@ -181,6 +181,10 @@
       name="org.eclipse.jdt.ui">
     <setupTask
         xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/content_assist_autoactivation_delay"
+        value="40"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/content_assist_disabled_computers"
         value="org.eclipse.jdt.ui.javaNoTypeProposalCategory$${0x0}org.eclipse.jdt.ui.javaTypeProposalCategory$${0x0}org.eclipse.jdt.ui.textProposalCategory$${0x0}org.eclipse.recommenders.calls.rcp.proposalCategory.templates$${0x0}"/>
     <setupTask
@@ -189,8 +193,44 @@
         value="java.awt.*;org.hibernate.collection.*;"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/escape¥Strings"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.jdt.ui/content_assist_favorite_static_members"
         value="org.hamcrest.Matchers.*;org.junit.Assert.*;org.mockito.BDDMockito.*;org.mockito.Matchers.*;org.mockito.Mockito.*;org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;org.springframework.test.web.servlet.result.MockMvcResultMatchers.*"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smart_backspace"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smart_opening_brace"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smart_semicolon"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smart_tab"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smartIndentAfterNewline"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.ui/smartPaste"
+        value="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.jdt.core">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.nonExternalizedStringLiteral"
+        value="ignore"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -202,6 +242,18 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.core.resources/refresh.enabled"
+        value="false"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.eclipse.m2e.core">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.m2e.core/eclipse.m2.hideFoldersOfNestedProjects"
+        value="true"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.eclipse.m2e.core/eclipse.m2.updateIndexes"
         value="false"/>
   </setupTask>
   <setupTask
@@ -227,6 +279,82 @@
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/whitespaceCharacterAlphaValue"
         value="20"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.springframework.ide.eclipse.beans.core">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.beans.core/org.springframework.ide.eclipse.beans.core.BeansCorePlugin.DISABLE_AUTO_DETECTION"
+        value="true"/>
+  </setupTask>
+  <setupTask
+      xsi:type="setup:CompoundTask"
+      name="org.springframework.ide.eclipse.core">
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.builders.enable.beanmetadatabuilder"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.useChangeDetectionForJavaFiles"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.enable.org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.enable.org.springframework.ide.eclipse.boot.bootvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanAlias-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanClass-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanConstructorArgument-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanDefinition-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanDefinitionHolder-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanFactory-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanInitDestroyMethod-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanProperty-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.beanReference-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.methodOverride-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.beans.core.parsingProblems-org.springframework.ide.eclipse.beans.core.beansvalidator"
+        value="false"/>
+    <setupTask
+        xsi:type="setup:PreferenceTask"
+        key="/instance/org.springframework.ide.eclipse.core/org.springframework.ide.eclipse.core.validator.rule.enable.org.springframework.ide.eclipse.boot.missingConfigurationProcessor-org.springframework.ide.eclipse.boot.bootvalidator"
+        value="false"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
