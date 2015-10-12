@@ -23,6 +23,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.actuate.trace.TraceProperties;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,9 +33,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
-
-
-
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
  * tracing}.
@@ -43,7 +41,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
-@EnableConfigurationProperties(TraceWebFilterProperties.class)
+@EnableConfigurationProperties(TraceProperties.class)
 public class TraceWebFilterAutoConfiguration {
 
 	@Autowired
@@ -56,11 +54,12 @@ public class TraceWebFilterAutoConfiguration {
 	private boolean dumpRequests;
 
 	@Autowired
-	TraceWebFilterProperties traceWebFilterProperties = new TraceWebFilterProperties();
+	TraceProperties traceWebFilterProperties = new TraceProperties();
 
 	@Bean
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
-		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository, this.traceWebFilterProperties);
+		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository,
+				this.traceWebFilterProperties);
 		filter.setDumpRequests(this.dumpRequests);
 
 		if (this.errorAttributes != null) {

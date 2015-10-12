@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package org.springframework.boot.actuate.trace;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-
 import java.security.Principal;
+import java.util.EnumSet;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -31,6 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.trace.TraceProperties.Include;
 import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,19 +42,23 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Dave Syer
  * @author Wallace Wadge
+ * @author Phillip Webb
  */
 public class WebRequestTraceFilterTests {
 
-	private final InMemoryTraceRepository inMemoryTraceRepository = new InMemoryTraceRepository();
+	private final InMemoryTraceRepository repository = new InMemoryTraceRepository();
 
-	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(this.inMemoryTraceRepository);
+	private TraceProperties properties = new TraceProperties();
 
+	private WebRequestTraceFilter filter = new WebRequestTraceFilter(this.repository,
+			this.properties);
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
 	public void filterDumpsRequestResponse() throws IOException, ServletException {
+		this.properties.setInclude(EnumSet.allOf(Include.class));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
-
 		request.setContextPath("some.context.path");
 		request.setContent("Hello, World!".getBytes());
 		request.setRemoteAddr("some.remote.addr");
@@ -74,30 +78,12 @@ public class WebRequestTraceFilterTests {
 			}
 		};
 		request.setUserPrincipal(principal);
-
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		response.addHeader("Content-Type", "application/json");
-
-
-		this.filter.setIncludeClientInfo(true);
-		this.filter.setIncludeContextPath(true);
-		this.filter.setIncludeCookies(true);
-		this.filter.setIncludeParameters(true);
-		this.filter.setIncludePathInfo(true);
-		this.filter.setIncludePayload(true);
-		this.filter.setIncludePayloadResponse(true);
-		this.filter.setIncludeQueryString(true);
-		this.filter.setIncludePathTranslated(true);
-		this.filter.setIncludeAuthType(true);
-		this.filter.setIncludeUserPrincipal(true);
-		this.filter.setIncludeUserPrincipal(true);
-		this.filter.setMaxPayloadLength(100);
-		this.filter.setMaxPayloadResponseLength(100);
-
-
 		this.filter.doFilterInternal(request, response, new FilterChain() {
 			@Override
-			public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
 				BufferedReader bufferedReader = request.getReader();
 				while (bufferedReader.readLine() != null) {
 					// read the contents as normal (forces cache to fill up)
@@ -105,30 +91,24 @@ public class WebRequestTraceFilterTests {
 				response.getWriter().println("Goodbye, World!");
 			}
 		});
-
-
-		assertEquals(1, this.inMemoryTraceRepository.findAll().size());
-		Map<String, Object> trace = this.inMemoryTraceRepository.findAll().iterator().next().getInfo();
-		@SuppressWarnings("unchecked")
+		assertEquals(1, this.repository.findAll().size());
+		Map<String, Object> trace = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
 		assertEquals("{Content-Type=application/json, status=200}",
-			map.get("response").toString());
-
+				map.get("response").toString());
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
-		assertEquals("paramvalue", ((String[]) ((Map) trace.get("requestParams")).get("param"))[0]);
-		assertEquals("some.remote.addr", trace.get("requestRemoteAddr"));
-		assertEquals("some.query.string", trace.get("requestQueryString"));
-		assertEquals(principal.getName(), ((Principal) trace.get("userPrincipal")).getName());
+		assertEquals("paramvalue",
+				((String[]) ((Map) trace.get("parameters")).get("param"))[0]);
+		assertEquals("some.remote.addr", trace.get("remoteAddress"));
+		assertEquals("some.query.string", trace.get("query"));
+		assertEquals(principal.getName(), trace.get("userPrincipal"));
 		assertEquals("some.context.path", trace.get("contextPath"));
-		assertEquals(url, trace.get(WebRequestTraceFilter.TRACE_RQ_PATH_INFO));
-
-		assertEquals("Hello, World!", trace.get(WebRequestTraceFilter.TRACE_RQ_PAYLOAD));
-		assertEquals("authType", trace.get(WebRequestTraceFilter.TRACE_RQ_AUTH_TYPE));
-		assertEquals("Goodbye, World!", trace.get(WebRequestTraceFilter.TRACE_RESP_PAYLOAD));
+		assertEquals(url, trace.get("pathInfo"));
+		assertEquals("Hello, World!", trace.get("requestContent"));
+		assertEquals("authType", trace.get("authType"));
+		assertEquals("Goodbye, World!", trace.get("responseContent"));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
-		assertEquals(cookie, ((Cookie[]) trace.get(WebRequestTraceFilter.TRACE_RQ_COOKIES))[0]);
-
 	}
 
 	@Test
