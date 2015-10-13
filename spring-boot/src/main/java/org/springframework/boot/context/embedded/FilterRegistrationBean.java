@@ -280,13 +280,11 @@ public class FilterRegistrationBean extends RegistrationBean {
 			dispatcherTypes = (isAsyncSupported() ? ASYNC_DISPATCHER_TYPES
 					: NON_ASYNC_DISPATCHER_TYPES);
 		}
-
 		Set<String> servletNames = new LinkedHashSet<String>();
 		for (ServletRegistrationBean servletRegistrationBean : this.servletRegistrationBeans) {
 			servletNames.add(servletRegistrationBean.getServletName());
 		}
 		servletNames.addAll(this.servletNames);
-
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
 			logger.info("Mapping filter: '" + registration.getName() + "' to: "
 					+ Arrays.asList(DEFAULT_URL_MAPPINGS));

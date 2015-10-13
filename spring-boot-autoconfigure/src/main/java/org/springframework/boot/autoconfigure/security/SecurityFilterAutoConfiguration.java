@@ -16,15 +16,23 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import javax.servlet.Filter;
+import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.LazyServletContextInitializer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -50,12 +58,76 @@ public class SecurityFilterAutoConfiguration {
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
 	public FilterRegistrationBean securityFilterChainRegistration(
-			@Qualifier(DEFAULT_FILTER_NAME) Filter securityFilter,
+			ApplicationContext applicationContext,
 			SecurityProperties securityProperties) {
-		FilterRegistrationBean registration = new FilterRegistrationBean(securityFilter);
+		FilterRegistrationBean registration = new LazyLazySecurityFilterRegistrationBean(
+				applicationContext);
 		registration.setOrder(securityProperties.getFilterOrder());
 		registration.setName(DEFAULT_FILTER_NAME);
 		return registration;
+	}
+
+	// @Bean
+	// @ConditionalOnBean(name = DEFAULT_FILTER_NAME)
+	// public FilterRegistrationBean securityFilterChainRegistration(
+	// @Qualifier(DEFAULT_FILTER_NAME) Filter securityFilter,
+	// SecurityProperties securityProperties) {
+	// FilterRegistrationBean registration = new FilterRegistrationBean(securityFilter);
+	// registration.setOrder(securityProperties.getFilterOrder());
+	// registration.setName(DEFAULT_FILTER_NAME);
+	// return registration;
+	// }
+
+	private static class LazyLazySecurityFilterRegistrationBean
+			extends FilterRegistrationBean implements LazyServletContextInitializer {
+
+		LazyLazySecurityFilterRegistrationBean(ApplicationContext applicationContext) {
+			super(new LazySecurityFilter(applicationContext));
+		}
+
+		@Override
+		public String getBeanName() {
+			return DEFAULT_FILTER_NAME;
+		}
+
+	}
+
+	private static class LazySecurityFilter implements Filter {
+
+		private final ApplicationContext applicationContext;
+
+		private Filter delegate;
+
+		private final Object delegateMonitor = new Object();
+
+		LazySecurityFilter(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public void init(FilterConfig filterConfig) throws ServletException {
+		}
+
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response,
+				FilterChain chain) throws IOException, ServletException {
+			Filter delegateToUse = this.delegate;
+			if (delegateToUse == null) {
+				synchronized (this.delegateMonitor) {
+					if (this.delegate == null) {
+						this.delegate = (Filter) this.applicationContext
+								.getBean(DEFAULT_FILTER_NAME);
+					}
+					delegateToUse = this.delegate;
+				}
+			}
+			delegateToUse.doFilter(request, response, chain);
+		}
+
+		@Override
+		public void destroy() {
+		}
+
 	}
 
 }

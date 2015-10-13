@@ -40,6 +40,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * A collection {@link ServletContextInitializer}s obtained from a
@@ -63,6 +64,8 @@ class ServletContextInitializerBeans
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final Set<Object> seen = new HashSet<Object>();
+
+	private final Set<String> excludes = new HashSet<String>();
 
 	private final MultiValueMap<Class<?>, ServletContextInitializer> initializers;
 
@@ -118,6 +121,12 @@ class ServletContextInitializerBeans
 			// Mark the underlying source as seen in case it wraps an existing bean
 			this.seen.add(source);
 		}
+		if (initializer instanceof LazyServletContextInitializer) {
+			String exclude = ((LazyServletContextInitializer) initializer).getBeanName();
+			if (StringUtils.hasLength(exclude)) {
+				this.excludes.add(exclude);
+			}
+		}
 		if (this.log.isDebugEnabled()) {
 			String resourceDescription = getResourceDescription(beanName, beanFactory);
 			int order = getOrder(initializer);
@@ -164,7 +173,8 @@ class ServletContextInitializerBeans
 
 	private <T, B extends T> void addAsRegistrationBean(ListableBeanFactory beanFactory,
 			Class<T> type, Class<B> beanType, RegistrationBeanAdapter<T> adapter) {
-		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType);
+		List<Map.Entry<String, B>> beans = getOrderedBeansOfType(beanFactory, beanType,
+				this.excludes);
 		for (Entry<String, B> bean : beans) {
 			if (this.seen.add(bean.getValue())) {
 				int order = getOrder(bean.getValue());
@@ -175,7 +185,6 @@ class ServletContextInitializerBeans
 				registration.setName(beanName);
 				registration.setOrder(order);
 				this.initializers.add(type, registration);
-
 				if (this.log.isDebugEnabled()) {
 					this.log.debug(
 							"Created " + type.getSimpleName() + " initializer for bean '"
@@ -197,18 +206,27 @@ class ServletContextInitializerBeans
 
 	private <T> List<Entry<String, T>> getOrderedBeansOfType(
 			ListableBeanFactory beanFactory, Class<T> type) {
+		return getOrderedBeansOfType(beanFactory, type, Collections.<String>emptySet());
+	}
+
+	private <T> List<Entry<String, T>> getOrderedBeansOfType(
+			ListableBeanFactory beanFactory, Class<T> type, Set<String> excludes) {
 		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
 		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
+
 			@Override
 			public int compare(Entry<String, T> o1, Entry<String, T> o2) {
 				return AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
 						o2.getValue());
 			}
+
 		};
 		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		Map<String, T> map = new LinkedHashMap<String, T>();
 		for (String name : names) {
-			map.put(name, beanFactory.getBean(name, type));
+			if (!excludes.contains(name)) {
+				map.put(name, beanFactory.getBean(name, type));
+			}
 		}
 		beans.addAll(map.entrySet());
 		Collections.sort(beans, comparator);

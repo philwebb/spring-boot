@@ -35,6 +35,8 @@ import org.springframework.util.Assert;
  */
 public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
 
+	// FIXME could make this support lazy
+
 	private String name;
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
