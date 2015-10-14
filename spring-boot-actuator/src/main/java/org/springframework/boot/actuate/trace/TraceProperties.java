@@ -139,16 +139,6 @@ public class TraceProperties {
 		 */
 		REMOTE_USER,
 
-		/**
-		 * Include the contents of the request (not recommended in production).
-		 */
-		REQUEST_CONTENT,
-
-		/**
-		 * Include the contents of the response (not recommended in production).
-		 */
-		RESPONSE_CONTENT
-
 	}
 
 }

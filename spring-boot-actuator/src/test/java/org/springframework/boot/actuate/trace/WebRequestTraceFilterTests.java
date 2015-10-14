@@ -105,9 +105,7 @@ public class WebRequestTraceFilterTests {
 		assertEquals(principal.getName(), trace.get("userPrincipal"));
 		assertEquals("some.context.path", trace.get("contextPath"));
 		assertEquals(url, trace.get("pathInfo"));
-		assertEquals("Hello, World!", trace.get("requestContent"));
 		assertEquals("authType", trace.get("authType"));
-		assertEquals("Goodbye, World!", trace.get("responseContent"));
 		assertEquals("{Accept=application/json}", map.get("request").toString());
 	}
 

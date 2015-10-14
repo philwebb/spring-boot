@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.trace;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -39,8 +38,6 @@ import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
-import org.springframework.web.util.ContentCachingResponseWrapper;
 
 /**
  * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
@@ -107,14 +104,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain)
 					throws ServletException, IOException {
-		if (isIncluded(Include.REQUEST_CONTENT) && !isAsyncDispatch(request)
-				&& !(request instanceof ContentCachingRequestWrapper)) {
-			request = new ContentCachingRequestWrapper(request);
-		}
-		if (isIncluded(Include.RESPONSE_CONTENT) && !isAsyncDispatch(request)
-				&& !(response instanceof ContentCachingResponseWrapper)) {
-			response = new ContentCachingResponseWrapper(response);
-		}
 		Map<String, Object> trace = getTrace(request);
 		logTrace(request, trace);
 		try {
@@ -122,8 +111,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 		}
 		finally {
 			enhanceTrace(trace, response);
-			addRequestContent(trace, request);
-			addResponseContent(trace, response);
 			this.repository.add(trace);
 		}
 	}
@@ -203,40 +190,6 @@ public class WebRequestTraceFilter extends OncePerRequestFilter implements Order
 			if (this.dumpRequests) {
 				this.logger.trace("Headers: " + trace.get("headers"));
 			}
-		}
-	}
-
-	private void addRequestContent(Map<String, Object> trace,
-			HttpServletRequest request) {
-		if (request instanceof ContentCachingRequestWrapper) {
-			ContentCachingRequestWrapper wrapper = (ContentCachingRequestWrapper) request;
-			add(trace, Include.REQUEST_CONTENT, "requestContent", payloadBufferToString(
-					wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray()));
-		}
-	}
-
-	private void addResponseContent(Map<String, Object> trace,
-			HttpServletResponse response) {
-		if (response instanceof ContentCachingResponseWrapper) {
-			ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
-			add(trace, Include.REQUEST_CONTENT, "responseContent", payloadBufferToString(
-					wrapper.getCharacterEncoding(), wrapper.getContentAsByteArray()));
-		}
-	}
-
-	private String payloadBufferToString(String encoding, byte[] buffer) {
-		if (buffer == null || buffer.length == 0) {
-			return null;
-		}
-		try {
-			if (this.properties.getMaxContentLength() == -1) {
-				return new String(buffer, encoding);
-			}
-			int size = Math.min(buffer.length, this.properties.getMaxContentLength());
-			return new String(buffer, 0, size, encoding);
-		}
-		catch (UnsupportedEncodingException uee) {
-			return "[unknown]";
 		}
 	}
 
