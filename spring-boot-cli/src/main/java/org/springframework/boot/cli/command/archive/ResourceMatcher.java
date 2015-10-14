@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command.jar;
+package org.springframework.boot.cli.command.archive;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.StringUtils;
 
 /**
  * Used to match resources for inclusion in a CLI application's jar file.
@@ -48,7 +39,7 @@ class ResourceMatcher {
 	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
 			"target/**", "**/*.jar", "**/*.groovy" };
 
-	private final AntPathMatcher pathMatcher = new AntPathMatcher();
+	private final org.springframework.util.AntPathMatcher pathMatcher = new org.springframework.util.AntPathMatcher();
 
 	private final List<String> includes;
 
@@ -103,8 +94,8 @@ class ResourceMatcher {
 	}
 
 	private List<String> getOptions(List<String> values, String[] defaults) {
-		Set<String> result = new LinkedHashSet<String>();
-		Set<String> minus = new LinkedHashSet<String>();
+		java.util.Set<String> result = new java.util.LinkedHashSet<String>();
+		java.util.Set<String> minus = new java.util.LinkedHashSet<String>();
 		boolean deltasFound = false;
 		for (String value : values) {
 			if (value.startsWith("+")) {
@@ -132,18 +123,20 @@ class ResourceMatcher {
 	/**
 	 * {@link ResourceLoader} to get load resource from a folder.
 	 */
-	private static class FolderResourceLoader extends DefaultResourceLoader {
+	private static class FolderResourceLoader
+			extends org.springframework.core.io.DefaultResourceLoader {
 
 		private final File rootFolder;
 
-		FolderResourceLoader(File root) throws MalformedURLException {
+		FolderResourceLoader(File root) throws java.net.MalformedURLException {
 			super(new FolderClassLoader(root));
 			this.rootFolder = root;
 		}
 
 		@Override
 		protected Resource getResourceByPath(String path) {
-			return new FileSystemResource(new File(this.rootFolder, path));
+			return new org.springframework.core.io.FileSystemResource(
+					new File(this.rootFolder, path));
 		}
 
 	}
@@ -151,14 +144,15 @@ class ResourceMatcher {
 	/**
 	 * {@link ClassLoader} backed by a folder.
 	 */
-	private static class FolderClassLoader extends URLClassLoader {
+	private static class FolderClassLoader extends java.net.URLClassLoader {
 
-		FolderClassLoader(File rootFolder) throws MalformedURLException {
+		FolderClassLoader(File rootFolder) throws java.net.MalformedURLException {
 			super(new URL[] { rootFolder.toURI().toURL() });
 		}
 
 		@Override
-		public Enumeration<URL> getResources(String name) throws IOException {
+		public java.util.Enumeration<java.net.URL> getResources(String name)
+				throws IOException {
 			return findResources(name);
 		}
 
@@ -172,7 +166,7 @@ class ResourceMatcher {
 	/**
 	 * A single matched resource.
 	 */
-	public static final class MatchedResource {
+	static final class MatchedResource {
 
 		private final File file;
 
@@ -187,8 +181,9 @@ class ResourceMatcher {
 		}
 
 		private MatchedResource(File rootFolder, File file) {
-			this.name = StringUtils.cleanPath(file.getAbsolutePath()
-					.substring(rootFolder.getAbsolutePath().length() + 1));
+			this.name = org.springframework.util.StringUtils
+					.cleanPath(file.getAbsolutePath()
+							.substring(rootFolder.getAbsolutePath().length() + 1));
 			this.file = file;
 			this.root = false;
 		}
