@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.management.loading.ClassLoaderRepository;
-
 import org.springframework.util.Assert;
 
 /**
@@ -35,7 +33,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.3.0
  * @see ClassLoaderFile
- * @see ClassLoaderRepository
+ * @see ClassLoaderFileRepository
  */
 public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable {
 
