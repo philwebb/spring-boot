@@ -57,4 +57,14 @@ class RestartLauncher extends Thread {
 		return this.error;
 	}
 
+	public static Throwable relaunch(ClassLoader classLoader, String mainClassName,
+			String[] args, UncaughtExceptionHandler exceptionHandler)
+					throws InterruptedException {
+		RestartLauncher launcher = new RestartLauncher(classLoader, mainClassName, args,
+				exceptionHandler);
+		launcher.start();
+		launcher.join();
+		return launcher.getError();
+	}
+
 }

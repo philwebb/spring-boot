@@ -33,7 +33,8 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread thread, Throwable exception) {
-		if (exception instanceof SilentExitException) {
+		System.out.println("Handling " + thread.getName() + " " + exception);
+		if (exception instanceof IllegalThreadStateException) {
 			return;
 		}
 		if (this.delegate != null) {
@@ -50,11 +51,11 @@ class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 	}
 
 	public static void exitCurrentThread() {
-		throw new SilentExitException();
+		throw new IllegalThreadStateException();
 	}
 
 	private static class SilentExitException extends RuntimeException {
-
+		// FIXME find a way to get this back
 	}
 
 }

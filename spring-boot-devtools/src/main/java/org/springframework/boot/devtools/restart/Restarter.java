@@ -44,6 +44,7 @@ import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.restart.FailureHandler.Outcome;
+import org.springframework.boot.devtools.restart.classloader.AppClassLoader;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.devtools.restart.classloader.RestartClassLoader;
 import org.springframework.boot.logging.DeferredLog;
@@ -285,11 +286,8 @@ public class Restarter {
 	 * @throws Exception in case of errors
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
-		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName,
-				this.args, this.exceptionHandler);
-		launcher.start();
-		launcher.join();
-		return launcher.getError();
+		return RestartLauncher.relaunch(classLoader, this.mainClassName, this.args,
+				this.exceptionHandler);
 	}
 
 	/**
@@ -506,6 +504,7 @@ public class Restarter {
 			RestartInitializer initializer, boolean restartOnInitialize) {
 		Thread thread = Thread.currentThread();
 		SilentExitExceptionHandler.setup(thread);
+		relaunchWithApplicationLoader(thread, args);
 		if (instance == null) {
 			synchronized (Restarter.class) {
 				instance = new Restarter(thread, args, forceReferenceCleanup,
@@ -513,6 +512,23 @@ public class Restarter {
 			}
 			instance.initialize(restartOnInitialize);
 		}
+	}
+
+	private static void relaunchWithApplicationLoader(Thread thread, String[] args) {
+		ClassLoader classLoader = thread.getContextClassLoader();
+		String mainClassName = MainMethod.getMainClassName(thread);
+		if (!AppClassLoader.canApplyTo(classLoader) || mainClassName == null) {
+			return;
+		}
+		classLoader = AppClassLoader.apply(classLoader);
+		UncaughtExceptionHandler exceptionHandler = thread.getUncaughtExceptionHandler();
+		try {
+			RestartLauncher.relaunch(classLoader, mainClassName, args, exceptionHandler);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+		SilentExitExceptionHandler.exitCurrentThread();
 	}
 
 	/**
