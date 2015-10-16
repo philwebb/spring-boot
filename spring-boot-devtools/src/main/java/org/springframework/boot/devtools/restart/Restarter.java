@@ -125,23 +125,13 @@ public class Restarter {
 		Assert.notNull(args, "Args must not be null");
 		Assert.notNull(initializer, "Initializer must not be null");
 		this.logger.debug("Creating new Restarter for thread " + thread);
-		SilentExitExceptionHandler.setup(thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
 		this.initialUrls = initializer.getInitialUrls(thread);
-		this.mainClassName = getMainClassName(thread);
+		this.mainClassName = MainMethod.getMainClassName(thread);
 		this.applicationClassLoader = thread.getContextClassLoader();
 		this.args = args;
 		this.exceptionHandler = thread.getUncaughtExceptionHandler();
 		this.leakSafeThreads.add(new LeakSafeThread());
-	}
-
-	private String getMainClassName(Thread thread) {
-		try {
-			return new MainMethod(thread).getDeclaringClassName();
-		}
-		catch (Exception ex) {
-			return null;
-		}
 	}
 
 	protected void initialize(boolean restartOnInitialize) {
@@ -514,10 +504,12 @@ public class Restarter {
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer, boolean restartOnInitialize) {
+		Thread thread = Thread.currentThread();
+		SilentExitExceptionHandler.setup(thread);
 		if (instance == null) {
 			synchronized (Restarter.class) {
-				instance = new Restarter(Thread.currentThread(), args,
-						forceReferenceCleanup, initializer);
+				instance = new Restarter(thread, args, forceReferenceCleanup,
+						initializer);
 			}
 			instance.initialize(restartOnInitialize);
 		}

@@ -81,4 +81,13 @@ class MainMethod {
 		return this.method.getDeclaringClass().getName();
 	}
 
+	public static String getMainClassName(Thread thread) {
+		try {
+			return new MainMethod(thread).getDeclaringClassName();
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}
+
 }
