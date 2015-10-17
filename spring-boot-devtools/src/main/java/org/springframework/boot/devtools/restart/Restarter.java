@@ -117,17 +117,17 @@ public class Restarter {
 	 * @param thread the source thread
 	 * @param args the application arguments
 	 * @param forceReferenceCleanup if soft/weak reference cleanup should be forced
-	 * @param initializer the restart initializer
+	 * @param initialUrls the initial URLs
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup,
-			RestartInitializer initializer) {
+			URL[] initialUrls) {
 		Assert.notNull(thread, "Thread must not be null");
 		Assert.notNull(args, "Args must not be null");
-		Assert.notNull(initializer, "Initializer must not be null");
+		Assert.notNull(initialUrls, "InitialUrls must not be null");
 		this.logger.debug("Creating new Restarter for thread " + thread);
 		this.forceReferenceCleanup = forceReferenceCleanup;
-		this.initialUrls = initializer.getInitialUrls(thread);
+		this.initialUrls = initialUrls;
 		this.mainClassName = MainMethod.getMainClassName(thread);
 		this.applicationClassLoader = thread.getContextClassLoader();
 		this.args = args;
@@ -287,7 +287,7 @@ public class Restarter {
 	 */
 	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
 		return RestartLauncher.relaunch(classLoader, this.mainClassName, this.args,
-				this.exceptionHandler);
+				this.exceptionHandler, "restartedMain");
 	}
 
 	/**
@@ -502,13 +502,17 @@ public class Restarter {
 	 */
 	public static void initialize(String[] args, boolean forceReferenceCleanup,
 			RestartInitializer initializer, boolean restartOnInitialize) {
-		Thread thread = Thread.currentThread();
-		SilentExitExceptionHandler.setup(thread);
-		relaunchWithApplicationLoader(thread, args);
+		Assert.notNull(initializer, "Initializer must not be null");
 		if (instance == null) {
+			Thread thread = Thread.currentThread();
+			SilentExitExceptionHandler.setup(thread);
+			URL[] initialUrls = initializer.getInitialUrls(thread);
+			if (initialUrls != null) {
+				relaunchWithApplicationLoader(thread, args);
+			}
 			synchronized (Restarter.class) {
 				instance = new Restarter(thread, args, forceReferenceCleanup,
-						initializer);
+						initialUrls);
 			}
 			instance.initialize(restartOnInitialize);
 		}
@@ -523,7 +527,8 @@ public class Restarter {
 		classLoader = AppClassLoader.apply(classLoader);
 		UncaughtExceptionHandler exceptionHandler = thread.getUncaughtExceptionHandler();
 		try {
-			RestartLauncher.relaunch(classLoader, mainClassName, args, exceptionHandler);
+			RestartLauncher.relaunch(classLoader, mainClassName, args, exceptionHandler,
+					"main");
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();

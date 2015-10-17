@@ -35,7 +35,6 @@ class RestartLauncher extends Thread {
 			UncaughtExceptionHandler exceptionHandler) {
 		this.mainClassName = mainClassName;
 		this.args = args;
-		setName("restartedMain");
 		setUncaughtExceptionHandler(exceptionHandler);
 		setDaemon(false);
 		setContextClassLoader(classLoader);
@@ -58,10 +57,11 @@ class RestartLauncher extends Thread {
 	}
 
 	public static Throwable relaunch(ClassLoader classLoader, String mainClassName,
-			String[] args, UncaughtExceptionHandler exceptionHandler)
+			String[] args, UncaughtExceptionHandler exceptionHandler, String name)
 					throws InterruptedException {
 		RestartLauncher launcher = new RestartLauncher(classLoader, mainClassName, args,
 				exceptionHandler);
+		launcher.setName(name);
 		launcher.start();
 		launcher.join();
 		return launcher.getError();
