@@ -81,6 +81,11 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		Assert.notNull(logger, "Logger must not be null");
 		this.updatedFiles = updatedFiles;
 		this.logger = logger;
+		System.err.println("Creating new RCL " + this);
+		if (parent instanceof AppClassLoader) {
+			System.err.println("Setting on " + parent);
+			((AppClassLoader) parent).setRestartLoader(this);
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created RestartClassLoader " + toString());
 		}
@@ -147,13 +152,21 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 				loadedClass = findClass(name);
 			}
 			catch (ClassNotFoundException ex) {
-				loadedClass = getParent().loadClass(name);
+				loadedClass = loadApplicationClass(name);
 			}
 		}
 		if (resolve) {
 			resolveClass(loadedClass);
 		}
 		return loadedClass;
+	}
+
+	private Class<?> loadApplicationClass(String name) throws ClassNotFoundException {
+		ClassLoader parent = getParent();
+		if (parent instanceof AppClassLoader) {
+			return ((AppClassLoader) parent).loadApplicationClass(name);
+		}
+		return parent.loadClass(name);
 	}
 
 	@Override

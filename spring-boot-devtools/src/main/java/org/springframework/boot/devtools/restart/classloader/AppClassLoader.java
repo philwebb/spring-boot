@@ -19,10 +19,74 @@ package org.springframework.boot.devtools.restart.classloader;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+/**
+ * @author Phillip Webb
+ * @since 1.3.0
+ */
 public class AppClassLoader extends URLClassLoader {
+
+	private ClassLoader restartClassLoader;
 
 	private AppClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
+	}
+
+	@Override
+	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		boolean b = false;
+		if (name.endsWith("MyDomainObject") || name.endsWith("ObjectInputStream")) {
+			System.err.println("Loading " + name + " from " + this);
+			b = true;
+		}
+		Class<?> loaded = x(name);
+		if (b) {
+			System.err.println("Loaded " + loaded + " from " + loaded.getClassLoader());
+		}
+		return loaded;
+	}
+
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		Class<?> class1 = super.findClass(name);
+		if (name.endsWith("MyDomainObject") || name.endsWith("ObjectInputStream")) {
+			System.err.println("Found " + name + " from " + this);
+		}
+		return class1;
+	}
+
+	/**
+	 * @param name
+	 * @return
+	 * @throws ClassNotFoundException
+	 */
+	private Class<?> x(String name) throws ClassNotFoundException {
+		if (name.equals(this.getClass().getName())) {
+			return this.getClass();
+		}
+		if (this.restartClassLoader != null) {
+			if (name.equals(this.restartClassLoader.getClass().getName())) {
+				return this.restartClassLoader.getClass();
+			}
+			return this.restartClassLoader.loadClass(name);
+		}
+		return super.loadClass(name);
+	}
+
+	@Override
+	protected Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
+		if (name.endsWith("MyDomainObject")) {
+			System.err.println("Loading " + name + " from " + this);
+		}
+		return super.loadClass(name, resolve);
+	}
+
+	public void setRestartLoader(ClassLoader restartClassLoader) {
+		this.restartClassLoader = restartClassLoader;
+	}
+
+	public Class<?> loadApplicationClass(String name) throws ClassNotFoundException {
+		return super.loadClass(name);
 	}
 
 	public static boolean canApplyTo(ClassLoader classLoader) {
