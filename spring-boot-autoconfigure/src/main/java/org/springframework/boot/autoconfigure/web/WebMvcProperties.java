@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -62,6 +64,8 @@ public class WebMvcProperties {
 	private final Async async = new Async();
 
 	private final View view = new View();
+
+	private final Content content = new Content();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -113,6 +117,10 @@ public class WebMvcProperties {
 		return this.view;
 	}
 
+	public Content getContent() {
+		return this.content;
+	}
+
 	public static class Async {
 
 		/**
@@ -160,6 +168,30 @@ public class WebMvcProperties {
 
 		public void setSuffix(String suffix) {
 			this.suffix = suffix;
+		}
+
+	}
+
+	public static class Content {
+
+		private final Negotiation negotiation = new Negotiation();
+
+		public Negotiation getNegotiation() {
+			return this.negotiation;
+		}
+
+		public static class Negotiation {
+
+			private Map<String, String> mediaType = new HashMap<String, String>();
+
+			public Map<String, String> getMediaType() {
+				return this.mediaType;
+			}
+
+			public void setMediaType(Map<String, String> mediaTypes) {
+				this.mediaType = mediaTypes;
+			}
+
 		}
 
 	}

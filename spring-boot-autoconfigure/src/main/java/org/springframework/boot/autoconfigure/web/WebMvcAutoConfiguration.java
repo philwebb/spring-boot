@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -54,6 +55,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -68,6 +70,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
@@ -361,6 +364,16 @@ public class WebMvcAutoConfiguration {
 			catch (NoSuchBeanDefinitionException ex) {
 				return super.getConfigurableWebBindingInitializer();
 			}
+		}
+
+		@Override
+		protected void configureContentNegotiation(
+				ContentNegotiationConfigurer configurer) {
+			for (Map.Entry<String, String> entry : this.mvcProperties.getContent()
+					.getNegotiation().getMediaType().entrySet()) {
+				configurer.mediaType(entry.getKey(), MediaType.valueOf(entry.getValue()));
+			}
+			super.configureContentNegotiation(configurer);
 		}
 
 	}
