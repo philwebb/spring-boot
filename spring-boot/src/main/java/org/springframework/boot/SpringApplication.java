@@ -52,6 +52,7 @@ import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.SpringProperties;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
@@ -289,6 +290,7 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
+		configureExceptionLogging();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.started();
 		try {
@@ -301,17 +303,8 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Throwable ex) {
-			try {
-				listeners.finished(context, ex);
-				this.log.error("Application startup failed", ex);
-			}
-			finally {
-				if (context != null) {
-					context.close();
-				}
-			}
-			ReflectionUtils.rethrowRuntimeException(ex);
-			return context;
+			handleRunFailure(context, listeners, ex);
+			throw new IllegalStateException("Run failure not handled");
 		}
 	}
 
@@ -370,6 +363,12 @@ public class SpringApplication {
 	private void configureHeadlessProperty() {
 		System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, System.getProperty(
 				SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, Boolean.toString(this.headless)));
+	}
+
+	private void configureExceptionLogging() {
+		SpringApplicationUncaughtExceptionHandler.attachIfCurrentThreadIsMain();
+		SpringProperties.setFlag(
+				AbstractApplicationContext.SUPPRESS_BEAN_EXCEPTION_LOGGING_PROPERTY_NAME);
 	}
 
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
@@ -814,6 +813,27 @@ public class SpringApplication {
 	 */
 	@Deprecated
 	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
+	}
+
+	private void handleRunFailure(ConfigurableApplicationContext context,
+			SpringApplicationRunListeners listeners, Throwable exception) {
+		try {
+			try {
+				listeners.finished(context, exception);
+			}
+			finally {
+				if (context != null) {
+					context.close();
+				}
+			}
+		}
+		catch (Exception ex) {
+			this.log.warn("Unable to close ApplicationContext", ex);
+		}
+		if (!SpringApplicationUncaughtExceptionHandler.isAttached()) {
+			this.log.error("Application startup failed", exception);
+		}
+		ReflectionUtils.rethrowRuntimeException(exception);
 	}
 
 	/**
