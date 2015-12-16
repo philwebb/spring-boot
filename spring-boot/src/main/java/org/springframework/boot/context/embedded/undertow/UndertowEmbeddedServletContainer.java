@@ -224,6 +224,7 @@ public class UndertowEmbeddedServletContainer implements EmbeddedServletContaine
 			try {
 				this.started = false;
 				this.manager.stop();
+				this.manager.undeploy();
 				this.undertow.stop();
 			}
 			catch (Exception ex) {

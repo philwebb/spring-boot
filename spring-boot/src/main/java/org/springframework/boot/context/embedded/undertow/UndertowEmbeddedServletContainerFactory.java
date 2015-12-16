@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded.undertow;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +38,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import io.undertow.Undertow;
@@ -55,6 +59,7 @@ import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
@@ -370,29 +375,35 @@ public class UndertowEmbeddedServletContainerFactory
 	}
 
 	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
-
-			@Override
-			public HttpHandler wrap(HttpHandler handler) {
-				return createAccessLogHandler(handler);
-			}
-
-		});
-	}
-
-	private AccessLogHandler createAccessLogHandler(HttpHandler handler) {
 		try {
-			createAccessLogDirectoryIfNecessary();
-			AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
-					createWorker(), this.accessLogDirectory, "access_log.");
-			String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
-					: "common";
-			return new AccessLogHandler(handler, accessLogReceiver, formatString,
-					Undertow.class.getClassLoader());
+			final XnioWorker worker = createWorker();
+			final AccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(
+					worker, this.accessLogDirectory, "access_log.");
+			EventListener listener = new AccessLogShutdownListener(worker,
+					accessLogReceiver);
+			deploymentInfo.addListener(new ListenerInfo(AccessLogShutdownListener.class,
+					new ImmediateInstanceFactory<EventListener>(listener)));
+			deploymentInfo.addInitialHandlerChainWrapper(new HandlerWrapper() {
+
+				@Override
+				public HttpHandler wrap(HttpHandler handler) {
+					return createAccessLogHandler(handler, accessLogReceiver);
+				}
+
+			});
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
 		}
+	}
+
+	private AccessLogHandler createAccessLogHandler(HttpHandler handler,
+			AccessLogReceiver accessLogReceiver) {
+		createAccessLogDirectoryIfNecessary();
+		String formatString = (this.accessLogPattern != null) ? this.accessLogPattern
+				: "common";
+		return new AccessLogHandler(handler, accessLogReceiver, formatString,
+				Undertow.class.getClassLoader());
 	}
 
 	private void createAccessLogDirectoryIfNecessary() {
@@ -614,6 +625,37 @@ public class UndertowEmbeddedServletContainerFactory
 				throws ServletException {
 			for (ServletContextInitializer initializer : this.initializers) {
 				initializer.onStartup(servletContext);
+			}
+		}
+
+	}
+
+	private static class AccessLogShutdownListener implements ServletContextListener {
+
+		private final XnioWorker worker;
+
+		private final AccessLogReceiver accessLogReceiver;
+
+		AccessLogShutdownListener(XnioWorker worker,
+				AccessLogReceiver accessLogReceiver) {
+			this.worker = worker;
+			this.accessLogReceiver = accessLogReceiver;
+		}
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+		}
+
+		@Override
+		public void contextDestroyed(ServletContextEvent sce) {
+			try {
+				if (this.accessLogReceiver instanceof Closeable) {
+					((Closeable) this.accessLogReceiver).close();
+				}
+				this.worker.shutdown();
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 
