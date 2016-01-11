@@ -167,6 +167,16 @@ public class JarFileArchive extends Archive {
 		}
 	}
 
+	@Override
+	public String toString() {
+		try {
+			return getUrl().toString();
+		}
+		catch (Exception ex) {
+			return "jar archive";
+		}
+	}
+
 	/**
 	 * {@link Archive.Entry} implementation backed by a {@link JarEntry}.
 	 */

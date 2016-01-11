@@ -41,16 +41,6 @@ public abstract class Archive {
 	 */
 	public abstract URL getUrl() throws MalformedURLException;
 
-	@Override
-	public String toString() {
-		try {
-			return getUrl().toString();
-		}
-		catch (Exception ex) {
-			return "archive";
-		}
-	}
-
 	/**
 	 * Returns the manifest of the archive.
 	 * @return the manifest

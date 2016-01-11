@@ -73,4 +73,8 @@ public class FilteredArchive extends Archive {
 		});
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + " (filtered)";
+	}
 }

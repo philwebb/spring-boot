@@ -149,6 +149,16 @@ public class ExplodedArchive extends Archive {
 				: new JarFileArchive(file));
 	}
 
+	@Override
+	public String toString() {
+		try {
+			return getUrl().toString();
+		}
+		catch (Exception ex) {
+			return "exploded archive";
+		}
+	}
+
 	private class FileEntry implements Entry {
 
 		private final AsciiBytes name;
