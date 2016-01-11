@@ -24,8 +24,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -90,7 +90,7 @@ public class JarFileArchive implements Archive {
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
 		List<Archive> nestedArchives = new ArrayList<Archive>();
-		for (Entry entry : getEntries()) {
+		for (Entry entry : this) {
 			if (filter.matches(entry)) {
 				nestedArchives.add(getNestedArchive(entry));
 			}
@@ -99,8 +99,8 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public Collection<Entry> getEntries() {
-		return Collections.unmodifiableCollection(this.entries);
+	public Iterator<Entry> iterator() {
+		return Collections.unmodifiableCollection(this.entries).iterator();
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {

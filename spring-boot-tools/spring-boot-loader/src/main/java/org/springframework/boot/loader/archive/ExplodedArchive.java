@@ -26,9 +26,9 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +130,7 @@ public class ExplodedArchive implements Archive {
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
 		List<Archive> nestedArchives = new ArrayList<Archive>();
-		for (Entry entry : getEntries()) {
+		for (Entry entry : this) {
 			if (filter.matches(entry)) {
 				nestedArchives.add(getNestedArchive(entry));
 			}
@@ -139,8 +139,8 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public Collection<Entry> getEntries() {
-		return Collections.unmodifiableCollection(this.entries.values());
+	public Iterator<Entry> iterator() {
+		return Collections.unmodifiableCollection(this.entries.values()).iterator();
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {

@@ -19,9 +19,7 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -52,14 +50,8 @@ public class FilteredArchive implements Archive {
 	}
 
 	@Override
-	public Collection<Entry> getEntries() {
-		List<Entry> nested = new ArrayList<Entry>();
-		for (Entry entry : this.parent.getEntries()) {
-			if (this.filter.matches(entry)) {
-				nested.add(entry);
-			}
-		}
-		return Collections.unmodifiableList(nested);
+	public Iterator<Entry> iterator() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -77,4 +69,5 @@ public class FilteredArchive implements Archive {
 	public String toString() {
 		return super.toString() + " (filtered)";
 	}
+
 }

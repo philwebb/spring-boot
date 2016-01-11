@@ -19,7 +19,6 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -32,7 +31,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * @author Phillip Webb
  * @see JarFileArchive
  */
-public interface Archive {
+public interface Archive extends Iterable<Archive.Entry> {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
@@ -47,12 +46,6 @@ public interface Archive {
 	 * @throws IOException if the manifest cannot be read
 	 */
 	Manifest getManifest() throws IOException;
-
-	/**
-	 * Returns all entries from the archive.
-	 * @return the archive entries
-	 */
-	Collection<Entry> getEntries();
 
 	/**
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
