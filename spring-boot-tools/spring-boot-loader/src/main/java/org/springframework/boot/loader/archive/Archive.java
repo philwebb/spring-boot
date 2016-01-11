@@ -32,27 +32,27 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * @author Phillip Webb
  * @see JarFileArchive
  */
-public abstract class Archive {
+public interface Archive {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
 	 * @return the archive URL
 	 * @throws MalformedURLException if the URL is malformed
 	 */
-	public abstract URL getUrl() throws MalformedURLException;
+	URL getUrl() throws MalformedURLException;
 
 	/**
 	 * Returns the manifest of the archive.
 	 * @return the manifest
 	 * @throws IOException if the manifest cannot be read
 	 */
-	public abstract Manifest getManifest() throws IOException;
+	Manifest getManifest() throws IOException;
 
 	/**
 	 * Returns all entries from the archive.
 	 * @return the archive entries
 	 */
-	public abstract Collection<Entry> getEntries();
+	Collection<Entry> getEntries();
 
 	/**
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
@@ -60,13 +60,12 @@ public abstract class Archive {
 	 * @return nested archives
 	 * @throws IOException if nested archives cannot be read
 	 */
-	public abstract List<Archive> getNestedArchives(EntryFilter filter)
-			throws IOException;
+	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
 
 	/**
 	 * Represents a single entry in the archive.
 	 */
-	public interface Entry {
+	interface Entry {
 
 		/**
 		 * Returns {@code true} if the entry represents a directory.
@@ -85,7 +84,7 @@ public abstract class Archive {
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
-	public interface EntryFilter {
+	interface EntryFilter {
 
 		/**
 		 * Apply the jar entry filter.

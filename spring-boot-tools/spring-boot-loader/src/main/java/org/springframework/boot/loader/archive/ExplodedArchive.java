@@ -42,7 +42,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  *
  * @author Phillip Webb
  */
-public class ExplodedArchive extends Archive {
+public class ExplodedArchive implements Archive {
 
 	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(
 			Arrays.asList(".", ".."));

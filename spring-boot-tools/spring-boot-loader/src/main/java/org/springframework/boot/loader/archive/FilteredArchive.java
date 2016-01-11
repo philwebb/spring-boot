@@ -30,7 +30,7 @@ import java.util.jar.Manifest;
  *
  * @author Dave Syer
  */
-public class FilteredArchive extends Archive {
+public class FilteredArchive implements Archive {
 
 	private final Archive parent;
 

@@ -42,7 +42,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class JarFileArchive extends Archive {
+public class JarFileArchive implements Archive {
 
 	private static final AsciiBytes UNPACK_MARKER = new AsciiBytes("UNPACK:");
 
