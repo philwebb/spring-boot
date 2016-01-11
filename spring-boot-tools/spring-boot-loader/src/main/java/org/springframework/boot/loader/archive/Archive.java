@@ -41,25 +41,6 @@ public abstract class Archive {
 	 */
 	public abstract URL getUrl() throws MalformedURLException;
 
-	/**
-	 * Obtain the main class that should be used to launch the application. By default
-	 * this method uses a {@code Start-Class} manifest entry.
-	 * @return the main class
-	 * @throws Exception if the main class cannot be obtained
-	 */
-	public String getMainClass() throws Exception {
-		Manifest manifest = getManifest();
-		String mainClass = null;
-		if (manifest != null) {
-			mainClass = manifest.getMainAttributes().getValue("Start-Class");
-		}
-		if (mainClass == null) {
-			throw new IllegalStateException(
-					"No 'Start-Class' manifest entry specified in " + this);
-		}
-		return mainClass;
-	}
-
 	@Override
 	public String toString() {
 		try {

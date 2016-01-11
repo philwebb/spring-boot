@@ -49,11 +49,6 @@ public class FilteredArchive extends Archive {
 	}
 
 	@Override
-	public String getMainClass() throws Exception {
-		return this.parent.getMainClass();
-	}
-
-	@Override
 	public Manifest getManifest() throws IOException {
 		return this.parent.getManifest();
 	}
