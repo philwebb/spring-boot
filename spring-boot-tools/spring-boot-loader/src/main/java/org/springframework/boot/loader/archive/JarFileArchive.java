@@ -50,8 +50,6 @@ public class JarFileArchive implements Archive {
 
 	private final JarFile jarFile;
 
-	private final List<Entry> entries;
-
 	private URL url;
 
 	private File tempUnpackFolder;
@@ -67,11 +65,6 @@ public class JarFileArchive implements Archive {
 
 	public JarFileArchive(JarFile jarFile) {
 		this.jarFile = jarFile;
-		ArrayList<Entry> jarFileEntries = new ArrayList<Entry>();
-		for (JarEntryData data : jarFile) {
-			jarFileEntries.add(new JarFileEntry(data));
-		}
-		this.entries = Collections.unmodifiableList(jarFileEntries);
 	}
 
 	@Override
@@ -100,7 +93,7 @@ public class JarFileArchive implements Archive {
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return Collections.unmodifiableCollection(this.entries).iterator();
+		return new JarFileEntryIterator(this.jarFile.iterator());
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
@@ -175,6 +168,34 @@ public class JarFileArchive implements Archive {
 		catch (Exception ex) {
 			return "jar archive";
 		}
+	}
+
+	/**
+	 * {@link Archive.Entry} iterator implementation backed by {@link JarEntryData}.
+	 */
+	private static class JarFileEntryIterator implements Iterator<Entry> {
+
+		private final Iterator<JarEntryData> iterator;
+
+		JarFileEntryIterator(Iterator<JarEntryData> iterator) {
+			this.iterator = iterator;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return this.iterator.hasNext();
+		}
+
+		@Override
+		public Entry next() {
+			return new JarFileEntry(this.iterator.next());
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("remove");
+		}
+
 	}
 
 	/**
