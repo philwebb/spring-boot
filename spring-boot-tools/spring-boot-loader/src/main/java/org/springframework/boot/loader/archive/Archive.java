@@ -74,15 +74,6 @@ public abstract class Archive {
 			throws IOException;
 
 	/**
-	 * Returns a filtered version of the archive.
-	 * @param filter the filter to apply
-	 * @return a filter archive
-	 * @throws IOException if the archive cannot be read
-	 */
-	public abstract Archive getFilteredArchive(EntryRenameFilter filter)
-			throws IOException;
-
-	/**
 	 * Represents a single entry in the archive.
 	 */
 	public interface Entry {
@@ -112,23 +103,6 @@ public abstract class Archive {
 		 * @return {@code true} if the filter matches
 		 */
 		boolean matches(Entry entry);
-
-	}
-
-	/**
-	 * Strategy interface to filter or rename {@link Entry Entries}.
-	 */
-	public interface EntryRenameFilter {
-
-		/**
-		 * Apply the jar entry filter.
-		 * @param entryName the current entry name. This may be different that the
-		 * original entry name if a previous filter has been applied
-		 * @param entry the entry to filter
-		 * @return the new name of the entry or {@code null} if the entry should not be
-		 * included.
-		 */
-		AsciiBytes apply(AsciiBytes entryName, Entry entry);
 
 	}
 

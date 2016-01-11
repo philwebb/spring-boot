@@ -82,13 +82,6 @@ public class ExplodedArchive extends Archive {
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
-	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
-		this.root = root;
-		// The entries are pre-filtered
-		this.filtered = true;
-		this.entries = Collections.unmodifiableMap(entries);
-	}
-
 	private void buildEntries(File file, boolean recursive) {
 		if (!file.equals(this.root)) {
 			String name = file.toURI().getPath()
@@ -154,19 +147,6 @@ public class ExplodedArchive extends Archive {
 		File file = ((FileEntry) entry).getFile();
 		return (file.isDirectory() ? new ExplodedArchive(file)
 				: new JarFileArchive(file));
-	}
-
-	@Override
-	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
-		Map<AsciiBytes, Entry> filteredEntries = new LinkedHashMap<AsciiBytes, Archive.Entry>();
-		for (Map.Entry<AsciiBytes, Entry> entry : this.entries.entrySet()) {
-			AsciiBytes filteredName = filter.apply(entry.getKey(), entry.getValue());
-			if (filteredName != null) {
-				filteredEntries.put(filteredName, new FileEntry(filteredName,
-						((FileEntry) entry.getValue()).getFile()));
-			}
-		}
-		return new ExplodedArchive(this.root, filteredEntries);
 	}
 
 	private class FileEntry implements Entry {

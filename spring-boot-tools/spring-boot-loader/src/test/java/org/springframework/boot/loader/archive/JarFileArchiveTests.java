@@ -28,7 +28,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
@@ -124,22 +123,6 @@ public class JarFileArchiveTests {
 								getEntriesMap(this.archive).get("another-nested.jar"))
 						.getUrl().toURI());
 		assertThat(nested.getParent(), is(equalTo(anotherNested.getParent())));
-	}
-
-	@Test
-	public void getFilteredArchive() throws Exception {
-		Archive filteredArchive = this.archive
-				.getFilteredArchive(new Archive.EntryRenameFilter() {
-					@Override
-					public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-						if (entryName.toString().equals("1.dat")) {
-							return entryName;
-						}
-						return null;
-					}
-				});
-		Map<String, Entry> entries = getEntriesMap(filteredArchive);
-		assertThat(entries.size(), equalTo(1));
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {

@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
  *
@@ -71,17 +69,6 @@ public class FilteredArchive extends Archive {
 			public boolean matches(Entry entry) {
 				return FilteredArchive.this.filter.matches(entry)
 						&& filter.matches(entry);
-			}
-		});
-	}
-
-	@Override
-	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		return this.parent.getFilteredArchive(new EntryRenameFilter() {
-			@Override
-			public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
-				return FilteredArchive.this.filter.matches(entry)
-						? filter.apply(entryName, entry) : null;
 			}
 		});
 	}

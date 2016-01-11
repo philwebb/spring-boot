@@ -33,7 +33,6 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.jar.JarEntryData;
-import org.springframework.boot.loader.jar.JarEntryFilter;
 import org.springframework.boot.loader.jar.JarFile;
 import org.springframework.boot.loader.util.AsciiBytes;
 
@@ -166,17 +165,6 @@ public class JarFileArchive extends Archive {
 		finally {
 			inputStream.close();
 		}
-	}
-
-	@Override
-	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		JarFile filteredJar = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
-			@Override
-			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
-				return filter.apply(name, new JarFileEntry(entryData));
-			}
-		});
-		return new JarFileArchive(filteredJar);
 	}
 
 	/**
