@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,6 +29,7 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Manifest;
@@ -38,7 +40,6 @@ import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
-import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
@@ -655,4 +656,46 @@ public class PropertiesLauncher extends Launcher {
 
 	}
 
+	/**
+	 * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.
+	 */
+	private static class FilteredArchive implements Archive {
+
+		private final Archive parent;
+
+		private final EntryFilter filter;
+
+		FilteredArchive(Archive parent, EntryFilter filter) {
+			this.parent = parent;
+			this.filter = filter;
+		}
+
+		@Override
+		public URL getUrl() throws MalformedURLException {
+			return this.parent.getUrl();
+		}
+
+		@Override
+		public Manifest getManifest() throws IOException {
+			return this.parent.getManifest();
+		}
+
+		@Override
+		public Iterator<Entry> iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<Archive> getNestedArchives(final EntryFilter filter)
+				throws IOException {
+			return this.parent.getNestedArchives(new EntryFilter() {
+				@Override
+				public boolean matches(Entry entry) {
+					return FilteredArchive.this.filter.matches(entry)
+							&& filter.matches(entry);
+				}
+			});
+		}
+
+	}
 }
