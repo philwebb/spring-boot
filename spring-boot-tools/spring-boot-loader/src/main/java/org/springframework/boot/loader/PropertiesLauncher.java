@@ -27,7 +27,6 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -122,8 +121,6 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
 
-	private static final List<String> DEFAULT_PATHS = Arrays.asList();
-
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
 	private static final URL[] EMPTY_URLS = {};
@@ -132,7 +129,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private final JavaAgentDetector javaAgentDetector;
 
-	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
+	private List<String> paths = new ArrayList<String>();
 
 	private final Properties properties = new Properties();
 
@@ -168,7 +165,6 @@ public class PropertiesLauncher extends Launcher {
 		config = SystemPropertyUtils.resolvePlaceholders(
 				SystemPropertyUtils.getProperty(CONFIG_LOCATION, config));
 		InputStream resource = getResource(config);
-
 		if (resource != null) {
 			log("Found: " + config);
 			try {
@@ -353,7 +349,6 @@ public class PropertiesLauncher extends Launcher {
 	@SuppressWarnings("unchecked")
 	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
 			String loaderClassName) throws Exception {
-
 		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class
 				.forName(loaderClassName, true, parent);
 
@@ -363,7 +358,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try with URLs
 		}
-
 		try {
 			return loaderClass.getConstructor(URL[].class, ClassLoader.class)
 					.newInstance(new URL[0], parent);
@@ -371,7 +365,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (NoSuchMethodException ex) {
 			// Ignore and try without any arguments
 		}
-
 		return loaderClass.newInstance();
 	}
 
@@ -384,21 +377,18 @@ public class PropertiesLauncher extends Launcher {
 			manifestKey = propertyKey.replace(".", "-");
 			manifestKey = toCamelCase(manifestKey);
 		}
-
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
 			log("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
-
 		if (this.properties.containsKey(propertyKey)) {
 			String value = SystemPropertyUtils
 					.resolvePlaceholders(this.properties.getProperty(propertyKey));
 			log("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
-
 		try {
 			// Prefer home dir for MANIFEST if there is one
 			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
@@ -412,7 +402,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (IllegalStateException ex) {
 			// Ignore
 		}
-
 		// Otherwise try the parent archive
 		Manifest manifest = createArchive().getManifest();
 		if (manifest != null) {
@@ -478,7 +467,7 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private Archive getNestedArchive(final String root) throws Exception {
+	private Archive getNestedArchive(String root) throws Exception {
 		if (root.startsWith("/")
 				|| this.parent.getUrl().equals(this.home.toURI().toURL())) {
 			// If home dir is same as parent archive, no need to add it twice.
@@ -629,22 +618,6 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	/**
-	 * Convenience class for finding nested archives (archive entries that can be
-	 * classpath entries).
-	 */
-	private static final class ArchiveEntryFilter implements EntryFilter {
-
-		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
-
-		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
-
-		@Override
-		public boolean matches(Entry entry) {
-			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
-		}
-	}
-
-	/**
 	 * Convenience class for finding nested archives that have a prefix in their file path
 	 * (e.g. "lib/").
 	 */
@@ -662,6 +635,24 @@ public class PropertiesLauncher extends Launcher {
 		public boolean matches(Entry entry) {
 			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
 		}
+
+	}
+
+	/**
+	 * Convenience class for finding nested archives (archive entries that can be
+	 * classpath entries).
+	 */
+	private static final class ArchiveEntryFilter implements EntryFilter {
+
+		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
+
+		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
+
+		@Override
+		public boolean matches(Entry entry) {
+			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
+		}
+
 	}
 
 }
