@@ -46,7 +46,7 @@ public class JarEntry extends java.util.jar.JarEntry {
 	 * Return the source {@link JarEntryData} that was used to create this entry.
 	 * @return the source of the entry
 	 */
-	public JarEntryData getSource() {
+	JarEntryData getSource() {
 		return this.source;
 	}
 
