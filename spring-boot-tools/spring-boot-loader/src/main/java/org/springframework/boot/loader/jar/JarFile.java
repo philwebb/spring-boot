@@ -47,7 +47,8 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  *
  * @author Phillip Webb
  */
-public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry> {
+public class JarFile extends java.util.jar.JarFile
+		implements Iterable<java.util.jar.JarEntry> {
 
 	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
@@ -199,9 +200,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	}
 
 	@Override
-	public Iterator<JarEntry> iterator() {
+	public Iterator<java.util.jar.JarEntry> iterator() {
 		final Iterator<JarEntryData> iterator = this.entries.iterator();
-		return new Iterator<JarEntry>() {
+		return new Iterator<java.util.jar.JarEntry>() {
 
 			@Override
 			public JarEntry next() {

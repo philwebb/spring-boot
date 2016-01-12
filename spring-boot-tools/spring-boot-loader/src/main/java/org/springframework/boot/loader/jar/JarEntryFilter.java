@@ -21,7 +21,7 @@ package org.springframework.boot.loader.jar;
  *
  * @author Phillip Webb
  */
-public interface JarEntryFilter {
+interface JarEntryFilter {
 
 	/**
 	 * Apply the jar entry filter.

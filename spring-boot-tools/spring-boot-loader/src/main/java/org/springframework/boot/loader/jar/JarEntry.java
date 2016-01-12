@@ -29,7 +29,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  */
-public class JarEntry extends java.util.jar.JarEntry {
+class JarEntry extends java.util.jar.JarEntry {
 
 	private final JarEntryData source;
 
@@ -55,7 +55,7 @@ public class JarEntry extends java.util.jar.JarEntry {
 	 * @return the URL for the entry
 	 * @throws MalformedURLException if the URL is not valid
 	 */
-	public URL getUrl() throws MalformedURLException {
+	URL getUrl() throws MalformedURLException {
 		return new URL(this.source.getSource().getUrl(), getName());
 	}
 

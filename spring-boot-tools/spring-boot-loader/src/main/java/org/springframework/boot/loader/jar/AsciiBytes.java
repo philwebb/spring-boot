@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
  *
  * @author Phillip Webb
  */
-public final class AsciiBytes {
+final class AsciiBytes {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
