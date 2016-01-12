@@ -45,13 +45,13 @@ class JarFileEntries implements Iterable<JarEntryData> {
 
 	private SoftReference<Map<AsciiBytes, JarEntryData>> entriesByName;
 
-	public JarFileEntries(JarFile source, CentralDirectoryEndRecord endRecord)
+	JarFileEntries(JarFile source, CentralDirectoryEndRecord endRecord)
 			throws IOException {
 		this.source = source;
 		this.entries = loadJarEntries(endRecord);
 	}
 
-	public JarFileEntries(JarFile source, JarFileEntries entries, JarEntryFilter filter) {
+	JarFileEntries(JarFile source, JarFileEntries entries, JarEntryFilter filter) {
 		this.source = source;
 		this.entries = filterEntries(entries.entries, filter);
 	}
