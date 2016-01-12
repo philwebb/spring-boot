@@ -211,7 +211,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 								JarFile jarFile = (JarFile) url.getContent();
 								// Check the jar entry data before needlessly creating the
 								// manifest
-								if (jarFile.getJarEntryData(path) != null
+								if (jarFile.containsEntry(path)
 										&& jarFile.getManifest() != null) {
 									definePackage(packageName, jarFile.getManifest(),
 											url);

@@ -214,14 +214,18 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		return (jarEntryData == null ? null : jarEntryData.asJarEntry());
 	}
 
-	public JarEntryData getJarEntryData(String name) {
+	public boolean containsEntry(String name) {
+		return getJarEntryData(name) != null;
+	}
+
+	private JarEntryData getJarEntryData(String name) {
 		if (name == null) {
 			return null;
 		}
 		return getJarEntryData(new AsciiBytes(name));
 	}
 
-	public JarEntryData getJarEntryData(AsciiBytes name) {
+	JarEntryData getJarEntryData(AsciiBytes name) {
 		return this.entries.getJarEntryData(name);
 	}
 
