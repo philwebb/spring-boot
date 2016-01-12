@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
@@ -119,6 +120,20 @@ class JarFileEntries implements Iterable<JarEntryData> {
 			entryData = entriesByName.get(name.append(SLASH));
 		}
 		return entryData;
+	}
+
+	public InputStream getInputStream(AsciiBytes name) throws IOException {
+		JarEntryData entryData = getJarEntryData(name);
+		return (entryData == null ? null : getInputStream(entryData));
+	}
+
+	public InputStream getInputStream(JarEntryData entry) throws IOException {
+		InputStream inputStream = entry.getData().getInputStream(ResourceAccess.PER_READ);
+		if (entry.getMethod() == ZipEntry.DEFLATED) {
+			inputStream = new ZipInflaterInputStream(inputStream, entry.getSize());
+		}
+		return inputStream;
+
 	}
 
 }

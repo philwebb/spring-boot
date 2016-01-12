@@ -169,7 +169,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
 		if (manifest == null) {
-			InputStream inputStream = this.manifestEntry.getInputStream();
+			InputStream inputStream = this.entries.getInputStream(this.manifestEntry);
 			try {
 				manifest = new Manifest(inputStream);
 			}
@@ -256,13 +256,12 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	InputStream getInputStream(AsciiBytes name) throws IOException {
-		JarEntryData entryData = getJarEntryData(name);
-		return (entryData == null ? null : entryData.getInputStream());
+		return this.entries.getInputStream(name);
 	}
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		return getContainedEntry(ze).getSource().getInputStream();
+		return this.entries.getInputStream(getContainedEntry(ze).getSource());
 	}
 
 	/**

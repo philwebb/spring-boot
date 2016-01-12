@@ -24,7 +24,6 @@ import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
@@ -84,14 +83,6 @@ public final class JarEntryData {
 
 	JarFile getSource() {
 		return this.source;
-	}
-
-	InputStream getInputStream() throws IOException {
-		InputStream inputStream = getData().getInputStream(ResourceAccess.PER_READ);
-		if (getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new ZipInflaterInputStream(inputStream, getSize());
-		}
-		return inputStream;
 	}
 
 	/**
