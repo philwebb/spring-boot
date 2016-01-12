@@ -24,12 +24,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -64,17 +60,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
-	private static final AsciiBytes SLASH = new AsciiBytes("/");
-
 	private final RandomAccessDataFile rootFile;
 
 	private final String pathFromRoot;
 
 	private final RandomAccessData data;
 
-	private final List<JarEntryData> entries;
-
-	private SoftReference<Map<AsciiBytes, JarEntryData>> entriesByName;
+	private JarFileEntries entries;
 
 	private boolean signed;
 
@@ -117,17 +109,24 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		this.data = getArchiveData(endRecord, data);
-		this.entries = loadJarEntries(endRecord);
+		this.entries = new JarFileEntries(this, endRecord) {
+
+			@Override
+			protected void processEntry(JarEntryData entry) {
+				JarFile.this.processEntry(entry);
+			};
+
+		};
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter filter)
+			RandomAccessData data, JarFileEntries entries, JarEntryFilter filter)
 					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		this.data = data;
-		this.entries = filterEntries(entries, filter);
+		this.entries = new JarFileEntries(this, entries, filter);
 	}
 
 	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
@@ -137,41 +136,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 			return data;
 		}
 		return data.getSubsection(offset, data.getSize() - offset);
-	}
-
-	private List<JarEntryData> loadJarEntries(CentralDirectoryEndRecord endRecord)
-			throws IOException {
-		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
-		int numberOfRecords = endRecord.getNumberOfRecords();
-		List<JarEntryData> entries = new ArrayList<JarEntryData>(numberOfRecords);
-		InputStream inputStream = centralDirectory.getInputStream(ResourceAccess.ONCE);
-		try {
-			JarEntryData entry = JarEntryData.fromInputStream(this, inputStream);
-			while (entry != null) {
-				entries.add(entry);
-				processEntry(entry);
-				entry = JarEntryData.fromInputStream(this, inputStream);
-			}
-		}
-		finally {
-			inputStream.close();
-		}
-		return entries;
-	}
-
-	private List<JarEntryData> filterEntries(List<JarEntryData> entries,
-			JarEntryFilter filter) {
-		List<JarEntryData> filteredEntries = new ArrayList<JarEntryData>(entries.size());
-		for (JarEntryData entry : entries) {
-			AsciiBytes name = entry.getName();
-			name = (filter == null || name == null ? name : filter.apply(name, entry));
-			if (name != null) {
-				JarEntryData filteredCopy = entry.createFilteredCopy(this, name);
-				filteredEntries.add(filteredCopy);
-				processEntry(filteredCopy);
-			}
-		}
-		return filteredEntries;
 	}
 
 	private void processEntry(JarEntryData entry) {
@@ -258,25 +222,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	public JarEntryData getJarEntryData(AsciiBytes name) {
-		if (name == null) {
-			return null;
-		}
-		Map<AsciiBytes, JarEntryData> entriesByName = (this.entriesByName == null ? null
-				: this.entriesByName.get());
-		if (entriesByName == null) {
-			entriesByName = new HashMap<AsciiBytes, JarEntryData>();
-			for (JarEntryData entry : this.entries) {
-				entriesByName.put(entry.getName(), entry);
-			}
-			this.entriesByName = new SoftReference<Map<AsciiBytes, JarEntryData>>(
-					entriesByName);
-		}
-
-		JarEntryData entryData = entriesByName.get(name);
-		if (entryData == null && !name.endsWith(SLASH)) {
-			entryData = entriesByName.get(name.append(SLASH));
-		}
-		return entryData;
+		return this.entries.getJarEntryData(name);
 	}
 
 	boolean isSigned() {
