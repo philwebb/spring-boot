@@ -255,6 +255,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 	}
 
+	InputStream getInputStream(AsciiBytes name) throws IOException {
+		JarEntryData entryData = getJarEntryData(name);
+		return (entryData == null ? null : entryData.getInputStream());
+	}
+
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
 		return getContainedEntry(ze).getSource().getInputStream();

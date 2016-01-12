@@ -24,7 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.util.AsciiBytes;
 
@@ -100,14 +99,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public void connect() throws IOException {
-		if (!this.jarEntryName.isEmpty()) {
-			this.jarEntryData = this.jarFile
-					.getJarEntryData(this.jarEntryName.asAsciiBytes());
-			if (this.jarEntryData == null) {
-				throwFileNotFound(this.jarEntryName, this.jarFile);
-			}
-		}
-		this.connected = true;
+		connect(false);
 	}
 
 	private void throwFileNotFound(Object entry, JarFile jarFile)
@@ -120,18 +112,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public Manifest getManifest() throws IOException {
-		try {
-			return super.getManifest();
-		}
-		finally {
-			this.connected = false;
-		}
-	}
-
-	@Override
 	public JarFile getJarFile() throws IOException {
-		connect();
+		connect(false);
 		return this.jarFile;
 	}
 
@@ -161,7 +143,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public JarEntry getJarEntry() throws IOException {
-		connect();
+		connect(true);
 		return (this.jarEntryData == null ? null : this.jarEntryData.asJarEntry());
 	}
 
@@ -172,17 +154,22 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		connect();
 		if (this.jarEntryName.isEmpty()) {
 			throw new IOException("no entry name specified");
 		}
-		return this.jarEntryData.getInputStream();
+		connect(false);
+		InputStream inputStream = this.jarFile
+				.getInputStream(this.jarEntryName.asAsciiBytes());
+		if (inputStream == null) {
+			throwFileNotFound(this.jarEntryName, this.jarFile);
+		}
+		return inputStream;
 	}
 
 	@Override
 	public int getContentLength() {
 		try {
-			connect();
+			connect(true);
 			if (this.jarEntryData != null) {
 				return this.jarEntryData.getSize();
 			}
@@ -195,13 +182,26 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public Object getContent() throws IOException {
-		connect();
+		connect(true);
 		return (this.jarEntryData == null ? this.jarFile : super.getContent());
 	}
 
 	@Override
 	public String getContentType() {
 		return this.jarEntryName.getContentType();
+	}
+
+	private void connect(boolean fetchEntry) throws IOException {
+		if (this.jarEntryData == null && fetchEntry) {
+			if (!this.jarEntryName.isEmpty()) {
+				this.jarEntryData = this.jarFile
+						.getJarEntryData(this.jarEntryName.asAsciiBytes());
+				if (this.jarEntryData == null) {
+					throwFileNotFound(this.jarEntryName, this.jarFile);
+				}
+			}
+		}
+		this.connected = true;
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
