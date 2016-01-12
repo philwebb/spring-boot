@@ -44,7 +44,7 @@ final class AsciiBytes {
 	 * Create a new {@link AsciiBytes} from the specified String.
 	 * @param string the source string
 	 */
-	public AsciiBytes(String string) {
+	AsciiBytes(String string) {
 		this(string.getBytes(UTF_8));
 		this.string = string;
 	}
@@ -54,7 +54,7 @@ final class AsciiBytes {
 	 * are not expected to change.
 	 * @param bytes the source bytes
 	 */
-	public AsciiBytes(byte[] bytes) {
+	AsciiBytes(byte[] bytes) {
 		this(bytes, 0, bytes.length);
 	}
 
@@ -65,7 +65,7 @@ final class AsciiBytes {
 	 * @param offset the offset
 	 * @param length the length
 	 */
-	public AsciiBytes(byte[] bytes, int offset, int length) {
+	AsciiBytes(byte[] bytes, int offset, int length) {
 		if (offset < 0 || length < 0 || (offset + length) > bytes.length) {
 			throw new IndexOutOfBoundsException();
 		}

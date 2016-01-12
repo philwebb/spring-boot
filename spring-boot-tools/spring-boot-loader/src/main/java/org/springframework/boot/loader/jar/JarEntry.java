@@ -37,7 +37,7 @@ class JarEntry extends java.util.jar.JarEntry {
 
 	private CodeSigner[] codeSigners;
 
-	public JarEntry(JarEntryData source) {
+	JarEntry(JarEntryData source) {
 		super(source.getName().toString());
 		this.source = source;
 	}
