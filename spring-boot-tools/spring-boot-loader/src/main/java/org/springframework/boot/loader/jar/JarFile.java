@@ -48,7 +48,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  *
  * @author Phillip Webb
  */
-public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryData> {
+public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry> {
 
 	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
@@ -169,7 +169,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 		Manifest manifest = (this.manifest == null ? null : this.manifest.get());
 		if (manifest == null) {
-			InputStream inputStream = this.entries.getInputStream(this.manifestEntry);
+			InputStream inputStream = this.entries.getInputStream(this.manifestEntry,
+					ResourceAccess.ONCE);
 			try {
 				manifest = new Manifest(inputStream);
 			}
@@ -183,7 +184,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public Enumeration<java.util.jar.JarEntry> entries() {
-		final Iterator<JarEntryData> iterator = iterator();
+		final Iterator<JarEntryData> iterator = this.entries.iterator();
 		return new Enumeration<java.util.jar.JarEntry>() {
 
 			@Override
@@ -199,8 +200,27 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	@Override
-	public Iterator<JarEntryData> iterator() {
-		return this.entries.iterator();
+	public Iterator<JarEntry> iterator() {
+		final Iterator<JarEntryData> iterator = this.entries.iterator();
+		return new Iterator<JarEntry>() {
+
+			@Override
+			public JarEntry next() {
+				return iterator.next().asJarEntry();
+			}
+
+			@Override
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException("remove");
+			}
+
+		};
+
 	}
 
 	@Override
@@ -265,7 +285,12 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
-		return this.entries.getInputStream(getContainedEntry(ze).getSource());
+		return getInputStream(ze, ResourceAccess.PER_READ);
+	}
+
+	public InputStream getInputStream(ZipEntry ze, ResourceAccess access)
+			throws IOException {
+		return this.entries.getInputStream(getContainedEntry(ze).getSource(), access);
 	}
 
 	/**

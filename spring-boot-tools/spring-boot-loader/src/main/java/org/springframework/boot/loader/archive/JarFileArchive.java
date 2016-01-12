@@ -28,13 +28,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.jar.JarEntryData;
+import org.springframework.boot.loader.jar.JarEntry;
 import org.springframework.boot.loader.jar.JarFile;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by a {@link JarFile}.
@@ -44,7 +42,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 public class JarFileArchive implements Archive {
 
-	private static final AsciiBytes UNPACK_MARKER = new AsciiBytes("UNPACK:");
+	private static final String UNPACK_MARKER = "UNPACK:";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
@@ -93,26 +91,26 @@ public class JarFileArchive implements Archive {
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return new JarFileEntryIterator(this.jarFile.iterator());
+		return new EntryIterator(this.jarFile.iterator());
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
-		JarEntryData data = ((JarFileEntry) entry).getJarEntryData();
-		if (data.getComment().startsWith(UNPACK_MARKER)) {
-			return getUnpackedNestedArchive(data);
+		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
+		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
+			return getUnpackedNestedArchive(jarEntry);
 		}
-		JarFile jarFile = this.jarFile.getNestedJarFile(data);
+		JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
 		return new JarFileArchive(jarFile);
 	}
 
-	private Archive getUnpackedNestedArchive(JarEntryData data) throws IOException {
-		String name = data.getName().toString();
+	private Archive getUnpackedNestedArchive(JarEntry jarEntry) throws IOException {
+		String name = jarEntry.getName();
 		if (name.lastIndexOf("/") != -1) {
 			name = name.substring(name.lastIndexOf("/") + 1);
 		}
 		File file = new File(getTempUnpackFolder(), name);
-		if (!file.exists() || file.length() != data.getSize()) {
-			unpack(data, file);
+		if (!file.exists() || file.length() != jarEntry.getSize()) {
+			unpack(jarEntry, file);
 		}
 		return new JarFileArchive(file, file.toURI().toURL());
 	}
@@ -139,8 +137,8 @@ public class JarFileArchive implements Archive {
 				"Failed to create unpack folder in directory '" + parent + "'");
 	}
 
-	private void unpack(JarEntryData data, File file) throws IOException {
-		InputStream inputStream = data.getData().getInputStream(ResourceAccess.ONCE);
+	private void unpack(JarEntry entry, File file) throws IOException {
+		InputStream inputStream = this.jarFile.getInputStream(entry, ResourceAccess.ONCE);
 		try {
 			OutputStream outputStream = new FileOutputStream(file);
 			try {
@@ -171,13 +169,13 @@ public class JarFileArchive implements Archive {
 	}
 
 	/**
-	 * {@link Archive.Entry} iterator implementation backed by {@link JarEntryData}.
+	 * {@link Archive.Entry} iterator implementation backed by {@link JarEntry}.
 	 */
-	private static class JarFileEntryIterator implements Iterator<Entry> {
+	private static class EntryIterator implements Iterator<Entry> {
 
-		private final Iterator<JarEntryData> iterator;
+		private final Iterator<JarEntry> iterator;
 
-		JarFileEntryIterator(Iterator<JarEntryData> iterator) {
+		EntryIterator(Iterator<JarEntry> iterator) {
 			this.iterator = iterator;
 		}
 
@@ -203,24 +201,24 @@ public class JarFileArchive implements Archive {
 	 */
 	private static class JarFileEntry implements Entry {
 
-		private final JarEntryData entryData;
+		private final JarEntry jarEntry;
 
-		JarFileEntry(JarEntryData entryData) {
-			this.entryData = entryData;
+		JarFileEntry(JarEntry jarEntry) {
+			this.jarEntry = jarEntry;
 		}
 
-		public JarEntryData getJarEntryData() {
-			return this.entryData;
+		public JarEntry getJarEntry() {
+			return this.jarEntry;
 		}
 
 		@Override
 		public boolean isDirectory() {
-			return this.entryData.isDirectory();
+			return this.jarEntry.isDirectory();
 		}
 
 		@Override
 		public String getName() {
-			return this.entryData.getName().toString();
+			return this.jarEntry.getName().toString();
 		}
 
 	}

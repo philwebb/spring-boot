@@ -33,7 +33,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public final class JarEntryData {
+final class JarEntryData {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 

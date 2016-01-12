@@ -124,11 +124,13 @@ class JarFileEntries implements Iterable<JarEntryData> {
 
 	public InputStream getInputStream(AsciiBytes name) throws IOException {
 		JarEntryData entryData = getJarEntryData(name);
-		return (entryData == null ? null : getInputStream(entryData));
+		return (entryData == null ? null
+				: getInputStream(entryData, ResourceAccess.PER_READ));
 	}
 
-	public InputStream getInputStream(JarEntryData entry) throws IOException {
-		InputStream inputStream = entry.getData().getInputStream(ResourceAccess.PER_READ);
+	public InputStream getInputStream(JarEntryData entry, ResourceAccess access)
+			throws IOException {
+		InputStream inputStream = entry.getData().getInputStream(access);
 		if (entry.getMethod() == ZipEntry.DEFLATED) {
 			inputStream = new ZipInflaterInputStream(inputStream, entry.getSize());
 		}
