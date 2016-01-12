@@ -285,10 +285,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	public synchronized JarFile getNestedJarFile(JarEntryData sourceEntry)
 			throws IOException {
 		try {
-			if (sourceEntry.nestedJar == null) {
-				sourceEntry.nestedJar = createJarFileFromEntry(sourceEntry);
-			}
-			return sourceEntry.nestedJar;
+			return createJarFileFromEntry(sourceEntry);
 		}
 		catch (IOException ex) {
 			throw new IOException(
@@ -335,7 +332,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
 		if (zipEntry instanceof JarEntry
-				&& ((JarEntry) zipEntry).getSource().getSource() == this) {
+				&& ((JarEntry) zipEntry).getSourceJarFile() == this) {
 			return (JarEntry) zipEntry;
 		}
 		throw new IllegalArgumentException("ZipEntry must be contained in this file");

@@ -56,8 +56,6 @@ public final class JarEntryData {
 
 	private SoftReference<JarEntry> entry;
 
-	JarFile nestedJar;
-
 	public JarEntryData(JarFile source, byte[] header, InputStream inputStream)
 			throws IOException {
 		this.source = source;
