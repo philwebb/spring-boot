@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * An archive that can be launched by the {@link Launcher}.
@@ -70,7 +69,7 @@ public interface Archive extends Iterable<Archive.Entry> {
 		 * Returns the name of the entry.
 		 * @return the name of the entry
 		 */
-		AsciiBytes getName();
+		String getName();
 
 	}
 

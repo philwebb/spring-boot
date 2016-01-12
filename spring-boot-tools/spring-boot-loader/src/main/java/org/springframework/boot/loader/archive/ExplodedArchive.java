@@ -33,8 +33,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
  *
@@ -171,7 +169,7 @@ public class ExplodedArchive implements Archive {
 			this.current = poll();
 			String name = file.toURI().getPath()
 					.substring(this.root.toURI().getPath().length());
-			return new FileEntry(new AsciiBytes(name), file);
+			return new FileEntry(name, file);
 		}
 
 		private Iterator<File> listFiles(File file) {
@@ -207,11 +205,11 @@ public class ExplodedArchive implements Archive {
 	 */
 	private static class FileEntry implements Entry {
 
-		private final AsciiBytes name;
+		private final String name;
 
 		private final File file;
 
-		FileEntry(AsciiBytes name, File file) {
+		FileEntry(String name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -226,7 +224,7 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public AsciiBytes getName() {
+		public String getName() {
 			return this.name;
 		}
 

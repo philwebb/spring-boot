@@ -219,8 +219,8 @@ public class JarFileArchive implements Archive {
 		}
 
 		@Override
-		public AsciiBytes getName() {
-			return this.entryData.getName();
+		public String getName() {
+			return this.entryData.getName().toString();
 		}
 
 	}

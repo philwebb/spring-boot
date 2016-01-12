@@ -41,7 +41,6 @@ import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
-import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
@@ -624,12 +623,12 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 
-		private final AsciiBytes prefix;
+		private final String prefix;
 
 		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
 
 		private PrefixMatchingArchiveFilter(String prefix) {
-			this.prefix = new AsciiBytes(prefix);
+			this.prefix = prefix;
 		}
 
 		@Override
@@ -645,9 +644,9 @@ public class PropertiesLauncher extends Launcher {
 	 */
 	private static final class ArchiveEntryFilter implements EntryFilter {
 
-		private static final AsciiBytes DOT_JAR = new AsciiBytes(".jar");
+		private static final String DOT_JAR = ".jar";
 
-		private static final AsciiBytes DOT_ZIP = new AsciiBytes(".zip");
+		private static final String DOT_ZIP = ".zip";
 
 		@Override
 		public boolean matches(Entry entry) {
