@@ -43,8 +43,6 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
  * offers the following additional functionality.
  * <ul>
- * <li>New filtered files can be {@link #getFilteredJarFile(JarEntryFilter...) created}
- * from existing files.</li>
  * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} based
  * on any directory entry.</li>
  * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} for
@@ -123,13 +121,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
-			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter... filters)
+			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter filter)
 					throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		this.data = data;
-		this.entries = filterEntries(entries, filters);
+		this.entries = filterEntries(entries, filter);
 	}
 
 	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
@@ -162,14 +160,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	private List<JarEntryData> filterEntries(List<JarEntryData> entries,
-			JarEntryFilter[] filters) {
+			JarEntryFilter filter) {
 		List<JarEntryData> filteredEntries = new ArrayList<JarEntryData>(entries.size());
 		for (JarEntryData entry : entries) {
 			AsciiBytes name = entry.getName();
-			for (JarEntryFilter filter : filters) {
-				name = (filter == null || name == null ? name
-						: filter.apply(name, entry));
-			}
+			name = (filter == null || name == null ? name : filter.apply(name, entry));
 			if (name != null) {
 				JarEntryData filteredCopy = entry.createFilteredCopy(this, name);
 				filteredEntries.add(filteredCopy);
@@ -385,18 +380,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 		return new JarFile(this.rootFile,
 				this.pathFromRoot + "!/" + sourceEntry.getName(), sourceEntry.getData());
-	}
-
-	/**
-	 * Return a new jar based on the filtered contents of this file.
-	 * @param filters the set of jar entry filters to be applied
-	 * @return a filtered {@link JarFile}
-	 * @throws IOException if the jar file cannot be read
-	 */
-	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
-			throws IOException {
-		return new JarFile(this.rootFile, this.pathFromRoot, this.data, this.entries,
-				filters);
 	}
 
 	private JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
