@@ -24,7 +24,6 @@ import java.util.GregorianCalendar;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until

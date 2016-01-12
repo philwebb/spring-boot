@@ -25,8 +25,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
  *

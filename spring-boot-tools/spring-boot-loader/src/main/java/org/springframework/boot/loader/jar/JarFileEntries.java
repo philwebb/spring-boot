@@ -28,7 +28,6 @@ import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Provides access to the collection of entries from a JarFile.

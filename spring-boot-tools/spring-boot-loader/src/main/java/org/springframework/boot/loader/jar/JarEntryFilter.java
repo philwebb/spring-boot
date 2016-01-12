@@ -16,8 +16,6 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.springframework.boot.loader.util.AsciiBytes;
-
 /**
  * Interface that can be used to filter and optionally rename jar entries.
  *
