@@ -117,6 +117,7 @@ public class JarFile extends java.util.jar.JarFile
 			};
 
 		};
+		new JarFileIndex(this.data, endRecord);
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
