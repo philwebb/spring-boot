@@ -19,6 +19,7 @@ package org.springframework.boot.loader.jar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 
@@ -40,20 +41,24 @@ class JarFileIndex implements Iterable<JarEntry> {
 
 	private final int[] localHeaderOffsets;
 
-	private SoftReference<JarEntry[]> entries;
+	private SoftReference<JarEntry[]> entries = new SoftReference<JarEntry[]>(null);
 
 	JarFileIndex(RandomAccessData data, CentralDirectoryEndRecord endRecord)
 			throws IOException {
 		this.centralDirectoryData = endRecord.getCentralDirectory(data);
-		int numberOfRecords = endRecord.getNumberOfRecords();
-		this.nameHashCodes = new int[numberOfRecords];
-		this.centralDirectoryOffsets = new int[numberOfRecords];
-		this.localHeaderOffsets = new int[numberOfRecords];
+		int size = endRecord.getNumberOfRecords();
+		this.nameHashCodes = new int[size];
+		this.centralDirectoryOffsets = new int[size];
+		this.localHeaderOffsets = new int[size];
+		parseCentralDirectory();
+	}
+
+	private void parseCentralDirectory() throws IOException {
 		InputStream inputStream = this.centralDirectoryData
 				.getInputStream(ResourceAccess.ONCE);
 		try {
 			int centralDirectoryOffset = 0;
-			for (int i = 0; i < numberOfRecords; i++) {
+			for (int i = 0; i < this.nameHashCodes.length; i++) {
 				CentralDirectoryFileHeader header = CentralDirectoryFileHeader
 						.fromInputStream(inputStream);
 				this.nameHashCodes[i] = hashCode(header.getName());
@@ -67,24 +72,107 @@ class JarFileIndex implements Iterable<JarEntry> {
 		finally {
 			inputStream.close();
 		}
+		sort();
 	}
 
-	private int hashCode(AsciiBytes name) {
-		return name.hashCode(); // FIXME;
+	public void sort() {
+		JarEntry[] entries = this.entries.get();
+		sort(0, this.nameHashCodes.length - 1, entries);
+		this.entries = new SoftReference<JarEntry[]>(entries);
+	}
+
+	private void sort(int left, int right, JarEntry[] jarEntries) {
+		if (left < right) {
+			int pivot = this.nameHashCodes[left + (right - left) / 2];
+			int i = left;
+			int j = right;
+			while (i <= j) {
+				while (this.nameHashCodes[i] < pivot) {
+					i++;
+				}
+				while (this.nameHashCodes[j] > pivot) {
+					j--;
+				}
+				if (i <= j) {
+					swap(i, j, jarEntries);
+					i++;
+					j--;
+				}
+			}
+			if (left < j) {
+				sort(left, j, jarEntries);
+			}
+			if (right > i) {
+				sort(i, right, jarEntries);
+			}
+		}
+	}
+
+	private void swap(int i, int j, JarEntry[] jarEntries) {
+		if (i != j) {
+			swap(this.nameHashCodes, i, j);
+			swap(this.centralDirectoryOffsets, i, j);
+			swap(this.localHeaderOffsets, i, j);
+			if (jarEntries != null) {
+				swap(jarEntries, i, j);
+			}
+		}
+	}
+
+	private void swap(Object[] array, int i, int j) {
+		Object temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	private void swap(int[] array, int i, int j) {
+		int temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
 	}
 
 	public InputStream getInputStream(String name) {
+		getIndex(name);
+		return null;
+	}
+
+	private int getIndex(String name) {
+		int hashCode = hashCode(name);
+		int index = getFirstIndex(hashCode);
+		do {
+			index++;
+		}
+		while (index < this.nameHashCodes.length
+				&& this.nameHashCodes[index] == hashCode);
 		// for each hash code
 		// load CDFH or use the entries if already loaded
 		// check that the name matches
 		// if it does, return the input stream
+		return -1;
+	}
 
-		return null;
+	private int getFirstIndex(int hashCode) {
+		int index = Arrays.binarySearch(this.nameHashCodes, hashCode);
+		if (index < 0) {
+			return -1;
+		}
+		while (index > 0 && this.nameHashCodes[index - 1] == hashCode) {
+			index--;
+		}
+		return index;
 	}
 
 	@Override
 	public Iterator<JarEntry> iterator() {
 		return null;
+	}
+
+	private int hashCode(String name) {
+		return name.hashCode(); // FIXME;
+	}
+
+	private int hashCode(AsciiBytes name) {
+		return name.toString().hashCode(); // FIXME;
 	}
 
 }

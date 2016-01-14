@@ -155,6 +155,7 @@ final class AsciiBytes {
 
 	@Override
 	public int hashCode() {
+		// FIXME cache and make same as String
 		int hash = INITIAL_HASH;
 		for (int i = 0; i < this.length; i++) {
 			hash = MULTIPLIER * hash + this.bytes[this.offset + i];

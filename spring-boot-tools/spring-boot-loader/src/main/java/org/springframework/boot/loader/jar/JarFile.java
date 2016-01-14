@@ -76,6 +76,8 @@ public class JarFile extends java.util.jar.JarFile
 
 	private URL url;
 
+	private JarFileIndex index;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -117,7 +119,7 @@ public class JarFile extends java.util.jar.JarFile
 			};
 
 		};
-		new JarFileIndex(this.data, endRecord);
+		this.index = new JarFileIndex(this.data, endRecord);
 	}
 
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
@@ -281,6 +283,9 @@ public class JarFile extends java.util.jar.JarFile
 	}
 
 	InputStream getInputStream(AsciiBytes name) throws IOException {
+		if (this.index != null) {
+			this.index.getInputStream(name.toString());
+		}
 		return this.entries.getInputStream(name);
 	}
 
