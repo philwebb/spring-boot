@@ -36,11 +36,14 @@ class JarFileIndex implements CentralDirectoryVistor {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
+	private final JarFile jarFile;
+
 	private final JarEntryFilter filter;
 
 	private final List<JarFileEntry> entries = new ArrayList<JarFileEntry>();
 
-	JarFileIndex(JarEntryFilter filter) {
+	JarFileIndex(JarFile jarFile, JarEntryFilter filter) {
+		this.jarFile = jarFile;
 		this.filter = filter;
 	}
 
@@ -54,7 +57,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 		AsciiBytes name = fileHeader.getName();
 		name = (this.filter == null ? name : this.filter.apply(name));
 		if (name != null) {
-			JarFileEntry entry = new JarFileEntry(name.toString());
+			JarFileEntry entry = new JarFileEntry(this.jarFile, name.toString());
 			entry.setCompressedSize(fileHeader.getCompressedSize());
 			entry.setMethod(fileHeader.getMethod());
 			entry.setCrc(fileHeader.getCrc());
@@ -73,48 +76,47 @@ class JarFileIndex implements CentralDirectoryVistor {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<JarEntry> getEntries(RandomAccessData data) {
+	public Iterator<JarEntry> getEntries(JarFile jarFile) {
 		return (Iterator) this.entries.iterator();
 	}
 
-	public boolean containsEntry(RandomAccessData data, String name) {
-		return getEntry(data, name) != null;
+	public boolean containsEntry(String name) {
+		return getEntry(name) != null;
 	}
 
-	public JarFileEntry getEntry(RandomAccessData data, String name) {
+	public JarFileEntry getEntry(String name) {
 		for (JarFileEntry entry : this.entries) {
 			if (entry.getName().equals(name)) {
 				return entry;
 			}
 		}
 		if (!name.endsWith("/")) {
-			return getEntry(data, name + "/");
+			return getEntry(name + "/");
 		}
 		return null;
 	}
 
-	public InputStream getInputStream(RandomAccessData data, String name,
-			ResourceAccess access) throws IOException {
-		JarFileEntry entry = getEntry(data, name);
-		InputStream inputStream = getData(data, entry).getInputStream(access);
+	public InputStream getInputStream(String name, ResourceAccess access)
+			throws IOException {
+		JarFileEntry entry = getEntry(name);
+		InputStream inputStream = getData(entry).getInputStream(access);
 		if (entry.getMethod() == ZipEntry.DEFLATED) {
 			inputStream = new ZipInflaterInputStream(inputStream, (int) entry.getSize());
 		}
 		return inputStream;
 	}
 
-	public RandomAccessData getEntryData(RandomAccessData data, String name)
-			throws IOException {
-		JarFileEntry entry = getEntry(data, name);
-		return getData(data, entry);
+	public RandomAccessData getEntryData(String name) throws IOException {
+		JarFileEntry entry = getEntry(name);
+		return getData(entry);
 
 	}
 
-	private RandomAccessData getData(RandomAccessData data, JarFileEntry entry)
-			throws IOException {
+	private RandomAccessData getData(JarFileEntry entry) throws IOException {
 		// aspectjrt-1.7.4.jar has a different ext bytes length in the
 		// local directory to the central directory. We need to re-read
 		// here to skip them
+		RandomAccessData data = this.jarFile.getData();
 		byte[] localHeader = Bytes.get(
 				data.getSubsection(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE));
 		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);

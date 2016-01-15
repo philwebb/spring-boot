@@ -17,9 +17,13 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.Manifest;
 
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
@@ -34,45 +38,45 @@ class JarFileEntry extends java.util.jar.JarEntry {
 
 	private long localHeaderOffset;
 
-	JarFileEntry(String name) {
+	private final JarFile jarFile;
+
+	JarFileEntry(JarFile jarFile, String name) {
 		super(name);
+		this.jarFile = jarFile;
 	}
 
-	// /**
-	// * Return a {@link URL} for this {@link JarEntry}.
-	// * @return the URL for the entry
-	// * @throws MalformedURLException if the URL is not valid
-	// */
-	// URL getUrl() throws MalformedURLException {
-	// return new URL(this.source.getSource().getUrl(), getName());
-	// }
+	/**
+	 * Return a {@link URL} for this {@link JarEntry}.
+	 * @return the URL for the entry
+	 * @throws MalformedURLException if the URL is not valid
+	 */
+	URL getUrl() throws MalformedURLException {
+		return new URL(this.jarFile.getUrl(), getName());
+	}
 
 	@Override
 	public Attributes getAttributes() throws IOException {
-		// Manifest manifest = this.source.getSource().getManifest();
-		// return (manifest == null ? null : manifest.getAttributes(getName()));
-		return null; // FIXME
+		Manifest manifest = this.jarFile.getManifest();
+		return (manifest == null ? null : manifest.getAttributes(getName()));
 	}
 
 	@Override
 	public Certificate[] getCertificates() {
-		// FIXME
-		// if (this.source.getSource().isSigned() && this.certificates == null) {
-		// this.source.getSource().setupEntryCertificates();
-		// }
+		if (this.jarFile.isSigned() && this.certificates == null) {
+			this.jarFile.setupEntryCertificates(this);
+		}
 		return this.certificates;
 	}
 
 	@Override
 	public CodeSigner[] getCodeSigners() {
-		// FIXME
-		// if (this.source.getSource().isSigned() && this.codeSigners == null) {
-		// this.source.getSource().setupEntryCertificates();
-		// }
+		if (this.jarFile.isSigned() && this.codeSigners == null) {
+			this.jarFile.setupEntryCertificates(this);
+		}
 		return this.codeSigners;
 	}
 
-	void setupCertificates(java.util.jar.JarEntry entry) {
+	void setCertificates(java.util.jar.JarEntry entry) {
 		this.certificates = entry.getCertificates();
 		this.codeSigners = entry.getCodeSigners();
 	}
@@ -84,36 +88,5 @@ class JarFileEntry extends java.util.jar.JarEntry {
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
 	}
-
-	// FIXME
-	// boolean isSigned() {
-	// return this.signed;
-	// }
-	//
-	// void setupEntryCertificates() {
-	// // Fallback to JarInputStream to obtain certificates, not fast but hopefully not
-	// // happening that often.
-	// try {
-	// JarInputStream inputStream = new JarInputStream(
-	// getData().getInputStream(ResourceAccess.ONCE));
-	// try {
-	// java.util.jar.JarEntry entry = inputStream.getNextJarEntry();
-	// while (entry != null) {
-	// inputStream.closeEntry();
-	// JarEntry jarEntry = getJarEntry(entry.getName());
-	// if (jarEntry != null) {
-	// jarEntry.setupCertificates(entry);
-	// }
-	// entry = inputStream.getNextJarEntry();
-	// }
-	// }
-	// finally {
-	// inputStream.close();
-	// }
-	// }
-	// catch (IOException ex) {
-	// throw new IllegalStateException(ex);
-	// }
-	// }
 
 }

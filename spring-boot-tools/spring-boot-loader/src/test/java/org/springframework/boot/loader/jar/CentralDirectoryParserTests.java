@@ -94,8 +94,6 @@ public class CentralDirectoryParserTests {
 		assertThat(headers.hasNext(), equalTo(false));
 	}
 
-	// FIXME with prefix
-
 	private static class Collector implements CentralDirectoryVistor {
 
 		private List<CentralDirectoryFileHeader> headers = new ArrayList<CentralDirectoryFileHeader>();

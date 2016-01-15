@@ -27,6 +27,7 @@ import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -54,6 +55,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
+	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
+
+	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
+
 	private final RandomAccessDataFile rootFile;
 
 	private final String pathFromRoot;
@@ -65,6 +70,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	private JarFileIndex index;
 
 	private SoftReference<Manifest> manifest;
+
+	private boolean signed;
 
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
@@ -103,12 +110,42 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
-		this.index = parser.addVistor(new JarFileIndex(filter));
+		this.index = parser.addVistor(new JarFileIndex(this, filter));
+		parser.addVistor(centralDirectoryVistor());
 		this.data = parser.parse(data, filter == null);
+	}
+
+	private CentralDirectoryVistor centralDirectoryVistor() {
+		return new CentralDirectoryVistor() {
+
+			@Override
+			public void visitStart(CentralDirectoryEndRecord endRecord,
+					RandomAccessData centralDirectoryData) {
+			}
+
+			@Override
+			public void visitFileHeader(CentralDirectoryFileHeader fileHeader,
+					int dataOffset) {
+				AsciiBytes name = fileHeader.getName();
+				if (name.startsWith(META_INF)
+						&& name.endsWith(SIGNATURE_FILE_EXTENSION)) {
+					JarFile.this.signed = true;
+				}
+			}
+
+			@Override
+			public void visitEnd() {
+			}
+
+		};
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
 		return this.rootFile;
+	}
+
+	RandomAccessData getData() {
+		return this.data;
 	}
 
 	@Override
@@ -150,7 +187,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	@Override
 	public Iterator<JarEntry> iterator() {
-		return this.index.getEntries(this.data);
+		return this.index.getEntries(this);
 	}
 
 	@Override
@@ -160,11 +197,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		return this.index.getEntry(this.data, name);
+		return this.index.getEntry(name);
 	}
 
 	public boolean containsEntry(String name) {
-		return this.index.containsEntry(this.data, name);
+		return this.index.containsEntry(name);
 	}
 
 	@Override
@@ -178,7 +215,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	}
 
 	InputStream getInputStream(String name, ResourceAccess access) throws IOException {
-		return this.index.getInputStream(this.data, name, access);
+		return this.index.getInputStream(name, access);
 	}
 
 	/**
@@ -240,7 +277,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 					+ "jar files must be stored without compression. Please check the "
 					+ "mechanism used to create your executable jar file");
 		}
-		RandomAccessData entryData = this.index.getEntryData(this.data, entry.getName());
+		RandomAccessData entryData = this.index.getEntryData(entry.getName());
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(),
 				entryData);
 	}
@@ -280,6 +317,42 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	public String getName() {
 		String path = this.pathFromRoot;
 		return this.rootFile.getFile() + path;
+	}
+
+	boolean isSigned() {
+		return this.signed;
+	}
+
+	void setupEntryCertificates(JarFileEntry entry) {
+		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
+		// happening that often.
+		try {
+			JarInputStream inputStream = new JarInputStream(
+					getData().getInputStream(ResourceAccess.ONCE));
+			try {
+				JarEntry certEntry = inputStream.getNextJarEntry();
+				while (certEntry != null) {
+					inputStream.closeEntry();
+					if (entry.getName().equals(certEntry.getName())) {
+						setCertificates(entry, certEntry);
+					}
+					setCertificates(getJarEntry(certEntry.getName()), certEntry);
+					certEntry = inputStream.getNextJarEntry();
+				}
+			}
+			finally {
+				inputStream.close();
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private void setCertificates(JarFileEntry entry, JarEntry certEntry) {
+		if (entry != null) {
+			entry.setCertificates(certEntry);
+		}
 	}
 
 	/**
