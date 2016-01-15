@@ -26,8 +26,6 @@ import java.nio.charset.Charset;
  */
 final class AsciiBytes {
 
-	private static final String HASH_TEST = "abc123ABC456xYx!@#";
-
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	private final byte[] bytes;
@@ -195,7 +193,7 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(int hash, String string) {
-		char chars[] = string.toCharArray();
+		char[] chars = string.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			hash = 31 * hash + chars[i];
 		}

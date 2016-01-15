@@ -17,6 +17,8 @@
 package org.springframework.boot.loader.jar;
 
 /**
+ * Base class for file headers.
+ *
  * @author Phillip Webb
  */
 interface FileHeaderEntry {

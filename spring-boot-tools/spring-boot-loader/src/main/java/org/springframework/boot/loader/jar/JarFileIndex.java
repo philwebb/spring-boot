@@ -265,7 +265,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 
 		private JarFileEntry[] entries;
 
-		public EntryIterator(JarFileEntry[] entries) {
+		EntryIterator(JarFileEntry[] entries) {
 			this.entries = entries;
 		}
 
