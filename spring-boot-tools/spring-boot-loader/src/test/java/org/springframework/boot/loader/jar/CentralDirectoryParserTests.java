@@ -63,9 +63,9 @@ public class CentralDirectoryParserTests {
 	@Test
 	public void vistsInOrder() throws Exception {
 		CentralDirectoryVistor vistor = mock(CentralDirectoryVistor.class);
-		CentralDirectoryParser parser = new CentralDirectoryParser(this.jarData);
+		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVistor(vistor);
-		parser.parse();
+		parser.parse(this.jarData, false);
 		InOrder ordered = inOrder(vistor);
 		ordered.verify(vistor).visitStart(any(), any());
 		ordered.verify(vistor, atLeastOnce()).visitFileHeader(any(), anyInt());
@@ -75,9 +75,9 @@ public class CentralDirectoryParserTests {
 	@Test
 	public void vistRecords() throws Exception {
 		Collector collector = new Collector();
-		CentralDirectoryParser parser = new CentralDirectoryParser(this.jarData);
+		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVistor(collector);
-		parser.parse();
+		parser.parse(this.jarData, false);
 		Iterator<CentralDirectoryFileHeader> headers = collector.getHeaders().iterator();
 		assertThat(headers.next().getName().toString(), equalTo("META-INF/"));
 		assertThat(headers.next().getName().toString(), equalTo("META-INF/MANIFEST.MF"));
@@ -91,6 +91,8 @@ public class CentralDirectoryParserTests {
 		assertThat(headers.next().getName().toString(), equalTo("another-nested.jar"));
 		assertThat(headers.hasNext(), equalTo(false));
 	}
+
+	// FIXME with prefix
 
 	private static class Collector implements CentralDirectoryVistor {
 

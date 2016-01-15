@@ -34,21 +34,20 @@ class CentralDirectoryParser {
 
 	private int CENTRAL_DIRECTORY_HEADER_BASE_SIZE = 46;
 
-	private final RandomAccessData data;
-
 	private final List<CentralDirectoryVistor> vistors = new ArrayList<CentralDirectoryVistor>();
 
-	CentralDirectoryParser(RandomAccessData data) {
-		this.data = data;
-	}
-
-	public void addVistor(CentralDirectoryVistor vistor) {
+	public <T extends CentralDirectoryVistor> T addVistor(T vistor) {
 		this.vistors.add(vistor);
+		return vistor;
 	}
 
-	public void parse() throws IOException {
-		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(this.data);
-		RandomAccessData centralDirectoryData = endRecord.getCentralDirectory(this.data);
+	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes)
+			throws IOException {
+		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
+		if (skipPrefixBytes) {
+			data = getArchiveData(endRecord, data);
+		}
+		RandomAccessData centralDirectoryData = endRecord.getCentralDirectory(data);
 		visitStart(endRecord, centralDirectoryData);
 		InputStream inputStream = centralDirectoryData
 				.getInputStream(ResourceAccess.ONCE);
@@ -59,8 +58,7 @@ class CentralDirectoryParser {
 						.fromInputStream(inputStream);
 				visitFileHeader(dataOffset, fileHeader);
 				dataOffset += this.CENTRAL_DIRECTORY_HEADER_BASE_SIZE
-						+ fileHeader.getName().length()
-						+ +fileHeader.getComment().length()
+						+ fileHeader.getName().length() + fileHeader.getComment().length()
 						+ fileHeader.getExtra().length;
 			}
 		}
@@ -68,6 +66,16 @@ class CentralDirectoryParser {
 			inputStream.close();
 		}
 		visitEnd();
+		return data;
+	}
+
+	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
+			RandomAccessData data) {
+		long offset = endRecord.getStartOfArchive(data);
+		if (offset == 0) {
+			return data;
+		}
+		return data.getSubsection(offset, data.getSize() - offset);
 	}
 
 	private void visitStart(CentralDirectoryEndRecord endRecord,

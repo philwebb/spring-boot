@@ -26,13 +26,13 @@ import java.util.zip.ZipEntry;
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
- * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until
+ * Holds the underlying data of a {@link JarFileEntry}, allowing creation to be deferred until
  * the entry is actually needed.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-final class JarEntryData {
+final class OldJarEd {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
@@ -52,7 +52,7 @@ final class JarEntryData {
 
 	private RandomAccessData data;
 
-	private SoftReference<JarEntry> entry;
+	private SoftReference<JarFileEntry> entry;
 
 	JarEntryData(JarFile source, byte[] header, InputStream inputStream)
 			throws IOException {
@@ -107,10 +107,10 @@ final class JarEntryData {
 		return this.data;
 	}
 
-	JarEntry asJarEntry() {
-		JarEntry entry = (this.entry == null ? null : this.entry.get());
+	JarFileEntry asJarEntry() {
+		JarFileEntry entry = (this.entry == null ? null : this.entry.get());
 		if (entry == null) {
-			entry = new JarEntry(this);
+			entry = new JarFileEntry(this);
 			entry.setCompressedSize(getCompressedSize());
 			entry.setMethod(getMethod());
 			entry.setCrc(getCrc());
@@ -119,7 +119,7 @@ final class JarEntryData {
 			entry.setComment(getComment().toString());
 			entry.setSize(getSize());
 			entry.setTime(getTime());
-			this.entry = new SoftReference<JarEntry>(entry);
+			this.entry = new SoftReference<JarFileEntry>(entry);
 		}
 		return entry;
 	}

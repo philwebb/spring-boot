@@ -25,6 +25,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
  *
@@ -60,8 +62,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private final JarFile jarFile;
 
-	private JarEntryData jarEntryData;
-
 	private URL jarFileUrl;
 
 	private JarEntryName jarEntryName;
@@ -81,7 +81,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
-		JarEntry jarEntry = jarFile.getJarEntry(name);
+		JarFileEntry jarEntry = jarFile.getJarEntry(name);
 		if (jarEntry == null) {
 			throwFileNotFound(jarEntry, jarFile);
 		}
@@ -97,7 +97,12 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public void connect() throws IOException {
-		connect(false);
+		if (!this.jarEntryName.isEmpty()) {
+			if (!this.jarFile.containsEntry(getEntryName())) {
+				throwFileNotFound(this.jarEntryName, this.jarFile);
+			}
+		}
+		this.connected = true;
 	}
 
 	private void throwFileNotFound(Object entry, JarFile jarFile)
@@ -111,7 +116,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public JarFile getJarFile() throws IOException {
-		connect(false);
+		connect();
 		return this.jarFile;
 	}
 
@@ -140,9 +145,12 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public JarEntry getJarEntry() throws IOException {
-		connect(true);
-		return (this.jarEntryData == null ? null : this.jarEntryData.asJarEntry());
+	public JarFileEntry getJarEntry() throws IOException {
+		connect();
+		if (this.jarEntryName.isEmpty()) {
+			return null;
+		}
+		return this.jarFile.getJarEntry(this.jarEntryName.toString());
 	}
 
 	@Override
@@ -155,9 +163,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarEntryName.isEmpty()) {
 			throw new IOException("no entry name specified");
 		}
-		connect(false);
+		connect();
 		InputStream inputStream = this.jarFile
-				.getInputStream(this.jarEntryName.asAsciiBytes());
+				.getInputStream(this.jarEntryName.toString(), ResourceAccess.ONCE);
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
 		}
@@ -167,11 +175,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 	@Override
 	public int getContentLength() {
 		try {
-			connect(true);
-			if (this.jarEntryData != null) {
-				return this.jarEntryData.getSize();
+			if (this.jarEntryName.isEmpty()) {
+				return this.jarFile.size();
 			}
-			return this.jarFile.size();
+			JarFileEntry entry = getJarEntry();
+			return (entry == null ? -1 : (int) entry.getSize());
 		}
 		catch (IOException ex) {
 			return -1;
@@ -180,26 +188,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public Object getContent() throws IOException {
-		connect(true);
-		return (this.jarEntryData == null ? this.jarFile : super.getContent());
+		connect();
+		return (this.jarEntryName.isEmpty() ? this.jarFile : super.getContent());
 	}
 
 	@Override
 	public String getContentType() {
 		return this.jarEntryName.getContentType();
-	}
-
-	private void connect(boolean fetchEntry) throws IOException {
-		if (this.jarEntryData == null && fetchEntry) {
-			if (!this.jarEntryName.isEmpty()) {
-				this.jarEntryData = this.jarFile
-						.getJarEntryData(this.jarEntryName.asAsciiBytes());
-				if (this.jarEntryData == null) {
-					throwFileNotFound(this.jarEntryName, this.jarFile);
-				}
-			}
-		}
-		this.connected = true;
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
@@ -211,7 +206,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 	 */
 	private static class JarEntryName {
 
-		private final AsciiBytes name;
+		private final String name;
 
 		private String contentType;
 
@@ -219,26 +214,26 @@ class JarURLConnection extends java.net.JarURLConnection {
 			this.name = decode(spec);
 		}
 
-		private AsciiBytes decode(String source) {
+		private String decode(String source) {
 			int length = (source == null ? 0 : source.length());
 			if ((length == 0) || (source.indexOf('%') < 0)) {
-				return new AsciiBytes(source);
+				return new AsciiBytes(source).toString();
 			}
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(length);
 			for (int i = 0; i < length; i++) {
-				int ch = source.charAt(i);
-				if (ch == '%') {
+				int c = source.charAt(i);
+				if (c == '%') {
 					if ((i + 2) >= length) {
 						throw new IllegalArgumentException("Invalid encoded sequence \""
 								+ source.substring(i) + "\"");
 					}
-					ch = decodeEscapeSequence(source, i);
+					c = decodeEscapeSequence(source, i);
 					i += 2;
 				}
-				bos.write(ch);
+				outputStream.write(c);
 			}
 			// AsciiBytes is what is used to store the JarEntries so make it symmetric
-			return new AsciiBytes(bos.toByteArray());
+			return new AsciiBytes(outputStream.toByteArray()).toString();
 		}
 
 		private char decodeEscapeSequence(String source, int i) {
@@ -254,10 +249,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 		@Override
 		public String toString() {
 			return this.name.toString();
-		}
-
-		public AsciiBytes asAsciiBytes() {
-			return this.name;
 		}
 
 		public boolean isEmpty() {
