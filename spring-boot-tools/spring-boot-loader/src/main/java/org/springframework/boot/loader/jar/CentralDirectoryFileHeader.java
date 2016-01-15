@@ -21,6 +21,9 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+
 /**
  * A ZIP File "Central directory file header record" (CDFH).
  *
@@ -113,6 +116,18 @@ final class CentralDirectoryFileHeader {
 
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
+	}
+
+	public static CentralDirectoryFileHeader fromRandomAccessData(RandomAccessData data,
+			int offset) throws IOException {
+		InputStream inputStream = data.getSubsection(offset, data.getSize() - offset)
+				.getInputStream(ResourceAccess.ONCE);
+		try {
+			return fromInputStream(inputStream);
+		}
+		finally {
+			inputStream.close();
+		}
 	}
 
 	/**

@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -136,8 +138,28 @@ public class AsciiBytesTests {
 		assertThat(bc, equalTo(bc));
 		assertThat(bc, equalTo(bc_substring));
 		assertThat(bc, equalTo(bc_string));
-
 		assertThat(bc.hashCode(), not(equalTo(abcd.hashCode())));
 		assertThat(bc, not(equalTo(abcd)));
 	}
+
+	@Test
+	public void hashCodeSameAsString() throws Exception {
+		String s = "abcABC123xyz!";
+		AsciiBytes a = new AsciiBytes(s);
+		assertThat(s.hashCode(), equalTo(a.hashCode()));
+	}
+
+	@Test
+	public void nonFastHashCode() throws Exception {
+		ReflectionTestUtils.setField(AsciiBytes.class, "fastHash", Boolean.FALSE);
+		try {
+			String s = "abcABC123xyz!";
+			AsciiBytes a = new AsciiBytes(s);
+			assertThat(AsciiBytes.hashCode(s), equalTo(a.hashCode()));
+		}
+		finally {
+			ReflectionTestUtils.setField(AsciiBytes.class, "fastHash", null);
+		}
+	}
+
 }

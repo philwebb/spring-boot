@@ -36,8 +36,6 @@ class JarFileEntry extends java.util.jar.JarEntry {
 
 	private CodeSigner[] codeSigners;
 
-	private long localHeaderOffset;
-
 	private final JarFile jarFile;
 
 	JarFileEntry(JarFile jarFile, String name) {
@@ -79,14 +77,6 @@ class JarFileEntry extends java.util.jar.JarEntry {
 	void setCertificates(java.util.jar.JarEntry entry) {
 		this.certificates = entry.getCertificates();
 		this.codeSigners = entry.getCodeSigners();
-	}
-
-	public void setLocalHeaderOffset(long localHeaderOffset) {
-		this.localHeaderOffset = localHeaderOffset;
-	}
-
-	public long getLocalHeaderOffset() {
-		return this.localHeaderOffset;
 	}
 
 }

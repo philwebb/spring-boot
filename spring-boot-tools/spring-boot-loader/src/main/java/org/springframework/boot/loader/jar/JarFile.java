@@ -187,7 +187,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	@Override
 	public Iterator<JarEntry> iterator() {
-		return this.index.getEntries(this);
+		return this.index.getEntries();
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		return this.index.getEntry(name);
 	}
 
-	public boolean containsEntry(String name) {
+	public boolean containsEntry(String name) throws IOException {
 		return this.index.containsEntry(name);
 	}
 

@@ -18,9 +18,10 @@ package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.lang.ref.SoftReference;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
@@ -34,13 +35,28 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  */
 class JarFileIndex implements CentralDirectoryVistor {
 
-	private static final long LOCAL_FILE_HEADER_SIZE = 30;
+	private static final String SLASH = "/";
+
+	private static final String NO_SUFFIX = "";
 
 	private final JarFile jarFile;
 
 	private final JarEntryFilter filter;
 
-	private final List<JarFileEntry> entries = new ArrayList<JarFileEntry>();
+	private RandomAccessData centralDirectoryData;
+
+	private int size;
+
+	private int[] hashCodes;
+
+	private int[] centralDirectoryOffsets;
+
+	private int[] localHeaderOffsets;
+
+	private int[] positions;
+
+	private SoftReference<JarFileEntry[]> entries = new SoftReference<JarFileEntry[]>(
+			null);
 
 	JarFileIndex(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;
@@ -50,79 +66,244 @@ class JarFileIndex implements CentralDirectoryVistor {
 	@Override
 	public void visitStart(CentralDirectoryEndRecord endRecord,
 			RandomAccessData centralDirectoryData) {
+		int maxSize = endRecord.getNumberOfRecords();
+		this.centralDirectoryData = centralDirectoryData;
+		this.hashCodes = new int[maxSize];
+		this.centralDirectoryOffsets = new int[maxSize];
+		this.localHeaderOffsets = new int[maxSize];
+		this.positions = new int[maxSize];
 	}
 
 	@Override
 	public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
-		AsciiBytes name = fileHeader.getName();
-		name = (this.filter == null ? name : this.filter.apply(name));
+		AsciiBytes name = applyFilter(fileHeader.getName());
 		if (name != null) {
-			JarFileEntry entry = new JarFileEntry(this.jarFile, name.toString());
-			entry.setCompressedSize(fileHeader.getCompressedSize());
-			entry.setMethod(fileHeader.getMethod());
-			entry.setCrc(fileHeader.getCrc());
-			entry.setSize(fileHeader.getSize());
-			entry.setExtra(fileHeader.getExtra());
-			entry.setComment(fileHeader.getComment().toString());
-			entry.setSize(fileHeader.getSize());
-			entry.setTime(fileHeader.getTime());
-			entry.setLocalHeaderOffset(fileHeader.getLocalHeaderOffset());
-			this.entries.add(entry);
+			add(name, fileHeader, dataOffset);
 		}
+	}
+
+	private void add(AsciiBytes name, CentralDirectoryFileHeader fileHeader,
+			int dataOffset) {
+		this.hashCodes[this.size] = name.hashCode();
+		this.centralDirectoryOffsets[this.size] = dataOffset;
+		this.localHeaderOffsets[this.size] = (int) fileHeader.getLocalHeaderOffset();
+		this.positions[this.size] = this.size;
+		this.size++;
 	}
 
 	@Override
 	public void visitEnd() {
+		sort(0, this.size - 1);
+		int[] positions = this.positions;
+		this.positions = new int[positions.length];
+		for (int i = 0; i < positions.length; i++) {
+			this.positions[positions[i]] = i;
+		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<JarEntry> getEntries(JarFile jarFile) {
-		return (Iterator) this.entries.iterator();
+	private void sort(int left, int right) {
+		if (left < right) {
+			int pivot = this.hashCodes[left + (right - left) / 2];
+			int i = left;
+			int j = right;
+			while (i <= j) {
+				while (this.hashCodes[i] < pivot) {
+					i++;
+				}
+				while (this.hashCodes[j] > pivot) {
+					j--;
+				}
+				if (i <= j) {
+					swap(i, j);
+					i++;
+					j--;
+				}
+			}
+			if (left < j) {
+				sort(left, j);
+			}
+			if (right > i) {
+				sort(i, right);
+			}
+		}
 	}
 
-	public boolean containsEntry(String name) {
-		return getEntry(name) != null;
+	private void swap(int i, int j) {
+		swap(this.hashCodes, i, j);
+		swap(this.centralDirectoryOffsets, i, j);
+		swap(this.localHeaderOffsets, i, j);
+		swap(this.positions, i, j);
+	}
+
+	private void swap(int[] array, int i, int j) {
+		int temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+
+	public Iterator<JarEntry> getEntries() {
+		return new EntryIterator(getOrCreateEntries());
+	}
+
+	public boolean containsEntry(String name) throws IOException {
+		return getLocalFileHeader(name) != null;
 	}
 
 	public JarFileEntry getEntry(String name) {
-		for (JarFileEntry entry : this.entries) {
-			if (entry.getName().equals(name)) {
+		JarFileEntry[] entries = getOrCreateEntries();
+		int hashCode = AsciiBytes.hashCode(name);
+		JarFileEntry entry = findEntry(entries, hashCode, name, NO_SUFFIX);
+		if (entry == null) {
+			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
+			entry = findEntry(entries, hashCode, name, SLASH);
+		}
+		return entry;
+	}
+
+	private JarFileEntry[] getOrCreateEntries() {
+		JarFileEntry[] entries = this.entries.get();
+		if (entries == null) {
+			entries = new JarFileEntry[this.size];
+			this.entries = new SoftReference<JarFileEntry[]>(entries);
+		}
+		return entries;
+	}
+
+	private JarFileEntry findEntry(JarFileEntry[] entries, int hashCode, String name,
+			String suffix) {
+		int index = getFirstIndex(hashCode);
+		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
+			JarFileEntry entry = getEntry(entries, index);
+			if (isNameMatch(entry.getName(), name, suffix)) {
 				return entry;
 			}
-		}
-		if (!name.endsWith("/")) {
-			return getEntry(name + "/");
+			index++;
 		}
 		return null;
 	}
 
+	private JarFileEntry getEntry(JarFileEntry[] entries, int index) {
+		JarFileEntry entry = entries[index];
+		if (entry == null) {
+			try {
+				CentralDirectoryFileHeader header = CentralDirectoryFileHeader
+						.fromRandomAccessData(this.centralDirectoryData,
+								this.centralDirectoryOffsets[index]);
+				entry = new JarFileEntry(this.jarFile,
+						applyFilter(header.getName()).toString());
+				entry.setCompressedSize(header.getCompressedSize());
+				entry.setMethod(header.getMethod());
+				entry.setCrc(header.getCrc());
+				entry.setSize(header.getSize());
+				entry.setExtra(header.getExtra());
+				entry.setComment(header.getComment().toString());
+				entry.setSize(header.getSize());
+				entry.setTime(header.getTime());
+				entries[index] = entry;
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+		return entry;
+	}
+
+	private boolean isNameMatch(String candidate, String name, String suffix) {
+		return (candidate.length() == name.length() + suffix.length())
+				&& candidate.startsWith(name) && candidate.endsWith(suffix);
+	}
+
 	public InputStream getInputStream(String name, ResourceAccess access)
 			throws IOException {
-		JarFileEntry entry = getEntry(name);
-		InputStream inputStream = getData(entry).getInputStream(access);
-		if (entry.getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new ZipInflaterInputStream(inputStream, (int) entry.getSize());
+		LocalFileHeader header = getLocalFileHeader(name);
+		if (header == null) {
+			return null;
+		}
+		InputStream inputStream = getEntryData(header).getInputStream(access);
+		if (header.getMethod() == ZipEntry.DEFLATED) {
+			inputStream = new ZipInflaterInputStream(inputStream, header.getSize());
 		}
 		return inputStream;
 	}
 
 	public RandomAccessData getEntryData(String name) throws IOException {
-		JarFileEntry entry = getEntry(name);
-		return getData(entry);
-
+		LocalFileHeader header = getLocalFileHeader(name);
+		return getEntryData(header);
 	}
 
-	private RandomAccessData getData(JarFileEntry entry) throws IOException {
-		// aspectjrt-1.7.4.jar has a different ext bytes length in the
-		// local directory to the central directory. We need to re-read
-		// here to skip them
-		RandomAccessData data = this.jarFile.getData();
-		byte[] localHeader = Bytes.get(
-				data.getSubsection(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE));
-		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
-		long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
-		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE
-				+ nameLength + extraLength, entry.getCompressedSize());
+	private RandomAccessData getEntryData(LocalFileHeader header) {
+		if (header == null) {
+			return null;
+		}
+		long offset = header.getContentOffset();
+		int size = header.getCompressedSize();
+		return this.jarFile.getData().getSubsection(offset, size);
+	}
+
+	private LocalFileHeader getLocalFileHeader(String name) throws IOException {
+		int hashCode = AsciiBytes.hashCode(name);
+		LocalFileHeader localEntry = findLocalFileHeader(hashCode, name, NO_SUFFIX);
+		if (localEntry == null && !name.endsWith(SLASH)) {
+			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
+			localEntry = findLocalFileHeader(hashCode, name, SLASH);
+		}
+		return localEntry;
+	}
+
+	private LocalFileHeader findLocalFileHeader(int hashCode, String name, String suffix)
+			throws IOException {
+		int index = getFirstIndex(hashCode);
+		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
+			LocalFileHeader header = LocalFileHeader.fromRandomAccessData(
+					this.jarFile.getData(), this.localHeaderOffsets[index]);
+			if (applyFilter(header.getName()).equalsString(name, suffix)) {
+				return header;
+			}
+			index++;
+		}
+		return null;
+	}
+
+	private int getFirstIndex(int hashCode) {
+		int index = Arrays.binarySearch(this.hashCodes, 0, this.size, hashCode);
+		if (index < 0) {
+			return -1;
+		}
+		while (index > 0 && this.hashCodes[index - 1] == hashCode) {
+			index--;
+		}
+		return index;
+	}
+
+	private AsciiBytes applyFilter(AsciiBytes name) {
+		return (this.filter == null ? name : this.filter.apply(name));
+	}
+
+	private class EntryIterator implements Iterator<JarEntry> {
+
+		private int index = 0;
+
+		private JarFileEntry[] entries;
+
+		public EntryIterator(JarFileEntry[] entries) {
+			this.entries = entries;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return this.index < this.entries.length;
+		}
+
+		@Override
+		public JarEntry next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			int entryIndex = JarFileIndex.this.positions[this.index];
+			this.index++;
+			return getEntry(this.entries, entryIndex);
+		}
+
 	}
 
 }

@@ -26,11 +26,11 @@ import java.nio.charset.Charset;
  */
 final class AsciiBytes {
 
+	private static final String HASH_TEST = "abc123ABC456xYx!@#";
+
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-	private static final int INITIAL_HASH = 7;
-
-	private static final int MULTIPLIER = 31;
+	private static volatile Boolean fastHash;
 
 	private final byte[] bytes;
 
@@ -39,6 +39,8 @@ final class AsciiBytes {
 	private final int length;
 
 	private String string;
+
+	private int hash;
 
 	/**
 	 * Create a new {@link AsciiBytes} from the specified String.
@@ -155,13 +157,18 @@ final class AsciiBytes {
 
 	@Override
 	public int hashCode() {
-		// FIXME cache and make same as String
-		int hash = INITIAL_HASH;
-		for (int i = 0; i < this.length; i++) {
-			hash = MULTIPLIER * hash + this.bytes[this.offset + i];
+		int hash = this.hash;
+		if (hash == 0 && this.length > 0) {
+			for (int i = 0; i < this.length; i++) {
+				hash = 31 * hash + this.bytes[this.offset + i];
+			}
 		}
 		return hash;
+	}
 
+	public boolean equalsString(String string, String suffix) {
+		// FIXME Optimize, possibly push back
+		return equals(new AsciiBytes(string + (suffix == null ? "" : suffix)));
 	}
 
 	@Override
@@ -184,6 +191,25 @@ final class AsciiBytes {
 			}
 		}
 		return false;
+	}
+
+	public static int hashCode(String string) {
+		return hashCode(0, string);
+	}
+
+	public static int hashCode(int hash, String string) {
+		if (fastHash == null) {
+			fastHash = new AsciiBytes(HASH_TEST).hashCode() == HASH_TEST.hashCode();
+		}
+		if (Boolean.TRUE.equals(fastHash)) {
+			// Our algorithm is the same as JVMs so we can used the cached string hash
+			return string.hashCode();
+		}
+		char chars[] = string.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			hash = 31 * hash + chars[i];
+		}
+		return hash;
 	}
 
 }
