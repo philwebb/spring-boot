@@ -32,7 +32,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
 
-final class CentralDirectoryFileHeader {
+final class CentralDirectoryFileHeader implements FileHeaderEntry {
 
 	private static final AsciiBytes SLASH = new AsciiBytes("/");
 
@@ -62,10 +62,16 @@ final class CentralDirectoryFileHeader {
 		return this.name;
 	}
 
+	@Override
+	public boolean hasName(String name, String suffix) {
+		return this.name.equalsString(name, suffix);
+	}
+
 	public boolean isDirectory() {
 		return this.name.endsWith(SLASH);
 	}
 
+	@Override
 	public int getMethod() {
 		return (int) Bytes.littleEndianValue(this.header, 10, 2);
 	}
@@ -98,12 +104,14 @@ final class CentralDirectoryFileHeader {
 		return Bytes.littleEndianValue(this.header, 16, 4);
 	}
 
-	public int getCompressedSize() {
-		return (int) Bytes.littleEndianValue(this.header, 20, 4);
+	@Override
+	public long getCompressedSize() {
+		return Bytes.littleEndianValue(this.header, 20, 4);
 	}
 
-	public int getSize() {
-		return (int) Bytes.littleEndianValue(this.header, 24, 4);
+	@Override
+	public long getSize() {
+		return Bytes.littleEndianValue(this.header, 24, 4);
 	}
 
 	public byte[] getExtra() {
@@ -114,6 +122,7 @@ final class CentralDirectoryFileHeader {
 		return this.comment;
 	}
 
+	@Override
 	public long getLocalHeaderOffset() {
 		return this.localHeaderOffset;
 	}

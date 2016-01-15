@@ -35,6 +35,8 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  */
 class JarFileIndex implements CentralDirectoryVistor {
 
+	private static final long LOCAL_FILE_HEADER_SIZE = 30;
+
 	private static final String SLASH = "/";
 
 	private static final String NO_SUFFIX = "";
@@ -50,8 +52,6 @@ class JarFileIndex implements CentralDirectoryVistor {
 	private int[] hashCodes;
 
 	private int[] centralDirectoryOffsets;
-
-	private int[] localHeaderOffsets;
 
 	private int[] positions;
 
@@ -70,7 +70,6 @@ class JarFileIndex implements CentralDirectoryVistor {
 		this.centralDirectoryData = centralDirectoryData;
 		this.hashCodes = new int[maxSize];
 		this.centralDirectoryOffsets = new int[maxSize];
-		this.localHeaderOffsets = new int[maxSize];
 		this.positions = new int[maxSize];
 	}
 
@@ -86,7 +85,6 @@ class JarFileIndex implements CentralDirectoryVistor {
 			int dataOffset) {
 		this.hashCodes[this.size] = name.hashCode();
 		this.centralDirectoryOffsets[this.size] = dataOffset;
-		this.localHeaderOffsets[this.size] = (int) fileHeader.getLocalHeaderOffset();
 		this.positions[this.size] = this.size;
 		this.size++;
 	}
@@ -96,7 +94,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 		sort(0, this.size - 1);
 		int[] positions = this.positions;
 		this.positions = new int[positions.length];
-		for (int i = 0; i < positions.length; i++) {
+		for (int i = 0; i < this.size; i++) {
 			this.positions[positions[i]] = i;
 		}
 	}
@@ -131,7 +129,6 @@ class JarFileIndex implements CentralDirectoryVistor {
 	private void swap(int i, int j) {
 		swap(this.hashCodes, i, j);
 		swap(this.centralDirectoryOffsets, i, j);
-		swap(this.localHeaderOffsets, i, j);
 		swap(this.positions, i, j);
 	}
 
@@ -142,39 +139,77 @@ class JarFileIndex implements CentralDirectoryVistor {
 	}
 
 	public Iterator<JarEntry> getEntries() {
-		return new EntryIterator(getOrCreateEntries());
+		return new EntryIterator(getEntries(true));
 	}
 
 	public boolean containsEntry(String name) throws IOException {
-		return getLocalFileHeader(name) != null;
+		return getEntry(name, getEntries(false), FileHeaderEntry.class) != null;
 	}
 
 	public JarFileEntry getEntry(String name) {
-		JarFileEntry[] entries = getOrCreateEntries();
-		int hashCode = AsciiBytes.hashCode(name);
-		JarFileEntry entry = findEntry(entries, hashCode, name, NO_SUFFIX);
-		if (entry == null) {
-			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
-			entry = findEntry(entries, hashCode, name, SLASH);
-		}
-		return entry;
+		return getEntry(name, getEntries(true), JarFileEntry.class);
 	}
 
-	private JarFileEntry[] getOrCreateEntries() {
+	public InputStream getInputStream(String name, ResourceAccess access)
+			throws IOException {
+		FileHeaderEntry entry = getEntry(name, getEntries(false), FileHeaderEntry.class);
+		if (entry == null) {
+			return null;
+		}
+		InputStream inputStream = getEntryData(entry).getInputStream(access);
+		if (entry.getMethod() == ZipEntry.DEFLATED) {
+			inputStream = new ZipInflaterInputStream(inputStream, (int) entry.getSize());
+		}
+		return inputStream;
+	}
+
+	public RandomAccessData getEntryData(String name) throws IOException {
+		FileHeaderEntry entry = getEntry(name, this.entries.get(), FileHeaderEntry.class);
+		if (entry == null) {
+			return null;
+		}
+		return getEntryData(entry);
+	}
+
+	private RandomAccessData getEntryData(FileHeaderEntry entry) throws IOException {
+		// aspectjrt-1.7.4.jar has a different ext bytes length in the
+		// local directory to the central directory. We need to re-read
+		// here to skip them
+		RandomAccessData data = this.jarFile.getData();
+		byte[] localHeader = Bytes.get(
+				data.getSubsection(entry.getLocalHeaderOffset(), LOCAL_FILE_HEADER_SIZE));
+		long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
+		long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
+		return data.getSubsection(entry.getLocalHeaderOffset() + LOCAL_FILE_HEADER_SIZE
+				+ nameLength + extraLength, entry.getCompressedSize());
+	}
+
+	private JarFileEntry[] getEntries(boolean create) {
 		JarFileEntry[] entries = this.entries.get();
-		if (entries == null) {
+		if (entries == null && create) {
 			entries = new JarFileEntry[this.size];
 			this.entries = new SoftReference<JarFileEntry[]>(entries);
 		}
 		return entries;
 	}
 
-	private JarFileEntry findEntry(JarFileEntry[] entries, int hashCode, String name,
-			String suffix) {
+	private <T extends FileHeaderEntry> T getEntry(String name, JarFileEntry[] entries,
+			Class<T> type) {
+		int hashCode = AsciiBytes.hashCode(name);
+		T entry = getEntry(entries, hashCode, name, NO_SUFFIX, type);
+		if (entry == null) {
+			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
+			entry = getEntry(entries, hashCode, name, SLASH, type);
+		}
+		return entry;
+	}
+
+	private <T extends FileHeaderEntry> T getEntry(JarFileEntry[] entries, int hashCode,
+			String name, String suffix, Class<T> type) {
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
-			JarFileEntry entry = getEntry(entries, index);
-			if (isNameMatch(entry.getName(), name, suffix)) {
+			T entry = getEntry(entries, index, type);
+			if (entry.hasName(name, suffix)) {
 				return entry;
 			}
 			index++;
@@ -182,86 +217,31 @@ class JarFileIndex implements CentralDirectoryVistor {
 		return null;
 	}
 
-	private JarFileEntry getEntry(JarFileEntry[] entries, int index) {
-		JarFileEntry entry = entries[index];
-		if (entry == null) {
-			try {
-				CentralDirectoryFileHeader header = CentralDirectoryFileHeader
-						.fromRandomAccessData(this.centralDirectoryData,
-								this.centralDirectoryOffsets[index]);
-				entry = new JarFileEntry(this.jarFile,
-						applyFilter(header.getName()).toString());
-				entry.setCompressedSize(header.getCompressedSize());
-				entry.setMethod(header.getMethod());
-				entry.setCrc(header.getCrc());
-				entry.setSize(header.getSize());
-				entry.setExtra(header.getExtra());
-				entry.setComment(header.getComment().toString());
-				entry.setSize(header.getSize());
-				entry.setTime(header.getTime());
+	@SuppressWarnings("unchecked")
+	private <T extends FileHeaderEntry> T getEntry(JarFileEntry[] entries, int index,
+			Class<T> type) {
+		JarFileEntry entry = (entries == null ? null : entries[index]);
+		if (entry != null) {
+			return (T) entry;
+		}
+		try {
+			CentralDirectoryFileHeader header = CentralDirectoryFileHeader
+					.fromRandomAccessData(this.centralDirectoryData,
+							this.centralDirectoryOffsets[index]);
+			if (FileHeaderEntry.class.equals(type)) {
+				// No need to convert
+				return (T) header;
+			}
+			entry = new JarFileEntry(this.jarFile,
+					applyFilter(header.getName()).toString(), header);
+			if (entries != null) {
 				entries[index] = entry;
 			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
-			}
+			return (T) entry;
 		}
-		return entry;
-	}
-
-	private boolean isNameMatch(String candidate, String name, String suffix) {
-		return (candidate.length() == name.length() + suffix.length())
-				&& candidate.startsWith(name) && candidate.endsWith(suffix);
-	}
-
-	public InputStream getInputStream(String name, ResourceAccess access)
-			throws IOException {
-		LocalFileHeader header = getLocalFileHeader(name);
-		if (header == null) {
-			return null;
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
 		}
-		InputStream inputStream = getEntryData(header).getInputStream(access);
-		if (header.getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new ZipInflaterInputStream(inputStream, header.getSize());
-		}
-		return inputStream;
-	}
-
-	public RandomAccessData getEntryData(String name) throws IOException {
-		LocalFileHeader header = getLocalFileHeader(name);
-		return getEntryData(header);
-	}
-
-	private RandomAccessData getEntryData(LocalFileHeader header) {
-		if (header == null) {
-			return null;
-		}
-		long offset = header.getContentOffset();
-		int size = header.getCompressedSize();
-		return this.jarFile.getData().getSubsection(offset, size);
-	}
-
-	private LocalFileHeader getLocalFileHeader(String name) throws IOException {
-		int hashCode = AsciiBytes.hashCode(name);
-		LocalFileHeader localEntry = findLocalFileHeader(hashCode, name, NO_SUFFIX);
-		if (localEntry == null && !name.endsWith(SLASH)) {
-			hashCode = AsciiBytes.hashCode(hashCode, SLASH);
-			localEntry = findLocalFileHeader(hashCode, name, SLASH);
-		}
-		return localEntry;
-	}
-
-	private LocalFileHeader findLocalFileHeader(int hashCode, String name, String suffix)
-			throws IOException {
-		int index = getFirstIndex(hashCode);
-		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
-			LocalFileHeader header = LocalFileHeader.fromRandomAccessData(
-					this.jarFile.getData(), this.localHeaderOffsets[index]);
-			if (applyFilter(header.getName()).equalsString(name, suffix)) {
-				return header;
-			}
-			index++;
-		}
-		return null;
 	}
 
 	private int getFirstIndex(int hashCode) {
@@ -301,7 +281,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 			}
 			int entryIndex = JarFileIndex.this.positions[this.index];
 			this.index++;
-			return getEntry(this.entries, entryIndex);
+			return getEntry(this.entries, entryIndex, JarFileEntry.class);
 		}
 
 	}

@@ -30,7 +30,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  */
-class JarFileEntry extends java.util.jar.JarEntry {
+class JarFileEntry extends java.util.jar.JarEntry implements FileHeaderEntry {
 
 	private Certificate[] certificates;
 
@@ -38,9 +38,26 @@ class JarFileEntry extends java.util.jar.JarEntry {
 
 	private final JarFile jarFile;
 
-	JarFileEntry(JarFile jarFile, String name) {
+	private long localHeaderOffset;
+
+	JarFileEntry(JarFile jarFile, String name, CentralDirectoryFileHeader header) {
 		super(name);
 		this.jarFile = jarFile;
+		this.localHeaderOffset = header.getLocalHeaderOffset();
+		setCompressedSize(header.getCompressedSize());
+		setMethod(header.getMethod());
+		setCrc(header.getCrc());
+		setSize(header.getSize());
+		setExtra(header.getExtra());
+		setComment(header.getComment().toString());
+		setSize(header.getSize());
+		setTime(header.getTime());
+	}
+
+	@Override
+	public boolean hasName(String name, String suffix) {
+		return getName().length() == name.length() + suffix.length()
+				&& getName().startsWith(name) && getName().endsWith(suffix);
 	}
 
 	/**
@@ -77,6 +94,11 @@ class JarFileEntry extends java.util.jar.JarEntry {
 	void setCertificates(java.util.jar.JarEntry entry) {
 		this.certificates = entry.getCertificates();
 		this.codeSigners = entry.getCodeSigners();
+	}
+
+	@Override
+	public long getLocalHeaderOffset() {
+		return this.localHeaderOffset;
 	}
 
 }

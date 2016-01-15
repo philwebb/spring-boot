@@ -30,8 +30,6 @@ final class AsciiBytes {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-	private static volatile Boolean fastHash;
-
 	private final byte[] bytes;
 
 	private final int offset;
@@ -159,9 +157,8 @@ final class AsciiBytes {
 	public int hashCode() {
 		int hash = this.hash;
 		if (hash == 0 && this.length > 0) {
-			for (int i = 0; i < this.length; i++) {
-				hash = 31 * hash + this.bytes[this.offset + i];
-			}
+			hash = new String(this.bytes, this.offset, this.length, UTF_8).hashCode();
+			this.hash = hash;
 		}
 		return hash;
 	}
@@ -194,17 +191,10 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(String string) {
-		return hashCode(0, string);
+		return string.hashCode();
 	}
 
 	public static int hashCode(int hash, String string) {
-		if (fastHash == null) {
-			fastHash = new AsciiBytes(HASH_TEST).hashCode() == HASH_TEST.hashCode();
-		}
-		if (Boolean.TRUE.equals(fastHash)) {
-			// Our algorithm is the same as JVMs so we can used the cached string hash
-			return string.hashCode();
-		}
 		char chars[] = string.toCharArray();
 		for (int i = 0; i < chars.length; i++) {
 			hash = 31 * hash + chars[i];
