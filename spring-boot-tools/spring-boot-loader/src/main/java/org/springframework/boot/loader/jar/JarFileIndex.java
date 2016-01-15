@@ -28,6 +28,8 @@ import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
+ * Maintains an index of entries.
+ *
  * @author Phillip Webb
  */
 class JarFileIndex implements CentralDirectoryVistor {
@@ -38,7 +40,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 
 	private final List<JarFileEntry> entries = new ArrayList<JarFileEntry>();
 
-	public JarFileIndex(JarEntryFilter filter) {
+	JarFileIndex(JarEntryFilter filter) {
 		this.filter = filter;
 	}
 
@@ -70,6 +72,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 	public void visitEnd() {
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Iterator<JarEntry> getEntries(RandomAccessData data) {
 		return (Iterator) this.entries.iterator();
 	}

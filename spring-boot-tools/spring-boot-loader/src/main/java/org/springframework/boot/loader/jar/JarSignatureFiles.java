@@ -19,6 +19,8 @@ package org.springframework.boot.loader.jar;
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
+ * Detects signnature files.
+ *
  * @author Phillip Webb
  */
 class JarSignatureFiles implements CentralDirectoryVistor {

@@ -67,8 +67,10 @@ public class CentralDirectoryParserTests {
 		parser.addVistor(vistor);
 		parser.parse(this.jarData, false);
 		InOrder ordered = inOrder(vistor);
-		ordered.verify(vistor).visitStart(any(), any());
-		ordered.verify(vistor, atLeastOnce()).visitFileHeader(any(), anyInt());
+		ordered.verify(vistor).visitStart(any(CentralDirectoryEndRecord.class),
+				any(RandomAccessData.class));
+		ordered.verify(vistor, atLeastOnce())
+				.visitFileHeader(any(CentralDirectoryFileHeader.class), anyInt());
 		ordered.verify(vistor).visitEnd();
 	}
 

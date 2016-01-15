@@ -48,9 +48,6 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  */
 public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry> {
 
-	/**
-	 *
-	 */
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
 	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
