@@ -153,12 +153,28 @@ final class AsciiBytes {
 
 	@Override
 	public int hashCode() {
-		int hash = this.hash;
-		if (hash == 0 && this.length > 0) {
-			hash = new String(this.bytes, this.offset, this.length, UTF_8).hashCode();
-			this.hash = hash;
+		int h = this.hash;
+		if (h == 0 && this.bytes.length > 0) {
+			for (int i = this.offset; i < this.offset + this.length; i++) {
+				int b = this.bytes[i] & 0xff;
+				if (b > 0x7F) {
+					// Decode multi-byte UTF
+					for (int size = 0; size < 3; size++) {
+						if ((b & (0x40 >> size)) == 0) {
+							b = b & (0x1F >> size);
+							for (int j = 0; j < size; j++) {
+								b <<= 6;
+								b |= this.bytes[++i] & 0x3F;
+							}
+							break;
+						}
+					}
+				}
+				h = 31 * h + b;
+			}
+			this.hash = h;
 		}
-		return hash;
+		return h;
 	}
 
 	public boolean equalsString(String string, String suffix) {
@@ -189,6 +205,7 @@ final class AsciiBytes {
 	}
 
 	public static int hashCode(String string) {
+		// We're compatible with String's hashcode
 		return string.hashCode();
 	}
 
