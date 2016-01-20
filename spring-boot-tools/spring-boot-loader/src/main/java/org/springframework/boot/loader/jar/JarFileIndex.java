@@ -142,10 +142,6 @@ class JarFileIndex implements CentralDirectoryVistor {
 		return new EntryIterator(getEntries(true));
 	}
 
-	public boolean containsEntry(String name) throws IOException {
-		return getEntry(name, getEntries(false), FileHeaderEntry.class) != null;
-	}
-
 	public JarFileEntry getEntry(String name) {
 		return getEntry(name, getEntries(true), JarFileEntry.class);
 	}

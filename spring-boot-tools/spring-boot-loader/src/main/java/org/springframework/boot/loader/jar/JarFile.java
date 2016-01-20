@@ -200,10 +200,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		return this.index.getEntry(name);
 	}
 
-	public boolean containsEntry(String name) throws IOException {
-		return this.index.containsEntry(name);
-	}
-
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
 		return getInputStream(ze, ResourceAccess.PER_READ);
