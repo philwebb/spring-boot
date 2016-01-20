@@ -26,7 +26,6 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -47,7 +46,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  *
  * @author Phillip Webb
  */
-public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry> {
+public class JarFile extends java.util.jar.JarFile {
 
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
@@ -67,7 +66,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	private URL url;
 
-	private JarFileIndex index;
+	private JarFileEntries entries;
 
 	private SoftReference<Manifest> manifest;
 
@@ -110,7 +109,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
-		this.index = parser.addVistor(new JarFileIndex(this, filter));
+		this.entries = parser.addVistor(new JarFileEntries(this, filter));
 		parser.addVistor(centralDirectoryVistor());
 		this.data = parser.parse(data, filter == null);
 	}
@@ -168,9 +167,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	}
 
 	@Override
-	public Enumeration<JarEntry> entries() {
-		final Iterator<JarEntry> iterator = iterator();
-		return new Enumeration<JarEntry>() {
+	public Enumeration<java.util.jar.JarEntry> entries() {
+		final Iterator<JarEntry> iterator = this.entries.iterator();
+		return new Enumeration<java.util.jar.JarEntry>() {
 
 			@Override
 			public boolean hasMoreElements() {
@@ -178,7 +177,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 			}
 
 			@Override
-			public JarEntry nextElement() {
+			public java.util.jar.JarEntry nextElement() {
 				return iterator.next();
 			}
 
@@ -186,18 +185,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	}
 
 	@Override
-	public Iterator<JarEntry> iterator() {
-		return this.index.getEntries();
-	}
-
-	@Override
-	public JarFileEntry getJarEntry(String name) {
-		return (JarFileEntry) getEntry(name);
+	public JarEntry getJarEntry(String name) {
+		return (JarEntry) getEntry(name);
 	}
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		return this.index.getEntry(name);
+		return this.entries.getEntry(name);
 	}
 
 	@Override
@@ -207,14 +201,14 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	public InputStream getInputStream(ZipEntry ze, ResourceAccess access)
 			throws IOException {
-		if (ze instanceof JarFileEntry) {
-			return this.index.getInputStream((JarFileEntry) ze, access);
+		if (ze instanceof JarEntry) {
+			return this.entries.getInputStream((JarEntry) ze, access);
 		}
 		return getInputStream(ze == null ? null : ze.getName(), access);
 	}
 
 	InputStream getInputStream(String name, ResourceAccess access) throws IOException {
-		return this.index.getInputStream(name, access);
+		return this.entries.getInputStream(name, access);
 	}
 
 	/**
@@ -225,7 +219,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	 */
 	public synchronized JarFile getNestedJarFile(final ZipEntry entry)
 			throws IOException {
-		return getNestedJarFile((JarFileEntry) entry);
+		return getNestedJarFile((JarEntry) entry);
 	}
 
 	/**
@@ -234,7 +228,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException if the nested jar file cannot be read
 	 */
-	public synchronized JarFile getNestedJarFile(JarFileEntry entry) throws IOException {
+	public synchronized JarFile getNestedJarFile(JarEntry entry) throws IOException {
 		try {
 			return createJarFileFromEntry(entry);
 		}
@@ -244,15 +238,14 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		}
 	}
 
-	private JarFile createJarFileFromEntry(JarFileEntry entry) throws IOException {
+	private JarFile createJarFileFromEntry(JarEntry entry) throws IOException {
 		if (entry.isDirectory()) {
 			return createJarFileFromDirectoryEntry(entry);
 		}
 		return createJarFileFromFileEntry(entry);
 	}
 
-	private JarFile createJarFileFromDirectoryEntry(JarFileEntry entry)
-			throws IOException {
+	private JarFile createJarFileFromDirectoryEntry(JarEntry entry) throws IOException {
 		final AsciiBytes sourceName = new AsciiBytes(entry.getName());
 		JarEntryFilter filter = new JarEntryFilter() {
 			@Override
@@ -269,14 +262,14 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 				this.data, filter);
 	}
 
-	private JarFile createJarFileFromFileEntry(JarFileEntry entry) throws IOException {
+	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
 		if (entry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException("Unable to open nested entry '"
 					+ entry.getName() + "'. It has been compressed and nested "
 					+ "jar files must be stored without compression. Please check the "
 					+ "mechanism used to create your executable jar file");
 		}
-		RandomAccessData entryData = this.index.getEntryData(entry.getName());
+		RandomAccessData entryData = this.entries.getEntryData(entry.getName());
 		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName(),
 				entryData);
 	}
@@ -322,14 +315,14 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		return this.signed;
 	}
 
-	void setupEntryCertificates(JarFileEntry entry) {
+	void setupEntryCertificates(JarEntry entry) {
 		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
 		// happening that often.
 		try {
 			JarInputStream inputStream = new JarInputStream(
 					getData().getInputStream(ResourceAccess.ONCE));
 			try {
-				JarEntry certEntry = inputStream.getNextJarEntry();
+				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
 				while (certEntry != null) {
 					inputStream.closeEntry();
 					if (entry.getName().equals(certEntry.getName())) {
@@ -348,7 +341,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 		}
 	}
 
-	private void setCertificates(JarFileEntry entry, JarEntry certEntry) {
+	private void setCertificates(JarEntry entry, java.util.jar.JarEntry certEntry) {
 		if (entry != null) {
 			entry.setCertificates(certEntry);
 		}

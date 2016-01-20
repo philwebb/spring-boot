@@ -66,7 +66,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private final JarEntryName jarEntryName;
 
-	private JarFileEntry jarEntry;
+	private JarEntry jarEntry;
 
 	protected JarURLConnection(URL url, JarFile jarFile) throws IOException {
 		// What we pass to super is ultimately ignored
@@ -83,7 +83,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
-		JarFileEntry jarEntry = jarFile.getJarEntry(name);
+		JarEntry jarEntry = jarFile.getJarEntry(name);
 		if (jarEntry == null) {
 			throwFileNotFound(jarEntry, jarFile);
 		}
@@ -148,7 +148,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public JarFileEntry getJarEntry() throws IOException {
+	public JarEntry getJarEntry() throws IOException {
 		if (this.jarEntryName.isEmpty()) {
 			return null;
 		}
@@ -181,7 +181,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 			if (this.jarEntryName.isEmpty()) {
 				return this.jarFile.size();
 			}
-			JarFileEntry entry = getJarEntry();
+			JarEntry entry = getJarEntry();
 			return (entry == null ? -1 : (int) entry.getSize());
 		}
 		catch (IOException ex) {

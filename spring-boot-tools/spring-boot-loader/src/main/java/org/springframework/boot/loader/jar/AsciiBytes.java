@@ -177,11 +177,6 @@ final class AsciiBytes {
 		return h;
 	}
 
-	public boolean equalsString(String string, String suffix) {
-		// FIXME Optimize, possibly push back
-		return equals(new AsciiBytes(string + (suffix == null ? "" : suffix)));
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {

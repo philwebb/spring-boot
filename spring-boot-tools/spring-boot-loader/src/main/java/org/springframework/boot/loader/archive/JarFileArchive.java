@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -91,7 +92,7 @@ public class JarFileArchive implements Archive {
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return new EntryIterator(this.jarFile.iterator());
+		return new EntryIterator(this.jarFile.entries());
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
@@ -173,20 +174,20 @@ public class JarFileArchive implements Archive {
 	 */
 	private static class EntryIterator implements Iterator<Entry> {
 
-		private final Iterator<JarEntry> iterator;
+		private final Enumeration<JarEntry> enumeration;
 
-		EntryIterator(Iterator<JarEntry> iterator) {
-			this.iterator = iterator;
+		EntryIterator(Enumeration<JarEntry> enumeration) {
+			this.enumeration = enumeration;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return this.iterator.hasNext();
+			return this.enumeration.hasMoreElements();
 		}
 
 		@Override
 		public Entry next() {
-			return new JarFileEntry(this.iterator.next());
+			return new JarFileEntry(this.enumeration.nextElement());
 		}
 
 		@Override

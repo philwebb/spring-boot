@@ -24,18 +24,25 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
- * Maintains an index of entries.
+ * Provides access to entries from a {@link JarFile}. In order to reduce memory
+ * consumption entry details are stored using int arrays. The {@code hashCodes} array
+ * stores the hash code of the entry name, the {@code centralDirectoryOffsets} provides
+ * the offset to the central directory record and {@code positions} provides the original
+ * order position of the entry. The arrays are stored in hashCode order so that a binary
+ * search can be used to find a name.
+ * <p>
+ * A typical Spring Boot application will have somewhere in the region of 10,500 entries
+ * which should consume about 122K.
  *
  * @author Phillip Webb
  */
-class JarFileIndex implements CentralDirectoryVistor {
+class JarFileEntries implements CentralDirectoryVistor, Iterable<JarEntry> {
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
@@ -59,13 +66,12 @@ class JarFileIndex implements CentralDirectoryVistor {
 
 	private int[] positions;
 
-	private final Map<Integer, JarFileEntry> entriesCache = Collections
-			.synchronizedMap(new LinkedHashMap<Integer, JarFileEntry>(16, 0.75f, true) {
+	private final Map<Integer, JarEntry> entriesCache = Collections
+			.synchronizedMap(new LinkedHashMap<Integer, JarEntry>(16, 0.75f, true) {
 
 				@Override
-				protected boolean removeEldestEntry(
-						Map.Entry<Integer, JarFileEntry> eldest) {
-					if (JarFileIndex.this.jarFile.isSigned()) {
+				protected boolean removeEldestEntry(Map.Entry<Integer, JarEntry> eldest) {
+					if (JarFileEntries.this.jarFile.isSigned()) {
 						return false;
 					}
 					return size() >= ENTRY_CACHE_SIZE;
@@ -73,7 +79,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 
 			});
 
-	JarFileIndex(JarFile jarFile, JarEntryFilter filter) {
+	JarFileEntries(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;
 		this.filter = filter;
 	}
@@ -115,6 +121,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 	}
 
 	private void sort(int left, int right) {
+		// Quick sort algorithm, uses hashCodes as the source but sorts all arrays
 		if (left < right) {
 			int pivot = this.hashCodes[left + (right - left) / 2];
 			int i = left;
@@ -153,21 +160,22 @@ class JarFileIndex implements CentralDirectoryVistor {
 		array[j] = temp;
 	}
 
-	public Iterator<JarEntry> getEntries() {
+	@Override
+	public Iterator<JarEntry> iterator() {
 		return new EntryIterator();
 	}
 
-	public JarFileEntry getEntry(String name) {
-		return getEntry(name, JarFileEntry.class, true);
+	public JarEntry getEntry(String name) {
+		return getEntry(name, JarEntry.class, true);
 	}
 
 	public InputStream getInputStream(String name, ResourceAccess access)
 			throws IOException {
-		FileHeaderEntry entry = getEntry(name, FileHeaderEntry.class, false);
+		FileHeader entry = getEntry(name, FileHeader.class, false);
 		return getInputStream(entry, access);
 	}
 
-	public InputStream getInputStream(FileHeaderEntry entry, ResourceAccess access)
+	public InputStream getInputStream(FileHeader entry, ResourceAccess access)
 			throws IOException {
 		if (entry == null) {
 			return null;
@@ -180,14 +188,14 @@ class JarFileIndex implements CentralDirectoryVistor {
 	}
 
 	public RandomAccessData getEntryData(String name) throws IOException {
-		FileHeaderEntry entry = getEntry(name, FileHeaderEntry.class, false);
+		FileHeader entry = getEntry(name, FileHeader.class, false);
 		if (entry == null) {
 			return null;
 		}
 		return getEntryData(entry);
 	}
 
-	private RandomAccessData getEntryData(FileHeaderEntry entry) throws IOException {
+	private RandomAccessData getEntryData(FileHeader entry) throws IOException {
 		// aspectjrt-1.7.4.jar has a different ext bytes length in the
 		// local directory to the central directory. We need to re-read
 		// here to skip them
@@ -200,7 +208,7 @@ class JarFileIndex implements CentralDirectoryVistor {
 				+ nameLength + extraLength, entry.getCompressedSize());
 	}
 
-	private <T extends FileHeaderEntry> T getEntry(String name, Class<T> type,
+	private <T extends FileHeader> T getEntry(String name, Class<T> type,
 			boolean cacheEntry) {
 		int hashCode = AsciiBytes.hashCode(name);
 		T entry = getEntry(hashCode, name, NO_SUFFIX, type, cacheEntry);
@@ -211,8 +219,8 @@ class JarFileIndex implements CentralDirectoryVistor {
 		return entry;
 	}
 
-	private <T extends FileHeaderEntry> T getEntry(int hashCode, String name,
-			String suffix, Class<T> type, boolean cacheEntry) {
+	private <T extends FileHeader> T getEntry(int hashCode, String name, String suffix,
+			Class<T> type, boolean cacheEntry) {
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
 			T entry = getEntry(index, type, cacheEntry);
@@ -225,9 +233,9 @@ class JarFileIndex implements CentralDirectoryVistor {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends FileHeaderEntry> T getEntry(int index, Class<T> type,
+	private <T extends FileHeader> T getEntry(int index, Class<T> type,
 			boolean cacheEntry) {
-		JarFileEntry entry = this.entriesCache.get(index);
+		JarEntry entry = this.entriesCache.get(index);
 		if (entry != null) {
 			return (T) entry;
 		}
@@ -235,12 +243,12 @@ class JarFileIndex implements CentralDirectoryVistor {
 			CentralDirectoryFileHeader header = CentralDirectoryFileHeader
 					.fromRandomAccessData(this.centralDirectoryData,
 							this.centralDirectoryOffsets[index]);
-			if (FileHeaderEntry.class.equals(type)) {
+			if (FileHeader.class.equals(type)) {
 				// No need to convert
 				return (T) header;
 			}
-			entry = new JarFileEntry(this.jarFile,
-					applyFilter(header.getName()).toString(), header);
+			entry = new JarEntry(this.jarFile, applyFilter(header.getName()).toString(),
+					header);
 			if (cacheEntry) {
 				this.entriesCache.put(index, entry);
 			}
@@ -266,13 +274,16 @@ class JarFileIndex implements CentralDirectoryVistor {
 		return (this.filter == null ? name : this.filter.apply(name));
 	}
 
+	/**
+	 * Iterator for contained entries.
+	 */
 	private class EntryIterator implements Iterator<JarEntry> {
 
 		private int index = 0;
 
 		@Override
 		public boolean hasNext() {
-			return this.index < JarFileIndex.this.size;
+			return this.index < JarFileEntries.this.size;
 		}
 
 		@Override
@@ -280,9 +291,9 @@ class JarFileIndex implements CentralDirectoryVistor {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			int entryIndex = JarFileIndex.this.positions[this.index];
+			int entryIndex = JarFileEntries.this.positions[this.index];
 			this.index++;
-			return getEntry(entryIndex, JarFileEntry.class, false);
+			return getEntry(entryIndex, JarEntry.class, false);
 		}
 
 	}

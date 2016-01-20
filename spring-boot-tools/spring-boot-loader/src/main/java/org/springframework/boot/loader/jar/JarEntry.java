@@ -22,7 +22,6 @@ import java.net.URL;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
 /**
@@ -30,7 +29,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  */
-class JarFileEntry extends java.util.jar.JarEntry implements FileHeaderEntry {
+class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private Certificate[] certificates;
 
@@ -40,7 +39,7 @@ class JarFileEntry extends java.util.jar.JarEntry implements FileHeaderEntry {
 
 	private long localHeaderOffset;
 
-	JarFileEntry(JarFile jarFile, String name, CentralDirectoryFileHeader header) {
+	JarEntry(JarFile jarFile, String name, CentralDirectoryFileHeader header) {
 		super(name);
 		this.jarFile = jarFile;
 		this.localHeaderOffset = header.getLocalHeaderOffset();

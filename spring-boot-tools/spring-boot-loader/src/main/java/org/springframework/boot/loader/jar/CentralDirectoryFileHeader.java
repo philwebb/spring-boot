@@ -32,7 +32,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
  * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */
 
-final class CentralDirectoryFileHeader implements FileHeaderEntry {
+final class CentralDirectoryFileHeader implements FileHeader {
 
 	private static final AsciiBytes SLASH = new AsciiBytes("/");
 
