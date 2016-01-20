@@ -153,6 +153,11 @@ class JarFileIndex implements CentralDirectoryVistor {
 	public InputStream getInputStream(String name, ResourceAccess access)
 			throws IOException {
 		FileHeaderEntry entry = getEntry(name, getEntries(false), FileHeaderEntry.class);
+		return getInputStream(entry, access);
+	}
+
+	public InputStream getInputStream(FileHeaderEntry entry, ResourceAccess access)
+			throws IOException {
 		if (entry == null) {
 			return null;
 		}

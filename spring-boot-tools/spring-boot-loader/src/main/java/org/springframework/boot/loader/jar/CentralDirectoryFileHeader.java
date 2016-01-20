@@ -64,7 +64,7 @@ final class CentralDirectoryFileHeader implements FileHeaderEntry {
 
 	@Override
 	public boolean hasName(String name, String suffix) {
-		return name.equals(new AsciiBytes(suffix == null ? name : name + suffix));
+		return this.name.equals(new AsciiBytes(suffix == null ? name : name + suffix));
 	}
 
 	public boolean isDirectory() {

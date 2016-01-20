@@ -64,7 +64,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private URL jarFileUrl;
 
-	private JarEntryName jarEntryName;
+	private final JarEntryName jarEntryName;
+
+	private JarFileEntry jarEntry;
 
 	protected JarURLConnection(URL url, JarFile jarFile) throws IOException {
 		// What we pass to super is ultimately ignored
@@ -97,8 +99,9 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public void connect() throws IOException {
-		if (!this.jarEntryName.isEmpty()) {
-			if (!this.jarFile.containsEntry(getEntryName())) {
+		if (!this.jarEntryName.isEmpty() && this.jarEntry == null) {
+			this.jarEntry = this.jarFile.getJarEntry(getEntryName());
+			if (this.jarEntry == null) {
 				throwFileNotFound(this.jarEntryName, this.jarFile);
 			}
 		}
@@ -146,11 +149,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public JarFileEntry getJarEntry() throws IOException {
-		connect();
 		if (this.jarEntryName.isEmpty()) {
 			return null;
 		}
-		return this.jarFile.getJarEntry(this.jarEntryName.toString());
+		connect();
+		return this.jarEntry;
 	}
 
 	@Override
@@ -164,8 +167,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 			throw new IOException("no entry name specified");
 		}
 		connect();
-		InputStream inputStream = this.jarFile
-				.getInputStream(this.jarEntryName.toString(), ResourceAccess.ONCE);
+		InputStream inputStream = this.jarFile.getInputStream(this.jarEntry,
+				ResourceAccess.ONCE);
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
 		}

@@ -211,6 +211,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntry>
 
 	public InputStream getInputStream(ZipEntry ze, ResourceAccess access)
 			throws IOException {
+		if (ze instanceof JarFileEntry) {
+			return this.index.getInputStream((JarFileEntry) ze, access);
+		}
 		return getInputStream(ze == null ? null : ze.getName(), access);
 	}
 
