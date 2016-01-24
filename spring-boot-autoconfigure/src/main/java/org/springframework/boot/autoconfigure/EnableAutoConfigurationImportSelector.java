@@ -44,6 +44,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -169,9 +170,15 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 	}
 
 	private List<String> sort(List<String> configurations) throws IOException {
-		configurations = new AutoConfigurationSorter(getResourceLoader())
+		configurations = new AutoConfigurationSorter(getMetadataReaderFactory())
 				.getInPriorityOrder(configurations);
 		return configurations;
+	}
+
+	private MetadataReaderFactory getMetadataReaderFactory() {
+		return getBeanFactory().getBean(
+				SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
+				MetadataReaderFactory.class);
 	}
 
 	private void recordWithConditionEvaluationReport(List<String> configurations,
