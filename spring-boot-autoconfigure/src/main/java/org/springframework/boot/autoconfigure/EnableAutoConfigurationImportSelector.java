@@ -177,7 +177,7 @@ public class EnableAutoConfigurationImportSelector implements DeferredImportSele
 
 	private MetadataReaderFactory getMetadataReaderFactory() {
 		return getBeanFactory().getBean(
-				CachingMetadataReaderFactoryContextInitializer.BEAN_NAME,
+				SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
 				MetadataReaderFactory.class);
 	}
 

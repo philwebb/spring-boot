@@ -26,13 +26,17 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
  * {@link ApplicationContextInitializer} to create a shared
@@ -42,7 +46,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class CachingMetadataReaderFactoryContextInitializer
+class SharedMetadataReaderFactoryContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	public static final String BEAN_NAME = "org.springframework.boot.autoconfigure."
@@ -82,7 +86,7 @@ public class CachingMetadataReaderFactoryContextInitializer
 
 		private void register(BeanDefinitionRegistry registry) {
 			RootBeanDefinition definition = new RootBeanDefinition(
-					CachingMetadataReaderFactoryFactoryBean.class);
+					SharedMetadataReaderFactoryBean.class);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 
@@ -100,19 +104,24 @@ public class CachingMetadataReaderFactoryContextInitializer
 
 	}
 
-	static class CachingMetadataReaderFactoryFactoryBean
-			implements FactoryBean<CachingMetadataReaderFactory>, BeanClassLoaderAware {
+	/**
+	 * {@link FactoryBean} to create the shared {@link MetadataReaderFactory}.
+	 */
+	static class SharedMetadataReaderFactoryBean
+			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>,
+			BeanClassLoaderAware, ApplicationListener<ContextRefreshedEvent> {
 
-		private CachingMetadataReaderFactory metadataReaderFactory;
+		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
 
 		@Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.metadataReaderFactory = new CachingMetadataReaderFactory(classLoader);
-			this.metadataReaderFactory.setCacheLimit(600);
+			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(
+					classLoader);
 		}
 
 		@Override
-		public CachingMetadataReaderFactory getObject() throws Exception {
+		public ConcurrentReferenceCachingMetadataReaderFactory getObject()
+				throws Exception {
 			return this.metadataReaderFactory;
 		}
 
@@ -124,6 +133,11 @@ public class CachingMetadataReaderFactoryContextInitializer
 		@Override
 		public boolean isSingleton() {
 			return true;
+		}
+
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			this.metadataReaderFactory.clearCache();
 		}
 
 	}
