@@ -21,7 +21,7 @@ import javax.servlet.MultipartConfigElement;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link MultipartConfigFactory}.

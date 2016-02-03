@@ -30,7 +30,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link DelegatingApplicationContextInitializer}.

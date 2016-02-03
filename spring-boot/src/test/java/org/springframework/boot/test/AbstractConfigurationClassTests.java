@@ -35,7 +35,7 @@ import org.springframework.core.type.MethodMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Abstract base class for {@code @Configuration} sanity checks.

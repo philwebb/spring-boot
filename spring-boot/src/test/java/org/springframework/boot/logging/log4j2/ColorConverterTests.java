@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.springframework.boot.ansi.AnsiOutput;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link ColorConverter}.

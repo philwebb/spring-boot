@@ -21,7 +21,7 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link RelaxedNames}.

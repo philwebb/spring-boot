@@ -36,7 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link SpringBootServletInitializer}.

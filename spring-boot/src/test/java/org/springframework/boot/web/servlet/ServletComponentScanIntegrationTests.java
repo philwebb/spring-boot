@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Integration tests for {@link ServletComponentScan}

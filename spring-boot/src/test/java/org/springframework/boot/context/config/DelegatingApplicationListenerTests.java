@@ -32,7 +32,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link DelegatingApplicationListener}.

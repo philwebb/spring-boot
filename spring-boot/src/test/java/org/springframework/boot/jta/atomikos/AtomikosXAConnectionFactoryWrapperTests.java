@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+
 import static org.mockito.Mockito.mock;
 
 /**

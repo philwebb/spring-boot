@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link LiquibaseServiceLocatorApplicationListener}.

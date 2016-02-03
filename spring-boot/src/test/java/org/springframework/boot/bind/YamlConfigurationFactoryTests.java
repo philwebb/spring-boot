@@ -31,7 +31,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link YamlConfigurationFactory}

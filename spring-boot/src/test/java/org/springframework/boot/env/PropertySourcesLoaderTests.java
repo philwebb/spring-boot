@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Tests for {@link PropertySourcesLoader}.

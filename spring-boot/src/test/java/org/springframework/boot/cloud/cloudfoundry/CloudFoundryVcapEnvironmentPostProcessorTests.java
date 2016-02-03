@@ -23,8 +23,8 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+
 
 /**
  * Tests for {@link CloudFoundryVcapEnvironmentPostProcessor}.

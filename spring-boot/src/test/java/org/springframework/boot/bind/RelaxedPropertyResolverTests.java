@@ -32,8 +32,8 @@ import org.springframework.core.env.StandardEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+
+
 
 /**
  * Tests for {@link RelaxedPropertyResolver}.

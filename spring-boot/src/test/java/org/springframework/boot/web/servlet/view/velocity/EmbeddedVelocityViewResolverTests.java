@@ -27,7 +27,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityView;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link EmbeddedVelocityViewResolver}.

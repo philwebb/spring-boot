@@ -21,9 +21,8 @@ import org.junit.Test;
 
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AnsiPropertySource}.
@@ -41,48 +40,47 @@ public class AnsiPropertySourceTests {
 
 	@Test
 	public void getAnsiStyle() throws Exception {
-		assertThat(this.source.getProperty("AnsiStyle.BOLD"),
-				equalTo((Object) AnsiStyle.BOLD));
+		assertThat(this.source.getProperty("AnsiStyle.BOLD")).isEqualTo(AnsiStyle.BOLD);
 	}
 
 	@Test
 	public void getAnsiColor() throws Exception {
-		assertThat(this.source.getProperty("AnsiColor.RED"),
-				equalTo((Object) AnsiColor.RED));
+		assertThat(this.source.getProperty("AnsiColor.RED")).isEqualTo(AnsiColor.RED);
 	}
 
 	@Test
 	public void getAnsiBackground() throws Exception {
-		assertThat(this.source.getProperty("AnsiBackground.GREEN"),
-				equalTo((Object) AnsiBackground.GREEN));
+		assertThat(this.source.getProperty("AnsiBackground.GREEN"))
+				.isEqualTo(AnsiBackground.GREEN);
 	}
 
 	@Test
 	public void getAnsi() throws Exception {
-		assertThat(this.source.getProperty("Ansi.BOLD"),
-				equalTo((Object) AnsiStyle.BOLD));
-		assertThat(this.source.getProperty("Ansi.RED"), equalTo((Object) AnsiColor.RED));
-		assertThat(this.source.getProperty("Ansi.BG_RED"),
-				equalTo((Object) AnsiBackground.RED));
+		assertThat(this.source.getProperty("Ansi.BOLD"))
+				.isEqualTo(equalTo((Object) AnsiStyle.BOLD));
+		assertThat(this.source.getProperty("Ansi.RED")).isEqualTo(AnsiColor.RED);
+		assertThat(this.source.getProperty("Ansi.BG_RED"))
+				.isEqualTo(equalTo((Object) AnsiBackground.RED));
 	}
 
 	@Test
 	public void getMissing() throws Exception {
-		assertThat(this.source.getProperty("AnsiStyle.NOPE"), nullValue());
+		assertThat(this.source.getProperty("AnsiStyle.NOPE")).isNull();
+		;
 	}
 
 	@Test
 	public void encodeEnabled() throws Exception {
 		AnsiOutput.setEnabled(Enabled.ALWAYS);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
-		assertThat(source.getProperty("Ansi.RED"), equalTo((Object) "\033[31m"));
+		assertThat(source.getProperty("Ansi.RED")).isEqualTo("\033[31m");
 	}
 
 	@Test
 	public void encodeDisabled() throws Exception {
 		AnsiOutput.setEnabled(Enabled.NEVER);
 		AnsiPropertySource source = new AnsiPropertySource("ansi", true);
-		assertThat(source.getProperty("Ansi.RED"), equalTo((Object) ""));
+		assertThat(source.getProperty("Ansi.RED")).isEqualTo("");
 	}
 
 }

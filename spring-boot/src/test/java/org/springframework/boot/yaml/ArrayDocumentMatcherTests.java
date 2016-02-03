@@ -25,7 +25,7 @@ import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link ArrayDocumentMatcher}.

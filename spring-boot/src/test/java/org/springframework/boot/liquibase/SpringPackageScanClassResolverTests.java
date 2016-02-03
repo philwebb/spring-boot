@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for SpringPackageScanClassResolver.

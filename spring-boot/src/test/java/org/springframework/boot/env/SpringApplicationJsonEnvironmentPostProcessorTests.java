@@ -22,7 +22,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.

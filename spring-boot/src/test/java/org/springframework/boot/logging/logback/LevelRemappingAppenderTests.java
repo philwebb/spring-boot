@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.logging.logback.LevelRemappingAppender.AppendableLogger;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

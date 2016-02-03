@@ -23,7 +23,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Integration tests for {@link LoggingApplicationListener}.

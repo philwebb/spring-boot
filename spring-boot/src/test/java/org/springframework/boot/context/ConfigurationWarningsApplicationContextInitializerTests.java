@@ -38,7 +38,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link ConfigurationWarningsApplicationContextInitializer}.

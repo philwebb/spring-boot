@@ -37,8 +37,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+
+
 import static org.mockito.Mockito.verify;
 
 /**

@@ -30,7 +30,7 @@ import org.springframework.core.env.PropertySourcesPropertyResolver;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+
 
 /**
  * Tests for {@link LogFile}.
