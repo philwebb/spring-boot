@@ -49,8 +49,8 @@ public class SampleWebJspApplicationTests {
 	public void testJspWithEl() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("/resources/text.txt"));
 	}
 

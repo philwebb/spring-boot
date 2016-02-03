@@ -57,9 +57,9 @@ public class AutoConfigurationReportEndpointTests
 		this.context.register(this.configClass);
 		this.context.refresh();
 		Report report = getEndpointBean().invoke();
-		assertTrue(report.getPositiveMatches().isEmpty());
-		assertTrue(report.getNegativeMatches().containsKey("a"));
-		assertTrue(report.getExclusions().contains("com.foo.Bar"));
+		assertThat(report.getPositiveMatches().isEmpty()).isTrue();
+		assertThat(report.getNegativeMatches().containsKey("a")).isTrue();
+		assertThat(report.getExclusions().contains("com.foo.Bar")).isTrue();
 	}
 
 	@Configuration

@@ -63,7 +63,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 				Collections.singletonMap("foo", (Object) "spam")));
 		this.context.getEnvironment().getPropertySources().addFirst(source);
 		Map<String, Object> env = report.invoke();
-		assertEquals("bar", ((Map<String, Object>) env.get("composite:one")).get("foo"));
+		assertThat(Object>) env.get("composite:one")).get("foo")).as("bar").isEqualTo(((Map<String);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,13 +97,13 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 		System.setProperty("foo.mycredentials.uri", "123456");
 		EnvironmentEndpoint report = getEndpointBean();
 		Map<String, Object> env = report.invoke();
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+		assertThat(Object>) env.get("systemProperties")).as("******").isEqualTo(((Map<String)
 				.get("my.services.amqp-free.credentials.uri"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+		assertThat(Object>) env.get("systemProperties")).as("******").isEqualTo(((Map<String)
 				.get("credentials.http_api_uri"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+		assertThat(Object>) env.get("systemProperties")).as("******").isEqualTo(((Map<String)
 				.get("my.services.cleardb-free.credentials"));
-		assertEquals("******", ((Map<String, Object>) env.get("systemProperties"))
+		assertThat(Object>) env.get("systemProperties")).as("******").isEqualTo(((Map<String)
 				.get("foo.mycredentials.uri"));
 
 	}

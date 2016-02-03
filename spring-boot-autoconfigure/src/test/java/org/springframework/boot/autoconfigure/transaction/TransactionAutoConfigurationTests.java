@@ -54,7 +54,7 @@ public class TransactionAutoConfigurationTests {
 	@Test
 	public void noTransactionManager() {
 		load(EmptyConfiguration.class);
-		assertEquals(0, this.context.getBeansOfType(TransactionTemplate.class).size());
+		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class TransactionAutoConfigurationTests {
 	@Test
 	public void severalTransactionManagers() {
 		load(SeveralTransactionManagersConfiguration.class);
-		assertEquals(0, this.context.getBeansOfType(TransactionTemplate.class).size());
+		assertThat(this.context.getBeansOfType(TransactionTemplate.class)).isEmpty();
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class TransactionAutoConfigurationTests {
 		load(CustomTransactionManagerConfiguration.class);
 		Map<String, TransactionTemplate> beans = this.context
 				.getBeansOfType(TransactionTemplate.class);
-		assertEquals(1, beans.size());
-		assertTrue(beans.containsKey("transactionTemplateFoo"));
+		assertThat(beans).hasSize(1);
+		assertThat(beans.containsKey("transactionTemplateFoo")).isTrue();
 	}
 
 	private void load(Class<?>... configs) {

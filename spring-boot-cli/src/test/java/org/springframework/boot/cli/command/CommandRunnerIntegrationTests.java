@@ -40,7 +40,7 @@ public class CommandRunnerIntegrationTests {
 		// -d counts as "debug" for the spring command, but not for the
 		// LoggingApplicationListener
 		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertTrue(this.output.toString().contains("Negative matches:"));
+		assertThat(this.output.toString().contains("Negative matches:")).isTrue();
 	}
 
 	@Test
@@ -48,6 +48,6 @@ public class CommandRunnerIntegrationTests {
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new RunCommand());
 		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertFalse(this.output.toString().contains("Negative matches:"));
+		assertThat(this.output.toString().contains("Negative matches:")).isFalse();
 	}
 }

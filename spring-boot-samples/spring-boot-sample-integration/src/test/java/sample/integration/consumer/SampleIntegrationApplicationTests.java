@@ -71,7 +71,7 @@ public class SampleIntegrationApplicationTests {
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
 		String output = getOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat("Wrong output: " + output, output.contains("Hello World")).isTrue();
 	}
 
 	private String getOutput() throws Exception {

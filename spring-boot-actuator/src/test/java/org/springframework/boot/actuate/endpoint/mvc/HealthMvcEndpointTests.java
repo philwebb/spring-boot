@@ -81,8 +81,8 @@ public class HealthMvcEndpointTests {
 	public void up() {
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().up().build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,10 +90,10 @@ public class HealthMvcEndpointTests {
 	public void down() {
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus() == Status.DOWN);
-		assertEquals(HttpStatus.SERVICE_UNAVAILABLE, response.getStatusCode());
+		assertThat(response.getBody().getStatus() == Status.DOWN).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
@@ -104,10 +104,10 @@ public class HealthMvcEndpointTests {
 		this.mvc.setStatusMapping(
 				Collections.singletonMap("OK", HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus().equals(new Status("OK")));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertThat(response.getBody().getStatus().equals(new Status("OK"))).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
@@ -118,10 +118,10 @@ public class HealthMvcEndpointTests {
 		this.mvc.setStatusMapping(Collections.singletonMap("out-of-service",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof ResponseEntity);
+		assertThat(result instanceof ResponseEntity).isTrue();
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
-		assertTrue(response.getBody().getStatus().equals(Status.OUT_OF_SERVICE));
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertThat(response.getBody().getStatus().equals(Status.OUT_OF_SERVICE)).isTrue();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
@@ -130,9 +130,9 @@ public class HealthMvcEndpointTests {
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		given(this.endpoint.isSensitive()).willReturn(false);
 		Object result = this.mvc.invoke(this.admin);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -140,9 +140,9 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.user);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertNull(((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
 	}
 
 	@Test
@@ -152,17 +152,17 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(this.admin);
-		assertTrue(result instanceof Health);
+		assertThat(result instanceof Health).isTrue();
 		Health health = (Health) result;
-		assertTrue(health.getStatus() == Status.UP);
+		assertThat(health.getStatus() == Status.UP).isTrue();
 		assertThat(health.getDetails()).hasSize(equalTo(1));
 		assertThat(health.getDetails().get("foo")).isEqualTo((Object) "bar");
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null); // insecure now
-		assertTrue(result instanceof Health);
+		assertThat(result instanceof Health).isTrue();
 		health = (Health) result;
 		// so the result is cached
-		assertTrue(health.getStatus() == Status.UP);
+		assertThat(health.getStatus() == Status.UP).isTrue();
 		// but the details are hidden
 		assertThat(health.getDetails()).hasSize(equalTo(0));
 	}
@@ -174,9 +174,9 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -185,9 +185,9 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertNull(((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isNull();
 	}
 
 	@Test
@@ -198,9 +198,9 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
-		assertEquals("bar", ((Health) result).getDetails().get("foo"));
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
+		assertThat(((Health) result).getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -209,13 +209,13 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null);
 		@SuppressWarnings("unchecked")
 		Health health = ((ResponseEntity<Health>) result).getBody();
-		assertTrue(health.getStatus() == Status.DOWN);
+		assertThat(health.getStatus() == Status.DOWN).isTrue();
 	}
 
 	@Test
@@ -225,14 +225,14 @@ public class HealthMvcEndpointTests {
 		given(this.endpoint.invoke())
 				.willReturn(new Health.Builder().up().withDetail("foo", "bar").build());
 		Object result = this.mvc.invoke(null);
-		assertTrue(result instanceof Health);
-		assertTrue(((Health) result).getStatus() == Status.UP);
+		assertThat(result instanceof Health).isTrue();
+		assertThat(((Health) result).getStatus() == Status.UP).isTrue();
 		Thread.sleep(100);
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null);
 		@SuppressWarnings("unchecked")
 		Health health = ((ResponseEntity<Health>) result).getBody();
-		assertTrue(health.getStatus() == Status.DOWN);
+		assertThat(health.getStatus() == Status.DOWN).isTrue();
 	}
 
 }

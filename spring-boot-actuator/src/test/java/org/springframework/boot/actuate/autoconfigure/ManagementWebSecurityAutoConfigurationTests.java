@@ -96,7 +96,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 1 for static resources, one for management endpoints and one for the rest
 		assertThat(filterChainProxy.getFilterChains(), hasSize(3));
@@ -110,7 +110,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 	@Test
 	public void testPathNormalization() throws Exception {
 		String path = "admin/./error";
-		assertEquals("admin/error", StringUtils.cleanPath(path));
+		assertThat(StringUtils.cleanPath(path)).isEqualTo("admin/error");
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		assertTrue(user.getAuthorities().containsAll(AuthorityUtils
+		assertThat(user.getAuthorities().isTrue().containsAll(AuthorityUtils
 				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
 	}
 

@@ -129,7 +129,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		repository = new RemoteRepository.Builder(repository).setProxy(proxy).build();
 		AuthenticationContext authenticationContext = AuthenticationContext
 				.forProxy(session, repository);
-		assertEquals("proxy.example.com", proxy.getHost());
+		assertThat(proxy.getHost()).isEqualTo("proxy.example.com");
 		assertEquals("proxyuser",
 				authenticationContext.get(AuthenticationContext.USERNAME));
 		assertEquals("somepassword",
@@ -139,9 +139,9 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	private void assertMirrorSelectorConfiguration(DefaultRepositorySystemSession session,
 			RemoteRepository repository) {
 		RemoteRepository mirror = session.getMirrorSelector().getMirror(repository);
-		assertNotNull("No mirror configured for repository " + repository.getId(),
+		assertThat("No mirror configured for repository " + repository.getId().isNotNull(),
 				mirror);
-		assertEquals("maven.example.com", mirror.getHost());
+		assertThat(mirror.getHost()).isEqualTo("maven.example.com");
 	}
 
 	private void assertAuthenticationSelectorConfiguration(
@@ -155,8 +155,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 		AuthenticationContext authenticationContext = AuthenticationContext
 				.forRepository(session, repository);
 
-		assertEquals("tester", authenticationContext.get(AuthenticationContext.USERNAME));
-		assertEquals("secret", authenticationContext.get(AuthenticationContext.PASSWORD));
+		assertThat(authenticationContext.get(AuthenticationContext.USERNAME)).isEqualTo("tester");
+		assertThat(authenticationContext.get(AuthenticationContext.PASSWORD)).isEqualTo("secret");
 	}
 
 }

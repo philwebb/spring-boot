@@ -53,11 +53,11 @@ public class InsecureSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-		assertFalse("Wrong headers: " + entity.getHeaders(),
+		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
 				entity.getHeaders().containsKey("Set-Cookie"));
 	}
 

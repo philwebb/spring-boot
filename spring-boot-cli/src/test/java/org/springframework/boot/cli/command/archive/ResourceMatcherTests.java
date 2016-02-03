@@ -51,7 +51,7 @@ public class ResourceMatcherTests {
 				Arrays.asList(".*", "alpha/**/excluded"));
 		List<MatchedResource> matchedResources = resourceMatcher
 				.find(Arrays.asList(new File("does-not-exist")));
-		assertEquals(0, matchedResources.size());
+		assertThat(matchedResources).isEmpty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,9 +59,9 @@ public class ResourceMatcherTests {
 	public void defaults() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
 				Arrays.asList(""));
-		assertTrue(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+		assertThat(((Collection<String>).isTrue() ReflectionTestUtils.getField(resourceMatcher,
 				"includes")).contains("static/**"));
-		assertTrue(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+		assertThat(((Collection<String>).isTrue() ReflectionTestUtils.getField(resourceMatcher,
 				"excludes")).contains("**/*.jar"));
 	}
 
@@ -81,8 +81,8 @@ public class ResourceMatcherTests {
 				Arrays.asList(""));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils
 				.getField(resourceMatcher, "includes");
-		assertTrue(includes.contains("templates/**"));
-		assertFalse(includes.contains("static/**"));
+		assertThat(includes.contains("templates/**")).isTrue();
+		assertThat(includes.contains("static/**")).isFalse();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,10 +92,10 @@ public class ResourceMatcherTests {
 				Arrays.asList("-static/**", "foo.jar"), Arrays.asList("-**/*.jar"));
 		Collection<String> includes = (Collection<String>) ReflectionTestUtils
 				.getField(resourceMatcher, "includes");
-		assertTrue(includes.contains("foo.jar"));
-		assertTrue(includes.contains("templates/**"));
-		assertFalse(includes.contains("static/**"));
-		assertFalse(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+		assertThat(includes.contains("foo.jar")).isTrue();
+		assertThat(includes.contains("templates/**")).isTrue();
+		assertThat(includes.contains("static/**")).isFalse();
+		assertThat(((Collection<String>).isFalse() ReflectionTestUtils.getField(resourceMatcher,
 				"excludes")).contains("**/*.jar"));
 	}
 
@@ -104,7 +104,7 @@ public class ResourceMatcherTests {
 	public void excludedDeltas() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
 				Arrays.asList("-**/*.jar"));
-		assertFalse(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+		assertThat(((Collection<String>).isFalse() ReflectionTestUtils.getField(resourceMatcher,
 				"excludes")).contains("**/*.jar"));
 	}
 
@@ -118,7 +118,7 @@ public class ResourceMatcherTests {
 		FooJarMatcher matcher = new FooJarMatcher(MatchedResource.class);
 		assertThat(found, hasItem(matcher));
 		// A jar file is always treated as a dependency (stick it in /lib)
-		assertTrue(matcher.getMatched().isRoot());
+		assertThat(matcher.getMatched().isRoot()).isTrue();
 	}
 
 	@Test
@@ -136,7 +136,7 @@ public class ResourceMatcherTests {
 			paths.add(resource.getName());
 		}
 
-		assertEquals(6, paths.size());
+		assertThat(paths).hasSize(6);
 		assertTrue(paths.containsAll(Arrays.asList("alpha/nested/fileA", "bravo/fileC",
 				"fileD", "bravo/fileE", "fileF", "three")));
 	}

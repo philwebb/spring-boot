@@ -136,8 +136,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().server, "endpointoutput");
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, null);
-		assertTrue(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
-		assertTrue(this.applicationContext.containsBean("applicationContextIdFilter"));
+		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context")).isTrue();
+		assertThat(this.applicationContext.containsBean("applicationContextIdFilter")).isTrue();
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -150,8 +150,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 				BaseConfiguration.class, ServerPortConfig.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
-		assertFalse(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
-		assertFalse(this.applicationContext.containsBean("applicationContextIdFilter"));
+		assertThat(hasHeader("/endpoint", ports.get().server, "X-Application-Context")).isFalse();
+		assertThat(this.applicationContext.containsBean("applicationContextIdFilter")).isFalse();
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -171,7 +171,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getBean(ManagementContextResolver.class).getApplicationContext();
 		List<?> interceptors = (List<?>) ReflectionTestUtils.getField(
 				managementContext.getBean(EndpointHandlerMapping.class), "interceptors");
-		assertEquals(1, interceptors.size());
+		assertThat(interceptors).hasSize(1);
 		this.applicationContext.close();
 		assertAllClosed();
 	}

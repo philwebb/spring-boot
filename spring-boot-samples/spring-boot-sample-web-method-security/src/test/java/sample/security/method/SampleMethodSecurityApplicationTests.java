@@ -62,8 +62,8 @@ public class SampleMethodSecurityApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("<title>Login"));
 	}
 
@@ -79,7 +79,7 @@ public class SampleMethodSecurityApplicationTests {
 				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertEquals("http://localhost:" + this.port + "/",
 				entity.getHeaders().getLocation().toString());
 	}
@@ -96,14 +96,14 @@ public class SampleMethodSecurityApplicationTests {
 				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
-		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
 		ResponseEntity<String> page = new TestRestTemplate().exchange(
 				entity.getHeaders().getLocation(), HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
-		assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(),
+		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+		assertThat("Wrong body (message doesn't match):\n" + entity.getBody().isTrue(),
 				page.getBody().contains("Access denied"));
 	}
 
@@ -111,21 +111,21 @@ public class SampleMethodSecurityApplicationTests {
 	public void testManagementProtected() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testManagementAuthorizedAccess() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
 				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void testManagementUnauthorizedAccess() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
 				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
-		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {

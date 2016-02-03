@@ -42,7 +42,7 @@ public class LinkedInAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(LinkedIn.class));
+		assertThat(this.context.getBean(LinkedIn.class)).isNotNull();
 	}
 
 	@Test

@@ -60,8 +60,8 @@ public class SampleTomcatSslApplicationTests {
 				.setHttpClient(httpClient);
 		ResponseEntity<String> entity = testRestTemplate
 				.getForEntity("https://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello, world", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("Hello, world");
 	}
 
 }

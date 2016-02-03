@@ -77,7 +77,7 @@ public class MongoDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class MongoDataAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(GridFsTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length).isEqualTo(1);
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class MongoDataAutoConfigurationTests {
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertTrue(template.getConverter().getConversionService().canConvert(Mongo.class,
+		assertThat(template.getConverter().getConversionService().isTrue().canConvert(Mongo.class,
 				Boolean.class));
 	}
 
@@ -155,7 +155,7 @@ public class MongoDataAutoConfigurationTests {
 				.getBean(MongoMappingContext.class);
 		FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
 				.getField(mappingContext, "fieldNamingStrategy");
-		assertEquals(expectedType, fieldNamingStrategy.getClass());
+		assertThat(fieldNamingStrategy.getClass()).isEqualTo(expectedType);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

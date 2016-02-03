@@ -54,19 +54,19 @@ public class ServletPathSampleActuatorApplicationTests {
 		ResponseEntity<Map> entity = new TestRestTemplate("user", "password")
 				.getForEntity("http://localhost:" + this.port + "/spring/error",
 						Map.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("None", body.get("error"));
-		assertEquals(999, body.get("status"));
+		assertThat(body.get("error")).isEqualTo("None");
+		assertThat(body.get("status")).isEqualTo(999);
 	}
 
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/spring/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
@@ -75,11 +75,11 @@ public class ServletPathSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/spring/", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(),
+		assertThat(body.get("error")).isEqualTo("Wrong body: " + body, "Unauthorized");
+		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
 				entity.getHeaders().containsKey("Set-Cookie"));
 	}
 

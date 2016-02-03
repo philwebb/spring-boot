@@ -66,7 +66,7 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
 		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
 		assertThat(client.settings().get("node.local")).isEqualTo("true");
@@ -86,7 +86,7 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
 		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
 		assertThat(client.settings().get("node.local")).isEqualTo("false");
@@ -101,7 +101,7 @@ public class ElasticsearchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
+		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
 		assertSame(this.context.getBean("myClient"), this.context.getBean(Client.class));
 	}
 

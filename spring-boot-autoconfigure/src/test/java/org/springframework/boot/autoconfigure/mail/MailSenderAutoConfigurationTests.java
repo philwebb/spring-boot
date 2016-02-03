@@ -100,9 +100,9 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.host:" + host);
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
-		assertEquals(host, bean.getHost());
-		assertEquals(JavaMailSenderImpl.DEFAULT_PORT, bean.getPort());
-		assertEquals(JavaMailSenderImpl.DEFAULT_PROTOCOL, bean.getProtocol());
+		assertThat(bean.getHost()).isEqualTo(host);
+		assertThat(bean.getPort()).isEqualTo(JavaMailSenderImpl.DEFAULT_PORT);
+		assertThat(bean.getProtocol()).isEqualTo(JavaMailSenderImpl.DEFAULT_PROTOCOL);
 	}
 
 	@Test
@@ -113,12 +113,12 @@ public class MailSenderAutoConfigurationTests {
 				"spring.mail.default-encoding:US-ASCII", "spring.mail.protocol:smtps");
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
-		assertEquals(host, bean.getHost());
-		assertEquals(42, bean.getPort());
-		assertEquals("john", bean.getUsername());
-		assertEquals("secret", bean.getPassword());
-		assertEquals("US-ASCII", bean.getDefaultEncoding());
-		assertEquals("smtps", bean.getProtocol());
+		assertThat(bean.getHost()).isEqualTo(host);
+		assertThat(bean.getPort()).isEqualTo(42);
+		assertThat(bean.getUsername()).isEqualTo("john");
+		assertThat(bean.getPassword()).isEqualTo("secret");
+		assertThat(bean.getDefaultEncoding()).isEqualTo("US-ASCII");
+		assertThat(bean.getProtocol()).isEqualTo("smtps");
 	}
 
 	@Test
@@ -127,13 +127,13 @@ public class MailSenderAutoConfigurationTests {
 				"spring.mail.properties.mail.smtp.auth:true");
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
-		assertEquals("true", bean.getJavaMailProperties().get("mail.smtp.auth"));
+		assertThat(bean.getJavaMailProperties().get("mail.smtp.auth")).isEqualTo("true");
 	}
 
 	@Test
 	public void smtpHostNotSet() {
 		load(EmptyConfig.class);
-		assertEquals(0, this.context.getBeansOfType(JavaMailSender.class).size());
+		assertThat(this.context.getBeansOfType(JavaMailSender.class)).isEmpty();
 	}
 
 	@Test
@@ -142,8 +142,8 @@ public class MailSenderAutoConfigurationTests {
 				"spring.mail.user:user", "spring.mail.password:secret");
 		JavaMailSenderImpl bean = (JavaMailSenderImpl) this.context
 				.getBean(JavaMailSender.class);
-		assertNull(bean.getUsername());
-		assertNull(bean.getPassword());
+		assertThat(bean.getUsername()).isNull();
+		assertThat(bean.getPassword()).isNull();
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class MailSenderAutoConfigurationTests {
 		Session session = configureJndiSession("foo");
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 		Session sessionBean = this.context.getBean(Session.class);
-		assertEquals(session, sessionBean);
+		assertThat(sessionBean).isEqualTo(session);
 		assertEquals(sessionBean,
 				this.context.getBean(JavaMailSenderImpl.class).getSession());
 	}
@@ -160,16 +160,16 @@ public class MailSenderAutoConfigurationTests {
 	public void jndiSessionIgnoredIfJndiNameNotSet() throws NamingException {
 		configureJndiSession("foo");
 		load(EmptyConfig.class, "spring.mail.host:smtp.acme.org");
-		assertEquals(0, this.context.getBeanNamesForType(Session.class).length);
-		assertNotNull(this.context.getBean(JavaMailSender.class));
+		assertThat(this.context.getBeanNamesForType(Session.class).length).isEqualTo(0);
+		assertThat(this.context.getBean(JavaMailSender.class)).isNotNull();
 	}
 
 	@Test
 	public void jndiSessionNotUsedIfJndiNameNotSet() throws NamingException {
 		configureJndiSession("foo");
 		load(EmptyConfig.class);
-		assertEquals(0, this.context.getBeanNamesForType(Session.class).length);
-		assertEquals(0, this.context.getBeanNamesForType(JavaMailSender.class).length);
+		assertThat(this.context.getBeanNamesForType(Session.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(JavaMailSender.class).length).isEqualTo(0);
 	}
 
 	@Test

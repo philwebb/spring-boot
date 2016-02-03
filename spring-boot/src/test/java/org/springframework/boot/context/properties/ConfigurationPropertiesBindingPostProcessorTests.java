@@ -125,7 +125,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		ConfigurationPropertiesBindingPostProcessor bean = this.context
 				.getBean(ConfigurationPropertiesBindingPostProcessor.class);
-		assertNull(ReflectionTestUtils.getField(bean, "validator"));
+		assertThat(ReflectionTestUtils.getField(bean, "validator")).isNull();
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 		this.context.registerBeanDefinition("test", beanDefinition);
 		this.context.refresh();
-		assertTrue("No init", ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
+		assertThat(ConfigurationPropertiesWithFactoryBean.factoryBeanInit).as("No init").isTrue();
 	}
 
 	@Test
@@ -337,7 +337,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
-			assertEquals(errorCount, bex.getErrorCount());
+			assertThat(bex.getErrorCount()).isEqualTo(errorCount);
 		}
 	}
 
@@ -434,7 +434,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		@PostConstruct
 		public void init() {
-			assertNotNull(this.bar);
+			assertThat(this.bar).isNotNull();
 		}
 
 	}

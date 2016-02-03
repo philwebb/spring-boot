@@ -49,7 +49,7 @@ public class CommonsDbcpDataSourceConfigurationTests {
 	public void testDataSourceExists() throws Exception {
 		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		this.context.close();
 	}
 
@@ -68,13 +68,13 @@ public class CommonsDbcpDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
-		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
-		assertTrue(ds.getTestWhileIdle());
-		assertTrue(ds.getTestOnBorrow());
-		assertTrue(ds.getTestOnReturn());
-		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
-		assertEquals(1234, ds.getMaxWait());
+		assertThat(ds.getUrl()).isEqualTo("jdbc:foo//bar/spam");
+		assertThat(ds.getTestWhileIdle()).isTrue();
+		assertThat(ds.getTestOnBorrow()).isTrue();
+		assertThat(ds.getTestOnReturn()).isTrue();
+		assertThat(ds.getTimeBetweenEvictionRunsMillis()).isEqualTo(10000);
+		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(12345);
+		assertThat(ds.getMaxWait()).isEqualTo(1234);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class CommonsDbcpDataSourceConfigurationTests {
 				ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
 				ds.getMinEvictableIdleTimeMillis());
-		assertEquals(GenericObjectPool.DEFAULT_MAX_WAIT, ds.getMaxWait());
+		assertThat(ds.getMaxWait()).isEqualTo(GenericObjectPool.DEFAULT_MAX_WAIT);
 	}
 
 	@Configuration

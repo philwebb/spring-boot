@@ -43,7 +43,7 @@ public class MetricReaderPublicMetricsTests {
 		MetricReader reader = mock(MetricReader.class);
 		given(reader.findAll()).willReturn(metrics);
 		MetricReaderPublicMetrics publicMetrics = new MetricReaderPublicMetrics(reader);
-		assertEquals(metrics, publicMetrics.metrics());
+		assertThat(publicMetrics.metrics()).isEqualTo(metrics);
 	}
 
 }

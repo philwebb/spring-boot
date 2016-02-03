@@ -87,8 +87,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						AbstractDeviceDelegatingViewResolver.class);
-		assertNotNull(internalResourceViewResolver);
-		assertNotNull(deviceDelegatingViewResolver);
+		assertThat(internalResourceViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver).isNotNull();
 		assertTrue(deviceDelegatingViewResolver
 				.getViewResolver() instanceof InternalResourceViewResolver);
 		try {
@@ -111,7 +111,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
@@ -138,12 +138,12 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
 				.getBean("deviceDelegatingViewResolver",
 						AbstractDeviceDelegatingViewResolver.class);
-		assertNotNull(thymeleafViewResolver);
-		assertNotNull(deviceDelegatingViewResolver);
+		assertThat(thymeleafViewResolver).isNotNull();
+		assertThat(deviceDelegatingViewResolver).isNotNull();
 		assertTrue(deviceDelegatingViewResolver
 				.getViewResolver() instanceof ThymeleafViewResolver);
-		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
-		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
 		assertTrue(deviceDelegatingViewResolver
 				.getOrder() == thymeleafViewResolver.getOrder() - 1);
 	}
@@ -159,8 +159,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
-		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
+		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
 		this.context.getBean("deviceDelegatingViewResolver",
 				AbstractDeviceDelegatingViewResolver.class);
 	}
@@ -181,13 +181,13 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 		DirectFieldAccessor accessor = new DirectFieldAccessor(
 				liteDeviceDelegatingViewResolver);
-		assertEquals(false, accessor.getPropertyValue("enableFallback"));
-		assertEquals("", accessor.getPropertyValue("normalPrefix"));
-		assertEquals("mobile/", accessor.getPropertyValue("mobilePrefix"));
-		assertEquals("tablet/", accessor.getPropertyValue("tabletPrefix"));
-		assertEquals("", accessor.getPropertyValue("normalSuffix"));
-		assertEquals("", accessor.getPropertyValue("mobileSuffix"));
-		assertEquals("", accessor.getPropertyValue("tabletSuffix"));
+		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(false);
+		assertThat(accessor.getPropertyValue("normalPrefix")).isEqualTo("");
+		assertThat(accessor.getPropertyValue("mobilePrefix")).isEqualTo("mobile/");
+		assertThat(accessor.getPropertyValue("tabletPrefix")).isEqualTo("tablet/");
+		assertThat(accessor.getPropertyValue("normalSuffix")).isEqualTo("");
+		assertThat(accessor.getPropertyValue("mobileSuffix")).isEqualTo("");
+		assertThat(accessor.getPropertyValue("tabletSuffix")).isEqualTo("");
 	}
 
 	@Test
@@ -195,7 +195,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
-		assertEquals(true, accessor.getPropertyValue("enableFallback"));
+		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(true);
 	}
 
 	@Test
@@ -203,7 +203,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.normalPrefix:normal/");
-		assertEquals("normal/", accessor.getPropertyValue("normalPrefix"));
+		assertThat(accessor.getPropertyValue("normalPrefix")).isEqualTo("normal/");
 	}
 
 	@Test
@@ -211,7 +211,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.mobilePrefix:mob/");
-		assertEquals("mob/", accessor.getPropertyValue("mobilePrefix"));
+		assertThat(accessor.getPropertyValue("mobilePrefix")).isEqualTo("mob/");
 	}
 
 	@Test
@@ -219,7 +219,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.tabletPrefix:tab/");
-		assertEquals("tab/", accessor.getPropertyValue("tabletPrefix"));
+		assertThat(accessor.getPropertyValue("tabletPrefix")).isEqualTo("tab/");
 	}
 
 	@Test
@@ -227,7 +227,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.normalSuffix:.nor");
-		assertEquals(".nor", accessor.getPropertyValue("normalSuffix"));
+		assertThat(accessor.getPropertyValue("normalSuffix")).isEqualTo(".nor");
 	}
 
 	@Test
@@ -235,7 +235,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.mobileSuffix:.mob");
-		assertEquals(".mob", accessor.getPropertyValue("mobileSuffix"));
+		assertThat(accessor.getPropertyValue("mobileSuffix")).isEqualTo(".mob");
 	}
 
 	@Test
@@ -243,7 +243,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.tabletSuffix:.tab");
-		assertEquals(".tab", accessor.getPropertyValue("tabletSuffix"));
+		assertThat(accessor.getPropertyValue("tabletSuffix")).isEqualTo(".tab");
 	}
 
 	private PropertyAccessor getLiteDeviceDelegatingViewResolverAccessor(

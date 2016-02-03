@@ -78,10 +78,10 @@ public class RabbitAutoConfigurationTests {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		RabbitAdmin amqpAdmin = this.context.getBean(RabbitAdmin.class);
-		assertEquals(connectionFactory, rabbitTemplate.getConnectionFactory());
-		assertEquals(rabbitTemplate, messagingTemplate.getRabbitTemplate());
-		assertNotNull(amqpAdmin);
-		assertEquals("localhost", connectionFactory.getHost());
+		assertThat(rabbitTemplate.getConnectionFactory()).isEqualTo(connectionFactory);
+		assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
+		assertThat(amqpAdmin).isNotNull();
+		assertThat(connectionFactory.getHost()).isEqualTo("localhost");
 		assertTrue("Listener container factory should be created by default",
 				this.context.containsBean("rabbitListenerContainerFactory"));
 	}
@@ -93,9 +93,9 @@ public class RabbitAutoConfigurationTests {
 				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("remote-server", connectionFactory.getHost());
-		assertEquals(9000, connectionFactory.getPort());
-		assertEquals("/vhost", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
+		assertThat(connectionFactory.getPort()).isEqualTo(9000);
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("/", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:foo");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("foo", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("foo");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:///foo");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("///foo", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("///foo");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration.class, "spring.rabbitmq.virtual_host:/");
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("/", connectionFactory.getVirtualHost());
+		assertThat(connectionFactory.getVirtualHost()).isEqualTo("/");
 	}
 
 	@Test
@@ -136,9 +136,9 @@ public class RabbitAutoConfigurationTests {
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals("otherserver", connectionFactory.getHost());
-		assertEquals(8001, connectionFactory.getPort());
+		assertThat(connectionFactory).isEqualTo(rabbitTemplate.getConnectionFactory());
+		assertThat(connectionFactory.getHost()).isEqualTo("otherserver");
+		assertThat(connectionFactory.getPort()).isEqualTo(8001);
 	}
 
 	@Test
@@ -154,7 +154,7 @@ public class RabbitAutoConfigurationTests {
 		load(TestConfiguration4.class);
 		RabbitMessagingTemplate messagingTemplate = this.context
 				.getBean(RabbitMessagingTemplate.class);
-		assertEquals("fooBar", messagingTemplate.getDefaultDestination());
+		assertThat(messagingTemplate.getDefaultDestination()).isEqualTo("fooBar");
 	}
 
 	@Test
@@ -199,12 +199,12 @@ public class RabbitAutoConfigurationTests {
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-		assertEquals(false, dfa.getPropertyValue("autoStartup"));
-		assertEquals(AcknowledgeMode.MANUAL, dfa.getPropertyValue("acknowledgeMode"));
-		assertEquals(5, dfa.getPropertyValue("concurrentConsumers"));
-		assertEquals(10, dfa.getPropertyValue("maxConcurrentConsumers"));
-		assertEquals(40, dfa.getPropertyValue("prefetchCount"));
-		assertEquals(20, dfa.getPropertyValue("txSize"));
+		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(false);
+		assertThat(dfa.getPropertyValue("acknowledgeMode")).isEqualTo(AcknowledgeMode.MANUAL);
+		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
+		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
+		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
+		assertThat(dfa.getPropertyValue("txSize")).isEqualTo(20);
 	}
 
 	@Test
@@ -221,14 +221,14 @@ public class RabbitAutoConfigurationTests {
 	public void customizeRequestedHeartBeat() {
 		load(TestConfiguration.class, "spring.rabbitmq.requestedHeartbeat:20");
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
-		assertEquals(20, rabbitConnectionFactory.getRequestedHeartbeat());
+		assertThat(rabbitConnectionFactory.getRequestedHeartbeat()).isEqualTo(20);
 	}
 
 	@Test
 	public void noSslByDefault() {
 		load(TestConfiguration.class);
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
-		assertEquals("Must use default SocketFactory", SocketFactory.getDefault(),
+		assertThat(SocketFactory.getDefault().isEqualTo("Must use default SocketFactory"),
 				rabbitConnectionFactory.getSocketFactory());
 	}
 

@@ -72,8 +72,8 @@ public class CustomContainerWebSocketsApplicationTests {
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
-		assertEquals(0, count);
-		assertEquals("Did you say \"Hello world!\"?", messagePayloadReference.get());
+		assertThat(count).isEqualTo(0);
+		assertThat(messagePayloadReference.get()).isEqualTo("Did you say \"Hello world!\"?");
 	}
 
 	@Test
@@ -87,8 +87,8 @@ public class CustomContainerWebSocketsApplicationTests {
 		AtomicReference<String> messagePayloadReference = context
 				.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
-		assertEquals(0, count);
-		assertEquals("Reversed: !dlrow olleH", messagePayloadReference.get());
+		assertThat(count).isEqualTo(0);
+		assertThat(messagePayloadReference.get()).isEqualTo("Reversed: !dlrow olleH");
 	}
 
 	@Configuration

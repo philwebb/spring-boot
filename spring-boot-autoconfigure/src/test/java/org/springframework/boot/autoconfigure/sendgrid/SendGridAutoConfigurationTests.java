@@ -55,8 +55,8 @@ public class SendGridAutoConfigurationTests {
 	public void expectedSendGridBeanCreatedUsername() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertEquals("user", ReflectionTestUtils.getField(sendGrid, "username"));
-		assertEquals("secret", ReflectionTestUtils.getField(sendGrid, "password"));
+		assertThat("username")).as("user").isEqualTo(ReflectionTestUtils.getField(sendGrid);
+		assertThat("password")).as("secret").isEqualTo(ReflectionTestUtils.getField(sendGrid);
 	}
 
 	@Test
@@ -78,8 +78,8 @@ public class SendGridAutoConfigurationTests {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.username:user",
 				"spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertEquals("manual-user", ReflectionTestUtils.getField(sendGrid, "username"));
-		assertEquals("manual-secret", ReflectionTestUtils.getField(sendGrid, "password"));
+		assertThat("username")).as("manual-user").isEqualTo(ReflectionTestUtils.getField(sendGrid);
+		assertThat("password")).as("manual-secret").isEqualTo(ReflectionTestUtils.getField(sendGrid);
 	}
 
 	@Test

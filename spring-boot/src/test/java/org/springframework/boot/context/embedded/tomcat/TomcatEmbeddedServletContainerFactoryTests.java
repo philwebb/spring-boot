@@ -235,14 +235,14 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setUriEncoding(Charset.forName("US-ASCII"));
 		Tomcat tomcat = getTomcat(factory);
-		assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
+		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("US-ASCII");
 	}
 
 	@Test
 	public void defaultUriEncoding() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Tomcat tomcat = getTomcat(factory);
-		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
+		assertThat(tomcat.getConnector().getURIEncoding()).isEqualTo("UTF-8");
 	}
 
 	@Test

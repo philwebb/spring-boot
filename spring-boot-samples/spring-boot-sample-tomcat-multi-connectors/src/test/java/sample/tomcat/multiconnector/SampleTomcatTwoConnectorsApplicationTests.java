@@ -111,13 +111,13 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 		ResponseEntity<String> entity = template.getForEntity(
 				"http://localhost:" + this.context.getBean("port") + "/hello",
 				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("hello", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("hello");
 
 		ResponseEntity<String> httpsEntity = template
 				.getForEntity("https://localhost:" + this.port + "/hello", String.class);
-		assertEquals(HttpStatus.OK, httpsEntity.getStatusCode());
-		assertEquals("hello", httpsEntity.getBody());
+		assertThat(httpsEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(httpsEntity.getBody()).isEqualTo("hello");
 
 	}
 

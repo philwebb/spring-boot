@@ -61,13 +61,13 @@ public class SampleIntegrationTests {
 	public void beansSample() throws Exception {
 		this.cli.run("beans.groovy");
 		String output = this.cli.getHttpOutput();
-		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+		assertThat("Wrong output: " + output, output.contains("Hello World!")).isTrue();
 	}
 
 	@Test
 	public void templateSample() throws Exception {
 		String output = this.cli.run("template.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+		assertThat("Wrong output: " + output, output.contains("Hello World!")).isTrue();
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class SampleIntegrationTests {
 			Thread.sleep(200);
 			output = this.cli.getOutput();
 		}
-		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+		assertThat("Wrong output: " + output, output.contains("Hello Phil")).isTrue();
 	}
 
 	@Test
@@ -103,52 +103,52 @@ public class SampleIntegrationTests {
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 		String result = this.cli.getHttpOutput();
-		assertEquals("World!", result);
+		assertThat(result).isEqualTo("World!");
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		this.cli.run("web.groovy");
-		assertEquals("World!", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("World!");
 	}
 
 	@Test
 	public void uiSample() throws Exception {
 		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
 		String result = this.cli.getHttpOutput();
-		assertTrue("Wrong output: " + result, result.contains("Hello World"));
+		assertThat("Wrong output: " + result, result.contains("Hello World")).isTrue();
 		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
-		assertTrue("Wrong output: " + result, result.contains("container"));
+		assertThat("Wrong output: " + result, result.contains("container")).isTrue();
 	}
 
 	@Test
 	public void actuatorSample() throws Exception {
 		this.cli.run("actuator.groovy");
-		assertEquals("{\"message\":\"Hello World!\"}", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("{\"message\":\"Hello World!\"}");
 	}
 
 	@Test
 	public void httpSample() throws Exception {
 		String output = this.cli.run("http.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat("Wrong output: " + output, output.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void integrationSample() throws Exception {
 		String output = this.cli.run("integration.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
+		assertThat("Wrong output: " + output, output.contains("Hello, World")).isTrue();
 	}
 
 	@Test
 	public void xmlSample() throws Exception {
 		String output = this.cli.run("runner.xml", "runner.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		assertThat("Wrong output: " + output, output.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void txSample() throws Exception {
 		String output = this.cli.run("tx.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Foo count="));
+		assertThat("Wrong output: " + output, output.contains("Foo count=")).isTrue();
 	}
 
 	@Test
@@ -169,7 +169,7 @@ public class SampleIntegrationTests {
 	@Test
 	public void deviceSample() throws Exception {
 		this.cli.run("device.groovy");
-		assertEquals("Hello Normal Device!", this.cli.getHttpOutput());
+		assertThat(this.cli.getHttpOutput()).isEqualTo("Hello Normal Device!");
 	}
 
 	@Test

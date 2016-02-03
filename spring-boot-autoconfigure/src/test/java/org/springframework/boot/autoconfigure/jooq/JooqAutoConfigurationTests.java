@@ -88,7 +88,7 @@ public class JooqAutoConfigurationTests {
 	public void noDataSource() throws Exception {
 		registerAndRefresh(JooqAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		assertEquals(0, this.context.getBeanNamesForType(DSLContext.class).length);
+		assertThat(this.context.getBeanNamesForType(DSLContext.class).length).isEqualTo(0);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class JooqAutoConfigurationTests {
 				JooqAutoConfiguration.class);
 		this.context.getBean(PlatformTransactionManager.class);
 		DSLContext dsl = this.context.getBean(DSLContext.class);
-		assertEquals(SQLDialect.H2, dsl.configuration().dialect());
+		assertThat(dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
 		dsl.execute("create table jooqtest_tx (name varchar(255) primary key);");
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;",
 				equalTo("0")));

@@ -76,7 +76,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		MetricExporters exporter = this.context.getBean(MetricExporters.class);
-		assertNotNull(exporter);
+		assertThat(exporter).isNotNull();
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
-		assertNotNull(gaugeService);
+		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		MetricExporters exporters = this.context.getBean(MetricExporters.class);
 		MetricCopyExporter exporter = (MetricCopyExporter) exporters.getExporters()

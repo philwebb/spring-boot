@@ -109,7 +109,7 @@ public class LogFileMvcEndpointTests {
 				"/logfile");
 		this.mvc.invoke(request, response);
 		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
-		assertEquals("--TEST--", response.getContentAsString());
+		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
 	}
 
 }

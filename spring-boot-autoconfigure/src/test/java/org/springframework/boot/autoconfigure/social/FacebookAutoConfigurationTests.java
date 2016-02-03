@@ -42,7 +42,7 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Facebook.class));
+		assertThat(this.context.getBean(Facebook.class)).isNotNull();
 	}
 
 	@Test

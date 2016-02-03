@@ -46,12 +46,12 @@ public class SpringJUnitTests {
 
 	@Test
 	public void testContextCreated() {
-		assertNotNull(this.context);
+		assertThat(this.context).isNotNull();
 	}
 
 	@Test
 	public void testContextInitialized() {
-		assertEquals("bucket", this.foo);
+		assertThat(this.foo).isEqualTo("bucket");
 	}
 
 	@Configuration

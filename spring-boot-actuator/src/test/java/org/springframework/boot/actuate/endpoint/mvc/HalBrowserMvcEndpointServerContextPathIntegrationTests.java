@@ -68,8 +68,8 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"_links\":"));
 	}
 
@@ -80,8 +80,8 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("<title"));
 	}
 
@@ -92,8 +92,8 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/actuator", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"_links\":"));
 	}
 
@@ -104,8 +104,8 @@ public class HalBrowserMvcEndpointServerContextPathIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/spring/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"_links\":"));
 	}
 

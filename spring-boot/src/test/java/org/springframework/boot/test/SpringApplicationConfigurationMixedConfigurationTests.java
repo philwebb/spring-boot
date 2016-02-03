@@ -43,8 +43,8 @@ public class SpringApplicationConfigurationMixedConfigurationTests {
 
 	@Test
 	public void mixedConfigClasses() {
-		assertNotNull(this.foo);
-		assertNotNull(this.config);
+		assertThat(this.foo).isNotNull();
+		assertThat(this.config).isNotNull();
 	}
 
 	@Configuration

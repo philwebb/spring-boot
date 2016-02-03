@@ -187,11 +187,11 @@ public class BasicErrorControllerIntegrationTests {
 
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
 			Class<?> exception, String message, String path) {
-		assertEquals("Wrong status", status, content.get("status"));
-		assertEquals("Wrong error", error, content.get("error"));
-		assertEquals("Wrong exception", exception.getName(), content.get("exception"));
-		assertEquals("Wrong message", message, content.get("message"));
-		assertEquals("Wrong path", path, content.get("path"));
+		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
+		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
+		assertThat(content.get("exception")).as("Wrong exception").isEqualTo(exception.getName());
+		assertThat(content.get("message")).as("Wrong message").isEqualTo(message);
+		assertThat(content.get("path")).as("Wrong path").isEqualTo(path);
 	}
 
 	private String createUrl(String path) {

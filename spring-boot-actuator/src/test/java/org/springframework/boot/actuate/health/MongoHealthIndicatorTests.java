@@ -58,10 +58,10 @@ public class MongoHealthIndicatorTests {
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EndpointAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length).isEqualTo(1);
 		MongoHealthIndicator healthIndicator = this.context
 				.getBean(MongoHealthIndicator.class);
-		assertNotNull(healthIndicator);
+		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class MongoHealthIndicatorTests {
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("2.6.4", health.getDetails().get("version"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("version")).isEqualTo("2.6.4");
 
 		verify(commandResult).getString("version");
 		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
@@ -88,8 +88,8 @@ public class MongoHealthIndicatorTests {
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
 		Health health = healthIndicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertTrue(((String) health.getDetails().get("error"))
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(((String) health.getDetails().get("error")).isTrue()
 				.contains("Connection failed"));
 
 		verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");

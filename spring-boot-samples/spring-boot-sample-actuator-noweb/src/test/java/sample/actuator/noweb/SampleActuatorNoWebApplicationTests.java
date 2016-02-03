@@ -42,7 +42,7 @@ public class SampleActuatorNoWebApplicationTests {
 
 	@Test
 	public void endpointsExist() throws Exception {
-		assertNotNull(this.endpoint);
+		assertThat(this.endpoint).isNotNull();
 	}
 
 }

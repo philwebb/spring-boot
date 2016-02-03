@@ -67,7 +67,7 @@ public class JerseyAutoConfigurationWithoutApplicationPathTests {
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/api/hello", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@MinimalWebConfiguration

@@ -72,8 +72,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void noObjectMapperMeansNoConverter() throws Exception {
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.getBeansOfType(ObjectMapper.class).isEmpty());
-		assertTrue(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class)
+		assertThat(this.context.getBeansOfType(ObjectMapper.class).isEmpty()).isTrue();
+		assertThat(this.context.getBeansOfType(MappingJackson2HttpMessageConverter.class).isTrue()
 				.isEmpty());
 		assertTrue(this.context
 				.getBeansOfType(MappingJackson2XmlHttpMessageConverter.class).isEmpty());
@@ -124,8 +124,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	public void noGson() throws Exception {
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.getBeansOfType(Gson.class).isEmpty());
-		assertTrue(this.context.getBeansOfType(GsonHttpMessageConverter.class).isEmpty());
+		assertThat(this.context.getBeansOfType(Gson.class).isEmpty()).isTrue();
+		assertThat(this.context.getBeansOfType(GsonHttpMessageConverter.class).isEmpty()).isTrue();
 	}
 
 	@Test
@@ -234,16 +234,16 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	private void assertConverterBeanExists(Class<?> type, String beanName) {
-		assertEquals(1, this.context.getBeansOfType(type).size());
+		assertThat(this.context.getBeansOfType(type)).hasSize(1);
 		List<String> beanNames = Arrays.asList(this.context.getBeanDefinitionNames());
-		assertTrue(beanName + " not found in " + beanNames, beanNames.contains(beanName));
+		assertThat(beanName + " not found in " + beanNames, beanNames.contains(beanName)).isTrue();
 	}
 
 	private void assertConverterBeanRegisteredWithHttpMessageConverters(Class<?> type) {
 		Object converter = this.context.getBean(type);
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
-		assertTrue(converters.getConverters().contains(converter));
+		assertThat(converters.getConverters().contains(converter)).isTrue();
 	}
 
 	@Configuration

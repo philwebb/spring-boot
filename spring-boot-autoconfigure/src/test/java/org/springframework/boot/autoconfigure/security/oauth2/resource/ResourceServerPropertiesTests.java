@@ -41,7 +41,7 @@ public class ResourceServerPropertiesTests {
 		String json = mapper.writeValueAsString(this.properties);
 		Map<String, Object> value = mapper.readValue(json, Map.class);
 		Map<String, Object> jwt = (Map<String, Object>) value.get("jwt");
-		assertNotNull("Wrong json: " + json, jwt.get("keyUri"));
+		assertThat("Wrong json: " + json, jwt.get("keyUri")).isNotNull();
 	}
 
 	@Test

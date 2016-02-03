@@ -41,7 +41,7 @@ public class MvcEndpointsTests {
 				new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
+		assertThat(this.endpoints.getEndpoints()).hasSize(1);
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class MvcEndpointsTests {
 				new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
+		assertThat(this.endpoints.getEndpoints()).hasSize(1);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class MvcEndpointsTests {
 				new EndpointMvcAdapter(new TestEndpoint()));
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
+		assertThat(this.endpoints.getEndpoints()).hasSize(1);
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class MvcEndpointsTests {
 				new TestEndpoint());
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
-		assertEquals(1, this.endpoints.getEndpoints().size());
+		assertThat(this.endpoints.getEndpoints()).hasSize(1);
 		assertEquals("/foo/bar",
 				this.endpoints.getEndpoints().iterator().next().getPath());
 	}

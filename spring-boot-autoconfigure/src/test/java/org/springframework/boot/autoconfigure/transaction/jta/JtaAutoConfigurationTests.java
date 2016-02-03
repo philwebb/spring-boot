@@ -107,8 +107,8 @@ public class JtaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.jta.enabled:false");
 		this.context.register(JtaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeansOfType(JtaTransactionManager.class).size());
-		assertEquals(0, this.context.getBeansOfType(XADataSourceWrapper.class).size());
+		assertThat(this.context.getBeansOfType(JtaTransactionManager.class)).isEmpty();
+		assertThat(this.context.getBeansOfType(XADataSourceWrapper.class)).isEmpty();
 		assertEquals(0,
 				this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
 	}
@@ -172,7 +172,7 @@ public class JtaAutoConfigurationTests {
 
 		File epochFile = new File("target/transaction-logs/"
 				+ InetAddress.getLocalHost().getHostAddress() + ".tm0.epoch");
-		assertTrue(epochFile.isFile());
+		assertThat(epochFile.isFile()).isTrue();
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 
 		File epochFile = new File("target/transaction-logs/custom0.epoch");
-		assertTrue(epochFile.isFile());
+		assertThat(epochFile.isFile()).isTrue();
 	}
 
 	@Test

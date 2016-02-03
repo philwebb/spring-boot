@@ -73,7 +73,7 @@ public class SampleUndertowApplicationTests {
 		ResponseEntity<byte[]> entity = restTemplate.exchange(
 				"http://localhost:" + this.port, HttpMethod.GET, requestEntity,
 				byte[].class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()));
 		try {
@@ -88,8 +88,8 @@ public class SampleUndertowApplicationTests {
 	private void assertOkResponse(String path, String body) {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + path, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals(body, entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo(body);
 	}
 
 }

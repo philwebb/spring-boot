@@ -536,9 +536,9 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void incrementalBuild() throws Exception {
 		TestProject project = new TestProject(this.temporaryFolder, FooProperties.class,
 				BarProperties.class);
-		assertFalse(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
+		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isFalse();
 		ConfigurationMetadata metadata = project.fullBuild();
-		assertTrue(project.getOutputFile(MetadataStore.METADATA_PATH).exists());
+		assertThat(project.getOutputFile(MetadataStore.METADATA_PATH).exists()).isTrue();
 		assertThat(metadata,
 				containsProperty("foo.counter").fromSource(FooProperties.class));
 		assertThat(metadata,

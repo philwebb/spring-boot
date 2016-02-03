@@ -43,7 +43,7 @@ public class CounterBuffersTests {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});
-		assertEquals(2, this.value);
+		assertThat(this.value).isEqualTo(2);
 	}
 
 	@Test
@@ -54,12 +54,12 @@ public class CounterBuffersTests {
 				CounterBuffersTests.this.value = buffer.getValue();
 			}
 		});
-		assertEquals(0, this.value);
+		assertThat(this.value).isEqualTo(0);
 	}
 
 	@Test
 	public void findNonExistent() {
-		assertNull(this.buffers.find("foo"));
+		assertThat(this.buffers.find("foo")).isNull();
 	}
 
 }

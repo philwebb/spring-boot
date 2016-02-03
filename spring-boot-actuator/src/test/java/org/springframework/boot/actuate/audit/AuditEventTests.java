@@ -34,17 +34,17 @@ public class AuditEventTests {
 	public void testNowEvent() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b"));
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("UNKNOWN", event.getType());
-		assertEquals("phil", event.getPrincipal());
-		assertNotNull(event.getTimestamp());
+		assertThat(event.getData().get("a")).isEqualTo("b");
+		assertThat(event.getType()).isEqualTo("UNKNOWN");
+		assertThat(event.getPrincipal()).isEqualTo("phil");
+		assertThat(event.getTimestamp()).isNotNull();
 	}
 
 	@Test
 	public void testConvertStringsToData() throws Exception {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN", "a=b", "c=d");
-		assertEquals("b", event.getData().get("a"));
-		assertEquals("d", event.getData().get("c"));
+		assertThat(event.getData().get("a")).isEqualTo("b");
+		assertThat(event.getData().get("c")).isEqualTo("d");
 	}
 
 }

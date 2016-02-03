@@ -112,11 +112,11 @@ public class MongoPropertiesTests {
 				+ "mongo2.example.com:23456/test");
 		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
-		assertEquals(2, allAddresses.size());
+		assertThat(allAddresses).hasSize(2);
 		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
 		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
 		List<MongoCredential> credentialsList = client.getCredentialsList();
-		assertEquals(1, credentialsList.size());
+		assertThat(credentialsList).hasSize(1);
 		assertMongoCredential(credentialsList.get(0), "user", "secret", "test");
 	}
 

@@ -39,30 +39,30 @@ public class SystemPublicMetricsTests {
 		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
-		assertTrue(results.containsKey("mem"));
-		assertTrue(results.containsKey("mem.free"));
-		assertTrue(results.containsKey("processors"));
-		assertTrue(results.containsKey("uptime"));
-		assertTrue(results.containsKey("systemload.average"));
+		assertThat(results.containsKey("mem")).isTrue();
+		assertThat(results.containsKey("mem.free")).isTrue();
+		assertThat(results.containsKey("processors")).isTrue();
+		assertThat(results.containsKey("uptime")).isTrue();
+		assertThat(results.containsKey("systemload.average")).isTrue();
 
-		assertTrue(results.containsKey("heap.committed"));
-		assertTrue(results.containsKey("heap.init"));
-		assertTrue(results.containsKey("heap.used"));
-		assertTrue(results.containsKey("heap"));
+		assertThat(results.containsKey("heap.committed")).isTrue();
+		assertThat(results.containsKey("heap.init")).isTrue();
+		assertThat(results.containsKey("heap.used")).isTrue();
+		assertThat(results.containsKey("heap")).isTrue();
 
-		assertTrue(results.containsKey("nonheap.committed"));
-		assertTrue(results.containsKey("nonheap.init"));
-		assertTrue(results.containsKey("nonheap.used"));
-		assertTrue(results.containsKey("nonheap"));
+		assertThat(results.containsKey("nonheap.committed")).isTrue();
+		assertThat(results.containsKey("nonheap.init")).isTrue();
+		assertThat(results.containsKey("nonheap.used")).isTrue();
+		assertThat(results.containsKey("nonheap")).isTrue();
 
-		assertTrue(results.containsKey("threads.peak"));
-		assertTrue(results.containsKey("threads.daemon"));
-		assertTrue(results.containsKey("threads.totalStarted"));
-		assertTrue(results.containsKey("threads"));
+		assertThat(results.containsKey("threads.peak")).isTrue();
+		assertThat(results.containsKey("threads.daemon")).isTrue();
+		assertThat(results.containsKey("threads.totalStarted")).isTrue();
+		assertThat(results.containsKey("threads")).isTrue();
 
-		assertTrue(results.containsKey("classes.loaded"));
-		assertTrue(results.containsKey("classes.unloaded"));
-		assertTrue(results.containsKey("classes"));
+		assertThat(results.containsKey("classes.loaded")).isTrue();
+		assertThat(results.containsKey("classes.unloaded")).isTrue();
+		assertThat(results.containsKey("classes")).isTrue();
 	}
 
 }

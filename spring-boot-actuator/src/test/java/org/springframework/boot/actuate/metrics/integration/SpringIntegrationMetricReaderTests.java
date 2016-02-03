@@ -50,7 +50,7 @@ public class SpringIntegrationMetricReaderTests {
 
 	@Test
 	public void test() {
-		assertTrue(this.reader.count() > 0);
+		assertThat(this.reader.count() > 0).isTrue();
 	}
 
 	@Configuration

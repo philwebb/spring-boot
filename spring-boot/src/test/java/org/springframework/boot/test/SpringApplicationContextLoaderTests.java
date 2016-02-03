@@ -93,8 +93,8 @@ public class SpringApplicationContextLoaderTests {
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
-		assertTrue("Key '" + key + "' not found", actual.containsKey(key));
-		assertEquals(value, actual.get(key));
+		assertThat(actual.containsKey(key)).as("Key '" + key + "' not found").isTrue();
+		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
 	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })

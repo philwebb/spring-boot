@@ -87,7 +87,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat("Wrong content: " + content, content.contains("status=999")).isTrue();
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat("Wrong content: " + content, content.contains("status=999")).isTrue();
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("status=999"));
+		assertThat("Wrong content: " + content, content.contains("status=999")).isTrue();
 	}
 
 	@Target(ElementType.TYPE)

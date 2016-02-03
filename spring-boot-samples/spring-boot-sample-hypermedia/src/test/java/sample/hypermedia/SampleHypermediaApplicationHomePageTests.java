@@ -47,7 +47,7 @@ public class SampleHypermediaApplicationHomePageTests {
 	public void home() {
 		String response = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port, String.class);
-		assertTrue("Wrong body: " + response, response.contains("404"));
+		assertThat("Wrong body: " + response, response.contains("404")).isTrue();
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
+		assertThat("Wrong body: " + response, response.getBody().contains("\"_links\":")).isTrue();
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class SampleHypermediaApplicationHomePageTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator/")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("HAL Browser"));
+		assertThat("Wrong body: " + response, response.getBody().contains("HAL Browser")).isTrue();
 	}
 
 }

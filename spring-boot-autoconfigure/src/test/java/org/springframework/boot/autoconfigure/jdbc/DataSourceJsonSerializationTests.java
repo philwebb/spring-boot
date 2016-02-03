@@ -62,7 +62,7 @@ public class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializerFactory(factory);
 		String value = mapper.writeValueAsString(dataSource);
-		assertTrue(value.contains("\"url\":"));
+		assertThat(value.contains("\"url\":")).isTrue();
 	}
 
 	@Test
@@ -71,8 +71,8 @@ public class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
-		assertTrue(value.contains("\"url\":"));
-		assertEquals(1, StringUtils.countOccurrencesOf(value, "\"url\""));
+		assertThat(value.contains("\"url\":")).isTrue();
+		assertThat("\"url\"")).isEqualTo(1, StringUtils.countOccurrencesOf(value);
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)

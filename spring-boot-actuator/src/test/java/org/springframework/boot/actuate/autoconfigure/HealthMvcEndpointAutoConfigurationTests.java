@@ -62,8 +62,8 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null);
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals(null, health.getDetails().get("foo"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("foo")).isEqualTo(null);
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class HealthMvcEndpointAutoConfigurationTests {
 		this.context.refresh();
 		Health health = (Health) this.context.getBean(HealthMvcEndpoint.class)
 				.invoke(null);
-		assertEquals(Status.UP, health.getStatus());
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Health map = (Health) health.getDetails().get("test");
-		assertEquals("bar", map.getDetails().get("foo"));
+		assertThat(map.getDetails().get("foo")).isEqualTo("bar");
 	}
 
 	@Configuration

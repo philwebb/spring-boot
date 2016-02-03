@@ -90,7 +90,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.web(false).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
 		RemoteTokenServices services = this.context.getBean(RemoteTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 		assertEquals(this.context.getBean(AuthoritiesExtractor.class),
 				ReflectionTestUtils.getField(services, "authoritiesExtractor"));
 	}
@@ -138,7 +138,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(true).run();
 		BeanDefinition bean = ((BeanDefinitionRegistry) this.context)
 				.getBeanDefinition("scopedTarget.oauth2ClientContext");
-		assertEquals("request", bean.getScope());
+		assertThat(bean.getScope()).isEqualTo("request");
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				Customizer.class).environment(this.environment).web(false).run();
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -174,7 +174,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 		this.context = new SpringApplicationBuilder(ResourceConfiguration.class)
 				.environment(this.environment).web(false).run();
 		DefaultTokenServices services = this.context.getBean(DefaultTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Test
@@ -197,10 +197,10 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.environment(this.environment).web(true).run();
 		ConnectionFactoryLocator connectionFactory = this.context
 				.getBean(ConnectionFactoryLocator.class);
-		assertNotNull(connectionFactory);
+		assertThat(connectionFactory).isNotNull();
 		SpringSocialTokenServices services = this.context
 				.getBean(SpringSocialTokenServices.class);
-		assertNotNull(services);
+		assertThat(services).isNotNull();
 	}
 
 	@Configuration

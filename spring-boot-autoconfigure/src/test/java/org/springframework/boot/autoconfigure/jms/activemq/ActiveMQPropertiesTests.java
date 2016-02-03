@@ -43,7 +43,7 @@ public class ActiveMQPropertiesTests {
 	@Test
 	public void getBrokerUrlUseExplicitBrokerUrl() {
 		this.properties.setBrokerUrl("vm://foo-bar");
-		assertEquals("vm://foo-bar", new ActiveMQConnectionFactoryFactory(this.properties)
+		assertThat(new ActiveMQConnectionFactoryFactory(this.properties).isEqualTo("vm://foo-bar")
 				.determineBrokerUrl());
 	}
 
@@ -59,7 +59,7 @@ public class ActiveMQPropertiesTests {
 	public void getExplicitBrokerUrlAlwaysWins() {
 		this.properties.setBrokerUrl("vm://foo-bar");
 		this.properties.setInMemory(false);
-		assertEquals("vm://foo-bar", new ActiveMQConnectionFactoryFactory(this.properties)
+		assertThat(new ActiveMQConnectionFactoryFactory(this.properties).isEqualTo("vm://foo-bar")
 				.determineBrokerUrl());
 	}
 

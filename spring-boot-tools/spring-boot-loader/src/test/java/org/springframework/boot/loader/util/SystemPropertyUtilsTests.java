@@ -39,12 +39,12 @@ public class SystemPropertyUtilsTests {
 
 	@Test
 	public void testVanillaPlaceholder() {
-		assertEquals("bar", SystemPropertyUtils.resolvePlaceholders("${foo}"));
+		assertThat(SystemPropertyUtils.resolvePlaceholders("${foo}")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testDefaultValue() {
-		assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:foo}"));
+		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:foo}")).isEqualTo("foo");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class SystemPropertyUtilsTests {
 
 	@Test
 	public void testEnvVar() {
-		assertEquals(System.getenv("LANG"), SystemPropertyUtils.getProperty("lang"));
+		assertThat(SystemPropertyUtils.getProperty("lang")).isEqualTo(System.getenv("LANG"));
 	}
 
 }

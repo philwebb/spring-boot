@@ -61,10 +61,10 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
+		assertThat(body.get("message")).isEqualTo("Hello Phil");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/admin/metrics", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
@@ -81,8 +81,8 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/admin/health",
 				String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
@@ -91,8 +91,8 @@ public class InsecureManagementPortAndPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.managementPort + "/admin/missing",
 				String.class);
-		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"status\":404"));
 	}
 

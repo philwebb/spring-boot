@@ -44,22 +44,22 @@ public class SampleJerseyApplicationTests {
 	public void contextLoads() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("http://localhost:" + this.port + "/hello", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	public void reverse() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity(
 				"http://localhost:" + this.port + "/reverse?input=olleh", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("hello", entity.getBody());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).isEqualTo("hello");
 	}
 
 	@Test
 	public void validation() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("http://localhost:" + this.port + "/reverse", String.class);
-		assertEquals(HttpStatus.BAD_REQUEST, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 	}
 
 }

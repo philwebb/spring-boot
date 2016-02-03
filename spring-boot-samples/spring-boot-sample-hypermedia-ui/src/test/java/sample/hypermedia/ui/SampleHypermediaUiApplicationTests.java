@@ -47,14 +47,14 @@ public class SampleHypermediaUiApplicationTests {
 	public void home() {
 		String response = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port, String.class);
-		assertTrue("Wrong body: " + response, response.contains("Hello World"));
+		assertThat("Wrong body: " + response, response.contains("Hello World")).isTrue();
 	}
 
 	@Test
 	public void links() {
 		String response = new TestRestTemplate().getForObject(
 				"http://localhost:" + this.port + "/actuator", String.class);
-		assertTrue("Wrong body: " + response, response.contains("\"_links\":"));
+		assertThat("Wrong body: " + response, response.contains("\"_links\":")).isTrue();
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class SampleHypermediaUiApplicationTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator")),
 				String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("\"_links\":"));
+		assertThat("Wrong body: " + response, response.getBody().contains("\"_links\":")).isTrue();
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class SampleHypermediaUiApplicationTests {
 		ResponseEntity<String> response = new TestRestTemplate()
 				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port)), String.class);
-		assertTrue("Wrong body: " + response, response.getBody().contains("Hello World"));
+		assertThat("Wrong body: " + response, response.getBody().contains("Hello World")).isTrue();
 	}
 
 }

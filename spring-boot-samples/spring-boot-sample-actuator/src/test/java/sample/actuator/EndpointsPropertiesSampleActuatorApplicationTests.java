@@ -59,11 +59,11 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/oops", Map.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("None", body.get("error"));
-		assertEquals(999, body.get("status"));
+		assertThat(body.get("error")).isEqualTo("None");
+		assertThat(body.get("status")).isEqualTo(999);
 	}
 
 	@Test
@@ -71,11 +71,11 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/admin/health",
 						String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"status\":\"UP\""));
 		System.err.println(entity.getBody());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"hello\":\"world\""));
 	}
 

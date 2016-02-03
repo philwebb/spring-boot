@@ -54,11 +54,11 @@ public class RedisMetricRepositoryTests {
 
 	@After
 	public void clear() {
-		assertNotNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNotNull()
 				.opsForValue().get(this.prefix + ".foo"));
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertNull(new StringRedisTemplate(this.redis.getConnectionFactory())
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNull()
 				.opsForValue().get(this.prefix + ".foo"));
 	}
 
@@ -66,14 +66,14 @@ public class RedisMetricRepositoryTests {
 	public void setAndGet() {
 		this.repository.set(new Metric<Number>("foo", 12.3));
 		Metric<?> metric = this.repository.findOne("foo");
-		assertEquals("foo", metric.getName());
-		assertEquals(12.3, metric.getValue().doubleValue(), 0.01);
+		assertThat(metric.getName()).isEqualTo("foo");
+		assertThat(0.01).isEqualTo(12.3, metric.getValue().doubleValue());
 	}
 
 	@Test
 	public void incrementAndGet() {
 		this.repository.increment(new Delta<Long>("foo", 3L));
-		assertEquals(3, this.repository.findOne("foo").getValue().longValue());
+		assertThat(this.repository.findOne("foo").getValue().longValue()).isEqualTo(3);
 	}
 
 	@Test
@@ -81,29 +81,29 @@ public class RedisMetricRepositoryTests {
 		this.repository.set(new Metric<Number>("foo", 12.3));
 		this.repository.increment(new Delta<Long>("foo", 3L));
 		Metric<?> metric = this.repository.findOne("foo");
-		assertEquals("foo", metric.getName());
-		assertEquals(15.3, metric.getValue().doubleValue(), 0.01);
+		assertThat(metric.getName()).isEqualTo("foo");
+		assertThat(0.01).isEqualTo(15.3, metric.getValue().doubleValue());
 	}
 
 	@Test
 	public void findAll() {
 		this.repository.increment(new Delta<Long>("foo", 3L));
 		this.repository.set(new Metric<Number>("bar", 12.3));
-		assertEquals(2, Iterables.collection(this.repository.findAll()).size());
+		assertThat(Iterables.collection(this.repository.findAll())).hasSize(2);
 	}
 
 	@Test
 	public void findOneWithAll() {
 		this.repository.increment(new Delta<Long>("foo", 3L));
 		Metric<?> metric = this.repository.findAll().iterator().next();
-		assertEquals("foo", metric.getName());
+		assertThat(metric.getName()).isEqualTo("foo");
 	}
 
 	@Test
 	public void count() {
 		this.repository.increment(new Delta<Long>("foo", 3L));
 		this.repository.set(new Metric<Number>("bar", 12.3));
-		assertEquals(2, this.repository.count());
+		assertThat(this.repository.count()).isEqualTo(2);
 	}
 
 }

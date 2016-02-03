@@ -49,7 +49,7 @@ public class SampleDropwizardMetricsApplicationTests {
 	@Test
 	public void timerCreated() {
 		this.gauges.submit("timer.test", 1234);
-		assertEquals(1, this.registry.getTimers().get("timer.test").getCount());
+		assertThat(this.registry.getTimers().get("timer.test").getCount()).isEqualTo(1);
 	}
 
 }

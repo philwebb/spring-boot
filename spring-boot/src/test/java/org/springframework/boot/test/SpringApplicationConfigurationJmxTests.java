@@ -43,7 +43,7 @@ public class SpringApplicationConfigurationJmxTests {
 
 	@Test
 	public void disabledByDefault() {
-		assertFalse(this.jmx);
+		assertThat(this.jmx).isFalse();
 	}
 
 	@Configuration

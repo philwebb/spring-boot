@@ -44,12 +44,12 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 
 	@Test
 	public void getMaxPoolSize() {
-		assertEquals(Integer.valueOf(2), getDataSourceMetadata().getMax());
+		assertThat(getDataSourceMetadata().getMax()).isEqualTo(Integer.valueOf(2));
 	}
 
 	@Test
 	public void getMinPoolSize() {
-		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getMin());
+		assertThat(getDataSourceMetadata().getMin()).isEqualTo(Integer.valueOf(0));
 	}
 
 	@Test
@@ -64,8 +64,8 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 				return null;
 			}
 		});
-		assertEquals(Integer.valueOf(0), getDataSourceMetadata().getActive());
-		assertEquals(Float.valueOf(0), getDataSourceMetadata().getUsage());
+		assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(0));
+		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0));
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 			@Override
 			public Void doInConnection(Connection connection)
 					throws SQLException, DataAccessException {
-				assertEquals(Integer.valueOf(1), getDataSourceMetadata().getActive());
-				assertEquals(Float.valueOf(0.5F), getDataSourceMetadata().getUsage());
+				assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(1));
+				assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0.5F));
 				return null;
 			}
 		});

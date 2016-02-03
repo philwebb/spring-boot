@@ -122,8 +122,8 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerAdaptersCreated() throws Exception {
 		load();
-		assertEquals(3, this.context.getBeanNamesForType(HandlerAdapter.class).length);
-		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
+		assertThat(this.context.getBeanNamesForType(HandlerAdapter.class).length).isEqualTo(3);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class).isFalse()
 				.getMessageConverters().isEmpty());
 		assertEquals(this.context.getBean(HttpMessageConverters.class).getConverters(),
 				this.context.getBean(RequestMappingHandlerAdapter.class)
@@ -133,7 +133,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerMappingsCreated() throws Exception {
 		load();
-		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
+		assertThat(this.context.getBeanNamesForType(HandlerMapping.class).length).isEqualTo(6);
 	}
 
 	@Test
@@ -303,7 +303,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void noMessageCodesResolver() throws Exception {
 		load(AllResources.class);
-		assertNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+		assertThat(this.context.getBean(WebMvcAutoConfigurationAdapter.class).isNull()
 				.getMessageCodesResolver());
 	}
 
@@ -311,7 +311,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideMessageCodesFormat() throws Exception {
 		load(AllResources.class,
 				"spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
-		assertNotNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+		assertThat(this.context.getBean(WebMvcAutoConfigurationAdapter.class).isNotNull()
 				.getMessageCodesResolver());
 	}
 
@@ -429,7 +429,7 @@ public class WebMvcAutoConfigurationTests {
 		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertNull(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"));
+		assertThat(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout")).isNull();
 	}
 
 	@Test
@@ -438,7 +438,7 @@ public class WebMvcAutoConfigurationTests {
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
 		Object actual = ReflectionTestUtils.getField(adapter, "asyncRequestTimeout");
-		assertEquals(123456L, actual);
+		assertThat(actual).isEqualTo(123456L);
 	}
 
 	@Test
@@ -448,7 +448,7 @@ public class WebMvcAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		ContentNegotiationManager actual = (ContentNegotiationManager) ReflectionTestUtils
 				.getField(adapter, "contentNegotiationManager");
-		assertTrue(actual.getAllFileExtensions().contains("yaml"));
+		assertThat(actual.getAllFileExtensions().contains("yaml")).isTrue();
 	}
 
 	@Test

@@ -48,7 +48,7 @@ public class DependencyFilterMojoTests {
 		Set<Artifact> artifacts = mojo.filterDependencies(
 				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
 				createArtifact("com.bar", "exclude-id"), artifact);
-		assertEquals("wrong filtering of artifacts", 1, artifacts.size());
+		assertThat(artifacts).as("wrong filtering of artifacts").hasSize(1);
 		assertSame("Wrong filtered artifact", artifact, artifacts.iterator().next());
 	}
 
@@ -61,7 +61,7 @@ public class DependencyFilterMojoTests {
 		Set<Artifact> artifacts = mojo.filterDependencies(
 				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
 				artifact);
-		assertEquals("wrong filtering of artifacts", 1, artifacts.size());
+		assertThat(artifacts).as("wrong filtering of artifacts").hasSize(1);
 		assertSame("Wrong filtered artifact", artifact, artifacts.iterator().next());
 	}
 

@@ -39,7 +39,7 @@ public class SpringApplicationConfigurationDefaultConfigurationTests {
 
 	@Test
 	public void nestedConfigClasses() {
-		assertNotNull(this.config);
+		assertThat(this.config).isNotNull();
 	}
 
 	@Configuration

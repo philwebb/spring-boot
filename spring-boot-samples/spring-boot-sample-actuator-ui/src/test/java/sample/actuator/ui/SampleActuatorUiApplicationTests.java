@@ -59,8 +59,8 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("<title>Hello"));
 	}
 
@@ -68,8 +68,8 @@ public class SampleActuatorUiApplicationTests {
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class SampleActuatorUiApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
@@ -87,12 +87,12 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(),
+		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("<body>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
+		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().isTrue()
 				.contains("Please contact the operator with the above information"));
 	}
 

@@ -48,7 +48,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void loadMetadata() throws IOException {
 		mockSuccessfulMetadataGet(false);
 		InitializrServiceMetadata metadata = this.invoker.loadMetadata("http://foo/bar");
-		assertNotNull(metadata);
+		assertThat(metadata).isNotNull();
 	}
 
 	@Test
@@ -149,20 +149,20 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest mockRequest) throws IOException {
 		mockSuccessfulProjectGeneration(mockRequest);
 		ProjectGenerationResponse entity = this.invoker.generate(request);
-		assertArrayEquals("wrong body content", mockRequest.content, entity.getContent());
+		assertThat(entity.getContent()).as("wrong body content").isEqualTo(mockRequest.content);
 		return entity;
 	}
 
 	private static void assertProjectEntity(ProjectGenerationResponse entity,
 			String mimeType, String fileName) {
 		if (mimeType == null) {
-			assertNull("No content type expected", entity.getContentType());
+			assertThat(entity.getContentType()).as("No content type expected").isNull();
 		}
 		else {
 			assertEquals("wrong mime type", mimeType,
 					entity.getContentType().getMimeType());
 		}
-		assertEquals("wrong filename", fileName, entity.getFileName());
+		assertThat(entity.getFileName()).as("wrong filename").isEqualTo(fileName);
 	}
 
 }

@@ -49,7 +49,7 @@ public class MongoAutoConfigurationTests {
 	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(Mongo.class).length);
+		assertThat(this.context.getBeanNamesForType(Mongo.class).length).isEqualTo(1);
 	}
 
 	@SuppressWarnings("deprecation")

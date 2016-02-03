@@ -70,8 +70,8 @@ public class DataSourceHealthIndicatorTests {
 	public void database() {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
-		assertNotNull(health.getDetails().get("database"));
-		assertNotNull(health.getDetails().get("hello"));
+		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getDetails().get("hello")).isNotNull();
 	}
 
 	@Test
@@ -82,9 +82,9 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setQuery("SELECT COUNT(*) from FOO");
 		Health health = this.indicator.health();
 		System.err.println(health);
-		assertNotNull(health.getDetails().get("database"));
-		assertEquals(Status.UP, health.getStatus());
-		assertNotNull(health.getDetails().get("hello"));
+		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("hello")).isNotNull();
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setQuery("SELECT COUNT(*) from BAR");
 		Health health = this.indicator.health();
 		assertThat(health.getDetails().get("database"), notNullValue());
-		assertEquals(Status.DOWN, health.getStatus());
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public class DataSourceHealthIndicatorTests {
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertNotNull(health.getDetails().get("database"));
+		assertThat(health.getDetails().get("database")).isNotNull();
 		verify(connection, times(2)).close();
 	}
 

@@ -54,7 +54,7 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\","
 						+ "\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertEquals("bb7935245adf3e650dfb7c58a06e9ece", this.context.getEnvironment()
+		assertThat(this.context.getEnvironment().isEqualTo("bb7935245adf3e650dfb7c58a06e9ece")
 				.getProperty("vcap.application.instance_id"));
 	}
 
@@ -71,7 +71,7 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 	public void testUnparseableApplicationProperties() {
 		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertNull(getProperty("vcap"));
+		assertThat(getProperty("vcap")).isNull();
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\","
 						+ "\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertNull(getProperty("vcap"));
+		assertThat(getProperty("vcap")).isNull();
 	}
 
 	@Test
@@ -106,10 +106,10 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":"
 						+ "\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertEquals("mysql", getProperty("vcap.services.mysql.name"));
-		assertEquals("3306", getProperty("vcap.services.mysql.credentials.port"));
-		assertEquals("true", getProperty("vcap.services.mysql.credentials.ssl"));
-		assertEquals("", getProperty("vcap.services.mysql.credentials.location"));
+		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
+		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
+		assertThat(getProperty("vcap.services.mysql.credentials.ssl")).isEqualTo("true");
+		assertThat(getProperty("vcap.services.mysql.credentials.location")).isEqualTo("");
 	}
 
 	@Test
@@ -124,8 +124,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"username\":\"urpRuqTf8Cpe6\","
 						+ "\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertEquals("mysql", getProperty("vcap.services.mysql.name"));
-		assertEquals("3306", getProperty("vcap.services.mysql.credentials.port"));
+		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
+		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
 	}
 
 	private String getProperty(String key) {

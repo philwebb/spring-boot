@@ -116,7 +116,7 @@ public class CounterServiceSpeedTests {
 				});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertEquals(number * threadCount, total.longValue());
+		assertThat(total.longValue()).isEqualTo(number * threadCount);
 	}
 
 	@Theory
@@ -140,7 +140,7 @@ public class CounterServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertEquals(number * threadCount, total.longValue());
+		assertThat(total.longValue()).isEqualTo(number * threadCount);
 	}
 
 	private void iterate(String taskName) throws Exception {

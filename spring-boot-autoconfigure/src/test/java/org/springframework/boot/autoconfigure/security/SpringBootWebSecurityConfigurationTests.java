@@ -87,7 +87,7 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@Test
 	public void testDefaultIgnores() {
-		assertTrue(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties())
+		assertThat(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties()).isTrue()
 				.contains("/css/**"));
 	}
 
@@ -95,8 +95,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	public void testWebConfigurationOverrideGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
 				"--server.port=0");
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationManager.class).isNotNull()
 				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
@@ -165,8 +165,8 @@ public class SpringBootWebSecurityConfigurationTests {
 	public void testWebConfigurationInjectGlobalAuthentication() throws Exception {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
 				"--server.port=0");
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
-		assertNotNull(this.context.getBean(AuthenticationManager.class)
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationManager.class).isNotNull()
 				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
 	}
 
@@ -184,14 +184,14 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		ResponseEntity<Object> result = rest
 				.postForEntity("http://localhost:" + port + "/", form, Object.class);
-		assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
 		// override method with GET
 		form = new LinkedMultiValueMap<String, String>();
 		form.add("_method", "GET");
 
 		result = rest.postForEntity("http://localhost:" + port + "/", form, Object.class);
-		assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test

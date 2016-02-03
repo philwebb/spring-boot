@@ -127,7 +127,7 @@ public class DropwizardCounterServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertEquals(number * threadCount, total.longValue());
+		assertThat(total.longValue()).isEqualTo(number * threadCount);
 	}
 
 }

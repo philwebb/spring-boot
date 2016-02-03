@@ -48,7 +48,7 @@ public class CassandraAutoConfigurationTests {
 	@Test
 	public void createClusterWithDefault() {
 		this.context = doLoad();
-		assertEquals(1, this.context.getBeanNamesForType(Cluster.class).length);
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		assertThat(cluster.getClusterName(), startsWith("cluster"));
 	}
@@ -56,7 +56,7 @@ public class CassandraAutoConfigurationTests {
 	@Test
 	public void createClusterWithOverrides() {
 		this.context = doLoad("spring.data.cassandra.cluster-name=testcluster");
-		assertEquals(1, this.context.getBeanNamesForType(Cluster.class).length);
+		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
 		assertThat(cluster.getClusterName(), equalTo("testcluster"));
 	}

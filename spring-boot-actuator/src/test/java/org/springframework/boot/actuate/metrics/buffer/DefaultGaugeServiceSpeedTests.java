@@ -125,7 +125,7 @@ public class DefaultGaugeServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(0 < total.longValue());
+		assertThat(0 < total.longValue()).isTrue();
 	}
 
 }

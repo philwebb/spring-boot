@@ -65,9 +65,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("other");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Test
@@ -81,9 +81,9 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("bar");
-		assertNotNull(nestedProperties);
-		assertEquals("other", nestedProperties.get("prefix"));
-		assertNotNull(nestedProperties.get("properties"));
+		assertThat(nestedProperties).isNotNull();
+		assertThat(nestedProperties.get("prefix")).isEqualTo("other");
+		assertThat(nestedProperties.get("properties")).isNotNull();
 	}
 
 	@Configuration

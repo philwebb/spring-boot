@@ -55,10 +55,10 @@ public class RepackagingTests {
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		File repackageFile = new File(buildLibs, "repackage.jar");
-		assertTrue(repackageFile.exists());
-		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertTrue(isDevToolsJarIncluded(repackageFile));
+		assertThat(repackageFile.exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(isDevToolsJarIncluded(repackageFile)).isTrue();
 	}
 
 	@Test
@@ -68,9 +68,9 @@ public class RepackagingTests {
 						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
-		assertFalse(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
+		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
 	}
 
 	@Test
@@ -80,11 +80,11 @@ public class RepackagingTests {
 						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
-		assertFalse(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertTrue(new File(buildLibs, "custom.jar").exists());
-		assertTrue(new File(buildLibs, "custom.jar.original").exists());
+		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
 
 	@Test
@@ -95,11 +95,11 @@ public class RepackagingTests {
 						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
-		assertFalse(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertTrue(new File(buildLibs, "custom.jar").exists());
-		assertTrue(new File(buildLibs, "custom.jar.original").exists());
+		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
 
 	@Test
@@ -109,11 +109,11 @@ public class RepackagingTests {
 						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
-		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertTrue(new File(buildLibs, "custom.jar").exists());
-		assertTrue(new File(buildLibs, "custom.jar.original").exists());
+		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
 
 	@Test
@@ -124,11 +124,11 @@ public class RepackagingTests {
 						"-PexcludeDevtools=false")
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
-		assertTrue(new File(buildLibs, "repackage.jar").exists());
-		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertTrue(new File(buildLibs, "custom.jar").exists());
-		assertTrue(new File(buildLibs, "custom.jar.original").exists());
+		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
+		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
 
 	@Test
@@ -153,10 +153,10 @@ public class RepackagingTests {
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		File repackageFile = new File(buildLibs, "repackage.jar");
-		assertTrue(repackageFile.exists());
-		assertTrue(new File(buildLibs, "repackage.jar.original").exists());
-		assertFalse(new File(buildLibs, "repackage-sources.jar.original").exists());
-		assertFalse(isDevToolsJarIncluded(repackageFile));
+		assertThat(repackageFile.exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(isDevToolsJarIncluded(repackageFile)).isFalse();
 	}
 
 	private boolean isDevToolsJarIncluded(File repackageFile) throws IOException {

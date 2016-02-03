@@ -60,7 +60,7 @@ public class MustacheViewTests {
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("msg", "World"), this.request,
 				this.response);
-		assertEquals("Hello World", this.response.getContentAsString());
+		assertThat(this.response.getContentAsString()).isEqualTo("Hello World");
 	}
 
 }

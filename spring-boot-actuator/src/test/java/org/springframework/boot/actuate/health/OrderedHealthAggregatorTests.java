@@ -46,7 +46,7 @@ public class OrderedHealthAggregatorTests {
 		healths.put("h2", new Health.Builder().status(Status.UP).build());
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
-		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class OrderedHealthAggregatorTests {
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
-		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class OrderedHealthAggregatorTests {
 		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
 		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
-		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
+		assertThat(this.healthAggregator.aggregate(healths).getStatus()).isEqualTo(Status.DOWN);
 	}
 
 }

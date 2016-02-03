@@ -48,9 +48,9 @@ public class AuditAutoConfigurationTests {
 	@Test
 	public void testTraceConfiguration() throws Exception {
 		registerAndRefresh(AuditAutoConfiguration.class);
-		assertNotNull(this.context.getBean(AuditEventRepository.class));
-		assertNotNull(this.context.getBean(AuthenticationAuditListener.class));
-		assertNotNull(this.context.getBean(AuthorizationAuditListener.class));
+		assertThat(this.context.getBean(AuditEventRepository.class)).isNotNull();
+		assertThat(this.context.getBean(AuthenticationAuditListener.class)).isNotNull();
+		assertThat(this.context.getBean(AuthorizationAuditListener.class)).isNotNull();
 	}
 
 	@Test

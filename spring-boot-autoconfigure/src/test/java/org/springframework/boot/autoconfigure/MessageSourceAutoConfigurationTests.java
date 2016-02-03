@@ -88,7 +88,7 @@ public class MessageSourceAutoConfigurationTests {
 	public void testBadEncoding() throws Exception {
 		load("spring.messages.encoding:rubbish");
 		// Bad encoding just means the messages are ignored
-		assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
+		assertThat(Locale.UK)).as("blah", this.context.getMessage("foo").isEqualTo(null, "blah");
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class MessageSourceAutoConfigurationTests {
 	public void testFallbackDefault() throws Exception {
 		load("spring.messages.basename:test/messages");
 
-		assertTrue(this.context.getBean(MessageSourceAutoConfiguration.class)
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isTrue()
 				.isFallbackToSystemLocale());
 	}
 
@@ -114,7 +114,7 @@ public class MessageSourceAutoConfigurationTests {
 	public void testFallbackTurnOff() throws Exception {
 		load("spring.messages.basename:test/messages",
 				"spring.messages.fallback-to-system-locale:false");
-		assertFalse(this.context.getBean(MessageSourceAutoConfiguration.class)
+		assertThat(this.context.getBean(MessageSourceAutoConfiguration.class).isFalse()
 				.isFallbackToSystemLocale());
 	}
 
@@ -125,7 +125,7 @@ public class MessageSourceAutoConfigurationTests {
 				MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals("foo", this.context.getMessage("foo", null, null, null));
+		assertThat(null)).as("foo", this.context.getMessage("foo").isEqualTo(null, null);
 	}
 
 	@Test

@@ -37,7 +37,7 @@ public class ArrayDocumentMatcherTests {
 	@Test
 	public void testMatchesSingleValue() throws IOException {
 		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar")));
+		assertThat(matcher.matches(getProperties("foo: bar"))).isEqualTo(MatchStatus.FOUND);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class ArrayDocumentMatcherTests {
 	@Test
 	public void testMatchesCommaSeparatedArray() throws IOException {
 		ArrayDocumentMatcher matcher = new ArrayDocumentMatcher("foo", "bar");
-		assertEquals(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar,spam")));
+		assertThat(spam"))).isEqualTo(MatchStatus.FOUND, matcher.matches(getProperties("foo: bar);
 	}
 
 	private Properties getProperties(String values) throws IOException {

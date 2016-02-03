@@ -117,7 +117,7 @@ public class BufferGaugeServiceSpeedTests {
 				});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(number * threadCount < total.longValue());
+		assertThat(number * threadCount < total.longValue()).isTrue();
 	}
 
 	@Theory
@@ -141,7 +141,7 @@ public class BufferGaugeServiceSpeedTests {
 		});
 		watch.stop();
 		System.err.println("Read(" + count + ")=" + watch.getLastTaskTimeMillis() + "ms");
-		assertTrue(0 < total.longValue());
+		assertThat(0 < total.longValue()).isTrue();
 	}
 
 	private void iterate(String taskName) throws Exception {

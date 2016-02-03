@@ -45,7 +45,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Set result = filter
 				.filter(Collections.singleton(createArtifact("com.foo", "bar")));
-		assertEquals("Should have been filtered", 0, result.size());
+		assertThat(result).as("Should have been filtered").isEmpty();
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.baz", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
+		assertThat(result).as("Should not have been filtered").hasSize(1);
 		assertSame(artifact, result.iterator().next());
 	}
 
@@ -64,7 +64,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "biz");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
+		assertThat(result).as("Should not have been filtered").hasSize(1);
 		assertSame(artifact, result.iterator().next());
 	}
 
@@ -74,7 +74,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Set result = filter
 				.filter(Collections.singleton(createArtifact("com.foo", "bar", "jdk5")));
-		assertEquals("Should have been filtered", 0, result.size());
+		assertThat(result).as("Should have been filtered").isEmpty();
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
+		assertThat(result).as("Should not have been filtered").hasSize(1);
 		assertSame(artifact, result.iterator().next());
 	}
 
@@ -93,7 +93,7 @@ public class ExcludeFilterTests {
 				Arrays.asList(createExclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk6");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertEquals("Should not have been filtered", 1, result.size());
+		assertThat(result).as("Should not have been filtered").hasSize(1);
 		assertSame(artifact, result.iterator().next());
 	}
 
@@ -108,7 +108,7 @@ public class ExcludeFilterTests {
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");
 		artifacts.add(anotherAcme);
 		Set result = filter.filter(artifacts);
-		assertEquals("Two dependencies should have been filtered", 1, result.size());
+		assertThat(result).as("Two dependencies should have been filtered").hasSize(1);
 		assertSame(anotherAcme, result.iterator().next());
 	}
 

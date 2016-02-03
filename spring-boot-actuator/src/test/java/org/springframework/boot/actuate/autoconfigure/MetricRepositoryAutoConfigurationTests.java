@@ -61,9 +61,9 @@ public class MetricRepositoryAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				MetricRepositoryAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(BufferGaugeService.class);
-		assertNotNull(gaugeService);
-		assertNotNull(this.context.getBean(BufferCounterService.class));
-		assertNotNull(this.context.getBean(PrefixMetricReader.class));
+		assertThat(gaugeService).isNotNull();
+		assertThat(this.context.getBean(BufferCounterService.class)).isNotNull();
+		assertThat(this.context.getBean(PrefixMetricReader.class)).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		assertEquals(2.7,
 				this.context.getBean(MetricReader.class).findOne("gauge.foo").getValue());
@@ -75,15 +75,15 @@ public class MetricRepositoryAutoConfigurationTests {
 				MetricsDropwizardAutoConfiguration.class,
 				MetricRepositoryAutoConfiguration.class, AopAutoConfiguration.class);
 		GaugeService gaugeService = this.context.getBean(GaugeService.class);
-		assertNotNull(gaugeService);
+		assertThat(gaugeService).isNotNull();
 		gaugeService.submit("foo", 2.7);
 		DropwizardMetricServices exporter = this.context
 				.getBean(DropwizardMetricServices.class);
-		assertEquals(gaugeService, exporter);
+		assertThat(exporter).isEqualTo(gaugeService);
 		MetricRegistry registry = this.context.getBean(MetricRegistry.class);
 		@SuppressWarnings("unchecked")
 		Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
-		assertEquals(new Double(2.7), gauge.getValue());
+		assertThat(gauge.getValue()).isEqualTo(new Double(2.7));
 	}
 
 	@Test

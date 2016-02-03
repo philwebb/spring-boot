@@ -73,7 +73,7 @@ public class DataSourcePoolMetadataProvidersTests {
 		assertSame(this.first, provider.getDataSourcePoolMetadata(this.firstDataSource));
 		assertSame(this.second,
 				provider.getDataSourcePoolMetadata(this.secondDataSource));
-		assertNull(provider.getDataSourcePoolMetadata(this.unknownDataSource));
+		assertThat(provider.getDataSourcePoolMetadata(this.unknownDataSource)).isNull();
 	}
 
 }

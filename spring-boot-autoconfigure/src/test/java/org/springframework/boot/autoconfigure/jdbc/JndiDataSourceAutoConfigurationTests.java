@@ -95,7 +95,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		this.context.register(JndiDataSourceAutoConfiguration.class);
 		this.context.refresh();
 
-		assertEquals(dataSource, this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,7 +112,7 @@ public class JndiDataSourceAutoConfigurationTests {
 				MBeanExporterConfiguration.class);
 		this.context.refresh();
 
-		assertEquals(dataSource, this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
 		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
 				.getPropertyValue("excludedBeans");
@@ -133,7 +133,7 @@ public class JndiDataSourceAutoConfigurationTests {
 				MBeanExporterConfiguration.class);
 		this.context.refresh();
 
-		assertEquals(dataSource, this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isEqualTo(dataSource);
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
 		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
 				.getPropertyValue("excludedBeans");

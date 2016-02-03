@@ -68,10 +68,10 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
 		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).invoke();
 		Iterator<Entry<String, Object>> iterator = metrics.entrySet().iterator();
-		assertEquals("a", iterator.next().getKey());
-		assertEquals("b", iterator.next().getKey());
-		assertEquals("c", iterator.next().getKey());
-		assertFalse(iterator.hasNext());
+		assertThat(iterator.next().getKey()).isEqualTo("a");
+		assertThat(iterator.next().getKey()).isEqualTo("b");
+		assertThat(iterator.next().getKey()).isEqualTo("c");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	private static class TestPublicMetrics implements PublicMetrics, Ordered {

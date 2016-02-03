@@ -62,11 +62,11 @@ public class DevToolsSettingsTests {
 	@Test
 	public void defaultIncludePatterns() throws Exception {
 		DevToolsSettings settings = DevToolsSettings.get();
-		assertTrue(settings.isRestartExclude(makeUrl("spring-boot")));
-		assertTrue(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure")));
-		assertTrue(settings.isRestartExclude(makeUrl("spring-boot-actuator")));
-		assertTrue(settings.isRestartExclude(makeUrl("spring-boot-starter")));
-		assertTrue(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing")));
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-actuator"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing"))).isTrue();
 	}
 
 	private URL makeUrl(String name) throws IOException {

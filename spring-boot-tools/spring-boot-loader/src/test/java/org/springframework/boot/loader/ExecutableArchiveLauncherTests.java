@@ -87,8 +87,8 @@ public class ExecutableArchiveLauncherTests {
 	}
 
 	private void assertClassLoaderUrls(ClassLoader classLoader, URL[] urls) {
-		assertTrue(classLoader instanceof URLClassLoader);
-		assertArrayEquals(urls, ((URLClassLoader) classLoader).getURLs());
+		assertThat(classLoader instanceof URLClassLoader).isTrue();
+		assertThat(((URLClassLoader) classLoader).getURLs()).isEqualTo(urls);
 	}
 
 	private void doWithTccl(ClassLoader classLoader, Callable<?> action)

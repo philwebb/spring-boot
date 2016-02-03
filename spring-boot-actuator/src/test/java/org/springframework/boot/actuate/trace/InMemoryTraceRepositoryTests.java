@@ -39,9 +39,9 @@ public class InMemoryTraceRepositoryTests {
 		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
 		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
-		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(0).getInfo().get("bar"));
-		assertEquals("foo", traces.get(1).getInfo().get("bar"));
+		assertThat(traces).hasSize(2);
+		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("foo");
 	}
 
 	@Test
@@ -52,9 +52,9 @@ public class InMemoryTraceRepositoryTests {
 		this.repository.add(Collections.<String, Object>singletonMap("bar", "foo"));
 		this.repository.add(Collections.<String, Object>singletonMap("bar", "bar"));
 		List<Trace> traces = this.repository.findAll();
-		assertEquals(2, traces.size());
-		assertEquals("bar", traces.get(1).getInfo().get("bar"));
-		assertEquals("foo", traces.get(0).getInfo().get("bar"));
+		assertThat(traces).hasSize(2);
+		assertThat(traces.get(1).getInfo().get("bar")).isEqualTo("bar");
+		assertThat(traces.get(0).getInfo().get("bar")).isEqualTo("foo");
 	}
 
 }

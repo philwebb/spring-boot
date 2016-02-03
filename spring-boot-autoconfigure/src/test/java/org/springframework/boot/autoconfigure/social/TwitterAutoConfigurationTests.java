@@ -42,7 +42,7 @@ public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurati
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
-		assertNotNull(this.context.getBean(Twitter.class));
+		assertThat(this.context.getBean(Twitter.class)).isNotNull();
 	}
 
 	@Test

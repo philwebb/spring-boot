@@ -55,10 +55,10 @@ public class SampleWebUiApplicationTests {
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
 				entity.getBody().contains("<title>Messages"));
-		assertFalse("Wrong body (found layout:fragment):\n" + entity.getBody(),
+		assertThat("Wrong body (found layout:fragment):\n" + entity.getBody().isFalse(),
 				entity.getBody().contains("layout:fragment"));
 	}
 
@@ -77,8 +77,8 @@ public class SampleWebUiApplicationTests {
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
 	}
 
 }

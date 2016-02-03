@@ -37,7 +37,7 @@ public class ContextIdApplicationContextInitializerTests {
 	public void testDefaults() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
-		assertEquals("application", context.getId());
+		assertThat(context.getId()).isEqualTo("application");
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class ContextIdApplicationContextInitializerTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
 				"PORT:8080");
 		this.initializer.initialize(context);
-		assertEquals("foo:8080", context.getId());
+		assertThat(context.getId()).isEqualTo("foo:8080");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class ContextIdApplicationContextInitializerTests {
 		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
 				"spring.profiles.active: spam,bar", "spring.application.index:12");
 		this.initializer.initialize(context);
-		assertEquals("foo:spam,bar:12", context.getId());
+		assertThat(context.getId()).isEqualTo("foo:spam,bar:12");
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class ContextIdApplicationContextInitializerTests {
 				"PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
-		assertEquals("bar:2", context.getId());
+		assertThat(context.getId()).isEqualTo("bar:2");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class ContextIdApplicationContextInitializerTests {
 				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
-		assertEquals("spam:2", context.getId());
+		assertThat(context.getId()).isEqualTo("spam:2");
 	}
 
 }

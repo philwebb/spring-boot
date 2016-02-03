@@ -153,9 +153,9 @@ public class EmbeddedWebApplicationContextTests {
 		this.context.refresh();
 		EmbeddedServletContainerInitializedEvent event = this.context
 				.getBean(MockListener.class).getEvent();
-		assertNotNull(event);
-		assertTrue(event.getSource().getPort() >= 0);
-		assertEquals(this.context, event.getApplicationContext());
+		assertThat(event).isNotNull();
+		assertThat(event.getSource().getPort() >= 0).isTrue();
+		assertThat(event.getApplicationContext()).isEqualTo(this.context);
 	}
 
 	@Test
@@ -164,8 +164,8 @@ public class EmbeddedWebApplicationContextTests {
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		assertTrue(environment.containsProperty("local.server.port"));
-		assertEquals("8080", environment.getProperty("local.server.port"));
+		assertThat(environment.containsProperty("local.server.port")).isTrue();
+		assertThat(environment.getProperty("local.server.port")).isEqualTo("8080");
 	}
 
 	@Test
@@ -240,7 +240,7 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 		verify(escf.getServletContext()).addFilter("filterBean", filter);
 		verify(escf.getServletContext()).addFilter("object", registration.getFilter());
-		assertEquals(filter, escf.getRegisteredFilter(0).getFilter());
+		assertThat(escf.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 
 	@Test

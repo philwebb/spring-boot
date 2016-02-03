@@ -62,7 +62,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(TestConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityRepository.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Mongo mongo = this.context.getBean(Mongo.class);
 		assertThat(mongo).isEqualTo(instanceOf(MongoClient.class));
 		MongoMappingContext mappingContext = this.context
@@ -85,7 +85,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		prepareApplicationContext(CustomizedConfiguration.class);
 
-		assertNotNull(this.context.getBean(CityMongoDbRepository.class));
+		assertThat(this.context.getBean(CityMongoDbRepository.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

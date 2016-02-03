@@ -237,7 +237,7 @@ public class FileSystemWatcherTests {
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
 		assertThat(changedFiles.getFiles(), contains(expected));
-		assertEquals(this.changes.get(0), listener2Changes);
+		assertThat(listener2Changes).isEqualTo(this.changes.get(0));
 	}
 
 	@Test
@@ -257,7 +257,7 @@ public class FileSystemWatcherTests {
 		expected.add(new ChangedFile(folder, modify, Type.MODIFY));
 		expected.add(new ChangedFile(folder, delete, Type.DELETE));
 		expected.add(new ChangedFile(folder, add, Type.ADD));
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
@@ -284,7 +284,7 @@ public class FileSystemWatcherTests {
 		Set<ChangedFile> actual = changedFiles.getFiles();
 		Set<ChangedFile> expected = new HashSet<ChangedFile>();
 		expected.add(new ChangedFile(folder, file, Type.MODIFY));
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	private void setupWatcher(long pollingInterval, long quietPeriod) {

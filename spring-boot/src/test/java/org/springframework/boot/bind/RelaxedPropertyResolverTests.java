@@ -202,7 +202,7 @@ public class RelaxedPropertyResolverTests {
 		String directProperty = propertyResolver.getProperty(propertyName);
 		Map<String, Object> subProperties = propertyResolver.getSubProperties("");
 		String subProperty = (String) subProperties.get(propertyName);
-		assertEquals(directProperty, subProperty);
+		assertThat(subProperty).isEqualTo(directProperty);
 	}
 
 }

@@ -37,7 +37,7 @@ public class SampleJersey1ApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		assertEquals("Hello World", new TestRestTemplate()
+		assertThat(new TestRestTemplate().isEqualTo("Hello World")
 				.getForObject("http://localhost:" + this.port + "/", String.class));
 	}
 

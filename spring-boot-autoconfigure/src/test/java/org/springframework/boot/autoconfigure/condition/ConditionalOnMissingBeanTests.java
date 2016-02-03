@@ -58,8 +58,8 @@ public class ConditionalOnMissingBeanTests {
 	public void testNameOnMissingBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class ConditionalOnMissingBeanTests {
 		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		// FIXME: ideally this would be false, but the ordering is a problem
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class ConditionalOnMissingBeanTests {
 		childContext.setParent(this.context);
 		childContext.register(HierarchyConsidered.class);
 		childContext.refresh();
-		assertFalse(childContext.containsLocalBean("bar"));
+		assertThat(childContext.containsLocalBean("bar")).isFalse();
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class ConditionalOnMissingBeanTests {
 		childContext.setParent(this.context);
 		childContext.register(HierarchyNotConsidered.class);
 		childContext.refresh();
-		assertTrue(childContext.containsLocalBean("bar"));
+		assertThat(childContext.containsLocalBean("bar")).isTrue();
 	}
 
 	@Test
@@ -104,8 +104,8 @@ public class ConditionalOnMissingBeanTests {
 	public void testAnnotationOnMissingBeanCondition() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	// Rigorous test for SPR-11069
@@ -115,9 +115,9 @@ public class ConditionalOnMissingBeanTests {
 				FactoryBeanXmlConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertTrue(this.context.containsBean("example"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.containsBean("example")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test

@@ -93,11 +93,11 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
 		assertTrue("Wrong output pattern:\n" + output,
 				getLineWithText(output, "Hello world").contains("INFO"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
 	@Test
@@ -109,11 +109,11 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		File file = new File(tmpDir() + "/spring.log");
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
 		assertTrue("Wrong console output pattern:\n" + output,
 				getLineWithText(output, "Hello world").contains("INFO"));
-		assertTrue(file.exists());
+		assertThat(file.exists()).isTrue();
 		assertTrue("Wrong file output pattern:\n" + output,
 				getLineWithText(file, "Hello world").contains("INFO"));
 	}
@@ -124,7 +124,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
 		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-		assertNotNull(root.getAppender("CONSOLE"));
+		assertThat(root.getAppender("CONSOLE")).isNotNull();
 	}
 
 	@Test
@@ -135,10 +135,10 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
-		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
-		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log")).isTrue();
+		assertThat("Wrong output:\n" + output, output.endsWith("BOOTBOOT")).isTrue();
+		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLogger(getClass().getName());
 		julLogger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
 	}
 
 	@Test
@@ -194,22 +194,22 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLogger(getClass().getName());
 		julLogger.fine("Hello debug world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello debug world"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello debug world")).isTrue();
 	}
 
 	@Test
 	public void jbossLoggingIsConfiguredToUseSlf4j() {
 		this.loggingSystem.beforeInitialize();
-		assertEquals("slf4j", System.getProperty("org.jboss.logging.provider"));
+		assertThat(System.getProperty("org.jboss.logging.provider")).isEqualTo("slf4j");
 	}
 
 	@Test
 	public void bridgeHandlerLifecycle() {
-		assertFalse(bridgeHandlerInstalled());
+		assertThat(bridgeHandlerInstalled()).isFalse();
 		this.loggingSystem.beforeInitialize();
-		assertTrue(bridgeHandlerInstalled());
+		assertThat(bridgeHandlerInstalled()).isTrue();
 		this.loggingSystem.cleanUp();
-		assertFalse(bridgeHandlerInstalled());
+		assertThat(bridgeHandlerInstalled()).isFalse();
 	}
 
 	@Test

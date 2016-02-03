@@ -85,9 +85,9 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
 	@Test
@@ -102,8 +102,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
 		assertThat(temp.listFiles(SPRING_LOG_FILTER).length, greaterThan(0));
 	}
 
@@ -113,8 +113,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains("???? INFO [")).isTrue();
 	}
 
 	@Test
@@ -126,8 +126,8 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains("1234 INFO [")).isTrue();
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 				null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
+		assertThat("Wrong output:\n" + output, output.contains("INFO: Hello")).isTrue();
 	}
 
 	@Test(expected = IllegalStateException.class)

@@ -38,10 +38,10 @@ public class PropertiesMergingResourceTransformerTests {
 
 	@Test
 	public void testProcess() throws Exception {
-		assertFalse(this.transformer.hasTransformedResource());
+		assertThat(this.transformer.hasTransformedResource()).isFalse();
 		this.transformer.processResource("foo",
 				new ByteArrayInputStream("foo=bar".getBytes()), null);
-		assertTrue(this.transformer.hasTransformedResource());
+		assertThat(this.transformer.hasTransformedResource()).isTrue();
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class PropertiesMergingResourceTransformerTests {
 				new ByteArrayInputStream("foo=bar".getBytes()), null);
 		this.transformer.processResource("bar",
 				new ByteArrayInputStream("foo=spam".getBytes()), null);
-		assertEquals("bar,spam", this.transformer.getData().getProperty("foo"));
+		assertThat(this.transformer.getData().getProperty("foo")).isEqualTo("bar,spam");
 	}
 
 	@Test
@@ -63,8 +63,8 @@ public class PropertiesMergingResourceTransformerTests {
 		this.transformer.modifyOutputStream(os);
 		os.flush();
 		os.close();
-		assertNotNull(out.toByteArray());
-		assertTrue(out.toByteArray().length > 0);
+		assertThat(out.toByteArray()).isNotNull();
+		assertThat(out.toByteArray().length > 0).isTrue();
 	}
 
 }

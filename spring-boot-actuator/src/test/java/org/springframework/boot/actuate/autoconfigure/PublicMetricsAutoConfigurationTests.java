@@ -88,7 +88,7 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void systemPublicMetrics() throws Exception {
 		load();
-		assertEquals(1, this.context.getBeansOfType(SystemPublicMetrics.class).size());
+		assertThat(this.context.getBeansOfType(SystemPublicMetrics.class)).hasSize(1);
 	}
 
 	@Test
@@ -104,15 +104,15 @@ public class PublicMetricsAutoConfigurationTests {
 				RichGaugeReaderConfig.class, MetricRepositoryAutoConfiguration.class,
 				PublicMetricsAutoConfiguration.class);
 		RichGaugeReader richGaugeReader = context.getBean(RichGaugeReader.class);
-		assertNotNull(richGaugeReader);
+		assertThat(richGaugeReader).isNotNull();
 		given(richGaugeReader.findAll())
 				.willReturn(Collections.singletonList(new RichGauge("bar", 3.7d)));
 		RichGaugeReaderPublicMetrics publicMetrics = context
 				.getBean(RichGaugeReaderPublicMetrics.class);
-		assertNotNull(publicMetrics);
+		assertThat(publicMetrics).isNotNull();
 		Collection<Metric<?>> metrics = publicMetrics.metrics();
-		assertNotNull(metrics);
-		assertEquals(metrics.size(), 6);
+		assertThat(metrics).isNotNull();
+		assertThat(6).isEqualTo(metrics.size());
 		assertHasMetric(metrics, new Metric<Double>("bar.val", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.avg", 3.7d));
 		assertHasMetric(metrics, new Metric<Double>("bar.min", 3.7d));
@@ -194,13 +194,13 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void tomcatMetrics() throws Exception {
 		loadWeb(TomcatConfiguration.class);
-		assertEquals(1, this.context.getBeansOfType(TomcatPublicMetrics.class).size());
+		assertThat(this.context.getBeansOfType(TomcatPublicMetrics.class)).hasSize(1);
 	}
 
 	@Test
 	public void noCacheMetrics() {
 		load();
-		assertEquals(0, this.context.getBeansOfType(CachePublicMetrics.class).size());
+		assertThat(this.context.getBeansOfType(CachePublicMetrics.class)).isEmpty();
 	}
 
 	@Test

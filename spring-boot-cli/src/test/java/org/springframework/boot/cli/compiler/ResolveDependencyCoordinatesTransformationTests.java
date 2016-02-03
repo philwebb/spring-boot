@@ -221,8 +221,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 	private void assertGrabAnnotationHasBeenTransformed() {
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
 
-		assertEquals("org.springframework", getGrabAnnotationMemberAsString("group"));
-		assertEquals("spring-core", getGrabAnnotationMemberAsString("module"));
+		assertThat(getGrabAnnotationMemberAsString("group")).isEqualTo("org.springframework");
+		assertThat(getGrabAnnotationMemberAsString("module")).isEqualTo("spring-core");
 	}
 
 	private Object getGrabAnnotationMemberAsString(String memberName) {

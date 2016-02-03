@@ -65,31 +65,31 @@ public class FileUtilsTests {
 		new File(this.originDirectory, "logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertFalse(file.exists());
+		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
 	public void nestedDuplicateFile() throws IOException {
-		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
-		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
+		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertFalse(file.exists());
+		assertThat(file.exists()).isFalse();
 	}
 
 	@Test
 	public void nestedNonDuplicateFile() throws IOException {
-		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
-		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		assertThat(new File(this.outputDirectory, "sub").mkdirs()).isTrue();
+		assertThat(new File(this.originDirectory, "sub").mkdirs()).isTrue();
 		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertTrue(file.exists());
+		assertThat(file.exists()).isTrue();
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class FileUtilsTests {
 		new File(this.originDirectory, "different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
-		assertTrue(file.exists());
+		assertThat(file.exists()).isTrue();
 	}
 
 	@Test

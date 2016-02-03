@@ -35,13 +35,13 @@ public class InMemoryMetricRepositoryTests {
 	@Test
 	public void increment() {
 		this.repository.increment(new Delta<Integer>("foo", 1, new Date()));
-		assertEquals(1.0, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
+		assertThat(0.01).isEqualTo(1.0, this.repository.findOne("foo").getValue().doubleValue());
 	}
 
 	@Test
 	public void set() {
 		this.repository.set(new Metric<Double>("foo", 2.5, new Date()));
-		assertEquals(2.5, this.repository.findOne("foo").getValue().doubleValue(), 0.01);
+		assertThat(0.01).isEqualTo(2.5, this.repository.findOne("foo").getValue().doubleValue());
 	}
 
 }

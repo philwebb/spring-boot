@@ -43,7 +43,7 @@ public class JpaNoteRepositoryIntegrationTests {
 	@Test
 	public void findsAllNotes() {
 		List<Note> notes = this.repository.findAll();
-		assertEquals(4, notes.size());
+		assertThat(notes).hasSize(4);
 	}
 
 }

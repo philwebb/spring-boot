@@ -71,7 +71,7 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceResolverHandlerInterceptor.class));
+		assertThat(this.context.getBean(DeviceResolverHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class DeviceResolverAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(DeviceResolverAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceHandlerMethodArgumentResolver.class));
+		assertThat(this.context.getBean(DeviceHandlerMethodArgumentResolver.class)).isNotNull();
 	}
 
 	@Test

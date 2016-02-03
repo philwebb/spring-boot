@@ -71,10 +71,10 @@ public class EndpointMBeanExportAutoConfigurationTests {
 				EndpointMBeanExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(EndpointMBeanExporter.class));
+		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
-		assertFalse(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isFalse()
 				.queryNames(getObjectName("*", "*,*", this.context), null).isEmpty());
 	}
 
@@ -86,11 +86,11 @@ public class EndpointMBeanExportAutoConfigurationTests {
 				ManagedEndpoint.class, EndpointMBeanExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(EndpointMBeanExporter.class));
+		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
-		assertTrue(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isTrue()
 				.queryNames(getObjectName("*", "*,*", this.context), null).isEmpty());
 	}
 
@@ -102,11 +102,11 @@ public class EndpointMBeanExportAutoConfigurationTests {
 				NestedInManagedEndpoint.class, EndpointMBeanExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(EndpointMBeanExporter.class));
+		assertThat(this.context.getBean(EndpointMBeanExporter.class)).isNotNull();
 
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
-		assertTrue(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isTrue()
 				.queryNames(getObjectName("*", "*,*", this.context), null).isEmpty());
 	}
 
@@ -139,7 +139,7 @@ public class EndpointMBeanExportAutoConfigurationTests {
 
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
-		assertNotNull(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isNotNull()
 				.getMBeanInfo(ObjectNameManager.getInstance(
 						getObjectName("test-domain", "healthEndpoint", this.context)
 								.toString() + ",key1=value1,key2=value2")));

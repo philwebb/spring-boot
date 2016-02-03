@@ -38,7 +38,7 @@ public class EmbeddedDataSourceConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmbeddedDataSourceConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		this.context.close();
 	}
 

@@ -68,10 +68,10 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"_links\":"));
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains(":" + this.port));
 	}
 
@@ -82,10 +82,10 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("\"_links\":"));
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains(":" + this.port));
 	}
 
@@ -96,8 +96,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body: " + entity.getBody(),
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("Wrong body: " + entity.getBody().isTrue(),
 				entity.getBody().contains("<title"));
 	}
 

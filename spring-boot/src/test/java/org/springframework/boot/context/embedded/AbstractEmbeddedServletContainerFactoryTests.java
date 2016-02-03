@@ -243,7 +243,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		assertThat(getResponse("http://localhost:" + specificPort + "/hello"),
 				equalTo("Hello World"));
-		assertEquals(specificPort, this.container.getPort());
+		assertThat(this.container.getPort()).isEqualTo(specificPort);
 	}
 
 	@Test
@@ -639,23 +639,23 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void compression() throws Exception {
-		assertTrue(doTestCompression(10000, null, null));
+		assertThat(doTestCompression(10000, null, null)).isTrue();
 	}
 
 	@Test
 	public void noCompressionForSmallResponse() throws Exception {
-		assertFalse(doTestCompression(100, null, null));
+		assertThat(doTestCompression(100, null, null)).isFalse();
 	}
 
 	@Test
 	public void noCompressionForMimeType() throws Exception {
 		String[] mimeTypes = new String[] { "text/html", "text/xml", "text/css" };
-		assertFalse(doTestCompression(10000, mimeTypes, null));
+		assertThat(doTestCompression(10000, mimeTypes, null)).isFalse();
 	}
 
 	@Test
 	public void noCompressionForUserAgent() throws Exception {
-		assertFalse(doTestCompression(10000, null, new String[] { "testUserAgent" }));
+		assertThat(doTestCompression(10000, null, new String[] { "testUserAgent" })).isFalse();
 	}
 
 	@Test

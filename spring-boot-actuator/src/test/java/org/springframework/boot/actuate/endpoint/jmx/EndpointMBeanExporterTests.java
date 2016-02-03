@@ -78,9 +78,9 @@ public class EndpointMBeanExporterTests {
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 		MBeanInfo mbeanInfo = mbeanExporter.getServer()
 				.getMBeanInfo(getObjectName("endpoint1", this.context));
-		assertNotNull(mbeanInfo);
-		assertEquals(3, mbeanInfo.getOperations().length);
-		assertEquals(3, mbeanInfo.getAttributes().length);
+		assertThat(mbeanInfo).isNotNull();
+		assertThat(mbeanInfo.getOperations().length).isEqualTo(3);
+		assertThat(mbeanInfo.getAttributes().length).isEqualTo(3);
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class, null, mpv));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertFalse(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isFalse()
 				.isRegistered(getObjectName("endpoint1", this.context)));
 	}
 
@@ -109,7 +109,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class, null, mpv));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertTrue(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isTrue()
 				.isRegistered(getObjectName("endpoint1", this.context)));
 	}
 
@@ -124,9 +124,9 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertNotNull(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isNotNull()
 				.getMBeanInfo(getObjectName("endpoint1", this.context)));
-		assertNotNull(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isNotNull()
 				.getMBeanInfo(getObjectName("endpoint2", this.context)));
 	}
 
@@ -141,7 +141,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
+		assertThat(mbeanExporter.getServer().isNotNull().getMBeanInfo(
 				getObjectName("test-domain", "endpoint1", false, this.context)));
 	}
 
@@ -158,7 +158,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
+		assertThat(mbeanExporter.getServer().isNotNull().getMBeanInfo(
 				getObjectName("test-domain", "endpoint1", true, this.context)));
 	}
 
@@ -180,7 +180,7 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(TestEndpoint.class));
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertNotNull(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isNotNull()
 				.getMBeanInfo(ObjectNameManager.getInstance(
 						getObjectName("test-domain", "endpoint1", true, this.context)
 								.toString() + ",key1=value1,key2=value2")));
@@ -198,7 +198,7 @@ public class EndpointMBeanExporterTests {
 		parent.refresh();
 		this.context.refresh();
 		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
-		assertNotNull(mbeanExporter.getServer()
+		assertThat(mbeanExporter.getServer().isNotNull()
 				.getMBeanInfo(getObjectName("endpoint1", this.context)));
 
 		parent.close();

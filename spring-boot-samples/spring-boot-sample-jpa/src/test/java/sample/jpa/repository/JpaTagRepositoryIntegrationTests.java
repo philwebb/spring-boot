@@ -43,7 +43,7 @@ public class JpaTagRepositoryIntegrationTests {
 	@Test
 	public void findsAllTags() {
 		List<Tag> tags = this.repository.findAll();
-		assertEquals(3, tags.size());
+		assertThat(tags).hasSize(3);
 	}
 
 }

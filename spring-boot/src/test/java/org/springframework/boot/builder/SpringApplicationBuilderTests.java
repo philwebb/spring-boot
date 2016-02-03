@@ -248,7 +248,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(4, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(4);
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertEquals(5, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Test
@@ -270,7 +270,7 @@ public class SpringApplicationBuilderTests {
 							}
 						});
 		this.context = application.run();
-		assertEquals(5, application.application().getInitializers().size());
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Configuration

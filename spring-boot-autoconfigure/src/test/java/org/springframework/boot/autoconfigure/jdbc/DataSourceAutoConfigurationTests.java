@@ -81,7 +81,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 	}
 
 	@Test
@@ -91,8 +91,8 @@ public class DataSourceAutoConfigurationTests {
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = this.context
 				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
-		assertNotNull(dataSource.getUrl());
-		assertNotNull(dataSource.getDriverClassName());
+		assertThat(dataSource.getUrl()).isNotNull();
+		assertThat(dataSource.getDriverClassName()).isNotNull();
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -103,7 +103,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -115,21 +115,21 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 	}
 
 	@Test
 	public void testHikariIsFallback() throws Exception {
 		HikariDataSource pool = testDataSourceFallback(HikariDataSource.class,
 				"org.apache.tomcat");
-		assertEquals("jdbc:hsqldb:mem:testdb", pool.getJdbcUrl());
+		assertThat(pool.getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
 	public void commonsDbcpIsFallback() throws Exception {
 		BasicDataSource dataSource = testDataSourceFallback(BasicDataSource.class,
 				"org.apache.tomcat", "com.zaxxer.hikari");
-		assertEquals("jdbc:hsqldb:mem:testdb", dataSource.getUrl());
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class DataSourceAutoConfigurationTests {
 		org.apache.commons.dbcp2.BasicDataSource dataSource = testDataSourceFallback(
 				org.apache.commons.dbcp2.BasicDataSource.class, "org.apache.tomcat",
 				"com.zaxxer.hikari", "org.apache.commons.dbcp.");
-		assertEquals("jdbc:hsqldb:mem:testdb", dataSource.getUrl());
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:testdb");
 	}
 
 	@Test
@@ -149,10 +149,10 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
-		assertEquals("org.hsqldb.jdbcDriver", pool.getDriverClassName());
-		assertEquals("sa", pool.getUsername());
+		assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
+		assertThat(pool.getUsername()).isEqualTo("sa");
 	}
 
 	@Test
@@ -165,8 +165,8 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-		assertNotNull(bean);
-		assertEquals(HikariDataSource.class, bean.getClass());
+		assertThat(bean).isNotNull();
+		assertThat(bean.getClass()).isEqualTo(HikariDataSource.class);
 	}
 
 	@Test
@@ -178,12 +178,12 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-		assertNotNull(bean);
+		assertThat(bean).isNotNull();
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
 		assertEquals(
 				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
 				pool.getDriverClassName());
-		assertNull(pool.getUsername());
+		assertThat(pool.getUsername()).isNull();
 	}
 
 	@Test
@@ -203,8 +203,8 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertNotNull(jdbcTemplate);
-		assertNotNull(jdbcTemplate.getDataSource());
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource()).isNotNull();
 	}
 
 	@Test
@@ -214,8 +214,8 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		JdbcTemplate jdbcTemplate = this.context.getBean(JdbcTemplate.class);
-		assertNotNull(jdbcTemplate);
-		assertTrue(jdbcTemplate.getDataSource() instanceof BasicDataSource);
+		assertThat(jdbcTemplate).isNotNull();
+		assertThat(jdbcTemplate.getDataSource() instanceof BasicDataSource).isTrue();
 	}
 
 	@Test
@@ -223,7 +223,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
+		assertThat(this.context.getBean(NamedParameterJdbcOperations.class)).isNotNull();
 	}
 
 	@SuppressWarnings("unchecked")

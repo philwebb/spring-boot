@@ -44,32 +44,32 @@ public class DefaultCounterServiceTests {
 	public void incrementWithExistingCounter() {
 		this.service.increment("counter.foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.foo", this.captor.getValue().getName());
-		assertEquals(1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
 	}
 
 	@Test
 	public void incrementWithExistingNearCounter() {
 		this.service.increment("counter-foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.counter-foo", this.captor.getValue().getName());
-		assertEquals(1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.counter-foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
 	}
 
 	@Test
 	public void incrementPrependsCounter() {
 		this.service.increment("foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.foo", this.captor.getValue().getName());
-		assertEquals(1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(1L);
 	}
 
 	@Test
 	public void decrementPrependsCounter() {
 		this.service.decrement("foo");
 		verify(this.repository).increment(this.captor.capture());
-		assertEquals("counter.foo", this.captor.getValue().getName());
-		assertEquals(-1L, this.captor.getValue().getValue());
+		assertThat(this.captor.getValue().getName()).isEqualTo("counter.foo");
+		assertThat(this.captor.getValue().getValue()).isEqualTo(-1L);
 	}
 
 	@Test

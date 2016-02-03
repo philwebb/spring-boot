@@ -62,7 +62,7 @@ public class RedisHealthIndicatorTests {
 				this.context.getBeanNamesForType(RedisConnectionFactory.class).length);
 		RedisHealthIndicator healthIndicator = this.context
 				.getBean(RedisHealthIndicator.class);
-		assertNotNull(healthIndicator);
+		assertThat(healthIndicator).isNotNull();
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class RedisHealthIndicatorTests {
 				redisConnectionFactory);
 
 		Health health = healthIndicator.health();
-		assertEquals(Status.UP, health.getStatus());
-		assertEquals("2.8.9", health.getDetails().get("version"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("version")).isEqualTo("2.8.9");
 
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
@@ -98,8 +98,8 @@ public class RedisHealthIndicatorTests {
 				redisConnectionFactory);
 
 		Health health = healthIndicator.health();
-		assertEquals(Status.DOWN, health.getStatus());
-		assertTrue(((String) health.getDetails().get("error"))
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(((String) health.getDetails().get("error")).isTrue()
 				.contains("Connection failed"));
 
 		verify(redisConnectionFactory).getConnection();

@@ -77,8 +77,8 @@ public class HttpMessageConvertersTests {
 		MappingJackson2HttpMessageConverter converter2 = new MappingJackson2HttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1,
 				converter2);
-		assertTrue(converters.getConverters().contains(converter1));
-		assertTrue(converters.getConverters().contains(converter2));
+		assertThat(converters.getConverters().contains(converter1)).isTrue();
+		assertThat(converters.getConverters().contains(converter2)).isTrue();
 		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<MappingJackson2HttpMessageConverter>();
 		for (HttpMessageConverter<?> candidate : converters) {
 			if (candidate instanceof MappingJackson2HttpMessageConverter) {
@@ -86,9 +86,9 @@ public class HttpMessageConvertersTests {
 			}
 		}
 		// The existing converter is still there, but with a lower priority
-		assertEquals(3, httpConverters.size());
-		assertEquals(0, httpConverters.indexOf(converter1));
-		assertEquals(1, httpConverters.indexOf(converter2));
+		assertThat(httpConverters).hasSize(3);
+		assertThat(httpConverters.indexOf(converter1)).isEqualTo(0);
+		assertThat(httpConverters.indexOf(converter2)).isEqualTo(1);
 		assertNotEquals(0, converters.getConverters().indexOf(converter1));
 	}
 
@@ -98,8 +98,8 @@ public class HttpMessageConvertersTests {
 		HttpMessageConverter<?> converter2 = mock(HttpMessageConverter.class);
 		HttpMessageConverters converters = new HttpMessageConverters(converter1,
 				converter2);
-		assertEquals(converter1, converters.getConverters().get(0));
-		assertEquals(converter2, converters.getConverters().get(1));
+		assertThat(converters.getConverters().get(0)).isEqualTo(converter1);
+		assertThat(converters.getConverters().get(1)).isEqualTo(converter2);
 	}
 
 	@Test
@@ -110,8 +110,8 @@ public class HttpMessageConvertersTests {
 				converter2).getConverters();
 		List<HttpMessageConverter<?>> partConverters = extractFormPartConverters(
 				converters);
-		assertEquals(converter1, partConverters.get(0));
-		assertEquals(converter2, partConverters.get(1));
+		assertThat(partConverters.get(0)).isEqualTo(converter1);
+		assertThat(partConverters.get(1)).isEqualTo(converter2);
 	}
 
 	@Test

@@ -73,7 +73,7 @@ public class DataSourceInitializerTests {
 		this.context.register(DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
+		assertThat(this.context.getBeanNamesForType(DataSource.class).length).isEqualTo(0);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class DataSourceInitializerTests {
 		this.context.register(TwoDataSources.class, DataSourceInitializer.class,
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
-		assertEquals(2, this.context.getBeanNamesForType(DataSource.class).length);
+		assertThat(this.context.getBeanNamesForType(DataSource.class).length).isEqualTo(2);
 	}
 
 	@Test
@@ -97,8 +97,8 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
@@ -116,8 +116,8 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
@@ -139,8 +139,8 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(Integer.valueOf(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
@@ -162,8 +162,8 @@ public class DataSourceInitializerTests {
 						.addResourcePathToPackagePath(getClass(), "encoding-data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(Integer.valueOf(2),
 				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
@@ -183,8 +183,8 @@ public class DataSourceInitializerTests {
 
 		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
 
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
+		assertThat(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource).isTrue();
+		assertThat(dataSource).isNotNull();
 		JdbcOperations template = new JdbcTemplate(dataSource);
 
 		try {
@@ -194,7 +194,7 @@ public class DataSourceInitializerTests {
 		catch (BadSqlGrammarException ex) {
 			SQLException sqlException = ex.getSQLException();
 			int expectedCode = -5501; // user lacks privilege or object not found
-			assertEquals(expectedCode, sqlException.getErrorCode());
+			assertThat(sqlException.getErrorCode()).isEqualTo(expectedCode);
 		}
 	}
 

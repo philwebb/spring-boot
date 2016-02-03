@@ -62,9 +62,9 @@ public class JpaWebAutoConfigurationTests {
 				SpringDataWebAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
-		assertTrue(this.context.getBean(FormattingConversionService.class)
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FormattingConversionService.class).isTrue()
 				.canConvert(Long.class, City.class));
 	}
 

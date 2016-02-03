@@ -75,7 +75,7 @@ public class UserInfoTokenServicesTests {
 	@Test
 	public void sunnyDay() {
 		this.services.setRestTemplate(this.template);
-		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("unknown");
 	}
 
 	@Test
@@ -85,14 +85,14 @@ public class UserInfoTokenServicesTests {
 				.willThrow(new UserRedirectRequiredException("foo:bar",
 						Collections.<String, String>emptyMap()));
 		this.expected.expect(InvalidTokenException.class);
-		assertEquals("unknown", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("unknown");
 	}
 
 	@Test
 	public void userId() {
 		this.map.put("userid", "spencer");
 		this.services.setRestTemplate(this.template);
-		assertEquals("spencer", this.services.loadAuthentication("FOO").getName());
+		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("spencer");
 	}
 
 }

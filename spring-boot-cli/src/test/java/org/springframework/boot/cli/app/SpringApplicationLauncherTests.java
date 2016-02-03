@@ -80,8 +80,8 @@ public class SpringApplicationLauncherTests {
 		String[] args = new String[0];
 		new SpringApplicationLauncher(getClass().getClassLoader()).launch(sources, args);
 
-		assertTrue(sources == TestSpringApplication.sources);
-		assertTrue(args == TestSpringApplication.args);
+		assertThat(sources == TestSpringApplication.sources).isTrue();
+		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
 		assertThat(defaultProperties.size(), equalTo(1));

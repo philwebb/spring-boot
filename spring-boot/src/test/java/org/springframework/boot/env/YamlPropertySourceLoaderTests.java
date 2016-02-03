@@ -46,8 +46,8 @@ public class YamlPropertySourceLoaderTests {
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("spam", source.getProperty("foo.bar"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class YamlPropertySourceLoaderTests {
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
 				.load("resource", resource, null);
-		assertNotNull(source);
+		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
 	}
 
@@ -73,17 +73,17 @@ public class YamlPropertySourceLoaderTests {
 		yaml.append("foo:\n  baz: wham\n");
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("spam", source.getProperty("foo.bar"));
-		assertEquals("wham", source.getProperty("foo.baz"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
+		assertThat(source.getProperty("foo.baz")).isEqualTo("wham");
 	}
 
 	@Test
 	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource, null);
-		assertNotNull(source);
-		assertEquals("2015-01-28", source.getProperty("foo"));
+		assertThat(source).isNotNull();
+		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
 	}
 
 }

@@ -183,7 +183,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		context.register(Config.class);
 		new AutoConfigurationReportLoggingInitializer().initialize(context);
 		context.refresh();
-		assertNotNull(context.getBean(ConditionEvaluationReport.class));
+		assertThat(context.getBean(ConditionEvaluationReport.class)).isNotNull();
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		context.register(Config.class);
 		new AutoConfigurationReportLoggingInitializer().initialize(context);
 		context.refresh();
-		assertNotNull(context.getBean(ConditionEvaluationReport.class));
+		assertThat(context.getBean(ConditionEvaluationReport.class)).isNotNull();
 	}
 
 	@Test

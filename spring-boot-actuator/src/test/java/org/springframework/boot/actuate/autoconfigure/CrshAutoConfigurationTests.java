@@ -84,11 +84,11 @@ public class CrshAutoConfigurationTests {
 		load(env);
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertNotNull(lifeCycle);
+		assertThat(lifeCycle).isNotNull();
 
-		assertNull(lifeCycle.getContext().getPlugin(GroovyRepl.class));
-		assertNull(lifeCycle.getContext().getPlugin(ProcessorIOHandler.class));
-		assertNull(lifeCycle.getContext().getPlugin(JaasAuthenticationPlugin.class));
+		assertThat(lifeCycle.getContext().getPlugin(GroovyRepl.class)).isNull();
+		assertThat(lifeCycle.getContext().getPlugin(ProcessorIOHandler.class)).isNull();
+		assertThat(lifeCycle.getContext().getPlugin(JaasAuthenticationPlugin.class)).isNull();
 	}
 
 	@Test
@@ -100,9 +100,9 @@ public class CrshAutoConfigurationTests {
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
 		Map<String, Object> attributes = lifeCycle.getContext().getAttributes();
-		assertTrue(attributes.containsKey("spring.version"));
-		assertTrue(attributes.containsKey("spring.beanfactory"));
-		assertEquals(this.context.getBeanFactory(), attributes.get("spring.beanfactory"));
+		assertThat(attributes.containsKey("spring.version")).isTrue();
+		assertThat(attributes.containsKey("spring.beanfactory")).isTrue();
+		assertThat(attributes.get("spring.beanfactory")).isEqualTo(this.context.getBeanFactory());
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals("3333", lifeCycle.getConfig().getProperty("crash.ssh.port"));
+		assertThat(lifeCycle.getConfig().getProperty("crash.ssh.port")).isEqualTo("3333");
 		assertEquals("600000",
 				lifeCycle.getConfig().getProperty("crash.ssh.auth_timeout"));
 		assertEquals("600000",
@@ -172,7 +172,7 @@ public class CrshAutoConfigurationTests {
 			count++;
 			resources.next();
 		}
-		assertEquals(1, count);
+		assertThat(count).isEqualTo(1);
 
 		count = 0;
 		resources = lifeCycle.getContext()
@@ -181,7 +181,7 @@ public class CrshAutoConfigurationTests {
 			count++;
 			resources.next();
 		}
-		assertEquals(1, count);
+		assertThat(count).isEqualTo(1);
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class CrshAutoConfigurationTests {
 			count++;
 			resources.next();
 		}
-		assertEquals(0, count);
+		assertThat(count).isEqualTo(0);
 	}
 
 	@Test
@@ -220,7 +220,7 @@ public class CrshAutoConfigurationTests {
 			count++;
 			plugins.next();
 		}
-		assertEquals(3, count);
+		assertThat(count).isEqualTo(3);
 	}
 
 	@Test
@@ -233,7 +233,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
+		assertThat(lifeCycle.getConfig().get("crash.auth")).isEqualTo("simple");
 	}
 
 	@Test
@@ -249,7 +249,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals("jaas", lifeCycle.getConfig().get("crash.auth"));
+		assertThat(lifeCycle.getConfig().get("crash.auth")).isEqualTo("jaas");
 		assertEquals("my-test-domain",
 				lifeCycle.getConfig().get("crash.auth.jaas.domain"));
 	}
@@ -267,8 +267,8 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals("key", lifeCycle.getConfig().get("crash.auth"));
-		assertEquals("~/test.pem", lifeCycle.getConfig().get("crash.auth.key.path"));
+		assertThat(lifeCycle.getConfig().get("crash.auth")).isEqualTo("key");
+		assertThat(lifeCycle.getConfig().get("crash.auth.key.path")).isEqualTo("~/test.pem");
 	}
 
 	@Test
@@ -285,11 +285,11 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
+		assertThat(lifeCycle.getConfig().get("crash.auth")).isEqualTo("simple");
 
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
-		assertNotNull(authentication);
+		assertThat(authentication).isNotNull();
 		for (AuthenticationPlugin plugin : lifeCycle.getContext()
 				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
@@ -297,9 +297,9 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertNotNull(authenticationPlugin);
-		assertTrue(authenticationPlugin.authenticate("user", "password"));
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+		assertThat(authenticationPlugin).isNotNull();
+		assertThat(authenticationPlugin.authenticate("user", "password")).isTrue();
+		assertThat(authenticationPlugin.authenticate(UUID.randomUUID().toString().isFalse(),
 				"password"));
 	}
 
@@ -318,7 +318,7 @@ public class CrshAutoConfigurationTests {
 
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
-		assertNotNull(authentication);
+		assertThat(authentication).isNotNull();
 		for (AuthenticationPlugin plugin : lifeCycle.getContext()
 				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
@@ -329,7 +329,7 @@ public class CrshAutoConfigurationTests {
 		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
 				SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+		assertThat(authenticationPlugin.authenticate(UUID.randomUUID().toString().isFalse(),
 				SecurityConfiguration.PASSWORD));
 	}
 
@@ -348,7 +348,7 @@ public class CrshAutoConfigurationTests {
 
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
-		assertNotNull(authentication);
+		assertThat(authentication).isNotNull();
 		for (AuthenticationPlugin plugin : lifeCycle.getContext()
 				.getPlugins(AuthenticationPlugin.class)) {
 			if (authentication.equals(plugin.getName())) {
@@ -359,7 +359,7 @@ public class CrshAutoConfigurationTests {
 		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
 				SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+		assertThat(authenticationPlugin.authenticate(UUID.randomUUID().toString().isFalse(),
 				SecurityConfiguration.PASSWORD));
 	}
 

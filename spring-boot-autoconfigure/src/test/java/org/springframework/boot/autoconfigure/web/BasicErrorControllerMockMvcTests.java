@@ -89,7 +89,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(get("/error"))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat("Wrong content: " + content, content.contains("999")).isTrue();
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class BasicErrorControllerMockMvcTests {
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
 				.andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Expected!"));
+		assertThat("Wrong content: " + content, content.contains("Expected!")).isTrue();
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class BasicErrorControllerMockMvcTests {
 		// And the rendered status code is always wrong (but would be 400 in a real
 		// system)
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Error count: 1"));
+		assertThat("Wrong content: " + content, content.contains("Error count: 1")).isTrue();
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class BasicErrorControllerMockMvcTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
+		assertThat("Wrong content: " + content, content.contains("ERROR_BEAN")).isTrue();
 	}
 
 	@Target(ElementType.TYPE)

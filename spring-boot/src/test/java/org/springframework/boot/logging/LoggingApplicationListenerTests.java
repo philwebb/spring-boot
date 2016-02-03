@@ -122,7 +122,7 @@ public class LoggingApplicationListenerTests {
 		this.outputCapture.expect(not(containsString("???")));
 		this.outputCapture.expect(containsString("[junit-"));
 		this.logger.info("Hello world", new RuntimeException("Expected"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
 	@Test
@@ -133,11 +133,11 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains("???")).isFalse();
 		assertTrue("Wrong output:\n" + output,
 				output.startsWith("LOG_FILE_IS_UNDEFINED"));
-		assertTrue("Wrong output:\n" + output, output.endsWith("BOOTBOOT"));
+		assertThat("Wrong output:\n" + output, output.endsWith("BOOTBOOT")).isTrue();
 	}
 
 	@Test
@@ -159,9 +159,9 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains("???")).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
 	@Test
@@ -186,18 +186,18 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo.log"));
+		assertThat("Wrong output:\n" + output, output.startsWith("target/foo.log")).isTrue();
 	}
 
 	@Test
 	public void addLogFilePropertyWithDefault() {
-		assertFalse(new File("target/foo.log").exists());
+		assertThat(new File("target/foo.log").exists()).isFalse();
 		EnvironmentTestUtils.addEnvironment(this.context, "logging.file: target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
-		assertTrue(new File("target/foo.log").exists());
+		assertThat(new File("target/foo.log").exists()).isTrue();
 	}
 
 	@Test
@@ -332,9 +332,9 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void bridgeHandlerLifecycle() throws Exception {
-		assertTrue(bridgeHandlerInstalled());
+		assertThat(bridgeHandlerInstalled()).isTrue();
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
-		assertFalse(bridgeHandlerInstalled());
+		assertThat(bridgeHandlerInstalled()).isFalse();
 	}
 
 	@Test

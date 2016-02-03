@@ -40,7 +40,7 @@ public class TraceRepositoryAutoConfigurationTests {
 	public void configuresInMemoryTraceRepository() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				TraceRepositoryAutoConfiguration.class);
-		assertNotNull(context.getBean(InMemoryTraceRepository.class));
+		assertThat(context.getBean(InMemoryTraceRepository.class)).isNotNull();
 		context.close();
 	}
 

@@ -38,7 +38,7 @@ public class LoggingApplicationListenerIntegrationTests {
 				SampleService.class).web(false).run();
 		try {
 			SampleService service = context.getBean(SampleService.class);
-			assertNotNull(service.loggingSystem);
+			assertThat(service.loggingSystem).isNotNull();
 		}
 		finally {
 			context.close();

@@ -126,7 +126,7 @@ public class CommandRunnerTests {
 		verify(this.regularCommand).run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
 		// set
-		assertNull(System.getProperty("debug"));
+		assertThat(System.getProperty("debug")).isNull();
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class CommandRunnerTests {
 	public void handlesExceptionWithDashD() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
-		assertEquals("true", System.getProperty("debug"));
+		assertThat(System.getProperty("debug")).isEqualTo("true");
 		assertThat(status, equalTo(1));
 		assertThat(this.calls, equalTo(
 				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
@@ -174,7 +174,7 @@ public class CommandRunnerTests {
 	public void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
-		assertEquals("true", System.getProperty("debug"));
+		assertThat(System.getProperty("debug")).isEqualTo("true");
 		assertThat(status, equalTo(1));
 		assertThat(this.calls, equalTo(
 				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));

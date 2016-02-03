@@ -90,7 +90,7 @@ public class HalBrowserMvcEndpointVanillaIntegrationTests {
 		MvcResult response = this.mockMvc
 				.perform(get("/actuator/").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
-		assertEquals("/actuator/browser.html", response.getResponse().getForwardedUrl());
+		assertThat(response.getResponse().getForwardedUrl()).isEqualTo("/actuator/browser.html");
 	}
 
 	@Test

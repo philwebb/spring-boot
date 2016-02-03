@@ -62,7 +62,7 @@ public class SessionAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class SessionAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
-		assertNotNull(server);
+		assertThat(server).isNotNull();
 	}
 
 	@Configuration

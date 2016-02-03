@@ -63,8 +63,8 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		ConfigurationPropertiesReportEndpoint endpoint = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> result = endpoint.invoke();
-		assertTrue(result.containsKey("parent"));
-		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		assertThat(result.containsKey("parent")).isTrue();
+		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
 		// System.err.println(result);
 	}
 
@@ -80,8 +80,8 @@ public class ConfigurationPropertiesReportEndpointParentTests {
 		ConfigurationPropertiesReportEndpoint endpoint = this.context
 				.getBean(ConfigurationPropertiesReportEndpoint.class);
 		Map<String, Object> result = endpoint.invoke();
-		assertTrue(result.containsKey("parent"));
-		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		assertThat(result.containsKey("parent")).isTrue();
+		assertThat(result).hasSize(3); // the endpoint, the test props and the parent
 		// System.err.println(result);
 	}
 

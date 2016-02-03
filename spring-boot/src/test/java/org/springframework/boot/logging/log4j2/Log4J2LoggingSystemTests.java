@@ -79,9 +79,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, null);
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertFalse(new File(tmpDir() + "/spring.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 		assertThat(
 				this.loggingSystem.getConfiguration().getConfigurationSource().getFile(),
 				is(notNullValue()));
@@ -94,9 +94,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertFalse("Output not hidden:\n" + output, output.contains("Hidden"));
-		assertTrue(new File(tmpDir() + "/spring.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log").exists()).isTrue();
 		assertThat(
 				this.loggingSystem.getConfiguration().getConfigurationSource().getFile(),
 				is(notNullValue()));
@@ -109,9 +109,9 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log"));
-		assertFalse(new File(tmpDir() + "/tmp.log").exists());
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
+		assertThat("Wrong output:\n" + output, output.contains(tmpDir() + "/tmp.log")).isTrue();
+		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
 		assertThat(this.loggingSystem.getConfiguration().getConfigurationSource()
 				.getFile().getAbsolutePath(), containsString("log4j2-nondefault.xml"));
 		// we assume that "log4j2-nondefault.xml" contains the 'monitorInterval'
@@ -157,7 +157,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				.getLogger(getClass().getName());
 		julLogger.severe("Hello world");
 		String output = this.output.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
 	}
 
 	@Test

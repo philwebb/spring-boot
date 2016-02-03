@@ -63,8 +63,8 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
 		load();
-		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
-		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+		assertThat(this.context.getBean("redisTemplate", RedisOperations.class)).isNotNull();
+		assertThat(this.context.getBean(StringRedisTemplate.class)).isNotNull();
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.host:foo", "spring.redis.database:1");
 		assertEquals("foo",
 				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getDatabase());
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getDatabase()).isEqualTo(1);
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class RedisAutoConfigurationTests {
 		load("spring.redis.host:foo", "spring.redis.pool.max-idle:1");
 		assertEquals("foo",
 				this.context.getBean(JedisConnectionFactory.class).getHostName());
-		assertEquals(1, this.context.getBean(JedisConnectionFactory.class).getPoolConfig()
+		assertThat(this.context.getBean(JedisConnectionFactory.class).getPoolConfig().isEqualTo(1)
 				.getMaxIdle());
 	}
 
@@ -100,7 +100,7 @@ public class RedisAutoConfigurationTests {
 			load("spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:"
 					+ StringUtils.collectionToCommaDelimitedString(sentinels));
 
-			assertTrue(this.context.getBean(JedisConnectionFactory.class)
+			assertThat(this.context.getBean(JedisConnectionFactory.class).isTrue()
 					.isRedisSentinelAware());
 		}
 	}

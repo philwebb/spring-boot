@@ -107,7 +107,7 @@ public class HttpEncodingAutoConfigurationTests {
 	private void assertCharacterEncodingFilter(CharacterEncodingFilter actual,
 			String encoding, boolean forceEncoding) {
 		DirectFieldAccessor accessor = new DirectFieldAccessor(actual);
-		assertEquals("Wrong encoding", encoding, accessor.getPropertyValue("encoding"));
+		assertThat(accessor.getPropertyValue("encoding")).as("Wrong encoding").isEqualTo(encoding);
 		assertEquals("Wrong forceEncoding flag", forceEncoding,
 				accessor.getPropertyValue("forceEncoding"));
 	}

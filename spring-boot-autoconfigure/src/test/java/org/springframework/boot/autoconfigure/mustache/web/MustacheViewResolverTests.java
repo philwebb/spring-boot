@@ -57,32 +57,32 @@ public class MustacheViewResolverTests {
 
 	@Test
 	public void resolveNonExistent() throws Exception {
-		assertNull(this.resolver.resolveViewName("bar", null));
+		assertThat(this.resolver.resolveViewName("bar", null)).isNull();
 	}
 
 	@Test
 	public void resolveNullLocale() throws Exception {
-		assertNotNull(this.resolver.resolveViewName("foo", null));
+		assertThat(this.resolver.resolveViewName("foo", null)).isNotNull();
 	}
 
 	@Test
 	public void resolveDefaultLocale() throws Exception {
-		assertNotNull(this.resolver.resolveViewName("foo", Locale.US));
+		assertThat(this.resolver.resolveViewName("foo", Locale.US)).isNotNull();
 	}
 
 	@Test
 	public void resolveDoubleLocale() throws Exception {
-		assertNotNull(this.resolver.resolveViewName("foo", Locale.CANADA_FRENCH));
+		assertThat(this.resolver.resolveViewName("foo", Locale.CANADA_FRENCH)).isNotNull();
 	}
 
 	@Test
 	public void resolveTripleLocale() throws Exception {
-		assertNotNull(this.resolver.resolveViewName("foo", new Locale("en", "GB", "cy")));
+		assertThat(this.resolver.resolveViewName("foo", new Locale("en", "GB", "cy"))).isNotNull();
 	}
 
 	@Test
 	public void resolveSpecificLocale() throws Exception {
-		assertNotNull(this.resolver.resolveViewName("foo", new Locale("de")));
+		assertThat(this.resolver.resolveViewName("foo", new Locale("de"))).isNotNull();
 	}
 
 	@Test

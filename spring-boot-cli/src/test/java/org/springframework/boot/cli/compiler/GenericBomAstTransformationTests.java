@@ -68,14 +68,14 @@ public final class GenericBomAstTransformationTests {
 	public void transformationOfEmptyPackage() {
 		this.moduleNode.setPackage(new PackageNode("foo"));
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
-		assertEquals("[test:child:1.0.0]", getValue().toString());
+		assertThat(getValue().toString()).isEqualTo("[test:child:1.0.0]");
 	}
 
 	@Test
 	public void transformationOfClass() {
 		this.moduleNode.addClass(ClassHelper.make("MyClass"));
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
-		assertEquals("[test:child:1.0.0]", getValue().toString());
+		assertThat(getValue().toString()).isEqualTo("[test:child:1.0.0]");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public final class GenericBomAstTransformationTests {
 		annotation.addMember("value", new ConstantExpression("test:parent:1.0.0"));
 		cls.addAnnotation(annotation);
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
-		assertEquals("[test:parent:1.0.0, test:child:1.0.0]", getValue().toString());
+		assertThat(getValue().toString()).isEqualTo("[test:parent:1.0.0, test:child:1.0.0]");
 	}
 
 	private List<String> getValue() {

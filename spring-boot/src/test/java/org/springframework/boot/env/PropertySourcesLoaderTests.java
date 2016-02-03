@@ -31,10 +31,10 @@ public class PropertySourcesLoaderTests {
 
 	@Test
 	public void fileExtensions() {
-		assertTrue(this.loader.getAllFileExtensions().contains("yml"));
-		assertTrue(this.loader.getAllFileExtensions().contains("yaml"));
-		assertTrue(this.loader.getAllFileExtensions().contains("properties"));
-		assertTrue(this.loader.getAllFileExtensions().contains("xml"));
+		assertThat(this.loader.getAllFileExtensions().contains("yml")).isTrue();
+		assertThat(this.loader.getAllFileExtensions().contains("yaml")).isTrue();
+		assertThat(this.loader.getAllFileExtensions().contains("properties")).isTrue();
+		assertThat(this.loader.getAllFileExtensions().contains("xml")).isTrue();
 	}
 
 }

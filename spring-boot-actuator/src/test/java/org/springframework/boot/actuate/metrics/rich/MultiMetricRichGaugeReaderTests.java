@@ -45,11 +45,11 @@ public class MultiMetricRichGaugeReaderTests {
 		this.data.set(new Metric<Integer>("foo", 1));
 		this.exporter.export();
 		// Check the exporter worked
-		assertEquals(6, this.repository.count());
-		assertEquals(1, this.reader.count());
+		assertThat(this.repository.count()).isEqualTo(6);
+		assertThat(this.reader.count()).isEqualTo(1);
 		RichGauge one = this.reader.findOne("foo");
-		assertNotNull(one);
-		assertEquals(2, one.getCount());
+		assertThat(one).isNotNull();
+		assertThat(one.getCount()).isEqualTo(2);
 	}
 
 	@Test
@@ -57,10 +57,10 @@ public class MultiMetricRichGaugeReaderTests {
 		this.data.set(new Metric<Integer>("foo", 1));
 		this.data.set(new Metric<Integer>("bar", 1));
 		this.exporter.export();
-		assertEquals(2, this.reader.count());
+		assertThat(this.reader.count()).isEqualTo(2);
 		RichGauge one = this.reader.findOne("foo");
-		assertNotNull(one);
-		assertEquals(1, one.getCount());
+		assertThat(one).isNotNull();
+		assertThat(one.getCount()).isEqualTo(1);
 	}
 
 }

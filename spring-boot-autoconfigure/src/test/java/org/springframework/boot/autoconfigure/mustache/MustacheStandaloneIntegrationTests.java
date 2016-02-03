@@ -48,7 +48,7 @@ public class MustacheStandaloneIntegrationTests {
 
 	@Test
 	public void directCompilation() throws Exception {
-		assertEquals("Hello: World", this.compiler.compile("Hello: {{world}}")
+		assertThat(this.compiler.compile("Hello: {{world}}").isEqualTo("Hello: World")
 				.execute(Collections.singletonMap("world", "World")));
 	}
 
@@ -60,7 +60,7 @@ public class MustacheStandaloneIntegrationTests {
 
 	@Test
 	public void environmentCollectorCompoundKeyStandard() throws Exception {
-		assertEquals("Hello: Heaven", this.compiler.standardsMode(true)
+		assertThat(this.compiler.standardsMode(true).isEqualTo("Hello: Heaven")
 				.compile("Hello: {{env.foo}}").execute(new Object()));
 	}
 

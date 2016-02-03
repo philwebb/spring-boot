@@ -47,7 +47,7 @@ public class PrefixMetricGroupExporterTests {
 		this.reader.set(new Metric<Number>("foo.spam", 1.3));
 		this.exporter.setGroups(Collections.singleton("foo"));
 		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
+		assertThat(Iterables.collection(this.writer.groups())).hasSize(1);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class PrefixMetricGroupExporterTests {
 		this.reader.set(new Metric<Number>("foo.spam", 1.3));
 		this.exporter.setGroups(Collections.singleton("bar"));
 		this.exporter.export();
-		assertEquals(0, Iterables.collection(this.writer.groups()).size());
+		assertThat(Iterables.collection(this.writer.groups())).isEmpty();
 	}
 
 	@Test
@@ -64,8 +64,8 @@ public class PrefixMetricGroupExporterTests {
 		this.reader.set("foo", Arrays.<Metric<?>>asList(new Metric<Number>("bar", 2.3),
 				new Metric<Number>("spam", 1.3)));
 		this.exporter.export();
-		assertEquals(1, this.writer.countGroups());
-		assertEquals(2, Iterables.collection(this.writer.findAll("foo")).size());
+		assertThat(this.writer.countGroups()).isEqualTo(1);
+		assertThat(Iterables.collection(this.writer.findAll("foo"))).hasSize(2);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class PrefixMetricGroupExporterTests {
 		this.reader.set(new Metric<Number>("foobar.spam", 1.3));
 		this.exporter.setGroups(Collections.singleton("foo"));
 		this.exporter.export();
-		assertEquals(1, Iterables.collection(this.writer.groups()).size());
+		assertThat(Iterables.collection(this.writer.groups())).hasSize(1);
 	}
 
 }

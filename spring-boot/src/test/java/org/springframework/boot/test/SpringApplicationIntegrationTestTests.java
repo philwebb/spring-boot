@@ -72,12 +72,12 @@ public class SpringApplicationIntegrationTestTests {
 		assertNotEquals(0, this.port);
 		String body = new RestTemplate()
 				.getForObject("http://localhost:" + this.port + "/", String.class);
-		assertEquals("Hello World", body);
+		assertThat(body).isEqualTo("Hello World");
 	}
 
 	@Test
 	public void annotationAttributesOverridePropertiesFile() throws Exception {
-		assertEquals(123, this.value);
+		assertThat(this.value).isEqualTo(123);
 	}
 
 	@Test

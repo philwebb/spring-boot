@@ -139,7 +139,7 @@ public class ExplodedArchiveTests {
 	public void getNonRecursiveManifest() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(
 				new File("src/test/resources/root"));
-		assertNotNull(archive.getManifest());
+		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), equalTo(4));
 	}
@@ -148,7 +148,7 @@ public class ExplodedArchiveTests {
 	public void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
 				false);
-		assertNotNull(archive.getManifest());
+		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), equalTo(3));
 	}
@@ -157,9 +157,9 @@ public class ExplodedArchiveTests {
 	public void getResourceAsStream() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(
 				new File("src/test/resources/root"));
-		assertNotNull(archive.getManifest());
+		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
 		loader.close();
 	}
 
@@ -167,9 +167,9 @@ public class ExplodedArchiveTests {
 	public void getResourceAsStreamNonRecursive() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"),
 				false);
-		assertNotNull(archive.getManifest());
+		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
 		loader.close();
 	}
 

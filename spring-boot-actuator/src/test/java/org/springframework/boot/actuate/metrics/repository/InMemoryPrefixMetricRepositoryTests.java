@@ -43,8 +43,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(2, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(2);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo.*")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -65,8 +65,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo.")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -77,8 +77,8 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(1, names.size());
-		assertTrue(names.contains("foo.bar"));
+		assertThat(names).hasSize(1);
+		assertThat(names.contains("foo.bar")).isTrue();
 	}
 
 	@Test
@@ -90,9 +90,9 @@ public class InMemoryPrefixMetricRepositoryTests {
 		for (Metric<?> metric : this.repository.findAll("foo")) {
 			names.add(metric.getName());
 		}
-		assertEquals(2, names.size());
-		assertTrue(names.contains("foo.bar"));
-		assertEquals(3L, this.repository.findOne("foo.bar").getValue());
+		assertThat(names).hasSize(2);
+		assertThat(names.contains("foo.bar")).isTrue();
+		assertThat(this.repository.findOne("foo.bar").getValue()).isEqualTo(3L);
 	}
 
 }

@@ -37,7 +37,7 @@ public class TraceWebFilterAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				TraceRepositoryAutoConfiguration.class,
 				TraceWebFilterAutoConfiguration.class);
-		assertNotNull(context.getBean(WebRequestTraceFilter.class));
+		assertThat(context.getBean(WebRequestTraceFilter.class)).isNotNull();
 		context.close();
 	}
 

@@ -96,7 +96,7 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
+		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		// 4 for static resources and one for the rest
 		assertEquals(5,
 				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
@@ -125,7 +125,7 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		try {
 			context.refresh();
-			assertFalse(context.containsBean("securityFilterChainRegistration"));
+			assertThat(context.containsBean("securityFilterChainRegistration")).isFalse();
 		}
 		finally {
 			context.close();
@@ -184,7 +184,7 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// Ignores and the "matches-none" filter only
-		assertEquals(1, this.context.getBeanNamesForType(FilterChainProxy.class).length);
+		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length).isEqualTo(1);
 	}
 
 	@Test
@@ -195,7 +195,7 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(AuthenticationManager.class));
+		assertThat(this.context.getBean(AuthenticationManager.class)).isNotNull();
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class SecurityAutoConfigurationTests {
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UserDetailsSecurityCustomizer.class)
+		assertThat(this.context.getBean(UserDetailsSecurityCustomizer.class).isNotNull()
 				.getUserDetails().loadUserByUsername("user"));
 	}
 
@@ -312,7 +312,7 @@ public class SecurityAutoConfigurationTests {
 		// This can fail if security @Conditionals force early instantiation of the
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 		this.context.refresh();
-		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test
@@ -329,7 +329,7 @@ public class SecurityAutoConfigurationTests {
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				security.getUser().getName(), security.getUser().getPassword());
-		assertNotNull(manager.authenticate(token));
+		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
 	@Test
@@ -356,7 +356,7 @@ public class SecurityAutoConfigurationTests {
 		}
 
 		token = new UsernamePasswordAuthenticationToken("foo", "bar");
-		assertNotNull(manager.authenticate(token));
+		assertThat(manager.authenticate(token)).isNotNull();
 	}
 
 	@Test
@@ -366,7 +366,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SecurityEvaluationContextExtension.class));
+		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class)).isNotNull();
 	}
 
 	@Test

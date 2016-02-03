@@ -108,7 +108,7 @@ public class JacksonAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
+		assertThat(mapper.writeValueAsString(new Foo())).isEqualTo("{\"foo\":\"bar\"}");
 	}
 
 	/*
@@ -147,9 +147,9 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		DateTime dateTime = new DateTime(1988, 6, 25, 20, 30, DateTimeZone.UTC);
-		assertEquals("\"1988-06-25 20:30:00\"", mapper.writeValueAsString(dateTime));
+		assertThat(mapper.writeValueAsString(dateTime)).isEqualTo("\"1988-06-25 20:30:00\"");
 		Date date = dateTime.toDate();
-		assertEquals("\"19880625203000\"", mapper.writeValueAsString(date));
+		assertThat(mapper.writeValueAsString(date)).isEqualTo("\"19880625203000\"");
 	}
 
 	@Test
@@ -199,8 +199,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.serialization.indent_output:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(SerializationFeature.INDENT_OUTPUT.enabledByDefault());
-		assertTrue(mapper.getSerializationConfig()
+		assertThat(SerializationFeature.INDENT_OUTPUT.enabledByDefault()).isFalse();
+		assertThat(mapper.getSerializationConfig().isTrue()
 				.hasSerializationFeatures(SerializationFeature.INDENT_OUTPUT.getMask()));
 	}
 
@@ -211,8 +211,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.serialization.write_dates_as_timestamps:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.enabledByDefault());
-		assertFalse(mapper.getSerializationConfig().hasSerializationFeatures(
+		assertThat(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.enabledByDefault()).isTrue();
+		assertThat(mapper.getSerializationConfig().isFalse().hasSerializationFeatures(
 				SerializationFeature.WRITE_DATES_AS_TIMESTAMPS.getMask()));
 	}
 
@@ -223,8 +223,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.deserialization.use_big_decimal_for_floats:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.enabledByDefault());
-		assertTrue(mapper.getDeserializationConfig().hasDeserializationFeatures(
+		assertThat(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.enabledByDefault()).isFalse();
+		assertThat(mapper.getDeserializationConfig().isTrue().hasDeserializationFeatures(
 				DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS.getMask()));
 	}
 
@@ -235,8 +235,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.deserialization.fail-on-unknown-properties:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig().hasDeserializationFeatures(
+		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig().isFalse().hasDeserializationFeatures(
 				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.getMask()));
 	}
 
@@ -247,10 +247,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.mapper.require_setters_for_getters:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.enabledByDefault());
-		assertTrue(mapper.getSerializationConfig()
+		assertThat(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.enabledByDefault()).isFalse();
+		assertThat(mapper.getSerializationConfig().isTrue()
 				.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()));
-		assertTrue(mapper.getDeserializationConfig()
+		assertThat(mapper.getDeserializationConfig().isTrue()
 				.hasMapperFeatures(MapperFeature.REQUIRE_SETTERS_FOR_GETTERS.getMask()));
 	}
 
@@ -261,10 +261,10 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.mapper.use_annotations:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(MapperFeature.USE_ANNOTATIONS.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig()
+		assertThat(MapperFeature.USE_ANNOTATIONS.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig().isFalse()
 				.hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask()));
-		assertFalse(mapper.getSerializationConfig()
+		assertThat(mapper.getSerializationConfig().isFalse()
 				.hasMapperFeatures(MapperFeature.USE_ANNOTATIONS.getMask()));
 	}
 
@@ -275,8 +275,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.parser.allow_single_quotes:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(JsonParser.Feature.ALLOW_SINGLE_QUOTES.enabledByDefault());
-		assertTrue(mapper.getFactory().isEnabled(JsonParser.Feature.ALLOW_SINGLE_QUOTES));
+		assertThat(JsonParser.Feature.ALLOW_SINGLE_QUOTES.enabledByDefault()).isFalse();
+		assertThat(mapper.getFactory().isEnabled(JsonParser.Feature.ALLOW_SINGLE_QUOTES)).isTrue();
 	}
 
 	@Test
@@ -286,8 +286,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.parser.auto_close_source:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(JsonParser.Feature.AUTO_CLOSE_SOURCE.enabledByDefault());
-		assertFalse(mapper.getFactory().isEnabled(JsonParser.Feature.AUTO_CLOSE_SOURCE));
+		assertThat(JsonParser.Feature.AUTO_CLOSE_SOURCE.enabledByDefault()).isTrue();
+		assertThat(mapper.getFactory().isEnabled(JsonParser.Feature.AUTO_CLOSE_SOURCE)).isFalse();
 	}
 
 	@Test
@@ -297,8 +297,8 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.generator.write_numbers_as_strings:true");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertFalse(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS.enabledByDefault());
-		assertTrue(mapper.getFactory()
+		assertThat(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS.enabledByDefault()).isFalse();
+		assertThat(mapper.getFactory().isTrue()
 				.isEnabled(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS));
 	}
 
@@ -309,7 +309,7 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.generator.auto_close_target:false");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertTrue(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault());
+		assertThat(JsonGenerator.Feature.AUTO_CLOSE_TARGET.enabledByDefault()).isTrue();
 		assertFalse(
 				mapper.getFactory().isEnabled(JsonGenerator.Feature.AUTO_CLOSE_TARGET));
 	}
@@ -321,16 +321,16 @@ public class JacksonAutoConfigurationTests {
 		Jackson2ObjectMapperBuilder builder = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class);
 		ObjectMapper mapper = builder.build();
-		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig()
+		assertThat(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig().isFalse()
 				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertTrue(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig()
+		assertThat(MapperFeature.DEFAULT_VIEW_INCLUSION.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig().isFalse()
 				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertFalse(mapper.getSerializationConfig()
+		assertThat(mapper.getSerializationConfig().isFalse()
 				.isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
-		assertTrue(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault());
-		assertFalse(mapper.getDeserializationConfig()
+		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES.enabledByDefault()).isTrue();
+		assertThat(mapper.getDeserializationConfig().isFalse()
 				.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
 	}
 
@@ -393,7 +393,7 @@ public class JacksonAutoConfigurationTests {
 		ObjectMapper objectMapper = this.context
 				.getBean(Jackson2ObjectMapperBuilder.class).build();
 		Date date = new Date(1436966242231L);
-		assertEquals("\"GMT+10:00\"", objectMapper.writeValueAsString(date));
+		assertThat(objectMapper.writeValueAsString(date)).isEqualTo("\"GMT+10:00\"");
 	}
 
 	@Test

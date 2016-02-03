@@ -218,7 +218,7 @@ public class VelocityAutoConfigurationTests {
 	public void registerResourceHandlingFilterOnlyIfResourceChainIsEnabled()
 			throws Exception {
 		registerAndRefreshContext("spring.resources.chain.enabled:true");
-		assertNotNull(this.context.getBean(ResourceUrlEncodingFilter.class));
+		assertThat(this.context.getBean(ResourceUrlEncodingFilter.class)).isNotNull();
 	}
 
 	@Test

@@ -72,8 +72,8 @@ public class DefaultErrorViewIntegrationTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("<html>"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat("Wrong content: " + content, content.contains("<html>")).isTrue();
+		assertThat("Wrong content: " + content, content.contains("999")).isTrue();
 	}
 
 	@Test
@@ -86,9 +86,9 @@ public class DefaultErrorViewIntegrationTests {
 						.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("&lt;script&gt;"));
-		assertTrue("Wrong content: " + content, content.contains("Hello World"));
-		assertTrue("Wrong content: " + content, content.contains("999"));
+		assertThat("Wrong content: " + content, content.contains("&lt;script&gt;")).isTrue();
+		assertThat("Wrong content: " + content, content.contains("Hello World")).isTrue();
+		assertThat("Wrong content: " + content, content.contains("999")).isTrue();
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class DefaultErrorViewIntegrationTests {
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		System.out.println(content);
-		assertFalse("Wrong content: " + content, content.contains("injection"));
+		assertThat("Wrong content: " + content, content.contains("injection")).isFalse();
 	}
 
 	public static String injectCall() {

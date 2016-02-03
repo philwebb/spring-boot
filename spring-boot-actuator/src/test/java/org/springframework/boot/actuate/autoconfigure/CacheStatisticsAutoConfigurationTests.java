@@ -160,8 +160,8 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private void assertCoreStatistics(CacheStatistics metrics, Long size, Double hitRatio,
 			Double missRatio) {
-		assertNotNull("Cache metrics must not be null", metrics);
-		assertEquals("Wrong size for metrics " + metrics, size, metrics.getSize());
+		assertThat(metrics).as("Cache metrics must not be null").isNotNull();
+		assertThat(metrics.getSize()).isEqualTo("Wrong size for metrics " + metrics, size);
 		checkRatio("Wrong hit ratio for metrics " + metrics, hitRatio,
 				metrics.getHitRatio());
 		checkRatio("Wrong miss ratio for metrics " + metrics, missRatio,
@@ -170,10 +170,10 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private void checkRatio(String message, Double expected, Double actual) {
 		if (expected == null || actual == null) {
-			assertEquals(message, expected, actual);
+			assertThat(actual).isEqualTo(message, expected);
 		}
 		else {
-			assertEquals(message, expected, actual, 0.01D);
+			assertThat(0.01D).isEqualTo(message, expected, actual);
 		}
 	}
 

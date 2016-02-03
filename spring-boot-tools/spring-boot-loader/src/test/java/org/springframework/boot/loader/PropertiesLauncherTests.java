@@ -85,15 +85,15 @@ public class PropertiesLauncherTests {
 	@Test
 	public void testUserSpecifiedMain() throws Exception {
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("demo.Application", launcher.getMainClass());
-		assertNull(System.getProperty("loader.main"));
+		assertThat(launcher.getMainClass()).isEqualTo("demo.Application");
+		assertThat(System.getProperty("loader.main")).isNull();
 	}
 
 	@Test
 	public void testUserSpecifiedConfigName() throws Exception {
 		System.setProperty("loader.config.name", "foo");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("my.Application", launcher.getMainClass());
+		assertThat(launcher.getMainClass()).isEqualTo("my.Application");
 		assertEquals("[etc/]",
 				ReflectionTestUtils.getField(launcher, "paths").toString());
 	}
@@ -102,7 +102,7 @@ public class PropertiesLauncherTests {
 	public void testUserSpecifiedDotPath() throws Exception {
 		System.setProperty("loader.path", ".");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[.]", ReflectionTestUtils.getField(launcher, "paths").toString());
+		assertThat("paths").toString()).as("[.]").isEqualTo(ReflectionTestUtils.getField(launcher);
 	}
 
 	@Test
@@ -165,8 +165,8 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.classLoader", TestLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		ClassLoader loader = launcher.createClassLoader(Collections.<Archive>emptyList());
-		assertNotNull(loader);
-		assertEquals(TestLoader.class.getName(), loader.getClass().getName());
+		assertThat(loader).isNotNull();
+		assertThat(loader.getClass().getName()).isEqualTo(TestLoader.class.getName());
 	}
 
 	@Test
@@ -175,28 +175,28 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.config.name", "foo");
 		System.setProperty("loader.config.location", "classpath:bar.properties");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("my.BarApplication", launcher.getMainClass());
+		assertThat(launcher.getMainClass()).isEqualTo("my.BarApplication");
 	}
 
 	@Test
 	public void testSystemPropertySpecifiedMain() throws Exception {
 		System.setProperty("loader.main", "foo.Bar");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("foo.Bar", launcher.getMainClass());
+		assertThat(launcher.getMainClass()).isEqualTo("foo.Bar");
 	}
 
 	@Test
 	public void testSystemPropertiesSet() throws Exception {
 		System.setProperty("loader.system", "true");
 		new PropertiesLauncher();
-		assertEquals("demo.Application", System.getProperty("loader.main"));
+		assertThat(System.getProperty("loader.main")).isEqualTo("demo.Application");
 	}
 
 	@Test
 	public void testArgsEnhanced() throws Exception {
 		System.setProperty("loader.args", "foo");
 		PropertiesLauncher launcher = new PropertiesLauncher();
-		assertEquals("[foo, bar]", Arrays.asList(launcher.getArgs("bar")).toString());
+		assertThat(Arrays.asList(launcher.getArgs("bar")).toString()).isEqualTo("[foo, bar]");
 	}
 
 	@Test
@@ -223,7 +223,7 @@ public class PropertiesLauncherTests {
 			Thread.sleep(50L);
 			timeout = this.output.toString().contains(value);
 		}
-		assertTrue("Timed out waiting for (" + value + ")", timeout);
+		assertThat(timeout).as("Timed out waiting for (" + value + ")").isTrue();
 	}
 
 	public static class TestLoader extends URLClassLoader {

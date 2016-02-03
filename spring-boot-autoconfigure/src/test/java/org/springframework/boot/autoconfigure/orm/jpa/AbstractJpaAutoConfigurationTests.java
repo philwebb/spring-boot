@@ -93,8 +93,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testEntityManagerCreated() throws Exception {
 		setupTestConfiguration();
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(JpaTransactionManager.class)).isNotNull();
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.context.register(DataSourceTransactionManagerAutoConfiguration.class);
 		setupTestConfiguration();
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
+		assertThat(this.context.getBean(DataSource.class)).isNotNull();
 		assertTrue(this.context
 				.getBean("transactionManager") instanceof JpaTransactionManager);
 	}
@@ -113,7 +113,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
-		assertNotNull(context.getBean(OpenEntityManagerInViewInterceptor.class));
+		assertThat(context.getBean(OpenEntityManagerInViewInterceptor.class)).isNotNull();
 		context.close();
 	}
 
@@ -125,7 +125,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
+		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
 		context.close();
 	}
 
@@ -137,7 +137,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
-		assertEquals(0, getInterceptorBeans(context).length);
+		assertThat(getInterceptorBeans(context).length).isEqualTo(0);
 		context.close();
 	}
 

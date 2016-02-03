@@ -89,7 +89,7 @@ public class MultipartAutoConfigurationTests {
 				ContainerWithNothing.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		verify404();
-		assertNotNull(servlet.getMultipartResolver());
+		assertThat(servlet.getMultipartResolver()).isNotNull();
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
@@ -101,7 +101,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNoMultipartJetty.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertNotNull(servlet.getMultipartResolver());
+		assertThat(servlet.getMultipartResolver()).isNotNull();
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
@@ -115,7 +115,7 @@ public class MultipartAutoConfigurationTests {
 				ContainerWithNoMultipartUndertow.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		verifyServletWorks();
-		assertNotNull(servlet.getMultipartResolver());
+		assertThat(servlet.getMultipartResolver()).isNotNull();
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
@@ -127,7 +127,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNoMultipartTomcat.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		assertNull(servlet.getMultipartResolver());
+		assertThat(servlet.getMultipartResolver()).isNull();
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)
 				.size(), equalTo(1));
 		assertThat(this.context.getBeansOfType(MultipartResolver.class).size(),
@@ -210,7 +210,7 @@ public class MultipartAutoConfigurationTests {
 						+ this.context.getEmbeddedServletContainer().getPort() + "/"),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
-		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	private void verifyServletWorks() {

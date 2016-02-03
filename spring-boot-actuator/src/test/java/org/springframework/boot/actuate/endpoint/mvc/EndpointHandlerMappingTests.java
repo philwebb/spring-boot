@@ -99,8 +99,8 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a"))).isNotNull();
+		assertThat(mapping.getHandler(new MockHttpServletRequest("POST", "/a"))).isNull();
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("POST", "/a"))).isNotNull();
 	}
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
@@ -120,8 +120,8 @@ public class EndpointHandlerMappingTests {
 				Arrays.asList(endpoint));
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
-		assertNotNull(mapping.getHandler(new MockHttpServletRequest("POST", "/a")));
-		assertNull(mapping.getHandler(new MockHttpServletRequest("GET", "/a")));
+		assertThat(mapping.getHandler(new MockHttpServletRequest("POST", "/a"))).isNotNull();
+		assertThat(mapping.getHandler(new MockHttpServletRequest("GET", "/a"))).isNull();
 	}
 
 	@Test

@@ -31,19 +31,19 @@ public class SanitizerTests {
 
 	@Test
 	public void defaults() throws Exception {
-		assertEquals(this.sanitizer.sanitize("password", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("my-password", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("my-OTHER.paSSword", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("somesecret", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("somekey", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("find", "secret"), "secret");
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("password", "secret"));
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("my-password", "secret"));
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("my-OTHER.paSSword", "secret"));
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("somesecret", "secret"));
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("somekey", "secret"));
+		assertThat("secret").isEqualTo(this.sanitizer.sanitize("find", "secret"));
 	}
 
 	@Test
 	public void regex() throws Exception {
 		this.sanitizer.setKeysToSanitize(".*lock.*");
-		assertEquals(this.sanitizer.sanitize("verylOCkish", "secret"), "******");
-		assertEquals(this.sanitizer.sanitize("veryokish", "secret"), "secret");
+		assertThat("******").isEqualTo(this.sanitizer.sanitize("verylOCkish", "secret"));
+		assertThat("secret").isEqualTo(this.sanitizer.sanitize("veryokish", "secret"));
 	}
 
 }

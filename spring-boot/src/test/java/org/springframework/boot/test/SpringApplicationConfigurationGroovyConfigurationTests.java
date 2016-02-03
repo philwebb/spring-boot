@@ -38,7 +38,7 @@ public class SpringApplicationConfigurationGroovyConfigurationTests {
 
 	@Test
 	public void groovyConfigLoaded() {
-		assertNotNull(this.foo);
+		assertThat(this.foo).isNotNull();
 	}
 
 }

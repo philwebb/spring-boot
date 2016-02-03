@@ -43,7 +43,7 @@ public class InMemoryRepositoryTests {
 	@Test
 	public void setAndGet() {
 		this.repository.set("foo", "bar");
-		assertEquals("bar", this.repository.findOne("foo"));
+		assertThat(this.repository.findOne("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class InMemoryRepositoryTests {
 				return "bar";
 			}
 		});
-		assertEquals("bar", this.repository.findOne("foo"));
+		assertThat(this.repository.findOne("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class InMemoryRepositoryTests {
 				return "bar";
 			}
 		});
-		assertEquals("bar", this.repository.findOne("foo"));
+		assertThat(this.repository.findOne("foo")).isEqualTo("bar");
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class InMemoryRepositoryTests {
 	public void patternsAcceptedForRegisteredPrefix() {
 		this.repository.set("foo.bar", "spam");
 		Iterator<String> iterator = this.repository.findAllWithPrefix("foo.*").iterator();
-		assertEquals("spam", iterator.next());
-		assertFalse(iterator.hasNext());
+		assertThat(iterator.next()).isEqualTo("spam");
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
@@ -125,9 +125,9 @@ public class InMemoryRepositoryTests {
 		}
 		List<Future<Boolean>> all = Executors.newFixedThreadPool(10).invokeAll(tasks);
 		for (Future<Boolean> future : all) {
-			assertTrue(future.get(1, TimeUnit.SECONDS));
+			assertThat(future.get(1, TimeUnit.SECONDS)).isTrue();
 		}
-		assertEquals(Integer.valueOf(0), repository.findOne("foo"));
+		assertThat(repository.findOne("foo")).isEqualTo(Integer.valueOf(0));
 	}
 
 }

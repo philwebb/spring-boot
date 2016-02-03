@@ -57,8 +57,8 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(Client.class));
+		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(Client.class)).isNotNull();
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(Client.class));
+		assertThat(this.context.getBean(Client.class)).isNotNull();
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class ElasticsearchRepositoriesAutoConfigurationTests {
 				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityElasticsearchDbRepository.class));
+		assertThat(this.context.getBean(CityElasticsearchDbRepository.class)).isNotNull();
 	}
 
 	private void addElasticsearchProperties(AnnotationConfigApplicationContext context) {

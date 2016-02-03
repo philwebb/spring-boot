@@ -48,20 +48,20 @@ public class ResourceConditionTests {
 	@Test
 	public void defaultResourceAndNoExplicitKey() {
 		load(DefaultLocationConfiguration.class);
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
 	public void unknownDefaultLocationAndNoExplicitKey() {
 		load(UnknownDefaultLocationConfiguration.class);
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
 	public void unknownDefaultLocationAndExplicitKeyToResource() {
 		load(UnknownDefaultLocationConfiguration.class,
 				"spring.foo.test.config=logging.properties");
-		assertTrue(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {

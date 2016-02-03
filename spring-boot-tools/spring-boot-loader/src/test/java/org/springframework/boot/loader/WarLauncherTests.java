@@ -64,7 +64,7 @@ public class WarLauncherTests {
 
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(warRoot, true));
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertEquals(2, archives.size());
+		assertThat(archives).hasSize(2);
 
 		assertThat(getUrls(archives), hasItems(webInfClasses.toURI().toURL(),
 				new URL("jar:" + webInfLibFoo.toURI().toURL() + "!/")));
@@ -77,7 +77,7 @@ public class WarLauncherTests {
 
 		WarLauncher launcher = new WarLauncher(new JarFileArchive(warRoot));
 		List<Archive> archives = launcher.getClassPathArchives();
-		assertEquals(2, archives.size());
+		assertThat(archives).hasSize(2);
 
 		assertThat(getUrls(archives),
 				hasItems(new URL("jar:" + warRoot.toURI().toURL()

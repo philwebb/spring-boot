@@ -63,7 +63,7 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test
@@ -73,7 +73,7 @@ public class SitePreferenceAutoConfigurationTests {
 				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
+		assertThat(this.context.getBean(SitePreferenceHandlerInterceptor.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)

@@ -367,7 +367,7 @@ public class JarFileTests {
 				signedJarFile = entry;
 			}
 		}
-		assertNotNull(signedJarFile);
+		assertThat(signedJarFile).isNotNull();
 		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
 		jarFile.getManifest();
 		Enumeration<JarEntry> jarEntries = jarFile.entries();
@@ -378,7 +378,7 @@ public class JarFileTests {
 			inputStream.close();
 			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
 					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertNotNull("Missing cert " + jarEntry.getName(),
+				assertThat("Missing cert " + jarEntry.getName().isNotNull(),
 						jarEntry.getCertificates());
 			}
 		}

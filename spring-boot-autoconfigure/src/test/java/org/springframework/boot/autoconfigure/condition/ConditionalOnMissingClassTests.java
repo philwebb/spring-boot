@@ -39,16 +39,16 @@ public class ConditionalOnMissingClassTests {
 	public void testVanillaOnClassCondition() {
 		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isFalse();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
 	public void testMissingOnClassCondition() {
 		this.context.register(MissingConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Configuration

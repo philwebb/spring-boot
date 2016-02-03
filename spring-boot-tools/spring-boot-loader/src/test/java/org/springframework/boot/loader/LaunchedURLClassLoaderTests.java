@@ -47,13 +47,13 @@ public class LaunchedURLClassLoaderTests {
 	public void resolveResourceFromWindowsFilesystem() throws Exception {
 		// This path is invalid - it should return null even on Windows.
 		// A regular URLClassLoader will deal with it gracefully.
-		assertNull(getClass().getClassLoader()
+		assertThat(getClass().getClassLoader().isNull()
 				.getResource("c:\\Users\\user\\bar.properties"));
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
 		// So we should too...
-		assertNull(loader.getResource("c:\\Users\\user\\bar.properties"));
+		assertThat(loader.getResource("c:\\Users\\user\\bar.properties")).isNull();
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class LaunchedURLClassLoaderTests {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
-		assertNotNull(loader.getResource("demo/Application.java"));
+		assertThat(loader.getResource("demo/Application.java")).isNotNull();
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class LaunchedURLClassLoaderTests {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
-		assertTrue(loader.getResources("demo/Application.java").hasMoreElements());
+		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class LaunchedURLClassLoaderTests {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
-		assertNotNull(loader.getResource(""));
+		assertThat(loader.getResource("")).isNotNull();
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class LaunchedURLClassLoaderTests {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
-		assertTrue(loader.getResources("").hasMoreElements());
+		assertThat(loader.getResources("").hasMoreElements()).isTrue();
 	}
 
 	@Test

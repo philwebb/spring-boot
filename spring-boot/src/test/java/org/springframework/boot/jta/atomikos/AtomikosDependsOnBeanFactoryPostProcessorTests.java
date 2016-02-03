@@ -58,7 +58,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 	private void assertDependsOn(String bean, String... expected) {
 		BeanDefinition definition = this.context.getBeanDefinition(bean);
 		if (definition.getDependsOn() == null) {
-			assertTrue("No dependsOn expected for " + bean, expected.length == 0);
+			assertThat("No dependsOn expected for " + bean, expected.length == 0).isTrue();
 			return;
 		}
 		HashSet<String> dependsOn = new HashSet<String>(

@@ -39,21 +39,21 @@ public class BufferMetricReaderTests {
 	public void countReflectsNumberOfMetrics() {
 		this.gauges.set("foo", 1);
 		this.counters.increment("bar", 2);
-		assertEquals(2, this.reader.count());
+		assertThat(this.reader.count()).isEqualTo(2);
 	}
 
 	@Test
 	public void findGauge() {
 		this.gauges.set("foo", 1);
-		assertNotNull(this.reader.findOne("foo"));
-		assertEquals(1, this.reader.count());
+		assertThat(this.reader.findOne("foo")).isNotNull();
+		assertThat(this.reader.count()).isEqualTo(1);
 	}
 
 	@Test
 	public void findCounter() {
 		this.counters.increment("foo", 1);
-		assertNotNull(this.reader.findOne("foo"));
-		assertEquals(1, this.reader.count());
+		assertThat(this.reader.findOne("foo")).isNotNull();
+		assertThat(this.reader.count()).isEqualTo(1);
 	}
 
 }

@@ -42,8 +42,8 @@ public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		List<Object> result = getEndpointBean().invoke();
-		assertEquals(1, result.size());
-		assertTrue(result.get(0) instanceof Map);
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0) instanceof Map).isTrue();
 	}
 
 	@Configuration

@@ -73,9 +73,9 @@ public class HypermediaAutoConfigurationTests {
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
 		LinkDiscoverers discoverers = this.context.getBean(LinkDiscoverers.class);
-		assertNotNull(discoverers);
+		assertThat(discoverers).isNotNull();
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
-		assertTrue(HalLinkDiscoverer.class.isInstance(discoverer));
+		assertThat(HalLinkDiscoverer.class.isInstance(discoverer)).isTrue();
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class HypermediaAutoConfigurationTests {
 		this.context.register(BaseConfig.class);
 		this.context.refresh();
 		EntityLinks discoverers = this.context.getBean(EntityLinks.class);
-		assertNotNull(discoverers);
+		assertThat(discoverers).isNotNull();
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertTrue(objectMapper.getSerializationConfig()
+		assertThat(objectMapper.getSerializationConfig().isTrue()
 				.isEnabled(SerializationFeature.INDENT_OUTPUT));
 	}
 

@@ -68,7 +68,7 @@ public class JmxAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(MBeanExporter.class));
+		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class JmxAutoConfigurationTests {
 		this.context.setEnvironment(env);
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(MBeanExporter.class));
+		assertThat(this.context.getBean(MBeanExporter.class)).isNotNull();
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -103,7 +103,7 @@ public class JmxAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class);
 		this.context.refresh();
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
-		assertNotNull(mBeanExporter);
+		assertThat(mBeanExporter).isNotNull();
 		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
 				.getField(mBeanExporter, "namingStrategy");
 		assertEquals("my-test-domain",
@@ -143,7 +143,7 @@ public class JmxAutoConfigurationTests {
 		IntegrationMBeanExporter mbeanExporter = this.context
 				.getBean(IntegrationMBeanExporter.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(mbeanExporter);
-		assertEquals("foo.my", dfa.getPropertyValue("domain"));
+		assertThat(dfa.getPropertyValue("domain")).isEqualTo("foo.my");
 	}
 
 	@Configuration

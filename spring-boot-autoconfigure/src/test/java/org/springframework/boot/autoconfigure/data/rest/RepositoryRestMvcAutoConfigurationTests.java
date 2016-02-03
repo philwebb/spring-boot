@@ -72,17 +72,17 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		load(TestConfiguration.class);
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 	}
 
 	@Test
 	public void testWithCustomBasePath() throws Exception {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
 		URI expectedUri = URI.create("/foo");
-		assertEquals("Custom basePath not set", expectedUri, bean.getBaseUri());
+		assertThat(bean.getBaseUri()).as("Custom basePath not set").isEqualTo(expectedUri);
 		BaseUri baseUri = this.context.getBean(BaseUri.class);
 		assertEquals("Custom basePath has not been applied to BaseUri bean", expectedUri,
 				baseUri.getUri());
@@ -99,15 +99,15 @@ public class RepositoryRestMvcAutoConfigurationTests {
 				"spring.data.rest.return-body-on-create:false",
 				"spring.data.rest.return-body-on-update:false",
 				"spring.data.rest.enable-enum-translation:true");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom default page size not set", 42, bean.getDefaultPageSize());
-		assertEquals("Custom max page size not set", 78, bean.getMaxPageSize());
-		assertEquals("Custom page param name not set", "_page", bean.getPageParamName());
+		assertThat(bean.getDefaultPageSize()).as("Custom default page size not set").isEqualTo(42);
+		assertThat(bean.getMaxPageSize()).as("Custom max page size not set").isEqualTo(78);
+		assertThat(bean.getPageParamName()).as("Custom page param name not set").isEqualTo("_page");
 		assertEquals("Custom limit param name not set", "_limit",
 				bean.getLimitParamName());
-		assertEquals("Custom sort param name not set", "_sort", bean.getSortParamName());
+		assertThat(bean.getSortParamName()).as("Custom sort param name not set").isEqualTo("_sort");
 		assertEquals("Custom default media type not set",
 				MediaType.parseMediaType("application/my-json"),
 				bean.getDefaultMediaType());
@@ -122,10 +122,10 @@ public class RepositoryRestMvcAutoConfigurationTests {
 	@Test
 	public void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
-		assertNotNull(this.context.getBean(RepositoryRestMvcConfiguration.class));
+		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 		RepositoryRestConfiguration bean = this.context
 				.getBean(RepositoryRestConfiguration.class);
-		assertEquals("Custom base URI should not have been set", URI.create(""),
+		assertThat(URI.create("").isEqualTo("Custom base URI should not have been set"),
 				bean.getBaseUri());
 	}
 

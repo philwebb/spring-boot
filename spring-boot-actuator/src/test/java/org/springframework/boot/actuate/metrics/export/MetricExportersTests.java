@@ -54,8 +54,8 @@ public class MetricExportersTests {
 		this.exporters.setReader(this.reader);
 		this.exporters.setWriters(this.writers);
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(0, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).isEmpty();
 	}
 
 	@Test
@@ -66,8 +66,8 @@ public class MetricExportersTests {
 		this.exporters.setReader(this.reader);
 		this.exporters.setWriters(this.writers);
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(1, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).hasSize(1);
 	}
 
 	@Test
@@ -77,8 +77,8 @@ public class MetricExportersTests {
 		this.exporters.setExporters(Collections.<String, Exporter>singletonMap("foo",
 				new MetricCopyExporter(this.reader, this.writer)));
 		this.exporters.configureTasks(new ScheduledTaskRegistrar());
-		assertNotNull(this.exporters.getExporters());
-		assertEquals(1, this.exporters.getExporters().size());
+		assertThat(this.exporters.getExporters()).isNotNull();
+		assertThat(this.exporters.getExporters()).hasSize(1);
 	}
 
 }

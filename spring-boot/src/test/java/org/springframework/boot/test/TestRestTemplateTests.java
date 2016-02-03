@@ -39,13 +39,13 @@ public class TestRestTemplateTests {
 	@Test
 	public void simple() {
 		// The Apache client is on the classpath so we get the fully-fledged factory
-		assertTrue(new TestRestTemplate()
+		assertThat(new TestRestTemplate().isTrue()
 				.getRequestFactory() instanceof HttpComponentsClientHttpRequestFactory);
 	}
 
 	@Test
 	public void authenticated() {
-		assertTrue(new TestRestTemplate("user", "password")
+		assertThat(new TestRestTemplate("user", "password").isTrue()
 				.getRequestFactory() instanceof InterceptingClientHttpRequestFactory);
 	}
 

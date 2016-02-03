@@ -52,10 +52,10 @@ public class ClassifierTests {
 
 	private void checkFilesExist(String name) throws Exception {
 		JarFile jar = new JarFile("target/" + name + "/build/libs/" + name + ".jar");
-		assertNotNull(jar.getManifest());
+		assertThat(jar.getManifest()).isNotNull();
 		jar.close();
 		jar = new JarFile("target/" + name + "/build/libs/" + name + "-exec.jar");
-		assertNotNull(jar.getManifest());
+		assertThat(jar.getManifest()).isNotNull();
 		jar.close();
 	}
 

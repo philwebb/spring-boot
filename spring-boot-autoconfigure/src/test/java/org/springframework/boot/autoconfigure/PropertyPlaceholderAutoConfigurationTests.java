@@ -51,7 +51,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 				PlaceholderConfig.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
-		assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("two");
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 				PlaceholderConfig.class, PlaceholdersOverride.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
-		assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
+		assertThat(this.context.getBean(PlaceholderConfig.class).getFoo()).isEqualTo("spam");
 	}
 
 	@Configuration

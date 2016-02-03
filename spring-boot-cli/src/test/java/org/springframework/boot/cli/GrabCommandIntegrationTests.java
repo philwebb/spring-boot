@@ -58,9 +58,9 @@ public class GrabCommandIntegrationTests {
 
 		// Use --autoconfigure=false to limit the amount of downloaded dependencies
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
-		assertTrue(new File("target/repository/joda-time/joda-time").isDirectory());
+		assertThat(new File("target/repository/joda-time/joda-time").isDirectory()).isTrue();
 		// Should be resolved from local repository cache
-		assertTrue(output.contains("Downloading: file:"));
+		assertThat(output.contains("Downloading: file:")).isTrue();
 	}
 
 	@Test
@@ -83,6 +83,6 @@ public class GrabCommandIntegrationTests {
 				new File("src/test/resources/grab-samples/repository"),
 				new File("target/repository"));
 		this.cli.grab("customDependencyManagement.groovy", "--autoconfigure=false");
-		assertTrue(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory());
+		assertThat(new File("target/repository/javax/ejb/ejb-api/3.0").isDirectory()).isTrue();
 	}
 }

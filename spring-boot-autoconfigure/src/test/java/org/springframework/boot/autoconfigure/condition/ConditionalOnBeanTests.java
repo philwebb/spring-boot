@@ -50,8 +50,8 @@ public class ConditionalOnBeanTests {
 	public void testNameOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class ConditionalOnBeanTests {
 		 * specified in the different attributes of @ConditionalOnBean are combined with
 		 * logical OR (not AND) so if any of them match the condition is true.
 		 */
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
@@ -72,31 +72,31 @@ public class ConditionalOnBeanTests {
 		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testClassOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testClassOnBeanClassNameCondition() {
 		this.context.register(FooConfiguration.class, OnBeanClassNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
 	public void testOnBeanConditionWithXml() {
 		this.context.register(XmlConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -104,15 +104,15 @@ public class ConditionalOnBeanTests {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
 		// Ideally this should be true
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test
 	public void testAnnotationOnBeanCondition() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
+		assertThat(this.context.containsBean("bar")).isTrue();
+		assertThat(this.context.getBean("bar")).isEqualTo("bar");
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class ConditionalOnBeanTests {
 		this.context.register(FooConfiguration.class,
 				OnBeanMissingClassConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
+		assertThat(this.context.containsBean("bar")).isFalse();
 	}
 
 	@Test

@@ -57,14 +57,14 @@ public class SampleSimpleApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleSimpleApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+		assertThat("Wrong output: " + output, output.contains("Hello Phil")).isTrue();
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
 		SampleSimpleApplication.main(new String[] { "--name=Gordon" });
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("Hello Gordon"));
+		assertThat("Wrong output: " + output, output.contains("Hello Gordon")).isTrue();
 	}
 
 }

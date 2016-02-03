@@ -39,15 +39,15 @@ public class ConditionalOnExpressionTests {
 	public void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(this.context.getBean("foo")).isEqualTo("foo");
 	}
 
 	@Test
 	public void testResourceNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
+		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Configuration

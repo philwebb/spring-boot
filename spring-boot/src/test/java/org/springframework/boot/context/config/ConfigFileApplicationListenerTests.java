@@ -523,7 +523,7 @@ public class ConfigFileApplicationListenerTests {
 				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
 		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
 				.getSource();
-		assertEquals(2, sources.size());
+		assertThat(sources).hasSize(2);
 		List<String> names = new ArrayList<String>();
 		for (org.springframework.core.env.PropertySource<?> source : sources) {
 			if (source instanceof EnumerableCompositePropertySource) {

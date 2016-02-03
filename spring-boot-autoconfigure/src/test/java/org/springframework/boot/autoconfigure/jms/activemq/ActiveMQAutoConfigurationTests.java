@@ -54,7 +54,7 @@ public class ActiveMQAutoConfigurationTests {
 				.getBean(ConnectionFactory.class);
 		assertThat(connectionFactory, instanceOf(ActiveMQConnectionFactory.class));
 		String brokerUrl = ((ActiveMQConnectionFactory) connectionFactory).getBrokerURL();
-		assertEquals("vm://localhost?broker.persistent=false", brokerUrl);
+		assertThat(brokerUrl).isEqualTo("vm://localhost?broker.persistent=false");
 	}
 
 	@Test

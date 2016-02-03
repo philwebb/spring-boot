@@ -35,37 +35,37 @@ public class DefaultMetricNamingStrategyTests {
 	public void simpleName() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
 	}
 
 	@Test
 	public void onePeriod() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "bar");
 	}
 
 	@Test
 	public void twoPeriods() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar.spam");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("name"));
-		assertEquals("Wrong name: " + name, "spam", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("name")).isEqualTo("Wrong name: " + name, "bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "spam");
 	}
 
 	@Test
 	public void threePeriods() throws Exception {
 		ObjectName name = this.strategy.getObjectName(null,
 				"domain:type=MetricValue,name=foo.bar.spam.bucket");
-		assertEquals("domain", name.getDomain());
-		assertEquals("foo", name.getKeyProperty("type"));
-		assertEquals("Wrong name: " + name, "bar", name.getKeyProperty("name"));
-		assertEquals("Wrong name: " + name, "spam.bucket", name.getKeyProperty("value"));
+		assertThat(name.getDomain()).isEqualTo("domain");
+		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
+		assertThat(name.getKeyProperty("name")).isEqualTo("Wrong name: " + name, "bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "spam.bucket");
 	}
 
 }

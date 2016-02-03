@@ -56,14 +56,14 @@ public class StatsdMetricWriterTests {
 	public void increment() {
 		this.writer.increment(new Delta<Long>("counter.foo", 3L));
 		this.server.waitForMessage();
-		assertEquals("me.counter.foo:3|c", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.counter.foo:3|c");
 	}
 
 	@Test
 	public void setLongMetric() throws Exception {
 		this.writer.set(new Metric<Long>("gauge.foo", 3L));
 		this.server.waitForMessage();
-		assertEquals("me.gauge.foo:3|g", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3|g");
 	}
 
 	@Test
@@ -71,14 +71,14 @@ public class StatsdMetricWriterTests {
 		this.writer.set(new Metric<Double>("gauge.foo", 3.7));
 		this.server.waitForMessage();
 		// Doubles are truncated
-		assertEquals("me.gauge.foo:3.7|g", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.gauge.foo:3.7|g");
 	}
 
 	@Test
 	public void setTimerMetric() throws Exception {
 		this.writer.set(new Metric<Long>("timer.foo", 37L));
 		this.server.waitForMessage();
-		assertEquals("me.timer.foo:37|ms", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("me.timer.foo:37|ms");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class StatsdMetricWriterTests {
 		this.writer = new StatsdMetricWriter("localhost", this.port);
 		this.writer.set(new Metric<Long>("gauge.foo", 3L));
 		this.server.waitForMessage();
-		assertEquals("gauge.foo:3|g", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("gauge.foo:3|g");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class StatsdMetricWriterTests {
 		this.writer = new StatsdMetricWriter("my.", "localhost", this.port);
 		this.writer.set(new Metric<Long>("gauge.foo", 3L));
 		this.server.waitForMessage();
-		assertEquals("my.gauge.foo:3|g", this.server.messagesReceived().get(0));
+		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
 	}
 
 	private static final class DummyStatsDServer {

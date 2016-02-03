@@ -41,7 +41,7 @@ public class SampleSolrApplicationTests {
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("name=Sony Playstation"));
+		assertThat("Wrong output: " + output, output.contains("name=Sony Playstation")).isTrue();
 	}
 
 	private boolean serverNotRunning(IllegalStateException ex) {
