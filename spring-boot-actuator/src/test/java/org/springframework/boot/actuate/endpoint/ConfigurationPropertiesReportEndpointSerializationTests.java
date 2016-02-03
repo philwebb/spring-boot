@@ -32,9 +32,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-
-
-
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} serialization.
  *
@@ -152,7 +149,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 				.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
-		assertThat((map.get("map"))).isEqualTo(null);
+		assertThat((map.get("map"))).isNullValue()
 	}
 
 	@Test

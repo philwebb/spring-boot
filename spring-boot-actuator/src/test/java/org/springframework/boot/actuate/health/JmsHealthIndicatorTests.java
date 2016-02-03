@@ -23,7 +23,6 @@ import javax.jms.JMSException;
 
 import org.junit.Test;
 
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -59,7 +58,7 @@ public class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isEqualTo(null);
+		assertThat(health.getDetails().get("provider")).isNullValue();
 	}
 
 	@Test
@@ -74,7 +73,7 @@ public class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isEqualTo(null);
+		assertThat(health.getDetails().get("provider")).isNullValue();
 		verify(connection, times(1)).close();
 	}
 

@@ -53,14 +53,10 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-
-
-
-
-
 
 /**
  * Tests for {@link RelaxedDataBinder}.
@@ -267,7 +263,8 @@ public class RelaxedDataBinderTests {
 	public void testBindNestedListOfBeanWithList() throws Exception {
 		TargetWithNestedListOfBeanWithList target = new TargetWithNestedListOfBeanWithList();
 		bind(target, "nested[0].nested[0].foo: bar\nnested[1].nested[0].foo: foo");
-		assertThat(target.getNested().get(0).getNested().get(0).getFoo()).isEqualTo("bar");
+		assertThat(target.getNested().get(0).getNested().get(0).getFoo())
+				.isEqualTo("bar");
 	}
 
 	@Test
@@ -421,7 +418,8 @@ public class RelaxedDataBinderTests {
 		assertThat(target.getNested()).hasSize(2);
 		Map<String, Object> nestedMap = (Map<String, Object>) target.getNested()
 				.get("bar.key");
-		assertThat(nestedMap).as("nested map should be registered with 'bar.key'").isNotNull();
+		assertThat(nestedMap).as("nested map should be registered with 'bar.key'")
+				.isNotNull();
 		assertThat(nestedMap).hasSize(3);
 		assertThat(nestedMap.get("value")).isEqualTo("123");
 		assertThat(target.getNested().get("foo")).isEqualTo("bar.key");
@@ -436,8 +434,8 @@ public class RelaxedDataBinderTests {
 				+ "nested.bar.value: 123\nnested.bar.foo: crap");
 		assertThat(target.getNested()).hasSize(2);
 		assertThat(((Map<String, Object>) target.getNested().get("bar"))).hasSize(3);
-		assertEquals("123",
-				((Map<String, Object>) target.getNested().get("bar")).get("value"));
+		assertThat(((Map<String, Object>) target.getNested().get("bar")).get("value"))
+				.isEqualTo("123");
 		assertThat(target.getNested().get("foo")).isEqualTo("bar");
 		assertThat(target.getNested().containsValue(target.getNested())).isFalse();
 	}
