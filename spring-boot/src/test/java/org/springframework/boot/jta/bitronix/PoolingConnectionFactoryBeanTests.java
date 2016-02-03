@@ -43,9 +43,9 @@ public class PoolingConnectionFactoryBeanTests {
 	@Test
 	public void sensibleDefaults() throws Exception {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
-		assertThat(this.bean.getTestConnections()).isEqualTo(true);
-		assertThat(this.bean.getAutomaticEnlistingEnabled()).isEqualTo(true);
-		assertThat(this.bean.getAllowLocalTransactions()).isEqualTo(true);
+		assertThat(this.bean.getTestConnections())isTrue();
+		assertThat(this.bean.getAutomaticEnlistingEnabled())isTrue();
+		assertThat(this.bean.getAllowLocalTransactions())isTrue();
 	}
 
 	@Test

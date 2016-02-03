@@ -49,7 +49,7 @@ public class TriggerFileFilterTests {
 	@Test
 	public void acceptNameMatch() throws Exception {
 		File file = this.temp.newFile("thefile.txt");
-		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isEqualTo(true);
+		assertThat(new TriggerFileFilter("thefile.txt").accept(file))isTrue();
 	}
 
 	@Test

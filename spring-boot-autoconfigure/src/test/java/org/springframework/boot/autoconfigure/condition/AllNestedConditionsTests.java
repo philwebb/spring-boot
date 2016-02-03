@@ -56,7 +56,7 @@ public class AllNestedConditionsTests {
 	@Test
 	public void both() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a", "b:b");
-		assertThat(context.containsBean("myBean")).isEqualTo(true);
+		assertThat(context.containsBean("myBean"))isTrue();
 		context.close();
 	}
 

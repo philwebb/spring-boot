@@ -63,7 +63,7 @@ public class ClassPathChangedEventTests {
 		event = new ClassPathChangedEvent(this.source, changeSet, false);
 		assertThat(event.isRestartRequired()).isEqualTo(false);
 		event = new ClassPathChangedEvent(this.source, changeSet, true);
-		assertThat(event.isRestartRequired()).isEqualTo(true);
+		assertThat(event.isRestartRequired())isTrue();
 	}
 
 }

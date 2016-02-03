@@ -87,7 +87,7 @@ public class HttpHeaderAccessManagerTests {
 	@Test
 	public void allowsMatching() throws Exception {
 		this.request.addHeader(HEADER, SECRET);
-		assertThat(this.manager.isAllowed(this.serverRequest)).isEqualTo(true);
+		assertThat(this.manager.isAllowed(this.serverRequest))isTrue();
 	}
 
 	@Test

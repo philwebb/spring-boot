@@ -35,7 +35,7 @@ public class NoneNestedConditionsTests {
 	@Test
 	public void neither() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class);
-		assertThat(context.containsBean("myBean")).isEqualTo(true);
+		assertThat(context.containsBean("myBean"))isTrue();
 		context.close();
 	}
 

@@ -66,10 +66,10 @@ public class AsciiBytesTests {
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abc.startsWith(abc)).isEqualTo(true);
-		assertThat(abc.startsWith(ab)).isEqualTo(true);
-		assertThat(abc.startsWith(bc)).isEqualTo(false);
-		assertThat(abc.startsWith(abcd)).isEqualTo(false);
+		assertThat(abc.startsWith(abc))isTrue();
+		assertThat(abc.startsWith(ab))isTrue();
+		assertThat(abc.startsWith(bc))isFalse();
+		assertThat(abc.startsWith(abcd))isFalse();
 	}
 
 	@Test
@@ -78,10 +78,10 @@ public class AsciiBytesTests {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes aabc = new AsciiBytes(new byte[] { 65, 65, 66, 67 });
-		assertThat(abc.endsWith(abc)).isEqualTo(true);
-		assertThat(abc.endsWith(bc)).isEqualTo(true);
-		assertThat(abc.endsWith(ab)).isEqualTo(false);
-		assertThat(abc.endsWith(aabc)).isEqualTo(false);
+		assertThat(abc.endsWith(abc))isTrue();
+		assertThat(abc.endsWith(bc))isTrue();
+		assertThat(abc.endsWith(ab))isFalse();
+		assertThat(abc.endsWith(aabc))isFalse();
 	}
 
 	@Test

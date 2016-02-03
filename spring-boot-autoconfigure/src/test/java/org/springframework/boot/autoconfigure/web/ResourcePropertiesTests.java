@@ -40,13 +40,13 @@ public class ResourcePropertiesTests {
 	@Test
 	public void resourceChainStrategyEnabled() {
 		this.properties.getChain().getStrategy().getFixed().setEnabled(true);
-		assertThat(this.properties.getChain().getEnabled()).isEqualTo(true);
+		assertThat(this.properties.getChain().getEnabled())isTrue();
 	}
 
 	@Test
 	public void resourceChainEnabled() {
 		this.properties.getChain().setEnabled(true);
-		assertThat(this.properties.getChain().getEnabled()).isEqualTo(true);
+		assertThat(this.properties.getChain().getEnabled())isTrue();
 	}
 
 	@Test

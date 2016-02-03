@@ -294,7 +294,7 @@ public class RandomAccessDataFileTests {
 			}));
 		}
 		for (Future<Boolean> future : results) {
-			assertThat(future.get()).isEqualTo(true);
+			assertThat(future.get())isTrue();
 		}
 	}
 

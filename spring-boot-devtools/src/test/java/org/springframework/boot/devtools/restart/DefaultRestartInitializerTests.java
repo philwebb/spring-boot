@@ -45,7 +45,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isEqualTo(true);
+		assertThat(initializer.isMain(thread))isTrue();
 		assertThat(initializer.getInitialUrls(thread)).isNotEqualTo(nullValue());
 	}
 

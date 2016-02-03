@@ -21,9 +21,7 @@ import org.junit.Test;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CloudPlatform}.
@@ -35,14 +33,14 @@ public class CloudPlatformTests {
 	@Test
 	public void getActiveWhenEnvironmentIsNullShouldReturnNull() throws Exception {
 		CloudPlatform platform = CloudPlatform.getActive(null);
-		assertThat(platform, nullValue());
+		assertThat(platform).isNull();
 	}
 
 	@Test
 	public void getActiveWhenNotInCloudShouldReturnNull() throws Exception {
 		Environment environment = new MockEnvironment();
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform, nullValue());
+		assertThat(platform).isNull();
 
 	}
 
@@ -53,7 +51,7 @@ public class CloudPlatformTests {
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
-		assertThat(platform.isActive(environment)).isEqualTo(true);
+		assertThat(platform.isActive(environment))isTrue();
 	}
 
 	@Test
@@ -62,7 +60,7 @@ public class CloudPlatformTests {
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
-		assertThat(platform.isActive(environment)).isEqualTo(true);
+		assertThat(platform.isActive(environment))isTrue();
 	}
 
 	@Test
@@ -70,7 +68,7 @@ public class CloudPlatformTests {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
-		assertThat(platform.isActive(environment)).isEqualTo(true);
+		assertThat(platform.isActive(environment))isTrue();
 	}
 
 }

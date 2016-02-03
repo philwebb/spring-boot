@@ -80,7 +80,7 @@ public class SpringBootServletInitializerTests {
 	public void applicationBuilderCanBeCustomized() throws Exception {
 		CustomSpringBootServletInitializer servletInitializer = new CustomSpringBootServletInitializer();
 		servletInitializer.createRootApplicationContext(this.servletContext);
-		assertThat(servletInitializer.applicationBuilder.built).isEqualTo(true);
+		assertThat(servletInitializer.applicationBuilder.built)isTrue();
 	}
 
 	@Test

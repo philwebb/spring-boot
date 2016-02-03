@@ -76,14 +76,14 @@ public class DefaultSourceFolderUrlFilterTests {
 				+ "spring-boot-sample-devtools";
 		URL jarUrl = new URL("jar:file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/");
-		assertThat(this.filter.isMatch(sourceFolder, jarUrl)).isEqualTo(true);
+		assertThat(this.filter.isMatch(sourceFolder, jarUrl))isTrue();
 		URL nestedJarUrl = new URL("jar:file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar!/"
 				+ "lib/spring-boot-1.3.0.BUILD-SNAPSHOT.jar!/");
 		assertThat(this.filter.isMatch(sourceFolder, nestedJarUrl)).isEqualTo(false);
 		URL fileUrl = new URL("file:/Users/me/tmp/"
 				+ "spring-boot-sample-devtools-1.3.0.BUILD-SNAPSHOT.jar");
-		assertThat(this.filter.isMatch(sourceFolder, fileUrl)).isEqualTo(true);
+		assertThat(this.filter.isMatch(sourceFolder, fileUrl))isTrue();
 	}
 
 	private void doTest(String sourcePostfix) throws MalformedURLException {

@@ -20,8 +20,7 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RelaxedNames}.
@@ -44,7 +43,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("MY-RELAXED-PROPERTY");
 		assertThat(iterator.next()).isEqualTo("MY_RELAXED_PROPERTY");
 		assertThat(iterator.next()).isEqualTo("MYRELAXEDPROPERTY");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("NES_TED");
 		assertThat(iterator.next()).isEqualTo("NES.TED");
 		assertThat(iterator.next()).isEqualTo("NESTED");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -65,7 +64,7 @@ public class RelaxedNamesTests {
 		Iterator<String> iterator = new RelaxedNames("plain").iterator();
 		assertThat(iterator.next()).isEqualTo("plain");
 		assertThat(iterator.next()).isEqualTo("PLAIN");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("CAMEL");
 		assertThat(iterator.next()).isEqualTo("CA_MEL");
 		assertThat(iterator.next()).isEqualTo("CA-MEL");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("CAMELCASE");
 		assertThat(iterator.next()).isEqualTo("CA_MEL_CASE");
 		assertThat(iterator.next()).isEqualTo("CA-MEL-CASE");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -104,7 +103,7 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("SPRING.VALUE");
 		assertThat(iterator.next()).isEqualTo("SPRING_VALUE");
 		assertThat(iterator.next()).isEqualTo("SPRINGVALUE");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
@@ -114,14 +113,14 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next()).isEqualTo("spring_");
 		assertThat(iterator.next()).isEqualTo("SPRING.");
 		assertThat(iterator.next()).isEqualTo("SPRING_");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 	@Test
 	public void fromEmpty() throws Exception {
 		Iterator<String> iterator = new RelaxedNames("").iterator();
 		assertThat(iterator.next()).isEqualTo("");
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext())isFalse();
 	}
 
 }

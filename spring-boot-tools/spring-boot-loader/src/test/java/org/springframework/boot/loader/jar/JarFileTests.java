@@ -92,7 +92,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("special/\u00EB.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
-		assertThat(entries.hasMoreElements()).isEqualTo(false);
+		assertThat(entries.hasMoreElements())isFalse();
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
 		assertThat(urlClassLoader.getResource("special/\u00EB.dat"), notNullValue());
@@ -134,7 +134,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("special/\u00EB.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("nested.jar");
 		assertThat(entries.nextElement().getName()).isEqualTo("another-nested.jar");
-		assertThat(entries.hasMoreElements()).isEqualTo(false);
+		assertThat(entries.hasMoreElements())isFalse();
 	}
 
 	@Test
@@ -254,7 +254,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName()).isEqualTo("3.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("4.dat");
 		assertThat(entries.nextElement().getName()).isEqualTo("\u00E4.dat");
-		assertThat(entries.hasMoreElements()).isEqualTo(false);
+		assertThat(entries.hasMoreElements())isFalse();
 
 		InputStream inputStream = nestedJarFile
 				.getInputStream(nestedJarFile.getEntry("3.dat"));
@@ -277,7 +277,7 @@ public class JarFileTests {
 
 		Enumeration<java.util.jar.JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName()).isEqualTo("9.dat");
-		assertThat(entries.hasMoreElements()).isEqualTo(false);
+		assertThat(entries.hasMoreElements())isFalse();
 
 		InputStream inputStream = nestedJarFile
 				.getInputStream(nestedJarFile.getEntry("9.dat"));

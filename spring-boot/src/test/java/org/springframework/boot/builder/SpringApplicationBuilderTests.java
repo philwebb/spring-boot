@@ -35,11 +35,8 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -65,8 +62,7 @@ public class SpringApplicationBuilderTests {
 				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
 		assertThat(this.context).isEqualTo(instanceOf(StaticApplicationContext.class));
-		assertThat(this.context.getEnvironment().getProperty("foo"),
-				is(equalTo("bucket")));
+		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
 		assertThat(this.context.getEnvironment().acceptsProfiles("foo")).isTrue();
 	}
 
@@ -106,8 +102,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 	}
 
 	@Test
@@ -118,8 +114,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.build().run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 	}
 
 	@Test
@@ -131,8 +127,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(true));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isTrue();
 	}
 
 	@Test
@@ -143,8 +139,8 @@ public class SpringApplicationBuilderTests {
 				getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		this.context = application.run();
-		assertThat(((SpyApplicationContext) this.context).getClassLoader(),
-				is(equalTo(classLoader)));
+		assertThat(((SpyApplicationContext) this.context).getClassLoader())
+				.isEqualTo(classLoader);
 	}
 
 	@Test
@@ -157,7 +153,7 @@ public class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
 		assertThat(((SpyApplicationContext) this.context).getResourceLoader()
-				.getClassLoader(), is(equalTo(classLoader)));
+				.getClassLoader()).isEqualTo(classLoader);
 	}
 
 	@Test
@@ -168,8 +164,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext())
 				.setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
-				equalTo(false));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook())
+				.isFalse();
 	}
 
 	@Test
@@ -179,12 +175,12 @@ public class SpringApplicationBuilderTests {
 						.child(ChildConfig.class).web(false);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node")).isTrue();
-		assertThat(this.context.getEnvironment().getProperty("transport"),
-				is(equalTo("redis")));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"),
-				is(true));
-		assertThat(this.context.getParent().getEnvironment().getProperty("transport"),
-				is(equalTo("redis")));
+		assertThat(this.context.getEnvironment().getProperty("transport"))
+				.isEqualTo("redis");
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"))
+				.isTrue();
+		assertThat(this.context.getParent().getEnvironment().getProperty("transport"))
+				.isEqualTo("redis");
 		// only defined in node profile
 		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("spam");
 	}
@@ -195,10 +191,10 @@ public class SpringApplicationBuilderTests {
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).profiles("admin").web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(false));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isFalse();
 	}
 
 	@Test
@@ -209,12 +205,12 @@ public class SpringApplicationBuilderTests {
 				.profiles("admin").web(false);
 		shared.profiles("parent");
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
 		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node",
-				"parent"), is(true));
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(false));
+				"parent")).isTrue();
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isFalse();
 	}
 
 	@Test
@@ -224,12 +220,12 @@ public class SpringApplicationBuilderTests {
 						.profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).profiles("admin").web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"),
-				is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node", "admin"))
+				.isTrue();
 		// Now they share an Environment explicitly so there's no way to keep the profiles
 		// separate
-		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"),
-				is(true));
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("admin"))
+				.isTrue();
 	}
 
 	@Test

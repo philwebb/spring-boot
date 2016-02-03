@@ -47,7 +47,7 @@ public class JspTemplateAvailabilityProviderTests {
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.mvc.view.prefix",
 				"classpath:/custom-templates/");
-		assertThat(isTemplateAvailable("custom.jsp")).isEqualTo(true);
+		assertThat(isTemplateAvailable("custom.jsp"))isTrue();
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class JspTemplateAvailabilityProviderTests {
 		this.environment.setProperty("spring.mvc.view.prefix",
 				"classpath:/custom-templates/");
 		this.environment.setProperty("spring.mvc.view.suffix", ".jsp");
-		assertThat(isTemplateAvailable("suffixed")).isEqualTo(true);
+		assertThat(isTemplateAvailable("suffixed"))isTrue();
 	}
 
 	private boolean isTemplateAvailable(String view) {

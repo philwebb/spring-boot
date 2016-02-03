@@ -41,8 +41,8 @@ public class PoolingDataSourceBeanTests {
 	@Test
 	public void sensibleDefaults() throws Exception {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
-		assertThat(this.bean.getAutomaticEnlistingEnabled()).isEqualTo(true);
-		assertThat(this.bean.isEnableJdbc4ConnectionTest()).isEqualTo(true);
+		assertThat(this.bean.getAutomaticEnlistingEnabled())isTrue();
+		assertThat(this.bean.isEnableJdbc4ConnectionTest())isTrue();
 	}
 
 	@Test

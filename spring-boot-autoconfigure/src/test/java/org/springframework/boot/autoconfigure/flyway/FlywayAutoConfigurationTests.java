@@ -301,7 +301,7 @@ public class FlywayAutoConfigurationTests {
 		}
 
 		public void assertCalled() {
-			assertThat(this.called).isEqualTo(true);
+			assertThat(this.called)isTrue();
 		}
 	}
 

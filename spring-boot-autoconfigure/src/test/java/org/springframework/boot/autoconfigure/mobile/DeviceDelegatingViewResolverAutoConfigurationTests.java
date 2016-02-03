@@ -195,7 +195,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
-		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(true);
+		assertThat(accessor.getPropertyValue("enableFallback"))isTrue();
 	}
 
 	@Test

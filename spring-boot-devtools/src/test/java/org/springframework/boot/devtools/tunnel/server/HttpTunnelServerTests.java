@@ -326,7 +326,7 @@ public class HttpTunnelServerTests {
 		Thread.sleep(sleepBeforeResponse);
 		connection.respond(HttpStatus.NO_CONTENT);
 		connectionThread.join();
-		assertThat(responded.get()).isEqualTo(true);
+		assertThat(responded.get())isTrue();
 	}
 
 	@Test
@@ -334,7 +334,7 @@ public class HttpTunnelServerTests {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
 		assertThat(connection.isOlderThan(100)).isEqualTo(false);
 		Thread.sleep(200);
-		assertThat(connection.isOlderThan(100)).isEqualTo(true);
+		assertThat(connection.isOlderThan(100))isTrue();
 	}
 
 	/**

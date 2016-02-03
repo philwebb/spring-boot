@@ -30,10 +30,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RelaxedPropertyResolver}.
@@ -82,8 +79,8 @@ public class RelaxedPropertyResolverTests {
 
 	@Test
 	public void getRequiredPropertyWithType() throws Exception {
-		assertThat(this.resolver.getRequiredProperty("my-integer", Integer.class),
-				equalTo(123));
+		assertThat(this.resolver.getRequiredProperty("my-integer", Integer.class))
+				.isEqualTo(123);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("required key [my-missing] not found");
 		this.resolver.getRequiredProperty("my-missing", Integer.class);
@@ -92,7 +89,8 @@ public class RelaxedPropertyResolverTests {
 	@Test
 	public void getProperty() throws Exception {
 		assertThat(this.resolver.getProperty("my-string")).isEqualTo("value");
-		assertThat(this.resolver.getProperty("my-missing"), nullValue());
+		assertThat(this.resolver.getProperty("my-missing")).isNull();
+		;
 	}
 
 	@Test
@@ -110,30 +108,29 @@ public class RelaxedPropertyResolverTests {
 	@Test
 	public void getPropertyWithType() throws Exception {
 		assertThat(this.resolver.getProperty("my-integer", Integer.class)).isEqualTo(123);
-		assertThat(this.resolver.getProperty("my-missing", Integer.class), nullValue());
+		assertThat(this.resolver.getProperty("my-missing", Integer.class)).isNull();
 	}
 
 	@Test
 	public void getPropertyWithTypeAndDefault() throws Exception {
-		assertThat(this.resolver.getProperty("my-integer", Integer.class, 345),
-				equalTo(123));
-		assertThat(this.resolver.getProperty("my-missing", Integer.class, 345),
-				equalTo(345));
+		assertThat(this.resolver.getProperty("my-integer", Integer.class, 345))
+				.isEqualTo(123);
+		assertThat(this.resolver.getProperty("my-missing", Integer.class, 345))
+				.isEqualTo(345);
 	}
 
 	@Test
 	public void getPropertyAsClass() throws Exception {
-		assertThat(this.resolver.getPropertyAsClass("my-class", String.class),
-				equalTo(String.class));
-		assertThat(this.resolver.getPropertyAsClass("my-missing", String.class),
-				nullValue());
+		assertThat(this.resolver.getPropertyAsClass("my-class", String.class))
+				.isEqualTo(String.class);
+		assertThat(this.resolver.getPropertyAsClass("my-missing", String.class)).isNull();
 	}
 
 	@Test
 	public void containsProperty() throws Exception {
-		assertThat(this.resolver.containsProperty("my-string")).isEqualTo(true);
-		assertThat(this.resolver.containsProperty("myString")).isEqualTo(true);
-		assertThat(this.resolver.containsProperty("my_string")).isEqualTo(true);
+		assertThat(this.resolver.containsProperty("my-string"))isTrue();
+		assertThat(this.resolver.containsProperty("myString"))isTrue();
+		assertThat(this.resolver.containsProperty("my_string"))isTrue();
 		assertThat(this.resolver.containsProperty("my-missing")).isEqualTo(false);
 	}
 
@@ -153,7 +150,7 @@ public class RelaxedPropertyResolverTests {
 	public void prefixed() throws Exception {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "a.b.c.");
 		this.source.put("a.b.c.d", "test");
-		assertThat(this.resolver.containsProperty("d")).isEqualTo(true);
+		assertThat(this.resolver.containsProperty("d"))isTrue();
 		assertThat(this.resolver.getProperty("d")).isEqualTo("test");
 	}
 
@@ -162,7 +159,7 @@ public class RelaxedPropertyResolverTests {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "a.");
 		this.source.put("A_B", "test");
 		this.source.put("a.foobar", "spam");
-		assertThat(this.resolver.containsProperty("b")).isEqualTo(true);
+		assertThat(this.resolver.containsProperty("b"))isTrue();
 		assertThat(this.resolver.getProperty("b")).isEqualTo("test");
 		assertThat(this.resolver.getProperty("foo-bar")).isEqualTo("spam");
 	}
@@ -175,9 +172,9 @@ public class RelaxedPropertyResolverTests {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "x.y.");
 		Map<String, Object> subProperties = this.resolver.getSubProperties("my-sub.");
 		assertThat(subProperties.size()).isEqualTo(3);
-		assertThat(subProperties.get("a.b")).isEqualTo((Object) "1");
-		assertThat(subProperties.get("a.c")).isEqualTo((Object) "2");
-		assertThat(subProperties.get("a.d")).isEqualTo((Object) "3");
+		assertThat(subProperties.get("a.b")).isEqualTo("1");
+		assertThat(subProperties.get("a.c")).isEqualTo("2");
+		assertThat(subProperties.get("a.d")).isEqualTo("3");
 	}
 
 	@Test

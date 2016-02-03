@@ -123,7 +123,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
 		assertThat(this.context instanceof EmbeddedWebApplicationContext).isTrue();
-		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName().isEqualTo(true),
+		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName()isTrue(),
 				"EmbeddedWebApplication"));
 		int expected = ((EmbeddedWebApplicationContext) this.context)
 				.getEmbeddedServletContainer().getPort();

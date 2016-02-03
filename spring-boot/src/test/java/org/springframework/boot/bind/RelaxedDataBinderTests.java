@@ -54,9 +54,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
@@ -619,7 +616,8 @@ public class RelaxedDataBinderTests {
 		properties.add("flub", "a");
 		properties.add("foo", "b");
 		new RelaxedDataBinder(target).bind(properties);
-		assertThat(target.getFooBaz(), nullValue());
+		assertThat(target.getFooBaz()).isNull();
+		;
 		assertThat(target.getFoo()).isEqualTo("b");
 	}
 
@@ -673,11 +671,11 @@ public class RelaxedDataBinderTests {
 
 		result = bind(target, "bingos: The_Other");
 		assertThat(result.getErrorCount()).isEqualTo(0);
-		assertThat(target.getBingos(), contains(Bingo.THE_OTHER));
+		assertThat(target.getBingos()).contains(Bingo.THE_OTHER);
 
 		result = bind(target, "bingos: The_Other, that");
 		assertThat(result.getErrorCount()).isEqualTo(0);
-		assertThat(target.getBingos(), contains(Bingo.THE_OTHER, Bingo.THAT));
+		assertThat(target.getBingos()).contains(Bingo.THE_OTHER, Bingo.THAT);
 	}
 
 	private BindingResult bind(Object target, String values) throws Exception {

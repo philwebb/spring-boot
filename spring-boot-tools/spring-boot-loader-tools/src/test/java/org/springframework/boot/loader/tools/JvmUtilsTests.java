@@ -37,7 +37,7 @@ public class JvmUtilsTests {
 		URL jarUrl = JvmUtils.getToolsJarUrl();
 		// System.out.println(jarUrl);
 		assertThat(jarUrl.toString(), endsWith(".jar"));
-		assertThat(new File(jarUrl.toURI()).exists()).isEqualTo(true);
+		assertThat(new File(jarUrl.toURI()).exists())isTrue();
 	}
 
 }

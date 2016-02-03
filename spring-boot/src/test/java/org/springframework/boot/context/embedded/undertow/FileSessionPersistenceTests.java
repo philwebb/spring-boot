@@ -100,7 +100,7 @@ public class FileSessionPersistenceTests {
 		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<String, PersistentSession>();
 		this.persistence.persistSessions("test", sessionData);
-		assertThat(sessionFile.exists()).isEqualTo(true);
+		assertThat(sessionFile.exists())isTrue();
 		this.persistence.clear("test");
 		assertThat(sessionFile.exists()).isEqualTo(false);
 	}

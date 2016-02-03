@@ -90,7 +90,7 @@ public class OnInitializedRestarterConditionTests {
 			Restarter.initialize(new String[0], false, initializer);
 			ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 					Config.class);
-			assertThat(context.containsBean("bean")).isEqualTo(true);
+			assertThat(context.containsBean("bean"))isTrue();
 			context.close();
 			synchronized (wait) {
 				wait.notify();

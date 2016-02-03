@@ -673,7 +673,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		getResponse(getLocalUrl("/hello"),
 				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()
 						.setContentDecoderRegistry(contentDecoderMap).build()));
-		assertThat(inputStreamFactory.wasCompressionUsed()).isEqualTo(true);
+		assertThat(inputStreamFactory.wasCompressionUsed())isTrue();
 	}
 
 	@Test
