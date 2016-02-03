@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebSocketAutoConfiguration}
@@ -73,7 +73,7 @@ public class WebSocketAutoConfigurationTests {
 		this.context.refresh();
 		Object serverContainer = this.context.getServletContext()
 				.getAttribute("javax.websocket.server.ServerContainer");
-		assertThat(serverContainer, is(instanceOf(ServerContainer.class)));
+		assertThat(serverContainer).isEqualTo(instanceOf(ServerContainer.class));
 
 	}
 

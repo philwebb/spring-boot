@@ -40,8 +40,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
@@ -64,13 +64,13 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 		assertNotNull(this.context.getBean(CityRepository.class));
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertThat(mongo).isEqualTo(instanceOf(MongoClient.class));
 		MongoMappingContext mappingContext = this.context
 				.getBean(MongoMappingContext.class);
 		@SuppressWarnings("unchecked")
 		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities.size(), is(equalTo(1)));
+		assertThat(entities).hasSize(equalTo(1));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 		prepareApplicationContext(EmptyConfiguration.class);
 
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertThat(mongo).isEqualTo(instanceOf(MongoClient.class));
 	}
 
 	@Test

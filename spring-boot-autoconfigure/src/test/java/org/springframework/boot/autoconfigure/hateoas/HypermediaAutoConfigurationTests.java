@@ -44,9 +44,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link HypermediaAutoConfiguration}.

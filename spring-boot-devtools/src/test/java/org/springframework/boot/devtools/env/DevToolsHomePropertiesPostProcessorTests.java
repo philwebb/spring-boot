@@ -32,7 +32,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DevToolsHomePropertiesPostProcessor}.

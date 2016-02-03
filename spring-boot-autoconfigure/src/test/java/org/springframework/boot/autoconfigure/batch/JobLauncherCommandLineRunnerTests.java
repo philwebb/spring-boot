@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.

@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link InMemoryTraceRepository}.

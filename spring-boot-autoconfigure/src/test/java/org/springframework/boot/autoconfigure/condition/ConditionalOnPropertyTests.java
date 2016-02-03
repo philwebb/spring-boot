@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 /**

@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertTrue;
+
 import static org.mockito.Mockito.mock;
 
 /**

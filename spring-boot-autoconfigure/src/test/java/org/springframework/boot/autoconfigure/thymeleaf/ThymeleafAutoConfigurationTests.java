@@ -43,11 +43,11 @@ import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration}.
@@ -206,7 +206,7 @@ public class ThymeleafAutoConfigurationTests {
 			Context attrs = new Context(Locale.UK,
 					Collections.singletonMap("greeting", "Hello World"));
 			String result = engine.process("message", attrs);
-			assertThat(result, containsString("Hello World"));
+			assertThat(result).contains("Hello World");
 		}
 		finally {
 			context.close();

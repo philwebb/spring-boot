@@ -51,9 +51,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link VelocityAutoConfiguration}.
@@ -106,7 +106,7 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
@@ -115,7 +115,7 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
 	}
 
@@ -131,7 +131,7 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("prefixed"));
+		assertThat(result).contains("prefixed");
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("suffixed"));
+		assertThat(result).contains("suffixed");
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class VelocityAutoConfigurationTests {
 				"spring.velocity.resourceLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("custom"));
+		assertThat(result).contains("custom");
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class VelocityAutoConfigurationTests {
 		VelocityContext velocityContext = new VelocityContext();
 		velocityContext.put("greeting", "Hello World");
 		template.merge(velocityContext, writer);
-		assertThat(writer.toString(), containsString("Hello World"));
+		assertThat(writer.toString()).contains("Hello World");
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class VelocityAutoConfigurationTests {
 			VelocityContext velocityContext = new VelocityContext();
 			velocityContext.put("greeting", "Hello World");
 			template.merge(velocityContext, writer);
-			assertThat(writer.toString(), containsString("Hello World"));
+			assertThat(writer.toString()).contains("Hello World");
 		}
 		finally {
 			context.close();

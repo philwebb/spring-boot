@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.metrics.buffer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+
 
 /**
  * Tests for {@link BufferMetricReader}.

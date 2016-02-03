@@ -34,7 +34,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.gradle.ProjectCreator;
 import org.springframework.boot.gradle.Versions;
 
-import static org.junit.Assert.fail;
+
 
 /**
  * Tests for the various starter projects to check that they don't pull in unwanted

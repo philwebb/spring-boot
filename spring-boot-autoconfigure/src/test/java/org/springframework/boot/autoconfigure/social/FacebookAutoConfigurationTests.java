@@ -22,7 +22,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link FacebookAutoConfiguration}.

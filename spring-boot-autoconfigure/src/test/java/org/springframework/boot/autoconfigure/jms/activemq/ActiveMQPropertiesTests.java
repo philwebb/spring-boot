@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link ActiveMQProperties} and ActiveMQConnectionFactoryFactory.

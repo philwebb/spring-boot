@@ -38,7 +38,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author Dave Syer

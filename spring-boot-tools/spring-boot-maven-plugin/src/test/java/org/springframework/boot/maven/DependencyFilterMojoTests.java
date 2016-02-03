@@ -27,8 +27,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

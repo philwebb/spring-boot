@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link SampleJooqApplication}.
@@ -37,8 +37,8 @@ public class SampleJooqApplicationTests {
 	@Test
 	public void outputResults() throws Exception {
 		SampleJooqApplication.main(NO_ARGS);
-		assertThat(this.out.toString(), containsString("jOOQ Fetch 1 Greg Turnquest"));
-		assertThat(this.out.toString(), containsString("jOOQ Fetch 2 Craig Walls"));
+		assertThat(this.out.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
+		assertThat(this.out.toString()).contains("jOOQ Fetch 2 Craig Walls");
 		assertThat(this.out.toString(),
 				containsString("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
 						+ "Spring Boot in Action : Craig Walls]"));

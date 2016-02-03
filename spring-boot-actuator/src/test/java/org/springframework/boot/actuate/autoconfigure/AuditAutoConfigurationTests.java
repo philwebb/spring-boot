@@ -32,8 +32,8 @@ import org.springframework.security.access.event.AbstractAuthorizationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AuditAutoConfiguration}.

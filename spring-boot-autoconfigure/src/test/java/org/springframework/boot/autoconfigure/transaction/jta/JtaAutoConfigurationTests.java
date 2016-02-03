@@ -61,9 +61,9 @@ import org.springframework.util.FileSystemUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -145,7 +145,7 @@ public class JtaAutoConfigurationTests {
 				JtaPropertiesConfiguration.class, BitronixJtaConfiguration.class);
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class)
 				.getServerId();
-		assertThat(serverId, is(equalTo(InetAddress.getLocalHost().getHostAddress())));
+		assertThat(serverId).isEqualTo(InetAddress.getLocalHost().getHostAddress());
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class)
 				.getServerId();
-		assertThat(serverId, is(equalTo("custom")));
+		assertThat(serverId).isEqualTo("custom");
 	}
 
 	@Test
@@ -200,8 +200,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		AtomikosConnectionFactoryBean connectionFactory = this.context
 				.getBean(AtomikosConnectionFactoryBean.class);
-		assertThat(connectionFactory.getMinPoolSize(), is(equalTo(5)));
-		assertThat(connectionFactory.getMaxPoolSize(), is(equalTo(10)));
+		assertThat(connectionFactory.getMinPoolSize()).isEqualTo(5);
+		assertThat(connectionFactory.getMaxPoolSize()).isEqualTo(10);
 	}
 
 	@Test
@@ -215,8 +215,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		PoolingConnectionFactoryBean connectionFactory = this.context
 				.getBean(PoolingConnectionFactoryBean.class);
-		assertThat(connectionFactory.getMinPoolSize(), is(equalTo(5)));
-		assertThat(connectionFactory.getMaxPoolSize(), is(equalTo(10)));
+		assertThat(connectionFactory.getMinPoolSize()).isEqualTo(5);
+		assertThat(connectionFactory.getMaxPoolSize()).isEqualTo(10);
 	}
 
 	@Test
@@ -230,8 +230,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		AtomikosDataSourceBean dataSource = this.context
 				.getBean(AtomikosDataSourceBean.class);
-		assertThat(dataSource.getMinPoolSize(), is(equalTo(5)));
-		assertThat(dataSource.getMaxPoolSize(), is(equalTo(10)));
+		assertThat(dataSource.getMinPoolSize()).isEqualTo(5);
+		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}
 
 	@Test
@@ -245,8 +245,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		PoolingDataSourceBean dataSource = this.context
 				.getBean(PoolingDataSourceBean.class);
-		assertThat(dataSource.getMinPoolSize(), is(equalTo(5)));
-		assertThat(dataSource.getMaxPoolSize(), is(equalTo(10)));
+		assertThat(dataSource.getMinPoolSize()).isEqualTo(5);
+		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}
 
 	@Configuration

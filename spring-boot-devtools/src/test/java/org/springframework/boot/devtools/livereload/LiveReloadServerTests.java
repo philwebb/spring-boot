@@ -43,7 +43,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LiveReloadServer}.
@@ -78,7 +78,7 @@ public class LiveReloadServerTests {
 		RestTemplate template = new RestTemplate();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");
 		String script = template.getForObject(uri, String.class);
-		assertThat(script, containsString("livereload.com/protocols/official-7"));
+		assertThat(script).contains("livereload.com/protocols/official-7");
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class LiveReloadServerTests {
 			this.server.stop();
 			assertThat(socket.getMessages(0),
 					containsString("http://livereload.com/protocols/official-7"));
-			assertThat(socket.getMessages(1), containsString("command\":\"reload\""));
+			assertThat(socket.getMessages(1)).contains("command\":\"reload\"");
 		}
 		finally {
 			client.stop();

@@ -85,10 +85,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -461,7 +461,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext,
 				String.format("endpoints.%s.enabled:false", name));
 		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(type).size(), is(equalTo(0)));
+		assertThat(this.applicationContext.getBeansOfType(type)).hasSize(equalTo(0));
 	}
 
 	private void endpointEnabledOverride(String name, Class<? extends MvcEndpoint> type)
@@ -472,7 +472,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				"endpoints.enabled:false",
 				String.format("endpoints_%s_enabled:true", name));
 		this.applicationContext.refresh();
-		assertThat(this.applicationContext.getBeansOfType(type).size(), is(equalTo(1)));
+		assertThat(this.applicationContext.getBeansOfType(type)).hasSize(equalTo(1));
 	}
 
 	private void assertAllClosed() throws Exception {
@@ -493,7 +493,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				String actual = StreamUtils.copyToString(response.getBody(),
 						Charset.forName("UTF-8"));
 				if (expected instanceof Matcher) {
-					assertThat(actual, is((Matcher<String>) expected));
+					assertThat(actual).isEqualTo((Matcher<String>) expected);
 				}
 				else {
 					assertThat(actual, equalTo(expected));

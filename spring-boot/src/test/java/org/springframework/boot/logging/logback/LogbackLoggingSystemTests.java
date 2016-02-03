@@ -292,7 +292,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
 		String fileContents = FileCopyUtils
 				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-		assertThat(fileContents, is(expectedOutput));
+		assertThat(fileContents).isEqualTo(expectedOutput);
 	}
 
 	@Test
@@ -311,7 +311,7 @@ public class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 					new RuntimeException("Expected", new RuntimeException("Cause")));
 			String fileContents = FileCopyUtils
 					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-			assertThat(fileContents, is(expectedOutput));
+			assertThat(fileContents).isEqualTo(expectedOutput);
 		}
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");

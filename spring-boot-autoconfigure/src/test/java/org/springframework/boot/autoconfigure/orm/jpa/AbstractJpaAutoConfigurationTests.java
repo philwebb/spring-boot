@@ -54,10 +54,10 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.

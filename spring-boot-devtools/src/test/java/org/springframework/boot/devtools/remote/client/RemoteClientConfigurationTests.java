@@ -51,7 +51,7 @@ import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -95,13 +95,13 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void warnIfNotHttps() throws Exception {
 		configure("http://localhost", true);
-		assertThat(this.output.toString(), containsString("is insecure"));
+		assertThat(this.output.toString()).contains("is insecure");
 	}
 
 	@Test
 	public void doesntWarnIfUsingHttps() throws Exception {
 		configure("https://localhost", true);
-		assertThat(this.output.toString(), not(containsString("is insecure")));
+		assertThat(this.output.toString()).doesNotContain("is insecure");
 	}
 
 	@Test

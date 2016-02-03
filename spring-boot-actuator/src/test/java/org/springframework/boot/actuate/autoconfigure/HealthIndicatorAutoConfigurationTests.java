@@ -57,8 +57,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+
+
 import static org.mockito.Mockito.mock;
 
 /**

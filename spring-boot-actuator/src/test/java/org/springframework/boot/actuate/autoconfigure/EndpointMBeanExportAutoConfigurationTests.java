@@ -43,10 +43,10 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+
+
+
 
 /**
  * Tests for {@link EndpointMBeanExportAutoConfiguration}.

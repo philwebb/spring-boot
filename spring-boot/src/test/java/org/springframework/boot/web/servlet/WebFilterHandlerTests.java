@@ -71,16 +71,16 @@ public class WebFilterHandlerTests {
 		BeanDefinition filterRegistrationBean = this.registry
 				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) false));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo((Object) false);
 		assertThat((EnumSet<DispatcherType>) propertyValues.get("dispatcherTypes"),
 				is(EnumSet.of(DispatcherType.REQUEST)));
 		assertThat(((Map<String, String>) propertyValues.get("initParameters")).size(),
 				is(0));
-		assertThat((String[]) propertyValues.get("servletNames"), is(arrayWithSize(0)));
-		assertThat((String[]) propertyValues.get("urlPatterns"), is(arrayWithSize(0)));
+		assertThat((String[]) propertyValues.get("servletNames")).isEqualTo(arrayWithSize(0));
+		assertThat((String[]) propertyValues.get("urlPatterns")).isEqualTo(arrayWithSize(0));
 		assertThat(propertyValues.get("name"),
 				is((Object) DefaultConfigurationFilter.class.getName()));
-		assertThat(propertyValues.get("filter"), is(equalTo((Object) scanned)));
+		assertThat(propertyValues.get("filter")).isEqualTo((Object) scanned);
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class WebFilterHandlerTests {
 		this.handler.handle(scanned, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry.getBeanDefinition("custom");
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat(propertyValues.get("name"), is((Object) "custom"));
+		assertThat(propertyValues.get("name")).isEqualTo((Object) "custom");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class WebFilterHandlerTests {
 		BeanDefinition filterRegistrationBean = getBeanDefinition(
 				AsyncSupportedFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) true));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo((Object) true);
 	}
 
 	@Test

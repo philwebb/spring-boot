@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.jms;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+
 
 /**
  * Tests for {@link JmsProperties}.

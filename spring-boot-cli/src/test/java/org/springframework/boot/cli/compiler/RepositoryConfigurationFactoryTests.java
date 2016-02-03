@@ -27,7 +27,7 @@ import org.springframework.boot.cli.util.SystemProperties;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RepositoryConfigurationFactory}

@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Tests for {@link SystemPublicMetrics}

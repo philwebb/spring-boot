@@ -57,10 +57,10 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link BasicErrorController} using a real HTTP server.
@@ -163,10 +163,10 @@ public class BasicErrorControllerIntegrationTests {
 				.accept(MediaType.APPLICATION_JSON).build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
-		assertThat(resp, containsString("Error count: 1"));
-		assertThat(resp, containsString("errors=[{"));
-		assertThat(resp, containsString("codes=["));
-		assertThat(resp, containsString("org.springframework.validation.BindException"));
+		assertThat(resp).contains("Error count: 1");
+		assertThat(resp).contains("errors=[{");
+		assertThat(resp).contains("codes=[");
+		assertThat(resp).contains("org.springframework.validation.BindException");
 	}
 
 	@Test
@@ -178,9 +178,9 @@ public class BasicErrorControllerIntegrationTests {
 				.contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		String resp = entity.getBody().toString();
-		assertThat(resp, containsString("Error count: 1"));
-		assertThat(resp, containsString("errors=[{"));
-		assertThat(resp, containsString("codes=["));
+		assertThat(resp).contains("Error count: 1");
+		assertThat(resp).contains("errors=[{");
+		assertThat(resp).contains("codes=[");
 		assertThat(resp, containsString(
 				"org.springframework.web.bind.MethodArgumentNotValidException"));
 	}

@@ -520,7 +520,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.getJspServlet().setRegistered(false);
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getJspServlet(), is(nullValue()));
+		assertThat(getJspServlet()).isNull();
 	}
 
 	@Test
@@ -713,7 +713,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 					}
 				});
 		this.container.start();
-		assertThat(rootResource.get(), is(not(nullValue())));
+		assertThat(rootResource.get()).isNotNull();
 	}
 
 	@Test

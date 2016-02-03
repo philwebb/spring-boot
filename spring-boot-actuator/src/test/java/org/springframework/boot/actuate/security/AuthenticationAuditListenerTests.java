@@ -33,7 +33,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

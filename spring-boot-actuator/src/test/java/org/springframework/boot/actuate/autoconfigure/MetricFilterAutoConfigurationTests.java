@@ -57,8 +57,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyDouble;
@@ -269,7 +269,7 @@ public class MetricFilterAutoConfigurationTests {
 			fail();
 		}
 		catch (Exception ex) {
-			assertThat(result.getRequest().getAttribute(attributeName), is(nullValue()));
+			assertThat(result.getRequest().getAttribute(attributeName)).isNull();
 			verify(context.getBean(CounterService.class))
 					.increment("status.500.createFailure");
 		}

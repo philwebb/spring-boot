@@ -43,7 +43,7 @@ import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 
@@ -84,9 +84,9 @@ public class ElasticsearchHealthIndicatorTests {
 				.forClass(ClusterHealthRequest.class);
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
 		Health health = this.indicator.health();
-		assertThat(responseFuture.getTimeout, is(100L));
-		assertThat(requestCaptor.getValue().indices(), is(arrayContaining("_all")));
-		assertThat(health.getStatus(), is(Status.UP));
+		assertThat(responseFuture.getTimeout).isEqualTo(100L);
+		assertThat(requestCaptor.getValue().indices()).isEqualTo(arrayContaining("_all"));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class ElasticsearchHealthIndicatorTests {
 		Health health = this.indicator.health();
 		assertThat(requestCaptor.getValue().indices(),
 				is(arrayContaining("test-index-1", "test-index-2")));
-		assertThat(health.getStatus(), is(Status.UP));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class ElasticsearchHealthIndicatorTests {
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
 		this.properties.setResponseTimeout(1000L);
 		this.indicator.health();
-		assertThat(responseFuture.getTimeout, is(1000L));
+		assertThat(responseFuture.getTimeout).isEqualTo(1000L);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ElasticsearchHealthIndicatorTests {
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
 		Health health = this.indicator.health();
-		assertThat(health.getStatus(), is(Status.UP));
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		Map<String, Object> details = health.getDetails();
 		assertDetail(details, "clusterName", "test-cluster");
 		assertDetail(details, "activeShards", 1);
@@ -141,7 +141,7 @@ public class ElasticsearchHealthIndicatorTests {
 		responseFuture.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.RED));
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
-		assertThat(this.indicator.health().getStatus(), is(Status.DOWN));
+		assertThat(this.indicator.health().getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class ElasticsearchHealthIndicatorTests {
 				.onResponse(new StubClusterHealthResponse(ClusterHealthStatus.YELLOW));
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
-		assertThat(this.indicator.health().getStatus(), is(Status.UP));
+		assertThat(this.indicator.health().getStatus()).isEqualTo(Status.UP);
 	}
 
 	@Test
@@ -160,14 +160,14 @@ public class ElasticsearchHealthIndicatorTests {
 		given(this.cluster.health(any(ClusterHealthRequest.class)))
 				.willReturn(responseFuture);
 		Health health = this.indicator.health();
-		assertThat(health.getStatus(), is(Status.DOWN));
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error"),
 				containsString(ElasticsearchTimeoutException.class.getName()));
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> void assertDetail(Map<String, Object> details, String detail, T value) {
-		assertThat((T) details.get(detail), is(equalTo(value)));
+		assertThat((T) details.get(detail)).isEqualTo(value);
 	}
 
 	private final static class StubClusterHealthResponse extends ClusterHealthResponse {

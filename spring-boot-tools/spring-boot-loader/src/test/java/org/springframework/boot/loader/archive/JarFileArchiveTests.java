@@ -34,7 +34,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JarFileArchive}.
@@ -108,7 +108,7 @@ public class JarFileArchiveTests {
 		setup(true);
 		entry = getEntriesMap(this.archive).get("nested.jar");
 		URL secondNested = this.archive.getNestedArchive(entry).getUrl();
-		assertThat(secondNested, is(not(equalTo(firstNested))));
+		assertThat(secondNested).isNotEqualTo(firstNested);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class JarFileArchiveTests {
 						.getNestedArchive(
 								getEntriesMap(this.archive).get("another-nested.jar"))
 						.getUrl().toURI());
-		assertThat(nested.getParent(), is(equalTo(anotherNested.getParent())));
+		assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {

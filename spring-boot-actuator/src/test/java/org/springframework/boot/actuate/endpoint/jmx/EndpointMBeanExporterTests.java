@@ -44,11 +44,11 @@ import org.springframework.util.ObjectUtils;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link EndpointMBeanExporter}
@@ -216,8 +216,8 @@ public class EndpointMBeanExporterTests {
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-		assertThat(response, is(instanceOf(Map.class)));
-		assertThat(((Map<?, ?>) response).get("date"), is(instanceOf(Long.class)));
+		assertThat(response).isEqualTo(instanceOf(Map.class));
+		assertThat(((Map<?, ?>) response).get("date")).isEqualTo(instanceOf(Long.class));
 	}
 
 	@Test
@@ -237,8 +237,8 @@ public class EndpointMBeanExporterTests {
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-		assertThat(response, is(instanceOf(Map.class)));
-		assertThat(((Map<?, ?>) response).get("date"), is(instanceOf(String.class)));
+		assertThat(response).isEqualTo(instanceOf(Map.class));
+		assertThat(((Map<?, ?>) response).get("date")).isEqualTo(instanceOf(String.class));
 	}
 
 	private ObjectName getObjectName(String beanKey, GenericApplicationContext context)

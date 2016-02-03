@@ -32,9 +32,9 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,9 +68,9 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
-		assertThat(client.settings().get("node.local"), is(equalTo("true")));
-		assertThat(client.settings().get("http.enabled"), is(equalTo("false")));
+		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
+		assertThat(client.settings().get("node.local")).isEqualTo("true");
+		assertThat(client.settings().get("http.enabled")).isEqualTo("false");
 	}
 
 	@Test
@@ -88,10 +88,10 @@ public class ElasticsearchAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(Client.class).length);
 		NodeClient client = (NodeClient) this.context.getBean(Client.class);
-		assertThat(client.settings().get("foo.bar"), is(equalTo("baz")));
-		assertThat(client.settings().get("node.local"), is(equalTo("false")));
-		assertThat(client.settings().get("node.data"), is(equalTo("true")));
-		assertThat(client.settings().get("http.enabled"), is(equalTo("true")));
+		assertThat(client.settings().get("foo.bar")).isEqualTo("baz");
+		assertThat(client.settings().get("node.local")).isEqualTo("false");
+		assertThat(client.settings().get("node.data")).isEqualTo("true");
+		assertThat(client.settings().get("http.enabled")).isEqualTo("true");
 	}
 
 	@Test

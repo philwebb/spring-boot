@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link EmbeddedDataSourceConfiguration}.

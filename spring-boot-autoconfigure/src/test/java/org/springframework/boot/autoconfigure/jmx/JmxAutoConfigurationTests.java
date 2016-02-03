@@ -38,8 +38,8 @@ import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+
 
 /**
  * Tests for {@link JmxAutoConfiguration}

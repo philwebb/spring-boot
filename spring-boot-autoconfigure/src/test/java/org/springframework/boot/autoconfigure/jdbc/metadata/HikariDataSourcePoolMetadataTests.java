@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link HikariDataSourcePoolMetadata}.

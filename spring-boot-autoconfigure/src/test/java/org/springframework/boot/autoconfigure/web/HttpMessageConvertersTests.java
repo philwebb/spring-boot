@@ -37,10 +37,10 @@ import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.mock;
 
 /**

@@ -34,10 +34,10 @@ import org.springframework.security.core.authority.AuthorityUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -155,8 +155,8 @@ public class HealthMvcEndpointTests {
 		assertTrue(result instanceof Health);
 		Health health = (Health) result;
 		assertTrue(health.getStatus() == Status.UP);
-		assertThat(health.getDetails().size(), is(equalTo(1)));
-		assertThat(health.getDetails().get("foo"), is(equalTo((Object) "bar")));
+		assertThat(health.getDetails()).hasSize(equalTo(1));
+		assertThat(health.getDetails().get("foo")).isEqualTo((Object) "bar");
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null); // insecure now
 		assertTrue(result instanceof Health);
@@ -164,7 +164,7 @@ public class HealthMvcEndpointTests {
 		// so the result is cached
 		assertTrue(health.getStatus() == Status.UP);
 		// but the details are hidden
-		assertThat(health.getDetails().size(), is(equalTo(0)));
+		assertThat(health.getDetails()).hasSize(equalTo(0));
 	}
 
 	@Test

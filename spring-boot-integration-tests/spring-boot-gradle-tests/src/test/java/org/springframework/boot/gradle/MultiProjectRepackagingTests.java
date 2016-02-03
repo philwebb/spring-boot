@@ -23,7 +23,7 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for Gradle repackaging with a multi-project build.

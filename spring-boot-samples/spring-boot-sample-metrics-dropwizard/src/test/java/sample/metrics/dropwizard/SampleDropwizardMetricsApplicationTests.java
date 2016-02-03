@@ -27,7 +27,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Basic integration tests for {@link SampleDropwizardMetricsApplication}.

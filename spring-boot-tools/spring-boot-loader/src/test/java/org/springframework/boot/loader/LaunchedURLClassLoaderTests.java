@@ -26,10 +26,10 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.jar.JarFile;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link LaunchedURLClassLoader}.

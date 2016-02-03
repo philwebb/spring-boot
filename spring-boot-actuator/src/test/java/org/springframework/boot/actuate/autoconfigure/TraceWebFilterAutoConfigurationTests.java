@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.

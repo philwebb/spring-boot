@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -80,7 +80,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 		verify(this.repositorySystem, times(0))
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 
-		assertThat(this.session.getLocalRepository(), is(nullValue()));
+		assertThat(this.session.getLocalRepository()).isNull();
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 		verify(this.repositorySystem, times(1))
 				.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 
-		assertThat(this.session.getLocalRepository(), is(notNullValue()));
+		assertThat(this.session.getLocalRepository()).isNotNull();
 		assertThat(this.session.getLocalRepository().getBasedir().getAbsolutePath(),
 				endsWith(File.separatorChar + "foo" + File.separatorChar + "repository"));
 	}

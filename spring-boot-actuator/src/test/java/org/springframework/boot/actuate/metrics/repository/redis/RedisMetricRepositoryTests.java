@@ -27,9 +27,9 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+
+
+
 
 /**
  * Tests for {@link RedisMetricRepository}.

@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.SocketUtils;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TomcatPublicMetrics}

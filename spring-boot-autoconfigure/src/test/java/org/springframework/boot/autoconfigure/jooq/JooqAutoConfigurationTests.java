@@ -50,9 +50,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link JooqAutoConfiguration}.

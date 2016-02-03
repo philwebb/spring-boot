@@ -31,7 +31,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link ElasticsearchRepositoriesAutoConfiguration}.

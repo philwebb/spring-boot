@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GroovyTemplateAutoConfiguration}.
@@ -90,7 +90,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
@@ -99,7 +99,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("here"));
+		assertThat(result).contains("here");
 		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
@@ -117,7 +117,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("includes", Locale.FRENCH);
 		String result = response.getContentAsString();
-		assertThat(result, containsString("voila"));
+		assertThat(result).contains("voila");
 		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
@@ -126,7 +126,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext("spring.groovy.template.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
 	}
 
@@ -135,7 +135,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext("spring.groovy.template.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("prefixed"));
+		assertThat(result).contains("prefixed");
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		registerAndRefreshContext("spring.groovy.template.suffix:.groovytemplate");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("suffixed"));
+		assertThat(result).contains("suffixed");
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class GroovyTemplateAutoConfigurationTests {
 				"spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("custom"));
+		assertThat(result).contains("custom");
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class GroovyTemplateAutoConfigurationTests {
 				.make(new HashMap<String, Object>(
 						Collections.singletonMap("greeting", "Hello World")))
 				.writeTo(writer);
-		assertThat(writer.toString(), containsString("Hello World"));
+		assertThat(writer.toString()).contains("Hello World");
 	}
 
 	@Test

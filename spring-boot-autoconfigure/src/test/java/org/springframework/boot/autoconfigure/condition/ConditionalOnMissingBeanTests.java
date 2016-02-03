@@ -36,10 +36,10 @@ import org.springframework.util.Assert;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link ConditionalOnMissingBean}.
@@ -208,7 +208,7 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnIgnoredSubclass.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), is(equalTo(2)));
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(equalTo(2));
 		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
 				is(equalTo(1)));
 	}
@@ -219,7 +219,7 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnIgnoredSubclassByName.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), is(equalTo(2)));
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(equalTo(2));
 		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
 				is(equalTo(1)));
 	}

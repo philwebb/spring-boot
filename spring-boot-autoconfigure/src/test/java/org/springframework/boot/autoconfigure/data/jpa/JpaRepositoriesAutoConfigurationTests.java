@@ -37,7 +37,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.

@@ -29,7 +29,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringDataWebAutoConfiguration}.
@@ -57,7 +57,7 @@ public class SpringDataWebAutoConfigurationTests {
 				.setServletContext(new MockServletContext());
 		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
-		assertThat(beans.size(), is(equalTo(1)));
+		assertThat(beans).hasSize(equalTo(1));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class SpringDataWebAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
-		assertThat(beans.size(), is(equalTo(0)));
+		assertThat(beans).hasSize(equalTo(0));
 	}
 
 }

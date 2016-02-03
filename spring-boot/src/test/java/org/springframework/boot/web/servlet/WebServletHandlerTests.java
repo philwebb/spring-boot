@@ -65,14 +65,14 @@ public class WebServletHandlerTests {
 				.getBeanDefinition(DefaultConfigurationServlet.class.getName());
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) false));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo((Object) false);
 		assertThat(((Map<String, String>) propertyValues.get("initParameters")).size(),
 				is(0));
-		assertThat((Integer) propertyValues.get("loadOnStartup"), is(-1));
+		assertThat((Integer) propertyValues.get("loadOnStartup")).isEqualTo(-1);
 		assertThat(propertyValues.get("name"),
 				is((Object) DefaultConfigurationServlet.class.getName()));
-		assertThat((String[]) propertyValues.get("urlMappings"), is(arrayWithSize(0)));
-		assertThat(propertyValues.get("servlet"), is(equalTo((Object) scanned)));
+		assertThat((String[]) propertyValues.get("urlMappings")).isEqualTo(arrayWithSize(0));
+		assertThat(propertyValues.get("servlet")).isEqualTo((Object) scanned);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class WebServletHandlerTests {
 				.getBeanDefinition("custom");
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("name"), is((Object) "custom"));
+		assertThat(propertyValues.get("name")).isEqualTo((Object) "custom");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class WebServletHandlerTests {
 				AsyncSupportedServlet.class);
 		MutablePropertyValues propertyValues = servletRegistrationBean
 				.getPropertyValues();
-		assertThat(propertyValues.get("asyncSupported"), is((Object) true));
+		assertThat(propertyValues.get("asyncSupported")).isEqualTo((Object) true);
 	}
 
 	@SuppressWarnings("unchecked")

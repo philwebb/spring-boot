@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.autoconfigure;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.arrayContaining;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DevToolsProperties}.

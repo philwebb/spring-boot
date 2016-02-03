@@ -64,10 +64,10 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
-		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
+		assertThat(this.context).isEqualTo(instanceOf(StaticApplicationContext.class));
 		assertThat(this.context.getEnvironment().getProperty("foo"),
 				is(equalTo("bucket")));
-		assertThat(this.context.getEnvironment().acceptsProfiles("foo"), is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("foo")).isTrue();
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.properties(Collections.<String, Object>singletonMap("bar", "foo"));
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}
 
 	@Test
@@ -86,7 +86,7 @@ public class SpringApplicationBuilderTests {
 				.properties(StringUtils.splitArrayElementsIntoProperties(
 						new String[] { "bar=foo" }, "="));
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class);
 		this.context = application.run();
-		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
+		assertThat(this.context).isEqualTo(instanceOf(StaticApplicationContext.class));
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class SpringApplicationBuilderTests {
 				ExampleConfig.class).profiles("node").properties("transport=redis")
 						.child(ChildConfig.class).web(false);
 		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("node"), is(true));
+		assertThat(this.context.getEnvironment().acceptsProfiles("node")).isTrue();
 		assertThat(this.context.getEnvironment().getProperty("transport"),
 				is(equalTo("redis")));
 		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"),
@@ -186,7 +186,7 @@ public class SpringApplicationBuilderTests {
 		assertThat(this.context.getParent().getEnvironment().getProperty("transport"),
 				is(equalTo("redis")));
 		// only defined in node profile
-		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("spam")));
+		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("spam");
 	}
 
 	@Test

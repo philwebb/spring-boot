@@ -37,8 +37,8 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+
 
 /**
  * Tests for {@link WebRequestTraceFilter}.

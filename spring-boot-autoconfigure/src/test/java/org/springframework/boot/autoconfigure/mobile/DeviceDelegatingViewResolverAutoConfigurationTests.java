@@ -39,9 +39,9 @@ import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolv
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+
+
 
 /**
  * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.

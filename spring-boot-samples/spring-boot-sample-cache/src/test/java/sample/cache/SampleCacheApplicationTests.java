@@ -43,11 +43,11 @@ public class SampleCacheApplicationTests {
 	@Test
 	public void validateCache() {
 		Cache countries = this.cacheManager.getCache("countries");
-		assertThat(countries, is(notNullValue()));
+		assertThat(countries).isNotNull();
 		countries.clear(); // Simple test assuming the cache is empty
-		assertThat(countries.get("BE"), is(nullValue()));
+		assertThat(countries.get("BE")).isNull();
 		Country be = this.countryRepository.findByCode("BE");
-		assertThat((Country) countries.get("BE").get(), is(be));
+		assertThat((Country) countries.get("BE").get()).isEqualTo(be);
 	}
 
 }

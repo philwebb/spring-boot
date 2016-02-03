@@ -42,7 +42,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.

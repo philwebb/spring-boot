@@ -46,7 +46,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Integration tests for {@link MustacheAutoConfiguration}.

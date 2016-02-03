@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link JobExecutionExitCodeGenerator}.

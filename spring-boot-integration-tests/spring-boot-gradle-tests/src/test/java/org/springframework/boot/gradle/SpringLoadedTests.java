@@ -26,7 +26,7 @@ import java.util.List;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
-import static org.junit.Assert.fail;
+
 
 /**
  * Integration tests for the Gradle plugin's Spring Loaded support

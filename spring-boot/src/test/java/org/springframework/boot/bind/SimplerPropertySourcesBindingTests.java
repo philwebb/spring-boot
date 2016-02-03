@@ -54,7 +54,7 @@ public class SimplerPropertySourcesBindingTests {
 
 	@Test
 	public void overridingOfPropertiesWorksAsExpected() {
-		assertThat(this.foo, is(this.properties.getFoo()));
+		assertThat(this.foo).isEqualTo(this.properties.getFoo());
 	}
 
 	@PropertySources({ @PropertySource("classpath:/override.properties"),

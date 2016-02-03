@@ -39,8 +39,8 @@ import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.util.FileSystemUtils;
 
 import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WarLauncher}

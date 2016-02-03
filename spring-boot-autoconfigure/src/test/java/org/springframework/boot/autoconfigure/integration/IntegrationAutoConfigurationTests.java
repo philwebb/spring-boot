@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.

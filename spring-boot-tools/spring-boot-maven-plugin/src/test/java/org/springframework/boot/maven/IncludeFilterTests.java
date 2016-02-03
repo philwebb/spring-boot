@@ -25,8 +25,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

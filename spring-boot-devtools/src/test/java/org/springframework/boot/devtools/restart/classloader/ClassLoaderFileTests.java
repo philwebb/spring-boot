@@ -24,7 +24,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ClassLoaderFile}.

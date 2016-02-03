@@ -26,7 +26,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link ElasticsearchDataAutoConfiguration}.

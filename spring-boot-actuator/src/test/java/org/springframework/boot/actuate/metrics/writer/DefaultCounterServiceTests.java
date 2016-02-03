@@ -22,7 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

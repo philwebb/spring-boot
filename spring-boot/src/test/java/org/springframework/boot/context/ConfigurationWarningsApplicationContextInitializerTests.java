@@ -59,49 +59,49 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	@Test
 	public void logWarningInDefaultPackage() {
 		load(InDefaultPackageConfiguration.class);
-		assertThat(this.output.toString(), containsString(DEFAULT_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningInDefaultPackageAndMetaAnnotation() {
 		load(InDefaultPackageWithMetaAnnotationConfiguration.class);
-		assertThat(this.output.toString(), containsString(DEFAULT_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfInRealPackage() throws Exception {
 		load(InRealPackageConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogWithoutComponentScanAnnotation() throws Exception {
 		load(InDefaultPackageWithoutScanConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasValue() throws Exception {
 		load(InDefaultPackageWithValueConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackages() throws Exception {
 		load(InDefaultPackageWithBasePackagesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void noLogIfHasBasePackageClasses() throws Exception {
 		load(InDefaultPackageWithBasePackageClassesConfiguration.class);
-		assertThat(this.output.toString(), not(containsString(DEFAULT_SCAN_WARNING)));
+		assertThat(this.output.toString()).doesNotContain(DEFAULT_SCAN_WARNING);
 	}
 
 	@Test
 	public void logWarningInOrgSpringPackage() {
 		load(InOrgSpringPackageConfiguration.class);
-		assertThat(this.output.toString(), containsString(ORGSPRING_SCAN_WARNING));
+		assertThat(this.output.toString()).contains(ORGSPRING_SCAN_WARNING);
 	}
 
 	@Test

@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
@@ -104,7 +104,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
@@ -113,7 +113,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("home"));
+		assertThat(result).contains("home");
 		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
 	}
 
@@ -122,7 +122,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("prefixed"));
+		assertThat(result).contains("prefixed");
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("suffixed"));
+		assertThat(result).contains("suffixed");
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class FreeMarkerAutoConfigurationTests {
 				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
-		assertThat(result, containsString("custom"));
+		assertThat(result).contains("custom");
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class FreeMarkerAutoConfigurationTests {
 				.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
 		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
-		assertThat(writer.toString(), containsString("Hello World"));
+		assertThat(writer.toString()).contains("Hello World");
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class FreeMarkerAutoConfigurationTests {
 					.getBean(freemarker.template.Configuration.class);
 			StringWriter writer = new StringWriter();
 			freemarker.getTemplate("message.ftl").process(this, writer);
-			assertThat(writer.toString(), containsString("Hello World"));
+			assertThat(writer.toString()).contains("Hello World");
 		}
 		finally {
 			context.close();

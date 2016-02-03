@@ -22,8 +22,8 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.export.RichGaugeExporter;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+
 
 /**
  * Tests for {@link MultiMetricRichGaugeReader}.

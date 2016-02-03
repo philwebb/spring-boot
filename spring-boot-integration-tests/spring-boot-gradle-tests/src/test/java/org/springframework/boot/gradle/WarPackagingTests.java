@@ -30,8 +30,8 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+
 
 /**
  * Tests for war packaging with Gradle to ensure that only the Servlet container and its

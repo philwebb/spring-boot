@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -45,10 +45,10 @@ public class SampleBitronixApplicationTests {
 	public void testTransactionRollback() throws Exception {
 		SampleBitronixApplication.main(new String[] {});
 		String output = this.outputCapture.toString();
-		assertThat(output, containsString(1, "---->"));
-		assertThat(output, containsString(1, "----> josh"));
-		assertThat(output, containsString(2, "Count is 1"));
-		assertThat(output, containsString(1, "Simulated error"));
+		assertThat(output).contains(1, "---->");
+		assertThat(output).contains(1, "----> josh");
+		assertThat(output).contains(2, "Count is 1");
+		assertThat(output).contains(1, "Simulated error");
 	}
 
 	@Test

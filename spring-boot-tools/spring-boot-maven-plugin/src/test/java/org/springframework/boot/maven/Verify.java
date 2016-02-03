@@ -29,10 +29,10 @@ import java.util.zip.ZipFile;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+
+
+
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.

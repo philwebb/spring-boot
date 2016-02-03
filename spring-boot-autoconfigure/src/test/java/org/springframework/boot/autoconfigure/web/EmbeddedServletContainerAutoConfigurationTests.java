@@ -40,8 +40,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FrameworkServlet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+
 import static org.mockito.Mockito.verify;
 
 /**

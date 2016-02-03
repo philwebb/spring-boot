@@ -27,9 +27,9 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+
+
 
 /**
  * Tests for {@link SecurityProperties}.

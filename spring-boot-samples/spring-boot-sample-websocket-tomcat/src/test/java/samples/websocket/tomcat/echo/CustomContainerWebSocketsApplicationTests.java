@@ -47,7 +47,7 @@ import org.springframework.util.SocketUtils;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
-import static org.junit.Assert.assertEquals;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration({ SampleTomcatWebSocketApplication.class,

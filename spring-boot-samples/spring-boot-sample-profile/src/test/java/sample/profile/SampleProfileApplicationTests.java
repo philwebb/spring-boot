@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.test.OutputCapture;
 
-import static org.junit.Assert.assertTrue;
+
 
 public class SampleProfileApplicationTests {
 

@@ -21,7 +21,7 @@ import java.util.jar.JarFile;
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts

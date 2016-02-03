@@ -184,14 +184,14 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		factory.setAccessLogEnabled(true);
 		File accessLogDirectory = this.temporaryFolder.getRoot();
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles(), is(arrayWithSize(0)));
+		assertThat(accessLogDirectory.listFiles()).isEqualTo(arrayWithSize(0));
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
 		File accessLog = new File(accessLogDirectory, "access_log.log");
 		awaitFile(accessLog);
-		assertThat(accessLogDirectory.listFiles(), is(arrayContaining(accessLog)));
+		assertThat(accessLogDirectory.listFiles()).isEqualTo(arrayContaining(accessLog));
 	}
 
 	@Override

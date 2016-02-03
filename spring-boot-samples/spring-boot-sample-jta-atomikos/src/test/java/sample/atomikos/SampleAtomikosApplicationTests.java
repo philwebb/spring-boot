@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import org.springframework.boot.test.OutputCapture;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.
@@ -39,10 +39,10 @@ public class SampleAtomikosApplicationTests {
 	public void testTransactionRollback() throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
 		String output = this.outputCapture.toString();
-		assertThat(output, containsString(1, "---->"));
-		assertThat(output, containsString(1, "----> josh"));
-		assertThat(output, containsString(2, "Count is 1"));
-		assertThat(output, containsString(1, "Simulated error"));
+		assertThat(output).contains(1, "---->");
+		assertThat(output).contains(1, "----> josh");
+		assertThat(output).contains(2, "Count is 1");
+		assertThat(output).contains(1, "Simulated error");
 	}
 
 	private Matcher<? super String> containsString(final int times, String s) {

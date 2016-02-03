@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link InMemoryMetricRepository}.

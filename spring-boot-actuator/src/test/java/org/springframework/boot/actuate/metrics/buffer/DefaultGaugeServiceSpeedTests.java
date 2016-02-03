@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Speed tests for {@link DefaultGaugeService}.

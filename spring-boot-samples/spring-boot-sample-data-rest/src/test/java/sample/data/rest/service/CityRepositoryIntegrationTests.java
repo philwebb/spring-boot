@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link CityRepository}.
@@ -50,7 +50,7 @@ public class CityRepositoryIntegrationTests {
 	public void findsFirstPageOfCities() {
 
 		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
-		assertThat(cities.getTotalElements(), is(greaterThan(20L)));
+		assertThat(cities.getTotalElements()).isGreaterThan(20L);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class CityRepositoryIntegrationTests {
 		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne",
 				"Australia");
 		assertThat(city, notNullValue());
-		assertThat(city.getName(), is(equalTo("Melbourne")));
+		assertThat(city.getName()).isEqualTo("Melbourne");
 	}
 
 	@Test
@@ -66,6 +66,6 @@ public class CityRepositoryIntegrationTests {
 		Page<City> cities = this.repository
 				.findByNameContainingAndCountryContainingAllIgnoringCase("", "UK",
 						new PageRequest(0, 10));
-		assertThat(cities.getTotalElements(), is(equalTo(3L)));
+		assertThat(cities.getTotalElements()).isEqualTo(3L);
 	}
 }

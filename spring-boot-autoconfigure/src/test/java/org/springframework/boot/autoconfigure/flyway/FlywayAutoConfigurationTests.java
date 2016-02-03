@@ -49,9 +49,9 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
@@ -50,7 +50,7 @@ public class ReproIntegrationTests {
 	@Test
 	public void securityDependencies() throws Exception {
 		this.cli.run("secure.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class ReproIntegrationTests {
 	@Test
 	public void dataJpaDependencies() throws Exception {
 		this.cli.run("data-jpa.groovy");
-		assertThat(this.cli.getOutput(), containsString("Hello World"));
+		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
 
 	@Test

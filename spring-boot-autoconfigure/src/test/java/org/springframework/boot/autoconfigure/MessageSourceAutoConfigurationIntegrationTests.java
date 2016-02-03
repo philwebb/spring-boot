@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.

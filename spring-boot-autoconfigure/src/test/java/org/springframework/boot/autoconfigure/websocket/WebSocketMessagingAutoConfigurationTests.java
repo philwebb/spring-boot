@@ -63,8 +63,8 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Tests for {@link WebSocketMessagingAutoConfiguration}.

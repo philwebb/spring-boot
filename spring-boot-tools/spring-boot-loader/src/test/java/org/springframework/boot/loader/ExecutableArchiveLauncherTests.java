@@ -28,8 +28,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.archive.Archive.Entry;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+
+
 import static org.mockito.BDDMockito.given;
 
 /**

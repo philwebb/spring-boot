@@ -48,9 +48,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
@@ -143,7 +143,7 @@ public class RepositoryRestMvcAutoConfigurationTests {
 		load(TestConfiguration.class);
 		Map<String, ObjectMapper> objectMappers = this.context
 				.getBeansOfType(ObjectMapper.class);
-		assertThat(objectMappers.size(), is(greaterThan(1)));
+		assertThat(objectMappers).hasSize(greaterThan(1));
 		this.context.getBean(ObjectMapper.class);
 	}
 

@@ -55,8 +55,8 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+
 import static org.mockito.Mockito.mock;
 
 /**

@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.boot.cli.command.options.OptionHandler;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OptionParsingCommand}.
@@ -36,7 +36,7 @@ public class OptionParsingCommandTests {
 		handler.option("bar", "Bar");
 		OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
 		};
-		assertThat(command.getHelp(), containsString("--bar"));
+		assertThat(command.getHelp()).contains("--bar");
 	}
 
 }

@@ -38,8 +38,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import static org.hamcrest.Matchers.hasItemInArray;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SitePreferenceAutoConfiguration}.

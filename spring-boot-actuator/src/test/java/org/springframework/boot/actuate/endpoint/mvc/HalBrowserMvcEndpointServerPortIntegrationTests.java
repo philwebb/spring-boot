@@ -40,8 +40,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**

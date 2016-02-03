@@ -24,7 +24,7 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Mockito.mock;
 
 /**

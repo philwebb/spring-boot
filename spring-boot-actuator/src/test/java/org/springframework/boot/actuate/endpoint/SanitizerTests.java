@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link Sanitizer}.

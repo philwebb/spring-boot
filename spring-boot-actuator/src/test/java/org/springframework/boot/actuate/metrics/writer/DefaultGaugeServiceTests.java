@@ -21,7 +21,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

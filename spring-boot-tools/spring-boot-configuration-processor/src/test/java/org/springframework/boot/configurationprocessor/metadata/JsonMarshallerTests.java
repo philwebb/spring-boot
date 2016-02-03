@@ -26,7 +26,7 @@ import java.util.Collections;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
@@ -75,8 +75,8 @@ public class JsonMarshallerTests {
 						.withDescription("desc").withDefaultValue(is("x"))
 						.withDeprecation("Deprecation comment", "b.c.d"));
 		assertThat(read, containsProperty("b.c.d"));
-		assertThat(read, containsProperty("c").withDefaultValue(is(123)));
-		assertThat(read, containsProperty("d").withDefaultValue(is(true)));
+		assertThat(read).isEqualTo(123));
+		assertThat(read).isTrue());
 		assertThat(read,
 				containsProperty("e").withDefaultValue(is(new String[] { "y", "n" })));
 		assertThat(read, containsProperty("f")

@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link NamePatternFilter}.
@@ -65,7 +65,7 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("foo$");
 		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), is(nullValue()));
+		assertThat(results.get("fool")).isNull();
 		assertThat(filter.isGetNamesCalled(), equalTo(true));
 	}
 
@@ -74,7 +74,7 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("^foo");
 		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), is(nullValue()));
+		assertThat(results.get("fool")).isNull();
 		assertThat(filter.isGetNamesCalled(), equalTo(true));
 	}
 
@@ -82,7 +82,7 @@ public class NamePatternFilterTests {
 	public void regexCharacterClass() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo[a-z]l");
-		assertThat(results.get("foo"), is(nullValue()));
+		assertThat(results.get("foo")).isNull();
 		assertThat(results.get("fool"), equalTo((Object) "fool"));
 		assertThat(filter.isGetNamesCalled(), equalTo(true));
 	}

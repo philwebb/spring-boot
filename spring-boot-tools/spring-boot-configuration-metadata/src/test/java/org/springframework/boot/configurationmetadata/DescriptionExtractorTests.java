@@ -18,7 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link DescriptionExtractor}.

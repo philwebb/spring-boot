@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link ApplicationHealthIndicator}.

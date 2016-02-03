@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
-import static org.junit.Assert.assertNotNull;
+
 import static org.mockito.Mockito.mock;
 
 /**

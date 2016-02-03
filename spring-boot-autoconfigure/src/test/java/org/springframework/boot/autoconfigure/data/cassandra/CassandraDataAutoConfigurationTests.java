@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.mockito.Mockito.mock;
 
 /**

@@ -328,7 +328,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
 		Wrapper jspServlet = getJspServlet();
-		assertThat(jspServlet.findInitParameter("a"), is(equalTo("alpha")));
+		assertThat(jspServlet.findInitParameter("a")).isEqualTo("alpha");
 	}
 
 	@Test

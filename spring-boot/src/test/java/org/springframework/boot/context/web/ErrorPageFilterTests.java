@@ -81,7 +81,7 @@ public class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertTrue(this.response.isCommitted());
-		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertThat(this.response.getForwardedUrl()).isNull();
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
-		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertThat(this.response.getForwardedUrl()).isNull();
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -164,7 +164,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
-		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertThat(this.response.getForwardedUrl()).isNull();
 		assertTrue(this.response.isCommitted());
 	}
 
@@ -248,7 +248,7 @@ public class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
 		assertTrue(this.response.isCommitted());
-		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertThat(this.response.getForwardedUrl()).isNull();
 	}
 
 	@Test
@@ -290,7 +290,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.response.getForwardedUrl(), is(nullValue()));
+		assertThat(this.response.getForwardedUrl()).isNull();
 	}
 
 	@Test
@@ -457,7 +457,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.output.toString(), containsString("request [/test]"));
+		assertThat(this.output.toString()).contains("request [/test]");
 	}
 
 	@Test
@@ -475,7 +475,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.output.toString(), containsString("request [/test/alpha]"));
+		assertThat(this.output.toString()).contains("request [/test/alpha]");
 	}
 
 	@Test

@@ -100,11 +100,11 @@ public class SampleSecureOAuth2ApplicationTests {
 		Flight flight = this.objectMapper.readValue(
 				flightsAction.getResponse().getContentAsString(), Flight.class);
 
-		assertThat(flight.getOrigin(), is("Nashville"));
-		assertThat(flight.getDestination(), is("Dallas"));
-		assertThat(flight.getAirline(), is("Spring Ways"));
-		assertThat(flight.getFlightNumber(), is("OAUTH2"));
-		assertThat(flight.getTraveler(), is("Greg Turnquist"));
+		assertThat(flight.getOrigin()).isEqualTo("Nashville");
+		assertThat(flight.getDestination()).isEqualTo("Dallas");
+		assertThat(flight.getAirline()).isEqualTo("Spring Ways");
+		assertThat(flight.getFlightNumber()).isEqualTo("OAUTH2");
+		assertThat(flight.getTraveler()).isEqualTo("Greg Turnquist");
 	}
 
 }

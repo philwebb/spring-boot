@@ -145,7 +145,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LogManager.getRootLogger().debug("Hello");
 		this.loggingSystem.setLogLevel("foo.bar.baz", LogLevel.DEBUG);
 		LogManager.getRootLogger().debug("Hello");
-		assertThat(this.output.toString(), not(containsString("Hello")));
+		assertThat(this.output.toString()).doesNotContain("Hello");
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
 		String fileContents = FileCopyUtils
 				.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-		assertThat(fileContents, is(expectedOutput));
+		assertThat(fileContents).isEqualTo(expectedOutput);
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 					new RuntimeException("Expected", new RuntimeException("Cause")));
 			String fileContents = FileCopyUtils
 					.copyToString(new FileReader(new File(tmpDir() + "/spring.log")));
-			assertThat(fileContents, is(expectedOutput));
+			assertThat(fileContents).isEqualTo(expectedOutput);
 		}
 		finally {
 			System.clearProperty("LOG_EXCEPTION_CONVERSION_WORD");

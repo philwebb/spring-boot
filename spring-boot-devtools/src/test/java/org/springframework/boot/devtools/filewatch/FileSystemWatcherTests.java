@@ -40,8 +40,8 @@ import org.springframework.util.FileCopyUtils;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -112,7 +112,7 @@ public class FileSystemWatcherTests {
 	@Test
 	public void sourceFolderMustExist() throws Exception {
 		File folder = new File("does/not/exist");
-		assertThat(folder.exists(), is(false));
+		assertThat(folder.exists()).isFalse();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(
 				"Folder '" + folder + "' must exist and must be a directory");
@@ -122,7 +122,7 @@ public class FileSystemWatcherTests {
 	@Test
 	public void sourceFolderMustBeADirectory() throws Exception {
 		File folder = new File("pom.xml");
-		assertThat(folder.isFile(), is(true));
+		assertThat(folder.isFile()).isTrue();
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Folder 'pom.xml' must exist and must be a directory");
 		this.watcher.addSourceFolder(new File("pom.xml"));

@@ -31,7 +31,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationSorter}.

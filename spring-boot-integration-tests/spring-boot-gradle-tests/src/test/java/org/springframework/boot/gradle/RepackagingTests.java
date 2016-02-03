@@ -27,9 +27,9 @@ import org.junit.Test;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Integration tests for gradle repackaging.

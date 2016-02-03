@@ -36,7 +36,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleHateoasApplication.class)
@@ -53,7 +53,7 @@ public class SampleHateoasApplicationTests {
 		assertThat(entity.getStatusCode(), equalTo(HttpStatus.OK));
 		assertThat(entity.getBody(), startsWith(
 				"{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\""));
-		assertThat(entity.getBody(), containsString("_links\":{\"self\":{\"href\""));
+		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
 	}
 
 	@Test

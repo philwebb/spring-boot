@@ -67,9 +67,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsGroup;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsHint;
 import static org.springframework.boot.configurationprocessor.ConfigurationMetadataMatchers.containsProperty;
@@ -396,7 +396,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("simple.flag", Boolean.class)
 				.fromSource(SimpleProperties.class).withDescription("A simple flag.")
 				.withDeprecation(null, null).withDefaultValue(is(true)));
-		assertThat(metadata.getItems().size(), is(4));
+		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
@@ -409,7 +409,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.comparator", "java.util.Comparator<?>")
 						.fromSource(SimpleProperties.class)
 						.withDescription("A nice comparator."));
-		assertThat(metadata.getItems().size(), is(4));
+		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
@@ -423,7 +423,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("simple.comparator", "java.util.Comparator<?>")
 						.fromSource(SimpleProperties.class)
 						.withDeprecation("Don't use this.", "simple.complex-comparator"));
-		assertThat(metadata.getItems().size(), is(4));
+		assertThat(metadata.getItems()).hasSize(4);
 	}
 
 	@Test
@@ -437,7 +437,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				containsProperty("singledeprecated.name", String.class.getName())
 						.fromSource(DeprecatedSingleProperty.class)
 						.withDeprecation("Don't use this.", "single.name"));
-		assertThat(metadata.getItems().size(), is(3));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test

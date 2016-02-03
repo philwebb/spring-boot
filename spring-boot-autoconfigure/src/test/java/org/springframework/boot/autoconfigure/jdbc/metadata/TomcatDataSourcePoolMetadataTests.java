@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc.metadata;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.Before;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link TomcatDataSourcePoolMetadata}.

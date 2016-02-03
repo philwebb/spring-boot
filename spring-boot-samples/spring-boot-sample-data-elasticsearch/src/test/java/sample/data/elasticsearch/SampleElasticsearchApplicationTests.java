@@ -25,7 +25,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Tests for {@link SampleElasticsearchApplication}.

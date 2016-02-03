@@ -39,7 +39,7 @@ import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Abstract base class for {@link FieldValuesParser} tests.

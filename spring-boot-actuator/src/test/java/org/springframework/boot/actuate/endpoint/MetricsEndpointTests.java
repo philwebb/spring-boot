@@ -34,9 +34,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricsEndpoint}.

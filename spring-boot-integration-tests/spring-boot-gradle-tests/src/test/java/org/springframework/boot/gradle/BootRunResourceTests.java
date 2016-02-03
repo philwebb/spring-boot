@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for bootRun's resource handling
@@ -53,7 +53,7 @@ public class BootRunResourceTests {
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "-PaddResources=true")
 				.run();
 
-		assertThat(this.output.toString(), containsString("src/main/resources/test.txt"));
+		assertThat(this.output.toString()).contains("src/main/resources/test.txt");
 	}
 
 	@Test

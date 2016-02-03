@@ -27,7 +27,7 @@ import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.util.FileSystemUtils;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 

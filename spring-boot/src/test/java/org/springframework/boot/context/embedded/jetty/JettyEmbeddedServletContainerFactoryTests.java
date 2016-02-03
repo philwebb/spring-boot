@@ -182,7 +182,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		initParameters.put("a", "alpha");
 		factory.getJspServlet().setInitParameters(initParameters);
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getJspServlet().getInitParameters(), is(equalTo(initParameters)));
+		assertThat(getJspServlet().getInitParameters()).isEqualTo(initParameters);
 	}
 
 	@Test

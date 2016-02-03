@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleWsApplication.class)
@@ -68,7 +68,7 @@ public class SampleWsApplicationTests {
 		StreamResult result = new StreamResult(System.out);
 
 		this.webServiceTemplate.sendSourceAndReceiveToResult(source, result);
-		assertThat(this.output.toString(), containsString("Booking holiday for"));
+		assertThat(this.output.toString()).contains("Booking holiday for");
 	}
 
 }

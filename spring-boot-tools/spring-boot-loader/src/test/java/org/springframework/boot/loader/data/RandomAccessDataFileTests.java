@@ -41,7 +41,7 @@ import org.springframework.boot.loader.ByteArrayStartsWith;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RandomAccessDataFile}.

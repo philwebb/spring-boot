@@ -38,7 +38,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -134,7 +134,7 @@ public class ConditionalOnJndiTests {
 	private void assertPresent(boolean expected) {
 		int expectedNumber = expected ? 1 : 0;
 		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+		assertThat(this.context.getBeansOfType(String.class).values()).isEqualTo(matcher);
 	}
 
 	private void load(Class<?> config, String... environment) {

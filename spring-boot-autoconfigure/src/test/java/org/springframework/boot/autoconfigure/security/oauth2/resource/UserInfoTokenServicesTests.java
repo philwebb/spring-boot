@@ -34,7 +34,7 @@ import org.springframework.security.oauth2.client.resource.UserRedirectRequiredE
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;

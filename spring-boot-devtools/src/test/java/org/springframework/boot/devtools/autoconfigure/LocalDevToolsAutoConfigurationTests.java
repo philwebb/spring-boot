@@ -56,7 +56,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -236,7 +236,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
 				.getField(watcher, "folders");
-		assertThat(folders.size(), is(equalTo(2)));
+		assertThat(folders).hasSize(equalTo(2));
 		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
 		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
 	}

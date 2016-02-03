@@ -38,7 +38,7 @@ import org.springframework.util.ReflectionUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConditionalOnJava}.
@@ -98,17 +98,17 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void java8IsDetected() throws Exception {
-		assertThat(getJavaVersion(), is("1.8"));
+		assertThat(getJavaVersion()).isEqualTo("1.8");
 	}
 
 	@Test
 	public void java7IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class), is("1.7"));
+		assertThat(getJavaVersion(Function.class)).isEqualTo("1.7");
 	}
 
 	@Test
 	public void java6IsDetected() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class), is("1.6"));
+		assertThat(getJavaVersion(Function.class, Files.class)).isEqualTo("1.6");
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class ConditionalOnJavaTests {
 	private void assertPresent(boolean expected) {
 		int expectedNumber = expected ? 1 : 0;
 		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values(), is(matcher));
+		assertThat(this.context.getBeansOfType(String.class).values()).isEqualTo(matcher);
 	}
 
 	private final class ClassHidingClassLoader extends URLClassLoader {

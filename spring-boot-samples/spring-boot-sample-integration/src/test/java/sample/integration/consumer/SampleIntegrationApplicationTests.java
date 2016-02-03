@@ -38,7 +38,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.assertTrue;
+
 
 /**
  * Basic integration tests for service demo application.

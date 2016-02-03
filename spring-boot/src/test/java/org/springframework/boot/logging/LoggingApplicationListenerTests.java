@@ -221,8 +221,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), not(containsString("testattrace")));
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).doesNotContain("testattrace");
 	}
 
 	@Test
@@ -232,8 +232,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testattrace");
 	}
 
 	@Test
@@ -244,8 +244,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testattrace");
 	}
 
 	@Test
@@ -256,8 +256,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testattrace");
 	}
 
 	@Test
@@ -268,8 +268,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
-		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
-		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+		assertThat(this.outputCapture.toString()).contains("testatdebug");
+		assertThat(this.outputCapture.toString()).contains("testattrace");
 	}
 
 	@Test
@@ -279,7 +279,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
 		assertThat(this.outputCapture.toString(),
 				containsString("Cannot set level: GARBAGE"));
 	}
@@ -292,8 +292,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.fatal("testatfatal");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
-		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
+		assertThat(this.outputCapture.toString()).doesNotContain("testatfatal");
 	}
 
 	@Test
@@ -304,8 +304,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.fatal("testatfatal");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
-		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
+		assertThat(this.outputCapture.toString()).doesNotContain("testatfatal");
 	}
 
 	@Test
@@ -315,7 +315,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
 	}
 
 	@Test
@@ -327,7 +327,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
 	}
 
 	@Test
@@ -369,7 +369,7 @@ public class LoggingApplicationListenerTests {
 		listener.onApplicationEvent(
 				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		assertThat(listener.shutdownHook, is(nullValue()));
+		assertThat(listener.shutdownHook).isNull();
 	}
 
 	@Test
@@ -382,7 +382,7 @@ public class LoggingApplicationListenerTests {
 		listener.onApplicationEvent(
 				new ApplicationStartedEvent(new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-		assertThat(listener.shutdownHook, is(not(nullValue())));
+		assertThat(listener.shutdownHook).isNotNull();
 		listener.shutdownHook.start();
 		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30,
 				TimeUnit.SECONDS), is(true));
@@ -396,9 +396,9 @@ public class LoggingApplicationListenerTests {
 				new ApplicationStartedEvent(this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
-		assertThat(loggingSystem.cleanedUp, is(false));
+		assertThat(loggingSystem.cleanedUp).isFalse();
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
-		assertThat(loggingSystem.cleanedUp, is(true));
+		assertThat(loggingSystem.cleanedUp).isTrue();
 	}
 
 	@Test
@@ -409,13 +409,13 @@ public class LoggingApplicationListenerTests {
 				new ApplicationStartedEvent(this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
-		assertThat(loggingSystem.cleanedUp, is(false));
+		assertThat(loggingSystem.cleanedUp).isFalse();
 		GenericApplicationContext childContext = new GenericApplicationContext();
 		childContext.setParent(this.context);
 		this.initializer.onApplicationEvent(new ContextClosedEvent(childContext));
-		assertThat(loggingSystem.cleanedUp, is(false));
+		assertThat(loggingSystem.cleanedUp).isFalse();
 		this.initializer.onApplicationEvent(new ContextClosedEvent(this.context));
-		assertThat(loggingSystem.cleanedUp, is(true));
+		assertThat(loggingSystem.cleanedUp).isTrue();
 		childContext.close();
 	}
 

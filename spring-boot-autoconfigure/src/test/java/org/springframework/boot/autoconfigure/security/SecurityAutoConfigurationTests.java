@@ -63,12 +63,12 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -384,7 +384,7 @@ public class SecurityAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
 				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes, is(nullValue()));
+		assertThat(dispatcherTypes).isNull();
 	}
 
 	@Test

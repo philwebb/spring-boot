@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Tests for {@link SamplePropertyValidationApplication}.

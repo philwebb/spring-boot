@@ -26,7 +26,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.junit.Assert.assertEquals;
+
 
 /**
  * Abstract base class for {@link DataSourcePoolMetadata} tests.

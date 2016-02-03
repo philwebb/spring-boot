@@ -899,7 +899,7 @@ public class ConfigFileApplicationListenerTests {
 		@Override
 		public void postProcessEnvironment(ConfigurableEnvironment environment,
 				SpringApplication application) {
-			assertThat(environment.getPropertySources().size(), is(equalTo(4)));
+			assertThat(environment.getPropertySources()).hasSize(equalTo(4));
 		}
 
 	}

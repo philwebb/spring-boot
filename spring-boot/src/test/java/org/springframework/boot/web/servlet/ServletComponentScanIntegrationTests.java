@@ -55,7 +55,7 @@ public class ServletComponentScanIntegrationTests {
 		String port = this.context.getEnvironment().getProperty("local.server.port");
 		String response = new RestTemplate()
 				.getForObject("http://localhost:" + port + "/test", String.class);
-		assertThat(response, is(equalTo("alpha bravo")));
+		assertThat(response).isEqualTo("alpha bravo");
 	}
 
 	@Configuration
