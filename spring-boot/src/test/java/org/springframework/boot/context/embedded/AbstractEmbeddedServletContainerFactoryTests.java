@@ -135,7 +135,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ListenableFuture<ClientHttpResponse> response1 = clientHttpRequestFactory
 				.createAsyncRequest(new URI(getLocalUrl("/hello")), HttpMethod.GET)
 				.executeAsync();
-		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
+		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
 
 		this.container.stop();
 		this.container = factory
@@ -182,7 +182,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ListenableFuture<ClientHttpResponse> response2 = clientHttpRequestFactory
 				.createAsyncRequest(new URI(getLocalUrl("/hello")), HttpMethod.GET)
 				.executeAsync();
-		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
+		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode()).isEqualTo(200);
 	}
 
 	@Test
@@ -191,7 +191,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
 				new FilterRegistrationBean(new ExampleFilter()));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("[Hello World]"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("[Hello World]");
 	}
 
 	@Test
@@ -228,9 +228,9 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 						servletContext.addServlet("test", servlet).setLoadOnStartup(1);
 					}
 				});
-		assertThat(servlet.getInitCount(), equalTo(0));
+		assertThat(servlet.getInitCount()).isEqualTo(0);
 		this.container.start();
-		assertThat(servlet.getInitCount(), equalTo(1));
+		assertThat(servlet.getInitCount()).isEqualTo(1);
 	}
 
 	@Test
@@ -253,7 +253,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/say/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/say/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -312,7 +312,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		addTestTxtFile(factory);
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/test.txt")), equalTo("test"));
+		assertThat(getResponse(getLocalUrl("/test.txt"))).isEqualTo("test");
 	}
 
 	@Test
@@ -339,8 +339,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer(exampleServletRegistration(),
 				errorServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
-		assertThat(getResponse(getLocalUrl("/bang")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/bang"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -531,7 +531,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		ClientHttpResponse response = getClientResponse(
 				getLocalUrl("/org/springframework/boot/SpringApplication.class"));
-		assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
@@ -564,7 +564,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void defaultSessionTimeout() throws Exception {
-		assertThat(getFactory().getSessionTimeout(), equalTo(30 * 60));
+		assertThat(getFactory().getSessionTimeout()).isEqualTo(30 * 60);
 	}
 
 	@Test
@@ -585,8 +585,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		System.out.println(s2);
 		System.out.println(s3);
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
-		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
-		assertThat(message, s3.split(":")[0], equalTo(s2.split(":")[1]));
+		assertThat(message, s2.split(":")[0]).isEqualTo(s1.split(":")[1]);
+		assertThat(message, s3.split(":")[0]).isEqualTo(s2.split(":")[1]);
 	}
 
 	@Test
@@ -608,15 +608,15 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			}
 
 		});
-		assertThat(dirContents.length, greaterThan(0));
+		assertThat(dirContents.length).isGreaterThan(0);
 	}
 
 	@Test
 	public void getValidSessionStoreWhenSessionStoreNotSet() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		File dir = factory.getValidSessionStoreDir(false);
-		assertThat(dir.getName(), equalTo("servlet-sessions"));
-		assertThat(dir.getParentFile(), equalTo(new ApplicationTemp().getDir()));
+		assertThat(dir.getName()).isEqualTo("servlet-sessions");
+		assertThat(dir.getParentFile()).isEqualTo(new ApplicationTemp().getDir());
 	}
 
 	@Test
@@ -624,8 +624,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionStoreDir(new File("sessions"));
 		File dir = factory.getValidSessionStoreDir(false);
-		assertThat(dir.getName(), equalTo("sessions"));
-		assertThat(dir.getParentFile(), equalTo(new ApplicationHome().getDir()));
+		assertThat(dir.getName()).isEqualTo("sessions");
+		assertThat(dir.getParentFile()).isEqualTo(new ApplicationHome().getDir());
 	}
 
 	@Test
@@ -673,7 +673,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		getResponse(getLocalUrl("/hello"),
 				new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create()
 						.setContentDecoderRegistry(contentDecoderMap).build()));
-		assertThat(inputStreamFactory.wasCompressionUsed(), equalTo(true));
+		assertThat(inputStreamFactory.wasCompressionUsed()).isEqualTo(true);
 	}
 
 	@Test
@@ -724,7 +724,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		ClientHttpResponse response = getClientResponse(getLocalUrl("/hello"));
-		assertThat(response.getHeaders().getFirst("server"), equalTo("MyServer"));
+		assertThat(response.getHeaders().getFirst("server")).isEqualTo("MyServer");
 	}
 
 	private boolean doTestCompression(int contentSize, String[] mimeTypes,
@@ -738,7 +738,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				new HttpComponentsClientHttpRequestFactory(
 						HttpClientBuilder.create().setUserAgent("testUserAgent")
 								.setContentDecoderRegistry(contentDecoderMap).build()));
-		assertThat(response, equalTo(testContent));
+		assertThat(response).isEqualTo(testContent);
 		return inputStreamFactory.wasCompressionUsed();
 	}
 

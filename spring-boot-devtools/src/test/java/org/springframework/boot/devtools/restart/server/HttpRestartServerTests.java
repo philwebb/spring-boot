@@ -93,7 +93,7 @@ public class HttpRestartServerTests {
 				new ServletServerHttpResponse(response));
 		verify(this.delegate).updateAndRestart(this.filesCaptor.capture());
 		assertThat(this.filesCaptor.getValue().getFile("name"), notNullValue());
-		assertThat(response.getStatus(), equalTo(200));
+		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
-		assertThat(response.getStatus(), equalTo(500));
+		assertThat(response.getStatus()).isEqualTo(500);
 
 	}
 
@@ -115,7 +115,7 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verifyZeroInteractions(this.delegate);
-		assertThat(response.getStatus(), equalTo(500));
+		assertThat(response.getStatus()).isEqualTo(500);
 	}
 
 	private byte[] serialize(Object object) throws IOException {

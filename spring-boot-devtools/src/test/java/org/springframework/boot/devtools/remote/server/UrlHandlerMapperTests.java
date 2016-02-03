@@ -70,7 +70,7 @@ public class UrlHandlerMapperTests {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
-		assertThat(mapper.getHandler(request), equalTo(this.handler));
+		assertThat(mapper.getHandler(request)).isEqualTo(this.handler);
 	}
 
 	@Test

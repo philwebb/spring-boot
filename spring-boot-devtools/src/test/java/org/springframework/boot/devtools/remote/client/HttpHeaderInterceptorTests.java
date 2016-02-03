@@ -109,8 +109,8 @@ public class HttpHeaderInterceptorTests {
 	public void intercept() throws IOException {
 		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body,
 				this.execution);
-		assertThat(this.request.getHeaders().getFirst(this.name), equalTo(this.value));
-		assertThat(result, equalTo(this.response));
+		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
+		assertThat(result).isEqualTo(this.response);
 	}
 
 }

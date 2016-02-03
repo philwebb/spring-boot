@@ -100,7 +100,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size(), equalTo(10));
+		assertThat(entries.size()).isEqualTo(10);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("d/");
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
-		assertThat(nestedEntries.size(), equalTo(1));
+		assertThat(nestedEntries.size()).isEqualTo(1);
 		assertThat(nested.getUrl().toString(),
 				equalTo("file:" + this.rootFolder.toURI().getPath() + "d/"));
 	}
@@ -132,7 +132,7 @@ public class ExplodedArchiveTests {
 	public void getNonRecursiveEntriesForRoot() throws Exception {
 		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
-		assertThat(entries.size(), greaterThan(1));
+		assertThat(entries.size()).isGreaterThan(1);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class ExplodedArchiveTests {
 				new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
-		assertThat(entries.size(), equalTo(4));
+		assertThat(entries.size()).isEqualTo(4);
 	}
 
 	@Test
@@ -150,7 +150,7 @@ public class ExplodedArchiveTests {
 				false);
 		assertThat(archive.getManifest()).isNotNull();
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
-		assertThat(entries.size(), equalTo(3));
+		assertThat(entries.size()).isEqualTo(3);
 	}
 
 	@Test

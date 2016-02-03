@@ -96,7 +96,7 @@ public class HibernateJpaAutoConfigurationTests
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		String actual = (String) bean.getJpaPropertyMap()
 				.get("hibernate.ejb.naming_strategy");
-		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
+		assertThat(actual).isEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class HibernateJpaAutoConfigurationTests
 				.get("hibernate.ejb.naming_strategy");
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
-		assertThat(actual, not(equalTo("org.hibernate.cfg.EJB3NamingStrategy")));
+		assertThat(actual).isNotEqualTo("org.hibernate.cfg.EJB3NamingStrategy");
 	}
 
 	@Test

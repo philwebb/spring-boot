@@ -69,21 +69,21 @@ public class ClassLoaderFileTests {
 	@Test
 	public void added() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.ADDED, BYTES);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.ADDED));
-		assertThat(file.getContents(), equalTo(BYTES));
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.ADDED);
+		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
 	public void modified() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.MODIFIED, BYTES);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.MODIFIED));
-		assertThat(file.getContents(), equalTo(BYTES));
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.MODIFIED);
+		assertThat(file.getContents()).isEqualTo(BYTES);
 	}
 
 	@Test
 	public void deleted() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.DELETED, null);
-		assertThat(file.getKind(), equalTo(ClassLoaderFile.Kind.DELETED));
+		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.DELETED);
 		assertThat(file.getContents(), nullValue());
 	}
 

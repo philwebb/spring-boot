@@ -84,7 +84,7 @@ public class ClassPathFileSystemWatcherTests {
 		FileCopyUtils.copy("file".getBytes(), classFile);
 		Thread.sleep(1100);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();
-		assertThat(events.size(), equalTo(1));
+		assertThat(events.size()).isEqualTo(1);
 		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator()
 				.next().getFile(), equalTo(classFile));
 		context.close();

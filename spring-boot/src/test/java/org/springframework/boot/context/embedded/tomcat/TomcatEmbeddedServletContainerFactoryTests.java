@@ -260,7 +260,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 
 		AbstractHttp11JsseProtocol<?> jsseProtocol = (AbstractHttp11JsseProtocol<?>) connector
 				.getProtocolHandler();
-		assertThat(jsseProtocol.getCiphers(), equalTo("ALPHA,BRAVO,CHARLIE"));
+		assertThat(jsseProtocol.getCiphers()).isEqualTo("ALPHA,BRAVO,CHARLIE");
 	}
 
 	@Test
@@ -359,8 +359,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		System.out.println(s2);
 		System.out.println(s3);
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
-		assertThat(message, s2.split(":")[0], equalTo(s1.split(":")[1]));
-		assertThat(message, s3.split(":")[0], not(equalTo(s2.split(":")[1])));
+		assertThat(message, s2.split(":")[0]).isEqualTo(s1.split(":")[1]);
+		assertThat(message, s3.split(":")[0]).isNotEqualTo(s2.split(":")[1]);
 	}
 
 	@Override
@@ -383,7 +383,7 @@ public class TomcatEmbeddedServletContainerFactoryTests
 			int expected) {
 		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
-		assertThat(context.getSessionTimeout(), equalTo(expected));
+		assertThat(context.getSessionTimeout()).isEqualTo(expected);
 	}
 
 	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {

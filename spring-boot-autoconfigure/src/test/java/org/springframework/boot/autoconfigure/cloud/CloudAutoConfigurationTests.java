@@ -50,7 +50,7 @@ public class CloudAutoConfigurationTests {
 		classNames.add(JpaRepositoriesAutoConfiguration.class.getName());
 		classNames.add(CloudAutoConfiguration.class.getName());
 		List<String> ordered = sorter.getInPriorityOrder(classNames);
-		assertThat(ordered.get(0), equalTo(CloudAutoConfiguration.class.getName()));
+		assertThat(ordered.get(0)).isEqualTo(CloudAutoConfiguration.class.getName());
 	}
 
 }

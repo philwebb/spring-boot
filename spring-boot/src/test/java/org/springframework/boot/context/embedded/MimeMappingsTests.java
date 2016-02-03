@@ -50,7 +50,7 @@ public class MimeMappingsTests {
 		mappings.add("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
 		mappings.add("baz", "bar");
-		assertThat(clone.get("foo"), equalTo("bar"));
+		assertThat(clone.get("foo")).isEqualTo("bar");
 		assertThat(clone.get("baz"), nullValue());
 	}
 
@@ -60,7 +60,7 @@ public class MimeMappingsTests {
 		mappings.put("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
 		mappings.put("baz", "bar");
-		assertThat(clone.get("foo"), equalTo("bar"));
+		assertThat(clone.get("foo")).isEqualTo("bar");
 		assertThat(clone.get("baz"), nullValue());
 	}
 
@@ -73,10 +73,10 @@ public class MimeMappingsTests {
 		for (MimeMappings.Mapping mapping : mappings) {
 			mappingList.add(mapping);
 		}
-		assertThat(mappingList.get(0).getExtension(), equalTo("foo"));
-		assertThat(mappingList.get(0).getMimeType(), equalTo("bar"));
-		assertThat(mappingList.get(1).getExtension(), equalTo("baz"));
-		assertThat(mappingList.get(1).getMimeType(), equalTo("boo"));
+		assertThat(mappingList.get(0).getExtension()).isEqualTo("foo");
+		assertThat(mappingList.get(0).getMimeType()).isEqualTo("bar");
+		assertThat(mappingList.get(1).getExtension()).isEqualTo("baz");
+		assertThat(mappingList.get(1).getMimeType()).isEqualTo("boo");
 	}
 
 	@Test
@@ -86,10 +86,10 @@ public class MimeMappingsTests {
 		mappings.add("baz", "boo");
 		List<MimeMappings.Mapping> mappingList = new ArrayList<MimeMappings.Mapping>();
 		mappingList.addAll(mappings.getAll());
-		assertThat(mappingList.get(0).getExtension(), equalTo("foo"));
-		assertThat(mappingList.get(0).getMimeType(), equalTo("bar"));
-		assertThat(mappingList.get(1).getExtension(), equalTo("baz"));
-		assertThat(mappingList.get(1).getMimeType(), equalTo("boo"));
+		assertThat(mappingList.get(0).getExtension()).isEqualTo("foo");
+		assertThat(mappingList.get(0).getMimeType()).isEqualTo("bar");
+		assertThat(mappingList.get(1).getExtension()).isEqualTo("baz");
+		assertThat(mappingList.get(1).getMimeType()).isEqualTo("boo");
 	}
 
 	@Test
@@ -102,14 +102,14 @@ public class MimeMappingsTests {
 	public void addReplacesExisting() throws Exception {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
-		assertThat(mappings.add("foo", "baz"), equalTo("bar"));
+		assertThat(mappings.add("foo", "baz")).isEqualTo("bar");
 	}
 
 	@Test
 	public void remove() throws Exception {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
-		assertThat(mappings.remove("foo"), equalTo("bar"));
+		assertThat(mappings.remove("foo")).isEqualTo("bar");
 		assertThat(mappings.remove("foo"), nullValue());
 	}
 
@@ -117,7 +117,7 @@ public class MimeMappingsTests {
 	public void get() throws Exception {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
-		assertThat(mappings.get("foo"), equalTo("bar"));
+		assertThat(mappings.get("foo")).isEqualTo("bar");
 	}
 
 	@Test

@@ -38,7 +38,7 @@ public class NonRecursivePropertyPlaceholderHelperTests {
 		Properties properties = new Properties();
 		properties.put("a", "b");
 		String result = this.helper.replacePlaceholders("${a}", properties);
-		assertThat(result, equalTo("b"));
+		assertThat(result).isEqualTo("b");
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class NonRecursivePropertyPlaceholderHelperTests {
 		properties.put("a", "${b}");
 		properties.put("b", "c");
 		String result = this.helper.replacePlaceholders("${a}", properties);
-		assertThat(result, equalTo("${b}"));
+		assertThat(result).isEqualTo("${b}");
 	}
 
 }

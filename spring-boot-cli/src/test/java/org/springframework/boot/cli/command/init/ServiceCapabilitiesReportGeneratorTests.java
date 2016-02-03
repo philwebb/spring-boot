@@ -40,7 +40,7 @@ public class ServiceCapabilitiesReportGeneratorTests extends AbstractHttpClientM
 		String expected = new String(
 				readClasspathResource("metadata/service-metadata-2.1.0.txt"));
 		String content = this.command.generate("http://localhost");
-		assertThat(content, equalTo(expected));
+		assertThat(content).isEqualTo(expected);
 	}
 
 	@Test

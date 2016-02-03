@@ -127,7 +127,7 @@ public class HazelcastAutoConfigurationTests {
 			assertThat(hazelcastInstance.getConfig().getInstanceName(),
 					equalTo("my-test-instance"));
 			// Should reuse any existing instance by default.
-			assertThat(hazelcastInstance, equalTo(existingHazelcastInstance));
+			assertThat(hazelcastInstance).isEqualTo(existingHazelcastInstance);
 		}
 		finally {
 			existingHazelcastInstance.shutdown();

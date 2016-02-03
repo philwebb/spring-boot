@@ -77,7 +77,7 @@ public class ErrorPageFilterTests {
 	@Test
 	public void notAnError() throws Exception {
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isTrue();
@@ -115,15 +115,15 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		HttpServletResponseWrapper wrapper = (HttpServletResponseWrapper) this.chain
 				.getResponse();
-		assertThat(wrapper.getResponse(), equalTo((ServletResponse) this.response));
+		assertThat(wrapper.getResponse()).isEqualTo((ServletResponse) this.response);
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(wrapper.getStatus(), equalTo(401));
+		assertThat(wrapper.getStatus()).isEqualTo(401);
 		// The real response has to be 401 as well...
-		assertThat(this.response.getStatus(), equalTo(401));
-		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
+		assertThat(this.response.getStatus()).isEqualTo(401);
+		assertThat(this.response.getForwardedUrl()).isEqualTo("/error");
 	}
 
 	@Test
@@ -139,7 +139,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
@@ -159,7 +159,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
@@ -205,7 +205,7 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "/test/path"));
 
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(this.response.getForwardedUrl(), equalTo("/error"));
+		assertThat(this.response.getForwardedUrl()).isEqualTo("/error");
 	}
 
 	@Test
@@ -229,7 +229,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
 				equalTo((Object) "/test/path"));
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(this.response.getForwardedUrl(), equalTo("/400"));
+		assertThat(this.response.getForwardedUrl()).isEqualTo("/400");
 	}
 
 	@Test
@@ -274,7 +274,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
 				equalTo((Object) "/test/path"));
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
+		assertThat(this.response.getForwardedUrl()).isEqualTo("/500");
 	}
 
 	@Test
@@ -299,7 +299,7 @@ public class ErrorPageFilterTests {
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
 					throws IOException, ServletException {
-				assertThat(((HttpServletResponse) response).getStatus(), equalTo(200));
+				assertThat(((HttpServletResponse) response).getStatus()).isEqualTo(200);
 				super.doFilter(request, response);
 			}
 		};
@@ -337,7 +337,7 @@ public class ErrorPageFilterTests {
 	public void responseIsNotCommittedWhenRequestIsAsync() throws Exception {
 		this.request.setAsyncStarted(true);
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isFalse();
@@ -357,7 +357,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isTrue();
@@ -377,7 +377,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isTrue();
@@ -387,7 +387,7 @@ public class ErrorPageFilterTests {
 	public void responseIsNotCommittedDuringAsyncDispatch() throws Exception {
 		setUpAsyncDispatch();
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isFalse();
@@ -407,7 +407,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isTrue();
@@ -427,7 +427,7 @@ public class ErrorPageFilterTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(this.chain.getRequest()).isEqualTo((ServletRequest) this.request);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
 		assertThat(this.response.isCommitted()).isTrue();
@@ -501,7 +501,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI),
 				equalTo((Object) "/test/path"));
 		assertThat(this.response.isCommitted()).isTrue();
-		assertThat(this.response.getForwardedUrl(), equalTo("/500"));
+		assertThat(this.response.getForwardedUrl()).isEqualTo("/500");
 	}
 
 	private void setUpAsyncDispatch() throws Exception {

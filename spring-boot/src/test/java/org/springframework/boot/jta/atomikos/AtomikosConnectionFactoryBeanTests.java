@@ -39,7 +39,7 @@ public class AtomikosConnectionFactoryBeanTests {
 				new MockAtomikosConnectionFactoryBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
-		assertThat(bean.getUniqueResourceName(), equalTo("bean"));
+		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
 		verify(bean).init();
 		verify(bean, never()).close();
 		bean.destroy();

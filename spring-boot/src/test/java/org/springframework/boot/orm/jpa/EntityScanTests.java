@@ -121,7 +121,7 @@ public class EntityScanTests {
 		String[] actual = this.context
 				.getBean(TestLocalContainerEntityManagerFactoryBean.class)
 				.getPackagesToScan();
-		assertThat(actual, equalTo(expected));
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Configuration

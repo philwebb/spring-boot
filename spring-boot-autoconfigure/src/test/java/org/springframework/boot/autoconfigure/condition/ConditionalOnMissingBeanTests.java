@@ -97,7 +97,7 @@ public class ConditionalOnMissingBeanTests {
 	public void impliedOnBeanMethod() throws Exception {
 		this.context.register(ExampleBeanConfiguration.class, ImpliedOnBeanMethod.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), equalTo(1));
+		assertThat(this.context.getBeansOfType(ExampleBean.class).size()).isEqualTo(1);
 	}
 
 	@Test

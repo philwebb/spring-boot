@@ -202,7 +202,7 @@ public class FlywayAutoConfigurationTests {
 		assertThat(this.context.getBean(Flyway.class)).isNotNull();
 		FlywayMigrationInitializer initializer = this.context
 				.getBean(FlywayMigrationInitializer.class);
-		assertThat(initializer.getOrder(), equalTo(Ordered.HIGHEST_PRECEDENCE));
+		assertThat(initializer.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 	@Test
@@ -301,7 +301,7 @@ public class FlywayAutoConfigurationTests {
 		}
 
 		public void assertCalled() {
-			assertThat(this.called, equalTo(true));
+			assertThat(this.called).isEqualTo(true);
 		}
 	}
 

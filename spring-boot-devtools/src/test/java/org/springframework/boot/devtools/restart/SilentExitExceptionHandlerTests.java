@@ -54,7 +54,7 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown().getMessage(), equalTo("Expected"));
+		assertThat(testThread.getThrown().getMessage()).isEqualTo("Expected");
 	}
 
 	private static abstract class TestThread extends Thread {

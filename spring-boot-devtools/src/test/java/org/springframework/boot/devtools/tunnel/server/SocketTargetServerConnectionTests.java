@@ -65,7 +65,7 @@ public class SocketTargetServerConnectionTests {
 		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
 		ByteBuffer buffer = ByteBuffer.allocate(5);
 		channel.read(buffer);
-		assertThat(buffer.array(), equalTo("hello".getBytes()));
+		assertThat(buffer.array()).isEqualTo("hello".getBytes());
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class SocketTargetServerConnectionTests {
 
 		public void closeAndVerify() throws InterruptedException {
 			close();
-			assertThat(this.actualRead.array(), equalTo(this.expect));
+			assertThat(this.actualRead.array()).isEqualTo(this.expect);
 		}
 
 		public void close() throws InterruptedException {

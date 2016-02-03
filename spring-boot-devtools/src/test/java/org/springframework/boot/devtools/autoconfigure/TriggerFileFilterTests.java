@@ -49,13 +49,13 @@ public class TriggerFileFilterTests {
 	@Test
 	public void acceptNameMatch() throws Exception {
 		File file = this.temp.newFile("thefile.txt");
-		assertThat(new TriggerFileFilter("thefile.txt").accept(file), equalTo(true));
+		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isEqualTo(true);
 	}
 
 	@Test
 	public void doesNotAcceptNameMismatch() throws Exception {
 		File file = this.temp.newFile("notthefile.txt");
-		assertThat(new TriggerFileFilter("thefile.txt").accept(file), equalTo(false));
+		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isEqualTo(false);
 	}
 
 }

@@ -39,7 +39,7 @@ public class SpringApplicationConfigurationGroovyConventionConfigurationTests {
 
 	@Test
 	public void groovyConfigLoaded() {
-		assertThat(this.foo, equalTo("World"));
+		assertThat(this.foo).isEqualTo("World");
 	}
 
 }

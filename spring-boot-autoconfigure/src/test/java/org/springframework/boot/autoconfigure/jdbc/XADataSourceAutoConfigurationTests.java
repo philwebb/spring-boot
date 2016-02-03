@@ -47,7 +47,7 @@ public class XADataSourceAutoConfigurationTests {
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
-		assertThat(wrapper.getXaDataSource(), equalTo(source));
+		assertThat(wrapper.getXaDataSource()).isEqualTo(source);
 	}
 
 	@Test
@@ -59,8 +59,8 @@ public class XADataSourceAutoConfigurationTests {
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
 		assertThat(dataSource).isNotNull();
-		assertThat(dataSource.getUrl(), equalTo("jdbc:hsqldb:mem:test"));
-		assertThat(dataSource.getUser(), equalTo("un"));
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:test");
+		assertThat(dataSource.getUser()).isEqualTo("un");
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class XADataSourceAutoConfigurationTests {
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 		JDBCXADataSource dataSource = (JDBCXADataSource) wrapper.getXaDataSource();
 		assertThat(dataSource).isNotNull();
-		assertThat(dataSource.getDatabaseName(), equalTo("test"));
+		assertThat(dataSource.getDatabaseName()).isEqualTo("test");
 
 	}
 

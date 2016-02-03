@@ -101,7 +101,7 @@ public class DispatcherTests {
 				Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		verifyZeroInteractions(handler);
-		assertThat(this.response.getStatus(), equalTo(403));
+		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
 	@Test

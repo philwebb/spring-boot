@@ -63,7 +63,7 @@ public class RestartApplicationListenerTests {
 		testInitialize(false);
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"),
 				equalTo((Object) ARGS));
-		assertThat(Restarter.getInstance().isFinished(), equalTo(true));
+		assertThat(Restarter.getInstance().isFinished()).isEqualTo(true);
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class RestartApplicationListenerTests {
 		testInitialize(true);
 		assertThat(ReflectionTestUtils.getField(Restarter.getInstance(), "args"),
 				equalTo((Object) ARGS));
-		assertThat(Restarter.getInstance().isFinished(), equalTo(true));
+		assertThat(Restarter.getInstance().isFinished()).isEqualTo(true);
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class RestartApplicationListenerTests {
 		ConfigurableApplicationContext context = mock(
 				ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartedEvent(application, ARGS));
-		assertThat(Restarter.getInstance(), not(nullValue()));
-		assertThat(Restarter.getInstance().isFinished(), equalTo(false));
+		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
+		assertThat(Restarter.getInstance().isFinished()).isEqualTo(false);
 		if (failed) {
 			listener.onApplicationEvent(new ApplicationFailedEvent(application, ARGS,
 					context, new RuntimeException()));

@@ -49,7 +49,7 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+		assertThat(getEndpointBean().invoke().size()).isGreaterThan(0);
 	}
 
 	@SuppressWarnings("unchecked")

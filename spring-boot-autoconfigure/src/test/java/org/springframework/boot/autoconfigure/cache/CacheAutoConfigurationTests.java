@@ -418,7 +418,7 @@ public class CacheAutoConfigurationTests {
 				HazelcastCacheManager.class);
 		HazelcastInstance cacheHazelcastInstance = (HazelcastInstance) new DirectFieldAccessor(
 				cacheManager).getPropertyValue("hazelcastInstance");
-		assertThat(cacheHazelcastInstance, not(hazelcastInstance)); // Our custom
+		assertThat(cacheHazelcastInstance).isNotEqualTo(hazelcastInstance); // Our custom
 		assertThat(hazelcastInstance.getConfig().getConfigurationFile(),
 				equalTo(new ClassPathResource(mainConfig).getFile()));
 		assertThat(cacheHazelcastInstance.getConfig().getConfigurationFile(),
@@ -528,7 +528,7 @@ public class CacheAutoConfigurationTests {
 		Cache foo = cacheManager.getCache("foo");
 		foo.get("1");
 		// See next tests: no spec given so stats should be disabled
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount(), equalTo(0L));
+		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
 	}
 
 	@Test
@@ -552,7 +552,7 @@ public class CacheAutoConfigurationTests {
 		assertThat(cacheManager.getCacheNames(), hasSize(2));
 		Cache foo = cacheManager.getCache("foo");
 		foo.get("1");
-		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount(), equalTo(1L));
+		assertThat(((GuavaCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
 	private <T extends CacheManager> T validateCacheManager(Class<T> type) {

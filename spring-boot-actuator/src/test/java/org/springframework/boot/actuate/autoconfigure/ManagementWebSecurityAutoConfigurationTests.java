@@ -100,9 +100,9 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 1 for static resources, one for management endpoints and one for the rest
 		assertThat(filterChainProxy.getFilterChains(), hasSize(3));
-		assertThat(filterChainProxy.getFilters("/beans"), hasSize(greaterThan(0)));
-		assertThat(filterChainProxy.getFilters("/beans/"), hasSize(greaterThan(0)));
-		assertThat(filterChainProxy.getFilters("/beans.foo"), hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilters("/beans")).isGreaterThan(0));
+		assertThat(filterChainProxy.getFilters("/beans/")).isGreaterThan(0));
+		assertThat(filterChainProxy.getFilters("/beans.foo")).isGreaterThan(0));
 		assertThat(filterChainProxy.getFilters("/beans/foo/bar"),
 				hasSize(greaterThan(0)));
 	}

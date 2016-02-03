@@ -105,7 +105,7 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		try {
 			String actual = StreamUtils.copyToString(response.getBody(),
 					Charset.forName("UTF-8"));
-			assertThat(actual, equalTo("Hello World"));
+			assertThat(actual).isEqualTo("Hello World");
 		}
 		finally {
 			response.close();

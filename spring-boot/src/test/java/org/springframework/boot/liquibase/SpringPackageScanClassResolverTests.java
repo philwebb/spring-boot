@@ -39,7 +39,7 @@ public class SpringPackageScanClassResolverTests {
 		resolver.addClassLoader(getClass().getClassLoader());
 		Set<Class<?>> implementations = resolver.findImplementations(Logger.class,
 				"liquibase.logging.core");
-		assertThat(implementations.size(), greaterThan(0));
+		assertThat(implementations.size()).isGreaterThan(0);
 	}
 
 }

@@ -95,8 +95,8 @@ public class JooqAutoConfigurationTests {
 	public void jooqWithoutTx() throws Exception {
 		registerAndRefresh(JooqDataSourceConfiguration.class, JooqAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		assertThat(getBeanNames(PlatformTransactionManager.class), equalTo(NO_BEANS));
-		assertThat(getBeanNames(SpringTransactionProvider.class), equalTo(NO_BEANS));
+		assertThat(getBeanNames(PlatformTransactionManager.class)).isEqualTo(NO_BEANS);
+		assertThat(getBeanNames(SpringTransactionProvider.class)).isEqualTo(NO_BEANS);
 		DSLContext dsl = this.context.getBean(DSLContext.class);
 		dsl.execute("create table jooqtest (name varchar(255) primary key);");
 		dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest;",
@@ -156,9 +156,9 @@ public class JooqAutoConfigurationTests {
 		DSLContext dsl = this.context.getBean(DSLContext.class);
 		assertEquals(TestRecordMapperProvider.class,
 				dsl.configuration().recordMapperProvider().getClass());
-		assertThat(dsl.configuration().recordListenerProviders().length, equalTo(1));
-		assertThat(dsl.configuration().executeListenerProviders().length, equalTo(2));
-		assertThat(dsl.configuration().visitListenerProviders().length, equalTo(1));
+		assertThat(dsl.configuration().recordListenerProviders().length).isEqualTo(1);
+		assertThat(dsl.configuration().executeListenerProviders().length).isEqualTo(2);
+		assertThat(dsl.configuration().visitListenerProviders().length).isEqualTo(1);
 	}
 
 	@Test

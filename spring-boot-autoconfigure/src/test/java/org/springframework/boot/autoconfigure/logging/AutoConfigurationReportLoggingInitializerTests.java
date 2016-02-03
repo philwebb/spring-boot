@@ -119,7 +119,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		context.register(Config.class);
 		context.refresh();
 		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(this.debugLog.size(), not(equalTo(0)));
+		assertThat(this.debugLog.size()).isNotEqualTo(0);
 	}
 
 	@Test
@@ -136,8 +136,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 					new SpringApplication(), new String[0], context, ex));
 		}
 
-		assertThat(this.debugLog.size(), not(equalTo(0)));
-		assertThat(this.infoLog.size(), equalTo(0));
+		assertThat(this.debugLog.size()).isNotEqualTo(0);
+		assertThat(this.infoLog.size()).isEqualTo(0);
 	}
 
 	@Test
@@ -155,8 +155,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 					new SpringApplication(), new String[0], context, ex));
 		}
 
-		assertThat(this.debugLog.size(), equalTo(0));
-		assertThat(this.infoLog.size(), not(equalTo(0)));
+		assertThat(this.debugLog.size()).isEqualTo(0);
+		assertThat(this.infoLog.size()).isNotEqualTo(0);
 	}
 
 	@Test

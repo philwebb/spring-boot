@@ -74,13 +74,13 @@ public class JarFileArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size(), equalTo(10));
+		assertThat(entries.size()).isEqualTo(10);
 	}
 
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFileUrl + "!/"));
+		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFileUrl + "!/");
 	}
 
 	@Test

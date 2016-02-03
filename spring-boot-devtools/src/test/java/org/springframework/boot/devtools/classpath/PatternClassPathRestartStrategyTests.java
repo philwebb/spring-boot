@@ -90,7 +90,7 @@ public class PatternClassPathRestartStrategyTests {
 
 	private void assertRestartRequired(ClassPathRestartStrategy strategy,
 			String relativeName, boolean expected) {
-		assertThat(strategy.isRestartRequired(mockFile(relativeName)), equalTo(expected));
+		assertThat(strategy.isRestartRequired(mockFile(relativeName))).isEqualTo(expected);
 	}
 
 	private ChangedFile mockFile(String relativeName) {

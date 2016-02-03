@@ -43,7 +43,7 @@ public class WhitespaceThrowablePatternConverterTests {
 		LogEvent event = Log4jLogEvent.newBuilder().build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder.toString(), equalTo(""));
+		assertThat(builder.toString()).isEqualTo("");
 	}
 
 	@Test

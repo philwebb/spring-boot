@@ -71,7 +71,7 @@ public class ResourceMatcherTests {
 				Arrays.asList("**/*.jar"));
 		List<MatchedResource> found = resourceMatcher
 				.find(Arrays.asList(new File("src/test/resources")));
-		assertThat(found, not(hasItem(new FooJarMatcher(MatchedResource.class))));
+		assertThat(found).isNotEqualTo(hasItem(new FooJarMatcher(MatchedResource.class)));
 	}
 
 	@SuppressWarnings("unchecked")

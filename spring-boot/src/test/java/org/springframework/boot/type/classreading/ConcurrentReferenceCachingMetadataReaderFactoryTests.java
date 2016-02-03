@@ -56,7 +56,7 @@ public class ConcurrentReferenceCachingMetadataReaderFactoryTests {
 		MetadataReader metadataReader1 = factory.getMetadataReader(getClass().getName());
 		factory.clearCache();
 		MetadataReader metadataReader2 = factory.getMetadataReader(getClass().getName());
-		assertThat(metadataReader1, not(sameInstance(metadataReader2)));
+		assertThat(metadataReader1).isNotEqualTo(sameInstance(metadataReader2));
 		verify(factory, times(2)).createMetadataReader((Resource) any());
 	}
 

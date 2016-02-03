@@ -45,18 +45,18 @@ public class DevToolsSettingsTests {
 	public void includePatterns() throws Exception {
 		DevToolsSettings settings = DevToolsSettings
 				.load(ROOT + "spring-devtools-include.properties");
-		assertThat(settings.isRestartInclude(new URL("file://test/a")), equalTo(true));
-		assertThat(settings.isRestartInclude(new URL("file://test/b")), equalTo(true));
-		assertThat(settings.isRestartInclude(new URL("file://test/c")), equalTo(false));
+		assertThat(settings.isRestartInclude(new URL("file://test/a"))).isEqualTo(true);
+		assertThat(settings.isRestartInclude(new URL("file://test/b"))).isEqualTo(true);
+		assertThat(settings.isRestartInclude(new URL("file://test/c"))).isEqualTo(false);
 	}
 
 	@Test
 	public void excludePatterns() throws Exception {
 		DevToolsSettings settings = DevToolsSettings
 				.load(ROOT + "spring-devtools-exclude.properties");
-		assertThat(settings.isRestartExclude(new URL("file://test/a")), equalTo(true));
-		assertThat(settings.isRestartExclude(new URL("file://test/b")), equalTo(true));
-		assertThat(settings.isRestartExclude(new URL("file://test/c")), equalTo(false));
+		assertThat(settings.isRestartExclude(new URL("file://test/a"))).isEqualTo(true);
+		assertThat(settings.isRestartExclude(new URL("file://test/b"))).isEqualTo(true);
+		assertThat(settings.isRestartExclude(new URL("file://test/c"))).isEqualTo(false);
 	}
 
 	@Test

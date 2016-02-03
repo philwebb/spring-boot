@@ -147,7 +147,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		WebAppContext webAppContext = (WebAppContext) handlers[0];
 		int actual = webAppContext.getSessionHandler().getSessionManager()
 				.getMaxInactiveInterval();
-		assertThat(actual, equalTo(expected));
+		assertThat(actual).isEqualTo(expected);
 	}
 
 	@Test
@@ -167,7 +167,7 @@ public class JettyEmbeddedServletContainerFactoryTests
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test

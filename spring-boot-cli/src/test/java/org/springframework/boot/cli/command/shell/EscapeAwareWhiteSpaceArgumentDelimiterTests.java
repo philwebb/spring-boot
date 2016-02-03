@@ -38,9 +38,9 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 				equalTo(new String[] { "one", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "one", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 3), equalTo(true));
-		assertThat(this.delimiter.isDelimiter(s, 4), equalTo(false));
+		assertThat(this.delimiter.isDelimiter(s, 2)).isEqualTo(false);
+		assertThat(this.delimiter.isDelimiter(s, 3)).isEqualTo(true);
+		assertThat(this.delimiter.isDelimiter(s, 4)).isEqualTo(false);
 	}
 
 	@Test
@@ -50,10 +50,10 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 				equalTo(new String[] { "o\\ ne", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "o ne", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 3), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 4), equalTo(false));
-		assertThat(this.delimiter.isDelimiter(s, 5), equalTo(true));
+		assertThat(this.delimiter.isDelimiter(s, 2)).isEqualTo(false);
+		assertThat(this.delimiter.isDelimiter(s, 3)).isEqualTo(false);
+		assertThat(this.delimiter.isDelimiter(s, 4)).isEqualTo(false);
+		assertThat(this.delimiter.isDelimiter(s, 5)).isEqualTo(true);
 	}
 
 	@Test
@@ -87,8 +87,8 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 	public void escapedQuotes() throws Exception {
 		String s = "\\'a b";
 		ArgumentList argumentList = this.delimiter.delimit(s, 0);
-		assertThat(argumentList.getArguments(), equalTo(new String[] { "\\'a", "b" }));
-		assertThat(this.delimiter.parseArguments(s), equalTo(new String[] { "'a", "b" }));
+		assertThat(argumentList.getArguments()).isEqualTo(new String[] { "\\'a", "b" });
+		assertThat(this.delimiter.parseArguments(s)).isEqualTo(new String[] { "'a", "b" });
 	}
 
 	@Test

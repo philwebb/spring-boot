@@ -620,7 +620,7 @@ public class RelaxedDataBinderTests {
 		properties.add("foo", "b");
 		new RelaxedDataBinder(target).bind(properties);
 		assertThat(target.getFooBaz(), nullValue());
-		assertThat(target.getFoo(), equalTo("b"));
+		assertThat(target.getFoo()).isEqualTo("b");
 	}
 
 	@Test
@@ -630,8 +630,8 @@ public class RelaxedDataBinderTests {
 		properties.add("flub", "a");
 		properties.add("foo", "b");
 		new RelaxedDataBinder(target).withAlias("flub", "fooBaz").bind(properties);
-		assertThat(target.getFooBaz(), equalTo("a"));
-		assertThat(target.getFoo(), equalTo("b"));
+		assertThat(target.getFooBaz()).isEqualTo("a");
+		assertThat(target.getFoo()).isEqualTo("b");
 	}
 
 	@Test
@@ -648,35 +648,35 @@ public class RelaxedDataBinderTests {
 
 	private void doTestBindCaseInsensitiveEnums(VanillaTarget target) throws Exception {
 		BindingResult result = bind(target, "bingo: THIS");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.THIS));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.THIS);
 
 		result = bind(target, "bingo: oR");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.or));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.or);
 
 		result = bind(target, "bingo: that");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.THAT));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.THAT);
 
 		result = bind(target, "bingo: the-other");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.THE_OTHER);
 
 		result = bind(target, "bingo: the_other");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.THE_OTHER);
 
 		result = bind(target, "bingo: The_Other");
-		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.THE_OTHER));
+		assertThat(result.getErrorCount()).isEqualTo(0);
+		assertThat(target.getBingo()).isEqualTo(Bingo.THE_OTHER);
 
 		result = bind(target, "bingos: The_Other");
-		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target.getBingos(), contains(Bingo.THE_OTHER));
 
 		result = bind(target, "bingos: The_Other, that");
-		assertThat(result.getErrorCount(), equalTo(0));
+		assertThat(result.getErrorCount()).isEqualTo(0);
 		assertThat(target.getBingos(), contains(Bingo.THE_OTHER, Bingo.THAT));
 	}
 

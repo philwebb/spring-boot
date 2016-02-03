@@ -48,13 +48,13 @@ public class ConfigurationPropertiesAutoConfigurationTests {
 	@Test
 	public void processAnnotatedBean() {
 		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("test"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
 	public void processAnnotatedBeanNoAutoConfig() {
 		load(new Class[] { SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName(), equalTo("default"));
+		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}
 
 	private void load(Class<?>[] configs, String... environment) {

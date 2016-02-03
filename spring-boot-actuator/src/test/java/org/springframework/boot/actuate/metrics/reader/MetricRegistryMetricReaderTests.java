@@ -69,7 +69,7 @@ public class MetricRegistryMetricReaderTests {
 
 		});
 		Metric<Integer> metric = (Metric<Integer>) this.metricReader.findOne("test");
-		assertThat(metric.getValue(), equalTo(Integer.valueOf(5)));
+		assertThat(metric.getValue()).isEqualTo(Integer.valueOf(5));
 		this.metricRegistry.remove("test");
 		assertThat(this.metricReader.findOne("test")).isNull();
 	}

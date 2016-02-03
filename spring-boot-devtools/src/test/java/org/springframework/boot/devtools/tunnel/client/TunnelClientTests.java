@@ -76,7 +76,7 @@ public class TunnelClientTests {
 		channel.read(buffer);
 		channel.close();
 		this.tunnelConnection.verifyWritten("hello");
-		assertThat(new String(buffer.array()), equalTo("olleh"));
+		assertThat(new String(buffer.array())).isEqualTo("olleh");
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class TunnelClientTests {
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
-		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
-		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
+		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.isOpen()).isEqualTo(false);
 	}
 
 	@Test
@@ -101,9 +101,9 @@ public class TunnelClientTests {
 				.open(new InetSocketAddress(this.listenPort));
 		Thread.sleep(200);
 		client.stop();
-		assertThat(this.tunnelConnection.getOpenedTimes(), equalTo(1));
-		assertThat(this.tunnelConnection.isOpen(), equalTo(false));
-		assertThat(channel.read(ByteBuffer.allocate(1)), equalTo(-1));
+		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.isOpen()).isEqualTo(false);
+		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class TunnelClientTests {
 
 		public void verifyWritten(byte[] expected) {
 			synchronized (this.written) {
-				assertThat(this.written.toByteArray(), equalTo(expected));
+				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}

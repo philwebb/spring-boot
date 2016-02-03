@@ -132,30 +132,30 @@ public class CommandRunnerTests {
 	@Test
 	public void handlesSuccess() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(0));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.noneOf(Call.class)));
+		assertThat(status).isEqualTo(0);
+		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.noneOf(Call.class));
 	}
 
 	@Test
 	public void handlesNoSuchCommand() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("missing");
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE)));
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE));
 	}
 
 	@Test
 	public void handlesRegularExceptionWithMessage() throws Exception {
 		willThrow(new RuntimeException("With Message")).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE)));
+		assertThat(status).isEqualTo(1);
+		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE));
 	}
 
 	@Test
 	public void handlesRegularExceptionWithoutMessage() throws Exception {
 		willThrow(new NullPointerException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
-		assertThat(status, equalTo(1));
+		assertThat(status).isEqualTo(1);
 		assertThat(this.calls, equalTo(
 				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}
@@ -165,7 +165,7 @@ public class CommandRunnerTests {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
 		assertThat(System.getProperty("debug")).isEqualTo("true");
-		assertThat(status, equalTo(1));
+		assertThat(status).isEqualTo(1);
 		assertThat(this.calls, equalTo(
 				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}
@@ -175,7 +175,7 @@ public class CommandRunnerTests {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
 		assertThat(System.getProperty("debug")).isEqualTo("true");
-		assertThat(status, equalTo(1));
+		assertThat(status).isEqualTo(1);
 		assertThat(this.calls, equalTo(
 				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
 	}

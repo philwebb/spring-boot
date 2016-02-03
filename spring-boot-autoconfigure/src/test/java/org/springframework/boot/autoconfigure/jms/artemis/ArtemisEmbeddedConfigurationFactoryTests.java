@@ -51,8 +51,8 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.isPersistenceEnabled(), equalTo(true));
-		assertThat(configuration.getJournalType(), equalTo(JournalType.NIO));
+		assertThat(configuration.isPersistenceEnabled()).isEqualTo(true);
+		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword().length(), equalTo(36));
+		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword(), equalTo("password"));
+		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 
 }

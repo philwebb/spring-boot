@@ -152,14 +152,14 @@ public class ServerPropertiesTests {
 	public void testTrailingSlashOfContextPathIsRemoved() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.contextPath", "/foo/")));
-		assertThat(this.properties.getContextPath(), equalTo("/foo"));
+		assertThat(this.properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void testSlashOfContextPathIsDefaultValue() {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.contextPath", "/")));
-		assertThat(this.properties.getContextPath(), equalTo(""));
+		assertThat(this.properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test

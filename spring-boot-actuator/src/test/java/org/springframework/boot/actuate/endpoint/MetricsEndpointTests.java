@@ -57,7 +57,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5f));
+		assertThat(getEndpointBean().invoke().get("a")).isEqualTo((Object) 0.5f);
 	}
 
 	@Test

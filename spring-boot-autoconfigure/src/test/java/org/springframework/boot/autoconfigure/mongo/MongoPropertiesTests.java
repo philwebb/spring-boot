@@ -50,7 +50,7 @@ public class MongoPropertiesTests {
 		context.register(Conf.class);
 		context.refresh();
 		MongoProperties properties = context.getBean(MongoProperties.class);
-		assertThat(properties.getPassword(), equalTo("word".toCharArray()));
+		assertThat(properties.getPassword()).isEqualTo("word".toCharArray());
 	}
 
 	@Test
@@ -122,15 +122,15 @@ public class MongoPropertiesTests {
 
 	private void assertServerAddress(ServerAddress serverAddress, String expectedHost,
 			int expectedPort) {
-		assertThat(serverAddress.getHost(), equalTo(expectedHost));
-		assertThat(serverAddress.getPort(), equalTo(expectedPort));
+		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
+		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
 	}
 
 	private void assertMongoCredential(MongoCredential credentials,
 			String expectedUsername, String expectedPassword, String expectedSource) {
-		assertThat(credentials.getUserName(), equalTo(expectedUsername));
-		assertThat(credentials.getPassword(), equalTo(expectedPassword.toCharArray()));
-		assertThat(credentials.getSource(), equalTo(expectedSource));
+		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
+		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
+		assertThat(credentials.getSource()).isEqualTo(expectedSource);
 	}
 
 	@Configuration

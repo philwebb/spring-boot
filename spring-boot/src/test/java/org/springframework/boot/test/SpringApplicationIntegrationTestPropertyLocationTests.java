@@ -51,8 +51,8 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 	@Test
 	public void loadedProperties() throws Exception {
-		assertThat(this.environment.getProperty("value1"), equalTo("123"));
-		assertThat(this.environment.getProperty("value2"), equalTo("456"));
+		assertThat(this.environment.getProperty("value1")).isEqualTo("123");
+		assertThat(this.environment.getProperty("value2")).isEqualTo("456");
 		assertThat(this.environment.getProperty("annotation-referenced"),
 				equalTo("fromfile"));
 	}
@@ -71,9 +71,9 @@ public class SpringApplicationIntegrationTestPropertyLocationTests {
 
 		@PostConstruct
 		void checkValues() {
-			assertThat(this.value1, equalTo("123"));
-			assertThat(this.value2, equalTo("456"));
-			assertThat(this.annotationReferenced, equalTo("fromfile"));
+			assertThat(this.value1).isEqualTo("123");
+			assertThat(this.value2).isEqualTo("456");
+			assertThat(this.annotationReferenced).isEqualTo("fromfile");
 		}
 
 	}

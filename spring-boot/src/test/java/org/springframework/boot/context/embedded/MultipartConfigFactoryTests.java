@@ -34,10 +34,10 @@ public class MultipartConfigFactoryTests {
 	public void sensibleDefaults() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation(), equalTo(""));
-		assertThat(config.getMaxFileSize(), equalTo(-1L));
-		assertThat(config.getMaxRequestSize(), equalTo(-1L));
-		assertThat(config.getFileSizeThreshold(), equalTo(0));
+		assertThat(config.getLocation()).isEqualTo("");
+		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
+		assertThat(config.getMaxRequestSize()).isEqualTo(-1L);
+		assertThat(config.getFileSizeThreshold()).isEqualTo(0);
 	}
 
 	@Test
@@ -48,10 +48,10 @@ public class MultipartConfigFactoryTests {
 		factory.setMaxRequestSize(2);
 		factory.setFileSizeThreshold(3);
 		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation(), equalTo("loc"));
-		assertThat(config.getMaxFileSize(), equalTo(1L));
-		assertThat(config.getMaxRequestSize(), equalTo(2L));
-		assertThat(config.getFileSizeThreshold(), equalTo(3));
+		assertThat(config.getLocation()).isEqualTo("loc");
+		assertThat(config.getMaxFileSize()).isEqualTo(1L);
+		assertThat(config.getMaxRequestSize()).isEqualTo(2L);
+		assertThat(config.getFileSizeThreshold()).isEqualTo(3);
 	}
 
 	@Test
@@ -61,9 +61,9 @@ public class MultipartConfigFactoryTests {
 		factory.setMaxRequestSize("2kB");
 		factory.setFileSizeThreshold("3Mb");
 		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getMaxFileSize(), equalTo(1L));
-		assertThat(config.getMaxRequestSize(), equalTo(2 * 1024L));
-		assertThat(config.getFileSizeThreshold(), equalTo(3 * 1024 * 1024));
+		assertThat(config.getMaxFileSize()).isEqualTo(1L);
+		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
+		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
 	}
 
 }

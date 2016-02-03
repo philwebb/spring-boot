@@ -70,14 +70,14 @@ public class HttpTunnelPayloadTests {
 	@Test
 	public void getSequence() throws Exception {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
-		assertThat(payload.getSequence(), equalTo(1L));
+		assertThat(payload.getSequence()).isEqualTo(1L);
 	}
 
 	@Test
 	public void getData() throws Exception {
 		ByteBuffer data = ByteBuffer.wrap("hello".getBytes());
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, data);
-		assertThat(getData(payload), equalTo(data.array()));
+		assertThat(getData(payload)).isEqualTo(data.array());
 	}
 
 	@Test
@@ -87,8 +87,8 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletResponse servletResponse = new MockHttpServletResponse();
 		HttpOutputMessage response = new ServletServerHttpResponse(servletResponse);
 		payload.assignTo(response);
-		assertThat(servletResponse.getHeader("x-seq"), equalTo("2"));
-		assertThat(servletResponse.getContentAsString(), equalTo("hello"));
+		assertThat(servletResponse.getHeader("x-seq")).isEqualTo("2");
+		assertThat(servletResponse.getContentAsString()).isEqualTo("hello");
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class HttpTunnelPayloadTests {
 		servletRequest.addHeader("x-seq", 123);
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
-		assertThat(payload.getSequence(), equalTo(123L));
-		assertThat(getData(payload), equalTo("hello".getBytes()));
+		assertThat(payload.getSequence()).isEqualTo(123L);
+		assertThat(getData(payload)).isEqualTo("hello".getBytes());
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class HttpTunnelPayloadTests {
 		while (payloadData.hasRemaining()) {
 			writeChannel.write(payloadData);
 		}
-		assertThat(out.toByteArray(), equalTo("hello".getBytes()));
+		assertThat(out.toByteArray()).isEqualTo("hello".getBytes());
 	}
 
 	@Test

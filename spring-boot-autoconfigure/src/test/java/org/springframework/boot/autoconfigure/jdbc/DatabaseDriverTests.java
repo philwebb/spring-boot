@@ -52,7 +52,7 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void unknownOnNullJdbcUrl() {
-		assertThat(DatabaseDriver.fromJdbcUrl(null), equalTo(DatabaseDriver.UNKNOWN));
+		assertThat(DatabaseDriver.fromJdbcUrl(null)).isEqualTo(DatabaseDriver.UNKNOWN);
 	}
 
 	@Test

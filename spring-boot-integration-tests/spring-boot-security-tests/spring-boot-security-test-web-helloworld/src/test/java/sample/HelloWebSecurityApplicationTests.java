@@ -71,7 +71,7 @@ public class HelloWebSecurityApplicationTests {
 
 		this.springSecurityFilterChain.doFilter(this.request, this.response, this.chain);
 
-		assertThat(this.response.getStatus(), equalTo(HttpServletResponse.SC_OK));
+		assertThat(this.response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 	}
 
 }

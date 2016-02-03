@@ -150,9 +150,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = bean.getJpaPropertyMap();
-		assertThat(map.get("a"), equalTo((Object) "b"));
-		assertThat(map.get("c"), equalTo((Object) "d"));
-		assertThat(map.get("a.b"), equalTo((Object) "c"));
+		assertThat(map.get("a")).isEqualTo((Object) "b");
+		assertThat(map.get("c")).isEqualTo((Object) "d");
+		assertThat(map.get("a.b")).isEqualTo((Object) "c");
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
-		assertThat(map.get("configured"), equalTo((Object) "manually"));
+		assertThat(map.get("configured")).isEqualTo((Object) "manually");
 	}
 
 	@Test
@@ -177,7 +177,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		EntityManagerFactory factoryBean = this.context
 				.getBean(EntityManagerFactory.class);
 		Map<String, Object> map = factoryBean.getProperties();
-		assertThat(map.get("configured"), equalTo((Object) "manually"));
+		assertThat(map.get("configured")).isEqualTo((Object) "manually");
 	}
 
 	@Test

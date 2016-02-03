@@ -50,7 +50,7 @@ public class SampleHateoasApplicationTests {
 	public void hasHalLinks() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/customers/1", String.class);
-		assertThat(entity.getStatusCode(), equalTo(HttpStatus.OK));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody(), startsWith(
 				"{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\""));
 		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
@@ -64,7 +64,7 @@ public class SampleHateoasApplicationTests {
 				URI.create("http://localhost:" + this.port + "/customers/1"));
 		ResponseEntity<String> response = new TestRestTemplate().exchange(request,
 				String.class);
-		assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getHeaders().getContentType(),
 				equalTo(MediaType.parseMediaType("application/json;charset=UTF-8")));
 	}

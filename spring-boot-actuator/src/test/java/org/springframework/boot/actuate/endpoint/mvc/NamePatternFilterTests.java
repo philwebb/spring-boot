@@ -39,43 +39,43 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		assertThat(filter.getResults("not.a.regex"),
 				hasEntry("not.a.regex", (Object) "not.a.regex"));
-		assertThat(filter.isGetNamesCalled(), equalTo(false));
+		assertThat(filter.isGetNamesCalled()).isEqualTo(false);
 	}
 
 	@Test
 	public void regexRepetitionZeroOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.*");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo((Object) "foo");
+		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(filter.isGetNamesCalled()).isEqualTo(true);
 	}
 
 	@Test
 	public void regexRepetitionOneOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.+");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("foo")).isEqualTo((Object) "foo");
+		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(filter.isGetNamesCalled()).isEqualTo(true);
 	}
 
 	@Test
 	public void regexEndAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("foo$");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
+		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isNull();
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(filter.isGetNamesCalled()).isEqualTo(true);
 	}
 
 	@Test
 	public void regexStartAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("^foo");
-		assertThat(results.get("foo"), equalTo((Object) "foo"));
+		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isNull();
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(filter.isGetNamesCalled()).isEqualTo(true);
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo[a-z]l");
 		assertThat(results.get("foo")).isNull();
-		assertThat(results.get("fool"), equalTo((Object) "fool"));
-		assertThat(filter.isGetNamesCalled(), equalTo(true));
+		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(filter.isGetNamesCalled()).isEqualTo(true);
 	}
 
 	private static class MockNamePatternFilter extends NamePatternFilter<Object> {

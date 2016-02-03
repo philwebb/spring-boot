@@ -45,8 +45,8 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(true));
-		assertThat(initializer.getInitialUrls(thread), not(nullValue()));
+		assertThat(initializer.isMain(thread)).isEqualTo(true);
+		assertThat(initializer.getInitialUrls(thread)).isNotEqualTo(nullValue());
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("buscuit");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(false));
+		assertThat(initializer.isMain(thread)).isEqualTo(false);
 		assertThat(initializer.getInitialUrls(thread), nullValue());
 	}
 
@@ -68,7 +68,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread), equalTo(false));
+		assertThat(initializer.isMain(thread)).isEqualTo(false);
 		assertThat(initializer.getInitialUrls(thread), nullValue());
 	}
 
@@ -86,7 +86,7 @@ public class DefaultRestartInitializerTests {
 		MockRestartInitializer initializer = new MockRestartInitializer(true);
 		StackTraceElement element = new StackTraceElement(className, "someMethod",
 				"someFile", 123);
-		assertThat(initializer.isSkippedStackElement(element), equalTo(expected));
+		assertThat(initializer.isSkippedStackElement(element)).isEqualTo(expected);
 	}
 
 	private static class MockAppClassLoader extends ClassLoader {

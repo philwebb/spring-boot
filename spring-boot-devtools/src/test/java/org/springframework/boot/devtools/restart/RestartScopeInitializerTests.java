@@ -49,8 +49,8 @@ public class RestartScopeInitializerTests {
 		context.close();
 		context = runApplication();
 		context.close();
-		assertThat(createCount.get(), equalTo(1));
-		assertThat(refreshCount.get(), equalTo(2));
+		assertThat(createCount.get()).isEqualTo(1);
+		assertThat(refreshCount.get()).isEqualTo(2);
 	}
 
 	private ConfigurableApplicationContext runApplication() {

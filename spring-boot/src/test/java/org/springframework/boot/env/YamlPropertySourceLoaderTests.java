@@ -62,7 +62,7 @@ public class YamlPropertySourceLoaderTests {
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
 				.load("resource", resource, null);
 		assertThat(source).isNotNull();
-		assertThat(source.getPropertyNames(), equalTo(expected.toArray(new String[] {})));
+		assertThat(source.getPropertyNames()).isEqualTo(expected.toArray(new String[] {}));
 	}
 
 	@Test

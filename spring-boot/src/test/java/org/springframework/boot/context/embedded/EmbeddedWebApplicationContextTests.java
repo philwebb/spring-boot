@@ -115,7 +115,7 @@ public class EmbeddedWebApplicationContextTests {
 		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
 
 		// Ensure that the context has been setup
-		assertThat(this.context.getServletContext(), equalTo(escf.getServletContext()));
+		assertThat(this.context.getServletContext()).isEqualTo(escf.getServletContext());
 		verify(escf.getServletContext()).setAttribute(
 				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);

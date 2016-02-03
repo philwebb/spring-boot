@@ -204,7 +204,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.response.getStatus(), equalTo(200));
+		assertThat(this.response.getStatus()).isEqualTo(200);
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 		this.request.addHeader(DEFAULT_SECRET_HEADER_NAME, "supersecret");
 		this.response.setStatus(500);
 		filter.doFilter(this.request, this.response, this.chain);
-		assertThat(this.response.getStatus(), equalTo(200));
+		assertThat(this.response.getStatus()).isEqualTo(200);
 	}
 
 	private void assertTunnelInvoked(boolean value) {

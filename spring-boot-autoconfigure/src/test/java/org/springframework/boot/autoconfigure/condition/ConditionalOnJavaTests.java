@@ -135,7 +135,7 @@ public class ConditionalOnJavaTests {
 			boolean expected) {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
-		assertThat(outcome.getMessage(), outcome.isMatch(), equalTo(expected));
+		assertThat(outcome.getMessage(), outcome.isMatch()).isEqualTo(expected);
 	}
 
 	private void registerAndRefresh(Class<?> annotatedClasses) {

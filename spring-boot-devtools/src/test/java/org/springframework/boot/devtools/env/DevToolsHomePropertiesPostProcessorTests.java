@@ -63,7 +63,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);
-		assertThat(environment.getProperty("abc"), equalTo("def"));
+		assertThat(environment.getProperty("abc")).isEqualTo("def");
 	}
 
 	@Test

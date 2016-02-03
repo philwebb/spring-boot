@@ -72,7 +72,7 @@ public class CompositeHealthIndicatorTests {
 		CompositeHealthIndicator composite = new CompositeHealthIndicator(
 				this.healthAggregator, indicators);
 		Health result = composite.health();
-		assertThat(result.getDetails().size(), equalTo(2));
+		assertThat(result.getDetails().size()).isEqualTo(2);
 		assertThat(result.getDetails(), hasEntry("one",
 				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
 		assertThat(result.getDetails(), hasEntry("two",
@@ -88,7 +88,7 @@ public class CompositeHealthIndicatorTests {
 				this.healthAggregator, indicators);
 		composite.addHealthIndicator("three", this.three);
 		Health result = composite.health();
-		assertThat(result.getDetails().size(), equalTo(3));
+		assertThat(result.getDetails().size()).isEqualTo(3);
 		assertThat(result.getDetails(), hasEntry("one",
 				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
 		assertThat(result.getDetails(), hasEntry("two",
@@ -104,7 +104,7 @@ public class CompositeHealthIndicatorTests {
 		composite.addHealthIndicator("one", this.one);
 		composite.addHealthIndicator("two", this.two);
 		Health result = composite.health();
-		assertThat(result.getDetails().size(), equalTo(2));
+		assertThat(result.getDetails().size()).isEqualTo(2);
 		assertThat(result.getDetails(), hasEntry("one",
 				(Object) new Health.Builder().unknown().withDetail("1", "1").build()));
 		assertThat(result.getDetails(), hasEntry("two",

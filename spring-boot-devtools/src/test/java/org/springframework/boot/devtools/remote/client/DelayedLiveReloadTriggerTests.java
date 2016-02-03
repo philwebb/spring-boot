@@ -119,7 +119,7 @@ public class DelayedLiveReloadTriggerTests {
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
 		this.trigger.run();
-		assertThat(System.currentTimeMillis() - startTime, greaterThan(300L));
+		assertThat(System.currentTimeMillis() - startTime).isGreaterThan(300L);
 		verify(this.liveReloadServer).triggerReload();
 	}
 

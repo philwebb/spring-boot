@@ -58,7 +58,7 @@ public class CassandraAutoConfigurationTests {
 		this.context = doLoad("spring.data.cassandra.cluster-name=testcluster");
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName(), equalTo("testcluster"));
+		assertThat(cluster.getClusterName()).isEqualTo("testcluster");
 	}
 
 	private AnnotationConfigApplicationContext doLoad(String... environment) {

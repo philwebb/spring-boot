@@ -49,7 +49,7 @@ public class ConfigurationPropertiesReportEndpointTests
 
 	@Test
 	public void testInvoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+		assertThat(getEndpointBean().invoke().size()).isGreaterThan(0);
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("mixedBoolean"), equalTo((Object) true));
+		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo((Object) true);
 	}
 
 	@Configuration

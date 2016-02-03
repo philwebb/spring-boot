@@ -50,8 +50,8 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.isPersistenceEnabled(), equalTo(true));
-		assertThat(configuration.getJournalType(), equalTo(JournalType.NIO));
+		assertThat(configuration.isPersistenceEnabled()).isEqualTo(true);
+		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		HornetQProperties properties = new HornetQProperties();
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword().length(), equalTo(36));
+		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setClusterPassword("password");
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getClusterPassword(), equalTo("password"));
+		assertThat(configuration.getClusterPassword()).isEqualTo("password");
 	}
 
 }

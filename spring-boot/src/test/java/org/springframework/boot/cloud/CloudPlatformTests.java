@@ -52,8 +52,8 @@ public class CloudPlatformTests {
 		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform, equalTo(CloudPlatform.CLOUD_FOUNDRY));
-		assertThat(platform.isActive(environment), equalTo(true));
+		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
+		assertThat(platform.isActive(environment)).isEqualTo(true);
 	}
 
 	@Test
@@ -61,16 +61,16 @@ public class CloudPlatformTests {
 		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES",
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform, equalTo(CloudPlatform.CLOUD_FOUNDRY));
-		assertThat(platform.isActive(environment), equalTo(true));
+		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
+		assertThat(platform.isActive(environment)).isEqualTo(true);
 	}
 
 	@Test
 	public void getActiveWhenHasDynoShouldReturnHeroku() throws Exception {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform, equalTo(CloudPlatform.HEROKU));
-		assertThat(platform.isActive(environment), equalTo(true));
+		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
+		assertThat(platform.isActive(environment)).isEqualTo(true);
 	}
 
 }

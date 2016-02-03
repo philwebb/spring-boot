@@ -50,7 +50,7 @@ public class TraceRepositoryAutoConfigurationTests {
 				Config.class, TraceRepositoryAutoConfiguration.class);
 		assertThat(context.getBeansOfType(InMemoryTraceRepository.class).size(),
 				equalTo(0));
-		assertThat(context.getBeansOfType(TraceRepository.class).size(), equalTo(1));
+		assertThat(context.getBeansOfType(TraceRepository.class).size()).isEqualTo(1);
 		context.close();
 	}
 

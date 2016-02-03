@@ -43,32 +43,32 @@ public class DeferredLogTests {
 
 	@Test
 	public void isTraceEnabled() throws Exception {
-		assertThat(this.deferredLog.isTraceEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isTraceEnabled()).isEqualTo(true);
 	}
 
 	@Test
 	public void isDebugEnabled() throws Exception {
-		assertThat(this.deferredLog.isDebugEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isDebugEnabled()).isEqualTo(true);
 	}
 
 	@Test
 	public void isInfoEnabled() throws Exception {
-		assertThat(this.deferredLog.isInfoEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isInfoEnabled()).isEqualTo(true);
 	}
 
 	@Test
 	public void isWarnEnabled() throws Exception {
-		assertThat(this.deferredLog.isWarnEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isWarnEnabled()).isEqualTo(true);
 	}
 
 	@Test
 	public void isErrorEnabled() throws Exception {
-		assertThat(this.deferredLog.isErrorEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isErrorEnabled()).isEqualTo(true);
 	}
 
 	@Test
 	public void isFatalEnabled() throws Exception {
-		assertThat(this.deferredLog.isFatalEnabled(), equalTo(true));
+		assertThat(this.deferredLog.isFatalEnabled()).isEqualTo(true);
 	}
 
 	@Test

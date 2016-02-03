@@ -42,7 +42,7 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void initializerPopulatesEnvironment() {
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bucket");
 	}
 
 	@Configuration

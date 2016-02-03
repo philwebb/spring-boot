@@ -165,7 +165,7 @@ public class FileSystemWatcherTests {
 		Thread.sleep(200);
 		touch(new File(folder, "test2.txt"));
 		this.watcher.stopAfter(1);
-		assertThat(this.changes.size(), equalTo(2));
+		assertThat(this.changes.size()).isEqualTo(2);
 	}
 
 	@Test
@@ -178,7 +178,7 @@ public class FileSystemWatcherTests {
 		}
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles().size(), equalTo(10));
+		assertThat(changedFiles.getFiles().size()).isEqualTo(10);
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class FileSystemWatcherTests {
 		File file2 = touch(new File(folder2, "test.txt"));
 		this.watcher.stopAfter(1);
 		Set<ChangedFiles> change = getSingleOnChange();
-		assertThat(change.size(), equalTo(2));
+		assertThat(change.size()).isEqualTo(2);
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceFolder().equals(folder1)) {
 				ChangedFile file = new ChangedFile(folder1, file1, Type.ADD);
@@ -277,7 +277,7 @@ public class FileSystemWatcherTests {
 		this.watcher.start();
 		FileCopyUtils.copy("abc".getBytes(), file);
 		Thread.sleep(100);
-		assertThat(this.changes.size(), equalTo(0));
+		assertThat(this.changes.size()).isEqualTo(0);
 		FileCopyUtils.copy("abc".getBytes(), trigger);
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
@@ -306,12 +306,12 @@ public class FileSystemWatcherTests {
 
 	private ChangedFiles getSingleChangedFiles() {
 		Set<ChangedFiles> singleChange = getSingleOnChange();
-		assertThat(singleChange.size(), equalTo(1));
+		assertThat(singleChange.size()).isEqualTo(1);
 		return singleChange.iterator().next();
 	}
 
 	private Set<ChangedFiles> getSingleOnChange() {
-		assertThat(this.changes.size(), equalTo(1));
+		assertThat(this.changes.size()).isEqualTo(1);
 		return this.changes.get(0);
 	}
 

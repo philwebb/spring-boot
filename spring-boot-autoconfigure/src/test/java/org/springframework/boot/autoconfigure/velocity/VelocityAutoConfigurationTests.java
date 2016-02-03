@@ -107,7 +107,7 @@ public class VelocityAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result).contains("home");
-		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class VelocityAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result).contains("home");
-		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("application/json;charset=UTF-8");
 	}
 
 	@Test

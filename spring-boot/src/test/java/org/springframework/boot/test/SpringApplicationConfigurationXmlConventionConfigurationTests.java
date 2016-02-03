@@ -39,7 +39,7 @@ public class SpringApplicationConfigurationXmlConventionConfigurationTests {
 
 	@Test
 	public void xmlConfigLoaded() {
-		assertThat(this.foo, equalTo("World"));
+		assertThat(this.foo).isEqualTo("World");
 	}
 
 }

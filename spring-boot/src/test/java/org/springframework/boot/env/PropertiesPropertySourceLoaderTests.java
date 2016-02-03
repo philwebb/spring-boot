@@ -43,21 +43,21 @@ public class PropertiesPropertySourceLoaderTests {
 	public void loadProperties() throws Exception {
 		PropertySource<?> source = this.loader.load("test.properties",
 				new ClassPathResource("test-properties.properties", getClass()), null);
-		assertThat(source.getProperty("test"), equalTo((Object) "properties"));
+		assertThat(source.getProperty("test")).isEqualTo((Object) "properties");
 	}
 
 	@Test
 	public void loadPropertiesEncoded() throws Exception {
 		PropertySource<?> source = this.loader.load("encoded.properties",
 				new ClassPathResource("test-encoded.properties", getClass()), null);
-		assertThat(source.getProperty("test"), equalTo((Object) "prकperties"));
+		assertThat(source.getProperty("test")).isEqualTo((Object) "prकperties");
 	}
 
 	@Test
 	public void loadXml() throws Exception {
 		PropertySource<?> source = this.loader.load("test.xml",
 				new ClassPathResource("test-xml.xml", getClass()), null);
-		assertThat(source.getProperty("test"), equalTo((Object) "xml"));
+		assertThat(source.getProperty("test")).isEqualTo((Object) "xml");
 	}
 
 }

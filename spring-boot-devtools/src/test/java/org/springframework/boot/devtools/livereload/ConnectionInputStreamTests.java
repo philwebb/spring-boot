@@ -51,7 +51,7 @@ public class ConnectionInputStreamTests {
 		String data = header + "\r\n\r\n" + "content\r\n";
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(data.getBytes()));
-		assertThat(inputStream.readHeader(), equalTo(header));
+		assertThat(inputStream.readHeader()).isEqualTo(header);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ConnectionInputStreamTests {
 		ConnectionInputStream inputStream = new ConnectionInputStream(source);
 		byte[] buffer = new byte[bytes.length];
 		inputStream.readFully(buffer, 0, buffer.length);
-		assertThat(buffer, equalTo(bytes));
+		assertThat(buffer).isEqualTo(bytes);
 	}
 
 	@Test

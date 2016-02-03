@@ -84,7 +84,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		String actual = bean.getHibernateProperties(dataSource)
 				.get("hibernate.hbm2ddl.auto");
-		assertThat(actual, equalTo("create-drop"));
+		assertThat(actual).isEqualTo("create-drop");
 	}
 
 	@Test

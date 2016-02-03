@@ -68,7 +68,7 @@ public class ImportAutoConfigurationImportSelectorTests {
 		String[] value = new String[] { FreeMarkerAutoConfiguration.class.getName() };
 		configureValue(value);
 		String[] imports = this.importSelector.selectImports(this.annotationMetadata);
-		assertThat(imports, equalTo(value));
+		assertThat(imports).isEqualTo(value);
 	}
 
 	@Test

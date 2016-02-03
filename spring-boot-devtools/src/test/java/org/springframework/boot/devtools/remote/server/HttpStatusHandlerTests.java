@@ -69,14 +69,14 @@ public class HttpStatusHandlerTests {
 	public void respondsOk() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler();
 		handler.handle(this.request, this.response);
-		assertThat(this.servletResponse.getStatus(), equalTo(200));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(200);
 	}
 
 	@Test
 	public void respondsWithStatus() throws Exception {
 		HttpStatusHandler handler = new HttpStatusHandler(HttpStatus.I_AM_A_TEAPOT);
 		handler.handle(this.request, this.response);
-		assertThat(this.servletResponse.getStatus(), equalTo(418));
+		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
 	}
 
 }

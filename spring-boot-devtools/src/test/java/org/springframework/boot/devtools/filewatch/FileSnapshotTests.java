@@ -70,8 +70,8 @@ public class FileSnapshotTests {
 		File fileCopy = new File(file, "x").getParentFile();
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		FileSnapshot snapshot2 = new FileSnapshot(fileCopy);
-		assertThat(snapshot1, equalTo(snapshot2));
-		assertThat(snapshot1.hashCode(), equalTo(snapshot2.hashCode()));
+		assertThat(snapshot1).isEqualTo(snapshot2);
+		assertThat(snapshot1.hashCode()).isEqualTo(snapshot2.hashCode());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		file.delete();
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abcd", MODIFIED);
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class FileSnapshotTests {
 		File file = createNewFile("abc", MODIFIED);
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		setupFile(file, "abc", MODIFIED + TWO_MINS);
-		assertThat(snapshot1, not(equalTo(new FileSnapshot(file))));
+		assertThat(snapshot1).isNotEqualTo(new FileSnapshot(file));
 	}
 
 	private File createNewFile(String content, long lastModified) throws IOException {

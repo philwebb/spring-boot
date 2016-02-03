@@ -43,7 +43,7 @@ public class StaticPortProviderTests {
 	@Test
 	public void getPort() throws Exception {
 		StaticPortProvider provider = new StaticPortProvider(123);
-		assertThat(provider.getPort(), equalTo(123));
+		assertThat(provider.getPort()).isEqualTo(123);
 	}
 
 }

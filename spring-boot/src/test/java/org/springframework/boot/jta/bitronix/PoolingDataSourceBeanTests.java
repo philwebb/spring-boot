@@ -40,16 +40,16 @@ public class PoolingDataSourceBeanTests {
 
 	@Test
 	public void sensibleDefaults() throws Exception {
-		assertThat(this.bean.getMaxPoolSize(), equalTo(10));
-		assertThat(this.bean.getAutomaticEnlistingEnabled(), equalTo(true));
-		assertThat(this.bean.isEnableJdbc4ConnectionTest(), equalTo(true));
+		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
+		assertThat(this.bean.getAutomaticEnlistingEnabled()).isEqualTo(true);
+		assertThat(this.bean.isEnableJdbc4ConnectionTest()).isEqualTo(true);
 	}
 
 	@Test
 	public void setsUniqueNameIfNull() throws Exception {
 		this.bean.setBeanName("beanName");
 		this.bean.afterPropertiesSet();
-		assertThat(this.bean.getUniqueName(), equalTo("beanName"));
+		assertThat(this.bean.getUniqueName()).isEqualTo("beanName");
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class PoolingDataSourceBeanTests {
 		this.bean.setBeanName("beanName");
 		this.bean.setUniqueName("un");
 		this.bean.afterPropertiesSet();
-		assertThat(this.bean.getUniqueName(), equalTo("un"));
+		assertThat(this.bean.getUniqueName()).isEqualTo("un");
 	}
 
 	@Test

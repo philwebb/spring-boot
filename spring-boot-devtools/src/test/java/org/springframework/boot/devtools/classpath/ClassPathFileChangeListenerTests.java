@@ -116,8 +116,8 @@ public class ClassPathFileChangeListenerTests {
 		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
 		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor
 				.getValue();
-		assertThat(actualEvent.getChangeSet(), equalTo(changeSet));
-		assertThat(actualEvent.isRestartRequired(), equalTo(restart));
+		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
+		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);
 	}
 
 }

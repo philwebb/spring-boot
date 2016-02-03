@@ -42,7 +42,7 @@ public class DumpEndpointTests extends AbstractEndpointTests<DumpEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		List<ThreadInfo> threadInfo = getEndpointBean().invoke();
-		assertThat(threadInfo.size(), greaterThan(0));
+		assertThat(threadInfo.size()).isGreaterThan(0);
 	}
 
 	@Configuration

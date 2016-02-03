@@ -56,7 +56,7 @@ public class TestRestTemplateTests {
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRequestFactory();
 		RequestConfig config = factory.getRequestConfig();
-		assertThat(config.isRedirectsEnabled(), equalTo(true));
+		assertThat(config.isRedirectsEnabled()).isEqualTo(true);
 	}
 
 }

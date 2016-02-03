@@ -84,7 +84,7 @@ public class SpringApplicationLauncherTests {
 		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
-		assertThat(defaultProperties.size(), equalTo(1));
+		assertThat(defaultProperties.size()).isEqualTo(1);
 		assertThat(
 				defaultProperties.get("spring.groovy.template.check-template-location"),
 				equalTo("false"));

@@ -244,7 +244,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.addApplicationListener(grabManagementPort);
 		this.applicationContext.refresh();
 		int managementPort = grabManagementPort.getServletContainer().getPort();
-		assertThat(managementPort, not(equalTo(ports.get().server)));
+		assertThat(managementPort).isNotEqualTo(ports.get().server);
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, null);
 		assertContent("/controller", managementPort, null);
@@ -356,7 +356,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getProperty("local.management.port", Integer.class);
 		assertThat(localServerPort, notNullValue());
 		assertThat(localManagementPort, notNullValue());
-		assertThat(localServerPort, equalTo(localManagementPort));
+		assertThat(localServerPort).isEqualTo(localManagementPort);
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -375,7 +375,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				.getProperty("local.management.port", Integer.class);
 		assertThat(localServerPort, notNullValue());
 		assertThat(localManagementPort, notNullValue());
-		assertThat(localServerPort, not(equalTo(localManagementPort)));
+		assertThat(localServerPort).isNotEqualTo(localManagementPort);
 		assertThat(this.applicationContext.getBean(ServerPortConfig.class).getCount(),
 				equalTo(2));
 		this.applicationContext.close();
@@ -389,7 +389,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		RequestMappingInfoHandlerMapping mapping = this.applicationContext
 				.getBean(RequestMappingInfoHandlerMapping.class);
-		assertThat(mapping, not(instanceOf(EndpointHandlerMapping.class)));
+		assertThat(mapping).isNotEqualTo(instanceOf(EndpointHandlerMapping.class));
 	}
 
 	@Test
@@ -496,7 +496,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 					assertThat(actual).isEqualTo((Matcher<String>) expected);
 				}
 				else {
-					assertThat(actual, equalTo(expected));
+					assertThat(actual).isEqualTo(expected);
 				}
 			}
 			finally {

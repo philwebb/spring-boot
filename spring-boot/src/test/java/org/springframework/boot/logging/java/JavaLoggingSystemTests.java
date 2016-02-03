@@ -104,7 +104,7 @@ public class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
 		assertThat("Output not hidden:\n" + output, output.contains("Hidden")).isFalse();
-		assertThat(temp.listFiles(SPRING_LOG_FILTER).length, greaterThan(0));
+		assertThat(temp.listFiles(SPRING_LOG_FILTER).length).isGreaterThan(0);
 	}
 
 	@Test

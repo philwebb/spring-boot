@@ -47,7 +47,7 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		// As FINE isn't configured in the order we get UNKNOWN
-		assertThat(getEndpointBean().invoke().getStatus(), equalTo(Status.UNKNOWN));
+		assertThat(getEndpointBean().invoke().getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
 	@Configuration

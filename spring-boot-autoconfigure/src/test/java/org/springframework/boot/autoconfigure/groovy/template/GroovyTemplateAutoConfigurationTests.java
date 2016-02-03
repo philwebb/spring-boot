@@ -91,7 +91,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result).contains("home");
-		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		MockHttpServletResponse response = render("includes");
 		String result = response.getContentAsString();
 		assertThat(result).contains("here");
-		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		MockHttpServletResponse response = render("includes", Locale.FRENCH);
 		String result = response.getContentAsString();
 		assertThat(result).contains("voila");
-		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result).contains("home");
-		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
+		assertThat(response.getContentType()).isEqualTo("application/json;charset=UTF-8");
 	}
 
 	@Test

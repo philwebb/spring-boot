@@ -67,7 +67,7 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 	private void testResource(String path, String expectedLocation)
 			throws MalformedURLException {
 		URL resource = this.servletContext.getResource(path);
-		assertThat("Path " + path + " not found", resource, not(nullValue()));
+		assertThat("Path " + path + " not found", resource).isNotEqualTo(nullValue());
 		assertThat("Path " + path + " not in " + expectedLocation, resource.getPath(),
 				containsString(expectedLocation));
 	}
@@ -84,18 +84,18 @@ public class SpringBootMockServletContextTests implements ServletContextAware {
 			};
 		};
 		URL resource = context.getResource("/");
-		assertThat(resource, not(nullValue()));
+		assertThat(resource).isNotEqualTo(nullValue());
 		File file = new File(URLDecoder.decode(resource.getPath(), "UTF-8"));
-		assertThat("File " + file + " exists", file.exists(), equalTo(true));
-		assertThat("File " + file + " is directory", file.isDirectory(), equalTo(true));
+		assertThat("File " + file + " exists", file.exists()).isEqualTo(true);
+		assertThat("File " + file + " is directory", file.isDirectory()).isEqualTo(true);
 		String[] contents = file.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
 				return !(".".equals(name) || "..".equals(name));
 			}
 		});
-		assertThat(contents, not(nullValue()));
-		assertThat(contents.length, equalTo(0));
+		assertThat(contents).isNotEqualTo(nullValue());
+		assertThat(contents.length).isEqualTo(0);
 	}
 
 	@Configuration

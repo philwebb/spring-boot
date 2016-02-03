@@ -79,12 +79,12 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	@Test
 	public void getId() throws Exception {
-		assertThat(getEndpointBean().getId(), equalTo(this.id));
+		assertThat(getEndpointBean().getId()).isEqualTo(this.id);
 	}
 
 	@Test
 	public void isSensitive() throws Exception {
-		assertThat(getEndpointBean().isSensitive(), equalTo(this.sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(this.sensitive);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().getId(), equalTo("myid"));
+		assertThat(getEndpointBean().getId()).isEqualTo("myid");
 	}
 
 	@Test
@@ -105,7 +105,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
 	}
 
 	@Test
@@ -118,12 +118,12 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive(), equalTo(!this.sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(!this.sensitive);
 	}
 
 	@Test
 	public void isEnabledByDefault() throws Exception {
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isEqualTo(true);
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+		assertThat(getEndpointBean().isEnabled()).isEqualTo(false);
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isEqualTo(true);
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(false));
+		assertThat(getEndpointBean().isEnabled()).isEqualTo(false);
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled(), equalTo(true));
+		assertThat(getEndpointBean().isEnabled()).isEqualTo(true);
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isSensitive(), equalTo(sensitive));
+		assertThat(getEndpointBean().isSensitive()).isEqualTo(sensitive);
 	}
 
 	@SuppressWarnings("unchecked")

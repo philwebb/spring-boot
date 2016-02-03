@@ -34,7 +34,7 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		assertThat(properties.getPort(), nullValue());
-		assertThat(properties.getContextPath(), equalTo(""));
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 	@Test
@@ -42,22 +42,22 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setPort(123);
 		properties.setContextPath("/foo");
-		assertThat(properties.getPort(), equalTo(123));
-		assertThat(properties.getContextPath(), equalTo("/foo"));
+		assertThat(properties.getPort()).isEqualTo(123);
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void trailingSlashOfContextPathIsRemoved() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setContextPath("/foo/");
-		assertThat(properties.getContextPath(), equalTo("/foo"));
+		assertThat(properties.getContextPath()).isEqualTo("/foo");
 	}
 
 	@Test
 	public void slashOfContextPathIsDefaultValue() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setContextPath("/");
-		assertThat(properties.getContextPath(), equalTo(""));
+		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 
 }

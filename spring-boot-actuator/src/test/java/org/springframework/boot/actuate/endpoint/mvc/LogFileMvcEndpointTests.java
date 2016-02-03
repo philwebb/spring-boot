@@ -67,7 +67,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(
 				HttpMethod.HEAD.name(), "/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class LogFileMvcEndpointTests {
 		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.GET.name(),
 				"/logfile");
 		this.mvc.invoke(request, response);
-		assertThat(response.getStatus(), equalTo(HttpStatus.OK.value()));
+		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.getContentAsString()).isEqualTo("--TEST--");
 	}
 

@@ -87,24 +87,24 @@ public class HttpHeaderAccessManagerTests {
 	@Test
 	public void allowsMatching() throws Exception {
 		this.request.addHeader(HEADER, SECRET);
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(true));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isEqualTo(true);
 	}
 
 	@Test
 	public void disallowsWrongSecret() throws Exception {
 		this.request.addHeader(HEADER, "wrong");
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isEqualTo(false);
 	}
 
 	@Test
 	public void disallowsNoSecret() throws Exception {
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isEqualTo(false);
 	}
 
 	@Test
 	public void disallowsWrongHeader() throws Exception {
 		this.request.addHeader("X-WRONG", SECRET);
-		assertThat(this.manager.isAllowed(this.serverRequest), equalTo(false));
+		assertThat(this.manager.isAllowed(this.serverRequest)).isEqualTo(false);
 	}
 
 }

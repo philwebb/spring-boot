@@ -118,8 +118,8 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 						.fromSource(SimpleProperties.class)
 						.withDescription("A simple flag.").withDeprecation(null, null));
 		assertThat(metadata, containsProperty("simple.comparator"));
-		assertThat(metadata, not(containsProperty("simple.counter")));
-		assertThat(metadata, not(containsProperty("simple.size")));
+		assertThat(metadata).isNotEqualTo(containsProperty("simple.counter"));
+		assertThat(metadata).isNotEqualTo(containsProperty("simple.size"));
 	}
 
 	@Test
@@ -161,7 +161,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("simple.type.my-float", Float.class));
 		assertThat(metadata,
 				containsProperty("simple.type.my-primitive-float", Float.class));
-		assertThat(metadata.getItems().size(), equalTo(18));
+		assertThat(metadata.getItems().size()).isEqualTo(18);
 	}
 
 	@Test
@@ -257,7 +257,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(InvalidMethodConfig.class);
 		assertThat(metadata, containsProperty("something.name", String.class)
 				.fromSource(InvalidMethodConfig.class));
-		assertThat(metadata, not(containsProperty("invalid.name")));
+		assertThat(metadata).isNotEqualTo(containsProperty("invalid.name"));
 	}
 
 	@Test
@@ -274,7 +274,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void emptyTypeMethodConfig() throws Exception {
 		ConfigurationMetadata metadata = compile(EmptyTypeMethodConfig.class);
-		assertThat(metadata, not(containsProperty("something.foo")));
+		assertThat(metadata).isNotEqualTo(containsProperty("something.foo"));
 	}
 
 	@Test
@@ -302,7 +302,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				.fromSource(InnerClassProperties.class));
 		assertThat(metadata, containsProperty("config.third.value"));
 		assertThat(metadata, containsProperty("config.fourth"));
-		assertThat(metadata, not(containsGroup("config.fourth")));
+		assertThat(metadata).isNotEqualTo(containsGroup("config.fourth"));
 	}
 
 	@Test
@@ -310,7 +310,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		ConfigurationMetadata metadata = compile(InnerClassAnnotatedGetterConfig.class);
 		assertThat(metadata, containsProperty("specific.value"));
 		assertThat(metadata, containsProperty("foo.name"));
-		assertThat(metadata, not(containsProperty("specific.foo")));
+		assertThat(metadata).isNotEqualTo(containsProperty("specific.foo"));
 	}
 
 	@Test
@@ -323,11 +323,11 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	public void excludedTypesPojo() throws IOException {
 		ConfigurationMetadata metadata = compile(ExcludedTypesPojo.class);
 		assertThat(metadata, containsProperty("excluded.name"));
-		assertThat(metadata, not(containsProperty("excluded.class-loader")));
-		assertThat(metadata, not(containsProperty("excluded.data-source")));
-		assertThat(metadata, not(containsProperty("excluded.print-writer")));
-		assertThat(metadata, not(containsProperty("excluded.writer")));
-		assertThat(metadata, not(containsProperty("excluded.writer-array")));
+		assertThat(metadata).isNotEqualTo(containsProperty("excluded.class-loader"));
+		assertThat(metadata).isNotEqualTo(containsProperty("excluded.data-source"));
+		assertThat(metadata).isNotEqualTo(containsProperty("excluded.print-writer"));
+		assertThat(metadata).isNotEqualTo(containsProperty("excluded.writer"));
+		assertThat(metadata).isNotEqualTo(containsProperty("excluded.writer-array"));
 	}
 
 	@Test
@@ -373,7 +373,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		// environment for some reason. assertThat(metadata,
 		// containsProperty("config.third.value"));
 		assertThat(metadata, containsProperty("config.fourth"));
-		assertThat(metadata, not(containsGroup("config.fourth")));
+		assertThat(metadata).isNotEqualTo(containsGroup("config.fourth"));
 	}
 
 	@Test
@@ -556,7 +556,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty("bar.counter"));
 		project.revert(BarProperties.class);
 		metadata = project.incrementalBuild(BarProperties.class);
-		assertThat(metadata, not(containsProperty("bar.extra")));
+		assertThat(metadata).isNotEqualTo(containsProperty("bar.extra"));
 		assertThat(metadata, containsProperty("foo.counter"));
 		assertThat(metadata, containsProperty("bar.counter"));
 	}
@@ -572,7 +572,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 				"//@ConfigurationProperties");
 		metadata = project.incrementalBuild(BarProperties.class);
 		assertThat(metadata, containsProperty("foo.counter"));
-		assertThat(metadata, not(containsProperty("bar.counter")));
+		assertThat(metadata).isNotEqualTo(containsProperty("bar.counter"));
 	}
 
 	@Test
@@ -600,7 +600,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata,
 			Class<?> source, String prefix) {
 		assertThat(metadata, containsGroup(prefix).fromSource(source));
-		assertThat(metadata, not(containsProperty(prefix + ".id")));
+		assertThat(metadata).isNotEqualTo(containsProperty(prefix + ".id"));
 		assertThat(metadata, containsProperty(prefix + ".name", String.class)
 				.fromSource(source).withDescription("Name description."));
 		assertThat(metadata, containsProperty(prefix + ".description"));
@@ -608,7 +608,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata, containsProperty(prefix + ".number").fromSource(source)
 				.withDefaultValue(is(0)).withDeprecation(null, null));
 		assertThat(metadata, containsProperty(prefix + ".items"));
-		assertThat(metadata, not(containsProperty(prefix + ".ignored")));
+		assertThat(metadata).isNotEqualTo(containsProperty(prefix + ".ignored"));
 	}
 
 	private ConfigurationMetadata compile(Class<?>... types) throws IOException {

@@ -75,8 +75,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
-		assertThat(getResponse(getLocalUrl("/not-found")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		assertThat(getResponse(getLocalUrl("/not-found"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -188,7 +188,7 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
-		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, "access_log.log");
 		awaitFile(accessLog);
 		assertThat(accessLogDirectory.listFiles()).isEqualTo(arrayContaining(accessLog));

@@ -107,7 +107,7 @@ public class LiveReloadServerTests {
 			socket.getRemote().sendPing(NO_DATA);
 			Thread.sleep(200);
 			this.server.stop();
-			assertThat(driver.getPongCount(), equalTo(1));
+			assertThat(driver.getPongCount()).isEqualTo(1);
 		}
 		finally {
 			client.stop();
@@ -125,7 +125,7 @@ public class LiveReloadServerTests {
 			client.stop();
 		}
 		awaitClosedException();
-		assertThat(this.server.getClosedExceptions().size(), greaterThan(0));
+		assertThat(this.server.getClosedExceptions().size()).isGreaterThan(0);
 	}
 
 	private void awaitClosedException() throws InterruptedException {
@@ -144,7 +144,7 @@ public class LiveReloadServerTests {
 			Thread.sleep(200);
 			this.server.stop();
 			Thread.sleep(200);
-			assertThat(socket.getCloseStatus(), equalTo(1006));
+			assertThat(socket.getCloseStatus()).isEqualTo(1006);
 		}
 		finally {
 			client.stop();

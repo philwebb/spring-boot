@@ -98,7 +98,7 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("ABC".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("ABC"));
+		assertThat(content).isEqualTo("ABC");
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:e", "b:o"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hel\nlo"));
+		assertThat(content).isEqualTo("hel\nlo");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a:e}}ll{{b:o}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hello"));
+		assertThat(content).isEqualTo("hello");
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class DefaultLaunchScriptTests {
 		DefaultLaunchScript script = new DefaultLaunchScript(file,
 				createProperties("a:a"));
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("hallo"));
+		assertThat(content).isEqualTo("hallo");
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class DefaultLaunchScriptTests {
 		FileCopyUtils.copy("h{{a}}ll{{b}}".getBytes(), file);
 		DefaultLaunchScript script = new DefaultLaunchScript(file, null);
 		String content = new String(script.toByteArray());
-		assertThat(content, equalTo("h{{a}}ll{{b}}"));
+		assertThat(content).isEqualTo("h{{a}}ll{{b}}");
 	}
 
 	private void assertThatPlaceholderCanBeReplaced(String placeholder) throws Exception {

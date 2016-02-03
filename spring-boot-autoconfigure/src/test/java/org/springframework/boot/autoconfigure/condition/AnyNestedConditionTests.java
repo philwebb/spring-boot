@@ -37,28 +37,28 @@ public class AnyNestedConditionTests {
 	@Test
 	public void neither() throws Exception {
 		AnnotationConfigApplicationContext context = load(OnPropertyAorBCondition.class);
-		assertThat(context.containsBean("myBean"), equalTo(false));
+		assertThat(context.containsBean("myBean")).isEqualTo(false);
 		context.close();
 	}
 
 	@Test
 	public void propertyA() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a");
-		assertThat(context.containsBean("myBean"), equalTo(true));
+		assertThat(context.containsBean("myBean")).isEqualTo(true);
 		context.close();
 	}
 
 	@Test
 	public void propertyB() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "b:b");
-		assertThat(context.containsBean("myBean"), equalTo(true));
+		assertThat(context.containsBean("myBean")).isEqualTo(true);
 		context.close();
 	}
 
 	@Test
 	public void both() throws Exception {
 		AnnotationConfigApplicationContext context = load(Config.class, "a:a", "b:b");
-		assertThat(context.containsBean("myBean"), equalTo(true));
+		assertThat(context.containsBean("myBean")).isEqualTo(true);
 		context.close();
 	}
 

@@ -114,8 +114,8 @@ public class DispatcherFilterTests {
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
 		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();
 		ServletServerHttpResponse actualResponse = (ServletServerHttpResponse) dispatcherResponse;
-		assertThat(actualRequest.getServletRequest(), equalTo(request));
-		assertThat(actualResponse.getServletResponse(), equalTo(response));
+		assertThat(actualRequest.getServletRequest()).isEqualTo(request);
+		assertThat(actualResponse.getServletResponse()).isEqualTo(response);
 	}
 
 }

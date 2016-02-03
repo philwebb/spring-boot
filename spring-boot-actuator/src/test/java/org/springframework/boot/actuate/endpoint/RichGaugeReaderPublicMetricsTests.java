@@ -51,22 +51,22 @@ public class RichGaugeReaderPublicMetricsTests {
 			results.put(metric.getName(), metric);
 		}
 		assertThat(results.containsKey("a.val")).isTrue();
-		assertThat(results.get("a.val").getValue().doubleValue(), equalTo(0.5d));
+		assertThat(results.get("a.val").getValue().doubleValue()).isEqualTo(0.5d);
 
 		assertThat(results.containsKey("a.avg")).isTrue();
-		assertThat(results.get("a.avg").getValue().doubleValue(), equalTo(0.25d));
+		assertThat(results.get("a.avg").getValue().doubleValue()).isEqualTo(0.25d);
 
 		assertThat(results.containsKey("a.min")).isTrue();
-		assertThat(results.get("a.min").getValue().doubleValue(), equalTo(0.0d));
+		assertThat(results.get("a.min").getValue().doubleValue()).isEqualTo(0.0d);
 
 		assertThat(results.containsKey("a.max")).isTrue();
-		assertThat(results.get("a.max").getValue().doubleValue(), equalTo(0.5d));
+		assertThat(results.get("a.max").getValue().doubleValue()).isEqualTo(0.5d);
 
 		assertThat(results.containsKey("a.count")).isTrue();
-		assertThat(results.get("a.count").getValue().longValue(), equalTo(2L));
+		assertThat(results.get("a.count").getValue().longValue()).isEqualTo(2L);
 
 		assertThat(results.containsKey("a.alpha")).isTrue();
-		assertThat(results.get("a.alpha").getValue().doubleValue(), equalTo(-1.d));
+		assertThat(results.get("a.alpha").getValue().doubleValue()).isEqualTo(-1.d);
 	}
 
 }

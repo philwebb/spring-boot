@@ -62,7 +62,7 @@ public class EmbeddedServerPortFileWriterTests {
 		File file = this.temporaryFolder.newFile();
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), equalTo("8080"));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class EmbeddedServerPortFileWriterTests {
 		EmbeddedServerPortFileWriter listener = new EmbeddedServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
 		listener.onApplicationEvent(mockEvent("management", 9090));
-		assertThat(FileCopyUtils.copyToString(new FileReader(file)), equalTo("8080"));
+		assertThat(FileCopyUtils.copyToString(new FileReader(file))).isEqualTo("8080");
 		String managementFile = file.getName();
 		managementFile = managementFile.substring(0, managementFile.length()
 				- StringUtils.getFilenameExtension(managementFile).length() - 1);

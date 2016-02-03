@@ -145,7 +145,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("custom");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("fromcustom"));
+		assertThat(property).isEqualTo("fromcustom");
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -162,7 +162,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testprofiles");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("fromdefaultpropertiesfile"));
+		assertThat(property).isEqualTo("fromdefaultpropertiesfile");
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public class ConfigFileApplicationListenerTests {
 				+ "classpath:application.properties,classpath:testproperties.properties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class ConfigFileApplicationListenerTests {
 		assertEquals("other", StringUtils
 				.arrayToCommaDelimitedString(this.environment.getActiveProfiles()));
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromotherpropertiesfile"));
+		assertThat(property).isEqualTo("fromotherpropertiesfile");
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("the.property");
 		// The value from the second file wins (no profile-specific configuration is
 		// actually loaded)
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -211,13 +211,13 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("the.property");
 		// The value from the second file wins (no profile-specific configuration is
 		// actually loaded)
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
 	public void localFileTakesPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
-		assertThat(localFile.exists(), equalTo(false));
+		assertThat(localFile.exists()).isEqualTo(false);
 		try {
 			Properties properties = new Properties();
 			properties.put("the.property", "fromlocalfile");
@@ -230,7 +230,7 @@ public class ConfigFileApplicationListenerTests {
 			}
 			this.initializer.postProcessEnvironment(this.environment, this.application);
 			String property = this.environment.getProperty("the.property");
-			assertThat(property, equalTo("fromlocalfile"));
+			assertThat(property).isEqualTo("fromlocalfile");
 		}
 		finally {
 			localFile.delete();
@@ -243,7 +243,7 @@ public class ConfigFileApplicationListenerTests {
 				"spring.config.name:specific");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("specific"));
+		assertThat(property).isEqualTo("specific");
 	}
 
 	@Test
@@ -254,7 +254,7 @@ public class ConfigFileApplicationListenerTests {
 						+ "classpath:nonexistent.properties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -270,7 +270,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
 		// The search order has highest precedence last (like merging a map)
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -278,8 +278,8 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testyaml");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromyamlfile"));
-		assertThat(this.environment.getProperty("my.array[0]"), equalTo("1"));
+		assertThat(property).isEqualTo("fromyamlfile");
+		assertThat(this.environment.getProperty("my.array[0]")).isEqualTo("1");
 		assertThat(this.environment.getProperty("my.array"), nullValue(String.class));
 	}
 
@@ -288,7 +288,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testprofilesempty");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromemptyprofile"));
+		assertThat(property).isEqualTo("fromemptyprofile");
 	}
 
 	@Test
@@ -297,7 +297,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testprofilesdocument");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromdefaultprofile"));
+		assertThat(property).isEqualTo("fromdefaultprofile");
 	}
 
 	@Test
@@ -307,7 +307,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testprofilesdocument");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromotherprofile"));
+		assertThat(property).isEqualTo("fromotherprofile");
 	}
 
 	@Test
@@ -317,7 +317,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("fromcommandline"));
+		assertThat(property).isEqualTo("fromcommandline");
 	}
 
 	@Test
@@ -326,7 +326,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("fromsystem"));
+		assertThat(property).isEqualTo("fromsystem");
 	}
 
 	@Test
@@ -336,7 +336,7 @@ public class ConfigFileApplicationListenerTests {
 						Collections.singletonMap("my.fallback", (Object) "foo")));
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.fallback");
-		assertThat(property, equalTo("foo"));
+		assertThat(property).isEqualTo("foo");
 	}
 
 	@Test
@@ -346,7 +346,7 @@ public class ConfigFileApplicationListenerTests {
 						.singletonMap("spring.config.name", (Object) "testproperties")));
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	@Test
@@ -359,7 +359,7 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		// The "other" profile is activated in SpringApplication so it should take
 		// precedence over the default profile
-		assertThat(property, equalTo("fromotherpropertiesfile"));
+		assertThat(property).isEqualTo("fromotherpropertiesfile");
 	}
 
 	@Test
@@ -371,7 +371,7 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		// The "dev" profile is activated in SpringApplication so it should take
 		// precedence over the default profile
-		assertThat(property, equalTo("fromdevpropertiesfile"));
+		assertThat(property).isEqualTo("fromdevpropertiesfile");
 	}
 
 	@Test
@@ -381,7 +381,7 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("the.property");
 		// The "myprofile" profile is activated in enableprofile.properties so its value
 		// should show up here
-		assertThat(property, equalTo("fromprofilepropertiesfile"));
+		assertThat(property).isEqualTo("fromprofilepropertiesfile");
 	}
 
 	@Test
@@ -393,12 +393,12 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("other.property");
 		// The "other" profile is activated before any processing starts
-		assertThat(property, equalTo("fromotherpropertiesfile"));
+		assertThat(property).isEqualTo("fromotherpropertiesfile");
 		property = this.environment.getProperty("the.property");
 		// The "myprofile" profile is activated in enableprofile.properties and "other"
 		// was not activated by setting spring.profiles.active so "myprofile" should still
 		// be activated
-		assertThat(property, equalTo("fromprofilepropertiesfile"));
+		assertThat(property).isEqualTo("fromprofilepropertiesfile");
 	}
 
 	@Test
@@ -406,7 +406,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("enableprofile");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("one.more");
-		assertThat(property, equalTo("fromprofilepropertiesfile"));
+		assertThat(property).isEqualTo("fromprofilepropertiesfile");
 	}
 
 	@Test
@@ -493,9 +493,9 @@ public class ConfigFileApplicationListenerTests {
 		this.environment.setActiveProfiles("dev");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromdevprofile"));
+		assertThat(property).isEqualTo("fromdevprofile");
 		property = this.environment.getProperty("my.other");
-		assertThat(property, equalTo("notempty"));
+		assertThat(property).isEqualTo("notempty");
 	}
 
 	@Test
@@ -504,9 +504,9 @@ public class ConfigFileApplicationListenerTests {
 		this.environment.setActiveProfiles("other", "dev");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromdevprofile"));
+		assertThat(property).isEqualTo("fromdevprofile");
 		property = this.environment.getProperty("my.other");
-		assertThat(property, equalTo("notempty"));
+		assertThat(property).isEqualTo("notempty");
 	}
 
 	@Test
@@ -517,7 +517,7 @@ public class ConfigFileApplicationListenerTests {
 				.arrayToCommaDelimitedString(this.environment.getActiveProfiles()));
 		String property = this.environment.getProperty("my.property");
 		assertThat(Arrays.asList(this.environment.getActiveProfiles()), contains("dev"));
-		assertThat(property, equalTo("fromdevprofile"));
+		assertThat(property).isEqualTo("fromdevprofile");
 		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
 				.getPropertySources()
 				.get(ConfigFileApplicationListener.APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME);
@@ -558,7 +558,7 @@ public class ConfigFileApplicationListenerTests {
 				"spring.config.name=specificfile");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromspecificpropertiesfile"));
+		assertThat(property).isEqualTo("fromspecificpropertiesfile");
 	}
 
 	@Test
@@ -568,13 +568,13 @@ public class ConfigFileApplicationListenerTests {
 				"spring.config.location:" + location);
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("fromspecificlocation"));
+		assertThat(property).isEqualTo("fromspecificlocation");
 		assertThat(this.environment, containsPropertySource(
 				"applicationConfig: " + "[classpath:specificlocation.properties]"));
 		// The default property source is still there
 		assertThat(this.environment, containsPropertySource(
 				"applicationConfig: " + "[classpath:/application.properties]"));
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bucket");
 	}
 
 	@Test
@@ -614,9 +614,9 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("fromspecificlocation"));
+		assertThat(property).isEqualTo("fromspecificlocation");
 		property = context.getEnvironment().getProperty("my.property");
-		assertThat(property, equalTo("fromapplicationproperties"));
+		assertThat(property).isEqualTo("fromapplicationproperties");
 		assertThat(context.getEnvironment(), containsPropertySource(
 				"class path resource " + "[specificlocation.properties]"));
 		context.close();
@@ -632,7 +632,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("fromspecificlocation"));
+		assertThat(property).isEqualTo("fromspecificlocation");
 		assertThat(context.getEnvironment(), containsPropertySource(
 				"class path resource " + "[specificlocation.properties]"));
 		context.close();
@@ -645,7 +645,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("fromspecificlocation"));
+		assertThat(property).isEqualTo("fromspecificlocation");
 		assertThat(context.getEnvironment(), containsPropertySource("foo"));
 		context.close();
 	}
@@ -658,7 +658,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 		assertThat(context.getEnvironment(), containsPropertySource(
 				"class path resource " + "[enableprofile.properties]"));
 		assertThat(context.getEnvironment(), not(containsPropertySource(
@@ -673,7 +673,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
-		assertThat(property, equalTo("fromapplicationproperties"));
+		assertThat(property).isEqualTo("fromapplicationproperties");
 		assertThat(context.getEnvironment(), not(containsPropertySource(
 				"classpath:" + "/enableprofile-myprofile.properties")));
 		context.close();
@@ -686,7 +686,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("frommorepropertiesfile"));
+		assertThat(property).isEqualTo("frommorepropertiesfile");
 		assertThat(context.getEnvironment(), containsPropertySource(
 				"class path resource " + "[specificlocation.properties]"));
 		context.close();
@@ -699,7 +699,7 @@ public class ConfigFileApplicationListenerTests {
 		application.setWebEnvironment(false);
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("the.property");
-		assertThat(property, equalTo("frommorepropertiesfile"));
+		assertThat(property).isEqualTo("frommorepropertiesfile");
 		assertThat(context.getEnvironment(), containsPropertySource("foo"));
 		context.close();
 	}
@@ -713,7 +713,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(this.context.getEnvironment(), acceptsProfiles("specific"));
 		assertThat(this.context.getEnvironment(), acceptsProfiles("morespecific"));
 		assertThat(this.context.getEnvironment(), acceptsProfiles("yetmorespecific"));
-		assertThat(this.context.getEnvironment(), not(acceptsProfiles("missing")));
+		assertThat(this.context.getEnvironment()).isNotEqualTo(acceptsProfiles("missing"));
 	}
 
 	@Test
@@ -724,7 +724,7 @@ public class ConfigFileApplicationListenerTests {
 		this.context = application
 				.run("--spring.profiles.active=activeprofilewithsubdoc");
 		String property = this.context.getEnvironment().getProperty("foobar");
-		assertThat(property, equalTo("baz"));
+		assertThat(property).isEqualTo("baz");
 	}
 
 	@Test
@@ -734,7 +734,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
+		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
 	}
 
 	@Test
@@ -744,7 +744,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		Field field = ReflectionUtils.findField(SpringApplication.class, "bannerMode");
 		field.setAccessible(true);
-		assertThat((Banner.Mode) field.get(this.application), equalTo(Banner.Mode.OFF));
+		assertThat((Banner.Mode) field.get(this.application)).isEqualTo(Banner.Mode.OFF);
 	}
 
 	@Test
@@ -755,7 +755,7 @@ public class ConfigFileApplicationListenerTests {
 		this.context = application.run(
 				"--spring.profiles.active=activeprofilewithdifferentsubdoc,activeprofilewithdifferentsubdoc2");
 		String property = this.context.getEnvironment().getProperty("foobar");
-		assertThat(property, equalTo("baz"));
+		assertThat(property).isEqualTo("baz");
 	}
 
 	@Test
@@ -764,7 +764,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = System
 				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property, equalTo("true"));
+		assertThat(property).isEqualTo("true");
 	}
 
 	@Test
@@ -775,7 +775,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = System
 				.getProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
-		assertThat(property, equalTo("false"));
+		assertThat(property).isEqualTo("false");
 	}
 
 	@Test
@@ -787,7 +787,7 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("the.property");
-		assertThat(property, equalTo("frompropertiesfile"));
+		assertThat(property).isEqualTo("frompropertiesfile");
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(

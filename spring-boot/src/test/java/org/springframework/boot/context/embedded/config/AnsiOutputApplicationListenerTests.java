@@ -67,7 +67,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "ALWAYS");
 		application.setDefaultProperties(props);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.ALWAYS));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.ALWAYS);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class AnsiOutputApplicationListenerTests {
 		props.put("spring.output.ansi.enabled", "never");
 		application.setDefaultProperties(props);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.NEVER);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class AnsiOutputApplicationListenerTests {
 		application.setWebEnvironment(false);
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(AnsiOutputEnabledValue.get(), equalTo(Enabled.NEVER));
+		assertThat(AnsiOutputEnabledValue.get()).isEqualTo(Enabled.NEVER);
 	}
 
 	@Configuration

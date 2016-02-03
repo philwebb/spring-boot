@@ -37,7 +37,7 @@ public class AtomikosDataSourceBeanTests {
 		MockAtomikosDataSourceBean bean = spy(new MockAtomikosDataSourceBean());
 		bean.setBeanName("bean");
 		bean.afterPropertiesSet();
-		assertThat(bean.getUniqueResourceName(), equalTo("bean"));
+		assertThat(bean.getUniqueResourceName()).isEqualTo("bean");
 		verify(bean).init();
 		verify(bean, never()).close();
 		bean.destroy();

@@ -129,7 +129,7 @@ public class RestartClassLoaderTests {
 	public void getResourcesFiltersDuplicates() throws Exception {
 		List<URL> resources = toList(
 				this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(resources.size(), equalTo(1));
+		assertThat(resources.size()).isEqualTo(1);
 	}
 
 	@Test
@@ -142,21 +142,21 @@ public class RestartClassLoaderTests {
 	@Test
 	public void loadClassFromParent() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
-		assertThat(loaded.getClassLoader(), equalTo(getClass().getClassLoader()));
+		assertThat(loaded.getClassLoader()).isEqualTo(getClass().getClassLoader());
 	}
 
 	@Test
 	public void getDeletedResource() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResource(name), equalTo(null));
+		assertThat(this.reloadClassLoader.getResource(name)).isEqualTo(null);
 	}
 
 	@Test
 	public void getDeletedResourceAsStream() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThat(this.reloadClassLoader.getResourceAsStream(name), equalTo(null));
+		assertThat(this.reloadClassLoader.getResourceAsStream(name)).isEqualTo(null);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		URL resource = this.reloadClassLoader.getResource(name);
-		assertThat(FileCopyUtils.copyToByteArray(resource.openStream()), equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(resource.openStream())).isEqualTo(bytes);
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.txt";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(resources.size(), equalTo(0));
+		assertThat(resources.size()).isEqualTo(0);
 	}
 
 	@Test

@@ -89,7 +89,7 @@ public class MustacheViewResolverTests {
 	public void setsContentType() throws Exception {
 		this.resolver.setContentType("application/octet-stream");
 		View view = this.resolver.resolveViewName("foo", null);
-		assertThat(view.getContentType(), equalTo("application/octet-stream"));
+		assertThat(view.getContentType()).isEqualTo("application/octet-stream");
 
 	}
 

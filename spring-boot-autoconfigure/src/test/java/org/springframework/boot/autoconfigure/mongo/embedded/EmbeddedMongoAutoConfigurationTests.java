@@ -132,7 +132,7 @@ public class EmbeddedMongoAutoConfigurationTests {
 		MongoTemplate mongo = this.context.getBean(MongoTemplate.class);
 		CommandResult buildInfo = mongo.executeCommand("{ buildInfo: 1 }");
 
-		assertThat(buildInfo.getString("version"), equalTo(expectedVersion));
+		assertThat(buildInfo.getString("version")).isEqualTo(expectedVersion);
 	}
 
 	@Configuration

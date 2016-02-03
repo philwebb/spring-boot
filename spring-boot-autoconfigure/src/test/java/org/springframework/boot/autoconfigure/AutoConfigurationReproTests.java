@@ -54,7 +54,7 @@ public class AutoConfigurationReproTests {
 				ServerPropertiesAutoConfiguration.class);
 		this.context = application.run("--server.port=0");
 		String bean = (String) this.context.getBean("earlyInit");
-		assertThat(bean, equalTo("bucket"));
+		assertThat(bean).isEqualTo("bucket");
 	}
 
 	@Configuration

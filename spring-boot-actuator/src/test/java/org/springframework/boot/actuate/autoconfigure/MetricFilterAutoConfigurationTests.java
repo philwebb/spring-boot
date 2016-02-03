@@ -173,7 +173,7 @@ public class MetricFilterAutoConfigurationTests {
 	public void skipsFilterIfMissingServices() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				MetricFilterAutoConfiguration.class);
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 
@@ -184,7 +184,7 @@ public class MetricFilterAutoConfigurationTests {
 				"endpoints.metrics.filter.enabled:false");
 		context.register(Config.class, MetricFilterAutoConfiguration.class);
 		context.refresh();
-		assertThat(context.getBeansOfType(Filter.class).size(), equalTo(0));
+		assertThat(context.getBeansOfType(Filter.class).size()).isEqualTo(0);
 		context.close();
 	}
 

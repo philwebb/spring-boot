@@ -41,7 +41,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) "b"));
+		assertThat(getEndpointBean().invoke().get("a")).isEqualTo((Object) "b");
 	}
 
 	@Configuration
