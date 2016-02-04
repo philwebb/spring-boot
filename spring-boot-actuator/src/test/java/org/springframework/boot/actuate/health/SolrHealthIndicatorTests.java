@@ -30,9 +30,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -57,7 +55,8 @@ public class SolrHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, SolrAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(SolrServer.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(SolrServer.class).length)
+				.isEqualTo(1);
 		SolrHealthIndicator healthIndicator = this.context
 				.getBean(SolrHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();

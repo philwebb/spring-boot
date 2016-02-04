@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.support.StaticApplicationContext;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MvcEndpoints}.
@@ -73,8 +73,8 @@ public class MvcEndpointsTests {
 		this.endpoints.setApplicationContext(this.context);
 		this.endpoints.afterPropertiesSet();
 		assertThat(this.endpoints.getEndpoints()).hasSize(1);
-		assertEquals("/foo/bar",
-				this.endpoints.getEndpoints().iterator().next().getPath());
+		assertThat(this.endpoints.getEndpoints().iterator().next().getPath())
+				.isEqualTo("/foo/bar");
 	}
 
 	protected static class TestEndpoint extends AbstractEndpoint<String> {

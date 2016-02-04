@@ -33,9 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -57,7 +54,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a")).isEqualTo((Object) 0.5f);
+		assertThat(getEndpointBean().invoke().get("a")).isEqualTo(0.5f);
 	}
 
 	@Test

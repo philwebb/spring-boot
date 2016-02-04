@@ -24,8 +24,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -48,9 +46,8 @@ public class TraceRepositoryAutoConfigurationTests {
 	public void skipsIfRepositoryExists() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class, TraceRepositoryAutoConfiguration.class);
-		assertThat(context.getBeansOfType(InMemoryTraceRepository.class).size(),
-				equalTo(0));
-		assertThat(context.getBeansOfType(TraceRepository.class).size()).isEqualTo(1);
+		assertThat(context.getBeansOfType(InMemoryTraceRepository.class)).isEmpty();
+		assertThat(context.getBeansOfType(TraceRepository.class)).hasSize(1);
 		context.close();
 	}
 

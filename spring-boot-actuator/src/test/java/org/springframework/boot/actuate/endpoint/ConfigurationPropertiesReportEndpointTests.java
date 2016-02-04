@@ -28,10 +28,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -184,7 +180,7 @@ public class ConfigurationPropertiesReportEndpointTests
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
 				.get("testProperties")).get("properties");
-		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo((Object) true);
+		assertThat(nestedProperties.get("mixedBoolean")).isEqualTo(true);
 	}
 
 	@Configuration

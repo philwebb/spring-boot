@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.ArrayList;
+
 import javax.servlet.Filter;
 
 import org.hamcrest.Matchers;
@@ -42,6 +44,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -55,12 +58,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -99,12 +97,11 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		FilterChainProxy filterChainProxy = this.context.getBean(FilterChainProxy.class);
 		// 1 for static resources, one for management endpoints and one for the rest
-		assertThat(filterChainProxy.getFilterChains(), hasSize(3));
-		assertThat(filterChainProxy.getFilters("/beans")).isGreaterThan(0));
-		assertThat(filterChainProxy.getFilters("/beans/")).isGreaterThan(0));
-		assertThat(filterChainProxy.getFilters("/beans.foo")).isGreaterThan(0));
-		assertThat(filterChainProxy.getFilters("/beans/foo/bar"),
-				hasSize(greaterThan(0)));
+		assertThat(filterChainProxy.getFilterChains()).hasSize(3);
+		assertThat(filterChainProxy.getFilters("/beans")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/beans/")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/beans.foo")).isNotEmpty();
+		assertThat(filterChainProxy.getFilters("/beans/foo/bar")).isNotEmpty();
 	}
 
 	@Test
@@ -120,8 +117,10 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.register(WebConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
-		assertThat(user.getAuthorities().isTrue().containsAll(AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
+		ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(
+				user.getAuthorities());
+		assertThat(authorities).containsAll(AuthorityUtils
+				.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN"));
 	}
 
 	private UserDetails getUser() {
@@ -147,8 +146,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
-		assertEquals(2,
-				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
+				.hasSize(2);
 	}
 
 	@Test
@@ -160,8 +159,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now plus the backup
 		// filter on app endpoints
-		assertEquals(3,
-				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
+				.hasSize(3);
 	}
 
 	@Test
@@ -174,8 +173,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
-				this.context.getBean(AuthenticationManager.class));
+		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
+				this.context.getBean(TestConfiguration.class).authenticationManager);
 	}
 
 	@Test
@@ -188,8 +187,8 @@ public class ManagementWebSecurityAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
-				this.context.getBean(AuthenticationManager.class));
+		assertThat(this.context.getBean(AuthenticationManager.class)).isEqualTo(
+				this.context.getBean(TestConfiguration.class).authenticationManager);
 	}
 
 	// gh-2466

@@ -40,8 +40,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
 /**
@@ -69,10 +68,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 				"http://localhost:" + this.port + "/actuator", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"_links\":"));
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains(":" + this.port));
+		assertThat(entity.getBody()).contains("\"_links\":");
+		assertThat(entity.getBody()).contains(":" + this.port);
 	}
 
 	@Test
@@ -83,10 +80,8 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"_links\":"));
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains(":" + this.port));
+		assertThat(entity.getBody()).contains("\"_links\":");
+		assertThat(entity.getBody()).contains(":" + this.port);
 	}
 
 	@Test
@@ -97,8 +92,7 @@ public class HalBrowserMvcEndpointServerPortIntegrationTests {
 				"http://localhost:" + this.port + "/actuator/", HttpMethod.GET,
 				new HttpEntity<Void>(null, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("<title"));
+		assertThat(entity.getBody()).contains("<title");
 	}
 
 	@MinimalActuatorHypermediaApplication

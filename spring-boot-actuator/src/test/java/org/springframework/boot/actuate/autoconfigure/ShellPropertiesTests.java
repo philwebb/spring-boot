@@ -40,11 +40,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ShellProperties}.
@@ -119,8 +115,7 @@ public class ShellPropertiesTests {
 				.singletonMap("shell.disabled_plugins", "pattern1, pattern2")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(props.getDisabledPlugins().length).isEqualTo(2);
-		assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getDisabledPlugins());
+		assertThat(props.getDisabledPlugins()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test
@@ -132,8 +127,7 @@ public class ShellPropertiesTests {
 				.singletonMap("shell.disabled_commands", "pattern1, pattern2")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
 		assertThat(props.getDisabledCommands().length).isEqualTo(2);
-		assertArrayEquals(new String[] { "pattern1", "pattern2" },
-				props.getDisabledCommands());
+		assertThat(props.getDisabledPlugins()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test

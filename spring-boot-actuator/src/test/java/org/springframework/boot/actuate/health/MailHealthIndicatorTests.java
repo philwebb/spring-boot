@@ -32,9 +32,7 @@ import org.junit.Test;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;

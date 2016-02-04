@@ -32,12 +32,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -155,8 +150,8 @@ public class HealthMvcEndpointTests {
 		assertThat(result instanceof Health).isTrue();
 		Health health = (Health) result;
 		assertThat(health.getStatus() == Status.UP).isTrue();
-		assertThat(health.getDetails()).hasSize(equalTo(1));
-		assertThat(health.getDetails().get("foo")).isEqualTo((Object) "bar");
+		assertThat(health.getDetails()).hasSize(1);
+		assertThat(health.getDetails().get("foo")).isEqualTo("bar");
 		given(this.endpoint.invoke()).willReturn(new Health.Builder().down().build());
 		result = this.mvc.invoke(null); // insecure now
 		assertThat(result instanceof Health).isTrue();
@@ -164,7 +159,7 @@ public class HealthMvcEndpointTests {
 		// so the result is cached
 		assertThat(health.getStatus() == Status.UP).isTrue();
 		// but the details are hidden
-		assertThat(health.getDetails()).hasSize(equalTo(0));
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 	@Test

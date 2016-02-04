@@ -57,8 +57,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -89,8 +88,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -103,8 +102,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -117,8 +116,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertSame(this.context.getBean("customHealthIndicator"),
-				beans.values().iterator().next());
+		assertThat(this.context.getBean("customHealthIndicator"))
+				.isSameAs(beans.values().iterator().next());
 	}
 
 	@Test
@@ -132,8 +131,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(DiskSpaceHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(DiskSpaceHealthIndicator.class);
 	}
 
 	@Test
@@ -146,8 +145,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(RedisHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(RedisHealthIndicator.class);
 	}
 
 	@Test
@@ -161,8 +160,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -176,8 +175,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(MongoHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(MongoHealthIndicator.class);
 	}
 
 	@Test
@@ -192,8 +191,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -217,8 +216,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(DataSourceHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(DataSourceHealthIndicator.class);
 	}
 
 	@Test
@@ -252,8 +251,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -266,8 +265,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(RabbitHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(RabbitHealthIndicator.class);
 	}
 
 	@Test
@@ -281,8 +280,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -295,8 +294,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(SolrHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(SolrHealthIndicator.class);
 	}
 
 	@Test
@@ -310,8 +309,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -321,8 +320,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(DiskSpaceHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(DiskSpaceHealthIndicator.class);
 	}
 
 	@Test
@@ -337,8 +336,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(MailHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(MailHealthIndicator.class);
 	}
 
 	@Test
@@ -353,8 +352,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -368,8 +367,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(JmsHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(JmsHealthIndicator.class);
 	}
 
 	@Test
@@ -384,8 +383,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -401,8 +400,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ElasticsearchHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ElasticsearchHealthIndicator.class);
 	}
 
 	@Test
@@ -419,8 +418,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(ApplicationHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(ApplicationHealthIndicator.class);
 	}
 
 	@Test
@@ -433,8 +432,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertThat(beans).hasSize(1);
-		assertEquals(CassandraHealthIndicator.class,
-				beans.values().iterator().next().getClass());
+		assertThat(beans.values().iterator().next().getClass())
+				.isEqualTo(CassandraHealthIndicator.class);
 	}
 
 	@Configuration

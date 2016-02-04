@@ -22,9 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests for {@link Health}.
@@ -55,7 +54,7 @@ public class HealthTests {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("a")).isEqualTo((Object) "b");
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
 	}
 
 	@Test
@@ -78,7 +77,7 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withException(ex).build();
-		assertThat(health.getDetails().get("a")).isEqualTo((Object) "b");
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
 		assertThat(health.getDetails().get("error"),
 				equalTo((Object) "java.lang.RuntimeException: bang"));
 	}
@@ -87,15 +86,15 @@ public class HealthTests {
 	public void withDetails() throws Exception {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withDetail("c", "d").build();
-		assertThat(health.getDetails().get("a")).isEqualTo((Object) "b");
-		assertThat(health.getDetails().get("c")).isEqualTo((Object) "d");
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
+		assertThat(health.getDetails().get("c")).isEqualTo("d");
 	}
 
 	@Test
 	public void unknownWithDetails() throws Exception {
 		Health health = new Health.Builder().unknown().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
-		assertThat(health.getDetails().get("a")).isEqualTo((Object) "b");
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
 	}
 
 	@Test
@@ -109,7 +108,7 @@ public class HealthTests {
 	public void upWithDetails() throws Exception {
 		Health health = new Health.Builder().up().withDetail("a", "b").build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("a")).isEqualTo((Object) "b");
+		assertThat(health.getDetails().get("a")).isEqualTo("b");
 	}
 
 	@Test

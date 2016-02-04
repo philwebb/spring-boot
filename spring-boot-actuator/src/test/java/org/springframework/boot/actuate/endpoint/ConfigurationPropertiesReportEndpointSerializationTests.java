@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests for {@link ConfigurationPropertiesReportEndpoint} serialization.
  *
@@ -89,7 +91,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 				.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(2);
-		assertThat(Object>) map.get("bar")).get("name")).as("foo").isEqualTo(((Map<String);
+		assertThat(((Map<String, Object>) map.get("bar")).get("name")).isEqualTo("foo");
 	}
 
 	@Test
@@ -129,7 +131,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 				.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
-		assertThat(Object>) map.get("map")).get("name")).as("foo").isEqualTo(((Map<String);
+		assertThat(((Map<String, Object>) map.get("map")).get("name")).isEqualTo("foo");
 	}
 
 	@Test
@@ -149,7 +151,7 @@ public class ConfigurationPropertiesReportEndpointSerializationTests {
 				.get("properties");
 		assertThat(map).isNotNull();
 		assertThat(map).hasSize(3);
-		assertThat((map.get("map"))).isNullValue()
+		assertThat((map.get("map"))).isNull();
 	}
 
 	@Test

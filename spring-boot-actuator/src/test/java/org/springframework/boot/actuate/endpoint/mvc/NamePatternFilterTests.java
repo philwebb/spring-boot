@@ -20,10 +20,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -37,8 +33,8 @@ public class NamePatternFilterTests {
 	@Test
 	public void nonRegex() throws Exception {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
-		assertThat(filter.getResults("not.a.regex"),
-				hasEntry("not.a.regex", (Object) "not.a.regex"));
+		assertThat(filter.getResults("not.a.regex")).containsEntry("not.a.regex",
+				"not.a.regex");
 		assertThat(filter.isGetNamesCalled()).isFalse();
 	}
 
@@ -46,8 +42,8 @@ public class NamePatternFilterTests {
 	public void regexRepetitionZeroOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.*");
-		assertThat(results.get("foo")).isEqualTo((Object) "foo");
-		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isEqualTo("fool");
 		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
@@ -55,8 +51,8 @@ public class NamePatternFilterTests {
 	public void regexRepetitionOneOrMore() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo.+");
-		assertThat(results.get("foo")).isEqualTo((Object) "foo");
-		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(results.get("foo")).isEqualTo("foo");
+		assertThat(results.get("fool")).isEqualTo("fool");
 		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
@@ -64,7 +60,7 @@ public class NamePatternFilterTests {
 	public void regexEndAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("foo$");
-		assertThat(results.get("foo")).isEqualTo((Object) "foo");
+		assertThat(results.get("foo")).isEqualTo("foo");
 		assertThat(results.get("fool")).isNull();
 		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
@@ -73,7 +69,7 @@ public class NamePatternFilterTests {
 	public void regexStartAnchor() {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("^foo");
-		assertThat(results.get("foo")).isEqualTo((Object) "foo");
+		assertThat(results.get("foo")).isEqualTo("foo");
 		assertThat(results.get("fool")).isNull();
 		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
@@ -83,7 +79,7 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		Map<String, Object> results = filter.getResults("fo[a-z]l");
 		assertThat(results.get("foo")).isNull();
-		assertThat(results.get("fool")).isEqualTo((Object) "fool");
+		assertThat(results.get("fool")).isEqualTo("fool");
 		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 

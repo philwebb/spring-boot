@@ -59,11 +59,8 @@ import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.hasKey;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -94,8 +91,8 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void metricReaderPublicMetrics() throws Exception {
 		load();
-		assertEquals(1,
-				this.context.getBeansOfType(MetricReaderPublicMetrics.class).size());
+		assertThat(this.context.getBeansOfType(MetricReaderPublicMetrics.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -125,8 +122,7 @@ public class PublicMetricsAutoConfigurationTests {
 	@Test
 	public void noDataSource() {
 		load();
-		assertEquals(0,
-				this.context.getBeansOfType(DataSourcePublicMetrics.class).size());
+		assertThat(this.context.getBeansOfType(DataSourcePublicMetrics.class)).isEmpty();
 	}
 
 	@Test
@@ -236,7 +232,7 @@ public class PublicMetricsAutoConfigurationTests {
 			content.put(metric.getName(), metric.getValue());
 		}
 		for (String key : keys) {
-			assertThat(content, hasKey(key));
+			assertThat(content).containsKey(key);
 		}
 	}
 

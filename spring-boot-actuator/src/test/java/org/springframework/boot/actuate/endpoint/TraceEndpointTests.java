@@ -27,7 +27,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -44,7 +43,7 @@ public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 	@Test
 	public void invoke() throws Exception {
 		Trace trace = getEndpointBean().invoke().get(0);
-		assertThat(trace.getInfo().get("a")).isEqualTo((Object) "b");
+		assertThat(trace.getInfo().get("a")).isEqualTo("b");
 	}
 
 	@Configuration

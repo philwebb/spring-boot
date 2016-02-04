@@ -42,8 +42,6 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.SubscribableChannel;
 
-import static org.hamcrest.Matchers.notNullValue;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -132,7 +130,7 @@ public class MetricExportAutoConfigurationTests {
 				MetricExportAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(StatsdMetricWriter.class), notNullValue());
+		assertThat(this.context.getBean(StatsdMetricWriter.class)).isNotNull();
 	}
 
 	@Configuration

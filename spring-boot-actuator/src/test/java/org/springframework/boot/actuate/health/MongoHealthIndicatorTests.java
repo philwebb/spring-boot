@@ -29,9 +29,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,7 +56,8 @@ public class MongoHealthIndicatorTests {
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EndpointAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length)
+				.isEqualTo(1);
 		MongoHealthIndicator healthIndicator = this.context
 				.getBean(MongoHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();

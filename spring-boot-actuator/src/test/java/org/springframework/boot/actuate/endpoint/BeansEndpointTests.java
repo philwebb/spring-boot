@@ -25,8 +25,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link BeansEndpoint}.
@@ -43,7 +42,7 @@ public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 	public void invoke() throws Exception {
 		List<Object> result = getEndpointBean().invoke();
 		assertThat(result).hasSize(1);
-		assertThat(result.get(0) instanceof Map).isTrue();
+		assertThat(result.get(0)).isInstanceOf(Map.class);
 	}
 
 	@Configuration
@@ -56,4 +55,5 @@ public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 		}
 
 	}
+
 }

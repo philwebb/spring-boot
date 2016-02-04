@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -33,7 +31,7 @@ public class ManagementServerPropertiesAutoConfigurationTests {
 	@Test
 	public void defaultManagementServerProperties() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		assertThat(properties.getPort(), nullValue());
+		assertThat(properties.getPort()).isNull();
 		assertThat(properties.getContextPath()).isEqualTo("");
 	}
 

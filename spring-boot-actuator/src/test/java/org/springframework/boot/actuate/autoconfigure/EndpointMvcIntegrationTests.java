@@ -64,8 +64,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for MVC {@link Endpoint}s.
@@ -89,8 +88,7 @@ public class EndpointMvcIntegrationTests {
 	public void envEndpointHidden() throws InterruptedException {
 		String body = new TestRestTemplate().getForObject(
 				"http://localhost:" + this.port + "/env/user.dir", String.class);
-		assertThat(body).isNotNull();
-		assertThat("Wrong body: \n" + body, body.contains("spring-boot-actuator")).isTrue();
+		assertThat(body).isNotNull().contains("spring-boot-actuator");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 
@@ -98,8 +96,7 @@ public class EndpointMvcIntegrationTests {
 	public void healthEndpointNotHidden() throws InterruptedException {
 		String body = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port + "/health", String.class);
-		assertThat(body).isNotNull();
-		assertThat("Wrong body: \n" + body, body.contains("status")).isTrue();
+		assertThat(body).isNotNull().contains("status");
 		assertThat(this.interceptor.invoked()).isTrue();
 	}
 

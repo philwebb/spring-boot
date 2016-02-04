@@ -24,7 +24,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -41,7 +40,7 @@ public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a")).isEqualTo((Object) "b");
+		assertThat(getEndpointBean().invoke().get("a")).isEqualTo("b");
 	}
 
 	@Configuration

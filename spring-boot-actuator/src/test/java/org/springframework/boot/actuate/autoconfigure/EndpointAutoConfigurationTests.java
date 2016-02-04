@@ -47,10 +47,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -95,7 +92,7 @@ public class EndpointAutoConfigurationTests {
 		assertThat(bean).isNotNull();
 		Health result = bean.invoke();
 		assertThat(result).isNotNull();
-		assertThat("Wrong result: " + result, result.getDetails().containsKey("db")).isTrue();
+		assertThat(result.getDetails().containsKey("db")).isTrue();
 	}
 
 	@Test
@@ -135,7 +132,8 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void autoConfigurationAuditEndpoints() {
 		load(EndpointAutoConfiguration.class, ConditionEvaluationReport.class);
-		assertThat(this.context.getBean(AutoConfigurationReportEndpoint.class)).isNotNull();
+		assertThat(this.context.getBean(AutoConfigurationReportEndpoint.class))
+				.isNotNull();
 	}
 
 	@Test

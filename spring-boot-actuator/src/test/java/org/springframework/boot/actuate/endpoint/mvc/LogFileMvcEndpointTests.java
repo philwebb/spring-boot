@@ -31,8 +31,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

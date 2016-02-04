@@ -53,8 +53,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 /**
  * Tests for {@link CacheStatisticsAutoConfiguration}.
@@ -160,8 +160,8 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private void assertCoreStatistics(CacheStatistics metrics, Long size, Double hitRatio,
 			Double missRatio) {
-		assertThat(metrics).as("Cache metrics must not be null").isNotNull();
-		assertThat(metrics.getSize()).isEqualTo("Wrong size for metrics " + metrics, size);
+		assertThat(metrics).isNotNull();
+		assertThat(metrics.getSize()).isEqualTo(size);
 		checkRatio("Wrong hit ratio for metrics " + metrics, hitRatio,
 				metrics.getHitRatio());
 		checkRatio("Wrong miss ratio for metrics " + metrics, missRatio,
@@ -170,10 +170,10 @@ public class CacheStatisticsAutoConfigurationTests {
 
 	private void checkRatio(String message, Double expected, Double actual) {
 		if (expected == null || actual == null) {
-			assertThat(actual).isEqualTo(message, expected);
+			assertThat(actual).as(message).isEqualTo(expected);
 		}
 		else {
-			assertThat(0.01D).isEqualTo(message, expected, actual);
+			assertThat(actual).as(message).isEqualTo(expected, offset(0.01D));
 		}
 	}
 

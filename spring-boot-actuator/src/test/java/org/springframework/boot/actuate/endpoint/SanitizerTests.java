@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Sanitizer}.
@@ -27,23 +27,22 @@ import org.junit.Test;
  */
 public class SanitizerTests {
 
-	private Sanitizer sanitizer = new Sanitizer();
-
 	@Test
 	public void defaults() throws Exception {
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("password", "secret"));
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("my-password", "secret"));
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("my-OTHER.paSSword", "secret"));
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("somesecret", "secret"));
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("somekey", "secret"));
-		assertThat("secret").isEqualTo(this.sanitizer.sanitize("find", "secret"));
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
 	}
 
 	@Test
 	public void regex() throws Exception {
-		this.sanitizer.setKeysToSanitize(".*lock.*");
-		assertThat("******").isEqualTo(this.sanitizer.sanitize("verylOCkish", "secret"));
-		assertThat("secret").isEqualTo(this.sanitizer.sanitize("veryokish", "secret"));
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");
 	}
 
 }

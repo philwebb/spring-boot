@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link RichGaugeReaderPublicMetrics}.

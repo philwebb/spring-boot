@@ -26,8 +26,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RabbitHealthIndicator}.
@@ -50,7 +49,8 @@ public class RabbitHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, RabbitAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(RabbitAdmin.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(RabbitAdmin.class).length)
+				.isEqualTo(1);
 		RabbitHealthIndicator healthIndicator = this.context
 				.getBean(RabbitHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();
