@@ -25,9 +25,6 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

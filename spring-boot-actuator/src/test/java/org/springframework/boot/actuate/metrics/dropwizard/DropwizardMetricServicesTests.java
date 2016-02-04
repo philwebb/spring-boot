@@ -23,8 +23,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DropwizardMetricServices}.
@@ -108,7 +107,8 @@ public class DropwizardMetricServicesTests {
 		}
 
 		for (WriterThread thread : threads) {
-			assertThat(thread.isFailed()).as("expected thread caused unexpected exception").isFalse();
+			assertThat(thread.isFailed())
+					.as("expected thread caused unexpected exception").isFalse();
 		}
 	}
 

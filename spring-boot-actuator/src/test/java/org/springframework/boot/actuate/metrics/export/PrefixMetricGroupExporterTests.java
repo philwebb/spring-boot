@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PrefixMetricGroupExporter}.

@@ -37,9 +37,7 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RedisMultiMetricRepository}.
@@ -77,14 +75,14 @@ public class RedisMultiMetricRepositoryTests {
 
 	@After
 	public void clear() {
-		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).opsForZSet().isTrue()
-				.size("keys." + this.prefix) > 0);
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).opsForZSet()
+				.size("keys." + this.prefix)).isGreaterThan(0);
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNull()
-				.opsForValue().get(this.prefix + ".foo"));
-		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNull()
-				.opsForValue().get(this.prefix + ".bar"));
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo")).isNull();
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".bar")).isNull();
 	}
 
 	@Test
@@ -93,8 +91,8 @@ public class RedisMultiMetricRepositoryTests {
 				Arrays.<Metric<?>>asList(new Metric<Number>("foo.bar", 12.3)));
 		this.repository.set("foo",
 				Arrays.<Metric<?>>asList(new Metric<Number>("foo.bar", 15.3)));
-		assertThat(Iterables.collection(this.repository.findAll("foo")).iterator().isEqualTo(15.3)
-				.next().getValue());
+		assertThat(Iterables.collection(this.repository.findAll("foo")).iterator().next()
+				.getValue()).isEqualTo(15.3);
 	}
 
 	@Test
@@ -114,8 +112,7 @@ public class RedisMultiMetricRepositoryTests {
 				Arrays.<Metric<?>>asList(new Metric<Number>("bar.val", 12.3),
 						new Metric<Number>("bar.foo", 11.3)));
 		Collection<String> groups = Iterables.collection(this.repository.groups());
-		assertThat(groups).hasSize(2);
-		assertThat("Wrong groups: " + groups, groups.contains("foo")).isTrue();
+		assertThat(groups).hasSize(2).contains("foo");
 	}
 
 	@Test
@@ -142,8 +139,7 @@ public class RedisMultiMetricRepositoryTests {
 				bar = metric;
 			}
 		}
-		assertThat(names).hasSize(2);
-		assertThat("Wrong names: " + names, names.contains("foo.bar")).isTrue();
+		assertThat(names).hasSize(2).contains("foo.bar");
 		assertThat(bar.getValue()).isEqualTo(3d);
 	}
 

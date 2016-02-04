@@ -29,14 +29,14 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.util.SimpleInMemoryRepository.Callback;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link SimpleInMemoryRepository}.
+ *
  * @author Dave Syer
  */
-public class InMemoryRepositoryTests {
+public class SimpleInMemoryRepositoryTests {
 
 	private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
 
@@ -75,8 +75,7 @@ public class InMemoryRepositoryTests {
 		this.repository.set("foo.bar", "one");
 		this.repository.set("foo.min", "two");
 		this.repository.set("foo.max", "three");
-		assertEquals(3,
-				((Collection<?>) this.repository.findAllWithPrefix("foo")).size());
+		assertThat(((Collection<?>) this.repository.findAllWithPrefix("foo"))).hasSize(3);
 	}
 
 	@Test
@@ -89,45 +88,46 @@ public class InMemoryRepositoryTests {
 
 	@Test
 	public void updateConcurrent() throws Exception {
-		final SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<Integer>();
+		SimpleInMemoryRepository<Integer> repository = new SimpleInMemoryRepository<Integer>();
 		Collection<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
 		for (int i = 0; i < 1000; i++) {
-			tasks.add(new Callable<Boolean>() {
-				@Override
-				public Boolean call() throws Exception {
-					repository.update("foo", new Callback<Integer>() {
-						@Override
-						public Integer modify(Integer current) {
-							if (current == null) {
-								return 1;
-							}
-							return current + 1;
-						}
-					});
-					return true;
-				}
-			});
-			tasks.add(new Callable<Boolean>() {
-				@Override
-				public Boolean call() throws Exception {
-					repository.update("foo", new Callback<Integer>() {
-						@Override
-						public Integer modify(Integer current) {
-							if (current == null) {
-								return -1;
-							}
-							return current - 1;
-						}
-					});
-					return true;
-				}
-			});
+			tasks.add(new RepositoryUpdate(repository, 1));
+			tasks.add(new RepositoryUpdate(repository, -1));
 		}
 		List<Future<Boolean>> all = Executors.newFixedThreadPool(10).invokeAll(tasks);
 		for (Future<Boolean> future : all) {
 			assertThat(future.get(1, TimeUnit.SECONDS)).isTrue();
 		}
-		assertThat(repository.findOne("foo")).isEqualTo(Integer.valueOf(0));
+		assertThat(repository.findOne("foo")).isEqualTo(0);
+	}
+
+	private static class RepositoryUpdate implements Callable<Boolean> {
+
+		private final SimpleInMemoryRepository<Integer> repository;
+
+		private final int delta;
+
+		public RepositoryUpdate(SimpleInMemoryRepository<Integer> repository, int delta) {
+			this.repository = repository;
+			this.delta = delta;
+		}
+
+		@Override
+		public Boolean call() throws Exception {
+			this.repository.update("foo", new Callback<Integer>() {
+
+				@Override
+				public Integer modify(Integer current) {
+					if (current == null) {
+						return RepositoryUpdate.this.delta;
+					}
+					return current + RepositoryUpdate.this.delta;
+				}
+
+			});
+			return true;
+		}
+
 	}
 
 }

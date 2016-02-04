@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link InMemoryTraceRepository}.

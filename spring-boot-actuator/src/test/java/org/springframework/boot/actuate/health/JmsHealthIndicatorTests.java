@@ -59,7 +59,7 @@ public class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isNullValue();
+		assertThat(health.getDetails().get("provider")).isNull();
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isNullValue();
+		assertThat(health.getDetails().get("provider")).isNull();
 		verify(connection, times(1)).close();
 	}
 

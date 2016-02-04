@@ -37,8 +37,7 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebRequestTraceFilter}.
@@ -113,12 +112,13 @@ public class WebRequestTraceFilterTests {
 		assertThat(this.repository.findAll()).hasSize(1);
 		Map<String, Object> trace = this.repository.findAll().iterator().next().getInfo();
 		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
-		assertEquals("{Content-Type=application/json, status=200}",
-				map.get("response").toString());
+
+		assertThat(map.get("response").toString())
+				.isEqualTo("{Content-Type=application/json, status=200}");
 		assertThat(trace.get("method")).isEqualTo("GET");
 		assertThat(trace.get("path")).isEqualTo("/foo");
-		assertEquals("paramvalue",
-				((String[]) ((Map) trace.get("parameters")).get("param"))[0]);
+		assertThat(((String[]) ((Map) trace.get("parameters")).get("param"))[0])
+				.isEqualTo("paramvalue");
 		assertThat(trace.get("remoteAddress")).isEqualTo("some.remote.addr");
 		assertThat(trace.get("query")).isEqualTo("some.query.string");
 		assertThat(trace.get("userPrincipal")).isEqualTo(principal.getName());

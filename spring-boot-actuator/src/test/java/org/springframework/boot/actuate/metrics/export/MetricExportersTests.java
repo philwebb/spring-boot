@@ -28,8 +28,7 @@ import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricExporters}.

@@ -85,7 +85,7 @@ public class CompositeHealthIndicatorTests {
 				this.healthAggregator, indicators);
 		composite.addHealthIndicator("three", this.three);
 		Health result = composite.health();
-		assertThat(result.getDetails()).hasSize(2);
+		assertThat(result.getDetails()).hasSize(3);
 		assertThat(result.getDetails()).containsEntry("one",
 				new Health.Builder().unknown().withDetail("1", "1").build());
 		assertThat(result.getDetails()).containsEntry("two",

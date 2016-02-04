@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.metrics.repository.InMemoryMetricReposit
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MetricCopyExporter}.

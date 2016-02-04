@@ -24,8 +24,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AggregateMetricReader}.
@@ -47,7 +46,8 @@ public class AggregateMetricReaderTests {
 	@Test
 	public void defaultKeyPattern() {
 		this.source.set(new Metric<Double>("foo.bar.spam.bucket.wham", 2.3));
-		assertThat(this.reader.findOne("aggregate.spam.bucket.wham").getValue()).isEqualTo(2.3);
+		assertThat(this.reader.findOne("aggregate.spam.bucket.wham").getValue())
+				.isEqualTo(2.3);
 	}
 
 	@Test
@@ -91,7 +91,8 @@ public class AggregateMetricReaderTests {
 	public void incrementCounter() {
 		this.source.increment(new Delta<Long>("foo.bar.counter.spam", 2L));
 		this.source.increment(new Delta<Long>("oof.rab.counter.spam", 3L));
-		assertThat(this.reader.findOne("aggregate.counter.spam").getValue()).isEqualTo(5L);
+		assertThat(this.reader.findOne("aggregate.counter.spam").getValue())
+				.isEqualTo(5L);
 	}
 
 	@Test

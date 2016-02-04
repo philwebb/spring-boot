@@ -126,8 +126,7 @@ public class ShellPropertiesTests {
 		binder.bind(new MutablePropertyValues(Collections
 				.singletonMap("shell.disabled_commands", "pattern1, pattern2")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(props.getDisabledCommands().length).isEqualTo(2);
-		assertThat(props.getDisabledPlugins()).containsExactly("pattern1", "pattern2");
+		assertThat(props.getDisabledCommands()).containsExactly("pattern1", "pattern2");
 	}
 
 	@Test

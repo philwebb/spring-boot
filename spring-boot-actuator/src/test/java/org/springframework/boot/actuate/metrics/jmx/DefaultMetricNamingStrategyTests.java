@@ -20,7 +20,7 @@ import javax.management.ObjectName;
 
 import org.junit.Test;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DefaultMetricNamingStrategy}.
@@ -45,7 +45,7 @@ public class DefaultMetricNamingStrategyTests {
 				"domain:type=MetricValue,name=foo.bar");
 		assertThat(name.getDomain()).isEqualTo("domain");
 		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
-		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("bar");
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class DefaultMetricNamingStrategyTests {
 				"domain:type=MetricValue,name=foo.bar.spam");
 		assertThat(name.getDomain()).isEqualTo("domain");
 		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
-		assertThat(name.getKeyProperty("name")).isEqualTo("Wrong name: " + name, "bar");
-		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "spam");
+		assertThat(name.getKeyProperty("name")).isEqualTo("bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("spam");
 	}
 
 	@Test
@@ -64,8 +64,8 @@ public class DefaultMetricNamingStrategyTests {
 				"domain:type=MetricValue,name=foo.bar.spam.bucket");
 		assertThat(name.getDomain()).isEqualTo("domain");
 		assertThat(name.getKeyProperty("type")).isEqualTo("foo");
-		assertThat(name.getKeyProperty("name")).isEqualTo("Wrong name: " + name, "bar");
-		assertThat(name.getKeyProperty("value")).isEqualTo("Wrong name: " + name, "spam.bucket");
+		assertThat(name.getKeyProperty("name")).isEqualTo("bar");
+		assertThat(name.getKeyProperty("value")).isEqualTo("spam.bucket");
 	}
 
 }

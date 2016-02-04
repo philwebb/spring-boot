@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests for {@link Health}.
@@ -78,8 +77,8 @@ public class HealthTests {
 		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
 				.withException(ex).build();
 		assertThat(health.getDetails().get("a")).isEqualTo("b");
-		assertThat(health.getDetails().get("error"),
-				equalTo((Object) "java.lang.RuntimeException: bang"));
+		assertThat(health.getDetails().get("error"))
+				.isEqualTo("java.lang.RuntimeException: bang");
 	}
 
 	@Test
@@ -123,8 +122,8 @@ public class HealthTests {
 		RuntimeException ex = new RuntimeException("bang");
 		Health health = Health.down(ex).build();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("error"),
-				equalTo((Object) "java.lang.RuntimeException: bang"));
+		assertThat(health.getDetails().get("error"))
+				.isEqualTo("java.lang.RuntimeException: bang");
 	}
 
 	@Test

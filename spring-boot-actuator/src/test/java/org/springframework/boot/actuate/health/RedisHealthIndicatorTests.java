@@ -56,8 +56,8 @@ public class RedisHealthIndicatorTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, RedisAutoConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		assertEquals(1,
-				this.context.getBeanNamesForType(RedisConnectionFactory.class).length);
+		assertThat(this.context.getBeanNamesForType(RedisConnectionFactory.class))
+				.hasSize(1);
 		RedisHealthIndicator healthIndicator = this.context
 				.getBean(RedisHealthIndicator.class);
 		assertThat(healthIndicator).isNotNull();
@@ -67,7 +67,6 @@ public class RedisHealthIndicatorTests {
 	public void redisIsUp() throws Exception {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
-
 		RedisConnection redisConnection = mock(RedisConnection.class);
 		RedisConnectionFactory redisConnectionFactory = mock(
 				RedisConnectionFactory.class);
@@ -75,11 +74,9 @@ public class RedisHealthIndicatorTests {
 		given(redisConnection.info()).willReturn(info);
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
-
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("2.8.9");
-
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
 	}
@@ -94,13 +91,12 @@ public class RedisHealthIndicatorTests {
 				.willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
-
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(((String) health.getDetails().get("error")).isTrue()
+		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
-
 		verify(redisConnectionFactory).getConnection();
 		verify(redisConnection).info();
 	}
+
 }

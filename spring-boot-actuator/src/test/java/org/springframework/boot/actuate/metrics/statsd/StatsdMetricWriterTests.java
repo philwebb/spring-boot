@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.util.SocketUtils;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link StatsdMetricWriter}.
@@ -97,7 +97,7 @@ public class StatsdMetricWriterTests {
 		assertThat(this.server.messagesReceived().get(0)).isEqualTo("my.gauge.foo:3|g");
 	}
 
-	private static final class DummyStatsDServer {
+	private static final class DummyStatsDServer implements Runnable {
 
 		private final List<String> messagesReceived = new ArrayList<String>();
 
@@ -107,29 +107,27 @@ public class StatsdMetricWriterTests {
 			try {
 				this.server = new DatagramSocket(port);
 			}
-			catch (SocketException e) {
-				throw new IllegalStateException(e);
+			catch (SocketException ex) {
+				throw new IllegalStateException(ex);
 			}
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						final DatagramPacket packet = new DatagramPacket(new byte[256],
-								256);
-						DummyStatsDServer.this.server.receive(packet);
-						DummyStatsDServer.this.messagesReceived.add(
-								new String(packet.getData(), Charset.forName("UTF-8"))
-										.trim());
-					}
-					catch (Exception e) {
-						// Ignore
-					}
-				}
-			}).start();
+			new Thread(this).start();
 		}
 
 		public void stop() {
 			this.server.close();
+		}
+
+		@Override
+		public void run() {
+			try {
+				DatagramPacket packet = new DatagramPacket(new byte[256], 256);
+				this.server.receive(packet);
+				this.messagesReceived.add(
+						new String(packet.getData(), Charset.forName("UTF-8")).trim());
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
 		}
 
 		public void waitForMessage() {

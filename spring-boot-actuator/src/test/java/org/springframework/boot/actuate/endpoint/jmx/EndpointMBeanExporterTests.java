@@ -43,7 +43,6 @@ import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 
 /**
  * Tests for {@link EndpointMBeanExporter}
@@ -211,8 +210,8 @@ public class EndpointMBeanExporterTests {
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-		assertThat(response).isEqualTo(instanceOf(Map.class));
-		assertThat(((Map<?, ?>) response).get("date")).isEqualTo(instanceOf(Long.class));
+		assertThat(response).isInstanceOf(Map.class);
+		assertThat(((Map<?, ?>) response).get("date")).isInstanceOf(Long.class);
 	}
 
 	@Test
@@ -232,9 +231,8 @@ public class EndpointMBeanExporterTests {
 		Object response = mbeanExporter.getServer().invoke(
 				getObjectName("endpoint1", this.context), "getData", new Object[0],
 				new String[0]);
-		assertThat(response).isEqualTo(instanceOf(Map.class));
-		assertThat(((Map<?, ?>) response).get("date"))
-				.isEqualTo(instanceOf(String.class));
+		assertThat(response).isInstanceOf(Map.class);
+		assertThat(((Map<?, ?>) response).get("date")).isInstanceOf(String.class);
 	}
 
 	private ObjectName getObjectName(String beanKey, GenericApplicationContext context)

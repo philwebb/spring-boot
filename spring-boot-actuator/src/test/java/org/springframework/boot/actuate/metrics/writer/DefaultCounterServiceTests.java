@@ -22,12 +22,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultCounterService}.
+ *
+ * @author Dave Syer
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultCounterServiceTests {
@@ -77,4 +79,5 @@ public class DefaultCounterServiceTests {
 		this.service.reset("foo");
 		verify(this.repository).reset("counter.foo");
 	}
+
 }

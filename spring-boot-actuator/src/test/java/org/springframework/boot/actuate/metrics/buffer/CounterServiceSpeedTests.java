@@ -41,7 +41,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.lang.UsesJava8;
 import org.springframework.util.StopWatch;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Speed tests for {@link CounterService}.

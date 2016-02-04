@@ -40,9 +40,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 
@@ -84,7 +81,7 @@ public class ElasticsearchHealthIndicatorTests {
 		given(this.cluster.health(requestCaptor.capture())).willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(responseFuture.getTimeout).isEqualTo(100L);
-		assertThat(requestCaptor.getValue().indices()).isEqualTo(arrayContaining("_all"));
+		assertThat(requestCaptor.getValue().indices()).contains("_all");
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
@@ -98,8 +95,8 @@ public class ElasticsearchHealthIndicatorTests {
 		this.properties.getIndices()
 				.addAll(Arrays.asList("test-index-1", "test-index-2"));
 		Health health = this.indicator.health();
-		assertThat(requestCaptor.getValue().indices(),
-				is(arrayContaining("test-index-1", "test-index-2")));
+		assertThat(requestCaptor.getValue().indices()).contains("test-index-1",
+				"test-index-2");
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 	}
 
@@ -160,8 +157,8 @@ public class ElasticsearchHealthIndicatorTests {
 				.willReturn(responseFuture);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"),
-				containsString(ElasticsearchTimeoutException.class.getName()));
+		assertThat((String) health.getDetails().get("error"))
+				.contains(ElasticsearchTimeoutException.class.getName());
 	}
 
 	@SuppressWarnings("unchecked")

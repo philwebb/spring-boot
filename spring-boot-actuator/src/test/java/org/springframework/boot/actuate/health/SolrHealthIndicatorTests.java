@@ -70,7 +70,6 @@ public class SolrHealthIndicatorTests {
 		response.add("status", "OK");
 		pingResponse.setResponse(response);
 		given(solrServer.ping()).willReturn(pingResponse);
-
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -81,11 +80,11 @@ public class SolrHealthIndicatorTests {
 	public void solrIsDown() throws Exception {
 		SolrServer solrServer = mock(SolrServer.class);
 		given(solrServer.ping()).willThrow(new IOException("Connection failed"));
-
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrServer);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(((String) health.getDetails().get("error")).isTrue()
+		assertThat(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 	}
+
 }

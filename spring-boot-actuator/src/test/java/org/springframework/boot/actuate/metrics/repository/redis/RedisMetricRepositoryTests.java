@@ -27,9 +27,8 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.offset;
 
 /**
  * Tests for {@link RedisMetricRepository}.
@@ -54,12 +53,13 @@ public class RedisMetricRepositoryTests {
 
 	@After
 	public void clear() {
-		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNotNull()
-				.opsForValue().get(this.prefix + ".foo"));
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo")).isNotNull();
 		this.repository.reset("foo");
 		this.repository.reset("bar");
-		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory()).isNull()
-				.opsForValue().get(this.prefix + ".foo"));
+		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory())
+				.opsForValue().get(this.prefix + ".foo")).isNull();
+		;
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class RedisMetricRepositoryTests {
 		this.repository.set(new Metric<Number>("foo", 12.3));
 		Metric<?> metric = this.repository.findOne("foo");
 		assertThat(metric.getName()).isEqualTo("foo");
-		assertThat(0.01).isEqualTo(12.3, metric.getValue().doubleValue());
+		assertThat(metric.getValue().doubleValue()).isEqualTo(12.3, offset(0.01));
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class RedisMetricRepositoryTests {
 		this.repository.increment(new Delta<Long>("foo", 3L));
 		Metric<?> metric = this.repository.findOne("foo");
 		assertThat(metric.getName()).isEqualTo("foo");
-		assertThat(0.01).isEqualTo(15.3, metric.getValue().doubleValue());
+		assertThat(metric.getValue().doubleValue()).isEqualTo(15.3, offset(0.01));
 	}
 
 	@Test

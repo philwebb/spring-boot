@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RichGaugeExporter}.

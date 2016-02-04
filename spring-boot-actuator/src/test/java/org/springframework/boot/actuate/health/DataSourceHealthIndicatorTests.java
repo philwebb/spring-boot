@@ -30,9 +30,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -90,7 +87,7 @@ public class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery("SELECT COUNT(*) from BAR");
 		Health health = this.indicator.health();
-		assertThat(health.getDetails().get("database"), notNullValue());
+		assertThat(health.getDetails().get("database")).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
@@ -109,7 +106,7 @@ public class DataSourceHealthIndicatorTests {
 
 	@Test
 	public void productLookups() throws Exception {
-		assertThat(Product.forProduct("newone"), nullValue());
+		assertThat(Product.forProduct("newone")).isNull();
 		assertThat(Product.forProduct("HSQL Database Engine")).isEqualTo(Product.HSQLDB);
 		assertThat(Product.forProduct("Oracle")).isEqualTo(Product.ORACLE);
 		assertThat(Product.forProduct("Apache Derby")).isEqualTo(Product.DERBY);
@@ -117,8 +114,8 @@ public class DataSourceHealthIndicatorTests {
 		assertThat(Product.forProduct("DB2/LINUXX8664")).isEqualTo(Product.DB2);
 		assertThat(Product.forProduct("DB2 UDB for AS/400")).isEqualTo(Product.DB2_AS400);
 		assertThat(Product.forProduct("DB3 XDB for AS/400")).isEqualTo(Product.DB2_AS400);
-		assertThat(Product.forProduct("Informix Dynamic Server"),
-				equalTo(Product.INFORMIX));
+		assertThat(Product.forProduct("Informix Dynamic Server"))
+				.isEqualTo(Product.INFORMIX);
 		assertThat(Product.forProduct("Firebird 2.5.WI")).isEqualTo(Product.FIREBIRD);
 		assertThat(Product.forProduct("Firebird 2.1.LI")).isEqualTo(Product.FIREBIRD);
 	}
