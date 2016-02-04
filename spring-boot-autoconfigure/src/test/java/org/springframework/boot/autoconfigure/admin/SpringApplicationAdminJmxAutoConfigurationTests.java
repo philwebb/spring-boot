@@ -40,10 +40,8 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SpringApplicationAdminJmxAutoConfiguration}.
@@ -90,7 +88,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 		load(ENABLE_ADMIN_PROP);
 		ObjectName objectName = createDefaultObjectName();
 		ObjectInstance objectInstance = this.mBeanServer.getObjectInstance(objectName);
-		assertThat(objectInstance).as("Lifecycle bean should have been registered").isNotNull();
+		assertThat(objectInstance).as("Lifecycle bean should have been registered")
+				.isNotNull();
 	}
 
 	@Test
@@ -122,9 +121,9 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						JmxAutoConfiguration.class,
 						SpringApplicationAdminJmxAutoConfiguration.class)
 				.run("--" + ENABLE_ADMIN_PROP, "--server.port=0");
-		assertThat(this.context instanceof EmbeddedWebApplicationContext).isTrue();
-		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName()isTrue(),
-				"EmbeddedWebApplication"));
+		assertThat(this.context).isInstanceOf(EmbeddedWebApplicationContext.class);
+		assertThat(this.mBeanServer.getAttribute(createDefaultObjectName(),
+				"EmbeddedWebApplication")).isEqualTo(Boolean.TRUE);
 		int expected = ((EmbeddedWebApplicationContext) this.context)
 				.getEmbeddedServletContainer().getPort();
 		String actual = getProperty(createDefaultObjectName(), "local.server.port");

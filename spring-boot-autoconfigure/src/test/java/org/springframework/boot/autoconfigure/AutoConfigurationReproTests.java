@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,4 +65,5 @@ public class AutoConfigurationReproTests {
 	public static class EarlyInitConfig {
 
 	}
+
 }

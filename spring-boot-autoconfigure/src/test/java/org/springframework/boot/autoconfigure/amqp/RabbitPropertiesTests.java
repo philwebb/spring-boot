@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import org.junit.Test;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RabbitProperties}.

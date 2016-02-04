@@ -43,9 +43,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -82,8 +80,8 @@ public class RabbitAutoConfigurationTests {
 		assertThat(messagingTemplate.getRabbitTemplate()).isEqualTo(rabbitTemplate);
 		assertThat(amqpAdmin).isNotNull();
 		assertThat(connectionFactory.getHost()).isEqualTo("localhost");
-		assertTrue("Listener container factory should be created by default",
-				this.context.containsBean("rabbitListenerContainerFactory"));
+		assertThat(this.context.containsBean("rabbitListenerContainerFactory"))
+				.as("Listener container factory should be created by default").isTrue();
 	}
 
 	@Test
@@ -145,8 +143,8 @@ public class RabbitAutoConfigurationTests {
 	public void testRabbitTemplateBackOff() {
 		load(TestConfiguration3.class);
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
-		assertEquals(this.context.getBean("testMessageConverter"),
-				rabbitTemplate.getMessageConverter());
+		assertThat(rabbitTemplate.getMessageConverter())
+				.isEqualTo(this.context.getBean("testMessageConverter"));
 	}
 
 	@Test
@@ -173,8 +171,8 @@ public class RabbitAutoConfigurationTests {
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory = this.context
 				.getBean("rabbitListenerContainerFactory",
 						RabbitListenerContainerFactory.class);
-		assertEquals(SimpleRabbitListenerContainerFactory.class,
-				rabbitListenerContainerFactory.getClass());
+		assertThat(rabbitListenerContainerFactory.getClass())
+				.isEqualTo(SimpleRabbitListenerContainerFactory.class);
 	}
 
 	@Test
@@ -199,8 +197,9 @@ public class RabbitAutoConfigurationTests {
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-		assertThat(dfa.getPropertyValue("autoStartup")).isFalse();
-		assertThat(dfa.getPropertyValue("acknowledgeMode")).isEqualTo(AcknowledgeMode.MANUAL);
+		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(Boolean.FALSE);
+		assertThat(dfa.getPropertyValue("acknowledgeMode"))
+				.isEqualTo(AcknowledgeMode.MANUAL);
 		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
 		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);
 		assertThat(dfa.getPropertyValue("prefetchCount")).isEqualTo(40);
@@ -228,16 +227,17 @@ public class RabbitAutoConfigurationTests {
 	public void noSslByDefault() {
 		load(TestConfiguration.class);
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
-		assertThat(SocketFactory.getDefault().isEqualTo("Must use default SocketFactory"),
-				rabbitConnectionFactory.getSocketFactory());
+		assertThat(rabbitConnectionFactory.getSocketFactory())
+				.as("Must use default SocketFactory")
+				.isEqualTo(SocketFactory.getDefault());
 	}
 
 	@Test
 	public void enableSsl() {
 		load(TestConfiguration.class, "spring.rabbitmq.ssl.enabled:true");
 		com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory();
-		assertTrue("SocketFactory must use SSL",
-				rabbitConnectionFactory.getSocketFactory() instanceof SSLSocketFactory);
+		assertThat(rabbitConnectionFactory.getSocketFactory())
+				.as("SocketFactory must use SSL").isInstanceOf(SSLSocketFactory.class);
 	}
 
 	@Test
