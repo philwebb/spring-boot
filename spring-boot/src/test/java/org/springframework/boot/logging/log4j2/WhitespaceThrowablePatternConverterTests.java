@@ -21,10 +21,7 @@ import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WhitespaceThrowablePatternConverter}.
@@ -51,8 +48,8 @@ public class WhitespaceThrowablePatternConverterTests {
 		LogEvent event = Log4jLogEvent.newBuilder().setThrown(new Exception()).build();
 		StringBuilder builder = new StringBuilder();
 		this.converter.format(event, builder);
-		assertThat(builder.toString(), startsWith(LINE_SEPARATOR));
-		assertThat(builder.toString(), endsWith(LINE_SEPARATOR));
+		assertThat(builder.toString()).startsWith(LINE_SEPARATOR)
+				.endsWith(LINE_SEPARATOR);
 	}
 
 }

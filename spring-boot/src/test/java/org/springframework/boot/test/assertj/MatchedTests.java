@@ -14,48 +14,46 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.devtools.autoconfigure;
-
-import java.io.File;
+package org.springframework.boot.test.assertj;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 
 /**
- * Tests for {@link TriggerFileFilter}.
+ * Tests for {@link Matched}.
  *
  * @author Phillip Webb
  */
-public class TriggerFileFilterTests {
+public class MatchedTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
 	@Test
-	public void nameMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be null");
-		new TriggerFileFilter(null);
+	public void byMatcherMatches() {
+		assertThat("1234").is(Matched.by(startsWith("12")));
 	}
 
 	@Test
-	public void acceptNameMatch() throws Exception {
-		File file = this.temp.newFile("thefile.txt");
-		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isTrue();
+	public void byMatcherDoesNotMatch() {
+		this.thrown.expect(AssertionError.class);
+		this.thrown.expectMessage("a string starting with \"23\"");
+		assertThat("1234").is(Matched.by(startsWith("23")));
 	}
 
 	@Test
-	public void doesNotAcceptNameMismatch() throws Exception {
-		File file = this.temp.newFile("notthefile.txt");
-		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isFalse();
+	public void whenMatcherMatches() {
+		assertThat("1234").is(Matched.when(startsWith("12")));
 	}
 
+	@Test
+	public void whenMatcherDoesNotMatch() {
+		this.thrown.expect(AssertionError.class);
+		this.thrown.expectMessage("a string starting with \"23\"");
+		assertThat("1234").is(Matched.when(startsWith("23")));
+	}
 }

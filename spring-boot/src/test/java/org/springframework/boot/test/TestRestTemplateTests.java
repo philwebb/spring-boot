@@ -24,9 +24,7 @@ import org.springframework.boot.test.TestRestTemplate.HttpClientOption;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link TestRestTemplate}.
@@ -39,14 +37,14 @@ public class TestRestTemplateTests {
 	@Test
 	public void simple() {
 		// The Apache client is on the classpath so we get the fully-fledged factory
-		assertThat(new TestRestTemplate().isTrue()
-				.getRequestFactory() instanceof HttpComponentsClientHttpRequestFactory);
+		assertThat(new TestRestTemplate().getRequestFactory())
+				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
 	public void authenticated() {
-		assertThat(new TestRestTemplate("user", "password").isTrue()
-				.getRequestFactory() instanceof InterceptingClientHttpRequestFactory);
+		assertThat(new TestRestTemplate("user", "password").getRequestFactory())
+				.isInstanceOf(InterceptingClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -56,7 +54,7 @@ public class TestRestTemplateTests {
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRequestFactory();
 		RequestConfig config = factory.getRequestConfig();
-		assertThat(config.isRedirectsEnabled())isTrue();
+		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
 
 }

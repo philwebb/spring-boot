@@ -38,9 +38,9 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 				equalTo(new String[] { "one", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "one", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2)).isEqualTo(false);
-		assertThat(this.delimiter.isDelimiter(s, 3))isTrue();
-		assertThat(this.delimiter.isDelimiter(s, 4)).isEqualTo(false);
+		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 3)).isTrue();
+		assertThat(this.delimiter.isDelimiter(s, 4)).isFalse();
 	}
 
 	@Test
@@ -50,10 +50,10 @@ public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 				equalTo(new String[] { "o\\ ne", "two" }));
 		assertThat(this.delimiter.parseArguments(s),
 				equalTo(new String[] { "o ne", "two" }));
-		assertThat(this.delimiter.isDelimiter(s, 2)).isEqualTo(false);
-		assertThat(this.delimiter.isDelimiter(s, 3)).isEqualTo(false);
-		assertThat(this.delimiter.isDelimiter(s, 4)).isEqualTo(false);
-		assertThat(this.delimiter.isDelimiter(s, 5))isTrue();
+		assertThat(this.delimiter.isDelimiter(s, 2)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 3)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 4)).isFalse();
+		assertThat(this.delimiter.isDelimiter(s, 5)).isTrue();
 	}
 
 	@Test

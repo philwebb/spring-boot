@@ -22,8 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader} finding groovy config.

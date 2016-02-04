@@ -107,9 +107,9 @@ public class HttpTunnelConnectionTests {
 	public void closeTunnelChangesIsOpen() throws Exception {
 		this.requestFactory.willRespondAfterDelay(1000, HttpStatus.GONE);
 		WritableByteChannel channel = openTunnel(false);
-		assertThat(channel.isOpen())isTrue();
+		assertThat(channel.isOpen()).isTrue();
 		channel.close();
-		assertThat(channel.isOpen()).isEqualTo(false);
+		assertThat(channel.isOpen()).isFalse();
 	}
 
 	@Test

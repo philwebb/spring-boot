@@ -47,13 +47,8 @@ import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -90,8 +85,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		String firstContainerName = ((TomcatEmbeddedServletContainer) this.container)
 				.getTomcat().getEngine().getName();
 		String secondContainerName = container2.getTomcat().getEngine().getName();
-		assertFalse("Tomcat engines must have different names",
-				firstContainerName.equals(secondContainerName));
+		assertThat(firstContainerName).as("Tomcat engines must have different names")
+				.isNotEqualTo(secondContainerName);
 		container2.stop();
 	}
 
@@ -156,8 +151,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		this.container = factory.getEmbeddedServletContainer();
 		Map<Service, Connector[]> connectors = ((TomcatEmbeddedServletContainer) this.container)
 				.getServiceConnectors();
-		assertThat(connectors.values().iterator().next().length,
-				equalTo(listeners.length + 1));
+		assertThat(connectors.values().iterator().next().length)
+				.isEqualTo(listeners.length + 1);
 	}
 
 	@Test
@@ -359,8 +354,8 @@ public class TomcatEmbeddedServletContainerFactoryTests
 		System.out.println(s2);
 		System.out.println(s3);
 		String message = "Session error s1=" + s1 + " s2=" + s2 + " s3=" + s3;
-		assertThat(message, s2.split(":")[0]).isEqualTo(s1.split(":")[1]);
-		assertThat(message, s3.split(":")[0]).isNotEqualTo(s2.split(":")[1]);
+		assertThat(s2.split(":")[0]).as(message).isEqualTo(s1.split(":")[1]);
+		assertThat(s3.split(":")[0]).as(message).isNotEqualTo(s2.split(":")[1]);
 	}
 
 	@Override

@@ -52,8 +52,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import static org.hamcrest.Matchers.equalTo;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link ErrorPageFilter}.
@@ -133,8 +132,8 @@ public class ErrorPageFilterIntegrationTests {
 		private CountDownLatch latch = new CountDownLatch(1);
 
 		public int getStatus() throws InterruptedException {
-			assertThat("Timed out waiting for latch",
-					this.latch.await(1, TimeUnit.SECONDS), equalTo(true));
+			assertThat(this.latch.await(1, TimeUnit.SECONDS))
+					.as("Timed out waiting for latch").isTrue();
 			return this.status;
 		}
 

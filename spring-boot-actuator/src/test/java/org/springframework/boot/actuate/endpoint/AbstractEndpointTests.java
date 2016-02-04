@@ -123,7 +123,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	@Test
 	public void isEnabledByDefault() throws Exception {
-		assertThat(getEndpointBean().isEnabled())isTrue();
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled()).isEqualTo(false);
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
@@ -147,7 +147,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.register(this.configClass);
 		this.context.refresh();
 		((AbstractEndpoint) getEndpointBean()).setEnabled(true);
-		assertThat(getEndpointBean().isEnabled())isTrue();
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled()).isEqualTo(false);
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test
@@ -171,7 +171,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 		this.context.getEnvironment().getPropertySources().addFirst(propertySource);
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().isEnabled())isTrue();
+		assertThat(getEndpointBean().isEnabled()).isTrue();
 	}
 
 	@Test

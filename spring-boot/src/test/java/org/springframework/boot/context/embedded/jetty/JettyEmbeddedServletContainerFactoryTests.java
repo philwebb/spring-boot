@@ -46,9 +46,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.http.HttpHeaders;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -134,8 +132,8 @@ public class JettyEmbeddedServletContainerFactoryTests
 				.getConnectors()[0];
 		SslConnectionFactory connectionFactory = connector
 				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites(),
-				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
+		assertThat(connectionFactory.getSslContextFactory().getIncludeCipherSuites())
+				.containsExactly("ALPHA", "BRAVO", "CHARLIE");
 	}
 
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory,

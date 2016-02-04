@@ -181,7 +181,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 		DirectFieldAccessor accessor = new DirectFieldAccessor(
 				liteDeviceDelegatingViewResolver);
-		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(false);
+		assertThat(accessor.getPropertyValue("enableFallback")).isFalse();
 		assertThat(accessor.getPropertyValue("normalPrefix")).isEqualTo("");
 		assertThat(accessor.getPropertyValue("mobilePrefix")).isEqualTo("mobile/");
 		assertThat(accessor.getPropertyValue("tabletPrefix")).isEqualTo("tablet/");
@@ -195,7 +195,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
-		assertThat(accessor.getPropertyValue("enableFallback"))isTrue();
+		assertThat(accessor.getPropertyValue("enableFallback")).isTrue();
 	}
 
 	@Test

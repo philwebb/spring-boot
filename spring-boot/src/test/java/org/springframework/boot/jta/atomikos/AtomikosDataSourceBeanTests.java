@@ -19,8 +19,7 @@ package org.springframework.boot.jta.atomikos;
 import com.atomikos.jdbc.AtomikosSQLException;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;

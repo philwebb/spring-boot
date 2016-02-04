@@ -128,10 +128,10 @@ public class RelaxedPropertyResolverTests {
 
 	@Test
 	public void containsProperty() throws Exception {
-		assertThat(this.resolver.containsProperty("my-string"))isTrue();
-		assertThat(this.resolver.containsProperty("myString"))isTrue();
-		assertThat(this.resolver.containsProperty("my_string"))isTrue();
-		assertThat(this.resolver.containsProperty("my-missing")).isEqualTo(false);
+		assertThat(this.resolver.containsProperty("my-string")).isTrue();
+		assertThat(this.resolver.containsProperty("myString")).isTrue();
+		assertThat(this.resolver.containsProperty("my_string")).isTrue();
+		assertThat(this.resolver.containsProperty("my-missing")).isFalse();
 	}
 
 	@Test
@@ -150,7 +150,7 @@ public class RelaxedPropertyResolverTests {
 	public void prefixed() throws Exception {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "a.b.c.");
 		this.source.put("a.b.c.d", "test");
-		assertThat(this.resolver.containsProperty("d"))isTrue();
+		assertThat(this.resolver.containsProperty("d")).isTrue();
 		assertThat(this.resolver.getProperty("d")).isEqualTo("test");
 	}
 
@@ -159,7 +159,7 @@ public class RelaxedPropertyResolverTests {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "a.");
 		this.source.put("A_B", "test");
 		this.source.put("a.foobar", "spam");
-		assertThat(this.resolver.containsProperty("b"))isTrue();
+		assertThat(this.resolver.containsProperty("b")).isTrue();
 		assertThat(this.resolver.getProperty("b")).isEqualTo("test");
 		assertThat(this.resolver.getProperty("foo-bar")).isEqualTo("spam");
 	}

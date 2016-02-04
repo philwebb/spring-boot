@@ -102,7 +102,7 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory.setIgnoreUnknownFields(false);
 		this.factory.afterPropertiesSet();
 		Foo foo = this.factory.getObject();
-		assertThat(foo.name).isEqualTo("blah");
+		assertThat(foo.name).isEqualTo("bar");
 	}
 
 	@Test

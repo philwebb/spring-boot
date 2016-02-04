@@ -113,7 +113,7 @@ public class ClassLoaderFilesTests {
 		Iterator<SourceFolder> sourceFolders = this.files.getSourceFolders().iterator();
 		SourceFolder sourceFolder1 = sourceFolders.next();
 		SourceFolder sourceFolder2 = sourceFolders.next();
-		assertThat(sourceFolders.hasNext()).isEqualTo(false);
+		assertThat(sourceFolders.hasNext()).isFalse();
 		assertThat(sourceFolder1.getName()).isEqualTo("a");
 		assertThat(sourceFolder2.getName()).isEqualTo("b");
 		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder1.getFiles()),
@@ -149,7 +149,7 @@ public class ClassLoaderFilesTests {
 		Iterator<SourceFolder> sourceFolders = this.files.getSourceFolders().iterator();
 		SourceFolder sourceFolder1 = sourceFolders.next();
 		SourceFolder sourceFolder2 = sourceFolders.next();
-		assertThat(sourceFolders.hasNext()).isEqualTo(false);
+		assertThat(sourceFolders.hasNext()).isFalse();
 		assertThat(sourceFolder1.getName()).isEqualTo("a");
 		assertThat(sourceFolder2.getName()).isEqualTo("b");
 		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder1.getFiles()),

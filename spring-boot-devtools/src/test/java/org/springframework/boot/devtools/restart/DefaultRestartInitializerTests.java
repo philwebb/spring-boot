@@ -45,7 +45,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread))isTrue();
+		assertThat(initializer.isMain(thread)).isTrue();
 		assertThat(initializer.getInitialUrls(thread)).isNotEqualTo(nullValue());
 	}
 
@@ -56,7 +56,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("buscuit");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isEqualTo(false);
+		assertThat(initializer.isMain(thread)).isFalse();
 		assertThat(initializer.getInitialUrls(thread), nullValue());
 	}
 
@@ -68,7 +68,7 @@ public class DefaultRestartInitializerTests {
 		Thread thread = new Thread();
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
-		assertThat(initializer.isMain(thread)).isEqualTo(false);
+		assertThat(initializer.isMain(thread)).isFalse();
 		assertThat(initializer.getInitialUrls(thread), nullValue());
 	}
 

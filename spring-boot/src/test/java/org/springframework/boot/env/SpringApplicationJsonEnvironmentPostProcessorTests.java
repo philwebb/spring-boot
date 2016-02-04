@@ -22,7 +22,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.
@@ -37,32 +37,32 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void error() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.application.json=foo:bar");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void missing() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void empty() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.application.json={}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 	}
 
 	@Test
 	public void periodSeparated() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.application.json={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -71,7 +71,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void envVar() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":\"bar\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -80,7 +80,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void nested() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":{\"bar\":\"spam\",\"rab\":\"maps\"}}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -90,7 +90,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void prefixed() {
-		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo.bar\":\"spam\"}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -99,7 +99,7 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void list() {
-		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo[1]:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[\"bar\",\"spam\"]}");
 		this.processor.postProcessEnvironment(this.environment, null);
@@ -108,11 +108,12 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void listOfObject() {
-		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEqualTo("");
+		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEmpty();
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"SPRING_APPLICATION_JSON={\"foo\":[{\"bar\":\"spam\"}]}");
 		this.processor.postProcessEnvironment(this.environment, null);
-		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}")).isEqualTo("spam");
+		assertThat(this.environment.resolvePlaceholders("${foo[0].bar:}"))
+				.isEqualTo("spam");
 	}
 
 }

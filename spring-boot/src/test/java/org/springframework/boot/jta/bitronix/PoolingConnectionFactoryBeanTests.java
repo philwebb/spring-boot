@@ -20,8 +20,7 @@ import javax.jms.XAConnectionFactory;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -43,9 +42,9 @@ public class PoolingConnectionFactoryBeanTests {
 	@Test
 	public void sensibleDefaults() throws Exception {
 		assertThat(this.bean.getMaxPoolSize()).isEqualTo(10);
-		assertThat(this.bean.getTestConnections())isTrue();
-		assertThat(this.bean.getAutomaticEnlistingEnabled())isTrue();
-		assertThat(this.bean.getAllowLocalTransactions())isTrue();
+		assertThat(this.bean.getTestConnections()).isTrue();
+		assertThat(this.bean.getAutomaticEnlistingEnabled()).isTrue();
+		assertThat(this.bean.getAllowLocalTransactions()).isTrue();
 	}
 
 	@Test

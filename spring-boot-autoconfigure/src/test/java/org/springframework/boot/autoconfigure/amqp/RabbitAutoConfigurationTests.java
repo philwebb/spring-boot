@@ -199,7 +199,7 @@ public class RabbitAutoConfigurationTests {
 				.getBean("rabbitListenerContainerFactory",
 						SimpleRabbitListenerContainerFactory.class);
 		DirectFieldAccessor dfa = new DirectFieldAccessor(rabbitListenerContainerFactory);
-		assertThat(dfa.getPropertyValue("autoStartup")).isEqualTo(false);
+		assertThat(dfa.getPropertyValue("autoStartup")).isFalse();
 		assertThat(dfa.getPropertyValue("acknowledgeMode")).isEqualTo(AcknowledgeMode.MANUAL);
 		assertThat(dfa.getPropertyValue("concurrentConsumers")).isEqualTo(5);
 		assertThat(dfa.getPropertyValue("maxConcurrentConsumers")).isEqualTo(10);

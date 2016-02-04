@@ -53,7 +53,7 @@ public class OnInitializedRestarterConditionTests {
 		Restarter.clearInstance();
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
-		assertThat(context.containsBean("bean")).isEqualTo(false);
+		assertThat(context.containsBean("bean")).isFalse();
 		context.close();
 	}
 
@@ -62,7 +62,7 @@ public class OnInitializedRestarterConditionTests {
 		Restarter.initialize(new String[0], false, RestartInitializer.NONE);
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				Config.class);
-		assertThat(context.containsBean("bean")).isEqualTo(false);
+		assertThat(context.containsBean("bean")).isFalse();
 		context.close();
 	}
 
@@ -90,7 +90,7 @@ public class OnInitializedRestarterConditionTests {
 			Restarter.initialize(new String[0], false, initializer);
 			ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 					Config.class);
-			assertThat(context.containsBean("bean"))isTrue();
+			assertThat(context.containsBean("bean")).isTrue();
 			context.close();
 			synchronized (wait) {
 				wait.notify();

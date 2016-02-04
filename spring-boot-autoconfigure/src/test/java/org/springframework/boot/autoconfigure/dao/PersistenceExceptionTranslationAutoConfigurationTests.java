@@ -63,7 +63,7 @@ public class PersistenceExceptionTranslationAutoConfigurationTests {
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
 				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(equalTo(1));
-		assertThat(beans.values().iterator().next().isProxyTargetClass())isTrue();
+		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
 
 	@Test

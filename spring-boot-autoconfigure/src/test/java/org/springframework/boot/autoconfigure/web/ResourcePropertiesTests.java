@@ -40,19 +40,19 @@ public class ResourcePropertiesTests {
 	@Test
 	public void resourceChainStrategyEnabled() {
 		this.properties.getChain().getStrategy().getFixed().setEnabled(true);
-		assertThat(this.properties.getChain().getEnabled())isTrue();
+		assertThat(this.properties.getChain().getEnabled()).isTrue();
 	}
 
 	@Test
 	public void resourceChainEnabled() {
 		this.properties.getChain().setEnabled(true);
-		assertThat(this.properties.getChain().getEnabled())isTrue();
+		assertThat(this.properties.getChain().getEnabled()).isTrue();
 	}
 
 	@Test
 	public void resourceChainDisabled() {
 		this.properties.getChain().setEnabled(false);
-		assertThat(this.properties.getChain().getEnabled()).isEqualTo(false);
+		assertThat(this.properties.getChain().getEnabled()).isFalse();
 	}
 
 }

@@ -42,13 +42,7 @@ import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.arrayWithSize;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -173,8 +167,8 @@ public class UndertowEmbeddedServletContainerFactoryTests
 
 	@Test
 	public void eachFactoryUsesADiscreteServletContainer() {
-		assertThat(getServletContainerFromNewFactory(),
-				is(not(equalTo(getServletContainerFromNewFactory()))));
+		assertThat(getServletContainerFromNewFactory())
+				.isNotEqualTo(getServletContainerFromNewFactory());
 	}
 
 	@Test
@@ -184,14 +178,14 @@ public class UndertowEmbeddedServletContainerFactoryTests
 		factory.setAccessLogEnabled(true);
 		File accessLogDirectory = this.temporaryFolder.getRoot();
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles()).isEqualTo(arrayWithSize(0));
+		assertThat(accessLogDirectory.listFiles()).isEmpty();
 		this.container = factory.getEmbeddedServletContainer(
 				new ServletRegistrationBean(new ExampleServlet(), "/hello"));
 		this.container.start();
 		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, "access_log.log");
 		awaitFile(accessLog);
-		assertThat(accessLogDirectory.listFiles()).isEqualTo(arrayContaining(accessLog));
+		assertThat(accessLogDirectory.listFiles()).contains(accessLog);
 	}
 
 	@Override

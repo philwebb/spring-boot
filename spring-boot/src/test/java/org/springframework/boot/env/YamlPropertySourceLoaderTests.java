@@ -25,10 +25,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ByteArrayResource;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link YamlPropertySourceLoader}.
@@ -62,7 +59,8 @@ public class YamlPropertySourceLoaderTests {
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
 				.load("resource", resource, null);
 		assertThat(source).isNotNull();
-		assertThat(source.getPropertyNames()).isEqualTo(expected.toArray(new String[] {}));
+		assertThat(source.getPropertyNames())
+				.isEqualTo(expected.toArray(new String[] {}));
 	}
 
 	@Test

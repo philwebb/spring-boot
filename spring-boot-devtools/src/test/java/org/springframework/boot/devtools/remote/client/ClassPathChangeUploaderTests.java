@@ -124,7 +124,7 @@ public class ClassPathChangeUploaderTests {
 		assertClassFile(classFiles.next(), "File1", ClassLoaderFile.Kind.ADDED);
 		assertClassFile(classFiles.next(), "File2", ClassLoaderFile.Kind.MODIFIED);
 		assertClassFile(classFiles.next(), null, ClassLoaderFile.Kind.DELETED);
-		assertThat(classFiles.hasNext()).isEqualTo(false);
+		assertThat(classFiles.hasNext()).isFalse();
 	}
 
 	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {

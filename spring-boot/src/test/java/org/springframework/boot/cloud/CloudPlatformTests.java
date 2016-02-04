@@ -51,7 +51,7 @@ public class CloudPlatformTests {
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
-		assertThat(platform.isActive(environment))isTrue();
+		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class CloudPlatformTests {
 				"---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
-		assertThat(platform.isActive(environment))isTrue();
+		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class CloudPlatformTests {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
-		assertThat(platform.isActive(environment))isTrue();
+		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 }

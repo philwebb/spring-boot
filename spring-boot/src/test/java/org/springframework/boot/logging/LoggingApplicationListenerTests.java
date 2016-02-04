@@ -44,13 +44,9 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-
-
-
 
 /**
  * Tests for {@link LoggingApplicationListener}.
@@ -133,11 +129,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
-		assertThat("Wrong output:\n" + output, output.contains("???")).isFalse();
-		assertTrue("Wrong output:\n" + output,
-				output.startsWith("LOG_FILE_IS_UNDEFINED"));
-		assertThat("Wrong output:\n" + output, output.endsWith("BOOTBOOT")).isTrue();
+		assertThat(output).contains("Hello world").doesNotContain("???")
+				.startsWith("LOG_FILE_IS_UNDEFINED").endsWith("BOOTBOOT");
 	}
 
 	@Test
@@ -159,8 +152,7 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertThat("Wrong output:\n" + output, output.contains("Hello world")).isTrue();
-		assertThat("Wrong output:\n" + output, output.contains("???")).isFalse();
+		assertThat(output).contains("Hello world").doesNotContain("???");
 		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
 	}
 
@@ -186,7 +178,7 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertThat("Wrong output:\n" + output, output.startsWith("target/foo.log")).isTrue();
+		assertThat(output).startsWith("target/foo.log");
 	}
 
 	@Test
@@ -210,8 +202,7 @@ public class LoggingApplicationListenerTests {
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output,
-				output.startsWith("target/foo/spring.log"));
+		assertThat(output).startsWith("target/foo/spring.log");
 	}
 
 	@Test
@@ -279,9 +270,8 @@ public class LoggingApplicationListenerTests {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
-		assertThat(this.outputCapture.toString(),
-				containsString("Cannot set level: GARBAGE"));
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
+				.contains("Cannot set level: GARBAGE");
 	}
 
 	@Test
@@ -292,8 +282,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.fatal("testatfatal");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatfatal");
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
+				.doesNotContain("testatfatal");
 	}
 
 	@Test
@@ -304,8 +294,8 @@ public class LoggingApplicationListenerTests {
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		this.logger.fatal("testatfatal");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug");
-		assertThat(this.outputCapture.toString()).doesNotContain("testatfatal");
+		assertThat(this.outputCapture.toString()).doesNotContain("testatdebug")
+				.doesNotContain("testatfatal");
 	}
 
 	@Test
@@ -385,7 +375,7 @@ public class LoggingApplicationListenerTests {
 		assertThat(listener.shutdownHook).isNotNull();
 		listener.shutdownHook.start();
 		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30,
-				TimeUnit.SECONDS), is(true));
+				TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test

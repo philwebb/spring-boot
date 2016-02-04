@@ -48,7 +48,7 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 	@Override
 	public void isEnabledByDefault() throws Exception {
 		// Shutdown is dangerous so is disabled by default
-		assertThat(getEndpointBean().isEnabled()).isEqualTo(false);
+		assertThat(getEndpointBean().isEnabled()).isFalse();
 	}
 
 	@Test

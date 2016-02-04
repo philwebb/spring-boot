@@ -37,8 +37,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -105,8 +104,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		verifyContext();
 		// You can't initialize the application context and inject the servlet context
 		// because of a cycle - we'd like this to be not null but it never will be
-		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class).isNull()
-				.getServletContext());
+		assertThat(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
+				.getServletContext()).isNull();
 	}
 
 	@Test
@@ -119,8 +118,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		this.context.setParent(parent);
 		this.context.refresh();
 		verifyContext();
-		assertThat(this.context.getBean(ServletContextAwareConfiguration.class).isNotNull()
-				.getServletContext());
+		assertThat(this.context.getBean(ServletContextAwareConfiguration.class)
+				.getServletContext()).isNotNull();
 	}
 
 	private void verifyContext() {

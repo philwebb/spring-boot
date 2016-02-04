@@ -51,7 +51,7 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.isPersistenceEnabled())isTrue();
+		assertThat(configuration.isPersistenceEnabled()).isTrue();
 		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 

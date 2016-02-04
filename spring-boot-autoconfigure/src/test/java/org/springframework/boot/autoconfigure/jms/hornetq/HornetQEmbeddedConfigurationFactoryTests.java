@@ -50,7 +50,7 @@ public class HornetQEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new HornetQEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.isPersistenceEnabled())isTrue();
+		assertThat(configuration.isPersistenceEnabled()).isTrue();
 		assertThat(configuration.getJournalType()).isEqualTo(JournalType.NIO);
 	}
 

@@ -63,14 +63,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -121,14 +114,13 @@ public class EmbeddedWebApplicationContextTests {
 				this.context);
 
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
-		assertThat(
-				this.context.getBeanFactory()
-						.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				instanceOf(SessionScope.class));
+		assertThat(this.context.getBeanFactory()
+				.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+						.isInstanceOf(SessionScope.class);
 
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
-		assertThat(this.context.containsBean(
-				WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME), equalTo(true));
+		assertThat(this.context
+				.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME)).isTrue();
 	}
 
 	@Test
@@ -142,7 +134,7 @@ public class EmbeddedWebApplicationContextTests {
 				.getDeclaredField("shutdownHook");
 		shutdownHookField.setAccessible(true);
 		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook, nullValue());
+		assertThat(shutdownHook).isNull();
 	}
 
 	@Test
@@ -460,8 +452,8 @@ public class EmbeddedWebApplicationContextTests {
 				beanDefinition(propertySupport));
 
 		this.context.refresh();
-		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort(),
-				equalTo(8080));
+		assertThat(getEmbeddedServletContainerFactory().getContainer().getPort())
+				.isEqualTo(8080);
 	}
 
 	@Test
@@ -473,12 +465,12 @@ public class EmbeddedWebApplicationContextTests {
 		factory.registerScope(WebApplicationContext.SCOPE_GLOBAL_SESSION, scope);
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION),
-				sameInstance(scope));
-		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION),
-				sameInstance(scope));
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_REQUEST))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
+				.isSameAs(scope);
+		assertThat(factory.getRegisteredScope(WebApplicationContext.SCOPE_GLOBAL_SESSION))
+				.isSameAs(scope);
 	}
 
 	private void addEmbeddedServletContainerFactoryBean() {

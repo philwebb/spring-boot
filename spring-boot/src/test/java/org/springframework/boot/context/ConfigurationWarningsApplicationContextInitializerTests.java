@@ -36,9 +36,7 @@ import org.springframework.boot.context.configwarnings.real.InRealPackageConfigu
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationWarningsApplicationContextInitializer}.
@@ -107,9 +105,9 @@ public class ConfigurationWarningsApplicationContextInitializerTests {
 	@Test
 	public void logWarningIfScanningProblemPackages() throws Exception {
 		load(InRealButScanningProblemPackages.class);
-		assertThat(this.output.toString(),
-				containsString("Your ApplicationContext is unlikely to start due to a "
-						+ "@ComponentScan of the default package, 'org.springframework'."));
+		assertThat(this.output.toString())
+				.contains("Your ApplicationContext is unlikely to start due to a "
+						+ "@ComponentScan of the default package, 'org.springframework'.");
 
 	}
 

@@ -27,8 +27,7 @@ import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}

@@ -94,7 +94,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable()).isEqualTo(false);
+		assertThat(resolver.isCacheable()).isFalse();
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class, "--spring.thymeleaf.cache=true");
 		TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 		resolver.initialize();
-		assertThat(resolver.isCacheable())isTrue();
+		assertThat(resolver.isCacheable()).isTrue();
 	}
 
 	@Test
@@ -114,7 +114,7 @@ public class LocalDevToolsAutoConfigurationTests {
 			this.context = initializeAndRun(Config.class);
 			TemplateResolver resolver = this.context.getBean(TemplateResolver.class);
 			resolver.initialize();
-			assertThat(resolver.isCacheable())isTrue();
+			assertThat(resolver.isCacheable()).isTrue();
 		}
 		finally {
 			System.setProperty("user.home", userHome);
@@ -132,7 +132,7 @@ public class LocalDevToolsAutoConfigurationTests {
 	public void liveReloadServer() throws Exception {
 		this.context = initializeAndRun(Config.class);
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
-		assertThat(server.isStarted())isTrue();
+		assertThat(server.isStarted()).isTrue();
 	}
 
 	@Test

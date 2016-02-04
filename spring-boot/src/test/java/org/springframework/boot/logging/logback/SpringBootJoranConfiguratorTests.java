@@ -32,10 +32,9 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.mock.env.MockEnvironment;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
-
 
 /**
  * Tests for {@link SpringBootJoranConfigurator}.

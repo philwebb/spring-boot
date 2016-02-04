@@ -25,9 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MimeMappings}.
@@ -51,7 +49,7 @@ public class MimeMappingsTests {
 		MimeMappings clone = new MimeMappings(mappings);
 		mappings.add("baz", "bar");
 		assertThat(clone.get("foo")).isEqualTo("bar");
-		assertThat(clone.get("baz"), nullValue());
+		assertThat(clone.get("baz")).isNull();
 	}
 
 	@Test
@@ -61,7 +59,7 @@ public class MimeMappingsTests {
 		MimeMappings clone = new MimeMappings(mappings);
 		mappings.put("baz", "bar");
 		assertThat(clone.get("foo")).isEqualTo("bar");
-		assertThat(clone.get("baz"), nullValue());
+		assertThat(clone.get("baz")).isNull();
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class MimeMappingsTests {
 	@Test
 	public void addNew() throws Exception {
 		MimeMappings mappings = new MimeMappings();
-		assertThat(mappings.add("foo", "bar"), nullValue());
+		assertThat(mappings.add("foo", "bar")).isNull();
 	}
 
 	@Test
@@ -110,7 +108,7 @@ public class MimeMappingsTests {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.remove("foo")).isEqualTo("bar");
-		assertThat(mappings.remove("foo"), nullValue());
+		assertThat(mappings.remove("foo")).isNull();
 	}
 
 	@Test
@@ -123,7 +121,7 @@ public class MimeMappingsTests {
 	@Test
 	public void getMissing() throws Exception {
 		MimeMappings mappings = new MimeMappings();
-		assertThat(mappings.get("foo"), nullValue());
+		assertThat(mappings.get("foo")).isNull();
 	}
 
 	@Test
@@ -138,7 +136,7 @@ public class MimeMappingsTests {
 			// Expected
 		}
 		mappings.remove("foo");
-		assertThat(unmodifiable.get("foo"), nullValue());
+		assertThat(unmodifiable.get("foo")).isNull();
 	}
 
 }

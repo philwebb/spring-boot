@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import org.junit.Test;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link PropertySourcesLoader}.
@@ -31,10 +31,8 @@ public class PropertySourcesLoaderTests {
 
 	@Test
 	public void fileExtensions() {
-		assertThat(this.loader.getAllFileExtensions().contains("yml")).isTrue();
-		assertThat(this.loader.getAllFileExtensions().contains("yaml")).isTrue();
-		assertThat(this.loader.getAllFileExtensions().contains("properties")).isTrue();
-		assertThat(this.loader.getAllFileExtensions().contains("xml")).isTrue();
+		assertThat(this.loader.getAllFileExtensions()).containsOnly("yml", "yaml",
+				"properties", "xml");
 	}
 
 }

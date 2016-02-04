@@ -31,9 +31,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -58,7 +56,7 @@ public class AtomikosDependsOnBeanFactoryPostProcessorTests {
 	private void assertDependsOn(String bean, String... expected) {
 		BeanDefinition definition = this.context.getBeanDefinition(bean);
 		if (definition.getDependsOn() == null) {
-			assertThat("No dependsOn expected for " + bean, expected.length == 0).isTrue();
+			assertThat(expected).as("No dependsOn expected for " + bean).isEmpty();
 			return;
 		}
 		HashSet<String> dependsOn = new HashSet<String>(

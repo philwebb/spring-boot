@@ -28,9 +28,7 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link LogFile}.
@@ -43,7 +41,7 @@ public class LogFileTests {
 	public void noProperties() throws Exception {
 		PropertyResolver resolver = getPropertyResolver(null, null);
 		LogFile logFile = LogFile.get(resolver);
-		assertThat(logFile, nullValue());
+		assertThat(logFile).isNull();
 	}
 
 	@Test
@@ -54,7 +52,7 @@ public class LogFileTests {
 		logFile.applyTo(properties);
 		assertThat(logFile.toString()).isEqualTo("log.file");
 		assertThat(properties.getProperty("LOG_FILE")).isEqualTo("log.file");
-		assertThat(properties.getProperty("LOG_PATH"), nullValue());
+		assertThat(properties.getProperty("LOG_PATH")).isNull();
 	}
 
 	@Test

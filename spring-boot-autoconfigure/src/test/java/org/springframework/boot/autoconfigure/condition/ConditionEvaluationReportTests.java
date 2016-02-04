@@ -146,13 +146,13 @@ public class ConditionEvaluationReportTests {
 		conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition2);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome2);
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext()).isFalse();
 
 		iterator = map.get("b").iterator();
 		conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition3);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome3);
-		assertThat(iterator.hasNext()).isEqualTo(false);
+		assertThat(iterator.hasNext()).isFalse();
 	}
 
 	@Test
@@ -244,9 +244,9 @@ public class ConditionEvaluationReportTests {
 		assertThat(context.containsBean("negativeOuterPositiveInnerBean"),
 				equalTo(false));
 		String negativeConfig = NegativeOuterConfig.class.getName();
-		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isEqualTo(false);
+		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isFalse();
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
-		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isEqualTo(false);
+		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isFalse();
 	}
 
 	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {

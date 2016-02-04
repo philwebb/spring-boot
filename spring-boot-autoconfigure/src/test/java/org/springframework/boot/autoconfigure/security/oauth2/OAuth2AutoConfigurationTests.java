@@ -130,7 +130,7 @@ public class OAuth2AutoConfigurationTests {
 				.getBean(ClientDetailsService.class);
 		ClientDetails clientDetails = clientDetailsService
 				.loadClientByClientId(config.getClientId());
-		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService))isTrue();
+		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService)).isTrue();
 		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
 				is(equalTo(InMemoryClientDetailsService.class.getName())));
 		assertThat(handler instanceof ApprovalStoreUserApprovalHandler)isTrue();
@@ -153,9 +153,9 @@ public class OAuth2AutoConfigurationTests {
 		ClientDetails config = this.context.getBean(ClientDetails.class);
 		assertThat(config.getClientId()).isEqualTo("myclientid");
 		assertThat(config.getClientSecret()).isEqualTo("mysecret");
-		assertThat(config.isAutoApprove("read"))isTrue();
-		assertThat(config.isAutoApprove("write"))isTrue();
-		assertThat(config.isAutoApprove("foo")).isEqualTo(false);
+		assertThat(config.isAutoApprove("read")).isTrue();
+		assertThat(config.isAutoApprove("write")).isTrue();
+		assertThat(config.isAutoApprove("foo")).isFalse();
 		assertThat(config.getAccessTokenValiditySeconds()).isEqualTo(40);
 		assertThat(config.getRefreshTokenValiditySeconds()).isEqualTo(80);
 		verifyAuthentication(config);

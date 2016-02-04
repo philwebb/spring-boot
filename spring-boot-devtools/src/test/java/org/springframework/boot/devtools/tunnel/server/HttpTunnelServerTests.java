@@ -205,7 +205,7 @@ public class HttpTunnelServerTests {
 		this.server.handle(h2);
 		this.server.getServerThread().join();
 		assertThat(h1.getServletResponse().getStatus()).isEqualTo(410);
-		assertThat(this.serverChannel.isOpen()).isEqualTo(false);
+		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
 
 	@Test
@@ -258,7 +258,7 @@ public class HttpTunnelServerTests {
 		this.server.handle(h1);
 		this.serverChannel.send("hello");
 		this.server.getServerThread().join();
-		assertThat(this.serverChannel.isOpen()).isEqualTo(false);
+		assertThat(this.serverChannel.isOpen()).isFalse();
 	}
 
 	@Test
@@ -322,19 +322,19 @@ public class HttpTunnelServerTests {
 
 		};
 		connectionThread.start();
-		assertThat(responded.get()).isEqualTo(false);
+		assertThat(responded.get()).isFalse();
 		Thread.sleep(sleepBeforeResponse);
 		connection.respond(HttpStatus.NO_CONTENT);
 		connectionThread.join();
-		assertThat(responded.get())isTrue();
+		assertThat(responded.get()).isTrue();
 	}
 
 	@Test
 	public void httpConnectionRunning() throws Exception {
 		HttpConnection connection = new HttpConnection(this.request, this.response);
-		assertThat(connection.isOlderThan(100)).isEqualTo(false);
+		assertThat(connection.isOlderThan(100)).isFalse();
 		Thread.sleep(200);
-		assertThat(connection.isOlderThan(100))isTrue();
+		assertThat(connection.isOlderThan(100)).isTrue();
 	}
 
 	/**

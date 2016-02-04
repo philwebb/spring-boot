@@ -90,7 +90,7 @@ public class TunnelClientTests {
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
 		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
-		assertThat(this.tunnelConnection.isOpen()).isEqualTo(false);
+		assertThat(this.tunnelConnection.isOpen()).isFalse();
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class TunnelClientTests {
 		Thread.sleep(200);
 		client.stop();
 		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
-		assertThat(this.tunnelConnection.isOpen()).isEqualTo(false);
+		assertThat(this.tunnelConnection.isOpen()).isFalse();
 		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
 	}
 

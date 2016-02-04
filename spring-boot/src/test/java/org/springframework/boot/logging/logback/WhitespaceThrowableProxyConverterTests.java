@@ -20,10 +20,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WhitespaceThrowableProxyConverter}.
@@ -49,8 +46,7 @@ public class WhitespaceThrowableProxyConverterTests {
 	public void withStackTrace() throws Exception {
 		this.event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
 		String s = this.converter.convert(this.event);
-		assertThat(s, startsWith(LINE_SEPARATOR));
-		assertThat(s, endsWith(LINE_SEPARATOR));
+		assertThat(s).startsWith(LINE_SEPARATOR).endsWith(LINE_SEPARATOR);
 	}
 
 }

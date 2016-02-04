@@ -39,7 +39,7 @@ public class NamePatternFilterTests {
 		MockNamePatternFilter filter = new MockNamePatternFilter();
 		assertThat(filter.getResults("not.a.regex"),
 				hasEntry("not.a.regex", (Object) "not.a.regex"));
-		assertThat(filter.isGetNamesCalled()).isEqualTo(false);
+		assertThat(filter.isGetNamesCalled()).isFalse();
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class NamePatternFilterTests {
 		Map<String, Object> results = filter.getResults("fo.*");
 		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isEqualTo((Object) "fool");
-		assertThat(filter.isGetNamesCalled())isTrue();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class NamePatternFilterTests {
 		Map<String, Object> results = filter.getResults("fo.+");
 		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isEqualTo((Object) "fool");
-		assertThat(filter.isGetNamesCalled())isTrue();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class NamePatternFilterTests {
 		Map<String, Object> results = filter.getResults("foo$");
 		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isNull();
-		assertThat(filter.isGetNamesCalled())isTrue();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class NamePatternFilterTests {
 		Map<String, Object> results = filter.getResults("^foo");
 		assertThat(results.get("foo")).isEqualTo((Object) "foo");
 		assertThat(results.get("fool")).isNull();
-		assertThat(filter.isGetNamesCalled())isTrue();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class NamePatternFilterTests {
 		Map<String, Object> results = filter.getResults("fo[a-z]l");
 		assertThat(results.get("foo")).isNull();
 		assertThat(results.get("fool")).isEqualTo((Object) "fool");
-		assertThat(filter.isGetNamesCalled())isTrue();
+		assertThat(filter.isGetNamesCalled()).isTrue();
 	}
 
 	private static class MockNamePatternFilter extends NamePatternFilter<Object> {

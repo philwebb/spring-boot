@@ -23,8 +23,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CloudFoundryVcapEnvironmentPostProcessor}.
@@ -54,8 +53,9 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\","
 						+ "\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(this.context.getEnvironment().isEqualTo("bb7935245adf3e650dfb7c58a06e9ece")
-				.getProperty("vcap.application.instance_id"));
+		assertThat(
+				this.context.getEnvironment().getProperty("vcap.application.instance_id"))
+						.isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
 	}
 
 	@Test
@@ -63,8 +63,8 @@ public class CloudFoundryVcapEnvironmentPostProcessorTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"VCAP_APPLICATION:{\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertEquals("foo.cfapps.io",
-				this.context.getEnvironment().getProperty("vcap.application.uris[0]"));
+		assertThat(this.context.getEnvironment().getProperty("vcap.application.uris[0]"))
+				.isEqualTo("foo.cfapps.io");
 	}
 
 	@Test

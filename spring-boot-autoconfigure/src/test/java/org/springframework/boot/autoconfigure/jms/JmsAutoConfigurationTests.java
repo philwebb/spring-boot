@@ -157,7 +157,7 @@ public class JmsAutoConfigurationTests {
 				jmsListenerContainerFactory.getClass());
 		DefaultMessageListenerContainer listenerContainer = ((DefaultJmsListenerContainerFactory) jmsListenerContainerFactory)
 				.createListenerContainer(mock(JmsListenerEndpoint.class));
-		assertThat(listenerContainer.isAutoStartup()).isEqualTo(false);
+		assertThat(listenerContainer.isAutoStartup()).isFalse();
 		assertEquals(Session.CLIENT_ACKNOWLEDGE,
 				listenerContainer.getSessionAcknowledgeMode());
 		assertThat(listenerContainer.getConcurrentConsumers()).isEqualTo(2);

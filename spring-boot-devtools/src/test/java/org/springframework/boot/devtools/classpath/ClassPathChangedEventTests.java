@@ -61,9 +61,9 @@ public class ClassPathChangedEventTests {
 		Set<ChangedFiles> changeSet = new LinkedHashSet<ChangedFiles>();
 		ClassPathChangedEvent event;
 		event = new ClassPathChangedEvent(this.source, changeSet, false);
-		assertThat(event.isRestartRequired()).isEqualTo(false);
+		assertThat(event.isRestartRequired()).isFalse();
 		event = new ClassPathChangedEvent(this.source, changeSet, true);
-		assertThat(event.isRestartRequired())isTrue();
+		assertThat(event.isRestartRequired()).isTrue();
 	}
 
 }

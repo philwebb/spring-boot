@@ -48,7 +48,7 @@ public class TomcatPublicMetricsTests {
 			Iterator<Metric<?>> metrics = tomcatMetrics.metrics().iterator();
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.max");
 			assertThat(metrics.next().getName()).isEqualTo("httpsessions.active");
-			assertThat(metrics.hasNext()).isEqualTo(false);
+			assertThat(metrics.hasNext()).isFalse();
 		}
 		finally {
 			context.close();

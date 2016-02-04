@@ -25,9 +25,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EnvironmentTestUtils}.
@@ -78,11 +76,9 @@ public class EnvironmentTestUtilsTests {
 	}
 
 	private void testAddSimplePair(String key, String value, String delimiter) {
-		assertFalse("Property '" + key + "' should not exist",
-				this.environment.containsProperty(key));
+		assertThat(this.environment.containsProperty(key)).isFalse();
 		EnvironmentTestUtils.addEnvironment(this.environment, key + delimiter + value);
-		assertEquals("Wrong value for property '" + key + "'", value,
-				this.environment.getProperty(key));
+		assertThat(this.environment.getProperty(key)).isEqualTo(value);
 	}
 
 	@Test

@@ -114,7 +114,7 @@ public class ConditionalOnJndiTests {
 	public void jndiLocationNotFound() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a"));
-		assertThat(outcome.isMatch()).isEqualTo(false);
+		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class ConditionalOnJndiTests {
 		this.condition.setFoundLocation("java:/b");
 		ConditionOutcome outcome = this.condition.getMatchOutcome(null,
 				mockMetaData("java:/a", "java:/b"));
-		assertThat(outcome.isMatch())isTrue();
+		assertThat(outcome.isMatch()).isTrue();
 	}
 
 	private void setupJndi() {

@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for disabling JMX by default

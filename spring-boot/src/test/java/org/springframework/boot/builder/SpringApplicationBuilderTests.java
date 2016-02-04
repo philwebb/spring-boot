@@ -36,7 +36,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -61,7 +60,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class).contextClass(StaticApplicationContext.class)
 				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
-		assertThat(this.context).isEqualTo(instanceOf(StaticApplicationContext.class));
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
 		assertThat(this.context.getEnvironment().acceptsProfiles("foo")).isTrue();
 	}
@@ -91,7 +90,7 @@ public class SpringApplicationBuilderTests {
 				.sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class);
 		this.context = application.run();
-		assertThat(this.context).isEqualTo(instanceOf(StaticApplicationContext.class));
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 	}
 
 	@Test

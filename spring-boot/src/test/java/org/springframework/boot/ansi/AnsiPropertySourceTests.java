@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Tests for {@link AnsiPropertySource}.
@@ -56,11 +55,9 @@ public class AnsiPropertySourceTests {
 
 	@Test
 	public void getAnsi() throws Exception {
-		assertThat(this.source.getProperty("Ansi.BOLD"))
-				.isEqualTo(equalTo((Object) AnsiStyle.BOLD));
+		assertThat(this.source.getProperty("Ansi.BOLD")).isEqualTo(AnsiStyle.BOLD);
 		assertThat(this.source.getProperty("Ansi.RED")).isEqualTo(AnsiColor.RED);
-		assertThat(this.source.getProperty("Ansi.BG_RED"))
-				.isEqualTo(equalTo((Object) AnsiBackground.RED));
+		assertThat(this.source.getProperty("Ansi.BG_RED")).isEqualTo(AnsiBackground.RED);
 	}
 
 	@Test
