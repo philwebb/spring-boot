@@ -44,11 +44,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,7 +90,7 @@ public class BasicErrorControllerIntegrationTests {
 				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isTrue();
+		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
 	@Test

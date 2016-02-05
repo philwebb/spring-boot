@@ -217,7 +217,7 @@ public class VelocityAutoConfigurationTests {
 		registerAndRefreshContext("spring.velocity.allow-session-override:true");
 		AbstractTemplateViewResolver viewResolver = this.context
 				.getBean(VelocityViewResolver.class);
-		assertThat(viewResolver).extracting("allowSessionOverride").isEqualTo(true);
+		assertThat(viewResolver).extracting("allowSessionOverride").containsExactly(true);
 	}
 
 	private void registerAndRefreshContext(String... env) {

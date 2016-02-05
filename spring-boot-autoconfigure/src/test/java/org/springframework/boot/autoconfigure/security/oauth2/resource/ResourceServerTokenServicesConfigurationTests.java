@@ -123,7 +123,7 @@ public class ResourceServerTokenServicesConfigurationTests {
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
 		assertThat(services).extracting("authoritiesExtractor")
-				.isEqualTo(this.context.getBean(AuthoritiesExtractor.class));
+				.containsExactly(this.context.getBean(AuthoritiesExtractor.class));
 	}
 
 	@Test

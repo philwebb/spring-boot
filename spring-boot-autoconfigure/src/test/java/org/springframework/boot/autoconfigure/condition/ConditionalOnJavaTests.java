@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.function.Function;
 
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava.JavaVersion;
@@ -36,7 +35,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.iterableWithSize;
 
 /**
  * Tests for {@link ConditionalOnJava}.
@@ -142,9 +140,7 @@ public class ConditionalOnJavaTests {
 	}
 
 	private void assertPresent(boolean expected) {
-		int expectedNumber = expected ? 1 : 0;
-		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values()).isEqualTo(matcher);
+		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private final class ClassHidingClassLoader extends URLClassLoader {

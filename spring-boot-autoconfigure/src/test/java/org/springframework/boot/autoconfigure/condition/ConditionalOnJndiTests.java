@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.naming.Context;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.iterableWithSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -130,9 +128,7 @@ public class ConditionalOnJndiTests {
 	}
 
 	private void assertPresent(boolean expected) {
-		int expectedNumber = expected ? 1 : 0;
-		Matcher<Iterable<String>> matcher = iterableWithSize(expectedNumber);
-		assertThat(this.context.getBeansOfType(String.class).values()).isEqualTo(matcher);
+		assertThat(this.context.getBeansOfType(String.class)).hasSize(expected ? 1 : 0);
 	}
 
 	private void load(Class<?> config, String... environment) {

@@ -87,7 +87,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertThat(internalResourceViewResolver).isNotNull();
 		assertThat(deviceDelegatingViewResolver).isNotNull();
-		assertThat(deviceDelegatingViewResolver)
+		assertThat(deviceDelegatingViewResolver.getViewResolver())
 				.isInstanceOf(InternalResourceViewResolver.class);
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);

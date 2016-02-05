@@ -158,9 +158,10 @@ public class DispatcherServletAutoConfigurationTests {
 				"spring.mvc.dispatch-trace-request:true");
 		this.context.refresh();
 		DispatcherServlet bean = this.context.getBean(DispatcherServlet.class);
-		assertThat(bean).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
-		assertThat(bean).extracting("dispatchOptionsRequest").isEqualTo(true);
-		assertThat(bean).extracting("dispatchTraceRequest").isEqualTo(true);
+		assertThat(bean).extracting("throwExceptionIfNoHandlerFound")
+				.containsExactly(true);
+		assertThat(bean).extracting("dispatchOptionsRequest").containsExactly(true);
+		assertThat(bean).extracting("dispatchTraceRequest").containsExactly(true);
 	}
 
 	@Configuration

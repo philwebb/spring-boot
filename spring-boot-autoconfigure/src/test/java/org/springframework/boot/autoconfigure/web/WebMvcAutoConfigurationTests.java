@@ -352,7 +352,8 @@ public class WebMvcAutoConfigurationTests {
 		load();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect").isEqualTo(true);
+		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
+				.containsExactly(true);
 	}
 
 	@Test
@@ -366,7 +367,8 @@ public class WebMvcAutoConfigurationTests {
 		this.context.refresh();
 		RequestMappingHandlerAdapter adapter = this.context
 				.getBean(RequestMappingHandlerAdapter.class);
-		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect").isEqualTo(false);
+		assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
+				.containsExactly(false);
 	}
 
 	@Test

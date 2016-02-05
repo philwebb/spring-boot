@@ -101,8 +101,7 @@ public class DefaultErrorViewIntegrationTests {
 								.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		System.out.println(content);
-		assertThat(content).contains("injection");
+		assertThat(content).doesNotContain("injection");
 	}
 
 	public static String injectCall() {

@@ -38,7 +38,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
@@ -61,7 +60,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isEqualTo(instanceOf(MongoClient.class));
+		assertThat(mongo).isInstanceOf(MongoClient.class);
 		MongoMappingContext mappingContext = this.context
 				.getBean(MongoMappingContext.class);
 		@SuppressWarnings("unchecked")
@@ -75,7 +74,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 		prepareApplicationContext(EmptyConfiguration.class);
 
 		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo).isEqualTo(instanceOf(MongoClient.class));
+		assertThat(mongo).isInstanceOf(MongoClient.class);
 	}
 
 	@Test
