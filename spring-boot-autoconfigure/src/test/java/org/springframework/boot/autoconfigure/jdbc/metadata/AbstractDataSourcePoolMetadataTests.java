@@ -95,13 +95,15 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 			public Void doInConnection(Connection connection)
 					throws SQLException, DataAccessException {
 				jdbcTemplate.execute(new ConnectionCallback<Void>() {
+
 					@Override
 					public Void doInConnection(Connection connection)
 							throws SQLException, DataAccessException {
 						assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
-						assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0);
+						assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0f);
 						return null;
 					}
+
 				});
 				return null;
 			}

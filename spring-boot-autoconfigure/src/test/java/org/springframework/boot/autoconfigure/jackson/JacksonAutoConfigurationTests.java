@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -115,7 +114,7 @@ public class JacksonAutoConfigurationTests {
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertThat(mapper.getDateFormat()).isEqualTo(instanceOf(StdDateFormat.class));
+		assertThat(mapper.getDateFormat()).isInstanceOf(StdDateFormat.class);
 	}
 
 	@Test
@@ -126,7 +125,7 @@ public class JacksonAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		DateFormat dateFormat = mapper.getDateFormat();
-		assertThat(dateFormat).isEqualTo(instanceOf(SimpleDateFormat.class));
+		assertThat(dateFormat).isInstanceOf(SimpleDateFormat.class);
 		assertThat(((SimpleDateFormat) dateFormat).toPattern())
 				.isEqualTo("yyyyMMddHHmmss");
 	}
@@ -153,7 +152,7 @@ public class JacksonAutoConfigurationTests {
 				"spring.jackson.date-format:org.springframework.boot.autoconfigure.jackson.JacksonAutoConfigurationTests.MyDateFormat");
 		this.context.refresh();
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertThat(mapper.getDateFormat()).isEqualTo(instanceOf(MyDateFormat.class));
+		assertThat(mapper.getDateFormat()).isInstanceOf(MyDateFormat.class);
 	}
 
 	@Test

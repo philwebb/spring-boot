@@ -50,15 +50,15 @@ public class SendGridAutoConfigurationTests {
 	public void expectedSendGridBeanCreatedUsername() {
 		loadContext("spring.sendgrid.username:user", "spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("username").isEqualTo("user");
-		assertThat(sendGrid).extracting("password").isEqualTo("secret");
+		assertThat(sendGrid).extracting("username").containsExactly("user");
+		assertThat(sendGrid).extracting("password").containsExactly("secret");
 	}
 
 	@Test
 	public void expectedSendGridBeanCreatedApiKey() {
 		loadContext("spring.sendgrid.apiKey:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("password").isEqualTo("SG.SECRET-API-KEY");
+		assertThat(sendGrid).extracting("password").containsExactly("SG.SECRET-API-KEY");
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -72,8 +72,8 @@ public class SendGridAutoConfigurationTests {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.username:user",
 				"spring.sendgrid.password:secret");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("username").isEqualTo("manual-user");
-		assertThat(sendGrid).extracting("password").isEqualTo("manual-secret");
+		assertThat(sendGrid).extracting("username").containsExactly("manual-user");
+		assertThat(sendGrid).extracting("password").containsExactly("manual-secret");
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class SendGridAutoConfigurationTests {
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertThat(sendGrid).extracting("client").extracting("routePlanner")
-				.isInstanceOf(DefaultProxyRoutePlanner.class);
+				.hasOnlyElementsOfType(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {

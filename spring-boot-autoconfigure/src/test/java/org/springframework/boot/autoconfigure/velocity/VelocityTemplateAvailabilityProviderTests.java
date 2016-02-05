@@ -62,7 +62,7 @@ public class VelocityTemplateAvailabilityProviderTests {
 	public void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.velocity.prefix", "prefix/");
 		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment,
-				getClass().getClassLoader(), this.resourceLoader)).isFalse();
+				getClass().getClassLoader(), this.resourceLoader)).isTrue();
 	}
 
 	@Test
