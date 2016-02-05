@@ -80,18 +80,13 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-
-
-
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -122,18 +117,19 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerAdaptersCreated() throws Exception {
 		load();
-		assertThat(this.context.getBeanNamesForType(HandlerAdapter.class).length).isEqualTo(3);
-		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class).isFalse()
-				.getMessageConverters().isEmpty());
-		assertEquals(this.context.getBean(HttpMessageConverters.class).getConverters(),
-				this.context.getBean(RequestMappingHandlerAdapter.class)
-						.getMessageConverters());
+		assertThat(this.context.getBeanNamesForType(HandlerAdapter.class).length)
+				.isEqualTo(3);
+		assertThat(this.context.getBean(RequestMappingHandlerAdapter.class)
+				.getMessageConverters()).isNotEmpty()
+						.isEqualTo(this.context.getBean(HttpMessageConverters.class)
+								.getConverters());
 	}
 
 	@Test
 	public void handlerMappingsCreated() throws Exception {
 		load();
-		assertThat(this.context.getBeanNamesForType(HandlerMapping.class).length).isEqualTo(6);
+		assertThat(this.context.getBeanNamesForType(HandlerMapping.class).length)
+				.isEqualTo(6);
 	}
 
 	@Test
@@ -142,8 +138,8 @@ public class WebMvcAutoConfigurationTests {
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/**").size()).isEqualTo(5);
 		assertThat(mappingLocations.get("/webjars/**").size()).isEqualTo(1);
-		assertThat(mappingLocations.get("/webjars/**").get(0), equalTo(
-				(Resource) new ClassPathResource("/META-INF/resources/webjars/")));
+		assertThat(mappingLocations.get("/webjars/**").get(0))
+				.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 		assertThat(getResourceResolvers("/webjars/**").size()).isEqualTo(1);
 		assertThat(getResourceTransformers("/webjars/**").size()).isEqualTo(0);
 		assertThat(getResourceResolvers("/**").size()).isEqualTo(1);
@@ -163,8 +159,8 @@ public class WebMvcAutoConfigurationTests {
 		load(WebJars.class);
 		Map<String, List<Resource>> mappingLocations = getResourceMappingLocations();
 		assertThat(mappingLocations.get("/webjars/**").size()).isEqualTo(1);
-		assertThat(mappingLocations.get("/webjars/**").get(0),
-				equalTo((Resource) new ClassPathResource("/foo/")));
+		assertThat(mappingLocations.get("/webjars/**").get(0))
+				.isEqualTo(new ClassPathResource("/foo/"));
 	}
 
 	@Test

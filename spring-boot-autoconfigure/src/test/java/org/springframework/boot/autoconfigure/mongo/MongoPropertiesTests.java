@@ -29,9 +29,6 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -59,7 +56,7 @@ public class MongoPropertiesTests {
 		properties.setPort(12345);
 		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
-		assertThat(allAddresses, hasSize(1));
+		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "localhost", 12345);
 	}
 
@@ -69,7 +66,7 @@ public class MongoPropertiesTests {
 		properties.setHost("mongo.example.com");
 		MongoClient client = properties.createMongoClient(null, null);
 		List<ServerAddress> allAddresses = client.getAllAddress();
-		assertThat(allAddresses, hasSize(1));
+		assertThat(allAddresses).hasSize(1);
 		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
 	}
 

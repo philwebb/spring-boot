@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.autoconfigure.jooq;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.sql.SQLException;
 

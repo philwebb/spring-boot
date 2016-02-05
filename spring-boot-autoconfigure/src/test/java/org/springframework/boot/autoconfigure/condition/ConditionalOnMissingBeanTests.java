@@ -34,12 +34,7 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link ConditionalOnMissingBean}.
@@ -126,8 +121,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -137,8 +132,8 @@ public class ConditionalOnMissingBeanTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "theValue:foo");
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -147,8 +142,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -158,8 +153,7 @@ public class ConditionalOnMissingBeanTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
-		assertThat(this.context.getBeansOfType(ExampleBean.class).values().size(),
-				equalTo(2));
+		assertThat(this.context.getBeansOfType(ExampleBean.class).values()).hasSize(2);
 	}
 
 	@Test
@@ -168,8 +162,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -178,8 +172,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -188,8 +182,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -198,8 +192,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(ExampleBean.class).toString(),
-				equalTo("fromFactory"));
+		assertThat(this.context.getBean(ExampleBean.class).toString())
+				.isEqualTo("fromFactory");
 	}
 
 	@Test
@@ -208,9 +202,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnIgnoredSubclass.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(equalTo(2));
-		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
-				is(equalTo(1)));
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(CustomExampleBean.class)).hasSize(1);
 	}
 
 	@Test
@@ -219,9 +212,8 @@ public class ConditionalOnMissingBeanTests {
 				ConditionalOnIgnoredSubclassByName.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(equalTo(2));
-		assertThat(this.context.getBeansOfType(CustomExampleBean.class).size(),
-				is(equalTo(1)));
+		assertThat(this.context.getBeansOfType(ExampleBean.class)).hasSize(2);
+		assertThat(this.context.getBeansOfType(CustomExampleBean.class)).hasSize(1);
 	}
 
 	@Configuration

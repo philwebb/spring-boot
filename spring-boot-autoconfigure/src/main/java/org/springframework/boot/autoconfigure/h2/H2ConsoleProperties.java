@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.h2;
+package org.springframework.boot.autoconfigure.h2;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

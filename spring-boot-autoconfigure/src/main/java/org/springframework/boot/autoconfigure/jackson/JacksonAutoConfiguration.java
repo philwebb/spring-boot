@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jackson;
+package org.springframework.boot.autoconfigure.jackson;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;

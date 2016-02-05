@@ -33,8 +33,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringDataWebAutoConfiguration} and
@@ -63,9 +62,10 @@ public class JpaWebAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class)).isNotNull();
-		assertThat(this.context.getBean(FormattingConversionService.class).isTrue()
-				.canConvert(Long.class, City.class));
+		assertThat(this.context.getBean(PageableHandlerMethodArgumentResolver.class))
+				.isNotNull();
+		assertThat(this.context.getBean(FormattingConversionService.class)
+				.canConvert(Long.class, City.class)).isTrue();
 	}
 
 	@Configuration

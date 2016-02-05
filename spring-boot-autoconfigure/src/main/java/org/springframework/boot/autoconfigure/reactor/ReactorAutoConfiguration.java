@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.reactor;
+package org.springframework.boot.autoconfigure.reactor;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import reactor.Environment;
 import reactor.bus.EventBus;

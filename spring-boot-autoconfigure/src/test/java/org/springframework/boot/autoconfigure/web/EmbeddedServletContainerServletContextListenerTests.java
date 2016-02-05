@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;
-
-import javax.servlet.ServletContextEvent;
+package org.springframework.boot.autoconfigure.web;import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.junit.Test;

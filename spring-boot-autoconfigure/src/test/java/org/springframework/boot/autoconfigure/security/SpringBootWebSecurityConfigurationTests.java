@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import javax.servlet.Filter;
 
@@ -61,11 +62,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-
-
-
 
 /**
  * Tests for {@link SpringBootWebSecurityConfiguration}.
@@ -87,8 +86,9 @@ public class SpringBootWebSecurityConfigurationTests {
 
 	@Test
 	public void testDefaultIgnores() {
-		assertThat(SpringBootWebSecurityConfiguration.getIgnored(new SecurityProperties()).isTrue()
-				.contains("/css/**"));
+		List<String> ignored = SpringBootWebSecurityConfiguration
+				.getIgnored(new SecurityProperties());
+		assertThat(ignored).contains("/css/**");
 	}
 
 	@Test
@@ -96,8 +96,9 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestWebConfiguration.class,
 				"--server.port=0");
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
-		assertThat(this.context.getBean(AuthenticationManager.class).isNotNull()
-				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertThat(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")))
+						.isNotNull();
 	}
 
 	@Test
@@ -166,8 +167,9 @@ public class SpringBootWebSecurityConfigurationTests {
 		this.context = SpringApplication.run(TestInjectWebConfiguration.class,
 				"--server.port=0");
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
-		assertThat(this.context.getBean(AuthenticationManager.class).isNotNull()
-				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")));
+		assertThat(this.context.getBean(AuthenticationManager.class)
+				.authenticate(new UsernamePasswordAuthenticationToken("dave", "secret")))
+						.isNotNull();
 	}
 
 	// gh-3447
@@ -306,4 +308,5 @@ public class SpringBootWebSecurityConfigurationTests {
 		}
 
 	}
+
 }

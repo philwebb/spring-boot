@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Spring Data's Web Support.
  */
-package org.springframework.boot.autoconfigure.data.web;
+package org.springframework.boot.autoconfigure.data.web;import static org.assertj.core.api.Assertions.assertThat;
+

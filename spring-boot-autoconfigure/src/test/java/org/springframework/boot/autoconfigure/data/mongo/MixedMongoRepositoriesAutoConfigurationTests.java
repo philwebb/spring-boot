@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.mongo;
-
-import java.util.ArrayList;
+package org.springframework.boot.autoconfigure.data.mongo;import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -41,6 +39,8 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

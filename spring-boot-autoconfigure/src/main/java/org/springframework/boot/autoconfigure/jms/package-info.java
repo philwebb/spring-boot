@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for JMS.
  */
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.autoconfigure.jms;import static org.assertj.core.api.Assertions.assertThat;
+

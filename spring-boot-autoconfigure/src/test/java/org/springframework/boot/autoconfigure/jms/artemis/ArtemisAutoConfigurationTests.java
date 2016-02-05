@@ -54,10 +54,7 @@ import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ArtemisAutoConfiguration}.
@@ -106,10 +103,8 @@ public class ArtemisAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).hasSize(1);
 		org.apache.activemq.artemis.core.config.Configuration configuration = this.context
 				.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
-		assertFalse("Persistence disabled by default",
-				configuration.isPersistenceEnabled());
-		assertThat(configuration.isSecurityEnabled()).as("Security disabled by default").isFalse();
-
+		assertThat(configuration.isPersistenceEnabled()).isFalse();
+		assertThat(configuration.isSecurityEnabled()).isFalse();
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
 		assertInVmConnectionFactory(connectionFactory);
@@ -122,9 +117,8 @@ public class ArtemisAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(EmbeddedJMS.class)).hasSize(1);
 		org.apache.activemq.artemis.core.config.Configuration configuration = this.context
 				.getBean(org.apache.activemq.artemis.core.config.Configuration.class);
-		assertFalse("Persistence disabled by default",
-				configuration.isPersistenceEnabled());
-		assertThat(configuration.isSecurityEnabled()).as("Security disabled by default").isFalse();
+		assertThat(configuration.isPersistenceEnabled()).isFalse();
+		assertThat(configuration.isSecurityEnabled()).isFalse();
 
 		ActiveMQConnectionFactory connectionFactory = this.context
 				.getBean(ActiveMQConnectionFactory.class);
@@ -218,9 +212,8 @@ public class ArtemisAutoConfigurationTests {
 		JmsTemplate jmsTemplate2 = this.context.getBean(JmsTemplate.class);
 		jmsTemplate2.setReceiveTimeout(1000L);
 		Message message = jmsTemplate2.receive("TestQueue");
-		assertThat(message).as("No message on persistent queue").isNotNull();
-		assertEquals("Invalid message received on queue", msgId,
-				((TextMessage) message).getText());
+		assertThat(message).isNotNull();
+		assertThat(((TextMessage) message).getText()).isEqualTo(msgId);
 	}
 
 	@Test
@@ -232,13 +225,11 @@ public class ArtemisAutoConfigurationTests {
 			ArtemisProperties properties = this.context.getBean(ArtemisProperties.class);
 			ArtemisProperties anotherProperties = anotherContext
 					.getBean(ArtemisProperties.class);
-			assertThat(properties.getEmbedded().as("ServerId should not match").isTrue()
-					.getServerId() < anotherProperties.getEmbedded().getServerId());
-
+			assertThat(properties.getEmbedded().getServerId() < anotherProperties
+					.getEmbedded().getServerId()).isTrue();
 			DestinationChecker checker = new DestinationChecker(this.context);
 			checker.checkQueue("Queue1", true);
 			checker.checkQueue("Queue2", true);
-
 			DestinationChecker anotherChecker = new DestinationChecker(anotherContext);
 			anotherChecker.checkQueue("Queue2", true);
 			anotherChecker.checkQueue("Queue1", true);
@@ -272,8 +263,8 @@ public class ArtemisAutoConfigurationTests {
 			ActiveMQConnectionFactory connectionFactory) {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(
 				connectionFactory);
-		assertEquals(InVMConnectorFactory.class.getName(),
-				transportConfig.getFactoryClassName());
+		assertThat(transportConfig.getFactoryClassName())
+				.isEqualTo(InVMConnectorFactory.class.getName());
 		return transportConfig;
 	}
 
@@ -281,8 +272,8 @@ public class ArtemisAutoConfigurationTests {
 			ActiveMQConnectionFactory connectionFactory, String host, int port) {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(
 				connectionFactory);
-		assertEquals(NettyConnectorFactory.class.getName(),
-				transportConfig.getFactoryClassName());
+		assertThat(transportConfig.getFactoryClassName())
+				.isEqualTo(NettyConnectorFactory.class.getName());
 		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
 		assertThat(transportConfig.getParams().get("port")).isEqualTo(port);
 		return transportConfig;
@@ -357,6 +348,7 @@ public class ArtemisAutoConfigurationTests {
 
 	@Configuration
 	protected static class EmptyConfiguration {
+
 	}
 
 	@Configuration

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.social;
-
-import org.junit.Test;
+package org.springframework.boot.autoconfigure.social;import org.junit.Test;
 
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

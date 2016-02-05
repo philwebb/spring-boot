@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -34,7 +32,7 @@ public class ResourcePropertiesTests {
 	@Test
 	public void resourceChainNoCustomization() {
 		System.out.println(this.properties.getChain().getEnabled());
-		assertThat(this.properties.getChain().getEnabled(), nullValue());
+		assertThat(this.properties.getChain().getEnabled()).isNull();
 	}
 
 	@Test

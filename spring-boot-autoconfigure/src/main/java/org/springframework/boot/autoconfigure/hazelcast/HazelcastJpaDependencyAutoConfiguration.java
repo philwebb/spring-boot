@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hazelcast;
+package org.springframework.boot.autoconfigure.hazelcast;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.persistence.EntityManagerFactory;
 

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;
-
-import java.io.ByteArrayInputStream;
+package org.springframework.boot.autoconfigure.mustache.web;import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 
@@ -27,9 +25,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.View;
-
-import static org.hamcrest.Matchers.equalTo;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

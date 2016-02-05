@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.batch;
-
-import org.junit.Before;
+package org.springframework.boot.autoconfigure.batch;import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.batch.core.Job;
@@ -43,6 +41,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

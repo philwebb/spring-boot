@@ -29,12 +29,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 
@@ -52,7 +47,7 @@ public class ActiveMQAutoConfigurationTests {
 		load(EmptyConfiguration.class);
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory, instanceOf(ActiveMQConnectionFactory.class));
+		assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
 		String brokerUrl = ((ActiveMQConnectionFactory) connectionFactory).getBrokerURL();
 		assertThat(brokerUrl).isEqualTo("vm://localhost?broker.persistent=false");
 	}
@@ -60,8 +55,8 @@ public class ActiveMQAutoConfigurationTests {
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
 		load(CustomConnectionFactoryConfiguration.class);
-		assertTrue(
-				mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock());
+		assertThat(mockingDetails(this.context.getBean(ConnectionFactory.class)).isMock())
+				.isTrue();
 	}
 
 	@Test
@@ -69,10 +64,10 @@ public class ActiveMQAutoConfigurationTests {
 		load(EmptyConfiguration.class, "spring.activemq.pooled:true");
 		ConnectionFactory connectionFactory = this.context
 				.getBean(ConnectionFactory.class);
-		assertThat(connectionFactory, instanceOf(PooledConnectionFactory.class));
+		assertThat(connectionFactory).isInstanceOf(PooledConnectionFactory.class);
 		this.context.close();
-		assertThat(((PooledConnectionFactory) connectionFactory).createConnection(),
-				is(nullValue()));
+		assertThat(((PooledConnectionFactory) connectionFactory).createConnection())
+				.isNull();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -103,4 +98,5 @@ public class ActiveMQAutoConfigurationTests {
 			return mock(ConnectionFactory.class);
 		}
 	}
+
 }

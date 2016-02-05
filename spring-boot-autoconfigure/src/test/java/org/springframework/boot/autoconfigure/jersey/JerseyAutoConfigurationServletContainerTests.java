@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,10 +65,10 @@ public class JerseyAutoConfigurationServletContainerTests {
 
 	@Test
 	public void existingJerseyServletIsAmended() {
-		assertThat(output.toString(),
-				containsString("Configuring existing registration for Jersey servlet"));
-		assertThat(output.toString(), containsString(
-				"Servlet " + Application.class.getName() + " was not registered"));
+		assertThat(output.toString())
+				.contains("Configuring existing registration for Jersey servlet");
+		assertThat(output.toString()).contains(
+				"Servlet " + Application.class.getName() + " was not registered");
 	}
 
 	@ImportAutoConfiguration({ EmbeddedServletContainerAutoConfiguration.class,

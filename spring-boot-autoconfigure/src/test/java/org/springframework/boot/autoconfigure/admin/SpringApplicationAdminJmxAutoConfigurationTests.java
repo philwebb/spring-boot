@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.admin;
-
-import java.lang.management.ManagementFactory;
+package org.springframework.boot.autoconfigure.admin;import java.lang.management.ManagementFactory;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;

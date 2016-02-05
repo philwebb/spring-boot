@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for transaction support.
  */
-package org.springframework.boot.autoconfigure.transaction;
+package org.springframework.boot.autoconfigure.transaction;import static org.assertj.core.api.Assertions.assertThat;
+

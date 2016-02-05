@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.autoconfigure.cache;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.CacheManager;

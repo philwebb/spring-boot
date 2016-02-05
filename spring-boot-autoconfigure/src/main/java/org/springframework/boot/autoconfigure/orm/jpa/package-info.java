@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for JPA and Spring ORM.
  */
-package org.springframework.boot.autoconfigure.orm.jpa;
+package org.springframework.boot.autoconfigure.orm.jpa;import static org.assertj.core.api.Assertions.assertThat;
+

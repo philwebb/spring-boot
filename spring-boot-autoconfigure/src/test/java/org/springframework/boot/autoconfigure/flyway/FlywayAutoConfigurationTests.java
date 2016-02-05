@@ -48,9 +48,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -114,8 +111,7 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/migration]",
-				Arrays.asList(flyway.getLocations()).toString());
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/migration");
 	}
 
 	@Test
@@ -126,8 +122,8 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/changelog, classpath:db/migration]",
-				Arrays.asList(flyway.getLocations()).toString());
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
+				"classpath:db/migration");
 	}
 
 	@Test
@@ -139,8 +135,8 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/changelog, classpath:db/migration]",
-				Arrays.asList(flyway.getLocations()).toString());
+		assertThat(flyway.getLocations()).containsExactly("classpath:db/changelog",
+				"classpath:db/migration");
 	}
 
 	@Test
@@ -219,8 +215,8 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getBaselineVersion(),
-				equalTo(MigrationVersion.fromVersion("0")));
+		assertThat(flyway.getBaselineVersion())
+				.isEqualTo(MigrationVersion.fromVersion("0"));
 	}
 
 	@Test
@@ -233,8 +229,8 @@ public class FlywayAutoConfigurationTests {
 				FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertThat(flyway.getBaselineVersion(),
-				equalTo(MigrationVersion.fromVersion("1")));
+		assertThat(flyway.getBaselineVersion())
+				.isEqualTo(MigrationVersion.fromVersion("1"));
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
@@ -301,7 +297,7 @@ public class FlywayAutoConfigurationTests {
 		}
 
 		public void assertCalled() {
-			assertThat(this.called)isTrue();
+			assertThat(this.called).isTrue();
 		}
 	}
 

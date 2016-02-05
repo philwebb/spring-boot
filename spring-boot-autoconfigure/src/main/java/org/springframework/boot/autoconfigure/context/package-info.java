@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for the Spring context.
  */
-package org.springframework.boot.autoconfigure.context;
+package org.springframework.boot.autoconfigure.context;import static org.assertj.core.api.Assertions.assertThat;
+

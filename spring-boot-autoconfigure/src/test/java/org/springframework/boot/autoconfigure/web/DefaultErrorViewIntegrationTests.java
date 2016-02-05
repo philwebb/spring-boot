@@ -42,8 +42,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,8 +71,8 @@ public class DefaultErrorViewIntegrationTests {
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertThat("Wrong content: " + content, content.contains("<html>")).isTrue();
-		assertThat("Wrong content: " + content, content.contains("999")).isTrue();
+		assertThat(content).contains("<html>");
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -86,9 +85,9 @@ public class DefaultErrorViewIntegrationTests {
 						.accept(MediaType.TEXT_HTML))
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
-		assertThat("Wrong content: " + content, content.contains("&lt;script&gt;")).isTrue();
-		assertThat("Wrong content: " + content, content.contains("Hello World")).isTrue();
-		assertThat("Wrong content: " + content, content.contains("999")).isTrue();
+		assertThat(content).contains("&lt;script&gt;");
+		assertThat(content).contains("Hello World");
+		assertThat(content).contains("999");
 	}
 
 	@Test
@@ -103,7 +102,7 @@ public class DefaultErrorViewIntegrationTests {
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		System.out.println(content);
-		assertThat("Wrong content: " + content, content.contains("injection")).isFalse();
+		assertThat(content).contains("injection");
 	}
 
 	public static String injectCall() {

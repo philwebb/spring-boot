@@ -45,12 +45,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Matchers.anyObject;
@@ -135,7 +131,6 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 					new SpringApplication(), new String[0], context, ex));
 		}
-
 		assertThat(this.debugLog.size()).isNotEqualTo(0);
 		assertThat(this.infoLog.size()).isEqualTo(0);
 	}
@@ -154,7 +149,6 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
 					new SpringApplication(), new String[0], context, ex));
 		}
-
 		assertThat(this.debugLog.size()).isEqualTo(0);
 		assertThat(this.infoLog.size()).isNotEqualTo(0);
 	}
@@ -173,8 +167,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 		// Just basic sanity check, test is for visual inspection
 		String l = this.debugLog.get(0);
-		assertThat(l,
-				containsString("not a web application (OnWebApplicationCondition)"));
+		assertThat(l).contains("not a web application (OnWebApplicationCondition)");
 	}
 
 	@Test
@@ -201,8 +194,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(),
 						new String[0], null, new RuntimeException("Planned")));
-		assertThat(this.infoLog.get(0),
-				containsString("Unable to provide auto-configuration report"));
+		assertThat(this.infoLog.get(0))
+				.contains("Unable to provide auto-configuration report");
 	}
 
 	public static class MockLogFactory extends LogFactoryImpl {

@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for JDBC.
  */
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.jdbc;import static org.assertj.core.api.Assertions.assertThat;
+

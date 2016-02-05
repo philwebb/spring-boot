@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Spring Social.
  */
-package org.springframework.boot.autoconfigure.social;
+package org.springframework.boot.autoconfigure.social;import static org.assertj.core.api.Assertions.assertThat;
+

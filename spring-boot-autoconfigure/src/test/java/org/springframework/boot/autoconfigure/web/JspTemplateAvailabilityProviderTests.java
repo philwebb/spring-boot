@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;
-
-import org.junit.Test;
+package org.springframework.boot.autoconfigure.web;import org.junit.Test;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

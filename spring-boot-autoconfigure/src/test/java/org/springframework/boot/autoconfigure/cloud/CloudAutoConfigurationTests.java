@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cloud;
-
-import java.util.ArrayList;
+package org.springframework.boot.autoconfigure.cloud;import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +27,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

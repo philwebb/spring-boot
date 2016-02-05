@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for email support.
  */
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.autoconfigure.mail;import static org.assertj.core.api.Assertions.assertThat;
+

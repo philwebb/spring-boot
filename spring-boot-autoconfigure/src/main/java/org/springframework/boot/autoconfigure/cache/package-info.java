@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for the cache abstraction.
  */
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.autoconfigure.cache;import static org.assertj.core.api.Assertions.assertThat;
+

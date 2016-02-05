@@ -25,8 +25,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -70,9 +69,10 @@ public class DataSourcePoolMetadataProvidersTests {
 	public void createWithProviders() {
 		DataSourcePoolMetadataProviders provider = new DataSourcePoolMetadataProviders(
 				Arrays.asList(this.firstProvider, this.secondProvider));
-		assertSame(this.first, provider.getDataSourcePoolMetadata(this.firstDataSource));
-		assertSame(this.second,
-				provider.getDataSourcePoolMetadata(this.secondDataSource));
+		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource))
+				.isSameAs(this.first);
+		assertThat(provider.getDataSourcePoolMetadata(this.secondDataSource))
+				.isSameAs(this.second);
 		assertThat(provider.getDataSourcePoolMetadata(this.unknownDataSource)).isNull();
 	}
 

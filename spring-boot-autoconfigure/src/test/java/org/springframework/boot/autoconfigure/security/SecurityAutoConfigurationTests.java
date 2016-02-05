@@ -61,14 +61,8 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
-
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -98,8 +92,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 		// 4 for static resources and one for the rest
-		assertEquals(5,
-				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
+				.hasSize(5);
 	}
 
 	@Test
@@ -111,9 +105,9 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
-				this.context.getBean("securityFilterChainRegistration",
-						DelegatingFilterProxyRegistrationBean.class).getOrder());
+		assertThat(this.context.getBean("securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
 	}
 
 	@Test
@@ -141,9 +135,9 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100,
-				this.context.getBean("securityFilterChainRegistration",
-						DelegatingFilterProxyRegistrationBean.class).getOrder());
+		assertThat(this.context.getBean("securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(
+						FilterRegistrationBean.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
 	}
 
 	@Test
@@ -156,8 +150,8 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(12345, this.context.getBean("securityFilterChainRegistration",
-				DelegatingFilterProxyRegistrationBean.class).getOrder());
+		assertThat(this.context.getBean("securityFilterChainRegistration",
+				DelegatingFilterProxyRegistrationBean.class).getOrder()).isEqualTo(12345);
 	}
 
 	@Test
@@ -170,8 +164,8 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
-		assertEquals(1,
-				this.context.getBean(FilterChainProxy.class).getFilterChains().size());
+		assertThat(this.context.getBean(FilterChainProxy.class).getFilterChains())
+				.hasSize(1);
 	}
 
 	@Test
@@ -184,7 +178,8 @@ public class SecurityAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// Ignores and the "matches-none" filter only
-		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(FilterChainProxy.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -215,8 +210,8 @@ public class SecurityAutoConfigurationTests {
 		catch (BadCredentialsException e) {
 			// expected
 		}
-		assertTrue("Wrong event type: " + listener.event,
-				listener.event instanceof AuthenticationFailureBadCredentialsEvent);
+		assertThat(listener.event)
+				.isInstanceOf(AuthenticationFailureBadCredentialsEvent.class);
 	}
 
 	@Test
@@ -227,10 +222,9 @@ public class SecurityAutoConfigurationTests {
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(
-				this.context.getBean(
-						TestAuthenticationConfiguration.class).authenticationManager,
-				this.context.getBean(AuthenticationManager.class));
+		assertThat(this.context.getBean(AuthenticationManager.class))
+				.isEqualTo(this.context.getBean(
+						TestAuthenticationConfiguration.class).authenticationManager);
 	}
 
 	@Test
@@ -242,8 +236,8 @@ public class SecurityAutoConfigurationTests {
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(UserDetailsSecurityCustomizer.class).isNotNull()
-				.getUserDetails().loadUserByUsername("user"));
+		assertThat(this.context.getBean(UserDetailsSecurityCustomizer.class)
+				.getUserDetails().loadUserByUsername("user")).isNotNull();
 	}
 
 	@Test
@@ -256,10 +250,9 @@ public class SecurityAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(
-				this.context.getBean(
-						TestAuthenticationConfiguration.class).authenticationManager,
-				this.context.getBean(AuthenticationManager.class));
+		assertThat(this.context.getBean(AuthenticationManager.class))
+				.isEqualTo(this.context.getBean(
+						TestAuthenticationConfiguration.class).authenticationManager);
 	}
 
 	@Test
@@ -275,8 +268,8 @@ public class SecurityAutoConfigurationTests {
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
 				"foo", "bar",
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertNotNull(
-				this.context.getBean(AuthenticationManager.class).authenticate(user));
+		assertThat(this.context.getBean(AuthenticationManager.class).authenticate(user))
+				.isNotNull();
 		pingAuthenticationListener();
 	}
 
@@ -293,8 +286,8 @@ public class SecurityAutoConfigurationTests {
 		UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(
 				"foo", "bar",
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
-		assertNotNull(
-				this.context.getBean(AuthenticationManager.class).authenticate(user));
+		assertThat(this.context.getBean(AuthenticationManager.class).authenticate(user))
+				.isNotNull();
 	}
 
 	@Test
@@ -366,7 +359,8 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(AuthenticationManagerCustomizer.class,
 				SecurityAutoConfiguration.class, ServerPropertiesAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class)).isNotNull();
+		assertThat(this.context.getBean(SecurityEvaluationContextExtension.class))
+				.isNotNull();
 	}
 
 	@Test
@@ -404,8 +398,8 @@ public class SecurityAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		EnumSet<DispatcherType> dispatcherTypes = (EnumSet<DispatcherType>) ReflectionTestUtils
 				.getField(bean, "dispatcherTypes");
-		assertThat(dispatcherTypes,
-				is(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.ERROR)));
+		assertThat(dispatcherTypes).containsOnly(DispatcherType.INCLUDE,
+				DispatcherType.ERROR);
 	}
 
 	private static final class AuthenticationListener

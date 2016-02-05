@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for RabbitMQ.
  */
-package org.springframework.boot.autoconfigure.amqp;
+package org.springframework.boot.autoconfigure.amqp;import static org.assertj.core.api.Assertions.assertThat;
+

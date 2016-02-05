@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.session;
-
-import org.junit.After;
+package org.springframework.boot.autoconfigure.session;import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -31,6 +29,8 @@ import org.springframework.boot.redis.RedisTestServer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

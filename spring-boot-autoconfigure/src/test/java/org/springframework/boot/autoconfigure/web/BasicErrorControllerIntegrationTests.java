@@ -44,6 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -56,11 +57,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
-import static org.hamcrest.Matchers.containsString;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link BasicErrorController} using a real HTTP server.
@@ -93,8 +90,7 @@ public class BasicErrorControllerIntegrationTests {
 				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertFalse("trace parameter should not be set",
-				entity.getBody().containsKey("trace"));
+		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
 	@Test
@@ -105,8 +101,7 @@ public class BasicErrorControllerIntegrationTests {
 				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertTrue("trace parameter should be set",
-				entity.getBody().containsKey("trace"));
+		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
 	@Test
@@ -117,8 +112,7 @@ public class BasicErrorControllerIntegrationTests {
 				.getForEntity(createUrl("?trace=true"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertFalse("trace parameter should not be set",
-				entity.getBody().containsKey("trace"));
+		assertThat(entity.getBody().containsKey("trace")).isFalse();
 	}
 
 	@Test
@@ -129,8 +123,7 @@ public class BasicErrorControllerIntegrationTests {
 				.getForEntity(createUrl("?trace=false"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error",
 				IllegalStateException.class, "Expected!", "/");
-		assertTrue("trace parameter should be set",
-				entity.getBody().containsKey("trace"));
+		assertThat(entity.getBody().containsKey("trace")).isTrue();
 	}
 
 	@Test
@@ -181,15 +174,15 @@ public class BasicErrorControllerIntegrationTests {
 		assertThat(resp).contains("Error count: 1");
 		assertThat(resp).contains("errors=[{");
 		assertThat(resp).contains("codes=[");
-		assertThat(resp, containsString(
-				"org.springframework.web.bind.MethodArgumentNotValidException"));
+		assertThat(resp).contains(MethodArgumentNotValidException.class.getName());
 	}
 
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error,
 			Class<?> exception, String message, String path) {
 		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
 		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
-		assertThat(content.get("exception")).as("Wrong exception").isEqualTo(exception.getName());
+		assertThat(content.get("exception")).as("Wrong exception")
+				.isEqualTo(exception.getName());
 		assertThat(content.get("message")).as("Wrong message").isEqualTo(message);
 		assertThat(content.get("path")).as("Wrong path").isEqualTo(path);
 	}

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jndi;
-
-import java.util.HashMap;
+package org.springframework.boot.autoconfigure.jndi;import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 

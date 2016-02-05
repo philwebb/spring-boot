@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.context;
-
-import org.junit.After;
+package org.springframework.boot.autoconfigure.context;import org.junit.After;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
@@ -26,7 +24,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

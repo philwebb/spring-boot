@@ -59,11 +59,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -109,8 +105,8 @@ public class JtaAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBeansOfType(JtaTransactionManager.class)).isEmpty();
 		assertThat(this.context.getBeansOfType(XADataSourceWrapper.class)).isEmpty();
-		assertEquals(0,
-				this.context.getBeansOfType(XAConnectionFactoryWrapper.class).size());
+		assertThat(this.context.getBeansOfType(XAConnectionFactoryWrapper.class))
+				.isEmpty();
 	}
 
 	@Test

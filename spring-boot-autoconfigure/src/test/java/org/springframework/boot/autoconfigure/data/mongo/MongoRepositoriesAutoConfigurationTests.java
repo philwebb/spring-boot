@@ -37,11 +37,8 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.instanceOf;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
@@ -70,7 +67,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(entities).hasSize(equalTo(1));
+		assertThat(entities).hasSize(1);
 	}
 
 	@Test

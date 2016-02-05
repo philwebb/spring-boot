@@ -30,9 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -65,7 +63,8 @@ public class TransactionAutoConfigurationTests {
 				.getBean(PlatformTransactionManager.class);
 		TransactionTemplate transactionTemplate = this.context
 				.getBean(TransactionTemplate.class);
-		assertSame(transactionManager, transactionTemplate.getTransactionManager());
+		assertThat(transactionTemplate.getTransactionManager())
+				.isSameAs(transactionManager);
 	}
 
 	@Test

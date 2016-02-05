@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Spring WebSocket.
  */
-package org.springframework.boot.autoconfigure.websocket;
+package org.springframework.boot.autoconfigure.websocket;import static org.assertj.core.api.Assertions.assertThat;
+

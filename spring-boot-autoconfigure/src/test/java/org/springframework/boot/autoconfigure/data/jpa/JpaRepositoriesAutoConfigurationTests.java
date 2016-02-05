@@ -37,7 +37,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
@@ -66,9 +66,9 @@ public class JpaRepositoriesAutoConfigurationTests {
 	@Test
 	public void testOverrideRepositoryConfiguration() throws Exception {
 		prepareApplicationContext(CustomConfiguration.class);
-
-		assertNotNull(this.context.getBean(
-				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
+		assertThat(this.context.getBean(
+				org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class))
+						.isNotNull();
 		assertThat(this.context.getBean(PlatformTransactionManager.class)).isNotNull();
 		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 	}

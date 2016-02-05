@@ -60,10 +60,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -94,8 +91,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		assertThat(this.context.getBean(JobExplorer.class)).isNotNull();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class)).isEqualTo(0)
-				.queryForList("select * from BATCH_JOB_EXECUTION").size());
+		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 	}
 
 	@Test
@@ -117,8 +114,10 @@ public class BatchAutoConfigurationTests {
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(JobLauncher.class).length).isEqualTo(0);
-		assertThat(this.context.getBeanNamesForType(JobRepository.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(JobLauncher.class).length)
+				.isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(JobRepository.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -130,8 +129,8 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertThat(this.context.getBean(JobRepository.class).isNotNull().getLastJobExecution("job",
-				new JobParameters()));
+		assertThat(this.context.getBean(JobRepository.class).getLastJobExecution("job",
+				new JobParameters())).isNotNull();
 	}
 
 	@Test
@@ -146,8 +145,8 @@ public class BatchAutoConfigurationTests {
 		JobRepository repository = this.context.getBean(JobRepository.class);
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(repository.getLastJobExecution("discreteRegisteredJob",
-				new JobParameters()));
+		assertThat(repository.getLastJobExecution("discreteRegisteredJob",
+				new JobParameters())).isNotNull();
 	}
 
 	@Test
@@ -161,8 +160,9 @@ public class BatchAutoConfigurationTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertThat(this.context.getBean(JobRepository.class).isNotNull()
-				.getLastJobExecution("discreteLocalJob", new JobParameters()));
+		assertThat(this.context.getBean(JobRepository.class)
+				.getLastJobExecution("discreteLocalJob", new JobParameters()))
+						.isNotNull();
 	}
 
 	@Test
@@ -175,7 +175,8 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
-		assertThat(this.context.getBeanNamesForType(CommandLineRunner.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(CommandLineRunner.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -206,11 +207,12 @@ public class BatchAutoConfigurationTests {
 		PlatformTransactionManager transactionManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		// It's a lazy proxy, but it does render its target if you ask for toString():
-		assertThat(transactionManager.toString().contains("JpaTransactionManager")).isTrue();
+		assertThat(transactionManager.toString().contains("JpaTransactionManager"))
+				.isTrue();
 		assertThat(this.context.getBean(EntityManagerFactory.class)).isNotNull();
 		// Ensure the JobRepository can be used (no problem with isolation level)
-		assertThat(this.context.getBean(JobRepository.class).isNull().getLastJobExecution("job",
-				new JobParameters()));
+		assertThat(this.context.getBean(JobRepository.class).getLastJobExecution("job",
+				new JobParameters())).isNull();
 	}
 
 	@Test
@@ -226,12 +228,13 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(JobLauncher.class)).isNotNull();
-		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class)).isEqualTo(0)
-				.queryForList("select * from PREFIX_JOB_EXECUTION").size());
+		assertThat(new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
 		JobExplorer jobExplorer = this.context.getBean(JobExplorer.class);
 		assertThat(jobExplorer.findRunningJobExecutions("test")).isEmpty();
 		JobRepository jobRepository = this.context.getBean(JobRepository.class);
-		assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
+		assertThat(jobRepository.getLastJobExecution("test", new JobParameters()))
+				.isNull();
 	}
 
 	@Configuration

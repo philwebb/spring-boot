@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.liquibase;
+package org.springframework.boot.autoconfigure.liquibase;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Map;
 

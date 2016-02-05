@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.amqp;
-
-import javax.net.SocketFactory;
+package org.springframework.boot.autoconfigure.amqp;import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.junit.After;

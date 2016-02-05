@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.orm.jpa;
+package org.springframework.boot.autoconfigure.orm.jpa;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Map;
 

@@ -17,4 +17,5 @@
 /**
  * Base classes for template Auto-configuration.
  */
-package org.springframework.boot.autoconfigure.template;
+package org.springframework.boot.autoconfigure.template;import static org.assertj.core.api.Assertions.assertThat;
+

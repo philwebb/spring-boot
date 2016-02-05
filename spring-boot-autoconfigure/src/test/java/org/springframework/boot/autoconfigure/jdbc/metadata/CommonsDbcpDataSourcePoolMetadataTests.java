@@ -20,8 +20,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CommonsDbcpDataSourcePoolMetadata}.
@@ -77,8 +76,8 @@ public class CommonsDbcpDataSourcePoolMetadataTests
 	public void getValidationQuery() {
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setValidationQuery("SELECT FROM FOO");
-		assertEquals("SELECT FROM FOO",
-				new CommonsDbcpDataSourcePoolMetadata(dataSource).getValidationQuery());
+		assertThat(new CommonsDbcpDataSourcePoolMetadata(dataSource).getValidationQuery())
+				.isEqualTo("SELECT FROM FOO");
 	}
 
 	private CommonsDbcpDataSourcePoolMetadata createDataSourceMetadata(int minSize,

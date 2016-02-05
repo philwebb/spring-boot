@@ -35,10 +35,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.iterableWithSize;
 
 /**
  * Tests for {@link ConditionalOnJava}.
@@ -84,16 +82,16 @@ public class ConditionalOnJavaTests {
 	public void equalOrNewerMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER,
 				JavaVersion.SEVEN, JavaVersion.SIX);
-		assertThat(outcome.getMessage(),
-				equalTo("Required JVM version " + "1.6 or newer found 1.7"));
+		assertThat(outcome.getMessage())
+				.isEqualTo("Required JVM version " + "1.6 or newer found 1.7");
 	}
 
 	@Test
 	public void olderThanMessage() throws Exception {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN,
 				JavaVersion.SEVEN, JavaVersion.SIX);
-		assertThat(outcome.getMessage(),
-				equalTo("Required JVM version " + "older than 1.6 found 1.7"));
+		assertThat(outcome.getMessage())
+				.isEqualTo("Required JVM version " + "older than 1.6 found 1.7");
 	}
 
 	@Test
@@ -113,8 +111,8 @@ public class ConditionalOnJavaTests {
 
 	@Test
 	public void java6IsTheFallback() throws Exception {
-		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class),
-				is("1.6"));
+		assertThat(getJavaVersion(Function.class, Files.class, ServiceLoader.class))
+				.isEqualTo("1.6");
 	}
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
@@ -135,7 +133,7 @@ public class ConditionalOnJavaTests {
 			boolean expected) {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(range, runningVersion,
 				version);
-		assertThat(outcome.getMessage(), outcome.isMatch()).isEqualTo(expected);
+		assertThat(outcome.isMatch()).as(outcome.getMessage()).isEqualTo(expected);
 	}
 
 	private void registerAndRefresh(Class<?> annotatedClasses) {

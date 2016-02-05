@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.client;
+package org.springframework.boot.autoconfigure.security.oauth2.client;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.lang.reflect.Method;
 

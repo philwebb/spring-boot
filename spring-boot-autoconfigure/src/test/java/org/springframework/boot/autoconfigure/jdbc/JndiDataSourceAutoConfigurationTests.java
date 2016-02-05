@@ -35,9 +35,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.jmx.export.MBeanExporter;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -116,7 +113,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
 		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
 				.getPropertyValue("excludedBeans");
-		assertThat(excludedBeans, contains("dataSource"));
+		assertThat(excludedBeans).containsExactly("dataSource");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,7 +134,7 @@ public class JndiDataSourceAutoConfigurationTests {
 		MBeanExporter exporter = this.context.getBean(MBeanExporter.class);
 		Set<String> excludedBeans = (Set<String>) new DirectFieldAccessor(exporter)
 				.getPropertyValue("excludedBeans");
-		assertThat(excludedBeans, hasSize(0));
+		assertThat(excludedBeans).isEmpty();
 	}
 
 	private void configureJndi(String name, DataSource dataSource)

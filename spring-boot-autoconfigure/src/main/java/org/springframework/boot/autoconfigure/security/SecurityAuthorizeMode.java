@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;
+package org.springframework.boot.autoconfigure.security;import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * Security authorization modes as specified in {@link SecurityProperties}.

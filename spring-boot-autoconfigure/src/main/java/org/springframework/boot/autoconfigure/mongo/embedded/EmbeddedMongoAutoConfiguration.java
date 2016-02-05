@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mongo.embedded;
+package org.springframework.boot.autoconfigure.mongo.embedded;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.io.IOException;
 import java.net.InetAddress;

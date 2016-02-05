@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.session;
+package org.springframework.boot.autoconfigure.session;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.annotation.PostConstruct;
 

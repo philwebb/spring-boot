@@ -33,12 +33,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.instanceOf;
-
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -70,7 +65,8 @@ public class LiquibaseAutoConfigurationTests {
 		this.context.register(LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(SpringLiquibase.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(SpringLiquibase.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -80,8 +76,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-master.yaml",
-				liquibase.getChangeLog());
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
 		assertThat(liquibase.getContexts()).isNull();
 		assertThat(liquibase.getDefaultSchema()).isNull();
 		assertThat(liquibase.isDropFirst()).isFalse();
@@ -96,8 +92,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-override.xml",
-				liquibase.getChangeLog());
+		assertThat(liquibase.getChangeLog())
+				.isEqualTo("classpath:/db/changelog/db.changelog-override.xml");
 	}
 
 	@Test
@@ -144,8 +140,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("jdbc:hsqldb:mem:liquibase",
-				liquibase.getDataSource().getConnection().getMetaData().getURL());
+		assertThat(liquibase.getDataSource().getConnection().getMetaData().getURL())
+				.isEqualTo("jdbc:hsqldb:mem:liquibase");
 	}
 
 	@Test(expected = BeanCreationException.class)
@@ -166,7 +162,7 @@ public class LiquibaseAutoConfigurationTests {
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		Object log = ReflectionTestUtils.getField(liquibase, "log");
-		assertThat(log, instanceOf(CommonsLoggingLiquibaseLogger.class));
+		assertThat(log).isInstanceOf(CommonsLoggingLiquibaseLogger.class);
 	}
 
 	@Test

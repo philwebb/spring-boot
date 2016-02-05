@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.hornetq;
+package org.springframework.boot.autoconfigure.jms.hornetq;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import org.hornetq.core.config.Configuration;
 import org.hornetq.jms.server.embedded.EmbeddedJMS;

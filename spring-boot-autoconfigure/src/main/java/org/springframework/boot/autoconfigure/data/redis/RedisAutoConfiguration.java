@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.redis;
+package org.springframework.boot.autoconfigure.data.redis;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.artemis;
+package org.springframework.boot.autoconfigure.jms.artemis;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Collection;
 import java.util.List;

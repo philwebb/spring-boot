@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.cassandra;
-
-import com.datastax.driver.core.Cluster;
+package org.springframework.boot.autoconfigure.data.cassandra;import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**

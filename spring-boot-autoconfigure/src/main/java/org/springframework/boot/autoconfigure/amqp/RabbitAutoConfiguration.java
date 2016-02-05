@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.amqp;
+package org.springframework.boot.autoconfigure.amqp;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import com.rabbitmq.client.Channel;
 

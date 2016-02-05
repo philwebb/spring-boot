@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
-
-import org.junit.Rule;
+package org.springframework.boot.autoconfigure.jdbc;import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import static org.hamcrest.Matchers.equalTo;
-
 
 import static org.assertj.core.api.Assertions.assertThat;
 

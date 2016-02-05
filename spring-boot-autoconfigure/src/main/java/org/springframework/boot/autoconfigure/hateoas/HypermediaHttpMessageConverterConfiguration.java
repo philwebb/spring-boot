@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.hateoas;
+package org.springframework.boot.autoconfigure.hateoas;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Arrays;
 import java.util.Map;

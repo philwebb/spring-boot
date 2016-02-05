@@ -46,11 +46,6 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
@@ -86,7 +81,8 @@ public class ServerPropertiesTests {
 		binder.bind(new MutablePropertyValues(
 				Collections.singletonMap("server.address", "127.0.0.1")));
 		assertThat(binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(this.properties.getAddress()).isEqualTo(InetAddress.getByName("127.0.0.1"));
+		assertThat(this.properties.getAddress())
+				.isEqualTo(InetAddress.getByName("127.0.0.1"));
 	}
 
 	@Test
@@ -145,7 +141,8 @@ public class ServerPropertiesTests {
 		assertThat(tomcat.getAccesslog().getSuffix()).isEqualTo("-bar.log");
 		assertThat(tomcat.getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
-		assertThat(tomcat.getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getInternalProxies())
+				.isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 	}
 
 	@Test
@@ -249,8 +246,8 @@ public class ServerPropertiesTests {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.uriEncoding", "US-ASCII");
 		bindProperties(map);
-		assertEquals(Charset.forName("US-ASCII"),
-				this.properties.getTomcat().getUriEncoding());
+		assertThat(this.properties.getTomcat().getUriEncoding())
+				.isEqualTo(Charset.forName("US-ASCII"));
 	}
 
 	@Test
@@ -310,7 +307,7 @@ public class ServerPropertiesTests {
 		this.properties.customize(container);
 		assertThat(container.getValves()).hasSize(1);
 		Valve valve = container.getValves().iterator().next();
-		assertThat(valve, instanceOf(RemoteIpValve.class));
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
 		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
@@ -340,7 +337,7 @@ public class ServerPropertiesTests {
 
 		assertThat(container.getValves()).hasSize(1);
 		Valve valve = container.getValves().iterator().next();
-		assertThat(valve, instanceOf(RemoteIpValve.class));
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
 		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
 		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
 		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("On");

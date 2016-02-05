@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for embedded servlet containers and Spring MVC.
  */
-package org.springframework.boot.autoconfigure.web;
+package org.springframework.boot.autoconfigure.web;import static org.assertj.core.api.Assertions.assertThat;
+

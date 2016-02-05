@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.resource;
-
-import java.util.Date;
+package org.springframework.boot.autoconfigure.security.oauth2.resource;import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +50,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

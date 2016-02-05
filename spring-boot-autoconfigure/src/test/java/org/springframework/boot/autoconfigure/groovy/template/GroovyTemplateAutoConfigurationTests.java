@@ -44,10 +44,6 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -75,7 +71,7 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBean(GroovyMarkupViewResolver.class), notNullValue());
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class)).isNotNull();
 	}
 
 	@Test
@@ -108,8 +104,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.groovy.template.enabled:false");
 		registerAndRefreshContext();
-		assertThat(this.context.getBeanNamesForType(ViewResolver.class).length,
-				equalTo(0));
+		assertThat(this.context.getBeanNamesForType(ViewResolver.class)).isEmpty();
 	}
 
 	@Test
@@ -158,8 +153,8 @@ public class GroovyTemplateAutoConfigurationTests {
 	@Test
 	public void disableCache() {
 		registerAndRefreshContext("spring.groovy.template.cache:false");
-		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit(),
-				equalTo(0));
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit())
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -179,8 +174,8 @@ public class GroovyTemplateAutoConfigurationTests {
 	public void customConfiguration() throws Exception {
 		registerAndRefreshContext(
 				"spring.groovy.template.configuration.auto-indent:true");
-		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent(),
-				is(true));
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).isAutoIndent())
+				.isEqualTo(true);
 	}
 
 	private void registerAndRefreshContext(String... env) {
@@ -199,7 +194,7 @@ public class GroovyTemplateAutoConfigurationTests {
 		GroovyMarkupViewResolver resolver = this.context
 				.getBean(GroovyMarkupViewResolver.class);
 		View view = resolver.resolveViewName(viewName, locale);
-		assertThat(view, notNullValue());
+		assertThat(view).isNotNull();
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
@@ -207,4 +202,5 @@ public class GroovyTemplateAutoConfigurationTests {
 		view.render(null, request, response);
 		return response;
 	}
+
 }

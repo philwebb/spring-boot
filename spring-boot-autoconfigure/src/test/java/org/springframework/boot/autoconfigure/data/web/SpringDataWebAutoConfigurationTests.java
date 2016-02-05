@@ -27,8 +27,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -57,7 +55,7 @@ public class SpringDataWebAutoConfigurationTests {
 				.setServletContext(new MockServletContext());
 		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
-		assertThat(beans).hasSize(equalTo(1));
+		assertThat(beans).hasSize(1);
 	}
 
 	@Test
@@ -68,7 +66,7 @@ public class SpringDataWebAutoConfigurationTests {
 		this.context.refresh();
 		Map<String, PageableHandlerMethodArgumentResolver> beans = this.context
 				.getBeansOfType(PageableHandlerMethodArgumentResolver.class);
-		assertThat(beans).hasSize(equalTo(0));
+		assertThat(beans).isEmpty();
 	}
 
 }

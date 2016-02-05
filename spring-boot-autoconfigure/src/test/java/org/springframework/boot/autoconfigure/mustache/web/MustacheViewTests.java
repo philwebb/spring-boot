@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;
-
-import java.util.Collections;
+package org.springframework.boot.autoconfigure.mustache.web;import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
 import org.junit.Before;
@@ -27,6 +25,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

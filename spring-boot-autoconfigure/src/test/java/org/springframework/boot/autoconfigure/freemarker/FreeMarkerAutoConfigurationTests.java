@@ -41,11 +41,8 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
@@ -74,8 +71,8 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class), notNullValue());
-		assertThat(this.context.getBean(FreeMarkerConfigurer.class), notNullValue());
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class)).isNotNull();
+		assertThat(this.context.getBean(FreeMarkerConfigurer.class)).isNotNull();
 	}
 
 	@Test
@@ -145,8 +142,8 @@ public class FreeMarkerAutoConfigurationTests {
 	@Test
 	public void disableCache() {
 		registerAndRefreshContext("spring.freemarker.cache:false");
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit(),
-				equalTo(0));
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit())
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -154,8 +151,8 @@ public class FreeMarkerAutoConfigurationTests {
 		registerAndRefreshContext("spring.freemarker.allow-session-override:true");
 		AbstractTemplateViewResolver viewResolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
-		assertThat((Boolean) ReflectionTestUtils.getField(viewResolver,
-				"allowSessionOverride"), is(true));
+		assertThat(ReflectionTestUtils.getField(viewResolver, "allowSessionOverride"))
+				.isEqualTo(true);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -163,7 +160,7 @@ public class FreeMarkerAutoConfigurationTests {
 	public void customFreeMarkerSettings() {
 		registerAndRefreshContext("spring.freemarker.settings.boolean_format:yup,nope");
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration()
-				.getSetting("boolean_format"), equalTo("yup,nope"));
+				.getSetting("boolean_format")).isEqualTo("yup,nope");
 	}
 
 	@Test
@@ -206,7 +203,7 @@ public class FreeMarkerAutoConfigurationTests {
 		FreeMarkerViewResolver resolver = this.context
 				.getBean(FreeMarkerViewResolver.class);
 		View view = resolver.resolveViewName(viewName, Locale.UK);
-		assertThat(view, notNullValue());
+		assertThat(view).isNotNull();
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
@@ -214,4 +211,5 @@ public class FreeMarkerAutoConfigurationTests {
 		view.render(null, request, response);
 		return response;
 	}
+
 }

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch;
-
-import org.elasticsearch.client.Client;
+package org.springframework.boot.autoconfigure.data.elasticsearch;import org.elasticsearch.client.Client;
 import org.junit.After;
 import org.junit.Test;
 
@@ -30,6 +28,8 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

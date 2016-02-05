@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.amqp;
-
-import org.junit.Test;
+package org.springframework.boot.autoconfigure.amqp;import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

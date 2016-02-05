@@ -20,9 +20,6 @@ import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.server.JournalType;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -40,9 +37,8 @@ public class ArtemisEmbeddedConfigurationFactoryTests {
 		properties.getEmbedded().setPersistent(true);
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties)
 				.createConfiguration();
-		assertThat(configuration.getJournalDirectory(),
-				startsWith(System.getProperty("java.io.tmpdir")));
-		assertThat(configuration.getJournalDirectory(), endsWith("/journal"));
+		assertThat(configuration.getJournalDirectory())
+				.startsWith(System.getProperty("java.io.tmpdir")).endsWith("/journal");
 	}
 
 	@Test

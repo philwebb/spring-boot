@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.jpa;
-
-import org.junit.Test;
+package org.springframework.boot.autoconfigure.security.jpa;import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.SpringApplication;

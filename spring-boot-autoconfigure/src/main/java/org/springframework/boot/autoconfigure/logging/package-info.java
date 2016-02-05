@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for logging.
  */
-package org.springframework.boot.autoconfigure.logging;
+package org.springframework.boot.autoconfigure.logging;import static org.assertj.core.api.Assertions.assertThat;
+

@@ -26,7 +26,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.instanceOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -44,7 +43,7 @@ public class ReactorAutoConfigurationTests {
 		this.context.register(ReactorAutoConfiguration.class);
 		this.context.refresh();
 		EventBus eventBus = this.context.getBean(EventBus.class);
-		assertThat(eventBus.getDispatcher(), instanceOf(RingBufferDispatcher.class));
+		assertThat(eventBus.getDispatcher()).isInstanceOf(RingBufferDispatcher.class);
 		this.context.close();
 	}
 
@@ -53,7 +52,7 @@ public class ReactorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class, ReactorAutoConfiguration.class);
 		this.context.refresh();
 		EventBus eventBus = this.context.getBean(EventBus.class);
-		assertThat(eventBus.getDispatcher(), instanceOf(MpscDispatcher.class));
+		assertThat(eventBus.getDispatcher()).isInstanceOf(MpscDispatcher.class);
 		this.context.close();
 	}
 

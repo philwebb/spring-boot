@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.batch;
+package org.springframework.boot.autoconfigure.batch;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;

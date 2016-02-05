@@ -42,12 +42,8 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
 
-import static org.hamcrest.Matchers.containsString;
-
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration}.
@@ -93,7 +89,8 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.getBean(TemplateEngine.class).initialize();
 		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertThat(resolver instanceof TemplateResolver).isTrue();
-		assertThat(((TemplateResolver) resolver).getCharacterEncoding()).isEqualTo("UTF-16");
+		assertThat(((TemplateResolver) resolver).getCharacterEncoding())
+				.isEqualTo("UTF-16");
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertThat(views.getCharacterEncoding()).isEqualTo("UTF-16");
 		assertThat(views.getContentType()).isEqualTo("text/html;charset=UTF-16");
@@ -157,8 +154,8 @@ public class ThymeleafAutoConfigurationTests {
 		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 		view.render(Collections.singletonMap("foo", "bar"), request, response);
 		String result = response.getContentAsString();
-		assertThat("Wrong result: " + result, result.contains("<title>Content</title>")).isTrue();
-		assertThat("Wrong result: " + result, result.contains("<span>bar</span>")).isTrue();
+		assertThat(result).contains("<title>Content</title>");
+		assertThat(result).contains("<span>bar</span>");
 		context.close();
 	}
 
@@ -218,8 +215,8 @@ public class ThymeleafAutoConfigurationTests {
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0,
-				this.context.getBeansOfType(ResourceUrlEncodingFilter.class).size());
+		assertThat(this.context.getBeansOfType(ResourceUrlEncodingFilter.class))
+				.isEmpty();
 	}
 
 	@Test

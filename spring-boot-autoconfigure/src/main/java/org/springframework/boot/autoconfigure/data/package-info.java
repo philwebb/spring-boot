@@ -17,4 +17,5 @@
 /**
  * Auto-configuration base classes for Spring Data.
  */
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data;import static org.assertj.core.api.Assertions.assertThat;
+

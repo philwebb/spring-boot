@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
-
-import java.util.Date;
+package org.springframework.boot.autoconfigure.condition;import java.util.Date;
 
 import org.junit.Test;
 
@@ -32,6 +30,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

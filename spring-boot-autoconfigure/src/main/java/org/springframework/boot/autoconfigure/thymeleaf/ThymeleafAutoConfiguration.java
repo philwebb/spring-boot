@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.thymeleaf;
+package org.springframework.boot.autoconfigure.thymeleaf;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Collection;
 import java.util.Collections;

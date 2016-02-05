@@ -92,8 +92,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -131,9 +129,9 @@ public class OAuth2AutoConfigurationTests {
 		ClientDetails clientDetails = clientDetailsService
 				.loadClientByClientId(config.getClientId());
 		assertThat(AopUtils.isJdkDynamicProxy(clientDetailsService)).isTrue();
-		assertThat(AopUtils.getTargetClass(clientDetailsService).getName(),
-				is(equalTo(InMemoryClientDetailsService.class.getName())));
-		assertThat(handler instanceof ApprovalStoreUserApprovalHandler)isTrue();
+		assertThat(AopUtils.getTargetClass(clientDetailsService).getName())
+				.isEqualTo(InMemoryClientDetailsService.class.getName());
+		assertThat(handler).isInstanceOf(ApprovalStoreUserApprovalHandler.class);
 		assertThat(clientDetails).isEqualTo(config);
 		verifyAuthentication(config);
 	}
@@ -243,8 +241,8 @@ public class OAuth2AutoConfigurationTests {
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
 		assertThat(sources.size()).isEqualTo(1);
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(PrePostAnnotationSecurityMetadataSource.class.getName());
 		verifyAuthentication(config);
 	}
 
@@ -261,8 +259,8 @@ public class OAuth2AutoConfigurationTests {
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
 		assertThat(sources.size()).isEqualTo(1);
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(SecuredAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(SecuredAnnotationSecurityMetadataSource.class.getName());
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -279,8 +277,8 @@ public class OAuth2AutoConfigurationTests {
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
 		assertThat(sources.size()).isEqualTo(1);
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(Jsr250MethodSecurityMetadataSource.class.getName()));
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(Jsr250MethodSecurityMetadataSource.class.getName());
 		verifyAuthentication(config, HttpStatus.OK);
 	}
 
@@ -295,8 +293,8 @@ public class OAuth2AutoConfigurationTests {
 		List<MethodSecurityMetadataSource> sources = source
 				.getMethodSecurityMetadataSources();
 		assertThat(sources.size()).isEqualTo(1);
-		assertThat(sources.get(0).getClass().getName(),
-				equalTo(PrePostAnnotationSecurityMetadataSource.class.getName()));
+		assertThat(sources.get(0).getClass().getName())
+				.isEqualTo(PrePostAnnotationSecurityMetadataSource.class.getName());
 	}
 
 	/**
@@ -331,8 +329,8 @@ public class OAuth2AutoConfigurationTests {
 				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
 						URI.create(baseUrl + "/securedFind")), String.class);
 		assertThat(securedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(securedResponse.getBody(), equalTo(
-				"You reached an endpoint " + "secured by Spring Security OAuth2"));
+		assertThat(securedResponse.getBody()).isEqualTo(
+				"You reached an endpoint " + "secured by Spring Security OAuth2");
 		ResponseEntity<String> entity = rest.exchange(new RequestEntity<Void>(headers,
 				HttpMethod.POST, URI.create(baseUrl + "/securedSave")), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(finalStatus);

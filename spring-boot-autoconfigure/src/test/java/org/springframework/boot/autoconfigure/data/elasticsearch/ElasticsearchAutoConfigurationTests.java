@@ -30,10 +30,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -102,7 +98,8 @@ public class ElasticsearchAutoConfigurationTests {
 				ElasticsearchAutoConfiguration.class);
 		this.context.refresh();
 		assertThat(this.context.getBeanNamesForType(Client.class).length).isEqualTo(1);
-		assertSame(this.context.getBean("myClient"), this.context.getBean(Client.class));
+		assertThat(this.context.getBean("myClient"))
+				.isSameAs(this.context.getBean(Client.class));
 	}
 
 	@Test

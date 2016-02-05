@@ -44,8 +44,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test that a {@link DataSource} can be exposed as JSON for actuator endpoints.
@@ -72,7 +71,7 @@ public class DataSourceJsonSerializationTests {
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
 		assertThat(value.contains("\"url\":")).isTrue();
-		assertThat("\"url\"")).isEqualTo(1, StringUtils.countOccurrencesOf(value);
+		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isEqualTo(1);
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.user;
-
-import javax.persistence.Entity;
+package org.springframework.boot.autoconfigure.security.user;import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 

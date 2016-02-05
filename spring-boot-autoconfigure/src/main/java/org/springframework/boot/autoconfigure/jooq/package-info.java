@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for JOOQ.
  */
-package org.springframework.boot.autoconfigure.jooq;
+package org.springframework.boot.autoconfigure.jooq;import static org.assertj.core.api.Assertions.assertThat;
+

@@ -24,9 +24,6 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -50,7 +47,7 @@ public class CassandraAutoConfigurationTests {
 		this.context = doLoad();
 		assertThat(this.context.getBeanNamesForType(Cluster.class).length).isEqualTo(1);
 		Cluster cluster = this.context.getBean(Cluster.class);
-		assertThat(cluster.getClusterName(), startsWith("cluster"));
+		assertThat(cluster.getClusterName()).startsWith("cluster");
 	}
 
 	@Test

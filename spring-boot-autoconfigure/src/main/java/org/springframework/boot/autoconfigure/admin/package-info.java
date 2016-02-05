@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for admin-related features.
  */
-package org.springframework.boot.autoconfigure.admin;
+package org.springframework.boot.autoconfigure.admin;import static org.assertj.core.api.Assertions.assertThat;
+

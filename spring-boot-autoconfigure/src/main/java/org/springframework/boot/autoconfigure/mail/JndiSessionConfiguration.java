@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;
+package org.springframework.boot.autoconfigure.mail;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.mail.Session;
 import javax.naming.NamingException;

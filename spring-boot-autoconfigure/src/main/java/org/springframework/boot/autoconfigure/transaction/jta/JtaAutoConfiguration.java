@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.transaction.jta;
+package org.springframework.boot.autoconfigure.transaction.jta;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

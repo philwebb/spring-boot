@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Spring Data Mongo.
  */
-package org.springframework.boot.autoconfigure.data.mongo;
+package org.springframework.boot.autoconfigure.data.mongo;import static org.assertj.core.api.Assertions.assertThat;
+

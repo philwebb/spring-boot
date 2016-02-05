@@ -25,8 +25,8 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Abstract base class for testing Spring Social auto-configuration.

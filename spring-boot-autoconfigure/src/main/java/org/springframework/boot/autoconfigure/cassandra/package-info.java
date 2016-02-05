@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Cassandra.
  */
-package org.springframework.boot.autoconfigure.cassandra;
+package org.springframework.boot.autoconfigure.cassandra;import static org.assertj.core.api.Assertions.assertThat;
+

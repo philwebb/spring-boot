@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;
+package org.springframework.boot.autoconfigure.cache;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.List;
 

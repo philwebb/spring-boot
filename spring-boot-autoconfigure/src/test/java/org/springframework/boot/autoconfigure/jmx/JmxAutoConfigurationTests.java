@@ -38,8 +38,7 @@ import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JmxAutoConfiguration}
@@ -106,8 +105,8 @@ public class JmxAutoConfigurationTests {
 		assertThat(mBeanExporter).isNotNull();
 		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
 				.getField(mBeanExporter, "namingStrategy");
-		assertEquals("my-test-domain",
-				ReflectionTestUtils.getField(naming, "defaultDomain"));
+		assertThat(ReflectionTestUtils.getField(naming, "defaultDomain"))
+				.isEqualTo("my-test-domain");
 	}
 
 	@Test

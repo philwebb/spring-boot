@@ -53,10 +53,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.stereotype.Component;
-import org.springframework.test.util.ReflectionTestUtils;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -124,8 +122,8 @@ public class ResourceServerTokenServicesConfigurationTests {
 		UserInfoTokenServices services = this.context
 				.getBean(UserInfoTokenServices.class);
 		assertThat(services).isNotNull();
-		assertEquals(this.context.getBean(AuthoritiesExtractor.class),
-				ReflectionTestUtils.getField(services, "authoritiesExtractor"));
+		assertThat(services).extracting("authoritiesExtractor")
+				.isEqualTo(this.context.getBean(AuthoritiesExtractor.class));
 	}
 
 	@Test

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
-
-import java.util.List;
+package org.springframework.boot.autoconfigure;import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;

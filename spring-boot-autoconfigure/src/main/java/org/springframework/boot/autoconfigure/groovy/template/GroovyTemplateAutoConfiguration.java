@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.groovy.template;
+package org.springframework.boot.autoconfigure.groovy.template;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.security.CodeSource;
 import java.security.ProtectionDomain;

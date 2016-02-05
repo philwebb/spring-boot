@@ -39,9 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -152,8 +150,8 @@ public class MailSenderAutoConfigurationTests {
 		load(EmptyConfig.class, "spring.mail.jndi-name:foo");
 		Session sessionBean = this.context.getBean(Session.class);
 		assertThat(sessionBean).isEqualTo(session);
-		assertEquals(sessionBean,
-				this.context.getBean(JavaMailSenderImpl.class).getSession());
+		assertThat(this.context.getBean(JavaMailSenderImpl.class).getSession())
+				.isEqualTo(sessionBean);
 	}
 
 	@Test
@@ -169,7 +167,8 @@ public class MailSenderAutoConfigurationTests {
 		configureJndiSession("foo");
 		load(EmptyConfig.class);
 		assertThat(this.context.getBeanNamesForType(Session.class).length).isEqualTo(0);
-		assertThat(this.context.getBeanNamesForType(JavaMailSender.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(JavaMailSender.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test

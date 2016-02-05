@@ -17,4 +17,5 @@
 /**
  * Auto-configuration for Mustache with Spring MVC.
  */
-package org.springframework.boot.autoconfigure.mustache.web;
+package org.springframework.boot.autoconfigure.mustache.web;import static org.assertj.core.api.Assertions.assertThat;
+

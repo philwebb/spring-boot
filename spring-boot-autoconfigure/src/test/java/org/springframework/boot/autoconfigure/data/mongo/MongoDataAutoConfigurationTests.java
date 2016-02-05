@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Set;
 
 import com.mongodb.Mongo;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,11 +45,8 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.hamcrest.Matchers.hasSize;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
-
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link MongoDataAutoConfiguration}.
@@ -77,7 +73,8 @@ public class MongoDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(MongoTemplate.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -88,7 +85,8 @@ public class MongoDataAutoConfigurationTests {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(GridFsTemplate.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -99,8 +97,8 @@ public class MongoDataAutoConfigurationTests {
 				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
 		this.context.refresh();
 		MongoTemplate template = this.context.getBean(MongoTemplate.class);
-		assertThat(template.getConverter().getConversionService().isTrue().canConvert(Mongo.class,
-				Boolean.class));
+		assertThat(template.getConverter().getConversionService().canConvert(Mongo.class,
+				Boolean.class)).isTrue();
 	}
 
 	@Test
@@ -163,8 +161,7 @@ public class MongoDataAutoConfigurationTests {
 			Class<?>... types) {
 		Set<Class> initialEntitySet = (Set<Class>) ReflectionTestUtils
 				.getField(mappingContext, "initialEntitySet");
-		assertThat(initialEntitySet, hasSize(types.length));
-		assertThat(initialEntitySet, Matchers.<Class>hasItems(types));
+		assertThat(initialEntitySet).containsOnly(types);
 	}
 
 	@Configuration

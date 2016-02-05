@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.h2;
+package org.springframework.boot.autoconfigure.h2;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import org.h2.server.web.WebServlet;
 

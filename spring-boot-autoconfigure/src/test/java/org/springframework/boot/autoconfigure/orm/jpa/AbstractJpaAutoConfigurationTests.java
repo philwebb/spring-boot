@@ -52,12 +52,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.Matchers.equalTo;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
@@ -103,8 +98,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		setupTestConfiguration();
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		assertTrue(this.context
-				.getBean("transactionManager") instanceof JpaTransactionManager);
+		assertThat(this.context.getBean("transactionManager"))
+				.isInstanceOf(JpaTransactionManager.class);
 	}
 
 	@Test
@@ -150,9 +145,9 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = bean.getJpaPropertyMap();
-		assertThat(map.get("a")).isEqualTo((Object) "b");
-		assertThat(map.get("c")).isEqualTo((Object) "d");
-		assertThat(map.get("a.b")).isEqualTo((Object) "c");
+		assertThat(map.get("a")).isEqualTo("b");
+		assertThat(map.get("c")).isEqualTo("d");
+		assertThat(map.get("a.b")).isEqualTo("c");
 	}
 
 	@Test
@@ -165,7 +160,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
-		assertThat(map.get("configured")).isEqualTo((Object) "manually");
+		assertThat(map.get("configured")).isEqualTo("manually");
 	}
 
 	@Test
@@ -177,7 +172,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		EntityManagerFactory factoryBean = this.context
 				.getBean(EntityManagerFactory.class);
 		Map<String, Object> map = factoryBean.getProperties();
-		assertThat(map.get("configured")).isEqualTo((Object) "manually");
+		assertThat(map.get("configured")).isEqualTo("manually");
 	}
 
 	@Test
@@ -186,7 +181,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		this.context.refresh();
 		PlatformTransactionManager txManager = this.context
 				.getBean(PlatformTransactionManager.class);
-		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
+		assertThat(txManager).isInstanceOf(CustomJpaTransactionManager.class);
 	}
 
 	@Test
@@ -198,8 +193,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		Field field = LocalContainerEntityManagerFactoryBean.class
 				.getDeclaredField("persistenceUnitManager");
 		field.setAccessible(true);
-		assertThat(field.get(entityManagerFactoryBean),
-				equalTo((Object) this.context.getBean(PersistenceUnitManager.class)));
+		assertThat(field.get(entityManagerFactoryBean))
+				.isEqualTo(this.context.getBean(PersistenceUnitManager.class));
 	}
 
 	protected void setupTestConfiguration() {

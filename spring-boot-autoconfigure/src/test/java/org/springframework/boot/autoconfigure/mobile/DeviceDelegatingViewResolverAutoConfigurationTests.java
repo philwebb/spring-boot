@@ -39,9 +39,7 @@ import org.springframework.mobile.device.view.AbstractDeviceDelegatingViewResolv
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.
@@ -89,16 +87,16 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertThat(internalResourceViewResolver).isNotNull();
 		assertThat(deviceDelegatingViewResolver).isNotNull();
-		assertTrue(deviceDelegatingViewResolver
-				.getViewResolver() instanceof InternalResourceViewResolver);
+		assertThat(deviceDelegatingViewResolver)
+				.isInstanceOf(InternalResourceViewResolver.class);
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
-		assertTrue(deviceDelegatingViewResolver
-				.getOrder() == internalResourceViewResolver.getOrder() - 1);
+		assertThat(deviceDelegatingViewResolver.getOrder())
+				.isEqualTo(internalResourceViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -140,12 +138,12 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 						AbstractDeviceDelegatingViewResolver.class);
 		assertThat(thymeleafViewResolver).isNotNull();
 		assertThat(deviceDelegatingViewResolver).isNotNull();
-		assertTrue(deviceDelegatingViewResolver
-				.getViewResolver() instanceof ThymeleafViewResolver);
+		assertThat(deviceDelegatingViewResolver.getViewResolver())
+				.isInstanceOf(ThymeleafViewResolver.class);
 		assertThat(this.context.getBean(InternalResourceViewResolver.class)).isNotNull();
 		assertThat(this.context.getBean(ThymeleafViewResolver.class)).isNotNull();
-		assertTrue(deviceDelegatingViewResolver
-				.getOrder() == thymeleafViewResolver.getOrder() - 1);
+		assertThat(deviceDelegatingViewResolver.getOrder())
+				.isEqualTo(thymeleafViewResolver.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
@@ -181,7 +179,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 
 		DirectFieldAccessor accessor = new DirectFieldAccessor(
 				liteDeviceDelegatingViewResolver);
-		assertThat(accessor.getPropertyValue("enableFallback")).isFalse();
+		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(Boolean.FALSE);
 		assertThat(accessor.getPropertyValue("normalPrefix")).isEqualTo("");
 		assertThat(accessor.getPropertyValue("mobilePrefix")).isEqualTo("mobile/");
 		assertThat(accessor.getPropertyValue("tabletPrefix")).isEqualTo("tablet/");
@@ -195,7 +193,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		PropertyAccessor accessor = getLiteDeviceDelegatingViewResolverAccessor(
 				"spring.mobile.devicedelegatingviewresolver.enabled:true",
 				"spring.mobile.devicedelegatingviewresolver.enableFallback:true");
-		assertThat(accessor.getPropertyValue("enableFallback")).isTrue();
+		assertThat(accessor.getPropertyValue("enableFallback")).isEqualTo(Boolean.TRUE);
 	}
 
 	@Test

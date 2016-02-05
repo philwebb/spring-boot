@@ -29,9 +29,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CommonsDbcpDataSourceConfiguration}.
@@ -82,10 +80,10 @@ public class CommonsDbcpDataSourceConfigurationTests {
 		this.context.register(CommonsDbcpDataSourceConfiguration.class);
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
-		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
-				ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
-				ds.getMinEvictableIdleTimeMillis());
+		assertThat(ds.getTimeBetweenEvictionRunsMillis())
+				.isEqualTo(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
+		assertThat(ds.getMinEvictableIdleTimeMillis())
+				.isEqualTo(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS);
 		assertThat(ds.getMaxWait()).isEqualTo(GenericObjectPool.DEFAULT_MAX_WAIT);
 	}
 

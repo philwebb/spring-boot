@@ -41,12 +41,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link HypermediaAutoConfiguration}.
@@ -99,7 +94,7 @@ public class HypermediaAutoConfigurationTests {
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
 		assertThat(objectMapper.getSerializationConfig()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT), is(false));
+				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isFalse();
 	}
 
 	@Test
@@ -112,8 +107,8 @@ public class HypermediaAutoConfigurationTests {
 		this.context.refresh();
 		ObjectMapper objectMapper = this.context.getBean("_halObjectMapper",
 				ObjectMapper.class);
-		assertThat(objectMapper.getSerializationConfig().isTrue()
-				.isEnabled(SerializationFeature.INDENT_OUTPUT));
+		assertThat(objectMapper.getSerializationConfig()
+				.isEnabled(SerializationFeature.INDENT_OUTPUT)).isTrue();
 	}
 
 	@Test
@@ -126,8 +121,8 @@ public class HypermediaAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes(), containsInAnyOrder(
-						MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON));
+				assertThat(converter.getSupportedMediaTypes())
+						.contains(MediaType.APPLICATION_JSON, MediaTypes.HAL_JSON);
 			}
 		}
 	}
@@ -144,8 +139,8 @@ public class HypermediaAutoConfigurationTests {
 				.getBean(RequestMappingHandlerAdapter.class);
 		for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
 			if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-				assertThat(converter.getSupportedMediaTypes(),
-						contains(MediaTypes.HAL_JSON));
+				assertThat(converter.getSupportedMediaTypes())
+						.containsExactly(MediaTypes.HAL_JSON);
 			}
 		}
 	}

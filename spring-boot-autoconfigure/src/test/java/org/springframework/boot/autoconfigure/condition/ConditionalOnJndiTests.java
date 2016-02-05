@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
-
-import java.util.HashMap;
+package org.springframework.boot.autoconfigure.condition;import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.Context;
@@ -35,10 +33,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.iterableWithSize;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.iterableWithSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 

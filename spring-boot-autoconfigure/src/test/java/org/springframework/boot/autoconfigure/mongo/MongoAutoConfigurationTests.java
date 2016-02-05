@@ -27,7 +27,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MongoAutoConfiguration}.
@@ -61,8 +61,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300,
-				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -74,8 +74,8 @@ public class MongoAutoConfigurationTests {
 		this.context.register(OptionsConfig.class,
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(300,
-				this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout());
+		assertThat(this.context.getBean(Mongo.class).getMongoOptions().getSocketTimeout())
+				.isEqualTo(300);
 	}
 
 	@Configuration

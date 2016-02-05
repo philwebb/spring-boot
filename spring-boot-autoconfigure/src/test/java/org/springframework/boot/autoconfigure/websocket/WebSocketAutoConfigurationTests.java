@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;
-
-import javax.websocket.server.ServerContainer;
+package org.springframework.boot.autoconfigure.websocket;import javax.websocket.server.ServerContainer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,9 +28,8 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 
 /**
  * Tests for {@link WebSocketAutoConfiguration}

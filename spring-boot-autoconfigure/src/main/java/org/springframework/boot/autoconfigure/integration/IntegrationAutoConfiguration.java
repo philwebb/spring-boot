@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;
+package org.springframework.boot.autoconfigure.integration;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import javax.management.MBeanServer;
 

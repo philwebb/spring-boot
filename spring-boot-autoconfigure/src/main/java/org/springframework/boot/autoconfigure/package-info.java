@@ -19,4 +19,5 @@
  *
  * @see org.springframework.boot.autoconfigure.EnableAutoConfiguration
  */
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.autoconfigure;import static org.assertj.core.api.Assertions.assertThat;
+

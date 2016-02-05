@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jmx;
+package org.springframework.boot.autoconfigure.jmx;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.util.Hashtable;
 

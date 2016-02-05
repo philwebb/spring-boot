@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.solr;
+package org.springframework.boot.autoconfigure.data.solr;import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.lang.annotation.Annotation;
 

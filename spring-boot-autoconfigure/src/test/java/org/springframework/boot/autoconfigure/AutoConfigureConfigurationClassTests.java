@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
-
-import org.springframework.boot.test.AbstractConfigurationClassTests;
+package org.springframework.boot.autoconfigure;import org.springframework.boot.test.AbstractConfigurationClassTests;
 
 /**
  * Tests for the auto-configure module's {@code @Configuration} classes.

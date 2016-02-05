@@ -44,12 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
-import static org.hamcrest.Matchers.instanceOf;
-
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.Mockito.mock;
 
 /**
@@ -172,7 +167,9 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testExplicitDriverClassClearsUserName() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
+				"spring.datasource.driverClassName:"
+						+ "org.springframework.boot.autoconfigure.jdbc."
+						+ "DataSourceAutoConfigurationTests$DatabaseDriver",
 				"spring.datasource.url:jdbc:foo://localhost");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -180,9 +177,8 @@ public class DataSourceAutoConfigurationTests {
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertThat(bean).isNotNull();
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
-		assertEquals(
-				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
-				pool.getDriverClassName());
+		assertThat(pool.getDriverClassName()).isEqualTo(
+				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver");
 		assertThat(pool.getUsername()).isNull();
 	}
 
@@ -193,8 +189,7 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue("DataSource is wrong type: " + dataSource,
-				dataSource instanceof BasicDataSource);
+		assertThat(dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
 	@Test
@@ -234,6 +229,7 @@ public class DataSourceAutoConfigurationTests {
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
 		this.context.setClassLoader(
 				new URLClassLoader(new URL[0], getClass().getClassLoader()) {
+
 					@Override
 					protected Class<?> loadClass(String name, boolean resolve)
 							throws ClassNotFoundException {
@@ -244,13 +240,13 @@ public class DataSourceAutoConfigurationTests {
 						}
 						return super.loadClass(name, resolve);
 					}
+
 				});
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
-
-		assertThat(bean, instanceOf(expectedType));
+		assertThat(bean).isInstanceOf(expectedType);
 		return (T) bean;
 	}
 

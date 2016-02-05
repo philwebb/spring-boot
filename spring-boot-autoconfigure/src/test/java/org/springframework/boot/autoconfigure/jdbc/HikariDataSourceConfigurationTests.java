@@ -32,8 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HikariDataSourceConfiguration}.
@@ -79,8 +78,8 @@ public class HikariDataSourceConfigurationTests {
 				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertEquals("org.h2.JDBCDataSource",
-				ds.getDataSourceProperties().getProperty("dataSourceClassName"));
+		assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
+				.isEqualTo("org.h2.JDBCDataSource");
 	}
 
 	@Test

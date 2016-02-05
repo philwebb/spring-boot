@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
-
-import org.springframework.core.type.classreading.MetadataReaderFactory;
+package org.springframework.boot.autoconfigure;import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
  * Public version of {@link AutoConfigurationSorter} for use in tests.

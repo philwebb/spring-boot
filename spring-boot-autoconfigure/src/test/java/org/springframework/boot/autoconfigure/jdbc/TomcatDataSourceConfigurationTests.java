@@ -36,10 +36,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.util.ReflectionUtils;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
@@ -70,7 +68,8 @@ public class TomcatDataSourceConfigurationTests {
 				PREFIX + "url:jdbc:h2:mem:testdb");
 		this.context.refresh();
 		assertThat(this.context.getBean(DataSource.class)).isNotNull();
-		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)).isNotNull();
+		assertThat(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class))
+				.isNotNull();
 	}
 
 	@Test
