@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Jackson.
  */
-package org.springframework.boot.autoconfigure.jackson;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jackson;

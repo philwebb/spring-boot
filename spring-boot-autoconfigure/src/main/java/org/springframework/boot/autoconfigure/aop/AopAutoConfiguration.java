@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.aop;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.aop;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.Advice;

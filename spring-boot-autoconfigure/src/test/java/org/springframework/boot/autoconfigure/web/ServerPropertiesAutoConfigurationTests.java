@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;import java.io.File;
+package org.springframework.boot.autoconfigure.web;
+
+import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;

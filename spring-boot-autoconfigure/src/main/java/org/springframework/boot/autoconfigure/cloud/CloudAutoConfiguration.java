@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cloud;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.cloud;
 
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

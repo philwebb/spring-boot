@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 

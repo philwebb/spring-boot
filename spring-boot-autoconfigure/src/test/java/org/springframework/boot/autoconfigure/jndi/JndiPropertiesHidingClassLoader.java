@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jndi;import java.io.IOException;
+package org.springframework.boot.autoconfigure.jndi;
+
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.integration;import org.junit.Test;
+package org.springframework.boot.autoconfigure.integration;
+
+import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;

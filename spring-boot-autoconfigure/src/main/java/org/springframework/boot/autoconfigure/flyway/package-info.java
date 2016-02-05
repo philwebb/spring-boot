@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Flyway.
  */
-package org.springframework.boot.autoconfigure.flyway;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.flyway;

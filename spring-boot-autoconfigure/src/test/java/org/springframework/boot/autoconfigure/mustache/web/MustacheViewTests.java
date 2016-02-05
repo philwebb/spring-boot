@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;import java.util.Collections;
+package org.springframework.boot.autoconfigure.mustache.web;
+
+import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
 import org.junit.Before;

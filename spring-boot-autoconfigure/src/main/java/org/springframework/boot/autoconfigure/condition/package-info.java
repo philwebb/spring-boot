@@ -17,5 +17,4 @@
 /**
  * {@code @Condition} annotations and supporting classes.
  */
-package org.springframework.boot.autoconfigure.condition;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.condition;

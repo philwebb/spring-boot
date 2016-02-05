@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.HashMap;
 import java.util.Map;

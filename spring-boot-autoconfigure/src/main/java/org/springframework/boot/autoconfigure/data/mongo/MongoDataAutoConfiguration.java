@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.mongo;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.net.UnknownHostException;
 import java.util.Collection;

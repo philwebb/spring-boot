@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.test;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.test;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

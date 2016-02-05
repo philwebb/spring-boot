@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Groovy templates.
  */
-package org.springframework.boot.autoconfigure.groovy.template;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.groovy.template;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.resource;import java.util.Collections;
+package org.springframework.boot.autoconfigure.security.oauth2.resource;
+
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

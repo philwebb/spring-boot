@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.packagestest.two;import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests;
+package org.springframework.boot.autoconfigure.packagestest.two;
+
+import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackagesTests.TestRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Liquibase.
  */
-package org.springframework.boot.autoconfigure.liquibase;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.liquibase;

@@ -17,5 +17,4 @@
 /**
  * Test utilities related to auto-configuration.
  */
-package org.springframework.boot.autoconfigure.test;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.test;

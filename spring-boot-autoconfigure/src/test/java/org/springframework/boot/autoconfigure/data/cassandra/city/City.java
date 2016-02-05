@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.cassandra.city;import org.springframework.data.cassandra.mapping.Column;
+package org.springframework.boot.autoconfigure.data.cassandra.city;
+
+import org.springframework.data.cassandra.mapping.Column;
 import org.springframework.data.cassandra.mapping.PrimaryKey;
 import org.springframework.data.cassandra.mapping.Table;
 

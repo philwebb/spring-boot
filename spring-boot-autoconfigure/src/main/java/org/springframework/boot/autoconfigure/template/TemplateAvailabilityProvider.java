@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.template;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.template;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;

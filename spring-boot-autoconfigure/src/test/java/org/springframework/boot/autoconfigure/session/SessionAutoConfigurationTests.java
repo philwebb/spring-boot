@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.session;import org.junit.After;
+package org.springframework.boot.autoconfigure.session;
+
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 

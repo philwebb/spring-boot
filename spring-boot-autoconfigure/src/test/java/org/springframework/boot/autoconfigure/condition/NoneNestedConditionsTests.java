@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;import org.junit.Test;
+package org.springframework.boot.autoconfigure.condition;
+
+import org.junit.Test;
 
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

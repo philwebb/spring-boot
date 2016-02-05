@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;import java.util.Collections;
+package org.springframework.boot.autoconfigure.security;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

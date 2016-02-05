@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;import org.junit.Test;
+package org.springframework.boot.autoconfigure.web;
+
+import org.junit.Test;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;

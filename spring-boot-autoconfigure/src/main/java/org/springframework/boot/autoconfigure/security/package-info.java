@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring Security.
  */
-package org.springframework.boot.autoconfigure.security;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.security;

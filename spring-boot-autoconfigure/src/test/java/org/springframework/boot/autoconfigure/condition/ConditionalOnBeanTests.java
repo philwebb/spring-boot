@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;import java.util.Date;
+package org.springframework.boot.autoconfigure.condition;
+
+import java.util.Date;
 
 import org.junit.Test;
 

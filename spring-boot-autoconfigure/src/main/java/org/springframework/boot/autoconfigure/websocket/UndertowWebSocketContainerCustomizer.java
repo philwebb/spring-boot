@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.websocket;
 
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;

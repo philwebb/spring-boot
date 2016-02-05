@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Project Reactor.
  */
-package org.springframework.boot.autoconfigure.reactor;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.reactor;

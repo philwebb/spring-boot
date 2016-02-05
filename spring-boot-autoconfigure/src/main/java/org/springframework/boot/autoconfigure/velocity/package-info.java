@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Velocity.
  */
-package org.springframework.boot.autoconfigure.velocity;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.velocity;

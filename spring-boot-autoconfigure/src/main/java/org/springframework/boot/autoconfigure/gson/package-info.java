@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for GSON.
  */
-package org.springframework.boot.autoconfigure.gson;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.gson;

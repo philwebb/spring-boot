@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.cache;
 
 /**
  * Supported cache types (defined in order of precedence).

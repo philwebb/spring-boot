@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.sendgrid;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.sendgrid;
 
 import com.sendgrid.SendGrid;
 import org.apache.http.HttpHost;

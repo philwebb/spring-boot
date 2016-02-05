@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cache.support;import java.net.URI;
+package org.springframework.boot.autoconfigure.cache.support;
+
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;

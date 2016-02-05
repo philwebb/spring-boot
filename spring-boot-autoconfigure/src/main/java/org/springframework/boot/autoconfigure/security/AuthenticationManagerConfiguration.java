@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.security;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;

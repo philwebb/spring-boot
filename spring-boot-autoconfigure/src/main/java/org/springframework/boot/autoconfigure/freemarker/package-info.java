@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Freemarker.
  */
-package org.springframework.boot.autoconfigure.freemarker;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.freemarker;

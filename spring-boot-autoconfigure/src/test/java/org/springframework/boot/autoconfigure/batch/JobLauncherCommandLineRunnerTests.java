@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.batch;import org.junit.Before;
+package org.springframework.boot.autoconfigure.batch;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.batch.core.Job;

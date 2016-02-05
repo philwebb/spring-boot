@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for HornetQ.
  */
-package org.springframework.boot.autoconfigure.jms.hornetq;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jms.hornetq;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.elasticsearch.city;import java.io.Serializable;
+package org.springframework.boot.autoconfigure.data.elasticsearch.city;
+
+import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;

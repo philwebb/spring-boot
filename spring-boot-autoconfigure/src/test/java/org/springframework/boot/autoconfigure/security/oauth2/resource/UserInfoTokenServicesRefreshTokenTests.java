@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.resource;import java.util.Date;
+package org.springframework.boot.autoconfigure.security.oauth2.resource;
+
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Rule;

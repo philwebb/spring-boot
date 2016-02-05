@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;import java.util.Arrays;
+package org.springframework.boot.autoconfigure;
+
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;

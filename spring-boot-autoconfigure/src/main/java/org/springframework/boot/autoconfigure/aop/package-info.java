@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring AOP.
  */
-package org.springframework.boot.autoconfigure.aop;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.aop;

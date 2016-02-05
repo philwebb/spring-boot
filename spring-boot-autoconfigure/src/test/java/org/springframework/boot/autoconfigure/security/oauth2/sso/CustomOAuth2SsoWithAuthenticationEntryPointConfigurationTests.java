@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.sso;import javax.servlet.Filter;
+package org.springframework.boot.autoconfigure.security.oauth2.sso;
+
+import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;import java.util.Locale;
+package org.springframework.boot.autoconfigure;
+
+import java.util.Locale;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

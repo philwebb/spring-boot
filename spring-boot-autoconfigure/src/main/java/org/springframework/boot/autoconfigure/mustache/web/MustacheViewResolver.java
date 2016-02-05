@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.mustache.web;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.websocket;
 
 import javax.servlet.Servlet;
 import javax.websocket.server.ServerContainer;

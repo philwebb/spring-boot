@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Jersey.
  */
-package org.springframework.boot.autoconfigure.jersey;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jersey;

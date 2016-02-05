@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.template;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.template;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;

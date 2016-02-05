@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring Cloud Connectors.
  */
-package org.springframework.boot.autoconfigure.cloud;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.cloud;

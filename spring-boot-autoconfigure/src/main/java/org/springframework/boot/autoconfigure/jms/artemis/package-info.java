@@ -19,5 +19,4 @@
  *
  * @author Eddú Meléndez
  */
-package org.springframework.boot.autoconfigure.jms.artemis;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jms.artemis;

@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for JMX.
  */
-package org.springframework.boot.autoconfigure.jmx;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jmx;

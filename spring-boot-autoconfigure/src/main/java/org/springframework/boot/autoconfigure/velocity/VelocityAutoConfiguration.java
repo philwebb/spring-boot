@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.velocity;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.velocity;
 
 import java.io.IOException;
 import java.util.Properties;

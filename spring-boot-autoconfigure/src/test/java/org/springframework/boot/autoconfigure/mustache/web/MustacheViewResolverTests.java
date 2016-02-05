@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mustache.web;import java.io.ByteArrayInputStream;
+package org.springframework.boot.autoconfigure.mustache.web;
+
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 

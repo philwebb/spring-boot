@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring Mobile.
  */
-package org.springframework.boot.autoconfigure.mobile;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.mobile;

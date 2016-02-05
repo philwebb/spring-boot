@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring Data Redis.
  */
-package org.springframework.boot.autoconfigure.data.redis;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.data.redis;

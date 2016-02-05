@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.mail;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.mail;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;

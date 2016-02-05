@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;import org.springframework.beans.factory.FactoryBean;
+package org.springframework.boot.autoconfigure;
+
+import org.springframework.beans.factory.FactoryBean;
 
 public class EarlyInitFactoryBean implements FactoryBean<String> {
 

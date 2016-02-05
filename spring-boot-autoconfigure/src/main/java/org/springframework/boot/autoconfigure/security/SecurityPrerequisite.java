@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.security;
 
 /**
  * Marker interface for beans that need to be initialized before any security

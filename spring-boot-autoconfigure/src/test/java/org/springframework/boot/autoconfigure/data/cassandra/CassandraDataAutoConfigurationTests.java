@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.cassandra;import com.datastax.driver.core.Session;
+package org.springframework.boot.autoconfigure.data.cassandra;
+
+import com.datastax.driver.core.Session;
 import org.junit.After;
 import org.junit.Test;
 

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;import org.junit.Rule;
+package org.springframework.boot.autoconfigure.condition;
+
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 

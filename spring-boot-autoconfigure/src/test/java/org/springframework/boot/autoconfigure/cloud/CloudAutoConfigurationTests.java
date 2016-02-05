@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.cloud;import java.util.ArrayList;
+package org.springframework.boot.autoconfigure.cloud;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

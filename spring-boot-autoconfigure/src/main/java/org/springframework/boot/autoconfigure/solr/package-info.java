@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Solr.
  */
-package org.springframework.boot.autoconfigure.solr;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.solr;

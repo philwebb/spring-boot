@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Thymeleaf.
  */
-package org.springframework.boot.autoconfigure.thymeleaf;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.thymeleaf;

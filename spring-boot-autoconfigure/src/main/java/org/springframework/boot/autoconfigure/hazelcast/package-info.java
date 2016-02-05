@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Hazelcast.
  */
-package org.springframework.boot.autoconfigure.hazelcast;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.hazelcast;

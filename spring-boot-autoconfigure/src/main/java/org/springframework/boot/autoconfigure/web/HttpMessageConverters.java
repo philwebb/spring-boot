@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.web;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

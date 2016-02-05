@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Mustache.
  */
-package org.springframework.boot.autoconfigure.mustache;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.mustache;

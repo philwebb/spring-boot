@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.websocket;
 
 import org.eclipse.jetty.util.thread.ShutdownThread;
 import org.eclipse.jetty.webapp.AbstractConfiguration;

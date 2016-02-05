@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.social;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.social;
 
 import java.util.List;
 

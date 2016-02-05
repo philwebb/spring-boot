@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.flyway;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.flyway;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

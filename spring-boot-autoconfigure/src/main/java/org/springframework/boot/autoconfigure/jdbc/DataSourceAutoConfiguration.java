@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;import static org.assertj.core.api.Assertions.assertThat;
-
-
-import java.sql.SQLException;
+package org.springframework.boot.autoconfigure.jdbc;import java.sql.SQLException;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web;import java.util.Properties;
+package org.springframework.boot.autoconfigure.web;
+
+import java.util.Properties;
 
 import org.junit.Test;
 

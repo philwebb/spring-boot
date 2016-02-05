@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;import java.util.HashMap;
+package org.springframework.boot.autoconfigure.condition;
+
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.Context;

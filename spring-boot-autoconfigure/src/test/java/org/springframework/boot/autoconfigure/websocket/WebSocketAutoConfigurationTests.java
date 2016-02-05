@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.websocket;import javax.websocket.server.ServerContainer;
+package org.springframework.boot.autoconfigure.websocket;
+
+import javax.websocket.server.ServerContainer;
 
 import org.junit.After;
 import org.junit.Before;

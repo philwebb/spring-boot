@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.mongo;import java.util.ArrayList;
+package org.springframework.boot.autoconfigure.data.mongo;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;

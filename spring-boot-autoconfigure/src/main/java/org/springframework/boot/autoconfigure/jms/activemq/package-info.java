@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for ActiveMQ.
  */
-package org.springframework.boot.autoconfigure.jms.activemq;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.jms.activemq;

@@ -17,5 +17,4 @@
 /**
  * Auto-configuration for Spring Batch.
  */
-package org.springframework.boot.autoconfigure.batch;import static org.assertj.core.api.Assertions.assertThat;
-
+package org.springframework.boot.autoconfigure.batch;
