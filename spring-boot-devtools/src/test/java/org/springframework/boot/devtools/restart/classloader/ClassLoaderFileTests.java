@@ -22,8 +22,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -84,7 +82,7 @@ public class ClassLoaderFileTests {
 	public void deleted() throws Exception {
 		ClassLoaderFile file = new ClassLoaderFile(Kind.DELETED, null);
 		assertThat(file.getKind()).isEqualTo(ClassLoaderFile.Kind.DELETED);
-		assertThat(file.getContents(), nullValue());
+		assertThat(file.getContents()).isNull();
 	}
 
 }

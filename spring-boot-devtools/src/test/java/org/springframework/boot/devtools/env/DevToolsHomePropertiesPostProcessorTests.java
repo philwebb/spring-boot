@@ -30,8 +30,6 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -71,7 +69,7 @@ public class DevToolsHomePropertiesPostProcessorTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
 		postProcessor.postProcessEnvironment(environment, null);
-		assertThat(environment.getProperty("abc"), nullValue());
+		assertThat(environment.getProperty("abc")).isNull();
 	}
 
 	private class MockDevToolHomePropertiesPostProcessor

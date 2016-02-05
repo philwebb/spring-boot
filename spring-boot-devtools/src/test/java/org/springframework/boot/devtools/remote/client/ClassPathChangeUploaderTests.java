@@ -44,7 +44,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -128,8 +127,8 @@ public class ClassPathChangeUploaderTests {
 	}
 
 	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {
-		assertThat(file.getContents(),
-				equalTo(content == null ? null : content.getBytes()));
+		assertThat(file.getContents())
+				.isEqualTo(content == null ? null : content.getBytes());
 		assertThat(file.getKind()).isEqualTo(kind);
 	}
 

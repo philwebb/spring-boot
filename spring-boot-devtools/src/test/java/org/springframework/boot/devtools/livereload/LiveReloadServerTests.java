@@ -40,9 +40,6 @@ import org.junit.Test;
 import org.springframework.util.SocketUtils;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -89,8 +86,8 @@ public class LiveReloadServerTests {
 			this.server.triggerReload();
 			Thread.sleep(500);
 			this.server.stop();
-			assertThat(socket.getMessages(0),
-					containsString("http://livereload.com/protocols/official-7"));
+			assertThat(socket.getMessages(0))
+					.contains("http://livereload.com/protocols/official-7");
 			assertThat(socket.getMessages(1)).contains("command\":\"reload\"");
 		}
 		finally {

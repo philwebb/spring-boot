@@ -25,7 +25,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -63,8 +62,8 @@ public class MainMethodTests {
 			}
 		}).test();
 		assertThat(method.getMethod()).isEqualTo(this.actualMain);
-		assertThat(method.getDeclaringClassName(),
-				equalTo(this.actualMain.getDeclaringClass().getName()));
+		assertThat(method.getDeclaringClassName())
+				.isEqualTo(this.actualMain.getDeclaringClass().getName());
 	}
 
 	@Test

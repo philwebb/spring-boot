@@ -41,8 +41,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -105,7 +103,7 @@ public class RestarterTests {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		given(objectFactory.getObject()).willReturn("abc");
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute).isEqualTo((Object) "abc");
+		assertThat(attribute).isEqualTo("abc");
 	}
 
 	public void addUrlsMustNotBeNull() throws Exception {
@@ -142,8 +140,8 @@ public class RestarterTests {
 		restarter.restart();
 		ClassLoader classLoader = ((TestableRestarter) restarter)
 				.getRelaunchClassLoader();
-		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")),
-				equalTo("abc".getBytes()));
+		assertThat(FileCopyUtils.copyToByteArray(classLoader.getResourceAsStream("f")))
+				.isEqualTo("abc".getBytes());
 	}
 
 	@Test
@@ -157,7 +155,7 @@ public class RestarterTests {
 		});
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
-		assertThat(attribute).isEqualTo((Object) "abc");
+		assertThat(attribute).isEqualTo("abc");
 		verifyZeroInteractions(objectFactory);
 	}
 

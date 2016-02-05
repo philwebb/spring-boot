@@ -39,8 +39,6 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -115,14 +113,14 @@ public class RestartClassLoaderTests {
 	public void getResourceFromReloadableUrl() throws Exception {
 		String content = readString(
 				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(content, startsWith("fromchild"));
+		assertThat(content).startsWith("fromchild");
 	}
 
 	@Test
 	public void getResourceFromParent() throws Exception {
 		String content = readString(
 				this.reloadClassLoader.getResourceAsStream(PACKAGE_PATH + "/Parent.txt"));
-		assertThat(content, startsWith("fromparent"));
+		assertThat(content).startsWith("fromparent");
 	}
 
 	@Test
@@ -135,8 +133,7 @@ public class RestartClassLoaderTests {
 	@Test
 	public void loadClassFromReloadableUrl() throws Exception {
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
-		assertThat(loaded.getClassLoader(),
-				equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	@Test
@@ -182,8 +179,8 @@ public class RestartClassLoaderTests {
 		byte[] bytes = "abc".getBytes();
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, bytes));
 		List<URL> resources = toList(this.reloadClassLoader.getResources(name));
-		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()),
-				equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(resources.get(0).openStream()))
+				.isEqualTo(bytes);
 	}
 
 	@Test
@@ -209,8 +206,7 @@ public class RestartClassLoaderTests {
 				.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
 		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
-		assertThat(loaded.getClassLoader(),
-				equalTo((ClassLoader) this.reloadClassLoader));
+		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	private String readString(InputStream in) throws IOException {

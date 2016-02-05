@@ -37,8 +37,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -92,7 +90,7 @@ public class HttpRestartServerTests {
 		this.server.handle(new ServletServerHttpRequest(request),
 				new ServletServerHttpResponse(response));
 		verify(this.delegate).updateAndRestart(this.filesCaptor.capture());
-		assertThat(this.filesCaptor.getValue().getFile("name"), notNullValue());
+		assertThat(this.filesCaptor.getValue().getFile("name")).isNotNull();
 		assertThat(response.getStatus()).isEqualTo(200);
 	}
 

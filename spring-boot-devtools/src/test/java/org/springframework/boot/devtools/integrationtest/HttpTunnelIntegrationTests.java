@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Simple integration tests for HTTP tunneling.

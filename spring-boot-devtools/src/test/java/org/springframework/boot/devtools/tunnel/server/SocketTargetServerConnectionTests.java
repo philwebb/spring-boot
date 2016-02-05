@@ -29,11 +29,8 @@ import org.junit.Test;
 
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.lessThan;
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SocketTargetServerConnection}.
@@ -91,8 +88,8 @@ public class SocketTargetServerConnectionTests {
 		catch (SocketTimeoutException ex) {
 			// Expected
 			long runTime = System.currentTimeMillis() - startTime;
-			assertThat(runTime, greaterThanOrEqualTo(10L));
-			assertThat(runTime, lessThan(10000L));
+			assertThat(runTime).isGreaterThanOrEqualTo(10L);
+			assertThat(runTime).isLessThan(10000L);
 		}
 	}
 

@@ -51,11 +51,6 @@ import org.springframework.session.ExpiringSession;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -198,7 +193,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = initializeAndRun(Config.class);
 		ClassPathFileSystemWatcher watcher = this.context
 				.getBean(ClassPathFileSystemWatcher.class);
-		assertThat(watcher, notNullValue());
+		assertThat(watcher).isNotNull();
 	}
 
 	@Test
@@ -220,7 +215,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher,
 				"fileSystemWatcher");
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
-		assertThat(filter, instanceOf(TriggerFileFilter.class));
+		assertThat(filter).isInstanceOf(TriggerFileFilter.class);
 	}
 
 	@Test
@@ -236,9 +231,9 @@ public class LocalDevToolsAutoConfigurationTests {
 		@SuppressWarnings("unchecked")
 		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils
 				.getField(watcher, "folders");
-		assertThat(folders).hasSize(equalTo(2));
-		assertThat(folders, hasKey(new File("src/main/java").getAbsoluteFile()));
-		assertThat(folders, hasKey(new File("src/test/java").getAbsoluteFile()));
+		assertThat(folders).hasSize(2)
+				.containsKey(new File("src/main/java").getAbsoluteFile())
+				.containsKey(new File("src/test/java").getAbsoluteFile());
 	}
 
 	@Test
@@ -263,14 +258,14 @@ public class LocalDevToolsAutoConfigurationTests {
 		this.context = application.run();
 		RedisTemplate<?, ?> redisTemplate = this.context.getBean("sessionRedisTemplate",
 				RedisTemplate.class);
-		assertThat(redisTemplate.getHashKeySerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getHashValueSerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getKeySerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
-		assertThat(redisTemplate.getValueSerializer(),
-				is(instanceOf(RestartCompatibleRedisSerializer.class)));
+		assertThat(redisTemplate.getHashKeySerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getHashValueSerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getKeySerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
+		assertThat(redisTemplate.getValueSerializer())
+				.isInstanceOf(RestartCompatibleRedisSerializer.class);
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config,

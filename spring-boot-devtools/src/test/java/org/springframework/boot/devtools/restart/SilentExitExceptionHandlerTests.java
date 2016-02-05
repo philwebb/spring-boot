@@ -18,10 +18,8 @@ package org.springframework.boot.devtools.restart;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SilentExitExceptionHandler}.
@@ -41,7 +39,7 @@ public class SilentExitExceptionHandlerTests {
 		};
 		SilentExitExceptionHandler.setup(testThread);
 		testThread.startAndJoin();
-		assertThat(testThread.getThrown(), nullValue());
+		assertThat(testThread.getThrown()).isNull();
 	}
 
 	@Test

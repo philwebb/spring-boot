@@ -36,7 +36,6 @@ import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;

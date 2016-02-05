@@ -20,10 +20,8 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for {@link DefaultRestartInitializer}.
@@ -35,7 +33,7 @@ public class DefaultRestartInitializerTests {
 	@Test
 	public void nullForTests() throws Exception {
 		MockRestartInitializer initializer = new MockRestartInitializer(true);
-		assertThat(initializer.getInitialUrls(Thread.currentThread()), nullValue());
+		assertThat(initializer.getInitialUrls(Thread.currentThread())).isNull();
 	}
 
 	@Test
@@ -57,7 +55,7 @@ public class DefaultRestartInitializerTests {
 		thread.setName("buscuit");
 		thread.setContextClassLoader(classLoader);
 		assertThat(initializer.isMain(thread)).isFalse();
-		assertThat(initializer.getInitialUrls(thread), nullValue());
+		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test
@@ -69,7 +67,7 @@ public class DefaultRestartInitializerTests {
 		thread.setName("main");
 		thread.setContextClassLoader(classLoader);
 		assertThat(initializer.isMain(thread)).isFalse();
-		assertThat(initializer.getInitialUrls(thread), nullValue());
+		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	@Test

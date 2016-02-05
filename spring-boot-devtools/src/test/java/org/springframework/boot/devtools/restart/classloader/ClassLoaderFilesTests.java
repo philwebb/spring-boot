@@ -20,8 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Rule;
@@ -31,9 +29,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -65,7 +60,7 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void getFileWithNullName() throws Exception {
-		assertThat(this.files.getFile(null), nullValue());
+		assertThat(this.files.getFile(null)).isNull();
 	}
 
 	@Test
@@ -77,7 +72,7 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void getMissing() throws Exception {
-		assertThat(this.files.getFile("missing"), nullValue());
+		assertThat(this.files.getFile("missing")).isNull();
 	}
 
 	@Test
@@ -96,8 +91,10 @@ public class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceFolder("a").getFiles().size()).isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceFolder("b").getFiles().size()).isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceFolder("a").getFiles().size())
+				.isEqualTo(0);
+		assertThat(this.files.getOrCreateSourceFolder("b").getFiles().size())
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -116,10 +113,8 @@ public class ClassLoaderFilesTests {
 		assertThat(sourceFolders.hasNext()).isFalse();
 		assertThat(sourceFolder1.getName()).isEqualTo("a");
 		assertThat(sourceFolder2.getName()).isEqualTo("b");
-		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder1.getFiles()),
-				equalTo(Arrays.asList(file1, file2)));
-		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder2.getFiles()),
-				equalTo(Arrays.asList(file3, file4)));
+		assertThat(sourceFolder1.getFiles()).containsOnly(file1, file2);
+		assertThat(sourceFolder2.getFiles()).containsOnly(file3, file4);
 	}
 
 	@Test
@@ -133,7 +128,7 @@ public class ClassLoaderFilesTests {
 		ObjectInputStream ois = new ObjectInputStream(
 				new ByteArrayInputStream(bos.toByteArray()));
 		ClassLoaderFiles readObject = (ClassLoaderFiles) ois.readObject();
-		assertThat(readObject.getFile("myfile"), notNullValue());
+		assertThat(readObject.getFile("myfile")).isNull();
 	}
 
 	@Test
@@ -152,8 +147,7 @@ public class ClassLoaderFilesTests {
 		assertThat(sourceFolders.hasNext()).isFalse();
 		assertThat(sourceFolder1.getName()).isEqualTo("a");
 		assertThat(sourceFolder2.getName()).isEqualTo("b");
-		assertThat(new ArrayList<ClassLoaderFile>(sourceFolder1.getFiles()),
-				equalTo(Arrays.asList(file1, file2)));
+		assertThat(sourceFolder1.getFiles()).containsOnly(file1, file2);
 	}
 
 	@Test

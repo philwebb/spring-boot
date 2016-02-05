@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -99,7 +98,8 @@ public class DefaultSourceFolderUrlFilterTests {
 		for (String postfix : COMMON_POSTFIXES) {
 			for (URL url : getUrls(moduleRoot + postfix)) {
 				boolean match = this.filter.isMatch(sourceFolder, url);
-				assertThat(url + " against " + sourceFolder, match).isEqualTo(expected);
+				assertThat(match).as(url + " against " + sourceFolder)
+						.isEqualTo(expected);
 			}
 		}
 	}

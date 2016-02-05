@@ -36,8 +36,6 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -96,7 +94,7 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		HttpTunnelPayload payload = HttpTunnelPayload.get(request);
-		assertThat(payload, nullValue());
+		assertThat(payload).isNull();
 	}
 
 	@Test
@@ -139,7 +137,7 @@ public class HttpTunnelPayloadTests {
 		given(channel.read(any(ByteBuffer.class)))
 				.willThrow(new SocketTimeoutException());
 		ByteBuffer payload = HttpTunnelPayload.getPayloadData(channel);
-		assertThat(payload, nullValue());
+		assertThat(payload).isNull();
 	}
 
 	private byte[] getData(HttpTunnelPayload payload) throws IOException {

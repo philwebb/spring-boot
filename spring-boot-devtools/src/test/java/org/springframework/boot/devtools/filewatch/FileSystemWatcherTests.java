@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,10 +35,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
-
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -143,7 +138,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -153,7 +148,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -191,7 +186,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 	}
 
 	@Test
@@ -209,13 +204,11 @@ public class FileSystemWatcherTests {
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceFolder().equals(folder1)) {
 				ChangedFile file = new ChangedFile(folder1, file1, Type.ADD);
-				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
-						changedFiles.getFiles());
+				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 			else {
 				ChangedFile file = new ChangedFile(folder2, file2, Type.ADD);
-				assertEquals(new HashSet<ChangedFile>(Arrays.asList(file)),
-						changedFiles.getFiles());
+				assertThat(changedFiles.getFiles()).containsOnly(file);
 			}
 		}
 	}
@@ -236,7 +229,7 @@ public class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(folder, file, Type.ADD);
-		assertThat(changedFiles.getFiles(), contains(expected));
+		assertThat(changedFiles.getFiles()).contains(expected);
 		assertThat(listener2Changes).isEqualTo(this.changes.get(0));
 	}
 
