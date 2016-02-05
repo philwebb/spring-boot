@@ -33,8 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -156,21 +155,22 @@ public class DependencyCustomizerTests {
 	private void assertGrabAnnotation(AnnotationNode annotationNode, String group,
 			String module, String version, String classifier, String type,
 			boolean transitive) {
-		assertThat("group")).isEqualTo(group, getMemberValue(annotationNode);
-		assertThat("module")).isEqualTo(module, getMemberValue(annotationNode);
+		assertThat(getMemberValue(annotationNode, "group")).isEqualTo(group);
+		assertThat(getMemberValue(annotationNode, "module")).isEqualTo(module);
 		if (type == null) {
 			assertThat(annotationNode.getMember("type")).isNull();
 		}
 		else {
-			assertThat("type")).isEqualTo(type, getMemberValue(annotationNode);
+			assertThat(getMemberValue(annotationNode, "type")).isEqualTo(type);
 		}
 		if (classifier == null) {
 			assertThat(annotationNode.getMember("classifier")).isNull();
 		}
 		else {
-			assertThat("classifier")).isEqualTo(classifier, getMemberValue(annotationNode);
+			assertThat(getMemberValue(annotationNode, "classifier"))
+					.isEqualTo(classifier);
 		}
-		assertThat("transitive")).isEqualTo(transitive, getMemberValue(annotationNode);
+		assertThat(getMemberValue(annotationNode, "transitive")).isEqualTo(transitive);
 	}
 
 	private Object getMemberValue(AnnotationNode annotationNode, String member) {

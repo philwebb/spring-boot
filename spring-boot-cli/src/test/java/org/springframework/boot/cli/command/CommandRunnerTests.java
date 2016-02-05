@@ -30,9 +30,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -133,14 +130,14 @@ public class CommandRunnerTests {
 	public void handlesSuccess() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(0);
-		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.noneOf(Call.class));
+		assertThat(this.calls).isEmpty();
 	}
 
 	@Test
 	public void handlesNoSuchCommand() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("missing");
 		assertThat(status).isEqualTo(1);
-		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE));
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
 	}
 
 	@Test
@@ -148,7 +145,7 @@ public class CommandRunnerTests {
 		willThrow(new RuntimeException("With Message")).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(1);
-		assertThat(this.calls).isEqualTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE));
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE);
 	}
 
 	@Test
@@ -156,8 +153,7 @@ public class CommandRunnerTests {
 		willThrow(new NullPointerException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(1);
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
@@ -166,8 +162,7 @@ public class CommandRunnerTests {
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
 		assertThat(System.getProperty("debug")).isEqualTo("true");
 		assertThat(status).isEqualTo(1);
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
@@ -176,14 +171,13 @@ public class CommandRunnerTests {
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
 		assertThat(System.getProperty("debug")).isEqualTo("true");
 		assertThat(status).isEqualTo(1);
-		assertThat(this.calls, equalTo(
-				(Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE)));
+		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);
 	}
 
 	@Test
 	public void exceptionMessages() throws Exception {
-		assertThat(new NoSuchCommandException("name").getMessage(),
-				equalTo("'name' is not a valid command. See 'help'."));
+		assertThat(new NoSuchCommandException("name").getMessage())
+				.isEqualTo("'name' is not a valid command. See 'help'.");
 	}
 
 	@Test

@@ -27,8 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link InitializrServiceMetadata}
@@ -44,8 +43,8 @@ public class InitializrServiceMetadataTests {
 		assertThat(metadata.getDefaults().get("javaVersion")).isEqualTo("1.7");
 		assertThat(metadata.getDefaults().get("groupId")).isEqualTo("org.test");
 		assertThat(metadata.getDefaults().get("name")).isEqualTo("demo");
-		assertEquals("Demo project for Spring Boot",
-				metadata.getDefaults().get("description"));
+		assertThat(metadata.getDefaults().get("description"))
+				.isEqualTo("Demo project for Spring Boot");
 		assertThat(metadata.getDefaults().get("packaging")).isEqualTo("jar");
 		assertThat(metadata.getDefaults().get("language")).isEqualTo("java");
 		assertThat(metadata.getDefaults().get("artifactId")).isEqualTo("demo");
@@ -63,8 +62,8 @@ public class InitializrServiceMetadataTests {
 		// Security description
 		assertThat(metadata.getDependency("aop").getName()).isEqualTo("AOP");
 		assertThat(metadata.getDependency("security").getName()).isEqualTo("Security");
-		assertEquals("Security description",
-				metadata.getDependency("security").getDescription());
+		assertThat(metadata.getDependency("security").getDescription())
+				.isEqualTo("Security description");
 		assertThat(metadata.getDependency("jdbc").getName()).isEqualTo("JDBC");
 		assertThat(metadata.getDependency("data-jpa").getName()).isEqualTo("JPA");
 		assertThat(metadata.getDependency("data-mongodb").getName()).isEqualTo("MongoDB");

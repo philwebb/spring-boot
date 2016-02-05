@@ -18,12 +18,8 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.empty;
 
 /**
  * Tests for {@link SpringBootDependenciesDependencyManagement}

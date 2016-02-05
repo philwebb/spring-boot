@@ -19,7 +19,6 @@ package org.springframework.boot.cli;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -49,4 +48,5 @@ public class DirectorySourcesIntegrationTests {
 		this.cli.run("**/*.groovy");
 		assertThat(this.cli.getOutput()).contains("Hello World");
 	}
+
 }

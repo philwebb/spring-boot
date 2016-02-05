@@ -19,7 +19,6 @@ package org.springframework.boot.cli;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -39,4 +38,5 @@ public class ClassLoaderIntegrationTests {
 				SpringCli.class.getName());
 		assertThat(output).contains("HasClasses-false-true-false");
 	}
+
 }

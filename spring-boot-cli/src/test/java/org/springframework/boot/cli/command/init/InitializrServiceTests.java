@@ -24,10 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -149,20 +146,20 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 			MockHttpProjectGenerationRequest mockRequest) throws IOException {
 		mockSuccessfulProjectGeneration(mockRequest);
 		ProjectGenerationResponse entity = this.invoker.generate(request);
-		assertThat(entity.getContent()).as("wrong body content").isEqualTo(mockRequest.content);
+		assertThat(entity.getContent()).as("wrong body content")
+				.isEqualTo(mockRequest.content);
 		return entity;
 	}
 
 	private static void assertProjectEntity(ProjectGenerationResponse entity,
 			String mimeType, String fileName) {
 		if (mimeType == null) {
-			assertThat(entity.getContentType()).as("No content type expected").isNull();
+			assertThat(entity.getContentType()).isNull();
 		}
 		else {
-			assertEquals("wrong mime type", mimeType,
-					entity.getContentType().getMimeType());
+			assertThat(entity.getContentType().getMimeType()).isEqualTo(mimeType);
 		}
-		assertThat(entity.getFileName()).as("wrong filename").isEqualTo(fileName);
+		assertThat(entity.getFileName()).isEqualTo(fileName);
 	}
 
 }

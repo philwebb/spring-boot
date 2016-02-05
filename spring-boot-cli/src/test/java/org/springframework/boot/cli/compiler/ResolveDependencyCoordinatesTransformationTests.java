@@ -45,7 +45,7 @@ import org.junit.Test;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -220,8 +220,8 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private void assertGrabAnnotationHasBeenTransformed() {
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
-
-		assertThat(getGrabAnnotationMemberAsString("group")).isEqualTo("org.springframework");
+		assertThat(getGrabAnnotationMemberAsString("group"))
+				.isEqualTo("org.springframework");
 		assertThat(getGrabAnnotationMemberAsString("module")).isEqualTo("spring-core");
 	}
 

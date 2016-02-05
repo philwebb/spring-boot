@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.sameInstance;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -49,7 +48,7 @@ public class ExtendedGroovyClassLoaderTests {
 	public void loadsGroovyFromSameClassLoader() throws Exception {
 		Class<?> c1 = this.contextClassLoader.loadClass("groovy.lang.Script");
 		Class<?> c2 = this.defaultScopeGroovyClassLoader.loadClass("groovy.lang.Script");
-		assertThat(c1.getClassLoader(), sameInstance(c2.getClassLoader()));
+		assertThat(c1.getClassLoader()).isSameAs(c2.getClassLoader());
 	}
 
 	@Test

@@ -34,9 +34,7 @@ import org.junit.Test;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link AetherGrapeEngine}.
@@ -63,11 +61,9 @@ public class AetherGrapeEngineTests {
 	@Test
 	public void dependencyResolution() {
 		Map<String, Object> args = new HashMap<String, Object>();
-
 		createGrapeEngine(this.springMilestones).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
-
-		assertThat(this.groovyClassLoader.getURLs().length).isEqualTo(5);
+		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
 
 	@Test
@@ -81,8 +77,10 @@ public class AetherGrapeEngineTests {
 				DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
 						.getField(grapeEngine, "session");
 
-				assertThat(session.getProxySelector() instanceof CompositeProxySelector).isTrue();
+				assertThat(session.getProxySelector() instanceof CompositeProxySelector)
+						.isTrue();
 			}
+
 		});
 	}
 

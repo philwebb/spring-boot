@@ -26,10 +26,6 @@ import org.eclipse.aether.transfer.TransferResource;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -62,9 +58,8 @@ public final class DetailedProgressReporterTests {
 		TransferEvent startedEvent = new TransferEvent.Builder(this.session,
 				this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
-
-		assertThat(ARTIFACT).isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY),
-				new String(this.baos.toByteArray()));
+		assertThat(new String(this.baos.toByteArray()))
+				.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
 	}
 
 	@Test
@@ -75,9 +70,10 @@ public final class DetailedProgressReporterTests {
 				this.resource).addTransferredBytes(4096).build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
 		String message = new String(this.baos.toByteArray()).replace("\\", "/");
-		assertThat(message, startsWith("Downloaded: " + REPOSITORY + ARTIFACT));
+		assertThat(message).startsWith("Downloaded: " + REPOSITORY + ARTIFACT);
 		assertThat(message).contains("4KB at");
 		assertThat(message).contains("KB/sec");
-		assertThat(message, endsWith("\n"));
+		assertThat(message).endsWith("\n");
 	}
+
 }

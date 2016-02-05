@@ -35,7 +35,7 @@ import org.junit.Test;
 
 import org.springframework.boot.groovy.DependencyManagementBom;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
@@ -88,7 +88,8 @@ public final class GenericBomAstTransformationTests {
 		annotation.addMember("value", new ConstantExpression("test:parent:1.0.0"));
 		cls.addAnnotation(annotation);
 		this.transformation.visit(new ASTNode[] { this.moduleNode }, this.sourceUnit);
-		assertThat(getValue().toString()).isEqualTo("[test:parent:1.0.0, test:child:1.0.0]");
+		assertThat(getValue().toString())
+				.isEqualTo("[test:parent:1.0.0, test:child:1.0.0]");
 	}
 
 	private List<String> getValue() {

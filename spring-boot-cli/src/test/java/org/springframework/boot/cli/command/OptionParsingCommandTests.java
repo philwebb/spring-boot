@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import org.springframework.boot.cli.command.options.OptionHandler;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -34,9 +33,17 @@ public class OptionParsingCommandTests {
 	public void optionHelp() {
 		OptionHandler handler = new OptionHandler();
 		handler.option("bar", "Bar");
-		OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
-		};
+		OptionParsingCommand command = new TestOptionParsingCommand("foo", "Foo",
+				handler);
 		assertThat(command.getHelp()).contains("--bar");
+	}
+
+	private static class TestOptionParsingCommand extends OptionParsingCommand {
+
+		TestOptionParsingCommand(String name, String description, OptionHandler handler) {
+			super(name, description, handler);
+		}
+
 	}
 
 }

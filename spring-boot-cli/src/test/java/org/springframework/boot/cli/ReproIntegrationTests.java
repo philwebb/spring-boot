@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -41,8 +40,7 @@ public class ReproIntegrationTests {
 	@Test
 	public void grabAntBuilder() throws Exception {
 		this.cli.run("grab-ant-builder.groovy");
-		assertThat(this.cli.getHttpOutput(),
-				containsString("{\"message\":\"Hello World\"}"));
+		assertThat(this.cli.getHttpOutput()).contains("{\"message\":\"Hello World\"}");
 	}
 
 	// Security depends on old versions of Spring so if the dependencies aren't pinned
@@ -56,8 +54,7 @@ public class ReproIntegrationTests {
 	@Test
 	public void shellDependencies() throws Exception {
 		this.cli.run("crsh.groovy");
-		assertThat(this.cli.getHttpOutput(),
-				containsString("{\"message\":\"Hello World\"}"));
+		assertThat(this.cli.getHttpOutput()).contains("{\"message\":\"Hello World\"}");
 	}
 
 	@Test

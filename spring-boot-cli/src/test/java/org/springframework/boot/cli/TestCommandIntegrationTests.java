@@ -24,7 +24,6 @@ import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.cli.command.test.TestCommand;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -118,4 +117,5 @@ public class TestCommandIntegrationTests {
 		String output = this.cli.test("failures.groovy");
 		assertThat(output).contains("Tests run: 5,  Failures: 3");
 	}
+
 }

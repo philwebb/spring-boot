@@ -19,8 +19,6 @@ package org.springframework.boot.cli.compiler.dependencies;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -52,8 +50,8 @@ public class DependencyManagementArtifactCoordinatesResolverTests {
 
 	@Test
 	public void getGroupIdForBootArtifact() throws Exception {
-		assertThat(this.resolver.getGroupId("spring-boot-something"),
-				equalTo("org.springframework.boot"));
+		assertThat(this.resolver.getGroupId("spring-boot-something"))
+				.isEqualTo("org.springframework.boot");
 		verify(this.dependencyManagement, never()).find(anyString());
 	}
 
@@ -64,7 +62,7 @@ public class DependencyManagementArtifactCoordinatesResolverTests {
 
 	@Test
 	public void getGroupIdNotFound() throws Exception {
-		assertThat(this.resolver.getGroupId("a2"), nullValue());
+		assertThat(this.resolver.getGroupId("a2")).isNull();
 	}
 
 }

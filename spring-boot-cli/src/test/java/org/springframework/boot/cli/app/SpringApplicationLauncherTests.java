@@ -24,10 +24,7 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SpringApplicationLauncher}
@@ -45,21 +42,21 @@ public class SpringApplicationLauncherTests {
 
 	@Test
 	public void defaultLaunch() throws Exception {
-		assertThat(launch(), contains("org.springframework.boot.SpringApplication"));
+		assertThat(launch()).contains("org.springframework.boot.SpringApplication");
 	}
 
 	@Test
 	public void launchWithClassConfiguredBySystemProperty() {
 		System.setProperty("spring.application.class.name",
 				"system.property.SpringApplication");
-		assertThat(launch(), contains("system.property.SpringApplication"));
+		assertThat(launch()).contains("system.property.SpringApplication");
 	}
 
 	@Test
 	public void launchWithClassConfiguredByEnvironmentVariable() {
 		this.env.put("SPRING_APPLICATION_CLASS_NAME",
 				"environment.variable.SpringApplication");
-		assertThat(launch(), contains("environment.variable.SpringApplication"));
+		assertThat(launch()).contains("environment.variable.SpringApplication");
 	}
 
 	@Test
@@ -68,7 +65,7 @@ public class SpringApplicationLauncherTests {
 				"system.property.SpringApplication");
 		this.env.put("SPRING_APPLICATION_CLASS_NAME",
 				"environment.variable.SpringApplication");
-		assertThat(launch(), contains("system.property.SpringApplication"));
+		assertThat(launch()).contains("system.property.SpringApplication");
 
 	}
 
@@ -84,10 +81,8 @@ public class SpringApplicationLauncherTests {
 		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
-		assertThat(defaultProperties.size()).isEqualTo(1);
-		assertThat(
-				defaultProperties.get("spring.groovy.template.check-template-location"),
-				equalTo("false"));
+		assertThat(defaultProperties).hasSize(1)
+				.containsEntry("spring.groovy.template.check-template-location", "false");
 	}
 
 	private Set<String> launch() {
