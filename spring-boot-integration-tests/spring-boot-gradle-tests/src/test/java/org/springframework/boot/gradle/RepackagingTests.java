@@ -26,10 +26,7 @@ import org.junit.Test;
 
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.notNullValue;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Integration tests for gradle repackaging.
@@ -57,7 +54,8 @@ public class RepackagingTests {
 		File repackageFile = new File(buildLibs, "repackage.jar");
 		assertThat(repackageFile.exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(isDevToolsJarIncluded(repackageFile)).isTrue();
 	}
 
@@ -70,7 +68,8 @@ public class RepackagingTests {
 		File buildLibs = new File("target/repackage/build/libs");
 		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 	}
 
 	@Test
@@ -82,7 +81,8 @@ public class RepackagingTests {
 		File buildLibs = new File("target/repackage/build/libs");
 		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
@@ -97,7 +97,8 @@ public class RepackagingTests {
 		File buildLibs = new File("target/repackage/build/libs");
 		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isFalse();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
@@ -111,7 +112,8 @@ public class RepackagingTests {
 		File buildLibs = new File("target/repackage/build/libs");
 		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
@@ -126,7 +128,8 @@ public class RepackagingTests {
 		File buildLibs = new File("target/repackage/build/libs");
 		assertThat(new File(buildLibs, "repackage.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(new File(buildLibs, "custom.jar").exists()).isTrue();
 		assertThat(new File(buildLibs, "custom.jar.original").exists()).isTrue();
 	}
@@ -141,7 +144,7 @@ public class RepackagingTests {
 				.run();
 		File buildLibs = new File("target/repackage/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "repackage.jar"));
-		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
+		assertThat(jarFile.getEntry("lib/foo.jar")).isNotNull();
 		jarFile.close();
 	}
 
@@ -155,7 +158,8 @@ public class RepackagingTests {
 		File repackageFile = new File(buildLibs, "repackage.jar");
 		assertThat(repackageFile.exists()).isTrue();
 		assertThat(new File(buildLibs, "repackage.jar.original").exists()).isTrue();
-		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists()).isFalse();
+		assertThat(new File(buildLibs, "repackage-sources.jar.original").exists())
+				.isFalse();
 		assertThat(isDevToolsJarIncluded(repackageFile)).isFalse();
 	}
 
