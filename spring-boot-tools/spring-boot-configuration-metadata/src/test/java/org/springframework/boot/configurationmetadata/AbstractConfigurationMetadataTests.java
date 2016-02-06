@@ -25,8 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Base for configuration meta-data tests.

@@ -18,7 +18,6 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,13 +34,14 @@ public class ConfigurationMetadataTests {
 
 	@Test
 	public void toDashedCaseWordsUnderscore() {
-		assertThat(toDashedCase("Word_With_underscore")).isEqualTo("word_with_underscore");
+		assertThat(toDashedCase("Word_With_underscore"))
+				.isEqualTo("word_with_underscore");
 	}
 
 	@Test
 	public void toDashedCaseWordsSeveralUnderscores() {
-		assertThat(toDashedCase("Word___With__underscore"),
-				is("word___with__underscore"));
+		assertThat(toDashedCase("Word___With__underscore"))
+				.isEqualTo("word___with__underscore");
 	}
 
 	@Test

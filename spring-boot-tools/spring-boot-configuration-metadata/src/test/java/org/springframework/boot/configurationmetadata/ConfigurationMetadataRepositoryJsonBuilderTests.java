@@ -22,9 +22,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ConfigurationMetadataRepository}.
@@ -138,7 +136,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 			validateFoo(secondRepo);
 			validateBar(secondRepo);
 			// first repo not impacted by second build
-			assertNotEquals(firstRepo, secondRepo);
+			assertThat(secondRepo).isNotEqualTo(firstRepo);
 			assertThat(firstRepo.getAllGroups()).hasSize(1);
 			assertThat(firstRepo.getAllProperties()).hasSize(3);
 			assertThat(secondRepo.getAllGroups()).hasSize(2);
@@ -192,8 +190,7 @@ public class ConfigurationMetadataRepositoryJsonBuilderTests
 
 	private void contains(Map<String, ?> source, String... keys) {
 		for (String key : keys) {
-			assertThat("Item '" + key + "' not found. Got " + source.keySet().isTrue(),
-					source.containsKey(key));
+			assertThat(source).containsKey(key);
 		}
 	}
 

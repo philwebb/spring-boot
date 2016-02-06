@@ -28,7 +28,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.SocketUtils;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

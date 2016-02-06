@@ -34,8 +34,6 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
