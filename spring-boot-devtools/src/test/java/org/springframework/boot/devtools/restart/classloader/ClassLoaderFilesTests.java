@@ -128,7 +128,7 @@ public class ClassLoaderFilesTests {
 		ObjectInputStream ois = new ObjectInputStream(
 				new ByteArrayInputStream(bos.toByteArray()));
 		ClassLoaderFiles readObject = (ClassLoaderFiles) ois.readObject();
-		assertThat(readObject.getFile("myfile")).isNull();
+		assertThat(readObject.getFile("myfile")).isNotNull();
 	}
 
 	@Test
