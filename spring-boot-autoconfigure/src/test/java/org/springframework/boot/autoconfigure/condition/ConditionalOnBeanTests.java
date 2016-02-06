@@ -35,10 +35,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
-
 /**
  * Tests for {@link ConditionalOnBean}.
  *

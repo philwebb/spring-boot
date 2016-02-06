@@ -25,8 +25,6 @@ import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
  *

@@ -55,8 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link UserInfoTokenServices}.
  *
@@ -100,7 +98,8 @@ public class UserInfoTokenServicesRefreshTokenTests {
 		assertThat(this.services.loadAuthentication("FOO").getName()).isEqualTo("me");
 		assertThat(context.getAccessToken().getValue()).isEqualTo("FOO");
 		// The refresh token is still intact
-		assertThat(context.getAccessToken().getRefreshToken()).isEqualTo(token.getRefreshToken());
+		assertThat(context.getAccessToken().getRefreshToken())
+				.isEqualTo(token.getRefreshToken());
 	}
 
 	@Test

@@ -69,12 +69,14 @@ public class MustacheViewResolverTests {
 
 	@Test
 	public void resolveDoubleLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", Locale.CANADA_FRENCH)).isNotNull();
+		assertThat(this.resolver.resolveViewName("foo", Locale.CANADA_FRENCH))
+				.isNotNull();
 	}
 
 	@Test
 	public void resolveTripleLocale() throws Exception {
-		assertThat(this.resolver.resolveViewName("foo", new Locale("en", "GB", "cy"))).isNotNull();
+		assertThat(this.resolver.resolveViewName("foo", new Locale("en", "GB", "cy")))
+				.isNotNull();
 	}
 
 	@Test

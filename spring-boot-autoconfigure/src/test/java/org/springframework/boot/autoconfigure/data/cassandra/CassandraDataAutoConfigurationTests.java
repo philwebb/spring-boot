@@ -55,7 +55,8 @@ public class CassandraDataAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class);
 		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class).length)
+				.isEqualTo(1);
 	}
 
 	@Configuration

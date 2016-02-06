@@ -54,9 +54,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Integration Tests for {@link MustacheAutoConfiguration}, {@link MustacheViewResolver}
  * and {@link MustacheView}.
@@ -84,7 +81,8 @@ public class MustacheWebIntegrationTests {
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<String, String>();
 		context.put("arg", "world");
-		assertThat(tmpl.execute(context)).isEqualTo("Hello world!"); // returns "Hello world!"
+		assertThat(tmpl.execute(context)).isEqualTo("Hello world!"); // returns "Hello
+																		// world!"
 	}
 
 	@Test

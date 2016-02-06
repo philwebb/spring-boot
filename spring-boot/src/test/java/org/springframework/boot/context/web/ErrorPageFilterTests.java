@@ -441,14 +441,14 @@ public class ErrorPageFilterTests {
 		this.request.setServletPath("/test");
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new MockFilterChain() {
-			
+
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
 					throws IOException, ServletException {
 				super.doFilter(request, response);
 				throw new RuntimeException();
 			}
-			
+
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.output.toString()).contains("request [/test]");
@@ -461,14 +461,14 @@ public class ErrorPageFilterTests {
 		this.request.setPathInfo("/alpha");
 		this.filter.addErrorPages(new ErrorPage("/error"));
 		this.chain = new MockFilterChain() {
-			
+
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response)
 					throws IOException, ServletException {
 				super.doFilter(request, response);
 				throw new RuntimeException();
 			}
-			
+
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(this.output.toString()).contains("request [/test/alpha]");

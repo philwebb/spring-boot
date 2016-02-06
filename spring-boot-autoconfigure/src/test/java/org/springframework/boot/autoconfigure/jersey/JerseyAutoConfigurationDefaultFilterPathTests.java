@@ -47,8 +47,6 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link JerseyAutoConfiguration} when using custom servlet paths.
  *

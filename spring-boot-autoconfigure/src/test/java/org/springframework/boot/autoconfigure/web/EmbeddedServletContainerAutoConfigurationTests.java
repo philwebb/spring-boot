@@ -71,7 +71,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				SpringServletConfiguration.class, BaseConfiguration.class);
 		verifyContext();
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(2);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(2);
 	}
 
 	@Test
@@ -79,14 +80,16 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				NonSpringServletConfiguration.class, BaseConfiguration.class);
 		verifyContext(); // the non default servlet is still registered
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(0);
 	}
 
 	@Test
 	public void contextAlreadyHasNonServlet() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				NonServletConfiguration.class, BaseConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(0);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(0);
 		assertThat(this.context.getBeanNamesForType(Servlet.class).length).isEqualTo(0);
 	}
 
@@ -96,7 +99,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 				DispatcherServletWithRegistrationConfiguration.class,
 				BaseConfiguration.class);
 		verifyContext();
-		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length).isEqualTo(1);
+		assertThat(this.context.getBeanNamesForType(DispatcherServlet.class).length)
+				.isEqualTo(1);
 	}
 
 	@Test

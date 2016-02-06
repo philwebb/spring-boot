@@ -46,8 +46,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.
  *

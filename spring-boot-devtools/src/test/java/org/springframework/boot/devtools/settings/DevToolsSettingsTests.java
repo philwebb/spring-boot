@@ -26,7 +26,6 @@ import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 /**
  * Tests for {@link DevToolsSettings}.
  *
@@ -62,10 +61,12 @@ public class DevToolsSettingsTests {
 	public void defaultIncludePatterns() throws Exception {
 		DevToolsSettings settings = DevToolsSettings.get();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot"))).isTrue();
-		assertThat(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-autoconfigure")))
+				.isTrue();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot-actuator"))).isTrue();
 		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter"))).isTrue();
-		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing"))).isTrue();
+		assertThat(settings.isRestartExclude(makeUrl("spring-boot-starter-some-thing")))
+				.isTrue();
 	}
 
 	private URL makeUrl(String name) throws IOException {

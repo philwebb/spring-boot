@@ -33,8 +33,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link ElasticsearchRepositoriesAutoConfiguration}.
  *

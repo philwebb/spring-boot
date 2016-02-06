@@ -24,8 +24,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link LinkedInAutoConfiguration}.
  *

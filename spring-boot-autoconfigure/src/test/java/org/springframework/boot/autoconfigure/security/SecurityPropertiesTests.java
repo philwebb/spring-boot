@@ -29,10 +29,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
-
 /**
  * Tests for {@link SecurityProperties}.
  *
@@ -114,7 +110,8 @@ public class SecurityPropertiesTests {
 		this.binder.bind(new MutablePropertyValues(
 				Collections.singletonMap("security.user.role", "USER,ADMIN")));
 		assertThat(this.binder.getBindingResult().hasErrors()).isFalse();
-		assertThat(this.security.getUser().getRole().toString()).isEqualTo("[USER, ADMIN]");
+		assertThat(this.security.getUser().getRole().toString())
+				.isEqualTo("[USER, ADMIN]");
 	}
 
 	@Test

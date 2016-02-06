@@ -29,9 +29,6 @@ import org.springframework.context.annotation.Primary;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
 
-
-
-
 /**
  * Tests for {@link ConditionalOnSingleCandidate}.
  *

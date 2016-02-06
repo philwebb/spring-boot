@@ -20,9 +20,6 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Tests for {@link DataSourceProperties}.
  *
@@ -36,7 +33,8 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		assertThat(properties.getDriverClassName()).isNull();
-		assertThat(properties.determineDriverClassName()).isEqualTo("com.mysql.jdbc.Driver");
+		assertThat(properties.determineDriverClassName())
+				.isEqualTo("com.mysql.jdbc.Driver");
 	}
 
 	@Test
@@ -45,7 +43,8 @@ public class DataSourcePropertiesTests {
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.setDriverClassName("org.hsqldb.jdbcDriver");
 		assertThat(properties.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
-		assertThat(properties.determineDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
+		assertThat(properties.determineDriverClassName())
+				.isEqualTo("org.hsqldb.jdbcDriver");
 	}
 
 	@Test
@@ -53,7 +52,8 @@ public class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
 		assertThat(properties.getUrl()).isNull();
-		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
+		assertThat(properties.determineUrl())
+				.isEqualTo(EmbeddedDatabaseConnection.H2.getUrl());
 	}
 
 	@Test

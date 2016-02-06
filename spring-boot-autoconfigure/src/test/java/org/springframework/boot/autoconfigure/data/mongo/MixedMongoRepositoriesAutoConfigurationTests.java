@@ -44,8 +44,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
  *

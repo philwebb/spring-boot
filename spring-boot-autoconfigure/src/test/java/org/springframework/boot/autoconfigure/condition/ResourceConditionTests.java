@@ -28,9 +28,6 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Test for {@link ResourceCondition}.
  *

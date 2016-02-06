@@ -23,8 +23,6 @@ import org.springframework.batch.core.JobExecution;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link JobExecutionExitCodeGenerator}.
  *

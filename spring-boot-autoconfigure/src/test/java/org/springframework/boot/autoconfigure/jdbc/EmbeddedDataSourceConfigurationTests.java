@@ -24,8 +24,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link EmbeddedDataSourceConfiguration}.
  *

@@ -48,8 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Integration tests for {@link MustacheAutoConfiguration}.
  *
