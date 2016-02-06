@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.assertj.core.api.Condition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,12 +102,12 @@ public class GroovyGrabDependencyResolverTests {
 				"spring-core-4.1.1.RELEASE.jar");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void resolveShorthandArtifactWithDependencies() throws Exception {
 		List<File> resolved = this.resolver.resolve(Arrays.asList("spring-core"));
 		assertThat(resolved).hasSize(2);
-		assertThat(getNames(resolved)).has(Matched.by(
+		assertThat(getNames(resolved)).has((Condition) Matched.by(
 				hasItems(startsWith("commons-logging-"), startsWith("spring-core-"))));
 	}
 

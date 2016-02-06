@@ -39,7 +39,7 @@ public class NoJarTests {
 		this.project = new ProjectCreator().createProject("nojar");
 		this.project.newBuild().forTasks("build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
-		assertThat(new File("target/nojar/build/libs")).exists();
+		assertThat(new File("target/nojar/build/libs")).doesNotExist();
 	}
 
 }
