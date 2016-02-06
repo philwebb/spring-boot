@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Integration tests for {@link CityRepository}.
@@ -54,7 +53,7 @@ public class CityRepositoryIntegrationTests {
 	public void findByNameAndCountry() {
 		City city = this.repository.findByNameAndCountryAllIgnoringCase("Melbourne",
 				"Australia");
-		assertThat(city, notNullValue());
+		assertThat(city).isNotNull();
 		assertThat(city.getName()).isEqualTo("Melbourne");
 	}
 

@@ -74,9 +74,9 @@ public class SampleDataJpaApplicationTests {
 
 	@Test
 	public void testJmx() throws Exception {
-		assertThat(ManagementFactory.getPlatformMBeanServer().isEqualTo(1)
-				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null)
-				.size());
+		assertThat(ManagementFactory.getPlatformMBeanServer()
+				.queryMBeans(new ObjectName("jpa.sample:type=ConnectionPool,*"), null))
+						.hasSize(1);
 	}
 
 }

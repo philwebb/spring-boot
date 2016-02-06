@@ -40,8 +40,6 @@ import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Basic integration tests for service demo application.
  *
@@ -73,7 +71,7 @@ public class SampleIntegrationApplicationTests {
 	public void testVanillaExchange() throws Exception {
 		SpringApplication.run(ProducerApplication.class, "World");
 		String output = getOutput();
-		assertThat("Wrong output: " + output, output.contains("Hello World")).isTrue();
+		assertThat(output).contains("Hello World");
 	}
 
 	private String getOutput() throws Exception {

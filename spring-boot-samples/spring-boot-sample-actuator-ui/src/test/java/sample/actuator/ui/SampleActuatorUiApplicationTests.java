@@ -37,9 +37,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -62,8 +59,7 @@ public class SampleActuatorUiApplicationTests {
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<title>Hello"));
+		assertThat(entity.getBody()).contains("<title>Hello");
 	}
 
 	@Test
@@ -71,7 +67,7 @@ public class SampleActuatorUiApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
+		assertThat(entity.getBody()).contains("body");
 	}
 
 	@Test
@@ -90,12 +86,8 @@ public class SampleActuatorUiApplicationTests {
 				"http://localhost:" + this.port + "/error", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<html>"));
-		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<body>"));
-		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().isTrue()
-				.contains("Please contact the operator with the above information"));
+		assertThat(entity.getBody()).contains("<html>").contains("<body>")
+				.contains("Please contact the operator with the above information");
 	}
 
 }

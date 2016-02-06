@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Integration tests for {@link SampleJooqApplication}.
@@ -39,9 +38,9 @@ public class SampleJooqApplicationTests {
 		SampleJooqApplication.main(NO_ARGS);
 		assertThat(this.out.toString()).contains("jOOQ Fetch 1 Greg Turnquest");
 		assertThat(this.out.toString()).contains("jOOQ Fetch 2 Craig Walls");
-		assertThat(this.out.toString(),
-				containsString("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
-						+ "Spring Boot in Action : Craig Walls]"));
+		assertThat(this.out.toString())
+				.contains("jOOQ SQL " + "[Learning Spring Boot : Greg Turnquest, "
+						+ "Spring Boot in Action : Craig Walls]");
 	}
 
 }

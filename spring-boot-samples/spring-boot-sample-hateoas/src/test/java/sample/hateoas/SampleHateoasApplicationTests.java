@@ -34,8 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleHateoasApplication.class)
@@ -50,8 +48,8 @@ public class SampleHateoasApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/customers/1", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody(), startsWith(
-				"{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\""));
+		assertThat(entity.getBody()).startsWith(
+				"{\"id\":1,\"firstName\":\"Oliver\"" + ",\"lastName\":\"Gierke\"");
 		assertThat(entity.getBody()).contains("_links\":{\"self\":{\"href\"");
 	}
 
@@ -64,8 +62,8 @@ public class SampleHateoasApplicationTests {
 		ResponseEntity<String> response = new TestRestTemplate().exchange(request,
 				String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(response.getHeaders().getContentType(),
-				equalTo(MediaType.parseMediaType("application/json;charset=UTF-8")));
+		assertThat(response.getHeaders().getContentType())
+				.isEqualTo(MediaType.parseMediaType("application/json;charset=UTF-8"));
 	}
 
 }

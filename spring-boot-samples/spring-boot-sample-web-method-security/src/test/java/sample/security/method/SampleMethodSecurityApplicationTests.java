@@ -40,9 +40,6 @@ import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -65,8 +62,7 @@ public class SampleMethodSecurityApplicationTests {
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<title>Login"));
+		assertThat(entity.getBody()).contains("<title>Login");
 	}
 
 	@Test
@@ -82,8 +78,8 @@ public class SampleMethodSecurityApplicationTests {
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertEquals("http://localhost:" + this.port + "/",
-				entity.getHeaders().getLocation().toString());
+		assertThat(entity.getHeaders().getLocation().toString())
+				.isEqualTo("http://localhost:" + this.port + "/");
 	}
 
 	@Test
@@ -105,8 +101,7 @@ public class SampleMethodSecurityApplicationTests {
 				entity.getHeaders().getLocation(), HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		assertThat("Wrong body (message doesn't match):\n" + entity.getBody().isTrue(),
-				page.getBody().contains("Access denied"));
+		assertThat(page.getBody()).contains("Access denied");
 	}
 
 	@Test

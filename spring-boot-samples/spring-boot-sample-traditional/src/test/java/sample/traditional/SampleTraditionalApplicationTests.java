@@ -30,9 +30,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -53,8 +50,7 @@ public class SampleTraditionalApplicationTests {
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
-		assertThat("Wrong body:\n" + body, body.contains("<html>")).isTrue();
-		assertThat("Wrong body:\n" + body, body.contains("<h1>Home</h1>")).isTrue();
+		assertThat(body).contains("<html>").contains("<h1>Home</h1>");
 	}
 
 	@Test
@@ -63,8 +59,7 @@ public class SampleTraditionalApplicationTests {
 				"http://localhost:" + this.port + "/index.html", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String body = entity.getBody();
-		assertThat("Wrong body:\n" + body, body.contains("<html>")).isTrue();
-		assertThat("Wrong body:\n" + body, body.contains("<h1>Hello</h1>")).isTrue();
+		assertThat(body).contains("<html>").contains("<h1>Hello</h1>");
 	}
 
 }

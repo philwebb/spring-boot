@@ -25,8 +25,6 @@ import org.springframework.boot.test.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Tests for {@link SampleAopApplication}.
  *
@@ -59,14 +57,14 @@ public class SampleAopApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleAopApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertThat("Wrong output: " + output, output.contains("Hello Phil")).isTrue();
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	public void testCommandLineOverrides() throws Exception {
 		SampleAopApplication.main(new String[] { "--name=Gordon" });
 		String output = this.outputCapture.toString();
-		assertThat("Wrong output: " + output, output.contains("Hello Gordon")).isTrue();
+		assertThat(output).contains("Hello Gordon");
 	}
 
 }

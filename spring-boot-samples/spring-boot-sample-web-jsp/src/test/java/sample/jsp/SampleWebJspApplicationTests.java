@@ -30,9 +30,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for JSP application.
  *
@@ -52,8 +49,7 @@ public class SampleWebJspApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("/resources/text.txt"));
+		assertThat(entity.getBody()).contains("/resources/text.txt");
 	}
 
 }

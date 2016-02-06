@@ -39,8 +39,6 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -79,8 +77,8 @@ public class SampleUndertowApplicationTests {
 		GZIPInputStream inflater = new GZIPInputStream(
 				new ByteArrayInputStream(entity.getBody()));
 		try {
-			assertEquals("Hello World",
-					StreamUtils.copyToString(inflater, Charset.forName("UTF-8")));
+			assertThat(StreamUtils.copyToString(inflater, Charset.forName("UTF-8")))
+					.isEqualTo("Hello World");
 		}
 		finally {
 			inflater.close();

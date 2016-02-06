@@ -32,9 +32,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -54,8 +51,7 @@ public class SampleWebStaticApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<title>Static"));
+		assertThat(entity.getBody()).contains("<title>Static");
 	}
 
 	@Test
@@ -66,10 +62,9 @@ public class SampleWebStaticApplicationTests {
 								+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
-		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
-				MediaType.valueOf("text/css;charset=UTF-8"),
-				entity.getHeaders().getContentType());
+		assertThat(entity.getBody()).contains("body");
+		assertThat(entity.getHeaders().getContentType())
+				.isEqualTo(MediaType.valueOf("text/css;charset=UTF-8"));
 	}
 
 }

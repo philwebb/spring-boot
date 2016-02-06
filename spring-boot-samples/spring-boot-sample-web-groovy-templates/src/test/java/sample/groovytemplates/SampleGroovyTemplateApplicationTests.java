@@ -34,10 +34,6 @@ import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -57,10 +53,8 @@ public class SampleGroovyTemplateApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body (title doesn't match):\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("<title>Messages"));
-		assertThat("Wrong body (found layout:fragment):\n" + entity.getBody().isFalse(),
-				entity.getBody().contains("layout:fragment"));
+		assertThat(entity.getBody()).contains("<title>Messages");
+		assertThat(entity.getBody()).doesNotContain("layout:fragment");
 	}
 
 	@Test
@@ -70,8 +64,7 @@ public class SampleGroovyTemplateApplicationTests {
 		map.set("summary", "FOO");
 		URI location = new TestRestTemplate()
 				.postForLocation("http://localhost:" + this.port, map);
-		assertTrue("Wrong location:\n" + location,
-				location.toString().contains("localhost:" + this.port));
+		assertThat(location.toString()).contains("localhost:" + this.port);
 	}
 
 	@Test
@@ -79,7 +72,7 @@ public class SampleGroovyTemplateApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
+		assertThat(entity.getBody()).contains("body");
 	}
 
 }

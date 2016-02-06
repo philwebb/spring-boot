@@ -41,10 +41,6 @@ import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
-
 /**
  * Basic integration tests for demo application.
  *
@@ -67,8 +63,8 @@ public class SampleWebSecureCustomApplicationTests {
 				"http://localhost:" + this.port, HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat("Wrong location:\n" + entity.getHeaders().isTrue(),
-				entity.getHeaders().getLocation().toString().endsWith(port + "/login"));
+		assertThat(entity.getHeaders().getLocation().toString())
+				.endsWith(this.port + "/login");
 	}
 
 	@Test
@@ -79,8 +75,7 @@ public class SampleWebSecureCustomApplicationTests {
 				"http://localhost:" + this.port + "/login", HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong content:\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("_csrf"));
+		assertThat(entity.getBody()).contains("_csrf");
 	}
 
 	@Test
@@ -96,10 +91,9 @@ public class SampleWebSecureCustomApplicationTests {
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat("Wrong location:\n" + entity.getHeaders().isTrue(),
-				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
-		assertThat("Missing cookie:\n" + entity.getHeaders().isNotNull(),
-				entity.getHeaders().get("Set-Cookie"));
+		assertThat(entity.getHeaders().getLocation().toString())
+				.endsWith(this.port + "/");
+		assertThat(entity.getHeaders().get("Set-Cookie")).isNotNull();
 	}
 
 	private HttpHeaders getHeaders() {
@@ -109,9 +103,9 @@ public class SampleWebSecureCustomApplicationTests {
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.OK);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*")
-				.matcher(page.getBody());
-		assertThat("No csrf token: " + page.getBody(), matcher.matches()).isTrue();
+		Pattern pattern = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*");
+		Matcher matcher = pattern.matcher(page.getBody());
+		assertThat(matcher.matches()).as(page.getBody()).isTrue();
 		headers.set("X-CSRF-TOKEN", matcher.group(1));
 		return headers;
 	}
@@ -121,7 +115,7 @@ public class SampleWebSecureCustomApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body")).isTrue();
+		assertThat(entity.getBody()).contains("body");
 	}
 
 }

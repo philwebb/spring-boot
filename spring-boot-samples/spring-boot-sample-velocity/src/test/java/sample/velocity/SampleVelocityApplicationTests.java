@@ -26,8 +26,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Basic integration tests for Velocity application with no web layer.
  *
@@ -43,7 +41,7 @@ public class SampleVelocityApplicationTests {
 	@Test
 	public void testVelocityTemplate() throws Exception {
 		String result = SampleVelocityApplicationTests.output.toString();
-		assertThat("Wrong output: " + result, result.contains("Hello, Andy")).isTrue();
+		assertThat(result).contains("Hello, Andy");
 	}
 
 }

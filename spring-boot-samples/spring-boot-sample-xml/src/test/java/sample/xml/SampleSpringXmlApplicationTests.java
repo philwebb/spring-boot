@@ -23,8 +23,6 @@ import org.springframework.boot.test.OutputCapture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 public class SampleSpringXmlApplicationTests {
 
 	@Rule
@@ -34,7 +32,7 @@ public class SampleSpringXmlApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		SampleSpringXmlApplication.main(new String[0]);
 		String output = this.outputCapture.toString();
-		assertThat("Wrong output: " + output, output.contains("Hello World")).isTrue();
+		assertThat(output).contains("Hello World");
 	}
 
 }

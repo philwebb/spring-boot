@@ -27,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Basic integration tests for demo application.
  *

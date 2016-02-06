@@ -36,9 +36,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
 /**
  * Basic integration tests for Mustache application.
  *
@@ -59,8 +56,7 @@ public class SampleWebMustacheApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body:\n" + entity.getBody().isTrue(),
-				entity.getBody().contains("Hello, Andy"));
+		assertThat(entity.getBody()).contains("Hello, Andy");
 	}
 
 	@Test
@@ -74,8 +70,8 @@ public class SampleWebMustacheApplicationTests {
 				requestEntity, String.class);
 
 		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat("Wrong body:\n" + responseEntity.getBody().isTrue(),
-				responseEntity.getBody().contains("Something went wrong: 404 Not Found"));
+		assertThat(responseEntity.getBody())
+				.contains("Something went wrong: 404 Not Found");
 	}
 
 }

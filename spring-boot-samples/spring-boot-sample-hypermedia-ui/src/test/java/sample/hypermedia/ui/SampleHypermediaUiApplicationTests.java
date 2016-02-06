@@ -35,8 +35,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleHypermediaUiApplication.class)
 @WebIntegrationTest(value = { "management.context-path=" }, randomPort = true)
@@ -49,14 +47,14 @@ public class SampleHypermediaUiApplicationTests {
 	public void home() {
 		String response = new TestRestTemplate()
 				.getForObject("http://localhost:" + this.port, String.class);
-		assertThat("Wrong body: " + response, response.contains("Hello World")).isTrue();
+		assertThat(response).contains("Hello World");
 	}
 
 	@Test
 	public void links() {
 		String response = new TestRestTemplate().getForObject(
 				"http://localhost:" + this.port + "/actuator", String.class);
-		assertThat("Wrong body: " + response, response.contains("\"_links\":")).isTrue();
+		assertThat(response).contains("\"_links\":");
 	}
 
 	@Test
@@ -67,7 +65,7 @@ public class SampleHypermediaUiApplicationTests {
 				new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port + "/actuator")),
 				String.class);
-		assertThat("Wrong body: " + response, response.getBody().contains("\"_links\":")).isTrue();
+		assertThat(response.getBody()).contains("\"_links\":");
 	}
 
 	@Test
@@ -77,7 +75,7 @@ public class SampleHypermediaUiApplicationTests {
 		ResponseEntity<String> response = new TestRestTemplate()
 				.exchange(new RequestEntity<Void>(headers, HttpMethod.GET,
 						new URI("http://localhost:" + this.port)), String.class);
-		assertThat("Wrong body: " + response, response.getBody().contains("Hello World")).isTrue();
+		assertThat(response.getBody()).contains("Hello World");
 	}
 
 }

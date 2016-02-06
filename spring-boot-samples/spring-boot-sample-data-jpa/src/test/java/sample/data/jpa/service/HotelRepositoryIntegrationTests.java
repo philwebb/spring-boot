@@ -34,7 +34,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 
 /**
  * Integration tests for {@link HotelRepository}.
@@ -64,7 +63,7 @@ public class HotelRepositoryIntegrationTests {
 		assertThat(hotel.getName()).isEqualTo("Doubletree");
 
 		List<RatingCount> counts = this.repository.findRatingCounts(hotel);
-		assertThat(counts, hasSize(1));
+		assertThat(counts).hasSize(1);
 		assertThat(counts.get(0).getRating()).isEqualTo(Rating.AVERAGE);
 		assertThat(counts.get(0).getCount()).isGreaterThan(1L);
 	}
