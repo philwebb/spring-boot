@@ -59,7 +59,7 @@ public final class Matched<T> extends Condition<T> {
 	}
 
 	public static <T> Condition<T> by(Matcher<? extends T> matcher) {
-		return new Matched<>(matcher);
+		return new Matched<T>(matcher);
 	}
 
 }
