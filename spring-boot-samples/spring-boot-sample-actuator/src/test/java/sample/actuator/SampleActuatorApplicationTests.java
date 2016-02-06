@@ -38,10 +38,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for service demo application.
@@ -68,9 +65,8 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("Wrong body: " + body, "Unauthorized");
-		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
-				entity.getHeaders().containsKey("Set-Cookie"));
+		assertThat(body.get("error")).isEqualTo("Unauthorized");
+		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
 	@Test
@@ -110,7 +106,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat("Wrong body: " + body, body.containsKey("counter.status.200.root")).isTrue();
+		assertThat(body).containsKey("counter.status.200.root");
 	}
 
 	@Test
@@ -121,7 +117,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat("Wrong body: " + body, body.containsKey("systemProperties")).isTrue();
+		assertThat(body).containsKey("systemProperties");
 	}
 
 	@Test
@@ -129,10 +125,8 @@ public class SampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"status\":\"UP\""));
-		assertThat("Wrong body: " + entity.getBody().isFalse(),
-				entity.getBody().contains("\"hello\":\"1\""));
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).doesNotContain("\"hello\":\"1\"");
 	}
 
 	@Test
@@ -140,8 +134,7 @@ public class SampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"hello\":1"));
+		assertThat(entity.getBody()).contains("\"hello\":1");
 	}
 
 	@Test
@@ -149,8 +142,8 @@ public class SampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate()
 				.getForEntity("http://localhost:" + this.port + "/info", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody(), entity.getBody().isTrue()
-				.contains("\"artifact\":\"spring-boot-sample-actuator\""));
+		assertThat(entity.getBody())
+				.contains("\"artifact\":\"spring-boot-sample-actuator\"");
 	}
 
 	@Test
@@ -159,8 +152,7 @@ public class SampleActuatorApplicationTests {
 				.getForEntity("http://localhost:" + this.port + "/foo", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
-		assertThat(body).isNotNull();
-		assertThat("Wrong body: " + body, body.contains("\"error\":")).isTrue();
+		assertThat(body).contains("\"error\":");
 	}
 
 	@Test
@@ -174,8 +166,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).as("Body was null").isNotNull();
-		assertTrue("Wrong body: " + body,
-				body.contains("This application has no explicit mapping for /error"));
+		assertThat(body).contains("This application has no explicit mapping for /error");
 	}
 
 	@Test
@@ -208,16 +199,15 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testBeans() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:" + this.port + "/beans", List.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).hasSize(1);
-		@SuppressWarnings("unchecked")
 		Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
-		assertTrue("Wrong body: " + body,
-				((String) body.get("context")).startsWith("application"));
+		assertThat(((String) body.get("context"))).startsWith("application");
 	}
 
 	@Test
@@ -229,8 +219,7 @@ public class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				body.containsKey("spring.datasource.CONFIGURATION_PROPERTIES"));
+		assertThat(body).containsKey("spring.datasource.CONFIGURATION_PROPERTIES");
 	}
 
 	private String getPassword() {

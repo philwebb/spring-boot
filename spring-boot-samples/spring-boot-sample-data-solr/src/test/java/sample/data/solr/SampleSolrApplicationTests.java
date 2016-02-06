@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 public class SampleSolrApplicationTests {

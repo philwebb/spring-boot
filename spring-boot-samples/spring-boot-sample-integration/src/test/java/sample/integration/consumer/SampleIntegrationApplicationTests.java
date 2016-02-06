@@ -38,6 +38,8 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 /**

@@ -21,8 +21,8 @@ import org.junit.Test;
 
 import org.springframework.boot.test.OutputCapture;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Integration tests for {@link SampleJooqApplication}.

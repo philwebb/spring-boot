@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.anyString;

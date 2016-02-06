@@ -30,8 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -65,8 +64,7 @@ public class ManagementAddressActuatorApplicationTests {
 				"http://localhost:" + this.managementPort + "/admin/health",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"status\":\"UP\""));
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 }

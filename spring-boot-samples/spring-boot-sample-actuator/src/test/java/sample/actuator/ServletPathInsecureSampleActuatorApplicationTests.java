@@ -30,8 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for insecured service endpoints (even with Spring Security on
@@ -58,8 +57,7 @@ public class ServletPathInsecureSampleActuatorApplicationTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertThat(body.get("message")).isEqualTo("Hello Phil");
-		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
-				entity.getHeaders().containsKey("Set-Cookie"));
+		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
 	@Test

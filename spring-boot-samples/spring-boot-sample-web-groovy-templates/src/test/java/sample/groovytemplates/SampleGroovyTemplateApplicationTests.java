@@ -32,6 +32,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 

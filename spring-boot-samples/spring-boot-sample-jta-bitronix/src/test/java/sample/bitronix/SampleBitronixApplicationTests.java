@@ -26,10 +26,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.ApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for demo application.

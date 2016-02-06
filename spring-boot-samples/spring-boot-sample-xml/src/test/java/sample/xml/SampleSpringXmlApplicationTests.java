@@ -21,6 +21,8 @@ import org.junit.Test;
 
 import org.springframework.boot.test.OutputCapture;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 public class SampleSpringXmlApplicationTests {

@@ -32,8 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -72,8 +71,7 @@ public class ShutdownSampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				((String) body.get("message")).contains("Shutting down"));
+		assertThat(((String) body.get("message"))).contains("Shutting down");
 	}
 
 	private String getPassword() {

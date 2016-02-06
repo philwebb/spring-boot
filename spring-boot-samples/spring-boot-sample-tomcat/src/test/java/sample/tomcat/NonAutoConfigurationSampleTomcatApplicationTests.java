@@ -18,7 +18,6 @@ package sample.tomcat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
@@ -33,6 +32,7 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -40,6 +40,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 

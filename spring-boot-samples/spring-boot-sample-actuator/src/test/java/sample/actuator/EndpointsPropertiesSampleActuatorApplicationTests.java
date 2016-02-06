@@ -33,8 +33,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for endpoints configuration.
@@ -72,11 +71,8 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 				.getForEntity("http://localhost:" + this.port + "/admin/health",
 						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"status\":\"UP\""));
-		System.err.println(entity.getBody());
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"hello\":\"world\""));
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
+		assertThat(entity.getBody()).contains("\"hello\":\"world\"");
 	}
 
 	private String getPassword() {

@@ -26,6 +26,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 
 /**

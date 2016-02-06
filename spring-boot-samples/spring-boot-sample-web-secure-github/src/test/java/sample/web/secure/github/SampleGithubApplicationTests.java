@@ -30,10 +30,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for GitHub SSO application.

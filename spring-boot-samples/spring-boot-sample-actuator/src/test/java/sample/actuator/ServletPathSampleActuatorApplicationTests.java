@@ -30,9 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for endpoints configuration.
@@ -66,8 +64,7 @@ public class ServletPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:" + this.port + "/spring/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat("Wrong body: " + entity.getBody().isTrue(),
-				entity.getBody().contains("\"status\":\"UP\""));
+		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}
 
 	@Test
@@ -78,9 +75,8 @@ public class ServletPathSampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("Wrong body: " + body, "Unauthorized");
-		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
-				entity.getHeaders().containsKey("Set-Cookie"));
+		assertThat(body.get("error")).isEqualTo("Unauthorized");
+		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
 }

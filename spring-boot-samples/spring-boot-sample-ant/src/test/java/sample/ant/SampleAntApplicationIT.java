@@ -16,9 +16,9 @@
 
 package sample.ant;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-
 
 import java.io.File;
 import java.io.FileFilter;

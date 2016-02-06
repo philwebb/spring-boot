@@ -31,9 +31,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for insecured service endpoints (even with Spring Security on
@@ -59,9 +57,8 @@ public class InsecureManagementSampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("Wrong body: " + body, "Unauthorized");
-		assertThat("Wrong headers: " + entity.getHeaders().isFalse(),
-				entity.getHeaders().containsKey("Set-Cookie"));
+		assertThat(body.get("error")).isEqualTo("Unauthorized");
+		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
 	@Test
@@ -78,8 +75,7 @@ public class InsecureManagementSampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				body.containsKey("counter.status.401.unmapped"));
+		assertThat(body).containsKey("counter.status.401.unmapped");
 	}
 
 }

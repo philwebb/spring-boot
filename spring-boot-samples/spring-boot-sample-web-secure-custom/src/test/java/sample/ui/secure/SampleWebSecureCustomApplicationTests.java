@@ -22,12 +22,12 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.WebIntegrationTest;
 import sample.web.secure.custom.SampleWebSecureCustomApplication;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +38,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 
