@@ -20,9 +20,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link SystemPropertyUtils}.
+ *
  * @author Dave Syer
  */
 public class SystemPropertyUtilsTests {
@@ -44,18 +46,20 @@ public class SystemPropertyUtilsTests {
 
 	@Test
 	public void testDefaultValue() {
-		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:foo}")).isEqualTo("foo");
+		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:foo}"))
+				.isEqualTo("foo");
 	}
 
 	@Test
 	public void testNestedPlaceholder() {
-		assertEquals("foo",
-				SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
+		assertThat(SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"))
+				.isEqualTo("foo");
 	}
 
 	@Test
 	public void testEnvVar() {
-		assertThat(SystemPropertyUtils.getProperty("lang")).isEqualTo(System.getenv("LANG"));
+		assertThat(SystemPropertyUtils.getProperty("lang"))
+				.isEqualTo(System.getenv("LANG"));
 	}
 
 }

@@ -28,10 +28,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileSystemUtils;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link FileUtils}.
@@ -112,8 +109,8 @@ public class FileUtilsTests {
 		finally {
 			outputStream.close();
 		}
-		assertThat(FileUtils.sha1Hash(file),
-				equalTo("7037807198c22a7d2b0807371d763779a84fdfcf"));
+		assertThat(FileUtils.sha1Hash(file))
+				.isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
 	}
 
 }

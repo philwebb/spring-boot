@@ -28,8 +28,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.loader.archive.Archive.Entry;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -87,7 +86,7 @@ public class ExecutableArchiveLauncherTests {
 	}
 
 	private void assertClassLoaderUrls(ClassLoader classLoader, URL[] urls) {
-		assertThat(classLoader instanceof URLClassLoader).isTrue();
+		assertThat(classLoader).isInstanceOf(URLClassLoader.class);
 		assertThat(((URLClassLoader) classLoader).getURLs()).isEqualTo(urls);
 	}
 

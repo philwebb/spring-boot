@@ -38,9 +38,6 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -93,8 +90,8 @@ public class ExplodedArchiveTests {
 
 	@Test
 	public void getManifest() throws Exception {
-		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"),
-				equalTo("j1"));
+		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"))
+				.isEqualTo("j1");
 	}
 
 	@Test
@@ -106,16 +103,16 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(new File(URLDecoder.decode(url.getFile(), "UTF-8")),
-				equalTo(this.rootFolder));
+		assertThat(new File(URLDecoder.decode(url.getFile(), "UTF-8")))
+				.isEqualTo(this.rootFolder);
 	}
 
 	@Test
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(),
-				equalTo("jar:" + this.rootFolder.toURI() + "nested.jar!/"));
+		assertThat(nested.getUrl().toString())
+				.isEqualTo("jar:" + this.rootFolder.toURI() + "nested.jar!/");
 	}
 
 	@Test
@@ -124,8 +121,8 @@ public class ExplodedArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size()).isEqualTo(1);
-		assertThat(nested.getUrl().toString(),
-				equalTo("file:" + this.rootFolder.toURI().getPath() + "d/"));
+		assertThat(nested.getUrl().toString())
+				.isEqualTo("file:" + this.rootFolder.toURI().getPath() + "d/");
 	}
 
 	@Test
@@ -159,7 +156,8 @@ public class ExplodedArchiveTests {
 				new File("src/test/resources/root"));
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml"))
+				.isNotNull();
 		loader.close();
 	}
 
@@ -169,7 +167,8 @@ public class ExplodedArchiveTests {
 				false);
 		assertThat(archive.getManifest()).isNotNull();
 		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
-		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml")).isNotNull();
+		assertThat(loader.getResourceAsStream("META-INF/spring/application.xml"))
+				.isNotNull();
 		loader.close();
 	}
 
@@ -180,4 +179,5 @@ public class ExplodedArchiveTests {
 		}
 		return entries;
 	}
+
 }

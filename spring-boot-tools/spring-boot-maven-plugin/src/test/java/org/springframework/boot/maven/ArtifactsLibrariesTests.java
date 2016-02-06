@@ -36,7 +36,6 @@ import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -82,7 +81,7 @@ public class ArtifactsLibrariesTests {
 		Library library = this.libraryCaptor.getValue();
 		assertThat(library.getFile()).isEqualTo(this.file);
 		assertThat(library.getScope()).isEqualTo(LibraryScope.COMPILE);
-		assertThat(library.isUnpackRequired())isFalse();
+		assertThat(library.isUnpackRequired()).isFalse();
 	}
 
 	@Test
@@ -98,7 +97,7 @@ public class ArtifactsLibrariesTests {
 				mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getValue().isUnpackRequired())isTrue();
+		assertThat(this.libraryCaptor.getValue().isUnpackRequired()).isTrue();
 	}
 
 	@Test

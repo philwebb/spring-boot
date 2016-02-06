@@ -25,11 +25,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.jar.JarFile;
 
-import static org.hamcrest.Matchers.equalTo;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Tests for {@link LaunchedURLClassLoader}.
@@ -47,8 +43,8 @@ public class LaunchedURLClassLoaderTests {
 	public void resolveResourceFromWindowsFilesystem() throws Exception {
 		// This path is invalid - it should return null even on Windows.
 		// A regular URLClassLoader will deal with it gracefully.
-		assertThat(getClass().getClassLoader().isNull()
-				.getResource("c:\\Users\\user\\bar.properties"));
+		assertThat(getClass().getClassLoader()
+				.getResource("c:\\Users\\user\\bar.properties")).isNull();
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
@@ -69,7 +65,8 @@ public class LaunchedURLClassLoaderTests {
 		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(
 				new URL[] { new URL("jar:file:src/test/resources/jars/app.jar!/") },
 				getClass().getClassLoader());
-		assertThat(loader.getResources("demo/Application.java").hasMoreElements()).isTrue();
+		assertThat(loader.getResources("demo/Application.java").hasMoreElements())
+				.isTrue();
 	}
 
 	@Test

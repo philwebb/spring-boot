@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,10 +36,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.loader.ByteArrayStartsWith;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -157,7 +154,7 @@ public class RandomAccessDataFileTests {
 	public void inputStreamReadMoreBytesThanAvailable() throws Exception {
 		byte[] b = new byte[257];
 		int amountRead = this.inputStream.read(b);
-		assertThat(b, startsWith(BYTES));
+		assertThat(b).startsWith(BYTES);
 		assertThat(amountRead).isEqualTo(256);
 	}
 
@@ -214,8 +211,8 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsectionZeroLength() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(0, 0);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read(),
-				equalTo(-1));
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
+				.isEqualTo(-1);
 	}
 
 	@Test
@@ -235,7 +232,8 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
-		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read()).isEqualTo(1);
+		assertThat(subsection.getInputStream(ResourceAccess.PER_READ).read())
+				.isEqualTo(1);
 	}
 
 	@Test
@@ -294,7 +292,7 @@ public class RandomAccessDataFileTests {
 			}));
 		}
 		for (Future<Boolean> future : results) {
-			assertThat(future.get())isTrue();
+			assertThat(future.get()).isTrue();
 		}
 	}
 
@@ -309,10 +307,6 @@ public class RandomAccessDataFileTests {
 		filesField.setAccessible(true);
 		Queue<?> queue = (Queue<?>) filesField.get(filePool);
 		assertThat(queue.size()).isEqualTo(0);
-	}
-
-	private static Matcher<? super byte[]> startsWith(byte[] bytes) {
-		return new ByteArrayStartsWith(bytes);
 	}
 
 }

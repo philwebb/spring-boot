@@ -31,7 +31,6 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -62,7 +61,7 @@ public class CentralDirectoryParserTests {
 
 	@Test
 	public void visitsInOrder() throws Exception {
-		CentralDirectoryVisitor visitor = mock(CentralDirectoryVisitor.class);
+		CentralDirectoryVisitor visitor = mock(TestCentralDirectoryVisitor.class);
 		CentralDirectoryParser parser = new CentralDirectoryParser();
 		parser.addVisitor(visitor);
 		parser.parse(this.jarData, false);
@@ -91,7 +90,7 @@ public class CentralDirectoryParserTests {
 		assertThat(headers.next().getName().toString()).isEqualTo("special/\u00EB.dat");
 		assertThat(headers.next().getName().toString()).isEqualTo("nested.jar");
 		assertThat(headers.next().getName().toString()).isEqualTo("another-nested.jar");
-		assertThat(headers.hasNext())isFalse();
+		assertThat(headers.hasNext()).isFalse();
 	}
 
 	private static class Collector implements CentralDirectoryVisitor {
@@ -116,6 +115,10 @@ public class CentralDirectoryParserTests {
 		public List<CentralDirectoryFileHeader> getHeaders() {
 			return this.headers;
 		}
+
+	}
+
+	public static interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
 
 	}
 

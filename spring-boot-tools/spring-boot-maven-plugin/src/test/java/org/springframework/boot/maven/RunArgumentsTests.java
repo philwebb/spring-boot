@@ -18,8 +18,7 @@ package org.springframework.boot.maven;
 
 import org.junit.Test;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RunArguments}.
@@ -48,8 +47,8 @@ public class RunArgumentsTests {
 				"-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 		assertThat(args.length).isEqualTo(2);
 		assertThat(args[0]).isEqualTo("-Xdebug");
-		assertEquals("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005",
-				args[1]);
+		assertThat(args[1]).isEqualTo(
+				"-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 	}
 
 	@Test

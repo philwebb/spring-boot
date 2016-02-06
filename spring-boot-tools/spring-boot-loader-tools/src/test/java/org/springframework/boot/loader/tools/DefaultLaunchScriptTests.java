@@ -26,8 +26,6 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

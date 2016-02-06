@@ -29,11 +29,6 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -67,8 +62,8 @@ public class JarFileArchiveTests {
 
 	@Test
 	public void getManifest() throws Exception {
-		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"),
-				equalTo("j1"));
+		assertThat(this.archive.getManifest().getMainAttributes().getValue("Built-By"))
+				.isEqualTo("j1");
 	}
 
 	@Test
@@ -87,8 +82,8 @@ public class JarFileArchiveTests {
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(),
-				equalTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/"));
+		assertThat(nested.getUrl().toString())
+				.isEqualTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
 	}
 
 	@Test
@@ -96,8 +91,8 @@ public class JarFileArchiveTests {
 		setup(true);
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(), startsWith("file:"));
-		assertThat(nested.getUrl().toString(), endsWith("/nested.jar"));
+		assertThat(nested.getUrl().toString()).startsWith("file:");
+		assertThat(nested.getUrl().toString()).endsWith("/nested.jar");
 	}
 
 	@Test
@@ -132,4 +127,5 @@ public class JarFileArchiveTests {
 		}
 		return entries;
 	}
+
 }

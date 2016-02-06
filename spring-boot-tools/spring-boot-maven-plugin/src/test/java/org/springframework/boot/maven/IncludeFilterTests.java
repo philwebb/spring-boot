@@ -25,8 +25,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.junit.Test;
 
-
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author David Turanski
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class IncludeFilterTests {
 
 	@Test
@@ -44,8 +43,8 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should not have been filtered").hasSize(1);
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -54,7 +53,7 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.baz", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should have been filtered").isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -63,7 +62,7 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar")));
 		Artifact artifact = createArtifact("com.foo", "biz");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should have been filtered").isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -72,8 +71,8 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk5");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should not have been filtered").hasSize(1);
-		assertSame(artifact, result.iterator().next());
+		assertThat(result).hasSize(1);
+		assertThat(result.iterator().next()).isSameAs(artifact);
 	}
 
 	@Test
@@ -82,7 +81,7 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should have been filtered").isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class IncludeFilterTests {
 				Arrays.asList(createInclude("com.foo", "bar", "jdk5")));
 		Artifact artifact = createArtifact("com.foo", "bar", "jdk6");
 		Set result = filter.filter(Collections.singleton(artifact));
-		assertThat(result).as("Should have been filtered").isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
@@ -105,7 +104,7 @@ public class IncludeFilterTests {
 		Artifact anotherAcme = createArtifact("org.acme", "another-app");
 		artifacts.add(anotherAcme);
 		Set result = filter.filter(artifacts);
-		assertThat(result).as("One dependency should have been filtered").hasSize(2);
+		assertThat(result).hasSize(2);
 	}
 
 	private Include createInclude(String groupId, String artifactId) {

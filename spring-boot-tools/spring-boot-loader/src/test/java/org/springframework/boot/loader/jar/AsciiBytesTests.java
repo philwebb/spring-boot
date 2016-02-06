@@ -20,8 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,10 +64,10 @@ public class AsciiBytesTests {
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abc.startsWith(abc))isTrue();
-		assertThat(abc.startsWith(ab))isTrue();
-		assertThat(abc.startsWith(bc))isFalse();
-		assertThat(abc.startsWith(abcd))isFalse();
+		assertThat(abc.startsWith(abc)).isTrue();
+		assertThat(abc.startsWith(ab)).isTrue();
+		assertThat(abc.startsWith(bc)).isFalse();
+		assertThat(abc.startsWith(abcd)).isFalse();
 	}
 
 	@Test
@@ -78,10 +76,10 @@ public class AsciiBytesTests {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 65, 66, 67 }, 1, 2);
 		AsciiBytes ab = new AsciiBytes(new byte[] { 65, 66 });
 		AsciiBytes aabc = new AsciiBytes(new byte[] { 65, 65, 66, 67 });
-		assertThat(abc.endsWith(abc))isTrue();
-		assertThat(abc.endsWith(bc))isTrue();
-		assertThat(abc.endsWith(ab))isFalse();
-		assertThat(abc.endsWith(aabc))isFalse();
+		assertThat(abc.endsWith(abc)).isTrue();
+		assertThat(abc.endsWith(bc)).isTrue();
+		assertThat(abc.endsWith(ab)).isFalse();
+		assertThat(abc.endsWith(aabc)).isFalse();
 	}
 
 	@Test
