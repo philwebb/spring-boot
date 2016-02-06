@@ -108,7 +108,6 @@ public class SampleIntegrationTests {
 		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
 		String result = this.cli.getHttpOutput();
 		assertThat(result).contains("Hello World");
-		;
 		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
 		assertThat(result).contains("container");
 	}

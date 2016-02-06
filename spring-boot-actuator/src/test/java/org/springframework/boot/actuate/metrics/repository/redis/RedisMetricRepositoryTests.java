@@ -59,7 +59,6 @@ public class RedisMetricRepositoryTests {
 		this.repository.reset("bar");
 		assertThat(new StringRedisTemplate(this.redis.getConnectionFactory())
 				.opsForValue().get(this.prefix + ".foo")).isNull();
-		;
 	}
 
 	@Test

@@ -311,7 +311,7 @@ public final class Metadata {
 
 		private final String description;
 
-		public ItemHintValueCondition(int index, Object value, String description) {
+		ItemHintValueCondition(int index, Object value, String description) {
 			this.index = index;
 			this.value = value;
 			this.description = description;
@@ -356,7 +356,7 @@ public final class Metadata {
 
 		private final Map<String, Object> parameters;
 
-		public ItemHintProviderCondition(int index, String name,
+		ItemHintProviderCondition(int index, String name,
 				Map<String, Object> parameters) {
 			this.index = index;
 			this.name = name;

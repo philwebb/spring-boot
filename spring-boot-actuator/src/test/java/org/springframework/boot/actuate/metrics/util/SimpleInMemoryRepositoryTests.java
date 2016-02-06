@@ -107,7 +107,7 @@ public class SimpleInMemoryRepositoryTests {
 
 		private final int delta;
 
-		public RepositoryUpdate(SimpleInMemoryRepository<Integer> repository, int delta) {
+		RepositoryUpdate(SimpleInMemoryRepository<Integer> repository, int delta) {
 			this.repository = repository;
 			this.delta = delta;
 		}

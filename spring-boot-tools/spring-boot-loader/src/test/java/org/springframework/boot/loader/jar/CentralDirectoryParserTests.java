@@ -118,7 +118,7 @@ public class CentralDirectoryParserTests {
 
 	}
 
-	public static interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
+	public interface TestCentralDirectoryVisitor extends CentralDirectoryVisitor {
 
 	}
 

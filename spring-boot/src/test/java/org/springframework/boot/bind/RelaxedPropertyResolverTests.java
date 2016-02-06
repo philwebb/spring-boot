@@ -90,7 +90,6 @@ public class RelaxedPropertyResolverTests {
 	public void getProperty() throws Exception {
 		assertThat(this.resolver.getProperty("my-string")).isEqualTo("value");
 		assertThat(this.resolver.getProperty("my-missing")).isNull();
-		;
 	}
 
 	@Test

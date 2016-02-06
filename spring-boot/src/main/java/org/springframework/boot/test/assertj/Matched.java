@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.4
  */
-public class Matched<T> extends Condition<T> {
+public final class Matched<T> extends Condition<T> {
 
 	private final Matcher<? extends T> matcher;
 

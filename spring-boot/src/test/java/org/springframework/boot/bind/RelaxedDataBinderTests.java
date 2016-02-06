@@ -617,7 +617,6 @@ public class RelaxedDataBinderTests {
 		properties.add("foo", "b");
 		new RelaxedDataBinder(target).bind(properties);
 		assertThat(target.getFooBaz()).isNull();
-		;
 		assertThat(target.getFoo()).isEqualTo("b");
 	}
 

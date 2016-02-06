@@ -63,7 +63,6 @@ public class AnsiPropertySourceTests {
 	@Test
 	public void getMissing() throws Exception {
 		assertThat(this.source.getProperty("AnsiStyle.NOPE")).isNull();
-		;
 	}
 
 	@Test
