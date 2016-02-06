@@ -32,8 +32,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 /**
  * Basic integration tests for service demo application.
  *

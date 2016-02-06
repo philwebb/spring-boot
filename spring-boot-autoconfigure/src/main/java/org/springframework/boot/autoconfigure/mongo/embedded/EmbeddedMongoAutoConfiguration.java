@@ -110,7 +110,6 @@ public class EmbeddedMongoAutoConfiguration {
 				.build();
 	}
 
-	@SuppressWarnings("deprecation")
 	private ArtifactStoreBuilder getArtifactStore(Logger logger) {
 		return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
 				.download(new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)

@@ -44,8 +44,6 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleTomcatWebSocketApplication.class)
 @WebIntegrationTest(randomPort = true)
@@ -69,7 +67,8 @@ public class SampleWebSocketsApplicationTests {
 				.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
 		assertThat(count).isEqualTo(0);
-		assertThat(messagePayloadReference.get()).isEqualTo("Did you say \"Hello world!\"?");
+		assertThat(messagePayloadReference.get())
+				.isEqualTo("Did you say \"Hello world!\"?");
 	}
 
 	@Test

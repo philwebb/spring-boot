@@ -30,8 +30,6 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(SampleJerseyApplication.class)
 @WebIntegrationTest(randomPort = true)

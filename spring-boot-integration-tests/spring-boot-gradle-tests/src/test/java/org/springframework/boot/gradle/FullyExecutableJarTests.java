@@ -28,7 +28,6 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
