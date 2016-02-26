@@ -141,16 +141,14 @@ final class MetricsFilter extends OncePerRequestFilter {
 	private void recordMetrics(HttpServletRequest request, String path, int status,
 			long time) {
 		String suffix = getFinalStatus(request, path, status);
-		if (recordRolledUpMetrics) {
-			submitToGauge(getKey("response" + suffix), time);
-			incrementCounter(getKey("status." + status + suffix));
+		if (this.recordRolledUpMetrics) {
+			recordMetrics("", status, time, suffix);
 		}
-		if (recordMetricsPerHttpMethod) {
-			submitToGauge(getKey("response" + "." + request.getMethod() + suffix), time);
-			incrementCounter(
-					getKey("status." + request.getMethod() + "." + status + suffix));
+		if (this.recordMetricsPerHttpMethod) {
+			recordMetrics(request.getMethod() + ".", status, time, suffix);
 		}
 	}
+
 
 	private String getFinalStatus(HttpServletRequest request, String path, int status) {
 		Object bestMatchingPattern = request
@@ -187,7 +185,10 @@ final class MetricsFilter extends OncePerRequestFilter {
 		catch (Exception ex) {
 			return null;
 		}
-
+	}
+	private void recordMetrics(String prefix, int status, long time, String suffix) {
+		submitToGauge(getKey("response." + prefix + suffix), time);
+		incrementCounter(getKey("status." + prefix + status + suffix));
 	}
 
 	private String getKey(String string) {

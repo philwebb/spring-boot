@@ -85,8 +85,8 @@ public class MetricFilterAutoConfigurationTests {
 	@Test
 	public void defaultMetricFilterAutoConfigurationProperties() {
 		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
-		assertThat(properties.isRecordRolledUpMetrics(), is(true));
-		assertThat(properties.isRecordMetricsPerHttpMethod(), is(false));
+		assertThat(properties.isRecordRolledUpMetrics()).isTrue();
+		assertThat(properties.isRecordMetricsPerHttpMethod()).isFalse();
 	}
 
 	@Test
@@ -94,8 +94,8 @@ public class MetricFilterAutoConfigurationTests {
 		MetricFilterAutoConfigurationProperties properties = new MetricFilterAutoConfigurationProperties();
 		properties.setRecordRolledUpMetrics(false);
 		properties.setRecordMetricsPerHttpMethod(true);
-		assertThat(properties.isRecordRolledUpMetrics(), is(false));
-		assertThat(properties.isRecordMetricsPerHttpMethod(), is(true));
+		assertThat(properties.isRecordRolledUpMetrics()).isFalse();
+		assertThat(properties.isRecordMetricsPerHttpMethod()).isTrue();
 	}
 
 	@Test

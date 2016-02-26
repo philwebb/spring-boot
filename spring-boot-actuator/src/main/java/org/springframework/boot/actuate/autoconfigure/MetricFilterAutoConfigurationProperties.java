@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 the original author or authors.
+ * Copyright 2012-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for the {@link MetricsFilter}.
  *
  * @author Sebastian Kirsch
+ * @since 1.4.0
  */
 @ConfigurationProperties("endpoints.metrics.filter")
 public class MetricFilterAutoConfigurationProperties {
@@ -37,7 +38,7 @@ public class MetricFilterAutoConfigurationProperties {
 	private boolean recordMetricsPerHttpMethod = false;
 
 	public boolean isRecordMetricsPerHttpMethod() {
-		return recordMetricsPerHttpMethod;
+		return this.recordMetricsPerHttpMethod;
 	}
 
 	public void setRecordMetricsPerHttpMethod(boolean recordMetricsPerHttpMethod) {
@@ -45,7 +46,7 @@ public class MetricFilterAutoConfigurationProperties {
 	}
 
 	public boolean isRecordRolledUpMetrics() {
-		return recordRolledUpMetrics;
+		return this.recordRolledUpMetrics;
 	}
 
 	public void setRecordRolledUpMetrics(boolean recordRolledUpMetrics) {
