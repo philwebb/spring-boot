@@ -32,7 +32,7 @@ import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFac
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for welcome page using {@link MockMvc} and {@link SpringJUnit4ClassRunner}.
+ * Tests for welcome page using {@link MockMvc} and {@link SpringRunner}.
  *
  * @author Dave Syer
  */
