@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.springframework.boot.test.AbstractConfigurationClassTests;
+import org.springframework.boot.test.testutil.AbstractConfigurationClassTests;
 
 /**
  * Tests for the auto-configure module's {@code @Configuration} classes.

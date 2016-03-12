@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate;
 
-import org.springframework.boot.test.AbstractConfigurationClassTests;
+import org.springframework.boot.test.testutil.AbstractConfigurationClassTests;
 
 /**
  * Tests for the actuator module's {@code @Configuration} classes.
