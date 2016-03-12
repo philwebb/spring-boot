@@ -19,7 +19,7 @@ package sample.logback;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.springframework.boot.test.OutputCapture;
+import org.springframework.boot.test.rule.OutputCapture;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
