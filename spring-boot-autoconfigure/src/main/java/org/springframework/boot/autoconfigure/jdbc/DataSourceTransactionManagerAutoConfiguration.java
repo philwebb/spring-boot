@@ -58,7 +58,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	@Configuration
-	@EnableTransactionManagement
+	@EnableTransactionManagement(proxyTargetClass = true)
 	protected static class TransactionManagementConfiguration {
 
 	}
