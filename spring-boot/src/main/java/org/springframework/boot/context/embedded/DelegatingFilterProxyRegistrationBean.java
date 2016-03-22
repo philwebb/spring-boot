@@ -83,7 +83,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	}
 
 	@Override
-	protected Filter getFilter() {
+	public Filter getFilter() {
 		return new DelegatingFilterProxy(this.targetBeanName, getWebApplicationContext());
 	}
 

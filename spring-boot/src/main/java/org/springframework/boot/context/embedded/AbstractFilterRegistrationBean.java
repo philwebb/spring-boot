@@ -235,7 +235,7 @@ abstract class AbstractFilterRegistrationBean extends RegistrationBean {
 	 * Return the {@link Filter} to be registered.
 	 * @return the filter
 	 */
-	protected abstract Filter getFilter();
+	public abstract Filter getFilter();
 
 	/**
 	 * Configure registration settings. Subclasses can override this method to perform

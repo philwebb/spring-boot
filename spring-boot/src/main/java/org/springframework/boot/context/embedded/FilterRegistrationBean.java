@@ -67,7 +67,7 @@ public class FilterRegistrationBean extends AbstractFilterRegistrationBean {
 	}
 
 	@Override
-	protected Filter getFilter() {
+	public Filter getFilter() {
 		return this.filter;
 	}
 
