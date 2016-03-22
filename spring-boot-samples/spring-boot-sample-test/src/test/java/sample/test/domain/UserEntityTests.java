@@ -31,13 +31,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Domain tests for {@link User}.
+ * Data JPA tests for {@link User}.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class UserDomainTests {
+public class UserEntityTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");

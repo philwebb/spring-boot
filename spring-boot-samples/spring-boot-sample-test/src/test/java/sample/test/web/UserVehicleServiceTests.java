@@ -61,28 +61,29 @@ public class UserVehicleServiceTests {
 	}
 
 	@Test
-	public void getMakeAndModelWhenUsernameIsNullShouldThrowException() throws Exception {
+	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException()
+			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Username must not be null");
-		this.service.getMakeAndModel(null);
+		this.service.getVehicleDetails(null);
 	}
 
 	@Test
-	public void getMakeAndModelWhenUserNameNotFoundShouldThrowException()
+	public void getVehicleDetailsWhenUserNameNotFoundShouldThrowException()
 			throws Exception {
 		given(this.userRepository.findByUsername(anyString())).willReturn(null);
 		this.thrown.expect(UserNameNotFoundException.class);
-		this.service.getMakeAndModel("sboot");
+		this.service.getVehicleDetails("sboot");
 	}
 
 	@Test
-	public void getMakeAndModelShouldReturnMakeAndModel() throws Exception {
+	public void getVehicleDetailsShouldReturnMakeAndModel() throws Exception {
 		given(this.userRepository.findByUsername(anyString()))
 				.willReturn(new User("sboot", VIN));
 		VehicleDetails details = new VehicleDetails("Honda", "Civic");
 		given(this.vehicleDetailsService.getVehicleDetails(VIN)).willReturn(details);
-		String makeAndModel = this.service.getMakeAndModel("sboot");
-		assertThat(makeAndModel).isEqualTo("Honda Civic");
+		VehicleDetails actual = this.service.getVehicleDetails("sboot");
+		assertThat(actual).isEqualTo(details);
 	}
 
 }

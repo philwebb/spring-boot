@@ -43,16 +43,15 @@ public class UserVehicleService {
 		this.vehicleDetailsService = vehicleDetailsService;
 	}
 
-	public String getMakeAndModel(String username) throws UserNameNotFoundException,
+	public VehicleDetails getVehicleDetails(String username)
+			throws UserNameNotFoundException,
 			VehicleIdentificationNumberNotFoundException {
 		Assert.notNull(username, "Username must not be null");
 		User user = this.userRepository.findByUsername(username);
 		if (user == null) {
 			throw new UserNameNotFoundException(username);
 		}
-		VehicleDetails details = this.vehicleDetailsService
-				.getVehicleDetails(user.getVin());
-		return details.getMake() + " " + details.getModel();
+		return this.vehicleDetailsService.getVehicleDetails(user.getVin());
 	}
 
 }

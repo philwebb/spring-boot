@@ -17,13 +17,14 @@
 package sample.test.web;
 
 import sample.test.domain.User;
+import sample.test.service.VehicleDetails;
 import sample.test.service.VehicleIdentificationNumberNotFoundException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,9 +42,22 @@ public class UserVehicleController {
 		this.userVehicleService = userVehicleService;
 	}
 
-	@RequestMapping(path = "/{username}/vehicle", method = RequestMethod.GET)
-	public String getMakeAndModel(@PathVariable String username) {
-		return this.userVehicleService.getMakeAndModel(username);
+	@GetMapping(path = "/{username}/vehicle", produces = MediaType.TEXT_PLAIN_VALUE)
+	public String getVehicleDetailsText(@PathVariable String username) {
+		VehicleDetails details = this.userVehicleService.getVehicleDetails(username);
+		return details.getMake() + " " + details.getModel();
+	}
+
+	@GetMapping(path = "/{username}/vehicle", produces = MediaType.APPLICATION_JSON_VALUE)
+	public VehicleDetails VehicleDetailsJson(@PathVariable String username) {
+		return this.userVehicleService.getVehicleDetails(username);
+	}
+
+	@GetMapping(path = "/{username}/vehicle.html", produces = MediaType.TEXT_HTML_VALUE)
+	public String VehicleDetailsHtml(@PathVariable String username) {
+		VehicleDetails details = this.userVehicleService.getVehicleDetails(username);
+		String makeAndModel = details.getMake() + " " + details.getModel();
+		return "<html><body><h1>" + makeAndModel + "</h1></body></html>";
 	}
 
 	@ExceptionHandler

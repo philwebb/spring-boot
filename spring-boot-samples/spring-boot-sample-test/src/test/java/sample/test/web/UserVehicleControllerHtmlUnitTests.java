@@ -14,48 +14,43 @@
  * limitations under the License.
  */
 
-package sample.test;
+package sample.test.web;
 
-import org.junit.Before;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sample.test.domain.VehicleIdentificationNumber;
 import sample.test.service.VehicleDetails;
-import sample.test.service.VehicleDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.web.WebIntegrationTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
+ * HtmlUnit based tests for {@link UserVehicleController}.
+ *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebIntegrationTest(randomPort = true)
-public class SampleTestApplicationTests {
-
-	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
-			"01234567890123456");
+@WebMvcTest(UserVehicleController.class)
+public class UserVehicleControllerHtmlUnitTests {
 
 	@Autowired
-	private TestRestTemplate restTemplate;
+	private WebClient webClient;
 
 	@MockBean
-	private VehicleDetailsService vehicleDetailsService;
-
-	@Before
-	public void setup() {
-		given(this.vehicleDetailsService.getVehicleDetails(VIN))
-				.willReturn(new VehicleDetails("Honda", "Civic"));
-	}
+	private UserVehicleService userVehicleService;
 
 	@Test
-	public void test() {
-		this.restTemplate.getForEntity("/{username}/vehicle", String.class, "sframework");
+	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
+		given(this.userVehicleService.getVehicleDetails("sboot"))
+				.willReturn(new VehicleDetails("Honda", "Civic"));
+		HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
+		assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
 	}
 
 }

@@ -16,22 +16,21 @@
 
 package sample.test;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 /**
- * Sample application to demonstrate testing.
+ * Simple component that just prints a message. Used to show how different types of
+ * integration tests work.
  *
  * @author Phillip Webb
  */
-@SpringBootApplication
-public class SampleTestApplication {
+@Component
+public class WelcomeCommandLineRunner implements CommandLineRunner {
 
-	// NOTE: this application will intentionally not start without MySQL, the test will
-	// still run.
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleTestApplication.class, args);
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("***** WELCOME TO THE DEMO *****");
 	}
 
 }
