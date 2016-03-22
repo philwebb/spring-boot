@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.mock.mockito.runner;
+package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,28 +31,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Test {@link MockBean} on a test class field can be used to replace existing beans.
+ * Test {@link MockBean} on a field on a {@code @Configuration} class can be used to
+ * inject new mock instances.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-public class OnTestFieldForExistingBeanTests {
+public class OnConfigurationFieldForNewBeanIntegrationTests {
 
-	@MockBean
-	private ExampleService exampleService;
+	@Autowired
+	private Config config;
 
 	@Autowired
 	private ExampleServiceCaller caller;
 
 	@Test
 	public void testMocking() throws Exception {
-		given(this.exampleService.greeting()).willReturn("Boot");
+		given(this.config.exampleService.greeting()).willReturn("Boot");
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say Boot");
 	}
 
 	@Configuration
 	@Import(ExampleServiceCaller.class)
 	static class Config {
+
+		@MockBean
+		private ExampleService exampleService;
 
 	}
 

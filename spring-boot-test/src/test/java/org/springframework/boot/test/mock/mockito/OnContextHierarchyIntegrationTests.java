@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.mock.mockito.runner;
+package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +22,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.OnContextHierarchyIntegrationTests.ChildConfig;
+import org.springframework.boot.test.mock.mockito.OnContextHierarchyIntegrationTests.ParentConfig;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
-import org.springframework.boot.test.mock.mockito.runner.OnContextHierarchy.ChildConfig;
-import org.springframework.boot.test.mock.mockito.runner.OnContextHierarchy.ParentConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfig.class),
 		@ContextConfiguration(classes = ChildConfig.class) })
-public class OnContextHierarchy {
+public class OnContextHierarchyIntegrationTests {
 
 	@Autowired
 	private ChildConfig childConfig;
