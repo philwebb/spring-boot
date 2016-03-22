@@ -61,6 +61,37 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	}
 
 	/**
+	 * Overridden version of {@code isEqualTo} to perform JSON tests based on the object
+	 * type.
+	 * @see org.assertj.core.api.AbstractAssert#isEqualTo(java.lang.Object)
+	 */
+	@Override
+	public JsonContentAssert isEqualTo(Object expected) {
+		try {
+			if (expected == null || expected instanceof CharSequence) {
+				return isEqualToJson((CharSequence) expected);
+			}
+			if (expected instanceof byte[]) {
+				return isEqualToJson((byte[]) expected);
+			}
+			if (expected instanceof File) {
+				return isEqualToJson((File) expected);
+			}
+			if (expected instanceof InputStream) {
+				return isEqualToJson((InputStream) expected);
+			}
+			if (expected instanceof Resource) {
+				return isEqualToJson((Resource) expected);
+			}
+			throw new AssertionError(
+					"Unsupport type for JSON assert " + expected.getClass());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	/**
 	 * Verifies that the actual value is {@link JSONCompareMode#LENIENT leniently} equal
 	 * to the specified JSON. The {@code expected} value can contain the JSON itself or,
 	 * if it ends with {@code .json}, the name of a resource to be loaded using
@@ -401,6 +432,37 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			throws IOException {
 		String expectedJson = this.loader.getJson(expected);
 		return assertNotFailed(compare(expectedJson, comparator));
+	}
+
+	/**
+	 * Overridden version of {@code isNotEqualTo} to perform JSON tests based on the
+	 * object type.
+	 * @see org.assertj.core.api.AbstractAssert#isEqualTo(java.lang.Object)
+	 */
+	@Override
+	public JsonContentAssert isNotEqualTo(Object expected) {
+		try {
+			if (expected == null || expected instanceof CharSequence) {
+				return isNotEqualToJson((CharSequence) expected);
+			}
+			if (expected instanceof byte[]) {
+				return isNotEqualToJson((byte[]) expected);
+			}
+			if (expected instanceof File) {
+				return isNotEqualToJson((File) expected);
+			}
+			if (expected instanceof InputStream) {
+				return isNotEqualToJson((InputStream) expected);
+			}
+			if (expected instanceof Resource) {
+				return isNotEqualToJson((Resource) expected);
+			}
+			throw new AssertionError(
+					"Unsupport type for JSON assert " + expected.getClass());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	/**

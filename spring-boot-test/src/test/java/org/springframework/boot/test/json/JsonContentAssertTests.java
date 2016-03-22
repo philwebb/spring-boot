@@ -66,6 +66,71 @@ public class JsonContentAssertTests {
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Test
+	public void isEqualToWhenStringIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(LENIENT_SAME);
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenNullActualShouldFail() throws Exception {
+		assertThat(forJson(null)).isEqualTo(SOURCE);
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenStringIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(DIFFERENT);
+	}
+
+	@Test
+	public void isEqualToWhenResourcePathIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo("lenient-same.json");
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenResourcePathIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo("different.json");
+	}
+
+	@Test
+	public void isEqualToWhenBytesAreMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(LENIENT_SAME.getBytes());
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenBytesAreNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(DIFFERENT.getBytes());
+	}
+
+	@Test
+	public void isEqualToWhenFileIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createFile(LENIENT_SAME));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenFileIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createFile(DIFFERENT));
+	}
+
+	@Test
+	public void isEqualToWhenInputStreamIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createInputStream(LENIENT_SAME));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenInputStreamIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createInputStream(DIFFERENT));
+	}
+
+	@Test
+	public void isEqualToWhenResourceIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createResource(LENIENT_SAME));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isEqualToWhenResourceIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isEqualTo(createResource(DIFFERENT));
+	}
+
+	@Test
 	public void isEqualToJsonWhenStringIsMatchingShouldPass() throws Exception {
 		assertThat(forJson(SOURCE)).isEqualToJson(LENIENT_SAME);
 	}
@@ -414,6 +479,71 @@ public class JsonContentAssertTests {
 			throws Exception {
 		assertThat(forJson(SOURCE)).isEqualToJson(createResource(DIFFERENT),
 				JsonContentAssertTests.COMPARATOR);
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenStringIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(LENIENT_SAME);
+	}
+
+	@Test
+	public void isNotEqualToWhenNullActualShouldPass() throws Exception {
+		assertThat(forJson(null)).isNotEqualTo(SOURCE);
+	}
+
+	@Test
+	public void isNotEqualToWhenStringIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(DIFFERENT);
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenResourcePathIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo("lenient-same.json");
+	}
+
+	@Test
+	public void isNotEqualToWhenResourcePathIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo("different.json");
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenBytesAreMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(LENIENT_SAME.getBytes());
+	}
+
+	@Test
+	public void isNotEqualToWhenBytesAreNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(DIFFERENT.getBytes());
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenFileIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createFile(LENIENT_SAME));
+	}
+
+	@Test
+	public void isNotEqualToWhenFileIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createFile(DIFFERENT));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenInputStreamIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createInputStream(LENIENT_SAME));
+	}
+
+	@Test
+	public void isNotEqualToWhenInputStreamIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createInputStream(DIFFERENT));
+	}
+
+	@Test(expected = AssertionError.class)
+	public void isNotEqualToWhenResourceIsMatchingShouldPass() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createResource(LENIENT_SAME));
+	}
+
+	@Test
+	public void isNotEqualToWhenResourceIsNotMatchingShouldFail() throws Exception {
+		assertThat(forJson(SOURCE)).isNotEqualTo(createResource(DIFFERENT));
 	}
 
 	@Test(expected = AssertionError.class)
