@@ -43,6 +43,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
@@ -56,9 +57,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * A {@link BeanFactoryPostProcessor} used to register and inject
- * {@link MockBean @MockBeans}. An initial set of definitions can be passed to the
- * processor with additional definitions being automatically created from
- * {@code @Configuration} classes that use {@link MockBean @MockBean}.
+ * {@link MockBean @MockBeans} with the {@link ApplicationContext}. An initial set of
+ * definitions can be passed to the processor with additional definitions being
+ * automatically created from {@code @Configuration} classes that use
+ * {@link MockBean @MockBean}.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -145,6 +147,14 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			}
 		}
 		return definitions;
+	}
+
+	protected final void reinjectMock(ApplicationContext applicationContext,
+			MockDefinition mockDefinition, Field field) {
+		Assert.isInstanceOf(BeanDefinitionRegistry.class, applicationContext,
+				"@MockBean can only be used with a BeanDefinitionRegistry");
+		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
+		// getBeanName(this.beanFactory, registry, mockDefinition, beanDefinition);
 	}
 
 	private void registerMock(ConfigurableListableBeanFactory beanFactory,
