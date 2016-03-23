@@ -25,9 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.LocalServerPort;
 import org.springframework.boot.test.context.IntegrationTest;
 import org.springframework.boot.test.context.SpringApplicationConfiguration;
 import org.springframework.boot.test.context.web.SpringApplicationWebIntegrationTestTests.Config;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -54,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebIntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationWebIntegrationTestTests {
 
-	@Value("${local.server.port}")
+	@LocalServerPort
 	private int port = 0;
 
 	@Value("${value}")
@@ -66,11 +68,20 @@ public class SpringApplicationWebIntegrationTestTests {
 	@Autowired
 	private ServletContext servletContext;
 
+	@Autowired
+	private TestRestTemplate restTemplate;
+
 	@Test
 	public void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
 		String body = new RestTemplate()
 				.getForObject("http://localhost:" + this.port + "/", String.class);
+		assertThat(body).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void injectTestRestTemplate() {
+		String body = this.restTemplate.getForObject("/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}
 

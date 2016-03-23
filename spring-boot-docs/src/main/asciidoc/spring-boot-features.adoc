@@ -4288,121 +4288,162 @@ will need to register the `TypeExcludeFilter` with it. See
 {dc-spring-boot}/context/TypeExcludeFilter.{dc-ext}[the Javadoc] for details.
 
 
+
 [[boot-features-testing-spring-boot-applications-using-springapplicationtest]]
 ==== Using @SpringApplicationTest
-As The `@SpringApplicationTest`
+Use the `@SpringApplicationTest` annotation to load an `ApplicationContext` via
+`SpringApplication` and configure it with a mock servlet environment when appropriate.
+
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringRunner.class)
+	@SpringApplicationTest
+	public class MySpringApplicationTests {
+
+		@Autowired
+		private MyComponent component;
+
+		// ... tests
+
+	}
+----
 
 
+
+[[boot-features-testing-spring-boot-applications-using-webintegrationtest]]
 ==== Using @WebIntegrationTest
+Use the `@WebIntegrationTest` annotation to load an `WebApplicationContext` via
+`SpringApplication` and configure it with fully running server listening on its normal
+or a random port.
 
-==== Using @IntegrationTest
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
 
-==== Mocking Beans
-
-==== Testing JSON
-
-==== Testing Spring MVC
-
-==== Testing JPA
-
-
-==== FIXME
-
-A Spring Boot application is just a Spring `ApplicationContext` so nothing very special
-has to be done to test it beyond what you would normally do with a vanilla Spring context.
-One thing to watch out for though is that the external properties, logging and other
-features of Spring Boot are only installed in the context by default if you use
-`SpringApplication` to create it.
-
-
-Spring Boot provides a `@SpringApplicationConfiguration` annotation as an alternative
-to the standard `spring-test` `@ContextConfiguration` annotation. If you use
-`@SpringApplicationConfiguration` to configure the `ApplicationContext` used in your
-tests, it will be created via `SpringApplication` and you will get the additional Spring
-Boot features.
-
-For example:
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	public class CityRepositoryIntegrationTests {
-
-		@Autowired
-		CityRepository repository;
-
-		// ...
-
-	}
-----
-
-TIP: The context loader guesses whether you want to test a web application or not (e.g.
-with `MockMvc`) by looking for the `@WebIntegrationTest` or `@WebAppConfiguration`
-annotations.  (`MockMvc` and `@WebAppConfiguration` are part of `spring-test`).
-
-If you want a web application to start up and listen on its normal port, so you can test
-it with HTTP (e.g. using `RestTemplate`), annotate your test class (or one of its
-superclasses) with `@WebIntegrationTest`. This can be very useful because it means you can
-test the full stack of your application, but also inject its components into the test
-class and use them to assert the internal state of the application after an HTTP
-interaction. For example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(SampleDataJpaApplication.class)
-	@WebIntegrationTest
-	public class CityRepositoryIntegrationTests {
-
-		@Autowired
-		CityRepository repository;
-
-		RestTemplate restTemplate = new TestRestTemplate();
-
-		// ... interact with the running server
-
-	}
-----
-
-NOTE: Spring's test framework will cache application contexts between tests. Therefore,
-as long as your tests share the same configuration, the time consuming process of starting
-and stopping the server will only happen once, regardless of the number of tests that
-actually run.
+For convenience, tests that need to make REST calls to the started server can additionally
+`@Autowire` a `TestRestTemplate` which will resolve relative links to the running server.
 
 To change the port you can add environment properties to `@WebIntegrationTest` as colon-
 or equals-separated name-value pairs, e.g. `@WebIntegrationTest("server.port:9000")`.
 Additionally you can set the `server.port` and `management.port` properties to `0`
-in order to run your integration tests using random ports. For example:
+or use the `randomPort` attribute in order to run your integration tests using
+random ports.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(MyApplication.class)
-	@WebIntegrationTest({"server.port=0", "management.port=0"})
-	public class SomeIntegrationTests {
+	@RunWith(SpringRunner.class)
+	@WebIntegrationTest(randomPort=true)
+	public class MyWebIntegrationTests {
 
-		// ...
+		@Autowired
+		private TestRestTemplate restTemplate;
 
-	}
-----
-
-Alternatively, you can use the `randomPort` convenience attribute to set `server.port=0`.
-For example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@RunWith(SpringJUnit4ClassRunner.class)
-	@SpringApplicationConfiguration(MyApplication.class)
-	@WebIntegrationTest(randomPort = true)
-	public class SomeIntegrationTests {
-
-		// ...
+		@Test
+		public void test() {
+			String body = this.restTemplate.getForObject("/", String.class);
+			assertThat(body).isEqualTo("Hello World");
+		}
 
 	}
 ----
 
 See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
-the actual port that was allocated for the duration of the tests.
+the actual port that was allocated for the duration of the tests if you're not using the
+injected `TestRestTemplate`.
+
+
+
+[[boot-features-testing-spring-boot-applications-using-integrationtest]]
+==== Using @IntegrationTest
+Use the `@IntegrationTest` annotation to load an `ApplicationContext` via
+`SpringApplication` for non web-applications. Mock servlet support is explicitly disabled
+for tests annotated with `@IntegrationTest`.
+
+The `@Configuration` classes to load can either be explicitly defined using
+`@ContextConfiguration`, specified as inner-classes or
+<<boot-features-testing-spring-boot-applications-detecting-config, detected automatically>>
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringRunner.class)
+	@IntegrationTest
+	public class MyIntegrationTests {
+
+		@Autowired
+		private MyComponent component;
+
+		// ... tests
+
+	}
+----
+
+NOTE: Although it's possible to use the `@WebAppConfiguration` annotation in combination
+with `@IntegrationTest` if you want to start a full web server, the `@WebIntegrationTest`
+annotation is generally preferable.
+
+
+
+[[boot-features-testing-spring-boot-applications-mocking-beans]]
+==== Mocking Beans
+It's sometimes necessary to mock certain components within your application context when
+running tests. For example, you may have a facade over some remote service that's
+unavailable during development. Mocking can also be useful when you want to simulate
+failures that might be hard to trigger in a real environment.
+
+Spring Boot includes a `@MockBean` annotation that can be used to define a Mockito mock
+for a bean. You can use the annotation to add new beans, or replace a single existing bean
+definition. The annotation can be used directly on test classes, on fields within your
+test; or on `@Configuration` classes and fields. When used on a field the, instance of the
+created mock will also be injected. Mock beans are automatically reset after each test
+method.
+
+Here's a typical example where we replace an existing `RemoteService` bean with a mock
+implementation:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringRunner.class)
+	@SpringApplicationTest
+	public class MyTests {
+
+		@MockBean
+		private RemoteService remoteService;
+
+		@Autowired
+		private Reverser reverser;
+
+		@Test
+		public void test() {
+			// RemoteService has been injected into the reverser bean
+			given(this.remoteService.someCall()).willReturn("mock");
+			String reverse = reverser.reverseSomeCall();
+			assertThat(reverse).isEqualTo("kcom");
+		}
+
+	}
+
+
+----
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-json]]
+==== Testing JSON
+
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-springmvc]]
+==== Testing Spring MVC
+
+
+
+[[boot-features-testing-spring-boot-applications-testing-jpa]]
+==== Testing JPA
 
 
 
