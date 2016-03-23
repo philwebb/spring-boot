@@ -57,8 +57,6 @@ import org.springframework.util.Assert;
  */
 public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
-	// FIXME add readObject? at least change Javadoc of ObjectContent
-
 	private final ObjectMapper objectMapper;
 
 	/**
