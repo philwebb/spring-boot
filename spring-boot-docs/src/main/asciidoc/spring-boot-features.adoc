@@ -4161,10 +4161,13 @@ class for more details.
 
 [[boot-features-testing]]
 == Testing
-Spring Boot provides a number of useful tools for testing your application. The
-`spring-boot-starter-test` POM provides Spring Test, JUnit, Hamcrest and Mockito
-dependencies. There are also useful test utilities in the core `spring-boot` module under
-the `org.springframework.boot.test` package.
+Spring Boot provides a number of utilities and annotations to help when testing your
+application. Test support is provided by two modules; `spring-boot-test` contains core
+items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
+
+Most developers will just use the the `spring-boot-starter-test` '`Starter POM`' which
+imports both Spring Boot test modules as well has JUnit, AssertJ, Hamcrest and a number
+of other useful libraries.
 
 
 
@@ -4174,14 +4177,19 @@ If you use the
 `spring-boot-starter-test` '`Starter POM`' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* Spring Test -- integration test support for Spring applications.
+* Spring Test & Spring Boot Test -- utilties and integration test support for Spring Boot
+  applications.
 * JUnit -- The de-facto standard for unit testing Java applications.
+* AssertJ - A fluent assertion library.
 * Hamcrest -- A library of matcher objects (also known as constraints or predicates)
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.
+* JSONassert -- An assertion library for test JSON
+* JsonPath -- XPath for JSON
 
 These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
+
 
 
 [[boot-features-testing-spring-applications]]
@@ -4212,6 +4220,100 @@ has to be done to test it beyond what you would normally do with a vanilla Sprin
 One thing to watch out for though is that the external properties, logging and other
 features of Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it.
+
+Spring Boot provides three annotations which can be used as an alternative the standard
+`spring-test` `@ContextConfiguration` annotation. All three work by creating the
+`ApplicationContext` used in your tests via `SpringApplication` so that you get all the
+additional Spring Boot features.
+
+The specific annotation that choose will depend on the type of test that you are writings:
+
+* `@SpringApplicationTest` -- Loads the application context using `SpringApplication` and
+  provides a mock servlet environment when appropriate. Embedded servlet containers are
+  not started when using this annotation.
+* `@WebIntegrationTest` -- Loads the context using `SpringApplication` and provides a real
+  servlet environment. Embedded servlet containers are started and listening on a defined
+  or random port.
+* `@IntegrationTest` -- Loads the context using `SpringApplication` but does not provides
+  any servlet environment. Useful for integration testing non-web applications.
+
+NOTE: In addition to `@SpringApplicationTest`, `@WebIntegrationTest` and
+`@IntegrationTest` a number of other annotations are also provided for testing more
+specific slices of an application. See below for details.
+
+TIP: Don't forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise
+the annotations will be ignored.
+
+
+
+[[boot-features-testing-spring-boot-applications-detecting-config]]
+==== Detecting configuration
+If you're familiar with the Spring Test Framework, you may be used to using
+`@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration`
+to load. Alternatively you might have often used nested `@Configuration` classes within
+your test.
+
+When testing Spring Boot applications this is often no longer required.
+Spring Boot's `@*Test` annotations will search for your primary configuration automatically
+if you haven't defined one.
+
+The search algorithm works up from the package that contains the test until it finds a
+`@SpringBootApplication` or `@SpringBootConfiguration` annotated class. As long as you've
+<<using-boot-structuring-your-code, structure your code>> in a sensible way your main
+configuration is usually found.
+
+NOTE: Spring's test framework will cache application contexts between tests. Therefore, as
+long as your tests share the same configuration (no matter how it's discovered), the
+potentially time consuming process of loading the context will only happen once, regardless
+of the number of tests that actually run.
+
+
+
+[[boot-features-testing-spring-boot-applications-excluding-config]]
+==== Excluding test configuration
+If your application uses component scanning, for example if you use
+`@SpringBootApplication` or `@ComponentScan`, you may find components or configurations
+created only for specific tests accidentally get picked up everywhere.
+
+To help prevent this, Spring Boot provides `@TestComponent` and `@TestConfiguration`
+annotations that can be used on classes in `src/test/java` to indicate that they should
+not be picked up by scanning.
+
+NOTE: `@TestComponent` and `@TestConfiguration` are only needed on top level classes. If
+you define `@Configuration` or `@Component` as inner-classes within a test, they will be
+automatically filtered.
+
+NOTE: If you directly use `@ComponentScan` (i.e. not via `@SpringBootApplication`) you
+will need to register the `TypeExcludeFilter` with it. See
+{dc-spring-boot}/context/TypeExcludeFilter.{dc-ext}[the Javadoc] for details.
+
+
+[[boot-features-testing-spring-boot-applications-using-springapplicationtest]]
+==== Using @SpringApplicationTest
+As The `@SpringApplicationTest`
+
+
+==== Using @WebIntegrationTest
+
+==== Using @IntegrationTest
+
+==== Mocking Beans
+
+==== Testing JSON
+
+==== Testing Spring MVC
+
+==== Testing JPA
+
+
+==== FIXME
+
+A Spring Boot application is just a Spring `ApplicationContext` so nothing very special
+has to be done to test it beyond what you would normally do with a vanilla Spring context.
+One thing to watch out for though is that the external properties, logging and other
+features of Spring Boot are only installed in the context by default if you use
+`SpringApplication` to create it.
+
 
 Spring Boot provides a `@SpringApplicationConfiguration` annotation as an alternative
 to the standard `spring-test` `@ContextConfiguration` annotation. If you use
@@ -4381,7 +4483,6 @@ public class MyTest {
 
 [[boot-features-rest-templates-test-utility]]
 ==== TestRestTemplate
-
 `TestRestTemplate` is a convenience subclass of Spring's `RestTemplate` that is useful in
 integration tests. You can get a vanilla template or one that sends Basic HTTP
 authentication (with a username and password). In either case the template will behave
