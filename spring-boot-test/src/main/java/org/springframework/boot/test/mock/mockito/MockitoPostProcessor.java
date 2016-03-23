@@ -17,7 +17,6 @@
 package org.springframework.boot.test.mock.mockito;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,7 +82,9 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 
 	private final BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 
-	private Map<AnnotatedElement, String> mockBeans = new HashMap<AnnotatedElement, String>();
+	private Map<MockDefinition, String> beanNameRegistry = new HashMap<MockDefinition, String>();
+
+	private Map<Field, String> fieldRegistry = new HashMap<Field, String>();
 
 	/**
 	 * Create a new {@link MockitoPostProcessor} instance with the given initial
@@ -121,8 +122,10 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		for (Class<?> configurationClass : getConfigurationClasses(beanFactory)) {
 			parser.parse(configurationClass);
 		}
-		for (MockDefinition definition : parser.getDefinitions()) {
-			registerMock(beanFactory, registry, definition);
+		Set<MockDefinition> definitions = parser.getDefinitions();
+		for (MockDefinition definition : definitions) {
+			Field field = parser.getField(definition);
+			registerMock(beanFactory, registry, definition, field);
 		}
 	}
 
@@ -149,22 +152,22 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return definitions;
 	}
 
-	protected final void reinjectMock(ApplicationContext applicationContext,
-			MockDefinition mockDefinition, Field field) {
-		Assert.isInstanceOf(BeanDefinitionRegistry.class, applicationContext,
-				"@MockBean can only be used with a BeanDefinitionRegistry");
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) applicationContext;
-		// getBeanName(this.beanFactory, registry, mockDefinition, beanDefinition);
+	final void inject(Field field, Object target, MockDefinition definition) {
+		String beanName = this.beanNameRegistry.get(definition);
+		Assert.state(StringUtils.hasLength(beanName),
+				"No mock found for definition " + definition);
+		injectMock(field, target, beanName);
 	}
 
 	private void registerMock(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry, MockDefinition mockDefinition) {
+			BeanDefinitionRegistry registry, MockDefinition mockDefinition, Field field) {
 		RootBeanDefinition beanDefinition = createBeanDefinition(mockDefinition);
 		String name = getBeanName(beanFactory, registry, mockDefinition, beanDefinition);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(1, name);
 		registry.registerBeanDefinition(name, beanDefinition);
-		if (mockDefinition.getElement() != null) {
-			this.mockBeans.put(mockDefinition.getElement(), name);
+		this.beanNameRegistry.put(mockDefinition, name);
+		if (field != null) {
+			this.fieldRegistry.put(field, name);
 		}
 	}
 
@@ -218,25 +221,25 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 			@Override
 			public void doWith(Field field)
 					throws IllegalArgumentException, IllegalAccessException {
-				injectMock(bean, field);
+				postProcessField(bean, field);
 			}
 
 		});
 		return pvs;
 	}
 
-	protected final void injectMock(Object bean, Field field) {
-		String beanName = this.mockBeans.get(field);
+	private void postProcessField(Object bean, Field field) {
+		String beanName = this.fieldRegistry.get(field);
 		if (StringUtils.hasLength(beanName)) {
-			injectMock(bean, field, beanName);
+			injectMock(field, bean, beanName);
 		}
 	}
 
-	private void injectMock(Object bean, Field field, String beanName) {
+	private void injectMock(Field field, Object target, String beanName) {
 		try {
 			field.setAccessible(true);
-			Object mock = this.beanFactory.getBean(beanName, field.getType());
-			field.set(bean, mock);
+			Object mockBean = this.beanFactory.getBean(beanName, field.getType());
+			ReflectionUtils.setField(field, target, mockBean);
 		}
 		catch (Throwable ex) {
 			throw new BeanCreationException("Could not inject mock field: " + field, ex);

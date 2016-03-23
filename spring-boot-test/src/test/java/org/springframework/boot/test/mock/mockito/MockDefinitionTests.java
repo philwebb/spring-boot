@@ -16,8 +16,6 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.lang.reflect.Field;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,7 +25,6 @@ import org.mockito.mock.MockCreationSettings;
 
 import org.springframework.boot.test.mock.mockito.example.ExampleExtraInterface;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
-import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,14 +42,13 @@ public class MockDefinitionTests {
 	public void ClassToMockMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ClassToMock must not be null");
-		new MockDefinition(null, null, null, null, null, false, null);
+		new MockDefinition(null, null, null, null, false, null);
 	}
 
 	@Test
 	public void createWithDefaults() throws Exception {
-		MockDefinition definition = new MockDefinition(null, null, ExampleService.class,
-				null, null, false, null);
-		assertThat(definition.getElement()).isNull();
+		MockDefinition definition = new MockDefinition(null, ExampleService.class, null,
+				null, false, null);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces()).isEmpty();
@@ -63,11 +59,9 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createExplicit() throws Exception {
-		Field field = ReflectionUtils.findField(getClass(), "thrown");
-		MockDefinition definition = new MockDefinition(field, "name",
-				ExampleService.class, new Class<?>[] { ExampleExtraInterface.class },
+		MockDefinition definition = new MockDefinition("name", ExampleService.class,
+				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
-		assertThat(definition.getElement()).isEqualTo(field);
 		assertThat(definition.getName()).isEqualTo("name");
 		assertThat(definition.getClassToMock()).isEqualTo(ExampleService.class);
 		assertThat(definition.getExtraInterfaces())
@@ -79,7 +73,7 @@ public class MockDefinitionTests {
 
 	@Test
 	public void createMock() throws Exception {
-		MockDefinition definition = new MockDefinition(null, "name", ExampleService.class,
+		MockDefinition definition = new MockDefinition("name", ExampleService.class,
 				new Class<?>[] { ExampleExtraInterface.class },
 				Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE);
 		ExampleService mock = definition.createMock();

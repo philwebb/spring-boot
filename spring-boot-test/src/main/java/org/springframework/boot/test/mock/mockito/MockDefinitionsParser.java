@@ -21,7 +21,9 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -40,12 +42,15 @@ class MockDefinitionsParser {
 
 	private final Set<MockDefinition> definitions;
 
+	private final Map<MockDefinition, Field> fields;
+
 	MockDefinitionsParser() {
 		this(Collections.<MockDefinition>emptySet());
 	}
 
 	MockDefinitionsParser(Collection<? extends MockDefinition> existing) {
 		this.definitions = new LinkedHashSet<MockDefinition>();
+		this.fields = new LinkedHashMap<MockDefinition, Field>();
 		if (existing != null) {
 			this.definitions.addAll(existing);
 		}
@@ -80,9 +85,14 @@ class MockDefinitionsParser {
 					"The name attribute can only be used when mocking a single class");
 		}
 		for (Class<?> classToMock : classesToMock) {
-			this.definitions.add(new MockDefinition(element, annotation.name(),
-					classToMock, annotation.extraInterfaces(), annotation.answer(),
-					annotation.serializable(), annotation.reset()));
+			MockDefinition definition = new MockDefinition(annotation.name(), classToMock,
+					annotation.extraInterfaces(), annotation.answer(),
+					annotation.serializable(), annotation.reset());
+			boolean isNewDefinition = this.definitions.add(definition);
+			Assert.state(isNewDefinition, "Duplicate mock definition " + definition);
+			if (element instanceof Field) {
+				this.fields.put(definition, (Field) element);
+			}
 		}
 	}
 
@@ -98,6 +108,10 @@ class MockDefinitionsParser {
 
 	public Set<MockDefinition> getDefinitions() {
 		return Collections.unmodifiableSet(this.definitions);
+	}
+
+	public Field getField(MockDefinition definition) {
+		return this.fields.get(definition);
 	}
 
 }

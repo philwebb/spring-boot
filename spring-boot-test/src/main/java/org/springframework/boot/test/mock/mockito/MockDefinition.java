@@ -16,12 +16,12 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mockito.Answers;
 import org.mockito.MockSettings;
 import org.mockito.Mockito;
@@ -39,8 +39,6 @@ class MockDefinition {
 
 	private static final int MULTIPLIER = 31;
 
-	private final AnnotatedElement element;
-
 	private final String name;
 
 	private final Class<?> classToMock;
@@ -54,14 +52,12 @@ class MockDefinition {
 	private final MockReset reset;
 
 	MockDefinition(Class<?> classToMock) {
-		this(null, null, classToMock, null, null, false, null);
+		this(null, classToMock, null, null, false, null);
 	}
 
-	MockDefinition(AnnotatedElement element, String name, Class<?> classToMock,
-			Class<?>[] extraInterfaces, Answers answer, boolean serializable,
-			MockReset reset) {
+	MockDefinition(String name, Class<?> classToMock, Class<?>[] extraInterfaces,
+			Answers answer, boolean serializable, MockReset reset) {
 		Assert.notNull(classToMock, "ClassToMock must not be null");
-		this.element = element;
 		this.name = name;
 		this.classToMock = classToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
@@ -76,14 +72,6 @@ class MockDefinition {
 			classSet.addAll(Arrays.asList(classes));
 		}
 		return Collections.unmodifiableSet(classSet);
-	}
-
-	/**
-	 * Return the source element of this definition or {@code null}.
-	 * @return the source element
-	 */
-	public AnnotatedElement getElement() {
-		return this.element;
 	}
 
 	/**
@@ -163,6 +151,15 @@ class MockDefinition {
 		result &= this.serializable == other.serializable;
 		result &= ObjectUtils.nullSafeEquals(this.reset, other.reset);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("name", this.name)
+				.append("classToMock", this.classToMock)
+				.append("extraInterfaces", this.extraInterfaces)
+				.append("answer", this.answer).append("serializable", this.serializable)
+				.append("reset", this.reset).build();
 	}
 
 	public <T> T createMock() {

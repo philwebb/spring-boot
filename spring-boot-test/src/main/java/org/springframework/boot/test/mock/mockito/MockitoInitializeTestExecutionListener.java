@@ -17,7 +17,6 @@
 package org.springframework.boot.test.mock.mockito;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -43,15 +42,10 @@ class MockitoInitializeTestExecutionListener extends AbstractTestExecutionListen
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
-		MockDefinitionsParser parser = new MockDefinitionsParser();
-		parser.parse(testContext.getTestClass());
-		Set<MockDefinition> definitions = parser.getDefinitions();
-		if (!definitions.isEmpty() || hasMockitoAnnotations(testContext)) {
+		if (hasMockitoAnnotations(testContext)) {
 			MockitoAnnotations.initMocks(testContext.getTestInstance());
 		}
-		if (!definitions.isEmpty()) {
-			inject(testContext, definitions);
-		}
+		injectFields(testContext);
 	}
 
 	private boolean hasMockitoAnnotations(TestContext testContext) {
@@ -60,15 +54,22 @@ class MockitoInitializeTestExecutionListener extends AbstractTestExecutionListen
 		return collector.hasAnnotations();
 	}
 
-	private void inject(TestContext testContext, Set<MockDefinition> definitions) {
+	private void injectFields(TestContext testContext) {
+		MockDefinitionsParser parser = new MockDefinitionsParser();
+		parser.parse(testContext.getTestClass());
+		if (!parser.getDefinitions().isEmpty()) {
+			injectFields(testContext, parser);
+		}
+	}
+
+	private void injectFields(TestContext testContext, MockDefinitionsParser parser) {
 		ApplicationContext applicationContext = testContext.getApplicationContext();
 		MockitoPostProcessor postProcessor = applicationContext
 				.getBean(MockitoPostProcessor.class);
-		for (MockDefinition definition : definitions) {
-			AnnotatedElement element = definition.getElement();
-			if (element instanceof Field) {
-				postProcessor.reinjectMock(testContext.getApplicationContext(),
-						definition, (Field) element);
+		for (MockDefinition definition : parser.getDefinitions()) {
+			Field field = parser.getField(definition);
+			if (field != null) {
+				postProcessor.inject(field, testContext.getTestInstance(), definition);
 			}
 		}
 	}
