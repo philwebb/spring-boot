@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.OnContextHierarchyIntegrationTests.ChildConfig;
 import org.springframework.boot.test.mock.mockito.OnContextHierarchyIntegrationTests.ParentConfig;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
