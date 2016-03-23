@@ -32,8 +32,6 @@ import org.springframework.util.Assert;
  */
 public class LocalHostWebConnectionHtmlUnitDriver extends WebConnectionHtmlUnitDriver {
 
-	// FIXME needs a test
-
 	private final Environment environment;
 
 	public LocalHostWebConnectionHtmlUnitDriver(Environment environment) {
