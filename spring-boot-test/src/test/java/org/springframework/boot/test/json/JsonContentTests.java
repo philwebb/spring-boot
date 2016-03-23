@@ -16,7 +16,11 @@
 
 package org.springframework.boot.test.json;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,11 +31,63 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class JsonContentTests {
 
-	private BasicJsonTester json = new BasicJsonTester(getClass());
+	private static final String JSON = "{\"name\":\"spring\", \"age\":100}";
+
+	private static final ResolvableType TYPE = ResolvableType
+			.forClass(ExampleObject.class);
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void testName() throws Exception {
-		assertThat(this.json.from("simpsons.json"));
+	public void createWhenResourceLoadClassIsNullShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("ResourceLoadClass must not be null");
+		new JsonContent<ExampleObject>(null, TYPE, JSON);
+	}
+
+	@Test
+	public void createThenJsonIsNullShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("JSON must not be null");
+		new JsonContent<ExampleObject>(getClass(), TYPE, null);
+	}
+
+	@Test
+	public void createWhenTypeIsNullShouldCreateContent() throws Exception {
+		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+				null, JSON);
+		assertThat(content).isNotNull();
+	}
+
+	@Test
+	public void assertThatShouldReturnJsonContentAssert() throws Exception {
+		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+				TYPE, JSON);
+		assertThat(content.assertThat()).isInstanceOf(JsonContentAssert.class);
+	}
+
+	@Test
+	public void getJsonShouldReturnJson() throws Exception {
+		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+				TYPE, JSON);
+		assertThat(content.getJson()).isEqualTo(JSON);
+
+	}
+
+	@Test
+	public void toStringWhenHasTypeShouldReturnString() throws Exception {
+		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+				TYPE, JSON);
+		assertThat(content.toString())
+				.isEqualTo("JsonContent " + JSON + " created from " + TYPE);
+	}
+
+	@Test
+	public void toStringWhenNoTypeShouldReturnString() throws Exception {
+		JsonContent<ExampleObject> content = new JsonContent<ExampleObject>(getClass(),
+				null, JSON);
+		assertThat(content.toString()).isEqualTo("JsonContent " + JSON);
 	}
 
 }

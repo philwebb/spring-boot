@@ -70,8 +70,6 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  */
 public abstract class AbstractJsonMarshalTester<T> {
 
-	// FIXME test Object version
-
 	private final Class<?> resourceLoadClass;
 
 	private final ResolvableType type;
