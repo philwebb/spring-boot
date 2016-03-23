@@ -152,7 +152,7 @@ public class MockitoPostProcessor extends InstantiationAwareBeanPostProcessorAda
 		return definitions;
 	}
 
-	final void inject(Field field, Object target, MockDefinition definition) {
+	void inject(Field field, Object target, MockDefinition definition) {
 		String beanName = this.beanNameRegistry.get(definition);
 		Assert.state(StringUtils.hasLength(beanName),
 				"No mock found for definition " + definition);

@@ -50,7 +50,7 @@ class MockitoInitializeTestExecutionListener extends AbstractTestExecutionListen
 
 	private boolean hasMockitoAnnotations(TestContext testContext) {
 		MockitoAnnotationCollection collector = new MockitoAnnotationCollection();
-		ReflectionUtils.doWithFields(testContext.getClass(), collector);
+		ReflectionUtils.doWithFields(testContext.getTestClass(), collector);
 		return collector.hasAnnotations();
 	}
 
