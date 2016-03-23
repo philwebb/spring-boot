@@ -16,8 +16,6 @@
 
 package sample.test.domain;
 
-import javax.persistence.EntityManager;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -46,7 +44,7 @@ public class UserEntityTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private TestEntityManager testEntity;
+	private TestEntityManager entityManager;
 
 	@Test
 	public void createWhenUserIdIsNullShouldThrowException() throws Exception {
@@ -71,19 +69,9 @@ public class UserEntityTests {
 
 	@Test
 	public void saveShouldPersistData() throws Exception {
-		User user = mergeFlushFind(new User("sboot", VIN));
+		User user = this.entityManager.persistFlushFind(new User("sboot", VIN));
 		assertThat(user.getUsername()).isEqualTo("sboot");
 		assertThat(user.getVin()).isEqualTo(VIN);
-	}
-
-	// FIXME merge flush find is a common pattern, perhaps a util
-	private User mergeFlushFind(User user) {
-		// this.testEntities.persistFlushFind(user);
-		EntityManager entityManager = this.testEntity.getEntityManager();
-		user = entityManager.merge(user);
-		entityManager.flush();
-		user = entityManager.find(User.class, user.getId());
-		return user;
 	}
 
 }
