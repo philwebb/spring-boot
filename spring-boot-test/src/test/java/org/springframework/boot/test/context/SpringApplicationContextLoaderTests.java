@@ -97,37 +97,37 @@ public class SpringApplicationContextLoaderTests {
 		assertThat(actual.get(key)).isEqualTo(value);
 	}
 
-	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })
+	@SpringApplicationTest(properties = { "key=myValue", "anotherKey:anotherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class SimpleConfig {
 
 	}
 
-	@IntegrationTest({ "server.port=2345" })
+	@SpringApplicationTest(properties = { "server.port=2345" })
 	@ContextConfiguration(classes = Config.class)
 	static class OverrideConfig {
 
 	}
 
-	@IntegrationTest({ "key=myValue", "otherKey=otherValue" })
+	@SpringApplicationTest(properties = { "key=myValue", "otherKey=otherValue" })
 	@ContextConfiguration(classes = Config.class)
 	static class AppendConfig {
 
 	}
 
-	@IntegrationTest({ "key=my=Value", "anotherKey:another:Value" })
+	@SpringApplicationTest(properties = { "key=my=Value", "anotherKey:another:Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class SameSeparatorInValue {
 
 	}
 
-	@IntegrationTest({ "key=my:Value", "anotherKey:another=Value" })
+	@SpringApplicationTest(properties = { "key=my:Value", "anotherKey:another=Value" })
 	@ContextConfiguration(classes = Config.class)
 	static class AnotherSeparatorInValue {
 
 	}
 
-	@IntegrationTest({ "key=myValue", "variables=foo=FOO\n bar=BAR" })
+	@SpringApplicationTest(properties = { "key=myValue", "variables=foo=FOO\n bar=BAR" })
 	@ContextConfiguration(classes = Config.class)
 	static class NewLineInValue {
 
