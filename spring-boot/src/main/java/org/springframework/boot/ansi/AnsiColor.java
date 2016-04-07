@@ -25,49 +25,60 @@ package org.springframework.boot.ansi;
  */
 public enum AnsiColor implements AnsiElement {
 
-	DEFAULT("39"),
+	DEFAULT("39", null),
 
-	BLACK("30"),
+	BLACK("30", 0x000000),
 
-	RED("31"),
+	RED("31", 0xAA0000),
 
-	GREEN("32"),
+	GREEN("32", 0x00AA00),
 
-	YELLOW("33"),
+	YELLOW("33", 0xAA5500),
 
-	BLUE("34"),
+	BLUE("34", 0x0000AA),
 
-	MAGENTA("35"),
+	MAGENTA("35", 0xAA00AA),
 
-	CYAN("36"),
+	CYAN("36", 0x00AAAA),
 
-	WHITE("37"),
+	WHITE("37", 0xAAAAAA),
 
-	BRIGHT_BLACK("90"),
+	BRIGHT_BLACK("90", 0x555555),
 
-	BRIGHT_RED("91"),
+	BRIGHT_RED("91", 0xFF5555),
 
-	BRIGHT_GREEN("92"),
+	BRIGHT_GREEN("92", 0x55FF00),
 
-	BRIGHT_YELLOW("93"),
+	BRIGHT_YELLOW("93", 0xFFFF55),
 
-	BRIGHT_BLUE("94"),
+	BRIGHT_BLUE("94", 0x5555FF),
 
-	BRIGHT_MAGENTA("95"),
+	BRIGHT_MAGENTA("95", 0xFF55FF),
 
-	BRIGHT_CYAN("96"),
+	BRIGHT_CYAN("96", 0x55FFFF),
 
-	BRIGHT_WHITE("97");
+	BRIGHT_WHITE("97", 0xFFFFFF);
 
 	private final String code;
 
-	AnsiColor(String code) {
+	private final Integer rgb;
+
+	AnsiColor(String code, Integer rgb) {
 		this.code = code;
+		this.rgb = rgb;
 	}
 
 	@Override
 	public String toString() {
 		return this.code;
+	}
+
+	/**
+	 * Return the RGB color (if any) that can be used to render this ANSI color.
+	 * @return the RGB color or {@code null}.
+	 */
+	public Integer getRgb() {
+		return this.rgb;
 	}
 
 }
