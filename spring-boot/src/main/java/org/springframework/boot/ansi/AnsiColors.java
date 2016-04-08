@@ -26,12 +26,15 @@ import java.util.Map.Entry;
 import org.springframework.util.Assert;
 
 /**
+ * Utility class for working with {@link AnsiColor}.
+ *
  * @author Craig Burke
  * @author Ruben Dijkstra
  * @author Phillip Webb
  * @author Michael Simons
+ * @since 1.4.0
  */
-public class AnsiColors {
+public final class AnsiColors {
 
 	private static final Map<AnsiColor, LabColor> ANSI_COLOR_MAP;
 
@@ -43,6 +46,9 @@ public class AnsiColors {
 			}
 		}
 		ANSI_COLOR_MAP = Collections.unmodifiableMap(colorMap);
+	}
+
+	private AnsiColors() {
 	}
 
 	public static AnsiColor getClosest(Color color) {
@@ -62,6 +68,9 @@ public class AnsiColors {
 		return result;
 	}
 
+	/**
+	 * Represents a color stored in LAB form.
+	 */
 	private static final class LabColor {
 
 		private static final ColorSpace XYZ_COLOR_SPACE = ColorSpace
@@ -73,11 +82,11 @@ public class AnsiColors {
 
 		private final double b;
 
-		public LabColor(Integer rgb) {
+		LabColor(Integer rgb) {
 			this(rgb == null ? (Color) null : new Color(rgb));
 		}
 
-		public LabColor(Color color) {
+		LabColor(Color color) {
 			Assert.notNull(color, "Color must not be null");
 			float[] lab = fromXyz(color.getColorComponents(XYZ_COLOR_SPACE, null));
 			this.l = lab[0];

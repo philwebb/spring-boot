@@ -19,6 +19,8 @@ package org.springframework.boot;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import javax.imageio.ImageIO;
@@ -26,13 +28,14 @@ import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiColors;
-import org.springframework.boot.ansi.AnsiPropertySource;
+import org.springframework.boot.ansi.AnsiElement;
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -41,22 +44,20 @@ import org.springframework.util.Assert;
  * {@link Resource}.
  *
  * @author Craig Burke
+ * @author Phillip Webb
+ * @since 1.4.0
  */
 public class ImageBanner implements Banner {
 
 	private static final Log log = LogFactory.getLog(ImageBanner.class);
 
-	private static final double RED_WEIGHT = 0.2126d;
+	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
 
-	private static final double GREEN_WEIGHT = 0.7152d;
+	private static final char[] PIXEL = { ' ', '.', '*', ':', 'o', '&', '8', '#', '@' };
 
-	private static final double BLUE_WEIGHT = 0.0722d;
+	private static final int LUMINANCE_INCREMENT = 10;
 
-	private static final int DEFAULT_MAX_WIDTH = 72;
-
-	private static final double DEFAULT_ASPECT_RATIO = 0.5d;
-
-	private static final boolean DEFAULT_DARK = false;
+	private static final int LUMINANCE_START = LUMINANCE_INCREMENT * PIXEL.length;
 
 	private final Resource image;
 
@@ -69,147 +70,109 @@ public class ImageBanner implements Banner {
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass,
 			PrintStream out) {
-		String headlessProperty = System.getProperty("java.awt.headless");
+		String headless = System.getProperty("java.awt.headless");
 		try {
 			System.setProperty("java.awt.headless", "true");
-			BufferedImage sourceImage = ImageIO.read(this.image.getInputStream());
-
-			int maxWidth = environment.getProperty("banner.image.max-width",
-					Integer.class, DEFAULT_MAX_WIDTH);
-			Double aspectRatio = environment.getProperty("banner.image.aspect-ratio",
-					Double.class, DEFAULT_ASPECT_RATIO);
-			boolean invert = environment.getProperty("banner.image.dark", Boolean.class,
-					DEFAULT_DARK);
-
-			BufferedImage resizedImage = resizeImage(sourceImage, maxWidth, aspectRatio);
-			String banner = imageToBanner(resizedImage, invert);
-
-			PropertyResolver ansiResolver = getAnsiResolver();
-			banner = ansiResolver.resolvePlaceholders(banner);
-			out.println(banner);
+			printBanner(environment, out);
 		}
 		catch (Exception ex) {
 			log.warn("Image banner not printable: " + this.image + " (" + ex.getClass()
 					+ ": '" + ex.getMessage() + "')", ex);
 		}
 		finally {
-			if (headlessProperty == null) {
+			if (headless == null) {
 				System.clearProperty("java.awt.headless");
 			}
 			else {
-				System.setProperty("java.awt.headless", headlessProperty);
+				System.setProperty("java.awt.headless", headless);
 			}
 		}
 	}
 
-	private PropertyResolver getAnsiResolver() {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new AnsiPropertySource("ansi", true));
-		return new PropertySourcesPropertyResolver(sources);
+	private void printBanner(Environment environment, PrintStream out)
+			throws IOException {
+		PropertyResolver properties = new RelaxedPropertyResolver(environment,
+				"banner.image.");
+		int width = properties.getProperty("width", Integer.class, 76);
+		int heigth = properties.getProperty("heigth", Integer.class, 0);
+		int margin = properties.getProperty("margin", Integer.class, 2);
+		boolean invert = properties.getProperty("invert", Boolean.class, false);
+		Assert.state(width >= 10, "Cannot render banner.image.width less than 10");
+		BufferedImage image = readImage(width, heigth);
+		printBanner(image, margin, invert, out);
 	}
 
-	private String imageToBanner(BufferedImage image, boolean dark) {
-		StringBuilder banner = new StringBuilder();
+	private BufferedImage readImage(int width, int heigth) throws IOException {
+		InputStream inputStream = this.image.getInputStream();
+		try {
+			BufferedImage image = ImageIO.read(inputStream);
+			return resizeImage(image, width, heigth);
+		}
+		finally {
+			inputStream.close();
+		}
+	}
 
+	private BufferedImage resizeImage(BufferedImage image, int width, int height) {
+		if (height <= 0) {
+			double aspectRatio = (double) width / image.getWidth() * 0.5;
+			height = (int) Math.ceil(image.getHeight() * aspectRatio);
+		}
+		BufferedImage resized = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
+		Image scaled = image.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+		resized.getGraphics().drawImage(scaled, 0, 0, null);
+		return resized;
+	}
+
+	private void printBanner(BufferedImage image, int margin, boolean invert,
+			PrintStream out) {
+		AnsiElement background = (invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT);
+		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
+		out.print(AnsiOutput.encode(background));
+		out.println();
+		out.println();
+		AnsiColor lastColor = AnsiColor.DEFAULT;
 		for (int y = 0; y < image.getHeight(); y++) {
-			if (dark) {
-				banner.append("${AnsiBackground.BLACK}");
-			}
-			else {
-				banner.append("${AnsiBackground.DEFAULT}");
+			for (int i = 0; i < margin; i++) {
+				out.print(" ");
 			}
 			for (int x = 0; x < image.getWidth(); x++) {
 				Color color = new Color(image.getRGB(x, y), false);
-				banner.append(getFormatString(color, dark));
+				AnsiColor ansiColor = AnsiColors.getClosest(color);
+				if (ansiColor != lastColor) {
+					out.print(AnsiOutput.encode(ansiColor));
+					lastColor = ansiColor;
+				}
+				out.print(getAsciiPixel(color, invert));
 			}
-			if (dark) {
-				banner.append("${AnsiBackground.DEFAULT}");
-			}
-			banner.append("${AnsiColor.DEFAULT}\n");
+			out.println();
 		}
-
-		return banner.toString();
+		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
+		out.print(AnsiOutput.encode(AnsiBackground.DEFAULT));
+		out.println();
 	}
 
-	protected String getFormatString(Color color, boolean dark) {
-		AnsiColor matchedColor = AnsiColors.getAnsiColor(color, dark);
-		return "${AnsiColor." + matchedColor.name() + "}"
-				+ getAsciiCharacter(color, dark);
-	}
-
-	private static int getLuminance(Color color, boolean inverse) {
-		double red = color.getRed();
-		double green = color.getGreen();
-		double blue = color.getBlue();
-
-		double luminance;
-
-		if (inverse) {
-			luminance = (RED_WEIGHT * (255.0d - red)) + (GREEN_WEIGHT * (255.0d - green))
-					+ (BLUE_WEIGHT * (255.0d - blue));
-		}
-		else {
-			luminance = (RED_WEIGHT * red) + (GREEN_WEIGHT * green)
-					+ (BLUE_WEIGHT * blue);
-		}
-
-		return (int) Math.ceil((luminance / 255.0d) * 100);
-	}
-
-	private static char getAsciiCharacter(Color color, boolean dark) {
+	private char getAsciiPixel(Color color, boolean dark) {
 		double luminance = getLuminance(color, dark);
-
-		if (luminance >= 90) {
-			return ' ';
+		for (int i = 0; i < PIXEL.length; i++) {
+			if (luminance >= (LUMINANCE_START - (i * LUMINANCE_INCREMENT))) {
+				return PIXEL[i];
+			}
 		}
-		else if (luminance >= 80) {
-			return '.';
-		}
-		else if (luminance >= 70) {
-			return '*';
-		}
-		else if (luminance >= 60) {
-			return ':';
-		}
-		else if (luminance >= 50) {
-			return 'o';
-		}
-		else if (luminance >= 40) {
-			return '&';
-		}
-		else if (luminance >= 30) {
-			return '8';
-		}
-		else if (luminance >= 20) {
-			return '#';
-		}
-		else {
-			return '@';
-		}
+		return PIXEL[PIXEL.length - 1];
 	}
 
-	private static BufferedImage resizeImage(BufferedImage sourceImage, int maxWidth,
-			double aspectRatio) {
-		int width;
-		double resizeRatio;
-		if (sourceImage.getWidth() > maxWidth) {
-			resizeRatio = (double) maxWidth / (double) sourceImage.getWidth();
-			width = maxWidth;
-		}
-		else {
-			resizeRatio = 1.0d;
-			width = sourceImage.getWidth();
-		}
+	private int getLuminance(Color color, boolean inverse) {
+		double luminance = 0.0;
+		luminance += getLuminance(color.getRed(), inverse, RGB_WEIGHT[0]);
+		luminance += getLuminance(color.getGreen(), inverse, RGB_WEIGHT[1]);
+		luminance += getLuminance(color.getBlue(), inverse, RGB_WEIGHT[2]);
+		return (int) Math.ceil((luminance / 0xFF) * 100);
+	}
 
-		int height = (int) (Math
-				.ceil(resizeRatio * aspectRatio * sourceImage.getHeight()));
-		Image image = sourceImage.getScaledInstance(width, height, Image.SCALE_DEFAULT);
-
-		BufferedImage resizedImage = new BufferedImage(image.getWidth(null),
-				image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-
-		resizedImage.getGraphics().drawImage(image, 0, 0, null);
-		return resizedImage;
+	private double getLuminance(int component, boolean inverse, double weight) {
+		return (inverse ? 0xFF - component : component) * weight;
 	}
 
 }
