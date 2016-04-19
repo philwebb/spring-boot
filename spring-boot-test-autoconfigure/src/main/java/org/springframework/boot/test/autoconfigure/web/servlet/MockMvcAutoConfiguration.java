@@ -18,12 +18,16 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mvc.MvcTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,6 +76,13 @@ class MockMvcAutoConfiguration {
 	@ConditionalOnMissingBean
 	public MockMvc mockMvc(MockMvcBuilder builder) {
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnClass(Assertions.class)
+	@ConditionalOnMissingBean
+	public MvcTester mvcTester(MockMvc mvc) {
+		return new MvcTester(mvc);
 	}
 
 }

@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestData
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mvc.MvcTester;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -49,7 +50,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserVehicleControllerApplicationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvc mockMvc;
+
+	private MvcTester mvc;
 
 	@Autowired
 	private ApplicationContext applicationContext;
@@ -61,8 +64,16 @@ public class UserVehicleControllerApplicationTests {
 	public void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot"))
 				.willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+		this.mockMvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
 				.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
+	}
+
+	@Test
+	public void testName3() throws Exception {
+		given(this.userVehicleService.getVehicleDetails("sboot"))
+				.willReturn(new VehicleDetails("Honda", "Civic"));
+		assertThat(this.mvc.get("/boot/vehicle").accept(MediaType.TEXT_PLAIN)).isOk()
+				.contains("Honda Civic");
 	}
 
 	@Test
