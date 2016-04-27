@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.web.ErrorPage;
+import org.springframework.boot.web.ServletContextInitializer;
+
 /**
  * Simple interface that represents customizations to an
  * {@link EmbeddedServletContainerFactory}.
@@ -109,7 +112,7 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * Sets the error pages that will be used when handling exceptions.
 	 * @param errorPages the error pages
 	 */
-	void setErrorPages(Set<ErrorPage> errorPages);
+	void setErrorPages(Set<? extends ErrorPage> errorPages);
 
 	/**
 	 * Sets the mime-type mappings.
