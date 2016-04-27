@@ -36,7 +36,7 @@ import org.springframework.boot.web.ServletContextInitializer;
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainer {
+public interface ConfigurableEmbeddedServletContainer extends ErrorPageRegistry {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start
@@ -101,12 +101,6 @@ public interface ConfigurableEmbeddedServletContainer {
 	 * @param registerDefaultServlet if the default servlet should be registered
 	 */
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);
-
-	/**
-	 * Adds error pages that will be used when handling exceptions.
-	 * @param errorPages the error pages
-	 */
-	void addErrorPages(ErrorPage... errorPages);
 
 	/**
 	 * Sets the error pages that will be used when handling exceptions.
