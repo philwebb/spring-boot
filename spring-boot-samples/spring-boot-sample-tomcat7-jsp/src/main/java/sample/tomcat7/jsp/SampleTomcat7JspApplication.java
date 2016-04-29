@@ -16,10 +16,14 @@
 
 package sample.tomcat7.jsp;
 
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 @SpringBootApplication
 public class SampleTomcat7JspApplication extends SpringBootServletInitializer {
@@ -27,6 +31,19 @@ public class SampleTomcat7JspApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleTomcat7JspApplication.class);
+	}
+
+	@Bean
+	public CommandLineRunner commandLineRunner(final ResourceLoader resourceLoader) {
+		return new CommandLineRunner() {
+
+			@Override
+			public void run(String... args) throws Exception {
+				Resource resource = resourceLoader.getResource("WEB-INF/jsp/welcome.jsp");
+				System.err.println(resource.exists());
+			}
+
+		};
 	}
 
 	public static void main(String[] args) throws Exception {

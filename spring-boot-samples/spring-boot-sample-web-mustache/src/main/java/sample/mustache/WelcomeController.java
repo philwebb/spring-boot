@@ -36,4 +36,9 @@ public class WelcomeController {
 		return "welcome";
 	}
 
+	@RequestMapping("/bang")
+	public String bang() {
+		throw new RuntimeException("Boom");
+	}
+
 }
