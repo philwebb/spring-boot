@@ -47,18 +47,22 @@ class MockDefinition extends Definition {
 
 	private final boolean serializable;
 
+	private final boolean proxyTargetAware;
+
 	MockDefinition(Class<?> classToMock) {
-		this(null, classToMock, null, null, false, null);
+		this(null, classToMock, null, null, false, null, true);
 	}
 
 	MockDefinition(String name, Class<?> classToMock, Class<?>[] extraInterfaces,
-			Answers answer, boolean serializable, MockReset reset) {
+			Answers answer, boolean serializable, MockReset reset,
+			boolean proxyTargetAware) {
 		super(name, reset);
 		Assert.notNull(classToMock, "ClassToMock must not be null");
 		this.classToMock = classToMock;
 		this.extraInterfaces = asClassSet(extraInterfaces);
 		this.answer = (answer != null ? answer : Answers.RETURNS_DEFAULTS);
 		this.serializable = serializable;
+		this.proxyTargetAware = proxyTargetAware;
 	}
 
 	private Set<Class<?>> asClassSet(Class<?>[] classes) {
@@ -101,6 +105,14 @@ class MockDefinition extends Definition {
 		return this.serializable;
 	}
 
+	/**
+	 * Return if AOP advised beans should be proxy target aware.
+	 * @return if proxy target aware
+	 */
+	public boolean isProxyTargetAware() {
+		return this.proxyTargetAware;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
@@ -108,6 +120,8 @@ class MockDefinition extends Definition {
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.extraInterfaces);
 		result = MULTIPLIER * result + ObjectUtils.nullSafeHashCode(this.answer);
 		result = MULTIPLIER * result + (this.serializable ? 1231 : 1237);
+		result = MULTIPLIER * result
+				+ ObjectUtils.nullSafeHashCode(this.proxyTargetAware);
 		return result;
 	}
 
@@ -125,6 +139,8 @@ class MockDefinition extends Definition {
 		result &= ObjectUtils.nullSafeEquals(this.extraInterfaces, other.extraInterfaces);
 		result &= ObjectUtils.nullSafeEquals(this.answer, other.answer);
 		result &= this.serializable == other.serializable;
+		result &= ObjectUtils.nullSafeEquals(this.proxyTargetAware,
+				other.proxyTargetAware);
 		return result;
 	}
 
