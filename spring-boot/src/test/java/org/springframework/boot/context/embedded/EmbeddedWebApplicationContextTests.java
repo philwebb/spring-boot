@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -482,9 +483,33 @@ public class EmbeddedWebApplicationContextTests {
 				.isSameAs(scope);
 	}
 
+	@Test
+	public void failureStillTriggersPreDestroy() throws Exception {
+		addEmbeddedServletContainerFactoryBean(true);
+		BeanWithPreDestroy beanWithPreDestroy = new BeanWithPreDestroy();
+		this.context.getBeanFactory().registerSingleton("test", beanWithPreDestroy);
+		try {
+			this.context.refresh();
+		}
+		catch (Exception ex) {
+			// Expected
+			ex.printStackTrace();
+		}
+		assertThat(beanWithPreDestroy.isPreDestroyCalled()).isTrue();
+	}
+
 	private void addEmbeddedServletContainerFactoryBean() {
+		addEmbeddedServletContainerFactoryBean(false);
+	}
+
+	private void addEmbeddedServletContainerFactoryBean(boolean portInUse) {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(
+				MockEmbeddedServletContainerFactory.class);
+		if (portInUse) {
+			beanDefinition.getPropertyValues().add("portInUse", true);
+		}
 		this.context.registerBeanDefinition("embeddedServletContainerFactory",
-				new RootBeanDefinition(MockEmbeddedServletContainerFactory.class));
+				beanDefinition);
 	}
 
 	public MockEmbeddedServletContainerFactory getEmbeddedServletContainerFactory() {
@@ -530,6 +555,21 @@ public class EmbeddedWebApplicationContextTests {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) throws IOException, ServletException {
+		}
+
+	}
+
+	static class BeanWithPreDestroy {
+
+		boolean preDestroyCalled = false;
+
+		@PreDestroy
+		public void preDestroy() {
+			this.preDestroyCalled = true;
+		}
+
+		public boolean isPreDestroyCalled() {
+			return this.preDestroyCalled;
 		}
 
 	}

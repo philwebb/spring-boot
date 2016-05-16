@@ -54,11 +54,17 @@ public class MockEmbeddedServletContainerFactory
 
 	private MockEmbeddedServletContainer container;
 
+	private boolean portInUse;
+
+	public void setPortInUse(boolean portInUse) {
+		this.portInUse = portInUse;
+	}
+
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		this.container = spy(new MockEmbeddedServletContainer(
-				mergeInitializers(initializers), getPort()));
+				mergeInitializers(initializers), getPort(), this.portInUse));
 		return this.container;
 	}
 
@@ -92,10 +98,13 @@ public class MockEmbeddedServletContainerFactory
 
 		private final int port;
 
+		private final boolean portInUse;
+
 		public MockEmbeddedServletContainer(ServletContextInitializer[] initializers,
-				int port) {
+				int port, boolean portInUse) {
 			this.initializers = initializers;
 			this.port = port;
+			this.portInUse = portInUse;
 			initialize();
 		}
 
@@ -170,6 +179,10 @@ public class MockEmbeddedServletContainerFactory
 
 		@Override
 		public void start() throws EmbeddedServletContainerException {
+			if (this.portInUse) {
+				throw new EmbeddedServletContainerException("Port is in use",
+						new RuntimeException());
+			}
 		}
 
 		@Override

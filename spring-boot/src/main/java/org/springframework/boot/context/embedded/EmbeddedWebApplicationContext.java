@@ -142,10 +142,16 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	protected void finishRefresh() {
 		super.finishRefresh();
-		EmbeddedServletContainer localContainer = startEmbeddedServletContainer();
-		if (localContainer != null) {
-			publishEvent(
-					new EmbeddedServletContainerInitializedEvent(this, localContainer));
+		try {
+			EmbeddedServletContainer localContainer = startEmbeddedServletContainer();
+			if (localContainer != null) {
+				publishEvent(new EmbeddedServletContainerInitializedEvent(this,
+						localContainer));
+			}
+		}
+		catch (EmbeddedServletContainerException ex) {
+			throw new ApplicationContextException(
+					"Failed to start embedded servlet container", ex);
 		}
 	}
 
