@@ -42,7 +42,8 @@ public class RestTemplateBuilder {
 	 * @return this builder instance
 	 * @see RestTemplate#setRequestFactory(ClientHttpRequestFactory)
 	 */
-	protected RestTemplateBuilder requestFactory(ClientHttpRequestFactory requestFactory) {
+	protected RestTemplateBuilder requestFactory(
+			ClientHttpRequestFactory requestFactory) {
 		this.requestFactory = requestFactory;
 		return this;
 	}
@@ -54,9 +55,11 @@ public class RestTemplateBuilder {
 	 * @return this builder instance
 	 * @see #httpMessageConverters(HttpMessageConverter[])
 	 */
-	protected RestTemplateBuilder httpMessageConverters(HttpMessageConverters httpMessageConverters) {
+	protected RestTemplateBuilder httpMessageConverters(
+			HttpMessageConverters httpMessageConverters) {
 		List<HttpMessageConverter<?>> converters = httpMessageConverters.getConverters();
-		return httpMessageConverters(converters.toArray(new HttpMessageConverter[converters.size()]));
+		return httpMessageConverters(
+				converters.toArray(new HttpMessageConverter[converters.size()]));
 	}
 
 	/**
@@ -65,7 +68,8 @@ public class RestTemplateBuilder {
 	 * @return this builder instance
 	 * @see RestTemplate#setMessageConverters(List)
 	 */
-	protected RestTemplateBuilder httpMessageConverters(HttpMessageConverter<?>... httpMessageConverters) {
+	protected RestTemplateBuilder httpMessageConverters(
+			HttpMessageConverter<?>... httpMessageConverters) {
 		this.httpMessageConverters = Arrays.asList(httpMessageConverters);
 		return this;
 	}
@@ -75,9 +79,11 @@ public class RestTemplateBuilder {
 	 * @return a rest template with this builder's settings
 	 */
 	public RestTemplate build() {
-		RestTemplate restTemplate = createRestTemplate();
-		configure(restTemplate);
-		return restTemplate;
+		return build(RestTemplate.class);
+	}
+
+	public <T extends RestTemplate> T build(Class<T> restTemplateClass) {
+		return null;
 	}
 
 	/**
@@ -92,10 +98,6 @@ public class RestTemplateBuilder {
 		if (this.httpMessageConverters != null) {
 			restTemplate.setMessageConverters(this.httpMessageConverters);
 		}
-	}
-
-	protected RestTemplate createRestTemplate() {
-		return new RestTemplate();
 	}
 
 }

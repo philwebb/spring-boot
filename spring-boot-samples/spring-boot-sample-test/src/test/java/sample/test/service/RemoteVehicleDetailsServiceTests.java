@@ -16,7 +16,6 @@
 
 package sample.test.service;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,7 +30,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -45,31 +43,21 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@RestClientTest
+@RestClientTest(RemoteVehicleDetailsService.class)
 public class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
+
+	private static final String URL = "http://localhost:8080/vs/";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Autowired
-	private RestTemplate restTemplate;
-
-	@Autowired
-	private MockRestServiceServer.MockRestServiceServerBuilder builder;
-
-	private MockRestServiceServer server;
-
 	private RemoteVehicleDetailsService service;
 
-	@Before
-	public void setup() {
-		this.server = this.builder.build();
-		ServiceProperties properties = new ServiceProperties();
-		properties.setVehicleServiceRootUrl("http://example.com/");
-		this.service = new RemoteVehicleDetailsService(properties, this.restTemplate);
-	}
+	@Autowired
+	private MockRestServiceServer server;
 
 	@Test
 	public void getVehicleDetailsWhenVinIsNullShouldThrowException() throws Exception {
@@ -81,7 +69,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
 			throws Exception {
-		this.server.expect(requestTo("http://example.com/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
 				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"),
 						MediaType.APPLICATION_JSON));
 		VehicleDetails details = this.service
@@ -93,7 +81,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException()
 			throws Exception {
-		this.server.expect(requestTo("http://example.com/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.thrown.expect(VehicleIdentificationNumberNotFoundException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
@@ -102,7 +90,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException()
 			throws Exception {
-		this.server.expect(requestTo("http://example.com/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
 				.andRespond(withServerError());
 		this.thrown.expect(HttpServerErrorException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));

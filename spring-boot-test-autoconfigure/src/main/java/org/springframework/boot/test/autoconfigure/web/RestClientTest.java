@@ -70,4 +70,6 @@ public @interface RestClientTest {
 	 */
 	ComponentScan.Filter[] excludeFilters() default {};
 
+	Class<?> value();
+
 }
