@@ -32,6 +32,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -170,6 +171,27 @@ public class RestTemplateBuilderTests {
 				.additionalMessageConverters(this.messageConverter).build();
 		assertThat(template.getMessageConverters()).containsOnly(resourceConverter,
 				this.messageConverter);
+	}
+
+	@Test
+	public void defaultMessageConvertersShouldSetDefaultList() throws Exception {
+		RestTemplate template = new RestTemplate(
+				Collections.<HttpMessageConverter<?>>singletonList(
+						new StringHttpMessageConverter()));
+		this.builder.defaultMessageConverters().configure(template);
+		assertThat(template.getMessageConverters())
+				.hasSameSizeAs(new RestTemplate().getMessageConverters());
+	}
+
+	@Test
+	public void defaultMessageConvertersShouldClearExisting() throws Exception {
+		RestTemplate template = new RestTemplate(
+				Collections.<HttpMessageConverter<?>>singletonList(
+						new StringHttpMessageConverter()));
+		this.builder.additionalMessageConverters(this.messageConverter)
+				.defaultMessageConverters().configure(template);
+		assertThat(template.getMessageConverters())
+				.hasSameSizeAs(new RestTemplate().getMessageConverters());
 	}
 
 	@Test

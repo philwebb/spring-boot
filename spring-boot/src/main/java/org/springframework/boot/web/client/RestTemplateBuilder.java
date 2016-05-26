@@ -173,6 +173,19 @@ public class RestTemplateBuilder {
 	}
 
 	/**
+	 * Set the {@link HttpMessageConverter HttpMessageConverters} that should be used with
+	 * the {@link RestTemplate} to the default set. Calling this method will replace any
+	 * previously defined converters.
+	 * @return this builder
+	 * @see #messageConverters(HttpMessageConverter...)
+	 */
+	public RestTemplateBuilder defaultMessageConverters() {
+		this.messageConverters = new LinkedHashSet<HttpMessageConverter<?>>(
+				new RestTemplate().getMessageConverters());
+		return this;
+	}
+
+	/**
 	 * Set the {@link ClientHttpRequestFactory} class that should be used with the
 	 * {@link RestTemplate}.
 	 * @param requestFactory the request factory to use

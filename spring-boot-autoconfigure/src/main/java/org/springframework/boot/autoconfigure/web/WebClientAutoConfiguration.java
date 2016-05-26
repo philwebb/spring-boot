@@ -16,17 +16,28 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for web client.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 1.4.0
  */
 @Configuration
@@ -35,9 +46,37 @@ public class WebClientAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(RestTemplate.class)
-	@Import({RestTemplateConfiguration.HttpComponents.class,
-			RestTemplateConfiguration.DefaultRequestFactory.class})
-	public static class RestTemplateConfigurations {
+	public static class RestTemplateConfiguration {
+
+		private final ObjectProvider<HttpMessageConverters> messageConverters;
+
+		private final ObjectProvider<List<RestTemplateCustomizer>> restTemplateCustomizers;
+
+		public RestTemplateConfiguration(
+				ObjectProvider<HttpMessageConverters> messageConverters,
+				ObjectProvider<List<RestTemplateCustomizer>> restTemplateCustomizers) {
+			this.messageConverters = messageConverters;
+			this.restTemplateCustomizers = restTemplateCustomizers;
+		}
+
+		@Bean
+		@Scope("prototype")
+		@ConditionalOnMissingBean
+		public RestTemplateBuilder restTemplateBuilder() {
+			RestTemplateBuilder builder = new RestTemplateBuilder();
+			HttpMessageConverters converters = this.messageConverters.getIfUnique();
+			if (converters != null) {
+				builder.messageConverters(converters.getConverters());
+			}
+			List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers
+					.getIfAvailable();
+			if (!CollectionUtils.isEmpty(customizers)) {
+				customizers = new ArrayList<RestTemplateCustomizer>(customizers);
+				AnnotationAwareOrderComparator.sort(customizers);
+				builder.customizers(customizers);
+			}
+			return builder;
+		}
 
 	}
 
