@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sample.test.domain.VehicleIdentificationNumber;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -41,13 +42,14 @@ public class RemoteVehicleDetailsService implements VehicleDetailsService {
 
 	private final RestTemplate restTemplate;
 
+	@Autowired
 	public RemoteVehicleDetailsService(ServiceProperties properties) {
-		this.properties = properties;
-		this.restTemplate = new RestTemplate();
+		this(properties, new RestTemplate());
 	}
 
-	protected final RestTemplate getRestTemplate() {
-		return this.restTemplate;
+	protected RemoteVehicleDetailsService(ServiceProperties properties, RestTemplate restTemplate) {
+		this.properties = properties;
+		this.restTemplate = restTemplate;
 	}
 
 	@Override

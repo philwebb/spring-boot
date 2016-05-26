@@ -20,13 +20,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.RestClientTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -39,6 +44,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Phillip Webb
  */
+@RunWith(SpringRunner.class)
+@RestClientTest
 public class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
@@ -46,16 +53,22 @@ public class RemoteVehicleDetailsServiceTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private RemoteVehicleDetailsService service;
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Autowired
+	private MockRestServiceServer.MockRestServiceServerBuilder builder;
 
 	private MockRestServiceServer server;
 
+	private RemoteVehicleDetailsService service;
+
 	@Before
 	public void setup() {
+		this.server = this.builder.build();
 		ServiceProperties properties = new ServiceProperties();
 		properties.setVehicleServiceRootUrl("http://example.com/");
-		this.service = new RemoteVehicleDetailsService(properties);
-		this.server = MockRestServiceServer.createServer(this.service.getRestTemplate());
+		this.service = new RemoteVehicleDetailsService(properties, this.restTemplate);
 	}
 
 	@Test
