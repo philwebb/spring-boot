@@ -16,9 +16,16 @@
 
 package org.springframework.boot.web.client;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.fail;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.mock.http.client.MockClientHttpRequest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link BasicAuthorizationInterceptor}.
@@ -27,9 +34,40 @@ import static org.junit.Assert.fail;
  */
 public class BasicAuthorizationInterceptorTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void createWhenUsernameIsNullShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Username must not be empty");
+		new BasicAuthorizationInterceptor(null, "password");
+	}
+
+	@Test
+	public void createWhenUsernameIsEmptyShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Username must not be empty");
+		new BasicAuthorizationInterceptor("", "password");
+	}
+
+	@Test
+	public void createWhenPasswordIsNullShouldUseEmptyPassword() throws Exception {
+		BasicAuthorizationInterceptor interceptor = new BasicAuthorizationInterceptor(
+				"username", "");
+		assertThat(interceptor).extracting("password").containsExactly("");
+	}
+
+	@Test
+	public void interceptShouldAddHeader() throws Exception {
+		MockClientHttpRequest request = new MockClientHttpRequest();
+		ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
+		byte[] body = new byte[] {};
+		new BasicAuthorizationInterceptor("spring", "boot").intercept(request, body,
+				execution);
+		verify(execution).execute(request, body);
+		assertThat(request.getHeaders().getFirst("Authorization"))
+				.isEqualTo("Basic c3ByaW5nOmJvb3Q=");
 	}
 
 }
