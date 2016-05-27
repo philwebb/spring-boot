@@ -19,8 +19,8 @@ package org.springframework.boot.test.autoconfigure.web;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.RestTemplateBuilder;
 import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -36,7 +36,8 @@ class RestClientAutoConfiguration {
 
 	private final ObjectProvider<RestTemplateBuilder> restTemplateBuilderProvider;
 
-	RestClientAutoConfiguration(ObjectProvider<RestTemplateBuilder> restTemplateBuilderProvider) {
+	RestClientAutoConfiguration(
+			ObjectProvider<RestTemplateBuilder> restTemplateBuilderProvider) {
 		this.restTemplateBuilderProvider = restTemplateBuilderProvider;
 	}
 

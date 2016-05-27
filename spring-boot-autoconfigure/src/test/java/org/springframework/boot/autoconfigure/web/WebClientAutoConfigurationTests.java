@@ -105,6 +105,11 @@ public class WebClientAutoConfigurationTests {
 		verify(customizer).customize(restTemplate);
 	}
 
+	@Test
+	public void builderShouldBeFreshForEachUse() throws Exception {
+		load(DirtyRestTemplateConfig.class);
+	}
+
 	public void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(config);
@@ -119,6 +124,42 @@ public class WebClientAutoConfigurationTests {
 		@Bean
 		public RestTemplate restTemplate(RestTemplateBuilder builder) {
 			return builder.build();
+		}
+
+	}
+
+	@Configuration
+	static class DirtyRestTemplateConfig {
+
+		@Bean
+		public RestTemplate restTemplateOne(RestTemplateBuilder builder) {
+			try {
+				return builder.build();
+			}
+			finally {
+				breakBuilderOnNextCall(builder);
+			}
+		}
+
+		@Bean
+		public RestTemplate restTemplateTwo(RestTemplateBuilder builder) {
+			try {
+				return builder.build();
+			}
+			finally {
+				breakBuilderOnNextCall(builder);
+			}
+		}
+
+		private void breakBuilderOnNextCall(RestTemplateBuilder builder) {
+			builder.additionalCustomizers(new RestTemplateCustomizer() {
+
+				@Override
+				public void customize(RestTemplate restTemplate) {
+					throw new IllegalStateException();
+				}
+
+			});
 		}
 
 	}

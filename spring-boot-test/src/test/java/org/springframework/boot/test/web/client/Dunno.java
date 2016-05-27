@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.test.web.client;
 
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class HttpMessageConvertersRestTemplateCustomizer
-		implements RestTemplateCustomizer {
+public class Dunno {
 
-	@Override
-	public void customize(RestTemplate restTemplate) {
-		restTemplate.getMessageConverters();
+	public void test() {
+		RestTemplate restTemplate1 = new RestTemplate();
+		RestTemplate restTemplate2 = new RestTemplate();
+		RequestExpectationManager manager = null;
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate)
+				.build(manager);
+
 	}
 
 }
