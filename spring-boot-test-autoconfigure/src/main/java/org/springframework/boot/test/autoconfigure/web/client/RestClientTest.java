@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web;
+package org.springframework.boot.test.autoconfigure.web.client;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -43,7 +43,7 @@ import org.springframework.test.context.BootstrapWith;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(RestClientExcludeFilter.class)
 @AutoConfigureCache
-@AutoconfigureRestClient
+@AutoConfigureRestClient
 public @interface RestClientTest {
 
 	/**

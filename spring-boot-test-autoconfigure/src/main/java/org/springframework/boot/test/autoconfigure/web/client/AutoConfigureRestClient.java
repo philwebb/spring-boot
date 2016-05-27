@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web;
+package org.springframework.boot.test.autoconfigure.web.client;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -38,5 +38,5 @@ import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 @ImportAutoConfiguration({ GsonAutoConfiguration.class,
 		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 		WebClientAutoConfiguration.class, RestClientAutoConfiguration.class })
-public @interface AutoconfigureRestClient {
+public @interface AutoConfigureRestClient {
 }

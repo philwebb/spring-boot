@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

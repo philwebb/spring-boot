@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.util.List;
 
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;

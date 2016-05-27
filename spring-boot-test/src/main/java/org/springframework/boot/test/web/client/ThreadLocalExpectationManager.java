@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
-
-import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
-import org.springframework.stereotype.Service;
+package org.springframework.boot.test.web.client;
 
 /**
- * Example mockable {@link Service} used with {@link WebMvcTest} tests.
- *
  * @author Phillip Webb
  */
-@Service
-public class ExampleMockableService {
-
-	public ExampleMockableService() {
-		throw new IllegalStateException("Should not be called");
-	}
+class ThreadLocalExpectationManager {
 
 }

@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.RestClientTest;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

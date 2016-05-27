@@ -28,7 +28,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
@@ -60,20 +59,19 @@ public class WebClientAutoConfiguration {
 		}
 
 		@Bean
-		@Scope("prototype")
 		@ConditionalOnMissingBean
 		public RestTemplateBuilder restTemplateBuilder() {
 			RestTemplateBuilder builder = new RestTemplateBuilder();
 			HttpMessageConverters converters = this.messageConverters.getIfUnique();
 			if (converters != null) {
-				builder.messageConverters(converters.getConverters());
+				builder = builder.messageConverters(converters.getConverters());
 			}
 			List<RestTemplateCustomizer> customizers = this.restTemplateCustomizers
 					.getIfAvailable();
 			if (!CollectionUtils.isEmpty(customizers)) {
 				customizers = new ArrayList<RestTemplateCustomizer>(customizers);
 				AnnotationAwareOrderComparator.sort(customizers);
-				builder.customizers(customizers);
+				builder = builder.customizers(customizers);
 			}
 			return builder;
 		}

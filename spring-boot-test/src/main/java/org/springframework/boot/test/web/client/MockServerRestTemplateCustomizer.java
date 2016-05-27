@@ -16,8 +16,9 @@
 
 package org.springframework.boot.test.web.client;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -25,11 +26,12 @@ import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * {@link RestTemplateCustomizer} that can be applied to one or more
- * {@link RestTemplateBuilder} instances to add {@link MockRestServiceServer} support.
+ * {@link RestTemplateCustomizer} that can be applied to a {@link RestTemplateBuilder}
+ * instances to add {@link MockRestServiceServer} support.
  * <p>
  * Typically applied to an existing builder before it is used, for example:
  * <pre class="code">
@@ -38,31 +40,31 @@ import org.springframework.web.client.RestTemplate;
  * customizer.getServer().expect(requestTo("/hello")).andRespond(withSuccess());
  * bean.makeRestCall();
  * </pre>
+ * <p>
+ * If the customizer is only used once, the {@link #getServer()} method can be used to
+ * obtain the mock server. If the customizer has been used more than once the
+ * {@link #getServer(RestTemplate)} or {@link #getServer(int)} method must be used to
+ * access the related server.
  *
  * @author Phillip Webb
+ * @since 1.4.0
  * @see #getServer()
+ * @see #getServer(RestTemplate)
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
-	private Lock lock = new ReentrantLock();
+	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<RestTemplate, MockRestServiceServer>();
 
-	private volatile MockRestServiceServer server;
-
-	private final RequestExpectationManager expectationManager;
+	private final Class<? extends RequestExpectationManager> expectationManager;
 
 	private boolean detectRootUri = true;
 
 	public MockServerRestTemplateCustomizer() {
-		this.expectationManager = new SimpleRequestExpectationManager();
+		this.expectationManager = SimpleRequestExpectationManager.class;
 	}
 
 	public MockServerRestTemplateCustomizer(
 			Class<? extends RequestExpectationManager> expectationManager) {
-		this.expectationManager = BeanUtils.instantiate(expectationManager);
-	}
-
-	public MockServerRestTemplateCustomizer(
-			RequestExpectationManager expectationManager) {
 		this.expectationManager = expectationManager;
 	}
 
@@ -75,23 +77,49 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	@Override
 	public void customize(RestTemplate restTemplate) {
-		this.lock.lock();
-		try {
-			RequestExpectationManager expectationManager = this.expectationManager;
-			if (this.detectRootUri) {
-				expectationManager = RootUriRequestExpectationManager
-						.forRestTemplate(restTemplate, expectationManager);
-			}
-			this.server = MockRestServiceServer.bindTo(restTemplate)
-					.build(expectationManager);
+		RequestExpectationManager expectationManager = createExpecationManager();
+		if (this.detectRootUri) {
+			expectationManager = RootUriRequestExpectationManager
+					.forRestTemplate(restTemplate, expectationManager);
 		}
-		finally {
-			this.lock.unlock();
-		}
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate)
+				.build(expectationManager);
+		this.servers.put(restTemplate, server);
+	}
+
+	protected RequestExpectationManager createExpecationManager() {
+		return BeanUtils.instantiate(this.expectationManager);
 	}
 
 	public MockRestServiceServer getServer() {
-		return this.server;
+		if (this.servers.isEmpty()) {
+			return null;
+		}
+		Assert.state(this.servers.size() == 1,
+				"Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has been bound to "
+						+ "more than one RestTemplate");
+		return this.servers.values().iterator().next();
+	}
+
+	public MockRestServiceServer getServer(RestTemplate restTemplate) {
+		return this.servers.get(restTemplate);
+	}
+
+	public MockRestServiceServer getServer(int index) {
+		for (Map.Entry<RestTemplate, MockRestServiceServer> entry : this.servers
+				.entrySet()) {
+			if (index == 0) {
+				return entry.getValue();
+			}
+			index--;
+		}
+		return null;
+
+	}
+
+	public Map<RestTemplate, MockRestServiceServer> getServers() {
+		return Collections.unmodifiableMap(this.servers);
 	}
 
 }

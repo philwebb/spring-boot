@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web;
+package org.springframework.boot.test.autoconfigure.web.client;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;

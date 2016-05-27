@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
 
 /**
  * Example {@link SpringBootApplication} used with {@link WebMvcTest} tests.

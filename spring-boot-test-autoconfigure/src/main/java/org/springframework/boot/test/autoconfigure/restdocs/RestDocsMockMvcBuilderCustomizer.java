@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.restdocs;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.MockMvcBuilderCustomizer;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.test.web.servlet.setup.ConfigurableMockMvcBuilder;

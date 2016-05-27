@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;

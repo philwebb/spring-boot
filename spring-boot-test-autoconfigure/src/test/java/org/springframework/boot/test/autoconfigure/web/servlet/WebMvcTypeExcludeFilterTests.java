@@ -21,6 +21,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTypeExcludeFilter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
