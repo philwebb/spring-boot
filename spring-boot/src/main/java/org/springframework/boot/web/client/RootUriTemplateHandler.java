@@ -37,6 +37,11 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	private final UriTemplateHandler handler;
 
+	protected RootUriTemplateHandler(UriTemplateHandler handler) {
+		this.rootUri = null;
+		this.handler = handler;
+	}
+
 	/**
 	 * Create a new {@link RootUriTemplateHandler} instance.
 	 * @param rootUri the root URI to used to prefix relative URLs
@@ -69,9 +74,13 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	private String apply(String uriTemplate) {
 		if (StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
-			return this.rootUri + uriTemplate;
+			return getRootUri() + uriTemplate;
 		}
 		return uriTemplate;
+	}
+
+	public String getRootUri() {
+		return this.rootUri;
 	}
 
 	/**

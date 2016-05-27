@@ -61,6 +61,7 @@ class SpringBootTestContextCustomizer implements ContextCustomizer {
 	private static class TestRestTemplateFactory {
 
 		private static TestRestTemplate createRestTemplate(Environment environment) {
+			// FIXME use an injected builder
 			TestRestTemplate template = new TestRestTemplate();
 			template.setUriTemplateHandler(new LocalHostUriTemplateHandler(environment));
 			return template;

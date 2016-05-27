@@ -16,13 +16,15 @@
 
 package org.springframework.boot.test.web.client;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.MockRestServiceServer.MockRestServiceServerBuilder;
+import org.springframework.test.web.client.RequestExpectationManager;
+import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -36,32 +38,60 @@ import org.springframework.web.client.RestTemplate;
  * customizer.getServer().expect(requestTo("/hello")).andRespond(withSuccess());
  * bean.makeRestCall();
  * </pre>
- * <p>
- * When applied to a single builder the {@link #getServer()} method can be used to get the
- * {@link MockRestServiceServer}, if the same customizer has been applied to several
- * builders the {@link #getServer(RestTemplate)} method must be used.
  *
  * @author Phillip Webb
+ * @see #getServer()
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
-	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<RestTemplate, MockRestServiceServer>();
+	private Lock lock = new ReentrantLock();
+
+	private volatile MockRestServiceServer server;
+
+	private final RequestExpectationManager expectationManager;
+
+	private boolean detectRootUri = true;
+
+	public MockServerRestTemplateCustomizer() {
+		this.expectationManager = new SimpleRequestExpectationManager();
+	}
+
+	public MockServerRestTemplateCustomizer(
+			Class<? extends RequestExpectationManager> expectationManager) {
+		this.expectationManager = BeanUtils.instantiate(expectationManager);
+	}
+
+	public MockServerRestTemplateCustomizer(
+			RequestExpectationManager expectationManager) {
+		this.expectationManager = expectationManager;
+	}
+
+	/**
+	 * @param detectRootUri the detectRootUri to set
+	 */
+	public void setDetectRootUri(boolean detectRootUri) {
+		this.detectRootUri = detectRootUri;
+	}
 
 	@Override
 	public void customize(RestTemplate restTemplate) {
-		MockRestServiceServerBuilder builder = MockRestServiceServer.bindTo(restTemplate);
-		this.servers.put(restTemplate, builder.build());
-	}
-
-	protected void customizeBuilder(MockRestServiceServerBuilder builder) {
+		this.lock.lock();
+		try {
+			RequestExpectationManager expectationManager = this.expectationManager;
+			if (this.detectRootUri) {
+				expectationManager = RootUriRequestExpectationManager
+						.forRestTemplate(restTemplate, expectationManager);
+			}
+			this.server = MockRestServiceServer.bindTo(restTemplate)
+					.build(expectationManager);
+		}
+		finally {
+			this.lock.unlock();
+		}
 	}
 
 	public MockRestServiceServer getServer() {
-		return null;
-	}
-
-	public MockRestServiceServer getServer(RestTemplate restTemplate) {
-		return null;
+		return this.server;
 	}
 
 }
