@@ -370,6 +370,7 @@ public class RestTemplateBuilder {
 	 * @see RestTemplateBuilder#build()
 	 * @see #configure(RestTemplate)
 	 */
+
 	public <T extends RestTemplate> T build(Class<T> restTemplateClass) {
 		return configure(BeanUtils.instantiate(restTemplateClass));
 	}

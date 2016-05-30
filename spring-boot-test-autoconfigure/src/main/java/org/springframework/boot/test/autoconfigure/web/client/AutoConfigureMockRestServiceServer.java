@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure.web.client;
 /**
  * @author pwebb
  */
-public class AutoConfigureMockRestServiceServer {
+public @interface AutoConfigureMockRestServiceServer {
+
+	boolean value() default true;
 
 }

@@ -29,11 +29,13 @@ import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.BootstrapWith;
 
 /**
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -45,6 +47,25 @@ import org.springframework.test.context.BootstrapWith;
 @AutoConfigureCache
 @AutoConfigureRestClient
 public @interface RestClientTest {
+
+	/**
+	 * Specifies the components to test. This is an alias of {@link #components()} which
+	 * can be used for brevity if no other attributes are defined. See
+	 * {@link #components()} for details.
+	 * @see #components()
+	 * @return the components to test
+	 */
+	@AliasFor("components")
+	Class<?>[] value() default {};
+
+	/**
+	 * Specifies the components to test. May be left blank if components will be manually
+	 * imported or created directly.
+	 * @see #value()
+	 * @return the components to test
+	 */
+	@AliasFor("value")
+	Class<?>[] components() default {};
 
 	/**
 	 * Determines if default filtering should be used with
@@ -69,7 +90,5 @@ public @interface RestClientTest {
 	 * @return exclude filters to apply
 	 */
 	ComponentScan.Filter[] excludeFilters() default {};
-
-	Class<?> value();
 
 }

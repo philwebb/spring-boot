@@ -23,10 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 
 /**
  *
@@ -35,8 +31,6 @@ import org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ImportAutoConfiguration({ GsonAutoConfiguration.class,
-		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-		WebClientAutoConfiguration.class, RestClientAutoConfiguration.class })
+@ImportAutoConfiguration
 public @interface AutoConfigureRestClient {
 }

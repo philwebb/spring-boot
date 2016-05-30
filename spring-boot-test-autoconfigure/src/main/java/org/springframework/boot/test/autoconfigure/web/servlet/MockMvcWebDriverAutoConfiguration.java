@@ -14,51 +14,54 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client.servlet;
+package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.test.web.htmlunit.LocalHostWebClient;
+import org.springframework.boot.test.web.htmlunit.webdriver.LocalHostWebConnectionHtmlUnitDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
+import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
 
 /**
- * Auto-configuration for HtmlUnit {@link WebClient} MockMVC integration.
+ * Auto-configuration for Selenium {@link WebDriver} MockMVC integration.
  *
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(WebClient.class)
+@ConditionalOnClass(HtmlUnitDriver.class)
 @AutoConfigureAfter(MockMvcAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webmvc.webclient", name = "enabled", matchIfMissing = true)
-class MockMvcWebClientAutoConfiguration {
+@ConditionalOnProperty(prefix = "spring.test.webmvc.webdriver", name = "enabled", matchIfMissing = true)
+class MockMvcWebDriverAutoConfiguration {
 
 	private final Environment environment;
 
-	MockMvcWebClientAutoConfiguration(Environment environment) {
+	MockMvcWebDriverAutoConfiguration(Environment environment) {
 		this.environment = environment;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
+	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	public MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc) {
-		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebClient(this.environment));
+	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc) {
+		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
+				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(this.environment,
+						BrowserVersion.CHROME));
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnBean(MockMvcWebClientBuilder.class)
-	public WebClient htmlUnitWebClient(MockMvcWebClientBuilder builder) {
+	@ConditionalOnMissingBean(WebDriver.class)
+	@ConditionalOnBean(MockMvcHtmlUnitDriverBuilder.class)
+	public HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {
 		return builder.build();
 	}
 

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.web.client;
+
 /**
- * Auto-configuration for Spring MVC tests.
+ * @author Phillip Webb
+ * @since 1.4.0
  */
-package org.springframework.boot.test.autoconfigure.web.client.servlet;
+public interface RestTemplateWrapper {
+
+}

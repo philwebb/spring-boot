@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.web.client;
-
 /**
- * @author Phillip Webb
+ * Auto-configuration for Spring MVC tests.
  */
-class ThreadLocalExpectationManager {
-
-}
+package org.springframework.boot.test.autoconfigure.web.servlet;

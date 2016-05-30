@@ -16,15 +16,17 @@
 
 package org.springframework.boot.test.web.client;
 
-import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
+import org.springframework.test.web.client.UnorderedRequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -35,37 +37,123 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class MockServerRestTemplateCustomizerTests {
 
+	private MockServerRestTemplateCustomizer customizer;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+	@Before
+	public void setup() {
+		this.customizer = new MockServerRestTemplateCustomizer();
+	}
+
 	@Test
-	@Ignore
-	public void test() {
+	public void createShouldUseSimpleRequestExpectationManager() throws Exception {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
-		MyBean bean = new MyBean(new RestTemplateBuilder(customizer));
-		customizer.getServer().expect(requestTo("/hello")).andRespond(withSuccess());
-		bean.makeRestCall();
+		customizer.customize(new RestTemplate());
+		assertThat(customizer.getServer()).extracting("expectationManager")
+				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 	}
 
 	@Test
-	public void testName() throws Exception {
-		RestTemplate restTemplate1 = new RestTemplate();
-		RestTemplate restTemplate2 = new RestTemplate();
-		RequestExpectationManager manager = new SimpleRequestExpectationManager();
-		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate1)
-				.build(manager);
-		MockRestServiceServer.bindTo(restTemplate2).build(manager);
-		server.expect(requestTo("http://example.com/a")).andRespond(withSuccess());
-		server.expect(requestTo("http://example.com/b")).andRespond(withSuccess());
-		restTemplate1.getForObject("http://example.com/a", String.class);
-		restTemplate2.getForObject("http://example.com/b", String.class);
+	public void createWhenExpectationManagerClassIsNullShouldThrowException()
+			throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("ExpectationManager must not be null");
+		new MockServerRestTemplateCustomizer(null);
 	}
 
-	private static class MyBean {
+	@Test
+	public void createShouldUseExpectationMangerClass() throws Exception {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
+				UnorderedRequestExpectationManager.class);
+		customizer.customize(new RestTemplate());
+		assertThat(customizer.getServer()).extracting("expectationManager")
+				.hasAtLeastOneElementOfType(UnorderedRequestExpectationManager.class);
+	}
 
-		public MyBean(RestTemplateBuilder restTemplateBuilder) {
-		}
+	@Test
+	public void detectRootUriShouldDefaultToTrue() throws Exception {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer(
+				UnorderedRequestExpectationManager.class);
+		customizer.customize(
+				new RestTemplateBuilder().rootUri("http://example.com").build());
+		assertThat(customizer.getServer()).extracting("expectationManager")
+				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
+	}
 
-		public void makeRestCall() {
-		}
+	@Test
+	public void setDetectRootUriShouldDisableRootUriDetection() throws Exception {
+		this.customizer.setDetectRootUri(false);
+		this.customizer.customize(
+				new RestTemplateBuilder().rootUri("http://example.com").build());
+		assertThat(this.customizer.getServer()).extracting("expectationManager")
+				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
 
+	}
+
+	@Test
+	public void customizeShouldBindServer() throws Exception {
+		RestTemplate template = new RestTemplateBuilder(this.customizer).build();
+		this.customizer.getServer().expect(requestTo("/test")).andRespond(withSuccess());
+		template.getForEntity("/test", String.class);
+		this.customizer.getServer().verify();
+	}
+
+	@Test
+	public void getServerWhenNoServersAreBoundShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
+				+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
+		this.customizer.getServer();
+	}
+
+	@Test
+	public void getServerWhenMultipleServersAreBoundShouldThrowException()
+			throws Exception {
+		this.customizer.customize(new RestTemplate());
+		this.customizer.customize(new RestTemplate());
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
+				+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
+		this.customizer.getServer();
+	}
+
+	@Test
+	public void getServerWhenSingleServerIsBoundShouldReturnServer() throws Exception {
+		RestTemplate template = new RestTemplate();
+		this.customizer.customize(template);
+		assertThat(this.customizer.getServer())
+				.isEqualTo(this.customizer.getServer(template));
+	}
+
+	@Test
+	public void getServerWhenRestTemplateIsFoundShouldReturnServer() throws Exception {
+		RestTemplate template1 = new RestTemplate();
+		RestTemplate template2 = new RestTemplate();
+		this.customizer.customize(template1);
+		this.customizer.customize(template2);
+		assertThat(this.customizer.getServer(template1)).isNotNull();
+		assertThat(this.customizer.getServer(template2)).isNotNull()
+				.isNotSameAs(this.customizer.getServer(template1));
+	}
+
+	@Test
+	public void getServerWhenRestTemplateIsNotFoundShouldReturnNull() throws Exception {
+		RestTemplate template1 = new RestTemplate();
+		RestTemplate template2 = new RestTemplate();
+		this.customizer.customize(template1);
+		assertThat(this.customizer.getServer(template1)).isNotNull();
+		assertThat(this.customizer.getServer(template2)).isNull();
+	}
+
+	@Test
+	public void getServersShouldReturnServers() throws Exception {
+		RestTemplate template1 = new RestTemplate();
+		RestTemplate template2 = new RestTemplate();
+		this.customizer.customize(template1);
+		this.customizer.customize(template2);
+		assertThat(this.customizer.getServers()).containsOnlyKeys(template1, template2);
 	}
 
 }

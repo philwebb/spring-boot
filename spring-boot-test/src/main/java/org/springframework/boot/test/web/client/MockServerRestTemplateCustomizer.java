@@ -43,8 +43,8 @@ import org.springframework.web.client.RestTemplate;
  * <p>
  * If the customizer is only used once, the {@link #getServer()} method can be used to
  * obtain the mock server. If the customizer has been used more than once the
- * {@link #getServer(RestTemplate)} or {@link #getServer(int)} method must be used to
- * access the related server.
+ * {@link #getServer(RestTemplate)} or {@link #getServers()} method must be used to access
+ * the related server.
  *
  * @author Phillip Webb
  * @since 1.4.0
@@ -65,6 +65,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	public MockServerRestTemplateCustomizer(
 			Class<? extends RequestExpectationManager> expectationManager) {
+		Assert.notNull(expectationManager, "ExpectationManager must not be null");
 		this.expectationManager = expectationManager;
 	}
 
@@ -92,9 +93,10 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	public MockRestServiceServer getServer() {
-		if (this.servers.isEmpty()) {
-			return null;
-		}
+		Assert.state(this.servers.size() > 0,
+				"Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has not been bound to "
+						+ "a RestTemplate");
 		Assert.state(this.servers.size() == 1,
 				"Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has been bound to "
@@ -104,18 +106,6 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 
 	public MockRestServiceServer getServer(RestTemplate restTemplate) {
 		return this.servers.get(restTemplate);
-	}
-
-	public MockRestServiceServer getServer(int index) {
-		for (Map.Entry<RestTemplate, MockRestServiceServer> entry : this.servers
-				.entrySet()) {
-			if (index == 0) {
-				return entry.getValue();
-			}
-			index--;
-		}
-		return null;
-
 	}
 
 	public Map<RestTemplate, MockRestServiceServer> getServers() {

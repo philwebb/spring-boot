@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
-import org.springframework.boot.test.autoconfigure.web.client.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 /**
  * Example exception used in {@link WebMvcTest} tests.

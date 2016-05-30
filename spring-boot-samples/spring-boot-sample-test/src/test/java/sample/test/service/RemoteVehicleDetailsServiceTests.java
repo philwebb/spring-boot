@@ -56,7 +56,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Autowired
 	private RemoteVehicleDetailsService service;
 
-	@Autowired
+	// @Autowired
 	private MockRestServiceServer server;
 
 	@Test

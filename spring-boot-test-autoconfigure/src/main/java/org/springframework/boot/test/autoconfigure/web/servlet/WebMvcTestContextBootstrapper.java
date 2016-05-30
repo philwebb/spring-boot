@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client.servlet;
+package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.test.context.MergedContextConfiguration;
