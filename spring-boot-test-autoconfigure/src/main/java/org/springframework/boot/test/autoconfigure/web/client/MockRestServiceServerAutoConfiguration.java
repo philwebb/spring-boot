@@ -15,13 +15,9 @@
  */
 
 package org.springframework.boot.test.autoconfigure.web.client;
-
 /**
- * @author Phillip Webb
- * @since 1.4.0
+ * @author pwebb
  */
-public @interface AutoConfigureMockRestServiceServer {
-
-	boolean enabled() default true;
+public class MockRestServiceServerAutoConfiguration {
 
 }

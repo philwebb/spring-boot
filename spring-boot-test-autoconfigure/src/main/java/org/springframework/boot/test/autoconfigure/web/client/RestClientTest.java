@@ -45,7 +45,8 @@ import org.springframework.test.context.BootstrapWith;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(RestClientExcludeFilter.class)
 @AutoConfigureCache
-@AutoConfigureRestClient
+@AutoConfigureWebClient
+@AutoConfigureMockRestServiceServer
 public @interface RestClientTest {
 
 	/**

@@ -24,6 +24,10 @@ org.springframework.boot.test.autoconfigure.web.servlet.MockMvcSecurityAutoConfi
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebClientAutoConfiguration,\
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcWebDriverAutoConfiguration
 
+# AutoConfigureMockRestServiceServer
+org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer=\
+org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAutoConfiguration
+
 # AutoConfigureRestDocs auto-configuration imports
 org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration
@@ -36,7 +40,7 @@ org.springframework.boot.test.autoconfigure.orm.jpa.TestDatabaseAutoConfiguratio
 org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager=\
 org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
 
-# AutoConfigureRestClient auto-configuration imports
+# AutoConfigureWebClient auto-configuration imports
 org.springframework.boot.test.autoconfigure.web.client.AutoConfigureRestClient=\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration

@@ -27,10 +27,15 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 /**
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ImportAutoConfiguration
-public @interface AutoConfigureRestClient {
+public @interface AutoConfigureWebClient {
+
+	boolean addRestTemplate() default false;
+
 }
