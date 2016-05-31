@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.web.client;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * Tests for {@link WebMvcTest} with {@link WebClient}.
+ * Tests for {@link AutoConfigureMockRestServiceServer} with {@code enabled=false}.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
-public class WebMvcTestWebClientIntegrationTests {
+@RestClientTest
+@AutoConfigureMockRestServiceServer(enabled = false)
+public class AutoConfigureMockRestServiceServerEnabledFalseIntegrationTests {
 
 	@Autowired
-	private WebClient webClient;
+	private ApplicationContext applicationContext;
 
-	@Test
-	public void shouldAutoConfigureWebClient() throws Exception {
-		HtmlPage page = this.webClient.getPage("/html");
-		assertThat(page.getBody().getTextContent()).isEqualTo("Hello");
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void mockServerRestTemplateCustomizerShouldNotBeRegistered() throws Exception {
+		this.applicationContext.getBean(MockServerRestTemplateCustomizer.class);
 	}
 
 }

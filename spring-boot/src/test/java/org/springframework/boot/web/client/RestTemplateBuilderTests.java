@@ -300,7 +300,7 @@ public class RestTemplateBuilderTests {
 
 			@Override
 			public void customize(RestTemplate restTemplate) {
-				verify(restTemplate).setRequestFactory(any());
+				verify(restTemplate).setRequestFactory((ClientHttpRequestFactory) any());
 			}
 
 		});

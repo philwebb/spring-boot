@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.test.web.client.UnorderedRequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
@@ -154,6 +155,22 @@ public class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(template1);
 		this.customizer.customize(template2);
 		assertThat(this.customizer.getServers()).containsOnlyKeys(template1, template2);
+	}
+
+	@Test
+	public void getExpectationManagersShouldReturnExpectationManagers() throws Exception {
+		RestTemplate template1 = new RestTemplate();
+		RestTemplate template2 = new RestTemplate();
+		this.customizer.customize(template1);
+		this.customizer.customize(template2);
+		RequestExpectationManager manager1 = this.customizer.getExpectationManagers()
+				.get(template1);
+		RequestExpectationManager manager2 = this.customizer.getExpectationManagers()
+				.get(template2);
+		assertThat(this.customizer.getServer(template1)).extracting("expectationManager")
+				.containsOnly(manager1);
+		assertThat(this.customizer.getServer(template2)).extracting("expectationManager")
+				.containsOnly(manager2);
 	}
 
 }

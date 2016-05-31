@@ -14,34 +14,40 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.web.client;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link WebMvcTest} with {@link WebClient}.
+ * Tests for {@link RestClientTest} with a single client.
  *
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(secure = false)
-public class WebMvcTestWebClientIntegrationTests {
+@RestClientTest(ExampleRestClient.class)
+public class RestClientTestWithComponentIntegrationTests {
 
 	@Autowired
-	private WebClient webClient;
+	private MockRestServiceServer server;
+
+	@Autowired
+	private ExampleRestClient client;
 
 	@Test
-	public void shouldAutoConfigureWebClient() throws Exception {
-		HtmlPage page = this.webClient.getPage("/html");
-		assertThat(page.getBody().getTextContent()).isEqualTo("Hello");
+	public void mockServerCall() throws Exception {
+		this.server.expect(requestTo("/test"))
+				.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		assertThat(this.client.test()).isEqualTo("hello");
 	}
 
 }

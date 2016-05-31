@@ -365,6 +365,7 @@ public class RestTemplateBuilder {
 	/**
 	 * Build a new {@link RestTemplate} instance of the specified type and configure it
 	 * using this builder.
+	 * @param <T> the type of rest template
 	 * @param restTemplateClass the template type to create
 	 * @return a configured {@link RestTemplate} instance.
 	 * @see RestTemplateBuilder#build()
@@ -377,6 +378,7 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Configure the provided {@link RestTemplate} instance using this builder.
+	 * @param <T> the type of rest template
 	 * @param restTemplate the {@link RestTemplate} to configure
 	 * @return the rest template instance
 	 * @see RestTemplateBuilder#build()
@@ -427,7 +429,8 @@ public class RestTemplateBuilder {
 	}
 
 	private <T> Set<T> append(Set<T> set, Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<T>(set == null ? Collections.emptySet() : set);
+		Set<T> result = new LinkedHashSet<T>(
+				set == null ? Collections.<T>emptySet() : set);
 		result.addAll(additions);
 		return Collections.unmodifiableSet(result);
 	}

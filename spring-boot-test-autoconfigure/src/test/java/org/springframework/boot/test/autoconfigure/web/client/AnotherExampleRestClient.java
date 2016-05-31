@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.servlet;
+package org.springframework.boot.test.autoconfigure.web.client;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * Example mockable {@link Service} used with {@link WebMvcTest} tests.
+ * A second example web client used with {@link RestClientTest} tests.
  *
  * @author Phillip Webb
  */
 @Service
-public class ExampleMockableService {
+public class AnotherExampleRestClient {
 
-	public ExampleMockableService() {
-		throw new IllegalStateException("Should not be called");
+	private RestTemplate restTemplate;
+
+	public AnotherExampleRestClient(RestTemplateBuilder builder) {
+		this.restTemplate = builder.rootUri("http://example.com").build();
+	}
+
+	protected RestTemplate getRestTemplate() {
+		return this.restTemplate;
+	}
+
+	public String test() {
+		return this.restTemplate.getForEntity("/test", String.class).getBody();
 	}
 
 }

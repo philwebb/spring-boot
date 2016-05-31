@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.web.client;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -27,6 +28,8 @@ import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.test.autoconfigure.filter.AnnotationCustomizableTypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 
 /**
  * {@link TypeExcludeFilter} for {@link RestClientTest @RestClientTest}.
@@ -52,6 +55,20 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	}
 
 	@Override
+	protected boolean defaultInclude(MetadataReader metadataReader,
+			MetadataReaderFactory metadataReaderFactory) throws IOException {
+		if (super.defaultInclude(metadataReader, metadataReaderFactory)) {
+			return true;
+		}
+		for (Class<?> controller : this.annotation.components()) {
+			if (isTypeOrAnnotated(metadataReader, metadataReaderFactory, controller)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	protected boolean hasAnnotation() {
 		return this.annotation != null;
 	}
@@ -59,10 +76,10 @@ class RestClientExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 	@Override
 	protected Filter[] getFilters(FilterType type) {
 		switch (type) {
-			case INCLUDE:
-				return this.annotation.includeFilters();
-			case EXCLUDE:
-				return this.annotation.excludeFilters();
+		case INCLUDE:
+			return this.annotation.includeFilters();
+		case EXCLUDE:
+			return this.annotation.excludeFilters();
 		}
 		throw new IllegalStateException("Unsupported type " + type);
 	}

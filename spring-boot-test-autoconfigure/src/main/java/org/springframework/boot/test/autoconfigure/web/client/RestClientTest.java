@@ -28,14 +28,35 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 /**
+ * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
+ * for a typical Spring rest client test. Can be used when a test focuses
+ * <strong>only</strong> on beans that use {@link RestTemplateBuilder}.
+ * <p>
+ * Using this annotation will disable full auto-configuration and instead apply only
+ * configuration relevant to rest client tests (i.e. Jackson or GSON auto-configureation
+ * and {@code @JsonComponent} beans, but not regular {@link Component @Component} beans).
+ * <p>
+ * By default, tests annotated with {@code RestClientTest} will also auto-configure a
+ * {@link MockRestServiceServer}. For more fine-grained control the
+ * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer}
+ * annotation can be used.
+ * <p>
+ * If you are testing a bean that doesn't use {@link RestTemplateBuilder} but instead
+ * injects a {@link RestTemplate} directly, you can add
+ * {@code @AutoConfigureWebClient(registerRestTemplate=true)}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

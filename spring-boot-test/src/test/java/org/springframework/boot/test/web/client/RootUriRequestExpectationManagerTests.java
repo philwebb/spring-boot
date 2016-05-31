@@ -119,8 +119,9 @@ public class RootUriRequestExpectationManagerTests {
 			throws Exception {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(request.getURI()).willReturn(new URI(this.uri + "/hello"));
-		given(this.delegate.validateRequest(any())).willThrow(new AssertionError(
-				"Request URI expected:</hello> was:<http://example.com/bad>"));
+		given(this.delegate.validateRequest((ClientHttpRequest) any()))
+				.willThrow(new AssertionError(
+						"Request URI expected:</hello> was:<http://example.com/bad>"));
 		this.thrown.expect(AssertionError.class);
 		this.thrown.expectMessage("Request URI expected:<http://example.com/hello>");
 		this.manager.validateRequest(request);

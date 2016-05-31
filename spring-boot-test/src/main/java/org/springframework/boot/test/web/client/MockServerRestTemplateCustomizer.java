@@ -53,6 +53,8 @@ import org.springframework.web.client.RestTemplate;
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
+	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<RestTemplate, RequestExpectationManager>();
+
 	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<RestTemplate, MockRestServiceServer>();
 
 	private final Class<? extends RequestExpectationManager> expectationManager;
@@ -70,7 +72,9 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-	 * @param detectRootUri the detectRootUri to set
+	 * Set if root URIs from {@link RootUriRequestExpectationManager} should be detected
+	 * and applied to the {@link MockRestServiceServer}.
+	 * @param detectRootUri if root URIs should be detected
 	 */
 	public void setDetectRootUri(boolean detectRootUri) {
 		this.detectRootUri = detectRootUri;
@@ -85,6 +89,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		}
 		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate)
 				.build(expectationManager);
+		this.expectationManagers.put(restTemplate, expectationManager);
 		this.servers.put(restTemplate, server);
 	}
 
@@ -102,6 +107,10 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 						+ "MockServerRestTemplateCustomizer has been bound to "
 						+ "more than one RestTemplate");
 		return this.servers.values().iterator().next();
+	}
+
+	public Map<RestTemplate, RequestExpectationManager> getExpectationManagers() {
+		return this.expectationManagers;
 	}
 
 	public MockRestServiceServer getServer(RestTemplate restTemplate) {

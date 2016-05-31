@@ -23,8 +23,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
 /**
+ * Annotation that can be applied to a test class to enable and configure
+ * auto-configuration of web clients.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
@@ -34,8 +39,14 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ImportAutoConfiguration
+@PropertyMapping("spring.test.webclient")
 public @interface AutoConfigureWebClient {
 
-	boolean addRestTemplate() default false;
+	/**
+	 * If a {@link RestTemplate} bean should be registered. Defaults to {@code false} with
+	 * the assumption that the {@link RestTemplateBuilder} will be used.
+	 * @return if a {@link RestTemplate} bean should be added.
+	 */
+	boolean registerRestTemplate() default false;
 
 }

@@ -41,9 +41,10 @@ org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManag
 org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManagerAutoConfiguration
 
 # AutoConfigureWebClient auto-configuration imports
-org.springframework.boot.test.autoconfigure.web.client.AutoConfigureRestClient=\
+org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient=\
+org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration,\
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebClientAutoConfiguration
 

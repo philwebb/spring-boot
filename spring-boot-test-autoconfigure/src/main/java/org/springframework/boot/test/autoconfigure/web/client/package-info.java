@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
-
 /**
- * @author Phillip Webb
- * @since 1.4.0
+ * Auto-configuration for web clients.
  */
-public interface RestTemplateWrapper {
-
-}
+package org.springframework.boot.test.autoconfigure.web.client;
