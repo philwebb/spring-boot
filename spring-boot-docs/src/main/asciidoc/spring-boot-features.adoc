@@ -4227,6 +4227,12 @@ reached.
 
 
 
+[[boot-features-restclient]]
+== Calling REST services
+If you need to call remote REST services from yout  `RestTemplate` class
+
+
+
 [[boot-features-email]]
 == Sending email
 The Spring Framework provides an easy abstraction for sending email using the
