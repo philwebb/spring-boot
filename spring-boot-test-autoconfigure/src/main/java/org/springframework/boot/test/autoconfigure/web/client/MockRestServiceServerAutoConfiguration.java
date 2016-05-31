@@ -102,7 +102,11 @@ class MockRestServiceServerAutoConfiguration {
 
 		@Override
 		public void reset() {
-			getDelegate().reset();
+			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer
+					.getExpectationManagers();
+			if (expectationManagers.size() == 1) {
+				getDelegate().reset();
+			}
 		}
 
 		private RequestExpectationManager getDelegate() {

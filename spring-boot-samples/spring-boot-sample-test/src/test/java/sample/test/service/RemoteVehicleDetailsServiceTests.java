@@ -43,12 +43,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Phillip Webb
  */
 @RunWith(SpringRunner.class)
-@RestClientTest(RemoteVehicleDetailsService.class)
+@RestClientTest({ RemoteVehicleDetailsService.class, ServiceProperties.class })
 public class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
-
-	private static final String URL = "http://localhost:8080/vs/";
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -56,7 +54,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Autowired
 	private RemoteVehicleDetailsService service;
 
-	// @Autowired
+	@Autowired
 	private MockRestServiceServer server;
 
 	@Test
@@ -69,7 +67,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
 			throws Exception {
-		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"),
 						MediaType.APPLICATION_JSON));
 		VehicleDetails details = this.service
@@ -81,7 +79,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIsNotFoundShouldThrowException()
 			throws Exception {
-		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.thrown.expect(VehicleIdentificationNumberNotFoundException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
@@ -90,7 +88,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenResultIServerErrorShouldThrowException()
 			throws Exception {
-		this.server.expect(requestTo(URL + "/vehicle/" + VIN + "/details"))
+		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
 				.andRespond(withServerError());
 		this.thrown.expect(HttpServerErrorException.class);
 		this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
