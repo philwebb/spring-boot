@@ -81,13 +81,9 @@ public class DispatcherServletAutoConfiguration {
 	@EnableConfigurationProperties(WebMvcProperties.class)
 	protected static class DispatcherServletConfiguration {
 
-		private final ServerProperties server;
-
 		private final WebMvcProperties webMvcProperties;
 
-		public DispatcherServletConfiguration(ServerProperties server,
-				WebMvcProperties webMvcProperties) {
-			this.server = server;
+		public DispatcherServletConfiguration(WebMvcProperties webMvcProperties) {
 			this.webMvcProperties = webMvcProperties;
 		}
 
@@ -120,16 +116,16 @@ public class DispatcherServletAutoConfiguration {
 	@Import(DispatcherServletConfiguration.class)
 	protected static class DispatcherServletRegistrationConfiguration {
 
-		private final ServerProperties server;
+		private final ServerProperties serverProperties;
 
 		private final WebMvcProperties webMvcProperties;
 
 		private final MultipartConfigElement multipartConfig;
 
-		public DispatcherServletRegistrationConfiguration(ServerProperties server,
-				WebMvcProperties webMvcProperties,
+		public DispatcherServletRegistrationConfiguration(
+				ServerProperties serverProperties, WebMvcProperties webMvcProperties,
 				ObjectProvider<MultipartConfigElement> multipartConfigProvider) {
-			this.server = server;
+			this.serverProperties = serverProperties;
 			this.webMvcProperties = webMvcProperties;
 			this.multipartConfig = multipartConfigProvider.getIfAvailable();
 		}
@@ -139,7 +135,7 @@ public class DispatcherServletAutoConfiguration {
 		public ServletRegistrationBean dispatcherServletRegistration(
 				DispatcherServlet dispatcherServlet) {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
-					dispatcherServlet, this.server.getServletMapping());
+					dispatcherServlet, this.serverProperties.getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			registration.setLoadOnStartup(
 					this.webMvcProperties.getServlet().getLoadOnStartup());
@@ -158,31 +154,22 @@ public class DispatcherServletAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			List<String> servlets = Arrays.asList(beanFactory
+			List<String> dispatchServletBeans = Arrays.asList(beanFactory
 					.getBeanNamesForType(DispatcherServlet.class, false, false));
-			boolean containsDispatcherBean = beanFactory
-					.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			if (servlets.isEmpty()) {
-				if (containsDispatcherBean) {
-					return ConditionOutcome.noMatch("found no DispatcherServlet "
-							+ "but a non-DispatcherServlet named "
-							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-				}
+			if (dispatchServletBeans.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				return ConditionOutcome.noMatch("found DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			}
+			if (beanFactory.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			}
+			if (dispatchServletBeans.isEmpty()) {
 				return ConditionOutcome.match("no DispatcherServlet found");
 			}
-			else {
-				if (servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
-					return ConditionOutcome.noMatch("found DispatcherServlet named "
+			return ConditionOutcome
+					.match("one or more DispatcherServlets found and none is named "
 							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-				}
-				else if (containsDispatcherBean) {
-					return ConditionOutcome.noMatch("found non-DispatcherServlet named "
-							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-				}
-				return ConditionOutcome
-						.match("one or more DispatcherServlets found and none is named "
-								+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			}
 		}
 
 	}
@@ -199,9 +186,7 @@ public class DispatcherServletAutoConfiguration {
 			if (!outcome.isMatch()) {
 				return outcome;
 			}
-			else {
-				return checkServletRegistration(beanFactory);
-			}
+			return checkServletRegistration(beanFactory);
 		}
 
 		private ConditionOutcome checkDefaultDispatcherName(
@@ -215,9 +200,7 @@ public class DispatcherServletAutoConfiguration {
 				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
 						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
-			else {
-				return ConditionOutcome.match();
-			}
+			return ConditionOutcome.match();
 		}
 
 		private ConditionOutcome checkServletRegistration(
