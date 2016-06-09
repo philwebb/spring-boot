@@ -625,10 +625,12 @@ public class WebMvcAutoConfigurationTests {
 		@Bean
 		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerMapping() {
 			return new WebMvcRegistrationsAdapter() {
+
 				@Override
 				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
 					return new MyRequestMappingHandlerMapping();
 				}
+
 			};
 		}
 	}
@@ -644,10 +646,12 @@ public class WebMvcAutoConfigurationTests {
 		@Bean
 		public WebMvcRegistrationsAdapter webMvcRegistrationsHandlerAdapter() {
 			return new WebMvcRegistrationsAdapter() {
+
 				@Override
 				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
 					return new MyRequestMappingHandlerAdapter();
 				}
+
 			};
 		}
 	}

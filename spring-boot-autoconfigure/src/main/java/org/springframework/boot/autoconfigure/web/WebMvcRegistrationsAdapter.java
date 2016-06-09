@@ -29,30 +29,19 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  */
 public class WebMvcRegistrationsAdapter implements WebMvcRegistrations {
 
-	/**
-	 * {@inheritDoc}
-	 * <p>This implementation is empty.
-	 */
 	@Override
 	public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * <p>This implementation is empty.
-	 */
 	@Override
 	public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 * <p>This implementation is empty.
-	 */
 	@Override
 	public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
 		return null;
 	}
+
 }

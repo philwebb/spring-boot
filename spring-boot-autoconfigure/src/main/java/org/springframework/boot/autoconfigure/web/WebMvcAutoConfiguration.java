@@ -369,9 +369,7 @@ public class WebMvcAutoConfiguration {
 					&& this.mvcRegistrations.getRequestMappingHandlerAdapter() != null) {
 				return this.mvcRegistrations.getRequestMappingHandlerAdapter();
 			}
-			else {
-				return super.createRequestMappingHandlerAdapter();
-			}
+			return super.createRequestMappingHandlerAdapter();
 		}
 
 		@Bean
@@ -388,9 +386,7 @@ public class WebMvcAutoConfiguration {
 					&& this.mvcRegistrations.getRequestMappingHandlerMapping() != null) {
 				return this.mvcRegistrations.getRequestMappingHandlerMapping();
 			}
-			else {
-				return super.createRequestMappingHandlerMapping();
-			}
+			return super.createRequestMappingHandlerMapping();
 		}
 
 		@Override
@@ -409,9 +405,7 @@ public class WebMvcAutoConfiguration {
 					.getExceptionHandlerExceptionResolver() != null) {
 				return this.mvcRegistrations.getExceptionHandlerExceptionResolver();
 			}
-			else {
-				return super.createExceptionHandlerExceptionResolver();
-			}
+			return super.createExceptionHandlerExceptionResolver();
 		}
 	}
 
