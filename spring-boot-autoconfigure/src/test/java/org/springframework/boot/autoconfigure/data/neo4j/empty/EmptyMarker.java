@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-/**
- * Support for component scanning.
- */
-package org.springframework.boot.context.scan;
+package org.springframework.boot.autoconfigure.data.neo4j.empty;
+
+public class EmptyMarker {
+
+}

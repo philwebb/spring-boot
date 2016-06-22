@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.scan;
+package org.springframework.boot.autoconfigure.domain;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,22 +26,45 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * EntityScan test annotation.
+ * FIXME.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 1.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(TestEntityScanRegistrar.class)
-public @interface TestEntityScan {
+@Import(EntityScanPackages.Registrar.class)
+public @interface EntityScan {
 
+	/**
+	 * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation
+	 * declarations e.g.: {@code @EntityScan("org.my.pkg")} instead of
+	 * {@code @EntityScan(basePackages="org.my.pkg")}.
+	 * @return the base packages to scan
+	 */
 	@AliasFor("basePackages")
 	String[] value() default {};
 
+	/**
+	 * Base packages to scan for annotated entities. {@link #value()} is an alias for (and
+	 * mutually exclusive with) this attribute.
+	 * <p>
+	 * Use {@link #basePackageClasses()} for a type-safe alternative to String-based
+	 * package names.
+	 * @return the base packages to scan
+	 */
 	@AliasFor("value")
 	String[] basePackages() default {};
 
+	/**
+	 * Type-safe alternative to {@link #basePackages()} for specifying the packages to
+	 * scan for annotated entities. The package of each class specified will be scanned.
+	 * <p>
+	 * Consider creating a special no-op marker class or interface in each package that
+	 * serves no purpose other than being referenced by this attribute.
+	 * @return classes from the base packages to scan
+	 */
 	Class<?>[] basePackageClasses() default {};
 
 }
