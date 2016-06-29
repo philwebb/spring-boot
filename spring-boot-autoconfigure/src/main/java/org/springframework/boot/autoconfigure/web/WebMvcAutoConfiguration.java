@@ -198,7 +198,7 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class,
 				RequestContextFilter.class })
-		public RequestContextFilter requestContextFilter() {
+		public static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
 		}
 
