@@ -90,11 +90,19 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").and().logout()
+			// @formatter:off
+			http
+				.authorizeRequests()
+					.mvcMatchers("/login").permitAll()
+					.anyRequest().fullyAuthenticated().and()
+				.formLogin()
+					.loginPage("/login")
+					.failureUrl("/login?error").and()
+				.logout()
 					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
-					.exceptionHandling().accessDeniedPage("/access?error");
+				.exceptionHandling()
+					.accessDeniedPage("/access?error");
+			// @formatter:on
 		}
 
 	}

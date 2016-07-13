@@ -155,7 +155,7 @@ public class SpringBootWebSecurityConfiguration {
 			}
 			String[] paths = this.server.getPathsArray(ignored);
 			if (!ObjectUtils.isEmpty(paths)) {
-				builder.ignoring().antMatchers(paths);
+				builder.ignoring().mvcMatchers(paths);
 			}
 		}
 
@@ -174,15 +174,19 @@ public class SpringBootWebSecurityConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
+
 				@Override
 				public boolean matches(HttpServletRequest request) {
 					return false;
 				}
+
 			});
 		}
+
 	}
 
 	@Configuration
@@ -214,7 +218,7 @@ public class SpringBootWebSecurityConfiguration {
 				AuthenticationEntryPoint entryPoint = entryPoint();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				http.httpBasic().authenticationEntryPoint(entryPoint);
-				http.requestMatchers().antMatchers(paths);
+				http.requestMatchers().mvcMatchers(paths);
 				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
 				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
 				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {

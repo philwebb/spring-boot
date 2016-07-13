@@ -99,19 +99,24 @@ public class H2ConsoleAutoConfiguration {
 			@Override
 			public void configure(HttpSecurity http) throws Exception {
 				String path = this.console.getPath();
-				String antPattern = (path.endsWith("/") ? path + "**" : path + "/**");
-				HttpSecurity h2Console = http.antMatcher(antPattern);
-				h2Console.csrf().disable();
-				h2Console.httpBasic();
-				h2Console.headers().frameOptions().sameOrigin();
+				String pattern = (path.endsWith("/") ? path + "**" : path + "/**");
 				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
 				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
+				// @formatter:off
+				http
+					.requestMatchers()
+						.mvcMatchers(pattern).and()
+					.csrf().disable()
+					.httpBasic().and()
+					.headers()
+						.frameOptions().sameOrigin();
 				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {
 					http.authorizeRequests().anyRequest().hasAnyRole(roles);
 				}
 				else if (mode == SecurityAuthorizeMode.AUTHENTICATED) {
 					http.authorizeRequests().anyRequest().authenticated();
 				}
+				// @formatter:on
 			}
 
 		}

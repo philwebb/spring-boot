@@ -103,10 +103,15 @@ public class CustomOAuth2SsoWithAuthenticationEntryPointConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/ui/**").authorizeRequests().antMatchers("/ui/test")
-					.permitAll().anyRequest().authenticated().and().exceptionHandling()
-					.authenticationEntryPoint(
-							new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+			// @formatter:off
+			http
+				.requestMatchers().mvcMatchers("/ui/**").and()
+				.authorizeRequests()
+					.mvcMatchers("/ui/test").permitAll()
+					.anyRequest().authenticated().and()
+				.exceptionHandling()
+					.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+			// @formatter:on
 		}
 
 		@RestController

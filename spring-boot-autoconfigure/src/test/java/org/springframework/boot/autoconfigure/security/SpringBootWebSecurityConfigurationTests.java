@@ -307,7 +307,11 @@ public class SpringBootWebSecurityConfigurationTests {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers(HttpMethod.POST, "/**").denyAll();
+			// @formatter:off
+			http
+				.authorizeRequests()
+					.mvcMatchers(HttpMethod.POST, "/**").denyAll();
+			// @formatter:on
 		}
 
 	}

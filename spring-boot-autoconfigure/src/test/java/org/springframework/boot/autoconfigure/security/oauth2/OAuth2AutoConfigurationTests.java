@@ -512,8 +512,13 @@ public class OAuth2AutoConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and()
+			// @formatter:off
+			http
+				.authorizeRequests()
+					.anyRequest().authenticated().and()
+					.httpBasic().and()
 					.csrf().disable();
+			// @formatter:on
 		}
 
 	}

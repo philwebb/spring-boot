@@ -108,8 +108,13 @@ public class CustomOAuth2SsoConfigurationTests {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/ui/**").authorizeRequests().antMatchers("/ui/test")
-					.permitAll().anyRequest().authenticated();
+			// @formatter:off
+			http
+				.requestMatchers().mvcMatchers("/ui/**").and()
+				.authorizeRequests()
+					.mvcMatchers("/ui/test").permitAll()
+					.anyRequest().authenticated();
+			// @formatter:on
 		}
 
 		@RestController
