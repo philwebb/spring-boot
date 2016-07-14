@@ -56,7 +56,7 @@ public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.requestMatchers().mvcMatchers("/**");
+		http.mvcMatcher("/**");
 		http.authorizeRequests().anyRequest().authenticated();
 		new SsoSecurityConfigurer(this.applicationContext).configure(http);
 	}

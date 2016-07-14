@@ -105,7 +105,7 @@ public class CustomOAuth2SsoWithAuthenticationEntryPointConfigurationTests {
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http
-				.requestMatchers().mvcMatchers("/ui/**").and()
+				.mvcMatcher("/ui/**")
 				.authorizeRequests()
 					.mvcMatchers("/ui/test").permitAll()
 					.anyRequest().authenticated().and()

@@ -110,7 +110,7 @@ public class CustomOAuth2SsoConfigurationTests {
 		public void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http
-				.requestMatchers().mvcMatchers("/ui/**").and()
+				.mvcMatcher("/ui/**")
 				.authorizeRequests()
 					.mvcMatchers("/ui/test").permitAll()
 					.anyRequest().authenticated();

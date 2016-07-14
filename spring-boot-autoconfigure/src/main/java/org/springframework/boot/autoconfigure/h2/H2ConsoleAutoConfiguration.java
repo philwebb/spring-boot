@@ -104,8 +104,7 @@ public class H2ConsoleAutoConfiguration {
 				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
 				// @formatter:off
 				http
-					.requestMatchers()
-						.mvcMatchers(pattern).and()
+					.mvcMatcher(pattern)
 					.csrf().disable()
 					.httpBasic().and()
 					.headers()
