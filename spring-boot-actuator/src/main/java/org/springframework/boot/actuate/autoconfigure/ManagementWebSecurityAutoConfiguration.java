@@ -384,6 +384,8 @@ public class ManagementWebSecurityAutoConfiguration {
 					context);
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
 				matchers.add(new MvcRequestMatcher(introspector, server.getPath(path)));
+				// matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
 		}
