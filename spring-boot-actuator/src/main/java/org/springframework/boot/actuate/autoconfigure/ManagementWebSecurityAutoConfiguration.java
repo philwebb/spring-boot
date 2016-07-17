@@ -66,7 +66,6 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -149,6 +148,9 @@ public class ManagementWebSecurityAutoConfiguration {
 		@Autowired(required = false)
 		private ManagementContextResolver contextResolver;
 
+		@Autowired
+		private ApplicationContext context;
+
 		@Autowired(required = false)
 		private ServerProperties server;
 
@@ -173,16 +175,14 @@ public class ManagementWebSecurityAutoConfiguration {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			RequestMatcher requestMatcher = getRequestMatcher();
-			String[] paths = this.server.getPathsArray(ignored);
-			if (!ObjectUtils.isEmpty(paths)) {
-				ApplicationContext context = (this.contextResolver == null ? null
+			if (!ObjectUtils.isEmpty(ignored)) {
+				ApplicationContext context = (this.contextResolver == null ? this.context
 						: this.contextResolver.getApplicationContext());
-				HandlerMappingIntrospector introspector = (context == null ? null
-						: new HandlerMappingIntrospector(context));
+				HandlerMappingIntrospector introspector = new HandlerMappingIntrospector(
+						context);
 				List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
-				for (String pattern : paths) {
-					matchers.add(introspector == null ? new AntPathRequestMatcher(pattern)
-							: new MvcRequestMatcher(introspector, pattern));
+				for (String pattern : ignored) {
+					matchers.add(new MvcRequestMatcher(introspector, pattern));
 				}
 				if (requestMatcher != null) {
 					matchers.add(requestMatcher);
@@ -377,14 +377,12 @@ public class ManagementWebSecurityAutoConfiguration {
 
 		private RequestMatcher createDelegate() {
 			ApplicationContext context = this.contextResolver.getApplicationContext();
-			ServerProperties server = context.getBean(ServerProperties.class);
 			List<RequestMatcher> matchers = new ArrayList<RequestMatcher>();
 			EndpointHandlerMapping endpointHandlerMapping = getRequiredEndpointHandlerMapping();
 			HandlerMappingIntrospector introspector = new HandlerMappingIntrospector(
 					context);
 			for (String path : this.endpointPaths.getPaths(endpointHandlerMapping)) {
-				matchers.add(new MvcRequestMatcher(introspector, server.getPath(path)));
-				// matchers.add(new AntPathRequestMatcher(server.getPath(path)));
+				matchers.add(new MvcRequestMatcher(introspector, path));
 
 			}
 			return (matchers.isEmpty() ? MATCH_NONE : new OrRequestMatcher(matchers));
@@ -412,11 +410,11 @@ public class ManagementWebSecurityAutoConfiguration {
 			ApplicationContext context = contextResolver.getApplicationContext();
 			ManagementServerProperties management = context
 					.getBean(ManagementServerProperties.class);
-			ServerProperties server = context.getBean(ServerProperties.class);
+			// ServerProperties server = context.getBean(ServerProperties.class);
 			String path = management.getContextPath();
 			if (StringUtils.hasText(path)) {
 				return new MvcRequestMatcher(new HandlerMappingIntrospector(context),
-						server.getPath(path) + "/**");
+						path + "/**");
 			}
 			// Match everything, including the sensitive and non-sensitive paths
 			return new LazyEndpointPathRequestMatcher(contextResolver, EndpointPaths.ALL);

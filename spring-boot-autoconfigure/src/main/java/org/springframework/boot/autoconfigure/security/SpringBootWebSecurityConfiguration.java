@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.web.ErrorController;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -140,9 +139,6 @@ public class SpringBootWebSecurityConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
-		@Autowired
-		private ServerProperties server;
-
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 		}
@@ -153,9 +149,9 @@ public class SpringBootWebSecurityConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
-			if (!ObjectUtils.isEmpty(paths)) {
-				builder.ignoring().mvcMatchers(paths);
+			if (!ObjectUtils.isEmpty(ignored)) {
+				builder.ignoring()
+						.mvcMatchers(ignored.toArray(new String[ignored.size()]));
 			}
 		}
 
