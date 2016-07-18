@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -139,6 +140,9 @@ public class SpringBootWebSecurityConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
+		@Autowired
+		private ServerProperties server;
+
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 		}
@@ -149,9 +153,10 @@ public class SpringBootWebSecurityConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			if (!ObjectUtils.isEmpty(ignored)) {
-				builder.ignoring()
-						.mvcMatchers(ignored.toArray(new String[ignored.size()]));
+			String[] paths = this.server.getPathsArray(ignored);
+			if (!ObjectUtils.isEmpty(paths)) {
+				// Don't use mvcMatchers here because MVC may not be on the class path
+				builder.ignoring().antMatchers(paths);
 			}
 		}
 
@@ -170,7 +175,6 @@ public class SpringBootWebSecurityConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
 			extends WebSecurityConfigurerAdapter {
-
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.requestMatcher(new RequestMatcher() {
@@ -182,7 +186,6 @@ public class SpringBootWebSecurityConfiguration {
 
 			});
 		}
-
 	}
 
 	@Configuration
@@ -214,7 +217,8 @@ public class SpringBootWebSecurityConfiguration {
 				AuthenticationEntryPoint entryPoint = entryPoint();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint);
 				http.httpBasic().authenticationEntryPoint(entryPoint);
-				http.requestMatchers().mvcMatchers(paths);
+				// Don't use mvcMatchers here because MVC may not be on the class path
+				http.requestMatchers().antMatchers(paths);
 				String[] roles = this.security.getUser().getRole().toArray(new String[0]);
 				SecurityAuthorizeMode mode = this.security.getBasic().getAuthorizeMode();
 				if (mode == null || mode == SecurityAuthorizeMode.ROLE) {
