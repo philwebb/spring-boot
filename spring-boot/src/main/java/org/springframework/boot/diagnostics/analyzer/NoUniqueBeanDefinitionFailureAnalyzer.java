@@ -16,20 +16,16 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,7 +49,8 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure,
 			NoUniqueBeanDefinitionException cause) {
-		String consumerDescription = getConsumerDescription(rootFailure);
+		String consumerDescription = ConsumerDescriptionResolver
+				.getConsumerDescription(rootFailure);
 		if (consumerDescription == null) {
 			return null;
 		}
@@ -89,80 +86,6 @@ class NoUniqueBeanDefinitionFailureAnalyzer
 						+ " accept multiple beans, or using @Qualifier to identify the"
 						+ " bean that should be consumed",
 				cause);
-	}
-
-	private String getConsumerDescription(Throwable ex) {
-		UnsatisfiedDependencyException unsatisfiedDependency = findUnsatisfiedDependencyException(
-				ex);
-		if (unsatisfiedDependency != null) {
-			return getConsumerDescription(unsatisfiedDependency);
-		}
-		BeanInstantiationException beanInstantiationException = findBeanInstantiationException(
-				ex);
-		if (beanInstantiationException != null) {
-			return getConsumerDescription(beanInstantiationException);
-		}
-		return null;
-	}
-
-	private UnsatisfiedDependencyException findUnsatisfiedDependencyException(
-			Throwable root) {
-		return findMostNestedCause(root, UnsatisfiedDependencyException.class);
-	}
-
-	private BeanInstantiationException findBeanInstantiationException(Throwable root) {
-		return findMostNestedCause(root, BeanInstantiationException.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends Exception> T findMostNestedCause(Throwable root,
-			Class<T> causeType) {
-		Throwable candidate = root;
-		T mostNestedMatch = null;
-		while (candidate != null) {
-			if (causeType.isAssignableFrom(candidate.getClass())) {
-				mostNestedMatch = (T) candidate;
-			}
-			candidate = candidate.getCause();
-		}
-		return mostNestedMatch;
-	}
-
-	private String getConsumerDescription(UnsatisfiedDependencyException ex) {
-		InjectionPoint injectionPoint = ex.getInjectionPoint();
-		if (injectionPoint != null) {
-			if (injectionPoint.getField() != null) {
-				return String.format("Field %s in %s",
-						injectionPoint.getField().getName(),
-						injectionPoint.getField().getDeclaringClass().getName());
-			}
-			if (injectionPoint.getMethodParameter() != null) {
-				if (injectionPoint.getMethodParameter().getConstructor() != null) {
-					return String.format("Parameter %d of constructor in %s",
-							injectionPoint.getMethodParameter().getParameterIndex(),
-							injectionPoint.getMethodParameter().getDeclaringClass()
-									.getName());
-				}
-				return String.format("Parameter %d of method %s in %s",
-						injectionPoint.getMethodParameter().getParameterIndex(),
-						injectionPoint.getMethodParameter().getMethod().getName(),
-						injectionPoint.getMethodParameter().getDeclaringClass()
-								.getName());
-			}
-		}
-		return ex.getResourceDescription();
-	}
-
-	private String getConsumerDescription(BeanInstantiationException ex) {
-		if (ex.getConstructingMethod() != null) {
-			return String.format("Method %s in %s", ex.getConstructingMethod().getName(),
-					ex.getConstructingMethod().getDeclaringClass().getName());
-		}
-		if (ex.getConstructor() != null) {
-			return String.format("Constructor in %s", ClassUtils
-					.getUserClass(ex.getConstructor().getDeclaringClass()).getName());
-		}
-		return ex.getBeanClass().getName();
 	}
 
 	private String[] extractBeanNames(NoUniqueBeanDefinitionException cause) {
