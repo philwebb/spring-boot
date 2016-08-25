@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,17 +132,22 @@ class OnPropertyCondition extends SpringBootCondition {
 			return ConditionOutcome.match();
 		}
 
-		StringBuilder message = new StringBuilder("@ConditionalOnProperty ");
+		StringBuilder message = new StringBuilder();
 		if (!missingProperties.isEmpty()) {
-			message.append("missing required properties ")
-					.append(expandNames(prefix, missingProperties)).append(" ");
+			message.append("missing required ").append(propertyTerm(missingProperties))
+					.append(" '").append(expandNames(prefix, missingProperties)).append("' ");
 		}
 		if (!nonMatchingProperties.isEmpty()) {
 			String expected = StringUtils.hasLength(havingValue) ? havingValue : "!false";
-			message.append("expected '").append(expected).append("' for properties ")
+			message.append("expected '").append(expected).append("' for ")
+					.append(propertyTerm(nonMatchingProperties))
 					.append(expandNames(prefix, nonMatchingProperties));
 		}
 		return ConditionOutcome.noMatch(message.toString());
+	}
+
+	private static String propertyTerm(Collection<String> properties) {
+		return (properties.size() == 1 ? "property" : "properties");
 	}
 
 	private String[] getNames(Map<String, Object> annotationAttributes) {

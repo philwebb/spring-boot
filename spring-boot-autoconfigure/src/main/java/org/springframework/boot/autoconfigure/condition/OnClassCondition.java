@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,12 +54,12 @@ class OnClassCondition extends SpringBootCondition {
 					context);
 			if (!missing.isEmpty()) {
 				return ConditionOutcome
-						.noMatch("required @ConditionalOnClass classes not found: "
-								+ StringUtils.collectionToCommaDelimitedString(missing));
+						.noMatch(String.format("required %s not found '%s'", classTerm(missing),
+								StringUtils.collectionToCommaDelimitedString(missing)));
 			}
-			matchMessage.append("@ConditionalOnClass classes found: ")
-					.append(StringUtils.collectionToCommaDelimitedString(
-							getMatchingClasses(onClasses, MatchType.PRESENT, context)));
+			List<String> matchingClasses = getMatchingClasses(onClasses, MatchType.PRESENT, context);
+			matchMessage.append(String.format("required %s found '%s'", classTerm(matchingClasses),
+					StringUtils.collectionToCommaDelimitedString(matchingClasses)));
 		}
 
 		MultiValueMap<String, Object> onMissingClasses = getAttributes(metadata,
@@ -79,6 +80,10 @@ class OnClassCondition extends SpringBootCondition {
 		}
 
 		return ConditionOutcome.match(matchMessage.toString());
+	}
+
+	private static String classTerm(Collection<String> classes) {
+		return (classes.size() == 1 ? "class" : "classes");
 	}
 
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
