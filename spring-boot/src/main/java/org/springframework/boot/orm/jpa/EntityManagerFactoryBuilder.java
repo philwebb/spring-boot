@@ -28,7 +28,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.ApplicationInfo;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
@@ -53,15 +52,15 @@ public class EntityManagerFactoryBuilder {
 	private static final Log logger = LogFactory
 			.getLog(EntityManagerFactoryBuilder.class);
 
-	private JpaVendorAdapter jpaVendorAdapter;
+	private final JpaVendorAdapter jpaVendorAdapter;
 
-	private PersistenceUnitManager persistenceUnitManager;
+	private final PersistenceUnitManager persistenceUnitManager;
 
-	private Map<String, Object> jpaProperties;
+	private final Map<String, Object> jpaProperties;
+
+	private final Class<?> persistenceUnitRootLocationSource;
 
 	private EntityManagerFactoryBeanCallback callback;
-
-	private Class<?> applicationClass;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -73,9 +72,27 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager) {
+		this(jpaVendorAdapter, jpaProperties, persistenceUnitManager, null);
+	}
+
+	/**
+	 * Create a new instance passing in the common pieces that will be shared if multiple
+	 * EntityManagerFactory instances are created.
+	 * @param jpaVendorAdapter a vendor adapter
+	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param persistenceUnitManager optional source of persistence unit information (can
+	 * be null)
+	 * @param persistenceUnitRootLocationSource the source class used to determine the
+	 * persistence unit root location (can be null)
+	 * @since 1.4.1
+	 */
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
+			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager,
+			Class<?> persistenceUnitRootLocationSource) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaProperties = new LinkedHashMap<String, Object>(jpaProperties);
+		this.persistenceUnitRootLocationSource = persistenceUnitRootLocationSource;
 	}
 
 	public Builder dataSource(DataSource dataSource) {
@@ -88,33 +105,6 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public void setCallback(EntityManagerFactoryBeanCallback callback) {
 		this.callback = callback;
-	}
-
-	/**
-	 * An optional {@link ApplicationInfo} used to further tune the entity manager.
-	 * @param applicationInfo the application info
-	 */
-	public void setApplicationInfo(ApplicationInfo applicationInfo) {
-		this.applicationClass = applicationInfo.getMainApplicationClass();
-	}
-
-	/**
-	 * Determine a persistence unit root location to use if no {@code persistence.xml} or
-	 * {@code orm.xml} are present in the project.
-	 * @return the persistence unit root location or {@code null}
-	 */
-	protected String determinePersistenceUnitRootLocation() {
-		if (this.applicationClass != null) {
-			try {
-				URL mainLocation = this.applicationClass.getProtectionDomain()
-						.getCodeSource().getLocation();
-				return ResourceUtils.extractJarFileURL(mainLocation).toString();
-			}
-			catch (Exception ex) {
-				logger.info("Could not determine persistence unit root location: " + ex);
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -229,6 +219,21 @@ public class EntityManagerFactoryBuilder {
 						.execute(entityManagerFactoryBean);
 			}
 			return entityManagerFactoryBean;
+		}
+
+		private String determinePersistenceUnitRootLocation() {
+			Class<?> source = EntityManagerFactoryBuilder.this.persistenceUnitRootLocationSource;
+			if (source != null) {
+				try {
+					URL url = source.getProtectionDomain().getCodeSource().getLocation();
+					return ResourceUtils.extractJarFileURL(url).toString();
+				}
+				catch (Exception ex) {
+					logger.info("Could not determine persistence "
+							+ "unit root location from " + source + " : " + ex);
+				}
+			}
+			return null;
 		}
 
 	}

@@ -779,18 +779,14 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void getApplicationInfo() {
+	public void getSpringBootMainApplicationClass() {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleConfig.class);
 		application.setWebEnvironment(false);
 		this.context = application.run("foo");
-		ApplicationInfo applicationInfo = this.context.getBean(ApplicationInfo.class);
-		assertThat(application.getMainApplicationClass())
-				.isEqualTo(application.getMainApplicationClass());
-		assertThat(applicationInfo.getApplicationArguments()).isNotNull();
-		assertThat(applicationInfo.getApplicationArguments().getNonOptionArgs())
-				.containsExactly("foo");
-		assertThat(applicationInfo.getBanner()).isNotNull();
+		Class<?> mainApplicationClass = this.context
+				.getBean("springBootMainApplicationClass", Class.class);
+		assertThat(mainApplicationClass).isEqualTo(application.getMainApplicationClass());
 	}
 
 	@Test
