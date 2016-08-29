@@ -27,7 +27,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.ApplicationInfo;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -64,6 +63,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
+
+	private static final String MAIN_APPLICATION_CLASS_BEAN = "springBootMainApplicationClass";
 
 	private final DataSource dataSource;
 
@@ -102,13 +103,15 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
 			JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManagerProvider) {
+		Class<?> mainApplicationClass = null;
+		if (this.beanFactory.containsBean(MAIN_APPLICATION_CLASS_BEAN)) {
+			mainApplicationClass = this.beanFactory.getBean(MAIN_APPLICATION_CLASS_BEAN,
+					Class.class);
+		}
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.properties.getProperties(),
-				persistenceUnitManagerProvider.getIfAvailable());
+				persistenceUnitManagerProvider.getIfAvailable(), mainApplicationClass);
 		builder.setCallback(getVendorCallback());
-		if (this.beanFactory.containsBean("springApplicationInfo")) {
-			builder.setApplicationInfo(this.beanFactory.getBean(ApplicationInfo.class));
-		}
 		return builder;
 	}
 

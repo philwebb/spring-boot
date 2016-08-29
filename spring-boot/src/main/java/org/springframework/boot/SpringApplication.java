@@ -359,11 +359,10 @@ public class SpringApplication {
 		if (printedBanner != null) {
 			context.getBeanFactory().registerSingleton("springBootBanner", printedBanner);
 		}
-		ApplicationInfo applicationInfo = new ApplicationInfo(this, applicationArguments,
-				printedBanner);
-		context.getBeanFactory().registerSingleton("springApplicationInfo",
-				applicationInfo);
-
+		if (this.getMainApplicationClass() != null) {
+			context.getBeanFactory().registerSingleton("springBootMainApplicationClass",
+					getMainApplicationClass());
+		}
 		// Load the sources
 		Set<Object> sources = getSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
