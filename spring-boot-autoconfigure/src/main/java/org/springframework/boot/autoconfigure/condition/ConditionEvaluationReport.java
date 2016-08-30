@@ -127,8 +127,8 @@ public final class ConditionEvaluationReport {
 		String prefix = source + "$";
 		for (Entry<String, ConditionAndOutcomes> entry : this.outcomes.entrySet()) {
 			if (entry.getKey().startsWith(prefix)) {
-				ConditionOutcome outcome = new ConditionOutcome(false,
-						"Ancestor '" + source + "' did not match");
+				ConditionOutcome outcome = ConditionOutcome.noMatch(ConditionMessage
+						.forCondition("Ancestor " + source).because("did not match"));
 				entry.getValue().add(ANCESTOR_CONDITION, outcome);
 			}
 		}

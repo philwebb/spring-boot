@@ -42,23 +42,28 @@ class OnResourceCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata
 				.getAllAnnotationAttributes(ConditionalOnResource.class.getName(), true);
-		if (attributes != null) {
-			ResourceLoader loader = context.getResourceLoader() == null
-					? this.defaultResourceLoader : context.getResourceLoader();
-			List<String> locations = new ArrayList<String>();
-			collectValues(locations, attributes.get("resources"));
-			Assert.isTrue(!locations.isEmpty(),
-					"@ConditionalOnResource annotations must specify at least one resource location");
-			for (String location : locations) {
-				if (!loader
-						.getResource(
-								context.getEnvironment().resolvePlaceholders(location))
-						.exists()) {
-					return ConditionOutcome.noMatch("resource not found: " + location);
-				}
+		ResourceLoader loader = context.getResourceLoader() == null
+				? this.defaultResourceLoader : context.getResourceLoader();
+		List<String> locations = new ArrayList<String>();
+		collectValues(locations, attributes.get("resources"));
+		Assert.isTrue(!locations.isEmpty(),
+				"@ConditionalOnResource annotations must specify at "
+						+ "least one resource location");
+		List<String> missing = new ArrayList<String>();
+		for (String location : locations) {
+			String resouce = context.getEnvironment().resolvePlaceholders(location);
+			if (!loader.getResource(resouce).exists()) {
+				missing.add(location);
 			}
 		}
-		return ConditionOutcome.match();
+		if (!missing.isEmpty()) {
+			return ConditionOutcome
+					.noMatch(ConditionMessage.forCondition(ConditionalOnResource.class)
+							.didNotFind("resource", "resources").in(missing));
+		}
+		return ConditionOutcome
+				.match(ConditionMessage.forCondition(ConditionalOnResource.class)
+						.found("location", "locations").in(locations));
 	}
 
 	private void collectValues(List<String> names, List<Object> values) {

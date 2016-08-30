@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -27,11 +28,17 @@ public class ConditionOutcome {
 
 	private final boolean match;
 
-	private final String message;
+	private final ConditionMessage conditionMessage;
 
+	@Deprecated
 	public ConditionOutcome(boolean match, String message) {
+		this(match, ConditionMessage.of(message));
+	}
+
+	public ConditionOutcome(boolean match, ConditionMessage conditionMessage) {
+		Assert.notNull(conditionMessage, "ConditionMessage must not be null");
 		this.match = match;
-		this.message = message;
+		this.conditionMessage = conditionMessage;
 	}
 
 	/**
@@ -39,7 +46,7 @@ public class ConditionOutcome {
 	 * @return the {@link ConditionOutcome}
 	 */
 	public static ConditionOutcome match() {
-		return match(null);
+		return match(ConditionMessage.empty());
 	}
 
 	/**
@@ -47,7 +54,17 @@ public class ConditionOutcome {
 	 * @param message the message
 	 * @return the {@link ConditionOutcome}
 	 */
+	@Deprecated
 	public static ConditionOutcome match(String message) {
+		return new ConditionOutcome(true, message);
+	}
+
+	/**
+	 * Create a new {@link ConditionOutcome} instance for 'match'.
+	 * @param message the message
+	 * @return the {@link ConditionOutcome}
+	 */
+	public static ConditionOutcome match(ConditionMessage message) {
 		return new ConditionOutcome(true, message);
 	}
 
@@ -56,7 +73,17 @@ public class ConditionOutcome {
 	 * @param message the message
 	 * @return the {@link ConditionOutcome}
 	 */
+	@Deprecated
 	public static ConditionOutcome noMatch(String message) {
+		return new ConditionOutcome(false, message);
+	}
+
+	/**
+	 * Create a new {@link ConditionOutcome} instance for 'no match'.
+	 * @param message the message
+	 * @return the {@link ConditionOutcome}
+	 */
+	public static ConditionOutcome noMatch(ConditionMessage message) {
 		return new ConditionOutcome(false, message);
 	}
 
@@ -73,13 +100,22 @@ public class ConditionOutcome {
 	 * @return the message or {@code null}
 	 */
 	public String getMessage() {
-		return this.message;
+		return (this.conditionMessage.isEmpty() ? null
+				: this.conditionMessage.toString());
+	}
+
+	/**
+	 * Return an outcome message or {@code null}.
+	 * @return the message or {@code null}
+	 */
+	public ConditionMessage getConditionMessage() {
+		return this.conditionMessage;
 	}
 
 	@Override
 	public int hashCode() {
 		return ObjectUtils.hashCode(this.match) * 31
-				+ ObjectUtils.nullSafeHashCode(this.message);
+				+ ObjectUtils.nullSafeHashCode(this.conditionMessage);
 	}
 
 	@Override
@@ -92,15 +128,15 @@ public class ConditionOutcome {
 		}
 		if (getClass() == obj.getClass()) {
 			ConditionOutcome other = (ConditionOutcome) obj;
-			return (this.match == other.match
-					&& ObjectUtils.nullSafeEquals(this.message, other.message));
+			return (this.match == other.match && ObjectUtils
+					.nullSafeEquals(this.conditionMessage, other.conditionMessage));
 		}
 		return super.equals(obj);
 	}
 
 	@Override
 	public String toString() {
-		return (this.message == null ? "" : this.message);
+		return (this.conditionMessage == null ? "" : this.conditionMessage.toString());
 	}
 
 	/**
@@ -110,7 +146,7 @@ public class ConditionOutcome {
 	 * @since 1.3.0
 	 */
 	public static ConditionOutcome inverse(ConditionOutcome outcome) {
-		return new ConditionOutcome(!outcome.isMatch(), outcome.getMessage());
+		return new ConditionOutcome(!outcome.isMatch(), outcome.getConditionMessage());
 	}
 
 }
