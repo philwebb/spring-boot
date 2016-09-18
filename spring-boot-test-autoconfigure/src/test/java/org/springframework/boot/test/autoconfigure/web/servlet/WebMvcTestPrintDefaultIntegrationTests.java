@@ -37,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(secure = false)
+@AutoConfigureMockMvc(printOnlyOnFailure = false)
 public class WebMvcTestPrintDefaultIntegrationTests {
 
 	@Rule
