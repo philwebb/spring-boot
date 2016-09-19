@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
+@RunWith(WebMvcTestPrintDefaultRunner.class)
 @WebMvcTest(secure = false)
 public class WebMvcTestPrintDefaultIntegrationTests {
 
@@ -47,7 +46,7 @@ public class WebMvcTestPrintDefaultIntegrationTests {
 
 	@Test
 	public void shouldPrint() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(content().string("notone"))
+		this.mvc.perform(get("/one")).andExpect(content().string("none"))
 				.andExpect(status().isOk());
 	}
 
