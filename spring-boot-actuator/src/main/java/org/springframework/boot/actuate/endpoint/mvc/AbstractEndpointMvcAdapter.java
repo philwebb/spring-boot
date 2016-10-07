@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -30,7 +31,7 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  */
 public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
-		implements MvcEndpoint {
+		implements ScopedMvcEndpoint {
 
 	private final E delegate;
 
@@ -62,6 +63,16 @@ public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
 
 	@Override
 	public String getPath() {
+		return getPath(MvcEndpointScope.USER);
+	}
+
+	@Override
+	public String getPath(MvcEndpointScope scope) {
+		if (scope == MvcEndpointScope.PLATFORM) {
+			return "/" + (this.delegate instanceof AbstractEndpoint
+					? ((AbstractEndpoint<?>) this.delegate).getDefaultId()
+					: this.delegate.getId());
+		}
 		return (this.path != null ? this.path : "/" + this.delegate.getId());
 	}
 
@@ -77,6 +88,14 @@ public abstract class AbstractEndpointMvcAdapter<E extends Endpoint<?>>
 
 	@Override
 	public boolean isSensitive() {
+		return isSensitive(MvcEndpointScope.USER);
+	}
+
+	@Override
+	public boolean isSensitive(MvcEndpointScope scope) {
+		if (scope == MvcEndpointScope.PLATFORM) {
+			return false;
+		}
 		return this.delegate.isSensitive();
 	}
 

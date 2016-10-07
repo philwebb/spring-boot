@@ -33,6 +33,8 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 
 	private Environment environment;
 
+	private final String defaultId;
+
 	/**
 	 * Endpoint identifier. With HTTP monitoring the identifier of the endpoint is mapped
 	 * to a URL (e.g. 'foo' is mapped to '/foo').
@@ -69,6 +71,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * @param sensitive if the endpoint is sensitive by default
 	 */
 	public AbstractEndpoint(String id, boolean sensitive) {
+		this.defaultId = id;
 		this.id = id;
 		this.sensitiveDefault = sensitive;
 	}
@@ -80,6 +83,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	 * @param enabled if the endpoint is enabled or not.
 	 */
 	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
+		this.defaultId = id;
 		this.id = id;
 		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
@@ -92,6 +96,16 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T>, EnvironmentAwa
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
+	}
+
+	/**
+	 * The default recommended ID for the endpoint. Some technologies may prefer to use
+	 * this ID when exposing the endpoint rather than {@link #getId()} which can be
+	 * changed by the user.
+	 * @return the default ID.
+	 */
+	public String getDefaultId() {
+		return this.defaultId;
 	}
 
 	@Override

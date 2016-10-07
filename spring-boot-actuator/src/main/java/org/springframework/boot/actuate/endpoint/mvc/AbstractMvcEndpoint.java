@@ -34,9 +34,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @since 1.4.0
  */
 public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
-		implements MvcEndpoint, EnvironmentAware {
+		implements ScopedMvcEndpoint, EnvironmentAware {
 
 	private Environment environment;
+
+	private final String defaultPath;
 
 	/**
 	 * Endpoint URL path.
@@ -58,11 +60,13 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 	private final boolean sensitiveDefault;
 
 	public AbstractMvcEndpoint(String path, boolean sensitive) {
+		this.defaultPath = path;
 		this.path = path;
 		this.sensitiveDefault = sensitive;
 	}
 
 	public AbstractMvcEndpoint(String path, boolean sensitive, boolean enabled) {
+		this.defaultPath = path;
 		this.path = path;
 		this.sensitiveDefault = sensitive;
 		this.enabled = enabled;
@@ -79,7 +83,12 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 
 	@Override
 	public String getPath() {
-		return this.path;
+		return getPath(MvcEndpointScope.USER);
+	}
+
+	@Override
+	public String getPath(MvcEndpointScope scope) {
+		return (scope == MvcEndpointScope.PLATFORM ? this.defaultPath : this.path);
 	}
 
 	public void setPath(String path) {
@@ -96,6 +105,14 @@ public abstract class AbstractMvcEndpoint extends WebMvcConfigurerAdapter
 
 	@Override
 	public boolean isSensitive() {
+		return isSensitive(MvcEndpointScope.USER);
+	}
+
+	@Override
+	public boolean isSensitive(MvcEndpointScope scope) {
+		if (scope == MvcEndpointScope.PLATFORM) {
+			return false;
+		}
 		return EndpointProperties.isSensitive(this.environment, this.sensitive,
 				this.sensitiveDefault);
 	}
