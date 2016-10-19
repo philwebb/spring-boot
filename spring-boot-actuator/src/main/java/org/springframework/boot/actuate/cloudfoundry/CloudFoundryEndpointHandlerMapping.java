@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.cloudfoundry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.web.cors.CorsConfiguration;
@@ -49,6 +51,22 @@ class CloudFoundryEndpointHandlerMapping extends EndpointHandlerMapping {
 	CloudFoundryEndpointHandlerMapping(Set<NamedMvcEndpoint> endpoints,
 			CorsConfiguration corsConfiguration) {
 		super(endpoints, corsConfiguration);
+	}
+
+	@Override
+	protected void postProcessEndpoints(Set<MvcEndpoint> endpoints) {
+		super.postProcessEndpoints(endpoints);
+		for (Iterator<MvcEndpoint> iterator = endpoints.iterator(); iterator.hasNext();) {
+			if (iterator.next() instanceof HalJsonMvcEndpoint) {
+				iterator.remove();
+			}
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		detectHandlerMethods(new CloudFoundryDiscoveryMvcEndpoint((Set) getEndpoints()));
 	}
 
 	@Override
