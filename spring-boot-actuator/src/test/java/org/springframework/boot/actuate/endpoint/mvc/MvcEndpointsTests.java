@@ -116,4 +116,5 @@ public class MvcEndpointsTests {
 			super(delegate);
 		}
 	}
+
 }

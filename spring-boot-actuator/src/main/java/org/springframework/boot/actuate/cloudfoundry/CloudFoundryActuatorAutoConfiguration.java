@@ -20,10 +20,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,13 +33,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
- * Configuration to to expose {@link Endpoint} instances for Cloud Foundry specific path.
+ * {@link EnableAutoConfiguration Auto-configuration} to expose actuator endpoints for
+ * cloud foundry to use.
  *
  * @author Madhura Bhave
  * @since 1.5.0
  */
 @Configuration
-@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = false)
 @ConditionalOnBean(MvcEndpoints.class)
 @AutoConfigureAfter(EndpointWebMvcAutoConfiguration.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
@@ -48,14 +49,18 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@Bean
 	public CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping(
 			MvcEndpoints mvcEndpoints) {
-		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		Set<NamedMvcEndpoint> endpoints = new LinkedHashSet<NamedMvcEndpoint>(
 				mvcEndpoints.getEndpoints(NamedMvcEndpoint.class));
 		CloudFoundryEndpointHandlerMapping mapping = new CloudFoundryEndpointHandlerMapping(
-				endpoints, corsConfiguration);
+				endpoints, getCorsConfiguration());
 		mapping.setPrefix("/cloudfoundryapplication");
 		return mapping;
+	}
+
+	private CorsConfiguration getCorsConfiguration() {
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+		return corsConfiguration;
 	}
 
 }

@@ -38,9 +38,9 @@ public class CloudFoundryEndpointHandlerMappingTests {
 	@Test
 	public void getHandlerExecutionChainShouldHaveSecurityInterceptor() throws Exception {
 		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("a"));
-		CloudFoundryEndpointHandlerMapping mapping = new CloudFoundryEndpointHandlerMapping(
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
 				Arrays.asList(endpoint));
-		HandlerExecutionChain handlerExecutionChain = mapping
+		HandlerExecutionChain handlerExecutionChain = handlerMapping
 				.getHandlerExecutionChain(endpoint, new MockHttpServletRequest());
 		HandlerInterceptor[] interceptors = handlerExecutionChain.getInterceptors();
 		assertThat(interceptors).hasAtLeastOneElementOfType(
@@ -52,10 +52,9 @@ public class CloudFoundryEndpointHandlerMappingTests {
 			throws Exception {
 		TestMvcEndpoint testMvcEndpoint = new TestMvcEndpoint(new TestEndpoint("a"));
 		testMvcEndpoint.setPath("something-else");
-		CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping = new CloudFoundryEndpointHandlerMapping(
+		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
 				Arrays.asList(testMvcEndpoint));
-		assertThat(cloudFoundryEndpointHandlerMapping.getPath(testMvcEndpoint))
-				.isEqualTo("a");
+		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("a");
 	}
 
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
@@ -78,4 +77,5 @@ public class CloudFoundryEndpointHandlerMappingTests {
 		}
 
 	}
+
 }

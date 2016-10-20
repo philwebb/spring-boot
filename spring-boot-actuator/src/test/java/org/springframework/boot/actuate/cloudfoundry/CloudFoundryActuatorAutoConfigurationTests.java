@@ -70,15 +70,13 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	public void cloudFoundryPlatformActive() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---");
+		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:---",
+				"management.cloudfoundry.enabled:true");
 		this.context.refresh();
-		assertThat(this.context.containsBean("cloudFoundryEndpointHandlerMapping"))
-				.isTrue();
-		CloudFoundryEndpointHandlerMapping cloudFoundryEndpointHandlerMapping = this.context
-				.getBean("cloudFoundryEndpointHandlerMapping",
-						CloudFoundryEndpointHandlerMapping.class);
-		assertThat(cloudFoundryEndpointHandlerMapping.getPrefix())
-				.isEqualTo("/cloudfoundryapplication");
+		CloudFoundryEndpointHandlerMapping handlerMapping = this.context.getBean(
+				"cloudFoundryEndpointHandlerMapping",
+				CloudFoundryEndpointHandlerMapping.class);
+		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
 	}
 
 	@Test
@@ -96,4 +94,5 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		assertThat(this.context.containsBean("cloudFoundryEndpointHandlerMapping"))
 				.isFalse();
 	}
+
 }

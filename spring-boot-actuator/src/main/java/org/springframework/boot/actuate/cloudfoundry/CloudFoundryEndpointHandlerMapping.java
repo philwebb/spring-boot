@@ -63,25 +63,29 @@ class CloudFoundryEndpointHandlerMapping extends EndpointHandlerMapping {
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler,
 			HttpServletRequest request) {
 		HandlerExecutionChain chain = super.getHandlerExecutionChain(handler, request);
+		HandlerInterceptor[] interceptors = addSecurityInterceptor(
+				chain.getInterceptors());
+		return new HandlerExecutionChain(chain.getHandler(), interceptors);
+	}
+
+	private HandlerInterceptor[] addSecurityInterceptor(HandlerInterceptor[] existing) {
 		List<HandlerInterceptor> interceptors = new ArrayList<HandlerInterceptor>();
 		interceptors.add(new SecurityInterceptor());
-		if (chain.getInterceptors() != null) {
-			interceptors.addAll(Arrays.asList(chain.getInterceptors()));
+		if (existing != null) {
+			interceptors.addAll(Arrays.asList(existing));
 		}
-		return new HandlerExecutionChain(chain.getHandler(),
-				interceptors.toArray(new HandlerInterceptor[interceptors.size()]));
+		return interceptors.toArray(new HandlerInterceptor[interceptors.size()]);
 	}
 
 	/**
-	 * The security interceptor that secures cloudfoundry actuator endpoints.
-	 *
+	 * Security interceptor to check cloud foundry token.
 	 */
 	static class SecurityInterceptor extends HandlerInterceptorAdapter {
 
 		@Override
 		public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 				Object handler) throws Exception {
-			// FIXME
+			// Currently open
 			return true;
 		}
 
