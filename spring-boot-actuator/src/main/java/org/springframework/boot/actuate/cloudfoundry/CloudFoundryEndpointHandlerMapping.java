@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.AbstractEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.HalJsonMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.NamedMvcEndpoint;
@@ -42,7 +42,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  *
  * @author Madhura Bhave
  */
-class CloudFoundryEndpointHandlerMapping extends EndpointHandlerMapping {
+class CloudFoundryEndpointHandlerMapping
+		extends AbstractEndpointHandlerMapping<NamedMvcEndpoint> {
 
 	CloudFoundryEndpointHandlerMapping(Collection<? extends NamedMvcEndpoint> endpoints) {
 		super(endpoints);
@@ -54,9 +55,10 @@ class CloudFoundryEndpointHandlerMapping extends EndpointHandlerMapping {
 	}
 
 	@Override
-	protected void postProcessEndpoints(Set<MvcEndpoint> endpoints) {
+	protected void postProcessEndpoints(Set<NamedMvcEndpoint> endpoints) {
 		super.postProcessEndpoints(endpoints);
-		for (Iterator<MvcEndpoint> iterator = endpoints.iterator(); iterator.hasNext();) {
+		Iterator<NamedMvcEndpoint> iterator = endpoints.iterator();
+		while (iterator.hasNext()) {
 			if (iterator.next() instanceof HalJsonMvcEndpoint) {
 				iterator.remove();
 			}
@@ -66,7 +68,7 @@ class CloudFoundryEndpointHandlerMapping extends EndpointHandlerMapping {
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		detectHandlerMethods(new CloudFoundryDiscoveryMvcEndpoint((Set) getEndpoints()));
+		detectHandlerMethods(new CloudFoundryDiscoveryMvcEndpoint(getEndpoints()));
 	}
 
 	@Override

@@ -107,13 +107,18 @@ public class CloudFoundryEndpointHandlerMappingTests {
 	}
 
 	private static class TestHalJsonMvcEndpoint extends HalJsonMvcEndpoint {
+
 		TestHalJsonMvcEndpoint() {
 			super(new ManagementServletContext() {
+
 				@Override
 				public String getContextPath() {
 					return "";
 				}
+
 			});
+
 		}
 	}
+
 }

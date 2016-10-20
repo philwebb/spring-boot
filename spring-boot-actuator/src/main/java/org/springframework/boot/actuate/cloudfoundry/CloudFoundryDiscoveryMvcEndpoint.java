@@ -61,9 +61,7 @@ class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
 	}
 
 	/**
-	 * Used by {@link CloudFoundryDiscoveryMvcEndpoint} to create a map of the endpoint
-	 * name to the href.
-	 *
+	 * Details for a link link in the HAL response.
 	 */
 	static class Link {
 
@@ -84,4 +82,5 @@ class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
 		}
 
 	}
+
 }
