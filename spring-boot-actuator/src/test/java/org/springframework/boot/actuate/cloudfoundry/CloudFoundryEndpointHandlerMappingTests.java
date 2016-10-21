@@ -60,7 +60,7 @@ public class CloudFoundryEndpointHandlerMappingTests {
 		testMvcEndpoint.setPath("something-else");
 		CloudFoundryEndpointHandlerMapping handlerMapping = new CloudFoundryEndpointHandlerMapping(
 				Arrays.asList(testMvcEndpoint));
-		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("a");
+		assertThat(handlerMapping.getPath(testMvcEndpoint)).isEqualTo("/a");
 	}
 
 	@Test
