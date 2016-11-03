@@ -54,8 +54,14 @@ class CloudFoundryDiscoveryMvcEndpoint extends AbstractMvcEndpoint {
 			url = url.substring(0, url.length() - 1);
 		}
 		links.put("self", Link.withHref(url));
+		AccessLevel accessLevel = (AccessLevel) request
+				.getAttribute("cloudFoundryAccessLevel");
+
 		for (NamedMvcEndpoint endpoint : this.endpoints) {
-			links.put(endpoint.getName(), Link.withHref(url + "/" + endpoint.getName()));
+			if (accessLevel.isAccessAllowed(endpoint.getPath())) {
+				links.put(endpoint.getName(),
+						Link.withHref(url + "/" + endpoint.getName()));
+			}
 		}
 		return Collections.singletonMap("_links", links);
 	}
