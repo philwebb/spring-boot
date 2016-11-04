@@ -22,6 +22,7 @@ import org.hamcrest.Matcher;
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 
 /**
+ * Hamcrest matcher to check the {@link AuthorizationExceptionMatcher} {@link Reason}.
  *
  * @author Madhura Bhave
  */

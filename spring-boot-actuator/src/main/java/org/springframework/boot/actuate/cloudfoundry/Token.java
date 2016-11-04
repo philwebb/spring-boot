@@ -23,6 +23,11 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
+/**
+ * The JSON web token provided with each request that originates from Cloud Foundry.
+ *
+ * @author Madhura Bhave
+ */
 class Token {
 
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
@@ -66,11 +71,6 @@ class Token {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return this.encoded;
-	};
-
 	public byte[] getContent() {
 		return this.encoded.substring(0, this.encoded.lastIndexOf(".")).getBytes();
 	}
@@ -106,5 +106,10 @@ class Token {
 		}
 		return (T) value;
 	}
+
+	@Override
+	public String toString() {
+		return this.encoded;
+	};
 
 }

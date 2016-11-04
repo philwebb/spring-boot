@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CloudFoundrySecurityInterceptor}.
+ *
  * @author Madhura Bhave
  */
 public class CloudFoundrySecurityInterceptorTests {
@@ -128,7 +129,7 @@ public class CloudFoundrySecurityInterceptorTests {
 	}
 
 	@Test
-	public void preHandleSuccessful() throws Exception {
+	public void preHandleSuccessfulWithFullAccess() throws Exception {
 		String accessToken = mockAccessToken();
 		this.request.addHeader("Authorization", "Bearer " + accessToken);
 		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
@@ -143,6 +144,26 @@ public class CloudFoundrySecurityInterceptorTests {
 		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
 				.isEqualTo(AccessLevel.FULL);
+	}
+
+	@Test
+	public void preHandleSuccessfulWithRestrictedAccess() throws Exception {
+		this.endpoint = new TestMvcEndpoint(new TestEndpoint("info"));
+		this.handlerMethod = new HandlerMethod(this.endpoint, "invoke");
+		String accessToken = mockAccessToken();
+		this.request.addHeader("Authorization", "Bearer " + accessToken);
+		BDDMockito.given(this.securityService.getAccessLevel(accessToken, "my-app-id"))
+				.willReturn(AccessLevel.RESTRICTED);
+		boolean preHandle = this.interceptor.preHandle(this.request, this.response,
+				this.handlerMethod);
+		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
+		verify(this.tokenValidator).validate(tokenArgumentCaptor.capture());
+		Token token = tokenArgumentCaptor.getValue();
+		assertThat(token.toString()).isEqualTo(accessToken);
+		assertThat(preHandle).isTrue();
+		assertThat(this.response.getStatus()).isEqualTo(HttpStatus.OK.value());
+		assertThat(this.request.getAttribute("cloudFoundryAccessLevel"))
+				.isEqualTo(AccessLevel.RESTRICTED);
 	}
 
 	private String mockAccessToken() {

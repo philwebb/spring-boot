@@ -29,6 +29,11 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.util.Base64Utils;
 
+/**
+ * Validator used to ensure that a signed {@link Token} has not been tampered with.
+ *
+ * @author Madhura Bhave
+ */
 class TokenValidator {
 
 	private final CloudFoundrySecurityService securityService;
@@ -44,7 +49,6 @@ class TokenValidator {
 		validateSignature(token);
 		validateExpiry(token);
 		validateIssuer(token);
-		validateAudience(token);
 	}
 
 	private void validateAlgorithm(Token token) {
@@ -119,11 +123,4 @@ class TokenValidator {
 		}
 	}
 
-	private void validateAudience(Token jwt) {
-
-	}
-
-	public void setTokenKeys(List<String> tokenKeys) {
-		this.tokenKeys = tokenKeys;
-	}
 }

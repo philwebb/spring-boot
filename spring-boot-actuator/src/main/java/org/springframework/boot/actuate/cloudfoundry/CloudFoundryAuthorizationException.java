@@ -18,6 +18,11 @@ package org.springframework.boot.actuate.cloudfoundry;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * Authorization exceptions thrown to limit access to the endpoints.
+ *
+ * @author Madhura Bhave
+ */
 class CloudFoundryAuthorizationException extends RuntimeException {
 
 	private final Reason reason;
@@ -31,14 +36,25 @@ class CloudFoundryAuthorizationException extends RuntimeException {
 		this.reason = reason;
 	}
 
+	/**
+	 * Return the status code that should be returned to the client.
+	 * @return the HTTP status code
+	 */
 	public HttpStatus getStatusCode() {
 		return getReason().getStatus();
 	}
 
+	/**
+	 * Return the reason why the authorization exception was thrown.
+	 * @return the reason
+	 */
 	public Reason getReason() {
 		return this.reason;
 	}
 
+	/**
+	 * Reasons why the exception can be thrown.
+	 */
 	enum Reason {
 
 		ACCESS_DENIED(HttpStatus.FORBIDDEN),

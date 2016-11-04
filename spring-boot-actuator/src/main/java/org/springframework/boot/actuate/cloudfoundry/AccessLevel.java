@@ -19,10 +19,24 @@ package org.springframework.boot.actuate.cloudfoundry;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * The specific access level granted to the cloud foundry user that's calling the
+ * endpoints.
+ *
+ * @author Madhura Bhave
+ */
 enum AccessLevel {
 
+	/**
+	 * Restricted access to a limited set of endpoints.
+	 */
 	RESTRICTED("", "/health", "/info"),
 
+	/**
+	 * Full access to all endpoints.
+	 */
 	FULL;
 
 	private final List<String> endpointPaths;
@@ -31,8 +45,17 @@ enum AccessLevel {
 		this.endpointPaths = Arrays.asList(endpointPaths);
 	}
 
+	/**
+	 * Returns if the access level should allow access to the specified endpoint path.
+	 * @param endpointPath the endpoitn path
+	 * @return {@code true} if access is allowed
+	 */
 	public boolean isAccessAllowed(String endpointPath) {
 		return this.endpointPaths.isEmpty() || this.endpointPaths.contains(endpointPath);
+	}
+
+	public void put(HttpServletRequest request) {
+		request.setAttribute("cloudFoundryAccessLevel", this);
 	}
 
 }

@@ -27,8 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.actuate.cloudfoundry.AuthorizationExceptionMatcher.authorizationException;
 
 /**
+ * Tests for {@link Token}.
  *
- * @author Tests for {@link Token}.
+ * @author Madhura Bhave
  */
 public class TokenTests {
 

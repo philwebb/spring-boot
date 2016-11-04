@@ -26,10 +26,13 @@ import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationEx
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * Security interceptor to check cloud foundry token.
+ * {@link HandlerInterceptor} to check the cloud foundry token.
+ *
+ * @author Madhura Bhave
  */
 class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 
@@ -64,7 +67,6 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 			HandlerMethod handlerMethod = (HandlerMethod) o;
 			MvcEndpoint mvcEndpoint = (MvcEndpoint) handlerMethod.getBean();
 			check(request, mvcEndpoint);
-			request.setAttribute("cloudFoundryAccessLevel", AccessLevel.FULL);
 		}
 		catch (CloudFoundryAuthorizationException ex) {
 			this.logger.error(ex);
@@ -84,6 +86,7 @@ class CloudFoundrySecurityInterceptor extends HandlerInterceptorAdapter {
 			throw new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED,
 					"Access denied");
 		}
+		accessLevel.put(request);
 	}
 
 	private Token getToken(HttpServletRequest request) {

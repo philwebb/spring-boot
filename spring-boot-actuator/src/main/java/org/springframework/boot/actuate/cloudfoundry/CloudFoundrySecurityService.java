@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.cloudfoundry;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * Cloud Foundry security service to handle REST calls to the cloud controller and UAA.
  *
  * @author Madhura Bhave
  */
@@ -51,11 +53,17 @@ public class CloudFoundrySecurityService {
 		this.cloudControllerUrl = cloudControllerUrl;
 	}
 
+	/**
+	 * Return the access level that should be granted to the given token.
+	 * @param token the token
+	 * @param applicationId the cloud foundry application ID
+	 * @return the access level that should be granted
+	 * @throws CloudFoundryAuthorizationException if the token is not authorized
+	 */
 	public AccessLevel getAccessLevel(String token, String applicationId)
-			throws Exception {
+			throws CloudFoundryAuthorizationException {
 		try {
-			URI uri = new URI(this.cloudControllerUrl + "/v2/apps/" + applicationId
-					+ "/permissions");
+			URI uri = getPermissionsUri(applicationId);
 			RequestEntity<?> request = RequestEntity.get(uri)
 					.header("Authorization", "bearer " + token).build();
 			Map<?, ?> body = this.restTemplate.exchange(request, Map.class).getBody();
@@ -78,6 +86,20 @@ public class CloudFoundrySecurityService {
 		}
 	}
 
+	private URI getPermissionsUri(String applicationId) {
+		try {
+			return new URI(this.cloudControllerUrl + "/v2/apps/" + applicationId
+					+ "/permissions");
+		}
+		catch (URISyntaxException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	/**
+	 * Return all token keys known by the UAA.
+	 * @return a list of token keys
+	 */
 	public List<String> fetchTokenKeys() {
 		try {
 			return extractTokenKeys(this.restTemplate
@@ -98,6 +120,10 @@ public class CloudFoundrySecurityService {
 		return tokenKeys;
 	}
 
+	/**
+	 * Return the URL of the UAA.
+	 * @return the UAA url
+	 */
 	public String getUaaUrl() {
 		if (this.uaaUrl == null) {
 			try {
