@@ -77,9 +77,11 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	public void cloudFoundryPlatformActive() throws Exception {
 		CloudFoundryEndpointHandlerMapping handlerMapping = x();
 		assertThat(handlerMapping.getPrefix()).isEqualTo("/cloudfoundryapplication");
-		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils.getField(handlerMapping, "corsConfiguration");
+		CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils
+				.getField(handlerMapping, "corsConfiguration");
 		assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
-		assertThat(corsConfiguration.getAllowedMethods()).contains(HttpMethod.GET.name(), HttpMethod.POST.name());
+		assertThat(corsConfiguration.getAllowedMethods()).contains(HttpMethod.GET.name(),
+				HttpMethod.POST.name());
 	}
 
 	@Test

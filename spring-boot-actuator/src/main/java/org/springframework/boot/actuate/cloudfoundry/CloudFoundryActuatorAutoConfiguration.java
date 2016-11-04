@@ -88,7 +88,8 @@ public class CloudFoundryActuatorAutoConfiguration {
 	private CorsConfiguration getCorsConfiguration() {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
-		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+		corsConfiguration.setAllowedMethods(
+				Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
 		return corsConfiguration;
 	}
 
