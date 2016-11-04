@@ -180,12 +180,12 @@ public class TokenValidatorTests {
 		PrivateKey privateKey = getPrivateKey();
 		Signature signature = Signature.getInstance("SHA256WithRSA");
 		signature.initSign(privateKey);
-		byte[] content = dotConcat(Base64Utils.encode(header),
+		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header),
 				Base64Utils.encode(claims));
 		signature.update(content);
 		byte[] crypto = signature.sign();
-		byte[] token = dotConcat(Base64Utils.encode(header), Base64Utils.encode(claims),
-				Base64Utils.encode(crypto));
+		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header),
+				Base64Utils.encodeUrlSafe(claims), Base64Utils.encodeUrlSafe(crypto));
 		return new String(token, UTF_8);
 	}
 

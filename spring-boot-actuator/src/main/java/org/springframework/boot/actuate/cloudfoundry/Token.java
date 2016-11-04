@@ -61,7 +61,7 @@ class Token {
 
 	private Map<String, Object> parseJson(String base64) {
 		try {
-			byte[] bytes = Base64Utils.decodeFromString(base64);
+			byte[] bytes = Base64Utils.decodeFromUrlSafeString(base64);
 			return JsonParserFactory.getJsonParser().parseMap(new String(bytes, UTF_8));
 		}
 		catch (RuntimeException ex) {
@@ -76,7 +76,7 @@ class Token {
 	}
 
 	public byte[] getSignature() {
-		return Base64Utils.decodeFromString(this.signature);
+		return Base64Utils.decodeFromUrlSafeString(this.signature);
 	}
 
 	public String getSignatureAlgorithm() {
