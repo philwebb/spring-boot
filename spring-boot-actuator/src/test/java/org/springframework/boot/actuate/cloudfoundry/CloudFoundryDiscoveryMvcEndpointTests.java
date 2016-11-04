@@ -58,7 +58,7 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 	public void linksResponseWhenRequestUriHasNoTrailingSlash() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/cloudfoundryapplication");
-		request.setAttribute("cloudFoundryAccessLevel", AccessLevel.FULL);
+		AccessLevel.FULL.put(request);
 		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
 				.links(request).get("_links");
 		assertThat(links.get("self").getHref())
@@ -71,7 +71,7 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 	public void linksResponseWhenRequestUriHasTrailingSlash() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/cloudfoundryapplication/");
-		request.setAttribute("cloudFoundryAccessLevel", AccessLevel.FULL);
+		AccessLevel.FULL.put(request);
 		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
 				.links(request).get("_links");
 		assertThat(links.get("self").getHref())
@@ -87,7 +87,7 @@ public class CloudFoundryDiscoveryMvcEndpointTests {
 		this.endpoints.add(testHealthMvcEndpoint);
 		MockHttpServletRequest request = new MockHttpServletRequest("GET",
 				"/cloudfoundryapplication/");
-		request.setAttribute("cloudFoundryAccessLevel", AccessLevel.RESTRICTED);
+		AccessLevel.RESTRICTED.put(request);
 		Map<String, CloudFoundryDiscoveryMvcEndpoint.Link> links = this.endpoint
 				.links(request).get("_links");
 		assertThat(links.get("self").getHref())
