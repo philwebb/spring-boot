@@ -28,43 +28,48 @@ import org.springframework.util.Assert;
  * A {@link GaugeWriter} that writes the metric updates to InfluxDB.
  *
  * @author Mateusz Klimaszewski
+ * @since 1.5.0
  */
 public class InfluxDBMetricWriter implements GaugeWriter {
 
 	private static final String DEFAULT_DATABASE_NAME = "metrics";
+
 	private static final int DEFAULT_BATCH_ACTIONS = 500;
+
 	private static final int DEFAULT_FLUSH_DURATION = 30;
 
-	private final InfluxDB influxDB;
+	private final InfluxDB influxDb;
+
 	private final String databaseName;
 
-	private InfluxDBMetricWriter(Builder builder) {
-		this.influxDB = builder.influxDB;
-		this.databaseName = builder.databaseName;
-		this.influxDB.createDatabase(this.databaseName);
-		this.influxDB.enableBatch(builder.batchActions, builder.flushDuration,
-				builder.flushDurationTimeUnit);
-		this.influxDB.setLogLevel(builder.logLevel);
+	private InfluxDBMetricWriter(InfluxDB influxDb, String databaseName) {
+		this.influxDb = influxDb;
+		this.databaseName = databaseName;
 	}
 
 	@Override
 	public void set(Metric<?> value) {
 		Point point = Point.measurement(value.getName())
 				.time(value.getTimestamp().getTime(), TimeUnit.MILLISECONDS)
-				.addField("value", value.getValue())
-				.build();
-		this.influxDB.write(this.databaseName, value.getName(), point);
+				.addField("value", value.getValue()).build();
+		this.influxDb.write(this.databaseName, value.getName(), point);
 	}
 
 	/**
 	 * {@link InfluxDBMetricWriter} builder with possibility to change default arguments
 	 */
 	public static class Builder {
+
 		private final InfluxDB influxDB;
+
 		private String databaseName = DEFAULT_DATABASE_NAME;
+
 		private int batchActions = DEFAULT_BATCH_ACTIONS;
+
 		private int flushDuration = DEFAULT_FLUSH_DURATION;
+
 		private TimeUnit flushDurationTimeUnit = TimeUnit.SECONDS;
+
 		private InfluxDB.LogLevel logLevel = InfluxDB.LogLevel.BASIC;
 
 		public Builder(InfluxDB influxDB) {
@@ -94,7 +99,13 @@ public class InfluxDBMetricWriter implements GaugeWriter {
 		}
 
 		public InfluxDBMetricWriter build() {
-			return new InfluxDBMetricWriter(this);
+			this.influxDB.createDatabase(this.databaseName);
+			this.influxDB.enableBatch(this.batchActions, this.flushDuration,
+					this.flushDurationTimeUnit);
+			this.influxDB.setLogLevel(this.logLevel);
+			return new InfluxDBMetricWriter(this.influxDB, this.databaseName);
 		}
+
 	}
+
 }

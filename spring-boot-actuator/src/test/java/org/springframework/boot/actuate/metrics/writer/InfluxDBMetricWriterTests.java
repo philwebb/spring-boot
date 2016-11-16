@@ -21,11 +21,9 @@ import java.util.concurrent.TimeUnit;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -40,46 +38,26 @@ import static org.mockito.Mockito.verify;
  */
 public class InfluxDBMetricWriterTests {
 
-	private InfluxDB influxDB = mock(InfluxDB.class);
-	private InfluxDBMetricWriter influxDBMetricWriter;
+	private InfluxDB influx = mock(InfluxDB.class);
 
 	@Test
 	public void builderNonDefaultOptions() {
-		this.influxDBMetricWriter = new InfluxDBMetricWriter.Builder(this.influxDB)
-				.databaseName("testDatabaseName")
-				.batchActions(2000)
-				.flushDuration(10, TimeUnit.MILLISECONDS)
-				.logLevel(InfluxDB.LogLevel.FULL)
-				.build();
-		ArgumentCaptor<String> databaseNameCaptor = ArgumentCaptor.forClass(
-				String.class);
-		ArgumentCaptor<Integer> bashActionsCaptor = ArgumentCaptor.forClass(
-				Integer.class);
-		ArgumentCaptor<Integer> flushDurationCaptor = ArgumentCaptor.forClass(
-				Integer.class);
-		ArgumentCaptor<TimeUnit> flushDurationTimeUnitCaptor = ArgumentCaptor.forClass(
-				TimeUnit.class);
-		ArgumentCaptor<InfluxDB.LogLevel> logLevelCaptor = ArgumentCaptor.forClass(
-				InfluxDB.LogLevel.class);
-		verify(this.influxDB).createDatabase(databaseNameCaptor.capture());
-		verify(this.influxDB).enableBatch(bashActionsCaptor.capture(),
-				flushDurationCaptor.capture(), flushDurationTimeUnitCaptor.capture());
-		verify(this.influxDB).setLogLevel(logLevelCaptor.capture());
-		assertThat("testDatabaseName").isEqualTo(databaseNameCaptor.getValue());
-		assertThat(2000).isEqualTo(bashActionsCaptor.getValue().intValue());
-		assertThat(10).isEqualTo(flushDurationCaptor.getValue().intValue());
-		assertThat(TimeUnit.MILLISECONDS).isEqualTo(flushDurationTimeUnitCaptor
-				.getValue());
-		assertThat(InfluxDB.LogLevel.FULL).isEqualTo(logLevelCaptor.getValue());
+		new InfluxDBMetricWriter.Builder(this.influx).databaseName("testDatabaseName")
+				.batchActions(2000).flushDuration(10, TimeUnit.MILLISECONDS)
+				.logLevel(InfluxDB.LogLevel.FULL).build();
+		verify(this.influx).createDatabase("testDatabaseName");
+		verify(this.influx).enableBatch(2000, 10, TimeUnit.MILLISECONDS);
+		verify(this.influx).setLogLevel(InfluxDB.LogLevel.FULL);
 	}
 
 	@Test
 	public void setMetric() {
-		this.influxDBMetricWriter = new InfluxDBMetricWriter.Builder(this.influxDB)
+		InfluxDBMetricWriter writer = new InfluxDBMetricWriter.Builder(this.influx)
 				.build();
 		Metric<Number> metric = new Metric<Number>("testName", 1);
-		this.influxDBMetricWriter.set(metric);
-		verify(this.influxDB, times(1)).write(anyString(), eq(metric.getName()),
+		writer.set(metric);
+		verify(this.influx, times(1)).write(anyString(), eq(metric.getName()),
 				any(Point.class));
 	}
+
 }
