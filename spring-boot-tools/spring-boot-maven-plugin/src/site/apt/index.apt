@@ -48,6 +48,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/repackage-disable-attach.html}Local repackaged artifact}}
 
+* {{{./examples/custom-repackager.html}Custom repackager}}
+
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
   * {{{./examples/run-debug.html}Debug the application}}
