@@ -1,0 +1,28 @@
+buildscript {
+	repositories {
+		flatDir {
+			dirs '../..'
+		}
+		mavenLocal()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}"
+		classpath "org.springframework.boot:spring-boot-sample-repackager:${project.bootVersion}"
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+springBoot {
+	repackager = new sample.repackager.SampleRepackagerFactory('custom')
+}
+
+dependencies {
+	compile 'org.springframework.boot:spring-boot-starter'
+}

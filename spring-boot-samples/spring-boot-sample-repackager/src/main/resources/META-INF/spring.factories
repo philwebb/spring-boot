@@ -1,0 +1,2 @@
+org.springframework.boot.loader.tools.RepackagerFactory=\
+sample.repackager.SampleRepackagerFactory
