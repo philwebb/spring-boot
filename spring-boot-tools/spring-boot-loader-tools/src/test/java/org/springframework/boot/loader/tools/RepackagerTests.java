@@ -347,14 +347,46 @@ public class RepackagerTests {
 		final LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
 		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
+		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE)))
+				.willReturn("test-lib/");
 		repackager.setLayout(layout);
 		repackager.repackage(new Libraries() {
+
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(new Library(libJarFile, scope));
 			}
+
 		});
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();
+		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
+				.isEqualTo("test-lib/");
+		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
+				.isEqualTo("testLauncher");
+	}
+
+	@Test
+	public void customLayoutNoBootLib() throws Exception {
+		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File libJarFile = libJar.getFile();
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		Layout layout = mock(Layout.class);
+		final LibraryScope scope = mock(LibraryScope.class);
+		given(layout.getLauncherClassName()).willReturn("testLauncher");
+		repackager.setLayout(layout);
+		repackager.repackage(new Libraries() {
+
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(new Library(libJarFile, scope));
+			}
+
+		});
+		assertThat(getManifest(file).getMainAttributes().getValue("Spring-Boot-Lib"))
+				.isNull();
 		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"))
 				.isEqualTo("testLauncher");
 	}
@@ -536,6 +568,24 @@ public class RepackagerTests {
 		}
 	}
 
+	@Test
+	public void getWithNullFactoryShouldReturnRepackager() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		Repackager repackager = Repackager.get(null, source);
+		assertThat(repackager).isNotNull().isExactlyInstanceOf(Repackager.class);
+	}
+
+	@Test
+	public void getWithFactoryShouldUseFactoryToCreateRepackager() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File source = this.testJarFile.getFile();
+		RepackagerFactory factory = mock(RepackagerFactory.class);
+		given(factory.getRepackager(source)).willReturn(new TestRepackager(source));
+		Repackager repackager = Repackager.get(factory, source);
+		assertThat(repackager).isNotNull().isExactlyInstanceOf(TestRepackager.class);
+	}
+
 	private boolean hasLauncherClasses(File file) throws IOException {
 		return hasEntry(file, "org/springframework/boot/")
 				&& hasEntry(file, "org/springframework/boot/loader/JarLauncher.class");
@@ -576,6 +626,14 @@ public class RepackagerTests {
 		@Override
 		public byte[] toByteArray() {
 			return this.bytes;
+		}
+
+	}
+
+	public static class TestRepackager extends Repackager {
+
+		public TestRepackager(File source) {
+			super(source);
 		}
 
 	}

@@ -24,12 +24,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.tools.JarWriter.EntryTransformer;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.lang.UsesJava8;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -53,6 +56,10 @@ public class Repackager {
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
+	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
+
+	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<MainClassTimeoutWarningListener>();
+
 	private String mainClass;
 
 	private boolean backupSource = true;
@@ -67,6 +74,16 @@ public class Repackager {
 		}
 		this.source = source.getAbsoluteFile();
 		this.layout = Layouts.forFile(source);
+	}
+
+	/**
+	 * Add a listener that will be triggered to dispaly a warning if searching for the
+	 * main class takes too long.
+	 * @param listener the listener to add
+	 */
+	public void addMainClassTimeoutWarningListener(
+			MainClassTimeoutWarningListener listener) {
+		this.mainClassTimeoutListeners.add(listener);
 	}
 
 	/**
@@ -96,6 +113,14 @@ public class Repackager {
 			throw new IllegalArgumentException("Layout must not be null");
 		}
 		this.layout = layout;
+	}
+
+	/**
+	 * return the actual layout being written.
+	 * @return the layout
+	 */
+	protected Layout getLayout() {
+		return this.layout;
 	}
 
 	/**
@@ -204,21 +229,7 @@ public class Repackager {
 				}
 
 			});
-			writer.writeManifest(buildManifest(sourceJar));
-			Set<String> seen = new HashSet<String>();
-			writeNestedLibraries(unpackLibraries, seen, writer);
-			if (this.layout instanceof RepackagingLayout) {
-				writer.writeEntries(sourceJar,
-						new RenamingEntryTransformer(((RepackagingLayout) this.layout)
-								.getRepackagedClassesLocation()));
-			}
-			else {
-				writer.writeEntries(sourceJar);
-			}
-			writeNestedLibraries(standardLibraries, seen, writer);
-			if (this.layout.isExecutable()) {
-				writer.writeLoaderClasses();
-			}
+			repackage(sourceJar, writer, unpackLibraries, standardLibraries);
 		}
 		finally {
 			try {
@@ -228,6 +239,23 @@ public class Repackager {
 				// Ignore
 			}
 		}
+	}
+
+	protected void repackage(JarFile sourceJar, JarWriter writer,
+			final List<Library> unpackLibraries, final List<Library> standardLibraries)
+					throws IOException {
+		writer.writeManifest(buildManifest(sourceJar));
+		Set<String> seen = new HashSet<String>();
+		writeNestedLibraries(unpackLibraries, seen, writer);
+		if (this.layout instanceof RepackagingLayout) {
+			writer.writeEntries(sourceJar, new RenamingEntryTransformer(
+					((RepackagingLayout) this.layout).getRepackagedClassesLocation()));
+		}
+		else {
+			writer.writeEntries(sourceJar);
+		}
+		writeNestedLibraries(standardLibraries, seen, writer);
+		writeLoaderClasses(writer);
 	}
 
 	private void writeNestedLibraries(List<Library> libraries, Set<String> alreadySeen,
@@ -242,6 +270,18 @@ public class Repackager {
 				}
 				writer.writeNestedLibrary(destination, library);
 			}
+		}
+	}
+
+	/**
+	 * Write loader classes into the archive. Subclasses can override this method if
+	 * necessary.
+	 * @param writer the jar writer
+	 * @throws IOException on IO error
+	 */
+	protected void writeLoaderClasses(JarWriter writer) throws IOException {
+		if (this.layout.isExecutable()) {
+			writer.writeLoaderClasses();
 		}
 	}
 
@@ -281,7 +321,7 @@ public class Repackager {
 			startClass = manifest.getMainAttributes().getValue(MAIN_CLASS_ATTRIBUTE);
 		}
 		if (startClass == null) {
-			startClass = findMainMethod(source);
+			startClass = findMainMethodWithTimeoutWarning(source);
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
@@ -301,9 +341,23 @@ public class Repackager {
 				(this.layout instanceof RepackagingLayout)
 						? ((RepackagingLayout) this.layout).getRepackagedClassesLocation()
 						: this.layout.getClassesLocation());
-		manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE,
-				this.layout.getLibraryDestination("", LibraryScope.COMPILE));
+		String lib = this.layout.getLibraryDestination("", LibraryScope.COMPILE);
+		if (StringUtils.hasLength(lib)) {
+			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, lib);
+		}
 		return manifest;
+	}
+
+	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
+		long startTime = System.currentTimeMillis();
+		String mainMethod = findMainMethod(source);
+		long duration = System.currentTimeMillis() - startTime;
+		if (duration > FIND_WARNING_TIMEOUT) {
+			for (MainClassTimeoutWarningListener listener : this.mainClassTimeoutListeners) {
+				listener.handleTimeoutWarning(duration, mainMethod);
+			}
+		}
+		return mainMethod;
 	}
 
 	protected String findMainMethod(JarFile source) throws IOException {
@@ -322,6 +376,42 @@ public class Repackager {
 		if (!file.delete()) {
 			throw new IllegalStateException("Unable to delete '" + file + "'");
 		}
+	}
+
+	/**
+	 * Factory method to obtain a {@link Repackager}.
+	 * @param repackagerFactory a {@link RepackagerFactory} or {@code null}.
+	 * @param source the source to repackage
+	 * @return a repackager
+	 */
+	public static Repackager get(RepackagerFactory repackagerFactory, File source) {
+		if (repackagerFactory != null) {
+			return repackagerFactory.getRepackager(source);
+		}
+		List<RepackagerFactory> factories = SpringFactoriesLoader
+				.loadFactories(RepackagerFactory.class, null);
+		if (factories.size() > 1) {
+			throw new IllegalStateException("No unique RepackagerFactory found");
+		}
+		if (factories.size() == 1) {
+			return factories.get(0).getRepackager(source);
+		}
+		return new Repackager(source);
+	}
+
+	/**
+	 * Callback interface used to present a warning when finding the main class takes too
+	 * long.
+	 */
+	public interface MainClassTimeoutWarningListener {
+
+		/**
+		 * Handle a timeout warning.
+		 * @param duration the amount of time it took to find the main method
+		 * @param mainMethod the main method that was actually found
+		 */
+		void handleTimeoutWarning(long duration, String mainMethod);
+
 	}
 
 	/**

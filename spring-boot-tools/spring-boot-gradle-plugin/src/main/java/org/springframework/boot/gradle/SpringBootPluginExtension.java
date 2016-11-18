@@ -27,6 +27,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.springframework.boot.gradle.buildinfo.BuildInfo;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.RepackagerFactory;
 
 /**
  * Gradle DSL Extension for 'Spring Boot'. Most of the time Spring Boot can guess the
@@ -89,6 +90,12 @@ public class SpringBootPluginExtension {
 	 * String values to the correct type.
 	 */
 	LayoutType layout;
+
+	/**
+	 * The repackager that will be used to create the executable archive. Alternative
+	 * repackager implementations can be provided by 3rd parties.
+	 */
+	RepackagerFactory repackager;
 
 	/**
 	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
@@ -194,6 +201,14 @@ public class SpringBootPluginExtension {
 
 	public void setLayout(LayoutType layout) {
 		this.layout = layout;
+	}
+
+	public RepackagerFactory getRepackager() {
+		return this.repackager;
+	}
+
+	public void setRepackager(RepackagerFactory repackager) {
+		this.repackager = repackager;
 	}
 
 	public Set<String> getRequiresUnpack() {

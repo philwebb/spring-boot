@@ -208,7 +208,17 @@ public class JarWriter {
 	 * @throws IOException if the classes cannot be written
 	 */
 	public void writeLoaderClasses() throws IOException {
-		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
+		writeLoaderClasses(NESTED_LOADER_JAR);
+	}
+
+	/**
+	 * Write the required spring-boot-loader classes to the JAR.
+	 * @param loaderJarResourceName the name of the resource containing the loader classes
+	 * to be written
+	 * @throws IOException if the classes cannot be written
+	 */
+	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
+		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
 		JarInputStream inputStream = new JarInputStream(
 				new BufferedInputStream(loaderJar.openStream()));
 		JarEntry entry;
