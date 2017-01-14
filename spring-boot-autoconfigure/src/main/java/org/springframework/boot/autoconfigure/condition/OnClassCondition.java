@@ -39,6 +39,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -51,9 +52,14 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnMissingClass
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class OnClassCondition extends SpringBootAutoConfigurationCondition {
+public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
 	private Map<String, Set<String>> onClasses;
+
+	// public static MultiValueMap<String, String> onClass = new
+	// LinkedMultiValueMap<String, String>();
+	// public static MultiValueMap<String, String> onMissingClass = new
+	// LinkedMultiValueMap<String, String>();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -123,6 +129,7 @@ class OnClassCondition extends SpringBootAutoConfigurationCondition {
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
 				ConditionalOnClass.class);
 		if (onClasses != null) {
+			// dunno(onClass, metadata, getClasses(onClasses));
 			List<String> missing = getMatchingClasses(onClasses, MatchType.MISSING,
 					context);
 			if (!missing.isEmpty()) {
@@ -138,6 +145,7 @@ class OnClassCondition extends SpringBootAutoConfigurationCondition {
 		MultiValueMap<String, Object> onMissingClasses = getAttributes(metadata,
 				ConditionalOnMissingClass.class);
 		if (onMissingClasses != null) {
+			// dunno(onMissingClass, metadata, getClasses(onMissingClasses));
 			List<String> present = getMatchingClasses(onMissingClasses, MatchType.PRESENT,
 					context);
 			if (!present.isEmpty()) {
@@ -154,6 +162,17 @@ class OnClassCondition extends SpringBootAutoConfigurationCondition {
 		return ConditionOutcome.match(matchMessage);
 	}
 
+	private void dunno(MultiValueMap<String, String> onClass2,
+			AnnotatedTypeMetadata metadata, List<String> classes) {
+		if (metadata instanceof AnnotationMetadata) {
+			String name = ((AnnotationMetadata) metadata).getClassName();
+			for (String string : classes) {
+				onClass2.add(name, string);
+			}
+		}
+
+	}
+
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
 			Class<?> annotationType) {
 		return metadata.getAllAnnotationAttributes(annotationType.getName(), true);
@@ -161,10 +180,15 @@ class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
 	private List<String> getMatchingClasses(MultiValueMap<String, Object> attributes,
 			MatchType matchType, ConditionContext context) {
+		List<String> candidates = getClasses(attributes);
+		return getMatchingClasses(candidates, matchType, context);
+	}
+
+	private List<String> getClasses(MultiValueMap<String, Object> attributes) {
 		List<String> candidates = new ArrayList<String>();
 		addAll(candidates, attributes.get("value"));
 		addAll(candidates, attributes.get("name"));
-		return getMatchingClasses(candidates, matchType, context);
+		return candidates;
 	}
 
 	private List<String> getMatchingClasses(Collection<String> candidates,
