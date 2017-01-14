@@ -38,7 +38,13 @@ import org.springframework.util.MultiValueMap;
  * @see ConditionalOnMissingClass
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-class OnClassCondition extends SpringBootCondition {
+class OnClassCondition extends SpringBootAutoConfigurationCondition {
+
+	@Override
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
+			String configurationClass) {
+		return null;
+	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,

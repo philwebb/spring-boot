@@ -31,6 +31,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.condition.SpringBootAutoConfigurationCondition;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -81,20 +82,24 @@ public class EnableAutoConfigurationImportSelector
 			return NO_IMPORTS;
 		}
 		try {
-			AnnotationAttributes attributes = getAttributes(metadata);
-			List<String> configurations = getCandidateConfigurations(metadata,
-					attributes);
-			configurations = removeDuplicates(configurations);
-			Set<String> exclusions = getExclusions(metadata, attributes);
-			checkExcludedClasses(configurations, exclusions);
-			configurations.removeAll(exclusions);
-			configurations = sort(configurations);
-			recordWithConditionEvaluationReport(configurations, exclusions);
-			return configurations.toArray(new String[configurations.size()]);
+			return doSelectImports(metadata);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private String[] doSelectImports(AnnotationMetadata metadata) throws IOException {
+		ConditionEvaluationReport report = ConditionEvaluationReport
+				.get(getBeanFactory());
+		AnnotationAttributes attributes = getAttributes(metadata);
+		List<String> configurations = getCandidateConfigurations(metadata, attributes);
+		configurations = removeDuplicates(configurations);
+		Set<String> exclusions = removeExclusions(metadata, attributes, configurations);
+		configurations = removeAutoConfigurationConditionMatches(configurations, report);
+		configurations = sort(configurations);
+		recordWithConditionEvaluationReport(report, configurations, exclusions);
+		return configurations.toArray(new String[configurations.size()]);
 	}
 
 	protected boolean isEnabled(AnnotationMetadata metadata) {
@@ -236,16 +241,39 @@ public class EnableAutoConfigurationImportSelector
 		}
 	}
 
-	private void recordWithConditionEvaluationReport(List<String> configurations,
-			Collection<String> exclusions) throws IOException {
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(getBeanFactory());
+	private void recordWithConditionEvaluationReport(ConditionEvaluationReport report,
+			List<String> configurations, Collection<String> exclusions) {
 		report.recordEvaluationCandidates(configurations);
 		report.recordExclusions(exclusions);
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
 		return new ArrayList<T>(new LinkedHashSet<T>(list));
+	}
+
+	private Set<String> removeExclusions(AnnotationMetadata metadata,
+			AnnotationAttributes attributes, List<String> configurations) {
+		Set<String> exclusions = getExclusions(metadata, attributes);
+		checkExcludedClasses(configurations, exclusions);
+		configurations.removeAll(exclusions);
+		return exclusions;
+	}
+
+	private List<String> removeAutoConfigurationConditionMatches(
+			List<String> configurations, ConditionEvaluationReport report) {
+		SpringBootAutoConfigurationConditionEvaluator evaluator = new SpringBootAutoConfigurationConditionEvaluator(
+				this.beanFactory, this.environment, this.resourceLoader);
+		return evaluator.apply(configurations, getSpringBootAutoConfigurationConditions(),
+				report);
+	}
+
+	/**
+	 * Return a list of {@link SpringBootAutoConfigurationCondition} checks to apply.
+	 * @return the auto-configuration conditions
+	 */
+	protected List<SpringBootAutoConfigurationCondition> getSpringBootAutoConfigurationConditions() {
+		return SpringFactoriesLoader.loadFactories(
+				SpringBootAutoConfigurationCondition.class, getBeanClassLoader());
 	}
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {

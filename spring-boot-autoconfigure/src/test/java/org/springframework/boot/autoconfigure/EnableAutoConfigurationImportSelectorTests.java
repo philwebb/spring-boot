@@ -215,6 +215,12 @@ public class EnableAutoConfigurationImportSelectorTests {
 				.contains("org.springframework.boot.autoconfigure.DoesNotExist2");
 	}
 
+	@Test
+	public void AutoConfigurationConditionsAreApplied() throws Exception {
+		configureExclusions(new String[0], new String[0], new String[0]);
+		this.importSelector.selectImports(this.annotationMetadata);
+	}
+
 	private void configureExclusions(String[] classExclusion, String[] nameExclusion,
 			String[] propertyExclusion) {
 		String annotationName = EnableAutoConfiguration.class.getName();
