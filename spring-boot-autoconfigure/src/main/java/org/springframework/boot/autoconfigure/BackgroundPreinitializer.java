@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import javax.validation.Validation;
 
 import org.apache.catalina.mbeans.MBeanFactory;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.logging.LoggingApplicationListener;
@@ -52,6 +53,7 @@ public class BackgroundPreinitializer
 					runSafely(new ValidationInitializer());
 					runSafely(new JacksonInitializer());
 					runSafely(new ConversionServiceInitializer());
+					runSafely(new ThymeleafSpringTemplateEngineInitializer());
 				}
 
 				public void runSafely(Runnable runnable) {
@@ -105,6 +107,7 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			Validation.byDefaultProvider().configure();
+			Validation.buildDefaultValidatorFactory().getValidator();
 		}
 
 	}
@@ -129,6 +132,15 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			new DefaultFormattingConversionService();
+		}
+
+	}
+
+	private static class ThymeleafSpringTemplateEngineInitializer implements Runnable {
+
+		@Override
+		public void run() {
+			new SpringTemplateEngine();
 		}
 
 	}
