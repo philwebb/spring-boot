@@ -32,6 +32,9 @@ public abstract class SpringBootAutoConfigurationCondition extends SpringBootCon
 			ConditionEvaluationReport report) {
 		try {
 			ConditionOutcome outcome = getMatchOutcome(context, autoConfigurationClass);
+			if (outcome == null) {
+				return true;
+			}
 			logOutcome(autoConfigurationClass, outcome);
 			report.recordConditionEvaluation(autoConfigurationClass, this, outcome);
 			return outcome.isMatch();

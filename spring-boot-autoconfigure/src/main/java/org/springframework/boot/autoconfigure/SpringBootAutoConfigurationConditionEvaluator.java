@@ -25,6 +25,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.SpringBootAutoConfigurationCondition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 
@@ -47,10 +48,12 @@ class SpringBootAutoConfigurationConditionEvaluator {
 	public List<String> apply(List<String> configurations,
 			List<SpringBootAutoConfigurationCondition> conditions,
 			ConditionEvaluationReport report) {
+		AnnotationAwareOrderComparator.sort(conditions);
 		List<String> result = new ArrayList<String>(configurations);
 		Iterator<String> iterator = result.iterator();
 		while (iterator.hasNext()) {
-			if (shouldSkip(iterator.next(), conditions, report)) {
+			String configurationClass = iterator.next();
+			if (shouldSkip(configurationClass, conditions, report)) {
 				iterator.remove();
 			}
 		}
@@ -61,7 +64,7 @@ class SpringBootAutoConfigurationConditionEvaluator {
 			List<SpringBootAutoConfigurationCondition> conditions,
 			ConditionEvaluationReport report) {
 		for (SpringBootAutoConfigurationCondition condition : conditions) {
-			if (condition.matches(this.context, configuration, report)) {
+			if (!condition.matches(this.context, configuration, report)) {
 				return true;
 			}
 		}

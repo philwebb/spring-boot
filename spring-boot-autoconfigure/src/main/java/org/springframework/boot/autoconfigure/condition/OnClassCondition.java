@@ -16,19 +16,32 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific classes.
@@ -40,10 +53,67 @@ import org.springframework.util.MultiValueMap;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
+	private Map<String, Set<String>> onClasses;
+
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			String configurationClass) {
+		Map<String, Set<String>> onClasses = getOnClasses(context.getClassLoader());
+		Set<String> candidates = onClasses.get(configurationClass);
+		if (candidates != null) {
+			List<String> missing = getMatchingClasses(candidates, MatchType.MISSING,
+					context);
+			if (!missing.isEmpty()) {
+				return ConditionOutcome
+						.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
+								.didNotFind("required class", "required classes")
+								.items(Style.QUOTE, missing));
+			}
+		}
 		return null;
+	}
+
+	private Map<String, Set<String>> getOnClasses(ClassLoader classLoader) {
+		if (this.onClasses == null) {
+			this.onClasses = loadOnClasses(classLoader);
+		}
+		return this.onClasses;
+	}
+
+	private Map<String, Set<String>> loadOnClasses(ClassLoader classLoader) {
+		String name = "META-INF/" + ConditionalOnClass.class.getName() + ".properties";
+		try {
+			Enumeration<URL> urls = (classLoader != null ? classLoader.getResources(name)
+					: ClassLoader.getSystemResources(name));
+			Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+			while (urls.hasMoreElements()) {
+				addProperties(result, urls.nextElement());
+			}
+			for (String key : result.keySet()) {
+				result.put(key, Collections.unmodifiableSet(result.get(key)));
+			}
+			return Collections.unmodifiableMap(result);
+		}
+		catch (IOException ex) {
+			throw new IllegalArgumentException(
+					"Unable to load @ConditionalOnClass location [" + name + "]", ex);
+		}
+	}
+
+	private void addProperties(Map<String, Set<String>> result, URL url)
+			throws IOException {
+		Properties properties = PropertiesLoaderUtils
+				.loadProperties(new UrlResource(url));
+		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+			String[] conditionalClasses = StringUtils
+					.commaDelimitedListToStringArray((String) entry.getValue());
+			Set<String> resultValues = result.get(entry.getKey());
+			if (resultValues == null) {
+				resultValues = new HashSet<String>();
+				result.put((String) entry.getKey(), resultValues);
+			}
+			resultValues.addAll(Arrays.asList(conditionalClasses));
+		}
 	}
 
 	@Override
@@ -91,9 +161,15 @@ class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
 	private List<String> getMatchingClasses(MultiValueMap<String, Object> attributes,
 			MatchType matchType, ConditionContext context) {
-		List<String> matches = new LinkedList<String>();
-		addAll(matches, attributes.get("value"));
-		addAll(matches, attributes.get("name"));
+		List<String> candidates = new ArrayList<String>();
+		addAll(candidates, attributes.get("value"));
+		addAll(candidates, attributes.get("name"));
+		return getMatchingClasses(candidates, matchType, context);
+	}
+
+	private List<String> getMatchingClasses(Collection<String> candidates,
+			MatchType matchType, ConditionContext context) {
+		List<String> matches = new ArrayList<String>(candidates);
 		Iterator<String> iterator = matches.iterator();
 		while (iterator.hasNext()) {
 			if (!matchType.matches(iterator.next(), context)) {

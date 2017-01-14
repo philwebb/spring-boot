@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -96,7 +97,8 @@ public class EnableAutoConfigurationImportSelector
 		List<String> configurations = getCandidateConfigurations(metadata, attributes);
 		configurations = removeDuplicates(configurations);
 		Set<String> exclusions = removeExclusions(metadata, attributes, configurations);
-		configurations = removeAutoConfigurationConditionMatches(configurations, report);
+		configurations = removeAutoConfigurationConditionNonMatches(configurations,
+				report);
 		configurations = sort(configurations);
 		recordWithConditionEvaluationReport(report, configurations, exclusions);
 		return configurations.toArray(new String[configurations.size()]);
@@ -259,12 +261,15 @@ public class EnableAutoConfigurationImportSelector
 		return exclusions;
 	}
 
-	private List<String> removeAutoConfigurationConditionMatches(
+	private List<String> removeAutoConfigurationConditionNonMatches(
 			List<String> configurations, ConditionEvaluationReport report) {
+		long t = System.nanoTime();
 		SpringBootAutoConfigurationConditionEvaluator evaluator = new SpringBootAutoConfigurationConditionEvaluator(
 				this.beanFactory, this.environment, this.resourceLoader);
-		return evaluator.apply(configurations, getSpringBootAutoConfigurationConditions(),
-				report);
+		List<String> result = evaluator.apply(configurations,
+				getSpringBootAutoConfigurationConditions(), report);
+		System.err.println(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t));
+		return result;
 	}
 
 	/**
