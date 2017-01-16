@@ -39,7 +39,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -162,17 +161,6 @@ public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 		return ConditionOutcome.match(matchMessage);
 	}
 
-	private void dunno(MultiValueMap<String, String> onClass2,
-			AnnotatedTypeMetadata metadata, List<String> classes) {
-		if (metadata instanceof AnnotationMetadata) {
-			String name = ((AnnotationMetadata) metadata).getClassName();
-			for (String string : classes) {
-				onClass2.add(name, string);
-			}
-		}
-
-	}
-
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
 			Class<?> annotationType) {
 		return metadata.getAllAnnotationAttributes(annotationType.getName(), true);
@@ -217,7 +205,7 @@ public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return ClassUtils.isPresent(className, context.getClassLoader());
+				return isPresent(className, context);
 			}
 
 		},
@@ -226,12 +214,44 @@ public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return !ClassUtils.isPresent(className, context.getClassLoader());
+				return !isPresent(className, context);
 			}
 
 		};
 
 		public abstract boolean matches(String className, ConditionContext context);
+
+		private static boolean isPresent(String className, ConditionContext context) {
+			ClassLoader classLoader = context.getClassLoader();
+			// boolean theirs = ClassUtils.isPresent(className, classLoader);
+			boolean mine = dunno(className, classLoader);
+			// Assert.state(theirs == mine, "Fail " + className + " theirs " + theirs);
+			if (!mine) {
+				// System.err.println(className);
+			}
+			return mine;
+
+		}
+
+		private static boolean dunno(String className, ClassLoader classLoader) {
+			if (classLoader == null) {
+				classLoader = ClassUtils.getDefaultClassLoader();
+			}
+			try {
+				if (classLoader != null) {
+					// if (classLoader.getResource(
+					// className.replace(".", "/") + ".class") == null) {
+					// // System.err.println(className);
+					// return false;
+					// }
+					return classLoader.loadClass(className) != null;
+				}
+				return Class.forName(className) != null;
+			}
+			catch (Throwable ex) {
+				return false;
+			}
+		}
 
 	}
 

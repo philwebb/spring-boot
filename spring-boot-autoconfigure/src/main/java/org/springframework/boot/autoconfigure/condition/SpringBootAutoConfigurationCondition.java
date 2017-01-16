@@ -28,6 +28,13 @@ import org.springframework.context.annotation.ConditionContext;
  */
 public abstract class SpringBootAutoConfigurationCondition extends SpringBootCondition {
 
+	public final void apply(ConditionContext context, String[] autoConfigurationClasses,
+			boolean[] skip, ConditionEvaluationReport report) {
+		for (int i = 0; i < autoConfigurationClasses.length; i++) {
+			skip[i] = skip[i] || !matches(context, autoConfigurationClasses[i], report);
+		}
+	}
+
 	public final boolean matches(ConditionContext context, String autoConfigurationClass,
 			ConditionEvaluationReport report) {
 		try {
@@ -36,7 +43,9 @@ public abstract class SpringBootAutoConfigurationCondition extends SpringBootCon
 				return true;
 			}
 			logOutcome(autoConfigurationClass, outcome);
-			report.recordConditionEvaluation(autoConfigurationClass, this, outcome);
+			if (report != null) {
+				report.recordConditionEvaluation(autoConfigurationClass, this, outcome);
+			}
 			return outcome.isMatch();
 		}
 		catch (Throwable ex) {

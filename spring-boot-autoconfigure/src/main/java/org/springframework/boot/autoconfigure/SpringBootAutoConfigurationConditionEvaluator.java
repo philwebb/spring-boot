@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -49,26 +48,19 @@ class SpringBootAutoConfigurationConditionEvaluator {
 			List<SpringBootAutoConfigurationCondition> conditions,
 			ConditionEvaluationReport report) {
 		AnnotationAwareOrderComparator.sort(conditions);
-		List<String> result = new ArrayList<String>(configurations);
-		Iterator<String> iterator = result.iterator();
-		while (iterator.hasNext()) {
-			String configurationClass = iterator.next();
-			if (shouldSkip(configurationClass, conditions, report)) {
-				iterator.remove();
+		String[] autoConfigurationClasses = configurations
+				.toArray(new String[configurations.size()]);
+		boolean[] skip = new boolean[configurations.size()];
+		for (SpringBootAutoConfigurationCondition condition : conditions) {
+			condition.apply(this.context, autoConfigurationClasses, skip, report);
+		}
+		List<String> result = new ArrayList<String>(configurations.size());
+		for (int i = 0; i < autoConfigurationClasses.length; i++) {
+			if (!skip[i]) {
+				result.add(autoConfigurationClasses[i]);
 			}
 		}
 		return result;
-	}
-
-	private boolean shouldSkip(String configuration,
-			List<SpringBootAutoConfigurationCondition> conditions,
-			ConditionEvaluationReport report) {
-		for (SpringBootAutoConfigurationCondition condition : conditions) {
-			if (!condition.matches(this.context, configuration, report)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static class ConditionContextImpl implements ConditionContext {

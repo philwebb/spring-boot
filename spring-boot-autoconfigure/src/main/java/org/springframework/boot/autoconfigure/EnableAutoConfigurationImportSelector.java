@@ -264,11 +264,19 @@ public class EnableAutoConfigurationImportSelector
 	private List<String> removeAutoConfigurationConditionNonMatches(
 			List<String> configurations, ConditionEvaluationReport report) {
 		long t = System.nanoTime();
+		System.out.println("List<String> list = new ArrayList<String>();");
+		for (String string : configurations) {
+			System.out.println("list.add(\"" + string + "\");");
+		}
 		SpringBootAutoConfigurationConditionEvaluator evaluator = new SpringBootAutoConfigurationConditionEvaluator(
 				this.beanFactory, this.environment, this.resourceLoader);
 		List<String> result = evaluator.apply(configurations,
 				getSpringBootAutoConfigurationConditions(), report);
 		System.err.println(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t));
+		System.err.println("Filtered " + (result.size() - configurations.size()));
+		for (String string : result) {
+			System.out.println("==" + string);
+		}
 		return result;
 	}
 
