@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.configprops")
+@ConfigurationProperties(prefix = "endpoints.configprops", validate = false)
 public class ConfigurationPropertiesReportEndpoint
 		extends AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 

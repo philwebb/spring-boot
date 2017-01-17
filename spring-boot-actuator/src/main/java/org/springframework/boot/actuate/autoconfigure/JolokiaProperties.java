@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "jolokia")
+@ConfigurationProperties(prefix = "jolokia", validate = false)
 public class JolokiaProperties {
 
 	/**

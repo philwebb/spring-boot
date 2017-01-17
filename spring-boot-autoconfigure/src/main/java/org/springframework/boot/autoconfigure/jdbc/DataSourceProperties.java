@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.datasource")
+@ConfigurationProperties(prefix = "spring.datasource", validate = false)
 public class DataSourceProperties
 		implements BeanClassLoaderAware, EnvironmentAware, InitializingBean {
 

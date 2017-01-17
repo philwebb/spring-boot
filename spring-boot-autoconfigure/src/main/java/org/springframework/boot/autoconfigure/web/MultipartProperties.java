@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Toshiaki Maki
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.http.multipart", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "spring.http.multipart", validate = false, ignoreUnknownFields = false)
 public class MultipartProperties {
 
 	/**

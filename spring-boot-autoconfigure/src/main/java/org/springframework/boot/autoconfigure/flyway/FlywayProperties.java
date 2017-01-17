@@ -33,14 +33,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "flyway", validate = false, ignoreUnknownFields = true)
 public class FlywayProperties {
 
 	/**
-	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder
-	 * to use vendor-specific locations.
+	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
+	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<String>(Collections.singletonList("db/migration"));
+	private List<String> locations = new ArrayList<String>(
+			Collections.singletonList("db/migration"));
 
 	/**
 	 * Check that migration scripts location exists.

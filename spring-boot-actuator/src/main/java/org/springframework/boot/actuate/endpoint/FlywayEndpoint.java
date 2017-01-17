@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "endpoints.flyway")
+@ConfigurationProperties(prefix = "endpoints.flyway", validate = false)
 public class FlywayEndpoint extends AbstractEndpoint<List<FlywayReport>> {
 
 	private final Map<String, Flyway> flyways;

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Andy Wilkinson
  * @author Sergei Egorov
  */
-@ConfigurationProperties(prefix = "endpoints.metrics")
+@ConfigurationProperties(prefix = "endpoints.metrics", validate = false)
 public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
 	private final MetricsEndpoint delegate;

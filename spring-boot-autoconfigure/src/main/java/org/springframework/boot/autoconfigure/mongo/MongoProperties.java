@@ -42,7 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Stephane Nicoll
  * @author Nasko Vasilev
  */
-@ConfigurationProperties(prefix = "spring.data.mongodb")
+@ConfigurationProperties(prefix = "spring.data.mongodb", validate = false)
 public class MongoProperties {
 
 	/**

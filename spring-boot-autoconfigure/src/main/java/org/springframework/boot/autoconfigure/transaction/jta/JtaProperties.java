@@ -29,7 +29,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.jta", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "spring.jta", validate = false, ignoreUnknownFields = true)
 public class JtaProperties {
 
 	/**

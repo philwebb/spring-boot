@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.trace")
+@ConfigurationProperties(prefix = "endpoints.trace", validate = false)
 public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 
 	private final TraceRepository repository;

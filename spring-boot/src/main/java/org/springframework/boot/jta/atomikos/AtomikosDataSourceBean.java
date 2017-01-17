@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
-@ConfigurationProperties(prefix = "spring.jta.atomikos.datasource")
+@ConfigurationProperties(prefix = "spring.jta.atomikos.datasource", validate = false)
 public class AtomikosDataSourceBean extends com.atomikos.jdbc.AtomikosDataSourceBean
 		implements BeanNameAware, InitializingBean, DisposableBean {
 

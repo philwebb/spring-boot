@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andreas Ahlenstorf
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.jooq")
+@ConfigurationProperties(prefix = "spring.jooq", validate = false)
 public class JooqProperties {
 
 	/**

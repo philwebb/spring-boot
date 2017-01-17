@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Yogesh Lonkar
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.mongodb.embedded")
+@ConfigurationProperties(prefix = "spring.mongodb.embedded", validate = false)
 public class EmbeddedMongoProperties {
 
 	/**

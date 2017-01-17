@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Brian Clozel
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.http.encoding")
+@ConfigurationProperties(prefix = "spring.http.encoding", validate = false)
 public class HttpEncodingProperties {
 
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");

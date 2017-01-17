@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
-@ConfigurationProperties(prefix = "spring.jta.bitronix.datasource")
+@ConfigurationProperties(prefix = "spring.jta.bitronix.datasource", validate = false)
 public class PoolingDataSourceBean extends PoolingDataSource
 		implements BeanNameAware, InitializingBean {
 

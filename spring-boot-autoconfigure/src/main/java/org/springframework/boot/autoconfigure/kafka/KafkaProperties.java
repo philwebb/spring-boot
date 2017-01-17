@@ -46,7 +46,7 @@ import org.springframework.util.CollectionUtils;
  * @author Artem Bilan
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.kafka")
+@ConfigurationProperties(prefix = "spring.kafka", validate = false)
 public class KafkaProperties {
 
 	/**

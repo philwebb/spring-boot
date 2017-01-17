@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "endpoints.auditevents")
+@ConfigurationProperties(prefix = "endpoints.auditevents", validate = false)
 public class AuditEventsMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private final AuditEventRepository auditEventRepository;

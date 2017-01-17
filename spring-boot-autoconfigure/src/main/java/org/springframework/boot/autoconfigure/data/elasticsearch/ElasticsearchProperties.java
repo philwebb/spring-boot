@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mohsin Husen
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.data.elasticsearch")
+@ConfigurationProperties(prefix = "spring.data.elasticsearch", validate = false)
 public class ElasticsearchProperties {
 
 	/**

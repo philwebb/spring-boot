@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
-@ConfigurationProperties(prefix = "spring.jta.atomikos.connectionfactory")
+@ConfigurationProperties(prefix = "spring.jta.atomikos.connectionfactory", validate = false)
 public class AtomikosConnectionFactoryBean
 		extends com.atomikos.jms.AtomikosConnectionFactoryBean
 		implements BeanNameAware, InitializingBean, DisposableBean {

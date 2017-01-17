@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Ben Hale
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "endpoints.loggers")
+@ConfigurationProperties(prefix = "endpoints.loggers", validate = false)
 public class LoggersMvcEndpoint extends EndpointMvcAdapter {
 
 	private final LoggersEndpoint delegate;

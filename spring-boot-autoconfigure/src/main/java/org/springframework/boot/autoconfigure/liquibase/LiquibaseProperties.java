@@ -19,11 +19,12 @@ package org.springframework.boot.autoconfigure.liquibase;
 import java.io.File;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
+import javax.annotation.PostConstruct;
 
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * Configuration properties to configure {@link SpringLiquibase}.
@@ -31,13 +32,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marcel Overdijk
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "liquibase", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "liquibase", validate = false, ignoreUnknownFields = false)
 public class LiquibaseProperties {
 
 	/**
 	 * Change log configuration path.
 	 */
-	@NotNull
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	/**
@@ -95,6 +95,11 @@ public class LiquibaseProperties {
 	 * File to which rollback SQL will be written when an update is performed.
 	 */
 	private File rollbackFile;
+
+	@PostConstruct
+	private void validate() {
+		Assert.notNull(this.changeLog, "ChangeLog must not be null");
+	}
 
 	public String getChangeLog() {
 		return this.changeLog;

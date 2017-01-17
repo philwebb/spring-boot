@@ -126,7 +126,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "flyway")
+		@ConfigurationProperties(prefix = "flyway", validate = false)
 		public Flyway flyway() {
 			Flyway flyway = new SpringBootFlyway();
 			if (this.properties.isCreateDataSource()) {

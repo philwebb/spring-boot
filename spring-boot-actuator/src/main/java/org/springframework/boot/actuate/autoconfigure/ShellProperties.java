@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @deprecated as of 1.5 since CRaSH is not actively maintained
  */
-@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = ShellProperties.SHELL_PREFIX, validate = false, ignoreUnknownFields = true)
 @Deprecated
 public class ShellProperties {
 
@@ -409,7 +409,7 @@ public class ShellProperties {
 	 * Auth specific properties for key authentication.
 	 */
 	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.key", ignoreUnknownFields = false)
+			+ ".auth.key", validate = false, ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -441,7 +441,7 @@ public class ShellProperties {
 	 * Auth specific properties for simple authentication.
 	 */
 	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.simple", ignoreUnknownFields = false)
+			+ ".auth.simple", validate = false, ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 
@@ -518,7 +518,7 @@ public class ShellProperties {
 	 * Auth specific properties for Spring authentication.
 	 */
 	@ConfigurationProperties(prefix = SHELL_PREFIX
-			+ ".auth.spring", ignoreUnknownFields = false)
+			+ ".auth.spring", validate = false, ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties
 			extends CrshShellAuthenticationProperties {
 

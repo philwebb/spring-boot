@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Aurélien Leboulanger
  * @author Venil Noronha
  */
-@ConfigurationProperties(prefix = "spring.activemq")
+@ConfigurationProperties(prefix = "spring.activemq", validate = false)
 public class ActiveMQProperties {
 
 	/**

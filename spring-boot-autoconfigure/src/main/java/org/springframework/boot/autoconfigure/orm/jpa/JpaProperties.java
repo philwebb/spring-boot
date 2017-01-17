@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.jpa")
+@ConfigurationProperties(prefix = "spring.jpa", validate = false)
 public class JpaProperties {
 
 	/**

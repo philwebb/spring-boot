@@ -38,7 +38,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Johannes Edmeier
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.jackson")
+@ConfigurationProperties(prefix = "spring.jackson", validate = false)
 public class JacksonProperties {
 
 	/**

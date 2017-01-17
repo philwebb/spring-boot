@@ -36,7 +36,7 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Phillip Webb
  * @author Christian Dupuis
  */
-@ConfigurationProperties(prefix = "endpoints.env")
+@ConfigurationProperties(prefix = "endpoints.env", validate = false)
 public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final Sanitizer sanitizer = new Sanitizer();

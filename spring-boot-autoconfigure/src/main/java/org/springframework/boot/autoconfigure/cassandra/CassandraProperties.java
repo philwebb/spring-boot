@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Mark Paluch
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.data.cassandra")
+@ConfigurationProperties(prefix = "spring.data.cassandra", validate = false)
 public class CassandraProperties {
 
 	/**

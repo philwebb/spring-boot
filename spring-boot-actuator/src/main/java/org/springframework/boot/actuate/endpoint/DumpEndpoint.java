@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.dump")
+@ConfigurationProperties(prefix = "endpoints.dump", validate = false)
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
 	/**

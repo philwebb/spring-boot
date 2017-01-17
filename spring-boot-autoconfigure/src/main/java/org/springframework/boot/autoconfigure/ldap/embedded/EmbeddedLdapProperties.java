@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.ldap.embedded")
+@ConfigurationProperties(prefix = "spring.ldap.embedded", validate = false)
 public class EmbeddedLdapProperties {
 
 	/**

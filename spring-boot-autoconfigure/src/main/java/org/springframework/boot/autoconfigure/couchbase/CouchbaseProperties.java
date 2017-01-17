@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.couchbase")
+@ConfigurationProperties(prefix = "spring.couchbase", validate = false)
 public class CouchbaseProperties {
 
 	/**

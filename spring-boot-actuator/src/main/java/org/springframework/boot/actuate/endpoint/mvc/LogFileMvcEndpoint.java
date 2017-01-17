@@ -46,7 +46,7 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
  * @author Phillip Webb
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "endpoints.logfile")
+@ConfigurationProperties(prefix = "endpoints.logfile", validate = false)
 public class LogFileMvcEndpoint extends AbstractNamedMvcEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileMvcEndpoint.class);

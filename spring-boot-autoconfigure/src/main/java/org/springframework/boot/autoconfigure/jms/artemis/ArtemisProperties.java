@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.artemis")
+@ConfigurationProperties(prefix = "spring.artemis", validate = false)
 public class ArtemisProperties {
 
 	/**

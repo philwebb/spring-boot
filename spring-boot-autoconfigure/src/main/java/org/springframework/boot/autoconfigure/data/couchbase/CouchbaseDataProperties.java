@@ -25,7 +25,7 @@ import org.springframework.data.couchbase.core.query.Consistency;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.couchbase")
+@ConfigurationProperties(prefix = "spring.data.couchbase", validate = false)
 public class CouchbaseDataProperties {
 
 	/**

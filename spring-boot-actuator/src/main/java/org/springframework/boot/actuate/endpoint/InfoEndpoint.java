@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "endpoints.info")
+@ConfigurationProperties(prefix = "endpoints.info", validate = false)
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final List<InfoContributor> infoContributors;

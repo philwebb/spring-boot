@@ -58,6 +58,12 @@ public @interface ConfigurationProperties {
 	String prefix() default "";
 
 	/**
+	 * Flag to indicate if object validation should be attempted.
+	 * @return the flag value (default true)
+	 */
+	boolean validate() default true;
+
+	/**
 	 * Flag to indicate that when binding to this object invalid fields should be ignored.
 	 * Invalid means invalid according to the binder that is used, and usually this means
 	 * fields of the wrong type (or that cannot be coerced into the correct type).

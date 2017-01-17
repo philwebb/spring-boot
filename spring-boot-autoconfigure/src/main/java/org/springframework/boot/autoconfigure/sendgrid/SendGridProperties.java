@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Maciej Walkowiak
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.sendgrid")
+@ConfigurationProperties(prefix = "spring.sendgrid", validate = false)
 public class SendGridProperties {
 
 	/**

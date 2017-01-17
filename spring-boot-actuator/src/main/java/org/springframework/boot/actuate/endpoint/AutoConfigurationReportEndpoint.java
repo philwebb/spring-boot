@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.autoconfig")
+@ConfigurationProperties(prefix = "endpoints.autoconfig", validate = false)
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 	@Autowired

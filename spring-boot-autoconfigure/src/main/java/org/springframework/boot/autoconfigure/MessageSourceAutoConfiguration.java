@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "spring.messages")
+@ConfigurationProperties(prefix = "spring.messages", validate = false)
 public class MessageSourceAutoConfiguration {
 
 	private static final Resource[] NO_RESOURCES = {};

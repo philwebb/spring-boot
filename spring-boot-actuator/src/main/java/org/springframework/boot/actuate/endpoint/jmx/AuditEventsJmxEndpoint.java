@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "endpoints.auditevents")
+@ConfigurationProperties(prefix = "endpoints.auditevents", validate = false)
 public class AuditEventsJmxEndpoint extends AbstractJmxEndpoint {
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";

@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
  * @author Christian Dupuis
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "endpoints.health")
+@ConfigurationProperties(prefix = "endpoints.health", validate = false)
 public class HealthMvcEndpointProperties {
 
 	/**

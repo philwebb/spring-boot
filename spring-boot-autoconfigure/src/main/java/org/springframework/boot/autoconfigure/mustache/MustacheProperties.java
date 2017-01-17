@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.2.2
  */
-@ConfigurationProperties(prefix = "spring.mustache")
+@ConfigurationProperties(prefix = "spring.mustache", validate = false)
 public class MustacheProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";

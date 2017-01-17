@@ -43,7 +43,7 @@ import org.springframework.web.util.UrlPathHelper;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.jolokia", validate = false, ignoreUnknownFields = false)
 @HypermediaDisabled
 public class JolokiaMvcEndpoint extends AbstractNamedMvcEndpoint implements
 		InitializingBean, ApplicationContextAware, ServletContextAware, DisposableBean {

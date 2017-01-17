@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "endpoints.health")
+@ConfigurationProperties(prefix = "endpoints.health", validate = false)
 public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint>
 		implements EnvironmentAware {
 

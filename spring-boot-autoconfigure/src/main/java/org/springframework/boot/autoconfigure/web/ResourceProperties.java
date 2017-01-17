@@ -36,7 +36,7 @@ import org.springframework.core.io.ResourceLoader;
  * @author Venil Noronha
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "spring.resources", validate = false, ignoreUnknownFields = false)
 public class ResourceProperties implements ResourceLoaderAware {
 
 	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };

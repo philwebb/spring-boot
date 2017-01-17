@@ -308,12 +308,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		factory.setPropertySources(this.propertySources);
-		factory.setValidator(determineValidator(bean));
 		// If no explicit conversion service is provided we add one so that (at least)
 		// comma-separated arrays of convertibles can be bound automatically
 		factory.setConversionService(this.conversionService == null
 				? getDefaultConversionService() : this.conversionService);
+		boolean validate = true;
 		if (annotation != null) {
+			validate = annotation.validate();
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
 			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
@@ -321,6 +322,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			if (StringUtils.hasLength(annotation.prefix())) {
 				factory.setTargetName(annotation.prefix());
 			}
+		}
+		if (validate) {
+			factory.setValidator(determineValidator(bean));
 		}
 		try {
 			factory.bindPropertiesToTarget();
@@ -338,6 +342,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		}
 		StringBuilder details = new StringBuilder();
 		details.append("prefix=").append(annotation.prefix());
+		details.append(", validate=").append(annotation.validate());
 		details.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		details.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());
 		details.append(", ignoreNestedProperties=")

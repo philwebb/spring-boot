@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "endpoints")
+@ConfigurationProperties(prefix = "endpoints", validate = false)
 public class EndpointProperties {
 
 	private static final String ENDPOINTS_ENABLED_PROPERTY = "endpoints.enabled";

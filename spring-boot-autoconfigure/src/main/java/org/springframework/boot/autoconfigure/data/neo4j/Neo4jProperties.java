@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  * @author Vince Bickers
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.neo4j")
+@ConfigurationProperties(prefix = "spring.data.neo4j", validate = false)
 public class Neo4jProperties implements ApplicationContextAware {
 
 	static final String EMBEDDED_DRIVER = "org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver";

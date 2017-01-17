@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Venil Noronha
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "management.trace")
+@ConfigurationProperties(prefix = "management.trace", validate = false)
 public class TraceProperties {
 
 	private static final Set<Include> DEFAULT_INCLUDES;

@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christoph Strobl
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.data.solr")
+@ConfigurationProperties(prefix = "spring.data.solr", validate = false)
 public class SolrProperties {
 
 	/**

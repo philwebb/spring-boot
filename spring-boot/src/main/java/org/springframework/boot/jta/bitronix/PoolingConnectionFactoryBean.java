@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 @SuppressWarnings("serial")
-@ConfigurationProperties(prefix = "spring.jta.bitronix.connectionfactory")
+@ConfigurationProperties(prefix = "spring.jta.bitronix.connectionfactory", validate = false)
 public class PoolingConnectionFactoryBean extends PoolingConnectionFactory
 		implements BeanNameAware, InitializingBean, DisposableBean {
 

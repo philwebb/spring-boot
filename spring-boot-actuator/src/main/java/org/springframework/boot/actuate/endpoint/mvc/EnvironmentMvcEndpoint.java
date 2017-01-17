@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "endpoints.env")
+@ConfigurationProperties(prefix = "endpoints.env", validate = false)
 public class EnvironmentMvcEndpoint extends EndpointMvcAdapter
 		implements EnvironmentAware {
 

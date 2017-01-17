@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marten Deinum
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.groovy.template", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "spring.groovy.template", validate = false, ignoreUnknownFields = true)
 public class GroovyTemplateProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_RESOURCE_LOADER_PATH = "classpath:/templates/";

@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "endpoints.loggers")
+@ConfigurationProperties(prefix = "endpoints.loggers", validate = false)
 public class LoggersEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private final LoggingSystem loggingSystem;

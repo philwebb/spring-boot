@@ -74,7 +74,7 @@ public class OAuth2RestOperationsConfiguration {
 	protected static class SingletonScopedConfiguration {
 
 		@Bean
-		@ConfigurationProperties("security.oauth2.client")
+		@ConfigurationProperties(prefix = "security.oauth2.client", validate = false)
 		@Primary
 		public ClientCredentialsResourceDetails oauth2RemoteResource() {
 			ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();

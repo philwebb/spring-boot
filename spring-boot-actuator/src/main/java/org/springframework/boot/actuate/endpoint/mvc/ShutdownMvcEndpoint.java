@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.shutdown")
+@ConfigurationProperties(prefix = "endpoints.shutdown", validate = false)
 public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
 
 	public ShutdownMvcEndpoint(ShutdownEndpoint delegate) {

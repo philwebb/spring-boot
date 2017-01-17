@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@ConfigurationProperties(prefix = "security")
+@ConfigurationProperties(prefix = "security", validate = false)
 public class SecurityProperties implements SecurityPrerequisite {
 
 	/**
@@ -48,8 +48,8 @@ public class SecurityProperties implements SecurityPrerequisite {
 	/**
 	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
 	 * authentication for application endpoints. If you want to add your own
-	 * authentication for all or some of those endpoints the best thing to do is to add your
-	 * own WebSecurityConfigurerAdapter with lower order.
+	 * authentication for all or some of those endpoints the best thing to do is to add
+	 * your own WebSecurityConfigurerAdapter with lower order.
 	 */
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
 

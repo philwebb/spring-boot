@@ -35,7 +35,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "endpoints.beans")
+@ConfigurationProperties(prefix = "endpoints.beans", validate = false)
 public class BeansEndpoint extends AbstractEndpoint<List<Object>>
 		implements ApplicationContextAware {
 

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Gytis Trikleris
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = NarayanaProperties.PROPERTIES_PREFIX)
+@ConfigurationProperties(prefix = NarayanaProperties.PROPERTIES_PREFIX, validate = false)
 public class NarayanaProperties {
 
 	/**
