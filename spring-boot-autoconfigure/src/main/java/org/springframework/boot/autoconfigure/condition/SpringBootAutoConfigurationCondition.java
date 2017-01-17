@@ -53,9 +53,9 @@ public abstract class SpringBootAutoConfigurationCondition extends SpringBootCon
 	private void apply(final ConditionContext context,
 			final String[] autoConfigurationClasses, final boolean[] skip,
 			final ConditionOutcome[] outcomes) {
-		simple(context, autoConfigurationClasses, skip, outcomes);
+		// simple(context, autoConfigurationClasses, skip, outcomes);
 		split(context, autoConfigurationClasses, skip, outcomes);
-		executeor(context, autoConfigurationClasses, skip, outcomes);
+		// executeor(context, autoConfigurationClasses, skip, outcomes);
 	}
 
 	/**
