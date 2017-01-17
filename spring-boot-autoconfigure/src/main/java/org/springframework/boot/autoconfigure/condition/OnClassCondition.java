@@ -17,7 +17,10 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarFile;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -239,6 +243,9 @@ public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 			}
 			try {
 				if (classLoader != null) {
+					// if (classLoader instanceof URLClassLoader) {
+					// new Dunno((URLClassLoader) classLoader);
+					// }
 					// if (classLoader.getResource(
 					// className.replace(".", "/") + ".class") == null) {
 					// // System.err.println(className);
@@ -250,6 +257,21 @@ public class OnClassCondition extends SpringBootAutoConfigurationCondition {
 			}
 			catch (Throwable ex) {
 				return false;
+			}
+		}
+
+	}
+
+	private static class Dunno {
+
+		public Dunno(URLClassLoader cl) throws IOException {
+			URL[] urLs = cl.getURLs();
+			for (URL url : urLs) {
+				URLConnection connection = url.openConnection();
+				if (connection instanceof JarURLConnection) {
+					JarFile jarFile = ((JarURLConnection) connection).getJarFile();
+					System.out.println(jarFile);
+				}
 			}
 		}
 
