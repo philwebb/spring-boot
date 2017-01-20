@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2016 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 
 package org.springframework.boot.conditionprocessor;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -35,29 +35,30 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import org.springframework.util.StringUtils;
-
-@SupportedAnnotationTypes({"*"})
+/**
+ * Annotation processor to store {@code @ConditionalOnClass} values to a property file.
+ *
+ * @author Madhura Bhave
+ */
+@SupportedAnnotationTypes("org.springframework.boot.autoconfigure.condition.ConditionalOnClass")
 public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 
-	static final String METADATA_PATH = "META-INF/ConditionalOnClass.properties";
+	private static final String CONDITIONAL_ON_CLASS_ANNOTATION = "org.springframework.boot.autoconfigure.condition.ConditionalOnClass";
 
-	static final String CONDITIONAL_ON_CLASS_ANNOTATION = "org.springframework.boot.autoconfigure.condition.ConditionalOnClass";
+	protected static final String PROPERTIES_PATH = "META-INF/"
+			+ CONDITIONAL_ON_CLASS_ANNOTATION + ".properties";
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
-
-	private TypeUtils typeUtils;
-
-	Map<String, String> metadataCollector = new HashMap<String, String>();
+	private final Properties properties = new Properties();
 
 	@Override
 	public synchronized void init(ProcessingEnvironment env) {
 		super.init(env);
-		this.typeUtils = new TypeUtils();
 	}
 
 	@Override
@@ -66,7 +67,8 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+	public boolean process(Set<? extends TypeElement> annotations,
+			RoundEnvironment roundEnv) {
 		Elements elementUtils = this.processingEnv.getElementUtils();
 		TypeElement annotationType = elementUtils
 				.getTypeElement(conditionalOnClassAnnotation());
@@ -77,7 +79,7 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 		}
 		if (roundEnv.processingOver()) {
 			try {
-				writeMetaData();
+				writeProperties();
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to write metadata", ex);
@@ -86,12 +88,13 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 		return false;
 	}
 
-	private void writeMetaData() throws IOException {
-		System.out.println("hello");
-		if (!metadataCollector.isEmpty()) {
-			OutputStream outputStream = createMetadataResource().openOutputStream();
+	private void writeProperties() throws IOException {
+		if (!this.properties.isEmpty()) {
+			FileObject file = this.processingEnv.getFiler()
+					.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+			OutputStream outputStream = file.openOutputStream();
 			try {
-				outputStream.write(metadataCollector.toString().getBytes());
+				this.properties.store(outputStream, null);
 			}
 			finally {
 				outputStream.close();
@@ -99,57 +102,20 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 		}
 	}
 
-	private FileObject createMetadataResource() throws IOException {
-		FileObject resource = this.processingEnv.getFiler()
-				.createResource(StandardLocation.CLASS_OUTPUT, "", METADATA_PATH);
-		return resource;
-	}
-
-	protected String conditionalOnClassAnnotation() {
-		return CONDITIONAL_ON_CLASS_ANNOTATION;
-	}
-
 	private void processElement(Element element) {
 		try {
+			String qualifiedName = getQualifiedName(element);
 			AnnotationMirror annotation = getAnnotation(element,
 					conditionalOnClassAnnotation());
-			if (annotation != null) {
-				List<String> values = getValues(annotation);
-				processAnnotatedTypeElement(values, (TypeElement) element);
+			if (qualifiedName != null && annotation != null) {
+				List<AnnotationValue> values = getValues(annotation);
+				this.properties.put(qualifiedName, toCommaDelimitedString(values));
 			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(
 					"Error processing configuration meta-data on " + element, ex);
 		}
-	}
-
-	private void processAnnotatedTypeElement(List<String> values, TypeElement element) {
-		String type = this.typeUtils.getQualifiedName(element);
-		this.metadataCollector.put(type, StringUtils.collectionToCommaDelimitedString(values));
-	}
-
-	private List<String> getValues(AnnotationMirror annotation) {
-		Map<String, Object> elementValues = getAnnotationElementValues(annotation);
-		List<String> values = new ArrayList<String>();
-		List<String> name = (List<String>) elementValues.get("name");
-		if (name != null && !name.isEmpty()) {
-			values.addAll(name);
-		}
-		List<String> value = (List<String>) elementValues.get("value");
-		if (value != null && !value.isEmpty()) {
-			values.addAll(value);
-		}
-		return values;
-	}
-
-	private Map<String,Object> getAnnotationElementValues(AnnotationMirror annotation) {
-		Map<String,Object> values = new LinkedHashMap<String,Object>();
-		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
-				.getElementValues().entrySet()) {
-				values.put(entry.getKey().getSimpleName().toString(), entry.getValue().getValue());
-		}
-		return values;
 	}
 
 	private AnnotationMirror getAnnotation(Element element, String type) {
@@ -163,4 +129,71 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 		return null;
 	}
 
+	private String toCommaDelimitedString(List<AnnotationValue> list) {
+		StringBuffer result = new StringBuffer();
+		for (AnnotationValue item : list) {
+			result.append(result.length() != 0 ? "," : "");
+			result.append(item.getValue());
+		}
+		return result.toString();
+	}
+
+	private List<AnnotationValue> getValues(AnnotationMirror annotation) {
+		List<AnnotationValue> result = new ArrayList<AnnotationValue>();
+		Map<String, List<AnnotationValue>> elementValues = getAnnotationElementValues(
+				annotation);
+		addAttributeValue(elementValues, "name", result);
+		addAttributeValue(elementValues, "value", result);
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, List<AnnotationValue>> getAnnotationElementValues(
+			AnnotationMirror annotation) {
+		Map<String, List<AnnotationValue>> values = new LinkedHashMap<String, List<AnnotationValue>>();
+		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
+				.getElementValues().entrySet()) {
+			values.put(entry.getKey().getSimpleName().toString(),
+					(List<AnnotationValue>) entry.getValue().getValue());
+		}
+		return values;
+	}
+
+	private void addAttributeValue(Map<String, List<AnnotationValue>> elementValues,
+			String attriubte, List<AnnotationValue> result) {
+		List<AnnotationValue> value = elementValues.get(attriubte);
+		if (value != null) {
+			result.addAll(value);
+		}
+	}
+
+	private String getQualifiedName(Element element) {
+		if (element != null) {
+			TypeElement enclosingElement = getEnclosingTypeElement(element.asType());
+			if (enclosingElement != null) {
+				return getQualifiedName(enclosingElement) + "$"
+						+ ((DeclaredType) element.asType()).asElement().getSimpleName()
+								.toString();
+			}
+			if (element instanceof TypeElement) {
+				return ((TypeElement) element).getQualifiedName().toString();
+			}
+		}
+		return null;
+	}
+
+	protected String conditionalOnClassAnnotation() {
+		return CONDITIONAL_ON_CLASS_ANNOTATION;
+	}
+
+	private TypeElement getEnclosingTypeElement(TypeMirror type) {
+		if (type instanceof DeclaredType) {
+			DeclaredType declaredType = (DeclaredType) type;
+			Element enclosingElement = declaredType.asElement().getEnclosingElement();
+			if (enclosingElement != null && enclosingElement instanceof TypeElement) {
+				return (TypeElement) enclosingElement;
+			}
+		}
+		return null;
+	}
 }

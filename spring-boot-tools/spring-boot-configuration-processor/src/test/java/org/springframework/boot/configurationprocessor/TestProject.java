@@ -33,16 +33,13 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.junit.runner.classpath.TestCompiler.TestCompilationTask;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
-import org.springframework.boot.junit.runner.classpath.TestCompiler;
+import org.springframework.boot.junit.compiler.TestCompiler;
+import org.springframework.boot.junit.compiler.TestCompiler.TestCompilationTask;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
-
-import static org.springframework.boot.junit.runner.classpath.TestCompiler.ORIGINAL_SOURCE_FOLDER;
-import static org.springframework.boot.junit.runner.classpath.TestCompiler.sourcePathFor;
 
 /**
  * A TestProject contains a copy of a subset of test sample code.
@@ -97,7 +94,7 @@ public class TestProject {
 	}
 
 	public File getSourceFile(Class<?> type) {
-		return new File(this.sourceFolder, sourcePathFor(type));
+		return new File(this.sourceFolder, TestCompiler.sourcePathFor(type));
 	}
 
 	public ConfigurationMetadata fullBuild() {
@@ -193,7 +190,7 @@ public class TestProject {
 	 * code.
 	 */
 	private File getOriginalSourceFile(Class<?> type) {
-		return new File(ORIGINAL_SOURCE_FOLDER, sourcePathFor(type));
+		return new File(TestCompiler.SOURCE_FOLDER, TestCompiler.sourcePathFor(type));
 	}
 
 	private static void putContents(File targetFile, String contents)
