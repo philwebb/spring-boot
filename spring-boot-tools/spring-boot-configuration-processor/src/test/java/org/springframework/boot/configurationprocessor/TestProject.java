@@ -33,15 +33,16 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.configurationprocessor.TestCompiler.TestCompilationTask;
+import org.springframework.boot.junit.runner.classpath.TestCompiler.TestCompilationTask;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.junit.runner.classpath.TestCompiler;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
-import static org.springframework.boot.configurationprocessor.TestCompiler.ORIGINAL_SOURCE_FOLDER;
-import static org.springframework.boot.configurationprocessor.TestCompiler.sourcePathFor;
+import static org.springframework.boot.junit.runner.classpath.TestCompiler.ORIGINAL_SOURCE_FOLDER;
+import static org.springframework.boot.junit.runner.classpath.TestCompiler.sourcePathFor;
 
 /**
  * A TestProject contains a copy of a subset of test sample code.

@@ -27,5 +27,6 @@
 		<module>spring-boot-maven-plugin</module>
 		<module>spring-boot-gradle-plugin</module>
 		<module>spring-boot-antlib</module>
+		<module>spring-boot-condition-processor</module>
 	</modules>
 </project>

@@ -33,8 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.springframework.boot.configurationprocessor.TestCompiler;
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
+import org.springframework.boot.junit.runner.classpath.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
