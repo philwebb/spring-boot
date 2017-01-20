@@ -87,7 +87,7 @@ public abstract class SpringBootCondition implements Condition {
 				+ methodMetadata.getMethodName();
 	}
 
-	private void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
+	protected final void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace(getLogMessage(classOrMethodName, outcome));
 		}
