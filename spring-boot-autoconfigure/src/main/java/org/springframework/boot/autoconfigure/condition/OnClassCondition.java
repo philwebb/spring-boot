@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -31,7 +32,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 
 /**
- * {@link Condition} that checks for the presence or absence of specific classes.
+ * {@link Condition} and {@link AutoConfigurationImportFilter} that checks for the
+ * presence or absence of specific classes.
  *
  * @author Phillip Webb
  * @see ConditionalOnClass
@@ -111,7 +113,7 @@ class OnClassCondition extends SpringBootCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return ClassUtils.isPresent(className, context.getClassLoader());
+				return isPresent(className, context.getClassLoader());
 			}
 
 		},
@@ -120,10 +122,31 @@ class OnClassCondition extends SpringBootCondition {
 
 			@Override
 			public boolean matches(String className, ConditionContext context) {
-				return !ClassUtils.isPresent(className, context.getClassLoader());
+				return !isPresent(className, context.getClassLoader());
 			}
 
 		};
+
+		private static boolean isPresent(String className, ClassLoader classLoader) {
+			if (classLoader == null) {
+				classLoader = ClassUtils.getDefaultClassLoader();
+			}
+			try {
+				forName(className, classLoader);
+				return true;
+			}
+			catch (Throwable ex) {
+				return false;
+			}
+		}
+
+		private static Class<?> forName(String className, ClassLoader classLoader)
+				throws ClassNotFoundException {
+			if (classLoader != null) {
+				return classLoader.loadClass(className);
+			}
+			return Class.forName(className);
+		}
 
 		public abstract boolean matches(String className, ConditionContext context);
 
