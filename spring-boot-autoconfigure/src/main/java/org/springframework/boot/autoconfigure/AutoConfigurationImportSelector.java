@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
@@ -65,6 +69,9 @@ public class AutoConfigurationImportSelector
 		BeanFactoryAware, EnvironmentAware, Ordered {
 
 	private static final String[] NO_IMPORTS = {};
+
+	private static final Log logger = LogFactory
+			.getLog(AutoConfigurationImportSelector.class);
 
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -215,6 +222,7 @@ public class AutoConfigurationImportSelector
 	}
 
 	private List<String> filter(List<String> configurations) {
+		long startTime = System.currentTimeMillis();
 		String[] candidates = configurations.toArray(new String[configurations.size()]);
 		boolean[] skip = new boolean[candidates.length];
 		boolean skipped = false;
@@ -236,6 +244,12 @@ public class AutoConfigurationImportSelector
 			if (!skip[i]) {
 				result.add(candidates[i]);
 			}
+		}
+		if (logger.isTraceEnabled()) {
+			int numberFiltered = configurations.size() - result.size();
+			logger.trace("Filtered " + numberFiltered + " auto configuration class in "
+					+ TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)
+					+ " ms");
 		}
 		return new ArrayList<String>(result);
 	}
