@@ -16,10 +16,25 @@
 
 package org.springframework.boot.autoconfigure;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
+
 /**
  * Filter that can be registered in {@code spring.factories} to limit the
  * auto-configuration classes considered. This interface is designed to allow fast removal
  * of auto-configuration classes before their bytecode is even read.
+ * <p>
+ * An {@link AutoConfigurationImportFilter} may implement any of the following
+ * {@link org.springframework.beans.factory.Aware Aware} interfaces, and their respective
+ * methods will be called prior to {@link #match(String[])}:
+ * <ul>
+ * <li>{@link EnvironmentAware}</li>
+ * <li>{@link BeanFactoryAware }</li>
+ * <li>{@link BeanClassLoaderAware }</li>
+ * <li>{@link ResourceLoaderAware}</li>
+ * </ul>
  *
  * @author Phillip Webb
  * @since 1.5.0

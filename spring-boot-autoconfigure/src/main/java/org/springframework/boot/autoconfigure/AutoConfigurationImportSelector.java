@@ -219,6 +219,7 @@ public class AutoConfigurationImportSelector
 		boolean[] skip = new boolean[candidates.length];
 		boolean skipped = false;
 		for (AutoConfigurationImportFilter filter : getAutoConfigurationImportFilters()) {
+			invokeAwareMethods(filter);
 			boolean[] match = filter.match(candidates);
 			for (int i = 0; i < match.length; i++) {
 				if (!match[i]) {
@@ -288,20 +289,20 @@ public class AutoConfigurationImportSelector
 				this.beanClassLoader);
 	}
 
-	private void invokeAwareMethods(AutoConfigurationImportListener listener) {
-		if (listener instanceof Aware) {
-			if (listener instanceof BeanClassLoaderAware) {
-				((BeanClassLoaderAware) listener)
+	private void invokeAwareMethods(Object instance) {
+		if (instance instanceof Aware) {
+			if (instance instanceof BeanClassLoaderAware) {
+				((BeanClassLoaderAware) instance)
 						.setBeanClassLoader(this.beanClassLoader);
 			}
-			if (listener instanceof BeanFactoryAware) {
-				((BeanFactoryAware) listener).setBeanFactory(this.beanFactory);
+			if (instance instanceof BeanFactoryAware) {
+				((BeanFactoryAware) instance).setBeanFactory(this.beanFactory);
 			}
-			if (listener instanceof EnvironmentAware) {
-				((EnvironmentAware) listener).setEnvironment(this.environment);
+			if (instance instanceof EnvironmentAware) {
+				((EnvironmentAware) instance).setEnvironment(this.environment);
 			}
-			if (listener instanceof ResourceLoaderAware) {
-				((ResourceLoaderAware) listener).setResourceLoader(this.resourceLoader);
+			if (instance instanceof ResourceLoaderAware) {
+				((ResourceLoaderAware) instance).setResourceLoader(this.resourceLoader);
 			}
 		}
 	}

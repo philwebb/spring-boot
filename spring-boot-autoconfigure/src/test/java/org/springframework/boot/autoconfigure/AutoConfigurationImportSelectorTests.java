@@ -28,6 +28,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
@@ -211,6 +214,14 @@ public class AutoConfigurationImportSelectorTests {
 		assertThat(filtered[2]).isEqualTo(defaultImports[5]);
 	}
 
+	@Test
+	public void filterShouldSupportAware() throws Exception {
+		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter();
+		this.filters.add(filter);
+		selectImports(BasicEnableAutoConfiguration.class);
+		assertThat(filter.getBeanFactory()).isEqualTo(this.beanFactory);
+	}
+
 	private String[] selectImports(Class<?> source) {
 		return this.importSelector.selectImports(new StandardAnnotationMetadata(source));
 	}
@@ -251,12 +262,14 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	private static class TestAutoConfigurationImportFilter
-			implements AutoConfigurationImportFilter {
+			implements AutoConfigurationImportFilter, BeanFactoryAware {
 
 		private final Set<Integer> nonMatching;
 
+		private BeanFactory beanFactory;
+
 		@SuppressWarnings("unchecked")
-		public TestAutoConfigurationImportFilter(int... nonMatching) {
+		TestAutoConfigurationImportFilter(int... nonMatching) {
 			this.nonMatching = new LinkedHashSet<Integer>(
 					CollectionUtils.arrayToList(nonMatching));
 		}
@@ -268,6 +281,15 @@ public class AutoConfigurationImportSelectorTests {
 				result[i] = !this.nonMatching.contains(i);
 			}
 			return result;
+		}
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			this.beanFactory = beanFactory;
+		}
+
+		public BeanFactory getBeanFactory() {
+			return this.beanFactory;
 		}
 
 	}
