@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +38,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,6 +56,8 @@ public class AutoConfigurationImportSelectorTests {
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	private final MockEnvironment environment = new MockEnvironment();
+
+	private List<AutoConfigurationImportFilter> filters = new ArrayList<AutoConfigurationImportFilter>();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -191,6 +197,20 @@ public class AutoConfigurationImportSelectorTests {
 						"org.springframework.boot.autoconfigure.DoesNotExist2");
 	}
 
+	@Test
+	public void filterShouldFilterImports() throws Exception {
+		String[] defaultImports = selectImports(BasicEnableAutoConfiguration.class);
+		this.filters.add(new TestAutoConfigurationImportFilter(1));
+		this.filters.add(new TestAutoConfigurationImportFilter(3, 4));
+		String[] filtered = selectImports(BasicEnableAutoConfiguration.class);
+		assertThat(filtered).hasSize(defaultImports.length - 3);
+		// 0 1 2 3 4 5
+		// 0 X 1 X X 2
+		assertThat(filtered[0]).isEqualTo(defaultImports[0]);
+		assertThat(filtered[1]).isEqualTo(defaultImports[2]);
+		assertThat(filtered[2]).isEqualTo(defaultImports[5]);
+	}
+
 	private String[] selectImports(Class<?> source) {
 		return this.importSelector.selectImports(new StandardAnnotationMetadata(source));
 	}
@@ -200,10 +220,15 @@ public class AutoConfigurationImportSelectorTests {
 				getClass().getClassLoader());
 	}
 
-	private static class TestAutoConfigurationImportSelector
+	private class TestAutoConfigurationImportSelector
 			extends AutoConfigurationImportSelector {
 
 		private AutoConfigurationImportEvent lastEvent;
+
+		@Override
+		protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
+			return AutoConfigurationImportSelectorTests.this.filters;
+		}
 
 		@Override
 		protected List<AutoConfigurationImportListener> getAutoConfigurationImportListeners() {
@@ -221,6 +246,28 @@ public class AutoConfigurationImportSelectorTests {
 
 		public AutoConfigurationImportEvent getLastEvent() {
 			return this.lastEvent;
+		}
+
+	}
+
+	private static class TestAutoConfigurationImportFilter
+			implements AutoConfigurationImportFilter {
+
+		private final Set<Integer> nonMatching;
+
+		@SuppressWarnings("unchecked")
+		public TestAutoConfigurationImportFilter(int... nonMatching) {
+			this.nonMatching = new LinkedHashSet<Integer>(
+					CollectionUtils.arrayToList(nonMatching));
+		}
+
+		@Override
+		public boolean[] match(String[] autoConfigurationClasses) {
+			boolean[] result = new boolean[autoConfigurationClasses.length];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = !this.nonMatching.contains(i);
+			}
+			return result;
 		}
 
 	}
