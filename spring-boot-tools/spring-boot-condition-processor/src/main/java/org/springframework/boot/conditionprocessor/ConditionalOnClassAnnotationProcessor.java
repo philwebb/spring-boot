@@ -19,7 +19,6 @@ package org.springframework.boot.conditionprocessor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -138,33 +137,17 @@ public class ConditionalOnClassAnnotationProcessor extends AbstractProcessor {
 		return result.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<AnnotationValue> getValues(AnnotationMirror annotation) {
 		List<AnnotationValue> result = new ArrayList<AnnotationValue>();
-		Map<String, List<AnnotationValue>> elementValues = getAnnotationElementValues(
-				annotation);
-		addAttributeValue(elementValues, "name", result);
-		addAttributeValue(elementValues, "value", result);
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Map<String, List<AnnotationValue>> getAnnotationElementValues(
-			AnnotationMirror annotation) {
-		Map<String, List<AnnotationValue>> values = new LinkedHashMap<String, List<AnnotationValue>>();
 		for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotation
 				.getElementValues().entrySet()) {
-			values.put(entry.getKey().getSimpleName().toString(),
-					(List<AnnotationValue>) entry.getValue().getValue());
+			String attributeName = entry.getKey().getSimpleName().toString();
+			if ("name".equals(attributeName) || "value".equals(attributeName)) {
+				result.addAll((List<AnnotationValue>) entry.getValue().getValue());
+			}
 		}
-		return values;
-	}
-
-	private void addAttributeValue(Map<String, List<AnnotationValue>> elementValues,
-			String attriubte, List<AnnotationValue> result) {
-		List<AnnotationValue> value = elementValues.get(attriubte);
-		if (value != null) {
-			result.addAll(value);
-		}
+		return result;
 	}
 
 	private String getQualifiedName(Element element) {
