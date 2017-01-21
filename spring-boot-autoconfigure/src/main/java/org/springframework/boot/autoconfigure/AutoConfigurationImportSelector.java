@@ -222,7 +222,7 @@ public class AutoConfigurationImportSelector
 	}
 
 	private List<String> filter(List<String> configurations) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		String[] candidates = configurations.toArray(new String[configurations.size()]);
 		boolean[] skip = new boolean[candidates.length];
 		boolean skipped = false;
