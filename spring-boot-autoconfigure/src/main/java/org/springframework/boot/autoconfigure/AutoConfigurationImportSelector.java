@@ -90,12 +90,12 @@ public class AutoConfigurationImportSelector
 			AnnotationAttributes attributes = getAttributes(metadata);
 			List<String> configurations = getCandidateConfigurations(metadata,
 					attributes);
-			configurations = removeDuplicates(configurations);
 			Set<String> exclusions = getExclusions(metadata, attributes);
 			checkExcludedClasses(configurations, exclusions);
 			configurations.removeAll(exclusions);
-			configurations = sort(configurations);
 			configurations = filter(configurations);
+			configurations = removeDuplicates(configurations);
+			configurations = sort(configurations);
 			fireAutoConfigurationImportListeners(configurations, exclusions);
 			return configurations.toArray(new String[configurations.size()]);
 		}
@@ -163,7 +163,7 @@ public class AutoConfigurationImportSelector
 
 	private void checkExcludedClasses(List<String> configurations,
 			Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<String>();
+		List<String> invalidExcludes = new ArrayList<String>(exclusions.size());
 		for (String exclusion : exclusions) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {

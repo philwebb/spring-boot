@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +41,6 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -203,20 +202,18 @@ public class AutoConfigurationImportSelectorTests {
 	@Test
 	public void filterShouldFilterImports() throws Exception {
 		String[] defaultImports = selectImports(BasicEnableAutoConfiguration.class);
-		this.filters.add(new TestAutoConfigurationImportFilter(1));
-		this.filters.add(new TestAutoConfigurationImportFilter(3, 4));
+		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 1));
+		this.filters.add(new TestAutoConfigurationImportFilter(defaultImports, 3, 4));
 		String[] filtered = selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(filtered).hasSize(defaultImports.length - 3);
-		// 0 1 2 3 4 5
-		// 0 X 1 X X 2
-		assertThat(filtered[0]).isEqualTo(defaultImports[0]);
-		assertThat(filtered[1]).isEqualTo(defaultImports[2]);
-		assertThat(filtered[2]).isEqualTo(defaultImports[5]);
+		assertThat(filtered).doesNotContain(defaultImports[1], defaultImports[3],
+				defaultImports[4]);
 	}
 
 	@Test
 	public void filterShouldSupportAware() throws Exception {
-		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter();
+		TestAutoConfigurationImportFilter filter = new TestAutoConfigurationImportFilter(
+				new String[] {});
 		this.filters.add(filter);
 		selectImports(BasicEnableAutoConfiguration.class);
 		assertThat(filter.getBeanFactory()).isEqualTo(this.beanFactory);
@@ -264,21 +261,22 @@ public class AutoConfigurationImportSelectorTests {
 	private static class TestAutoConfigurationImportFilter
 			implements AutoConfigurationImportFilter, BeanFactoryAware {
 
-		private final Set<Integer> nonMatching;
+		private final Set<String> nonMatching = new HashSet<String>();
 
 		private BeanFactory beanFactory;
 
 		@SuppressWarnings("unchecked")
-		TestAutoConfigurationImportFilter(int... nonMatching) {
-			this.nonMatching = new LinkedHashSet<Integer>(
-					CollectionUtils.arrayToList(nonMatching));
+		TestAutoConfigurationImportFilter(String[] configurations, int... nonMatching) {
+			for (int i : nonMatching) {
+				this.nonMatching.add(configurations[i]);
+			}
 		}
 
 		@Override
 		public boolean[] match(String[] autoConfigurationClasses) {
 			boolean[] result = new boolean[autoConfigurationClasses.length];
 			for (int i = 0; i < result.length; i++) {
-				result[i] = !this.nonMatching.contains(i);
+				result[i] = !this.nonMatching.contains(autoConfigurationClasses[i]);
 			}
 			return result;
 		}
