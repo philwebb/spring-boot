@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,6 +41,13 @@ public class OnClassConditionAutoConfigurationImportFilterTests {
 	public void setup() {
 		this.filter.setBeanClassLoader(getClass().getClassLoader());
 		this.filter.setBeanFactory(this.beanFactory);
+	}
+
+	@Test
+	public void shouldBeRegistered() throws Exception {
+		assertThat(SpringFactoriesLoader
+				.loadFactories(AutoConfigurationImportFilter.class, null))
+						.hasAtLeastOneElementOfType(OnClassCondition.class);
 	}
 
 	@Test

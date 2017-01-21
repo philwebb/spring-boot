@@ -160,7 +160,8 @@ class OnClassCondition extends SpringBootCondition
 			@Override
 			public void run() {
 				for (int i = start; i < end; i++) {
-					List<String> onClasses = conditions.get(autoConfigurationClasses[i]);
+					String autoConfigurationClass = autoConfigurationClasses[i];
+					List<String> onClasses = conditions.get(autoConfigurationClass);
 					fillOutcome(onClasses, outcomes, i);
 				}
 			}
