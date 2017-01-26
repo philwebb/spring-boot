@@ -50,43 +50,36 @@ class ManagementContextConfigurationsImportSelector
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		// Find all possible management context configuration classes, filtering
-		// duplicates
-		List<String> names = loadFactoryNames();
-		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(
-				this.classLoader);
-		List<ManagementContextConfigurationClass> configurationClasses = createConfigurationClasses(
-				names, readerFactory);
-		OrderComparator.sort(configurationClasses);
-		List<String> sortedNames = new ArrayList<String>();
-		for (ManagementContextConfigurationClass configurationClass : configurationClasses) {
-			sortedNames.add(configurationClass.className);
+		// Find all management context configuration classes, filtering duplicates
+		List<ManagementConfiguration> configurations = getConfigurations();
+		OrderComparator.sort(configurations);
+		List<String> names = new ArrayList<String>();
+		for (ManagementConfiguration configuration : configurations) {
+			names.add(configuration.getClassName());
 		}
-		return sortedNames.toArray(new String[names.size()]);
+		return names.toArray(new String[names.size()]);
 	}
 
-	private List<ManagementContextConfigurationClass> createConfigurationClasses(
-			List<String> names, SimpleMetadataReaderFactory readerFactory) {
-		List<ManagementContextConfigurationClass> configurationClasses = new ArrayList<ManagementContextConfigurationClass>();
-		for (String name : names) {
-			try {
-				MetadataReader metadataReader = readerFactory.getMetadataReader(name);
-				Map<String, Object> orderAttributes = metadataReader
-						.getAnnotationMetadata()
-						.getAnnotationAttributes(Order.class.getName());
-				int order = (orderAttributes != null
-						&& orderAttributes.get("value") != null)
-								? (int) orderAttributes.get("value")
-								: Ordered.LOWEST_PRECEDENCE;
-				configurationClasses
-						.add(new ManagementContextConfigurationClass(name, order));
-			}
-			catch (IOException ex) {
-				throw new RuntimeException(
-						"Failed to read annotation metadata for '" + name + "'", ex);
-			}
+	private List<ManagementConfiguration> getConfigurations() {
+		SimpleMetadataReaderFactory readerFactory = new SimpleMetadataReaderFactory(
+				this.classLoader);
+		List<ManagementConfiguration> configurations = new ArrayList<ManagementConfiguration>();
+		for (String className : loadFactoryNames()) {
+			getConfiguration(readerFactory, configurations, className);
 		}
-		return configurationClasses;
+		return configurations;
+	}
+
+	private void getConfiguration(SimpleMetadataReaderFactory readerFactory,
+			List<ManagementConfiguration> configurations, String className) {
+		try {
+			MetadataReader metadataReader = readerFactory.getMetadataReader(className);
+			configurations.add(new ManagementConfiguration(metadataReader));
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(
+					"Failed to read annotation metadata for '" + className + "'", ex);
+		}
 	}
 
 	protected List<String> loadFactoryNames() {
@@ -99,15 +92,32 @@ class ManagementContextConfigurationsImportSelector
 		this.classLoader = classLoader;
 	}
 
-	private static class ManagementContextConfigurationClass implements Ordered {
+	/**
+	 * A management configuration class which can be sorted according to {@code @Order}.
+	 */
+	private static class ManagementConfiguration implements Ordered {
 
 		private final String className;
 
 		private final int order;
 
-		public ManagementContextConfigurationClass(String className, int order) {
-			this.className = className;
-			this.order = order;
+		public ManagementConfiguration(MetadataReader metadataReader) {
+			AnnotationMetadata annotationMetadata = metadataReader
+					.getAnnotationMetadata();
+			this.order = readOrder(annotationMetadata);
+			this.className = metadataReader.getClassMetadata().getClassName();
+		}
+
+		private int readOrder(AnnotationMetadata annotationMetadata) {
+			Map<String, Object> attributes = annotationMetadata
+					.getAnnotationAttributes(Order.class.getName());
+			Integer order = (attributes == null ? null
+					: (Integer) attributes.get("value"));
+			return (order == null ? Ordered.LOWEST_PRECEDENCE : order);
+		}
+
+		public String getClassName() {
+			return this.className;
 		}
 
 		@Override
