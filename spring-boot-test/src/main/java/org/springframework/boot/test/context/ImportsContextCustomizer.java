@@ -18,8 +18,11 @@ package org.springframework.boot.test.context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
@@ -30,19 +33,24 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.context.annotation.DeterminableImportSelector;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link ContextCustomizer} to allow {@code @Import} annotations to be used directly on
@@ -125,6 +133,11 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		// ImportSelectors are flexible so the only safe cache key is the test class
 		ImportsContextCustomizer other = (ImportsContextCustomizer) obj;
 		return this.key.equals(other.key);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("key", this.key).toString();
 	}
 
 	/**
@@ -224,13 +237,16 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
 		}
 
-		private final Set<Annotation> annotations;
+		private final Set<Object> key;
 
 		ContextCustomizerKey(Class<?> testClass) {
 			Set<Annotation> annotations = new HashSet<Annotation>();
 			Set<Class<?>> seen = new HashSet<Class<?>>();
 			collectClassAnnotations(testClass, annotations, seen);
-			this.annotations = Collections.unmodifiableSet(annotations);
+			Set<Class<?>> imports = getImports(annotations);
+			Set<String> selectedImports = getSelectedImports(testClass, imports);
+			this.key = Collections.<Object>unmodifiableSet(
+					selectedImports != null ? selectedImports : annotations);
 		}
 
 		private void collectClassAnnotations(Class<?> classType,
@@ -266,17 +282,76 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return false;
 		}
 
+		private Set<Class<?>> getImports(Set<Annotation> annotations) {
+			Set<Class<?>> imports = new LinkedHashSet<Class<?>>();
+			for (Annotation annotation : annotations) {
+				if (annotation instanceof Import) {
+					imports.addAll(Arrays.asList(((Import) annotation).value()));
+				}
+			}
+			return imports;
+		}
+
+		private Set<String> getSelectedImports(Class<?> testClass,
+				Set<Class<?>> sources) {
+			AnnotationMetadata metadata = new StandardAnnotationMetadata(testClass);
+			Set<String> selectedImports = new LinkedHashSet<String>();
+			for (Class<?> source : sources) {
+				Set<String> sourceImports = getSourceImports(metadata, source);
+				if (sourceImports == null) {
+					return null;
+				}
+				selectedImports.addAll(sourceImports);
+			}
+			return selectedImports;
+		}
+
+		private Set<String> getSourceImports(AnnotationMetadata metadata,
+				Class<?> source) {
+			if (DeterminableImportSelector.class.isAssignableFrom(source)) {
+				DeterminableImportSelector selector = instantiate(source);
+				// We can determine the imports
+				return selector.determineImports(metadata);
+			}
+			if (ImportSelector.class.isAssignableFrom(source)
+					|| ImportBeanDefinitionRegistrar.class.isAssignableFrom(source)) {
+				// Standard ImportSelector and ImportBeanDefinitionRegistrar could
+				// use anything to determine the imports so we can't be sure
+				return null;
+			}
+			// The source itself is the import
+			return Collections.singleton(source.getName());
+		}
+
+		private DeterminableImportSelector instantiate(Class<?> source) {
+			try {
+				Constructor<?> constructor = source.getDeclaredConstructor();
+				ReflectionUtils.makeAccessible(constructor);
+				return (DeterminableImportSelector) source.newInstance();
+			}
+			catch (Throwable ex) {
+				throw new IllegalStateException(
+						"Unable to instantiate DeterminableImportSelector "
+								+ source.getName(),
+						ex);
+			}
+		}
+
 		@Override
 		public int hashCode() {
-			return this.annotations.hashCode();
+			return this.key.hashCode();
 		}
 
 		@Override
 		public boolean equals(Object obj) {
 			return (obj != null && getClass().equals(obj.getClass())
-					&& this.annotations.equals(((ContextCustomizerKey) obj).annotations));
+					&& this.key.equals(((ContextCustomizerKey) obj).key));
 		}
 
+		@Override
+		public String toString() {
+			return this.key.toString();
+		}
 	}
 
 	/**
