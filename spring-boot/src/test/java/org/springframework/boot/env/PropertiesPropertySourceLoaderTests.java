@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link PropertiesPropertySourceLoader}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class PropertiesPropertySourceLoaderTests {
 
