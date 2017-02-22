@@ -54,6 +54,8 @@ public class AetherGrapeEngineTests {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<RepositoryConfiguration>();
 		repositoryConfigurations.add(new RepositoryConfiguration("central",
 				URI.create("http://repo1.maven.org/maven2"), false));
+		repositoryConfigurations.add(new RepositoryConfiguration("central",
+				URI.create("https://repo.spring.io/release"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
 		dependencyResolutionContext.addDependencyManagement(
@@ -99,7 +101,7 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
+				assertThat(repositories).hasSize(2);
 				assertThat(repositories.get(0).getId()).isEqualTo("central-mirror");
 			}
 		});
@@ -116,7 +118,7 @@ public class AetherGrapeEngineTests {
 
 				List<RemoteRepository> repositories = (List<RemoteRepository>) ReflectionTestUtils
 						.getField(grapeEngine, "repositories");
-				assertThat(repositories).hasSize(1);
+				assertThat(repositories).hasSize(2);
 				Authentication authentication = repositories.get(0).getAuthentication();
 				assertThat(authentication).isNotNull();
 			}
