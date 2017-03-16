@@ -25,6 +25,7 @@ import org.springframework.core.env.PropertySource;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
+@Deprecated
 public class PropertyOrigin {
 
 	private final PropertySource<?> source;

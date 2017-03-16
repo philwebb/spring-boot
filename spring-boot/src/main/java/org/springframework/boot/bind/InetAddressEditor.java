@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
  *
  * @author Dave Syer
  */
+@Deprecated
 public class InetAddressEditor extends PropertyEditorSupport {
 
 	@Override

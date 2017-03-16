@@ -27,6 +27,7 @@ import org.springframework.util.PatternMatchUtils;
  * @author Phillip Webb
  * @since 1.2.0
  */
+@Deprecated
 class PatternPropertyNamePatternsMatcher implements PropertyNamePatternsMatcher {
 
 	private final String[] patterns;

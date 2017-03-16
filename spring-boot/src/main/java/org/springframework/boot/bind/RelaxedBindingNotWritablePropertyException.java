@@ -26,6 +26,7 @@ import org.springframework.beans.NotWritablePropertyException;
  * @since 1.3.0
  * @see RelaxedDataBinder
  */
+@Deprecated
 public class RelaxedBindingNotWritablePropertyException
 		extends NotWritablePropertyException {
 

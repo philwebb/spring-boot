@@ -60,6 +60,7 @@ import static org.junit.Assert.fail;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@Deprecated
 public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Rule

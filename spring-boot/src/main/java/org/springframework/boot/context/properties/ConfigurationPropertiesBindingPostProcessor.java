@@ -74,6 +74,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Christian Dupuis
  * @author Stephane Nicoll
  */
+@Deprecated
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, EnvironmentAware, ApplicationContextAware, InitializingBean,
 		DisposableBean, ApplicationListener<ContextRefreshedEvent>, PriorityOrdered {

@@ -23,6 +23,7 @@ import org.springframework.core.convert.converter.Converter;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class StringToCharArrayConverter implements Converter<String, char[]> {
 
 	@Override

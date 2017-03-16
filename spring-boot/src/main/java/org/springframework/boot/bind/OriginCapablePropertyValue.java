@@ -24,6 +24,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Andy Wilkinson
  */
+@Deprecated
 class OriginCapablePropertyValue extends PropertyValue {
 
 	private static final String ATTRIBUTE_PROPERTY_ORIGIN = "propertyOrigin";
