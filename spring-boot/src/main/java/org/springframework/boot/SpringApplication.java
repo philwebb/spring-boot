@@ -340,7 +340,8 @@ public class SpringApplication {
 			bindToSpringApplication(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
+			exceptionReporters = getSpringFactoriesInstances(
+					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
@@ -854,7 +855,8 @@ public class SpringApplication {
 
 	private void handleRunFailure(ConfigurableApplicationContext context,
 			SpringApplicationRunListeners listeners,
-			Collection<SpringBootExceptionReporter> exceptionReporters, Throwable exception) {
+			Collection<SpringBootExceptionReporter> exceptionReporters,
+			Throwable exception) {
 		try {
 			try {
 				handleExitCode(context, exception);
