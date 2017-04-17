@@ -30,6 +30,14 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  */
 public class IgnoreNestedPropertiesBindHandler extends AbstractBindHandler {
 
+	public IgnoreNestedPropertiesBindHandler() {
+		super();
+	}
+
+	public IgnoreNestedPropertiesBindHandler(BindHandler parent) {
+		super(parent);
+	}
+
 	@Override
 	public boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context) {

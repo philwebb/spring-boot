@@ -58,8 +58,6 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 
 	private BeanFactory beanFactory;
 
-	private final String prefix = "spring.jmx.";
-
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
@@ -77,9 +75,10 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
-		String server = this.environment.getProperty(this.prefix + "server", "mbeanServer");
-		if (StringUtils.hasLength(server)) {
-			exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
+		String serverBean = this.environment.getProperty("spring.jmx.server",
+				"mbeanServer");
+		if (StringUtils.hasLength(serverBean)) {
+			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 		}
 		return exporter;
 	}
@@ -89,7 +88,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(
 				new AnnotationJmxAttributeSource());
-		String defaultDomain = this.environment.getProperty(this.prefix + "default-domain");
+		String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
@@ -107,7 +106,6 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		factory.setLocateExistingServerIfPossible(true);
 		factory.afterPropertiesSet();
 		return factory.getObject();
-
 	}
 
 }

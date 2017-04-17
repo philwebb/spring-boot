@@ -35,10 +35,9 @@ public class MustacheTemplateAvailabilityProvider
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("com.samskivert.mustache.Template", classLoader)) {
-			String propertyPrefix = "spring.mustache.";
-			String prefix = environment.getProperty(propertyPrefix + "prefix",
+			String prefix = environment.getProperty("spring.mustache.prefix",
 					MustacheProperties.DEFAULT_PREFIX);
-			String suffix = environment.getProperty(propertyPrefix + "suffix",
+			String suffix = environment.getProperty("spring.mustache.suffix",
 					MustacheProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}

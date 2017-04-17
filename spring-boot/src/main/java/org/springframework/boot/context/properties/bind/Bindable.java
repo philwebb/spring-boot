@@ -18,8 +18,10 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
@@ -154,8 +156,35 @@ public final class Bindable<T> {
 				this.annotations, defaultValue);
 	}
 
+	/**
+	 * Create a new {@link Bindable} of the specified type with an
+	 * existing value equal to a new instance of that type.
+	 * @param <T> The source type
+	 * @param type the type (must not be {@code null} and must have a default constructor)
+	 * @return a {@link Bindable} instance
+	 * @see #of(Class, Object)
+	 */
+	public static <T> Bindable<T> withNewInstance(Class<T> type) {
+		Assert.notNull(type, "Type must not be null");
+		Assert.state(hasDefaultConstructor(type), "Type must have default constructor");
+		T instance = BeanUtils.instantiateClass(type);
+		return of(type, instance);
+	}
+
+	private static boolean hasDefaultConstructor(Class<?> type) {
+		return Arrays.stream(type.getDeclaredConstructors())
+				.anyMatch((c) -> c.getParameterCount() == 0);
+	}
+
+	/**
+	 * Create a new {@link Bindable} of the type of the specified instance with an
+	 * existing value equal to the instance.
+	 * @param <T> The source type
+	 * @param instance the instance (must not be {@code null})
+	 * @return a {@link Bindable} instance
+	 * @see #of(Class, Object)
+	 */
 	public static <T> Bindable<T> ofInstance(T instance) {
-		// FIXME DC + Test
 		Assert.notNull(instance, "Instance must not be null");
 		return of(instance.getClass(), instance);
 	}

@@ -174,50 +174,49 @@ public class OAuth2ResourceServerConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth ResourceServer Condition");
 			Environment environment = context.getEnvironment();
-			String prefix = "security.oauth2.resource.";
-			if (environment instanceof ConfigurableEnvironment) {
-				if (hasOAuthClientId(environment)) {
-					return ConditionOutcome
-							.match(message.foundExactly("client-id property"));
-				}
-				Binder binder = Binder.get(environment);
-				Map<String, Object> jwt = binder.bind(prefix + "jwt",
-						Bindable.of(STRING_OBJECT_MAP));
-				if (jwt != null) {
-					return ConditionOutcome
-							.match(message.foundExactly("JWT resource configuration"));
-				}
-				Object jwk = binder.bind(prefix + "jwk", Bindable.of(STRING_OBJECT_MAP));
-				if (jwk != null) {
-					return ConditionOutcome
-							.match(message.foundExactly("JWK resource configuration"));
-				}
-				if (StringUtils
-						.hasText(environment.getProperty(prefix + "user-info-uri"))) {
-					return ConditionOutcome
-							.match(message.foundExactly("user-info-uri property"));
-				}
-				if (StringUtils
-						.hasText(environment.getProperty(prefix + "token-info-uri"))) {
-					return ConditionOutcome
-							.match(message.foundExactly("token-info-uri property"));
-				}
-				if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
-					if (AuthorizationServerEndpointsConfigurationBeanCondition
-							.matches(context)) {
-						return ConditionOutcome.match(
-								message.found("class").items(AUTHORIZATION_ANNOTATION));
-					}
+			if (!(environment instanceof ConfigurableEnvironment)) {
+				return ConditionOutcome
+						.noMatch(message.didNotFind("A ConfigurableEnvironment").atAll());
+			}
+			if (hasOAuthClientId(environment)) {
+				return ConditionOutcome.match(message.foundExactly("client-id property"));
+			}
+			Binder binder = Binder.get(environment);
+			if (binder.bind("security.oauth2.resource.jwt",
+					Bindable.of(STRING_OBJECT_MAP)) != null) {
+				return ConditionOutcome
+						.match(message.foundExactly("JWT resource configuration"));
+			}
+			if (binder.bind("security.oauth2.resource.jwk",
+					Bindable.of(STRING_OBJECT_MAP)) != null) {
+				return ConditionOutcome
+						.match(message.foundExactly("JWK resource configuration"));
+			}
+			if (StringUtils.hasText(
+					environment.getProperty("security.oauth2.resource.user-info-uri"))) {
+				return ConditionOutcome
+						.match(message.foundExactly("user-info-uri property"));
+			}
+			if (StringUtils.hasText(
+					environment.getProperty("security.oauth2.resource.token-info-uri"))) {
+				return ConditionOutcome
+						.match(message.foundExactly("token-info-uri property"));
+			}
+			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
+				if (AuthorizationServerEndpointsConfigurationBeanCondition
+						.matches(context)) {
+					return ConditionOutcome.match(
+							message.found("class").items(AUTHORIZATION_ANNOTATION));
 				}
 			}
 			return ConditionOutcome.noMatch(
-					message.didNotFind("client id, JWT resource or authorization server")
+					message.didNotFind("client ID, JWT resource or authorization server")
 							.atAll());
 		}
 
 		private boolean hasOAuthClientId(Environment environment) {
 			return StringUtils.hasLength(
-					environment.getProperty("security.oauth2.client.client-id", ""));
+					environment.getProperty("security.oauth2.client.client-id"));
 		}
 
 	}

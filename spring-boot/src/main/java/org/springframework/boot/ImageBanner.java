@@ -90,11 +90,11 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		String prefix = "banner.image.";
-		int width = environment.getProperty(prefix + "width", Integer.class, 76);
-		int height = environment.getProperty(prefix + "height", Integer.class, 0);
-		int margin = environment.getProperty(prefix + "margin", Integer.class, 2);
-		boolean invert = environment.getProperty(prefix + "invert", Boolean.class, false);
+		int width = environment.getProperty("banner.image.width", Integer.class, 76);
+		int height = environment.getProperty("banner.image.height", Integer.class, 0);
+		int margin = environment.getProperty("banner.image.margin", Integer.class, 2);
+		boolean invert = environment.getProperty("banner.image.invert", Boolean.class,
+				false);
 		BufferedImage image = readImage(width, height);
 		printBanner(image, margin, invert, out);
 	}

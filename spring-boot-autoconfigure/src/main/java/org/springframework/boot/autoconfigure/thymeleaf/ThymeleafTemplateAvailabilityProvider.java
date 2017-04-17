@@ -36,10 +36,9 @@ public class ThymeleafTemplateAvailabilityProvider
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine",
 				classLoader)) {
-			String propertyPrefix = "spring.thymeleaf.";
-			String prefix = environment.getProperty(propertyPrefix + "prefix",
+			String prefix = environment.getProperty("spring.thymeleaf.prefix",
 					ThymeleafProperties.DEFAULT_PREFIX);
-			String suffix = environment.getProperty(propertyPrefix + "suffix",
+			String suffix = environment.getProperty("spring.thymeleaf.suffix",
 					ThymeleafProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}

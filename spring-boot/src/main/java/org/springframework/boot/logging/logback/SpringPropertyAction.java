@@ -46,8 +46,8 @@ class SpringPropertyAction extends Action {
 	}
 
 	@Override
-	public void begin(InterpretationContext ic, String elementName, Attributes attributes)
-			throws ActionException {
+	public void begin(InterpretationContext context, String elementName,
+			Attributes attributes) throws ActionException {
 		String name = attributes.getValue(NAME_ATTRIBUTE);
 		String source = attributes.getValue(SOURCE_ATTRIBUTE);
 		Scope scope = ActionUtil.stringToScope(attributes.getValue(SCOPE_ATTRIBUTE));
@@ -56,7 +56,7 @@ class SpringPropertyAction extends Action {
 			addError(
 					"The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
-		ActionUtil.setProperty(ic, name, getValue(source, defaultValue), scope);
+		ActionUtil.setProperty(context, name, getValue(source, defaultValue), scope);
 	}
 
 	private String getValue(String source, String defaultValue) {
@@ -71,13 +71,14 @@ class SpringPropertyAction extends Action {
 		int lastDot = source.lastIndexOf(".");
 		if (lastDot > 0) {
 			String prefix = source.substring(0, lastDot + 1);
-			return this.environment.getProperty(prefix + source.substring(lastDot + 1), defaultValue);
+			return this.environment.getProperty(prefix + source.substring(lastDot + 1),
+					defaultValue);
 		}
 		return defaultValue;
 	}
 
 	@Override
-	public void end(InterpretationContext ic, String name) throws ActionException {
+	public void end(InterpretationContext context, String name) throws ActionException {
 	}
 
 }

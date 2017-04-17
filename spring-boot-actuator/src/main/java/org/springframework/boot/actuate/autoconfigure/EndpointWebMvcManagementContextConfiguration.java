@@ -224,8 +224,7 @@ public class EndpointWebMvcManagementContextConfiguration {
 				return ConditionOutcome
 						.match(message.found("logging.path").items(config));
 			}
-			String prefix = "endpoints.logfile.";
-			config = environment.getProperty(prefix + "external-file");
+			config = environment.getProperty("endpoints.logfile.external-file");
 			if (StringUtils.hasText(config)) {
 				return ConditionOutcome.match(
 						message.found("endpoints.logfile.external-file").items(config));

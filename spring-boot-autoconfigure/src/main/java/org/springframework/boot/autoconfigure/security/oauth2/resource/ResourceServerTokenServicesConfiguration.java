@@ -318,15 +318,17 @@ public class ResourceServerTokenServicesConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth TokenInfo Condition");
 			Environment environment = context.getEnvironment();
-			Boolean preferTokenInfo = environment.getProperty("security.oauth2.resource.prefer-token-info",
-					Boolean.class);
+			Boolean preferTokenInfo = environment.getProperty(
+					"security.oauth2.resource.prefer-token-info", Boolean.class);
 			if (preferTokenInfo == null) {
 				preferTokenInfo = environment
 						.resolvePlaceholders("${OAUTH2_RESOURCE_PREFERTOKENINFO:true}")
 						.equals("true");
 			}
-			String tokenInfoUri = environment.getProperty("security.oauth2.resource.token-info-uri");
-			String userInfoUri = environment.getProperty("security.oauth2.resource.user-info-uri");
+			String tokenInfoUri = environment
+					.getProperty("security.oauth2.resource.token-info-uri");
+			String userInfoUri = environment
+					.getProperty("security.oauth2.resource.user-info-uri");
 			if (!StringUtils.hasLength(userInfoUri)
 					&& !StringUtils.hasLength(tokenInfoUri)) {
 				return ConditionOutcome
@@ -349,8 +351,10 @@ public class ResourceServerTokenServicesConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth JWT Condition");
 			Environment environment = context.getEnvironment();
-			String keyValue = environment.getProperty("security.oauth2.resource.jwt.key-value");
-			String keyUri = environment.getProperty("security.oauth2.resource.jwt.key-uri");
+			String keyValue = environment
+					.getProperty("security.oauth2.resource.jwt.key-value");
+			String keyUri = environment
+					.getProperty("security.oauth2.resource.jwt.key-uri");
 			if (StringUtils.hasText(keyValue) || StringUtils.hasText(keyUri)) {
 				return ConditionOutcome
 						.match(message.foundExactly("provided public key"));
@@ -369,7 +373,8 @@ public class ResourceServerTokenServicesConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth JWK Condition");
 			Environment environment = context.getEnvironment();
-			String keyUri = environment.getProperty("security.oauth2.resource.jwk.key-set-uri");
+			String keyUri = environment
+					.getProperty("security.oauth2.resource.jwk.key-set-uri");
 			if (StringUtils.hasText(keyUri)) {
 				return ConditionOutcome
 						.match(message.foundExactly("provided jwk key set URI"));

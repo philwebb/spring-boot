@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,6 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.Authentication;
@@ -53,15 +53,14 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthMvcEndpointTests {
 
-	private static final ArrayList SECURITY_ROLES = new ArrayList(Arrays.asList("HERO"));
+	private static final List<String> SECURITY_ROLES = new ArrayList<>(
+			Arrays.asList("HERO"));
 
 	private HttpServletRequest request = new MockHttpServletRequest();
 
 	private HealthEndpoint endpoint = null;
 
 	private HealthMvcEndpoint mvc = null;
-
-	private MockEnvironment environment;
 
 	private HttpServletRequest defaultUser = createAuthenticationRequest("ROLE_ACTUATOR");
 
@@ -78,8 +77,6 @@ public class HealthMvcEndpointTests {
 		this.endpoint = mock(HealthEndpoint.class);
 		given(this.endpoint.isEnabled()).willReturn(true);
 		this.mvc = new HealthMvcEndpoint(this.endpoint);
-		this.environment = new MockEnvironment();
-		this.mvc.setEnvironment(this.environment);
 	}
 
 	@Test

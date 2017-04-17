@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
-import java.util.Map;
-
 import com.samskivert.mustache.DefaultCollector;
 import com.samskivert.mustache.Mustache.Collector;
 import com.samskivert.mustache.Mustache.VariableFetcher;
@@ -36,8 +34,6 @@ public class MustacheEnvironmentCollector extends DefaultCollector
 		implements EnvironmentAware {
 
 	private ConfigurableEnvironment environment;
-
-	private Map<String, Object> target;
 
 	private final VariableFetcher propertyFetcher = new PropertyVariableFetcher();
 

@@ -72,8 +72,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, ConfigurationProperty property, Object result) {
 		if (property != null) {
 			this.bound.add(property);
 		}

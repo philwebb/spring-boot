@@ -67,6 +67,14 @@ public class BindableTests {
 	}
 
 	@Test
+	public void ofInstanceShouldSetTypeAndExistingValue() throws Exception {
+		String instance = "foo";
+		ResolvableType type = ResolvableType.forClass(String.class);
+		assertThat(Bindable.ofInstance(instance).getType()).isEqualTo(type);
+		assertThat(Bindable.ofInstance(instance).getExistingValue().get()).isEqualTo("foo");
+	}
+
+	@Test
 	public void ofClassWithExistingValueShouldSetTypeAndExistingValue() throws Exception {
 		assertThat(Bindable.of(String.class, "foo").getExistingValue().get())
 				.isEqualTo("foo");
@@ -166,9 +174,52 @@ public class BindableTests {
 		assertThat(bindable1).isNotEqualTo(bindable3);
 	}
 
+	@Test
+	public void withNewInstanceShouldSetExistingValue() throws Exception {
+		Bindable<TestNewInstance> bindable = Bindable.withNewInstance(TestNewInstance.class);
+		assertThat(bindable.getExistingValue().get().getFoo()).isEqualTo("hello world");
+	}
+
+	@Test
+	public void withNewInstanceIfNoDefaultConstructorShouldFail() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Type must have default constructor");
+		Bindable.withNewInstance(TestNewInstanceWithNoDefaultConstructor.class);
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	static @interface TestAnnotation {
 
+	}
+
+	static class TestNewInstance {
+
+		private String foo = "hello world";
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+	}
+
+	static class TestNewInstanceWithNoDefaultConstructor {
+
+		TestNewInstanceWithNoDefaultConstructor(String foo) {
+			this.foo = foo;
+		}
+
+		private String foo = "hello world";
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
 	}
 
 }

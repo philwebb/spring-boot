@@ -211,7 +211,7 @@ public class AutoConfigurationImportSelector
 	private List<String> getExcludeAutoConfigurationsProperty() {
 		String name = "spring.autoconfigure.exclude";
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
-			Binder binder = Binder.get((ConfigurableEnvironment) getEnvironment());
+			Binder binder = Binder.get(getEnvironment());
 			String[] excludes = binder.bind(name, Bindable.of(String[].class));
 			return asList(excludes);
 		}

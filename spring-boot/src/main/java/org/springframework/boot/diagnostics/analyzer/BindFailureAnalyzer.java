@@ -16,13 +16,12 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.List;
-
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.util.CollectionUtils;
+import org.springframework.boot.origin.Origin;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -38,28 +37,41 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
 		if (cause.getCause() instanceof BindValidationException) {
-			BindValidationException validationException = (BindValidationException) cause.getCause();
-			List<ObjectError> validationErrors = validationException.getValidationErrors().getAllErrors();
-			if (CollectionUtils.isEmpty(validationErrors)) {
-				return null;
-			}
-			StringBuilder description = new StringBuilder(
-					String.format("Binding to target %s failed:%n", cause.getTarget()));
-			for (ObjectError error : validationErrors) {
-				if (error instanceof FieldError) {
-					FieldError fieldError = (FieldError) error;
-					description.append(String.format("%n    Property: %s",
-							error.getObjectName() + "." + fieldError.getField()));
-					description.append(
-							String.format("%n    Value: %s", fieldError.getRejectedValue()));
-				}
-				description.append(
-						String.format("%n    Reason: %s%n", error.getDefaultMessage()));
-			}
-			return new FailureAnalysis(description.toString(),
-					"Update your application's configuration", cause);
+			return analyzeBindValidationException(cause,
+					(BindValidationException) cause.getCause());
 		}
-		return null; //FIXME analyze other bind failures
+		return null;
+	}
+
+	private FailureAnalysis analyzeBindValidationException(BindException cause,
+			BindValidationException validationException) {
+		ValidationErrors errors = validationException.getValidationErrors();
+		if (!errors.hasErrors()) {
+			return null;
+		}
+		StringBuilder description = new StringBuilder(
+				String.format("Binding to target %s failed:%n", cause.getTarget()));
+		for (ObjectError error : errors) {
+			if (error instanceof FieldError) {
+				FieldError fieldError = (FieldError) error;
+				Origin origin = Origin.from(fieldError);
+				description.append(String.format("%n    Property: %s",
+						error.getObjectName() + "." + fieldError.getField()));
+				description.append(
+						String.format("%n    Value: %s", fieldError.getRejectedValue()));
+				if (origin != null) {
+					description.append(String.format("%n    Origin: %s", origin));
+				}
+			}
+			description.append(
+					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+		}
+		return getFailureAnalysis(description, cause);
+	}
+
+	private FailureAnalysis getFailureAnalysis(Object description, BindException cause) {
+		return new FailureAnalysis(description.toString(),
+				"Update your application's configuration", cause);
 	}
 
 }

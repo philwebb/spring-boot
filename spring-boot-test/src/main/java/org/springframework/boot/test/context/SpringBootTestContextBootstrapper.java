@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -31,14 +30,12 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySources;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -231,21 +228,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private WebApplicationType getConfiguredWebApplicationType(
 			MergedContextConfiguration configuration) {
-		PropertySources sources = convertToPropertySources(
-				configuration.getPropertySourceProperties());
-		Binder binder = new Binder(ConfigurationPropertySources.get(sources));
-		String property = binder.bind("spring.main.web-application-type",
-				Bindable.of(String.class));
-		return (property != null ? WebApplicationType.valueOf(property.toUpperCase())
-				: null);
-	}
-
-	private PropertySources convertToPropertySources(String[] properties) {
-		Map<String, Object> source = TestPropertySourceUtils
-				.convertInlinedPropertiesToMap(properties);
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new MapPropertySource("inline", source));
-		return sources;
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(
+				TestPropertySourceUtils.convertInlinedPropertiesToMap(
+						configuration.getPropertySourceProperties()));
+		Binder binder = new Binder(source);
+		return binder.bind("spring.main.web-application-type",
+				Bindable.of(WebApplicationType.class));
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(

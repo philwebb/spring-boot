@@ -99,8 +99,6 @@ public class NoUnboundElementsBindHandlerTests {
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
-	// FIXME a lot more tests are needed
-
 	public static class Example {
 
 		private String foo;

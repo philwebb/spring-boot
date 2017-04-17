@@ -22,6 +22,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * {@link PlaceholdersResolver} to resolve placeholders from {@link PropertySources}.
@@ -47,7 +48,9 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 			PropertyPlaceholderHelper helper) {
 		this.sources = sources;
 		this.helper = (helper != null ? helper
-				: new PropertyPlaceholderHelper("${", "}"));
+				: new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+						SystemPropertyUtils.PLACEHOLDER_SUFFIX,
+						SystemPropertyUtils.VALUE_SEPARATOR, false));
 	}
 
 	@Override
@@ -74,7 +77,7 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 	private static PropertySources getSources(Environment environment) {
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment,
-				"Environment must be a ConfigurableEnvironment.");
+				"Environment must be a ConfigurableEnvironment");
 		return ((ConfigurableEnvironment) environment).getPropertySources();
 	}
 

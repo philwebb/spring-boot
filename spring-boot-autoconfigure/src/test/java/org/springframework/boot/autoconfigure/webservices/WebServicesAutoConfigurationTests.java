@@ -59,7 +59,7 @@ public class WebServicesAutoConfigurationTests {
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage(" Failed to bind properties under 'spring.webservices'");
+		this.thrown.expectMessage("Failed to bind properties under 'spring.webservices'");
 		load(WebServicesAutoConfiguration.class, "spring.webservices.path=invalid");
 	}
 

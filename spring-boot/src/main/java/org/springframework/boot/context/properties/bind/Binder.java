@@ -341,8 +341,12 @@ public class Binder {
 		return StreamSupport.stream(this.sources.spliterator(), false);
 	}
 
+	/**
+	 * Create a new {@link Binder} instance from the specified environment.
+	 * @param environment the environment (must be a {@link ConfigurableEnvironment})
+	 * @return a {@link Binder} instance
+	 */
 	public static Binder get(Environment environment) {
-		// FIXME DC
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		return new Binder(
 				ConfigurationPropertySources.get((ConfigurableEnvironment) environment),

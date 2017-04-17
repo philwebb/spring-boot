@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
-//import java.io.File;
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
@@ -58,6 +57,7 @@ public class KafkaAutoConfigurationTests {
 			this.context.close();
 		}
 	}
+
 	@Test
 	public void consumerProperties() {
 		load("spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.properties.foo=bar",

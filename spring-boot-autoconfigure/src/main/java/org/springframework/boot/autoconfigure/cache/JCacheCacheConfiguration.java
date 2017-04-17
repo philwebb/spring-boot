@@ -186,8 +186,8 @@ class JCacheCacheConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("JCache");
-			String prefix = "spring.cache.jcache.";
-			if (context.getEnvironment().containsProperty(prefix + "provider")) {
+			String providerProperty = "spring.cache.jcache.provider";
+			if (context.getEnvironment().containsProperty(providerProperty)) {
 				return ConditionOutcome
 						.match(message.because("JCache provider specified"));
 			}

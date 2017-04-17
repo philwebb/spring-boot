@@ -49,10 +49,10 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private ConditionOutcome determineEndpointOutcome(String endpointName,
 			boolean enabledByDefault, ConditionContext context) {
-		String prefix = "endpoints." + endpointName + ".";
 		Environment environment = context.getEnvironment();
-		if (environment.containsProperty(prefix + "enabled") || !enabledByDefault) {
-			boolean match = environment.getProperty(prefix + "enabled", Boolean.class,
+		String enabledProperty = "endpoints." + endpointName + ".enabled";
+		if (environment.containsProperty(enabledProperty) || !enabledByDefault) {
+			boolean match = environment.getProperty(enabledProperty, Boolean.class,
 					enabledByDefault);
 			ConditionMessage message = ConditionMessage
 					.forCondition(ConditionalOnEnabledEndpoint.class,
@@ -64,8 +64,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	}
 
 	private ConditionOutcome determineAllEndpointsOutcome(ConditionContext context) {
-		Environment environment = context.getEnvironment();
-		boolean match = Boolean.valueOf(environment.getProperty("endpoints.enabled", "true"));
+		boolean match = Boolean.valueOf(
+				context.getEnvironment().getProperty("endpoints.enabled", "true"));
 		ConditionMessage message = ConditionMessage
 				.forCondition(ConditionalOnEnabledEndpoint.class)
 				.because("All endpoints are " + (match ? "enabled" : "disabled")

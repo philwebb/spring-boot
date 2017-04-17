@@ -29,10 +29,8 @@ import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -71,10 +69,8 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	protected List<String> extractSpringProfiles(Properties properties) {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		ConfigurationPropertySources sources = ConfigurationPropertySources.get(propertySources);
-		String[] profiles = new Binder(sources).bind("spring.profiles", Bindable.of(String[].class));
+		String[] profiles = new Binder(new MapConfigurationPropertySource(properties))
+				.bind("spring.profiles", Bindable.of(String[].class));
 		return Arrays.asList(profiles == null ? NO_PROFILES : profiles);
 	}
 

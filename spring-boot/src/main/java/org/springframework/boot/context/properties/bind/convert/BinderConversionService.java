@@ -25,9 +25,10 @@ import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.datetime.DateFormatter;
+import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
@@ -41,7 +42,7 @@ public class BinderConversionService implements ConversionService {
 
 	private final ConversionService conversionService;
 
-	private final GenericConversionService additionalConverters;
+	private final ConversionService additionalConversionService;
 
 	/**
 	 * Create a new {@link BinderConversionService} instance.
@@ -50,8 +51,7 @@ public class BinderConversionService implements ConversionService {
 	public BinderConversionService(ConversionService conversionService) {
 		this.conversionService = (conversionService != null ? conversionService
 				: new DefaultFormattingConversionService());
-		this.additionalConverters = new GenericConversionService();
-		addAdditionalConverters(this.additionalConverters);
+		this.additionalConversionService = createAdditionalConversionService();
 	}
 
 	/**
@@ -71,14 +71,14 @@ public class BinderConversionService implements ConversionService {
 	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
 		return (this.conversionService != null
 				&& this.conversionService.canConvert(sourceType, targetType))
-				|| this.additionalConverters.canConvert(sourceType, targetType);
+				|| this.additionalConversionService.canConvert(sourceType, targetType);
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return (this.conversionService != null
 				&& this.conversionService.canConvert(sourceType, targetType))
-				|| this.additionalConverters.canConvert(sourceType, targetType);
+				|| this.additionalConversionService.canConvert(sourceType, targetType);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,20 +121,27 @@ public class BinderConversionService implements ConversionService {
 	private <T> T callAdditionalConversionService(Function<ConversionService, T> call,
 			RuntimeException cause) {
 		try {
-			return call.apply(this.additionalConverters);
+			return call.apply(this.additionalConversionService);
 		}
 		catch (ConverterNotFoundException ex) {
 			throw (cause != null ? cause : ex);
 		}
 	}
 
-	private static void addAdditionalConverters(ConverterRegistry converterRegistry) {
-		DefaultConversionService.addCollectionConverters(converterRegistry);
-		converterRegistry.addConverterFactory(new StringToEnumConverterFactory());
-		converterRegistry.addConverter(new StringToCharArrayConverter());
-		converterRegistry.addConverter(new StringToInetAddressConverter());
-		converterRegistry.addConverter(new InetAddressToStringConverter());
-		converterRegistry.addConverter(new PropertyEditorConverter());
+	private static ConversionService createAdditionalConversionService() {
+		DefaultFormattingConversionService service = new DefaultFormattingConversionService();
+		DefaultConversionService.addCollectionConverters(service);
+		service.addConverterFactory(new StringToEnumConverterFactory());
+		service.addConverter(new StringToCharArrayConverter());
+		service.addConverter(new StringToInetAddressConverter());
+		service.addConverter(new InetAddressToStringConverter());
+		service.addConverter(new PropertyEditorConverter());
+		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+		DateFormatter formatter = new DateFormatter();
+		formatter.setIso(DateTimeFormat.ISO.DATE_TIME);
+		registrar.setFormatter(formatter);
+		registrar.registerFormatters(service);
+		return service;
 	}
 
 }

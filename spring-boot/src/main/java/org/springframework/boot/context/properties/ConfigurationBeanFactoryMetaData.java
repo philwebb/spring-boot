@@ -37,7 +37,6 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
  * @author Dave Syer
  * @since 1.1.0
  */
-@Deprecated
 public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcessor {
 
 	private ConfigurableListableBeanFactory beanFactory;

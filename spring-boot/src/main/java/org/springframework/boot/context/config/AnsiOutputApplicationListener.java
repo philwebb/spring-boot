@@ -19,6 +19,8 @@ package org.springframework.boot.context.config;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,23 +38,19 @@ public class AnsiOutputApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		String prefix = "spring.output.ansi.";
 		ConfigurableEnvironment environment = event.getEnvironment();
-		if (environment.containsProperty(prefix + "enabled")) {
-			String enabled = environment.getProperty(prefix + "enabled");
-			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
+		AnsiOutput.Enabled enabled = Binder.get(environment).bind(
+				"spring.output.ansi.enabled", Bindable.of(AnsiOutput.Enabled.class));
+		if (enabled != null) {
+			AnsiOutput.setEnabled(enabled);
 		}
-
-		if (environment.containsProperty(prefix + "console-available")) {
-			AnsiOutput.setConsoleAvailable(
-					environment.getProperty(prefix + "console-available", Boolean.class));
-		}
+		AnsiOutput.setConsoleAvailable(environment
+				.getProperty("spring.output.ansi.console-available", Boolean.class));
 	}
 
 	@Override
 	public int getOrder() {
-		// Apply after ConfigFileApplicationListener has called all
-		// EnvironmentPostProcessors
+		// Apply after ConfigFileApplicationListener has called EnvironmentPostProcessors
 		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
 	}
 

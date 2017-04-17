@@ -116,6 +116,14 @@ public class ValidationErrors implements Iterable<ObjectError> {
 		return this.boundProperties;
 	}
 
+	public boolean hasErrors() {
+		return !this.errors.isEmpty();
+	}
+
+	/**
+	 * Return the list of all validation errors.
+	 * @return the errors
+	 */
 	public List<ObjectError> getAllErrors() {
 		return this.errors;
 	}

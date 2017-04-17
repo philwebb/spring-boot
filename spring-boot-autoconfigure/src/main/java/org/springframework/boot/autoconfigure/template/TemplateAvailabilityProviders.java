@@ -133,9 +133,9 @@ public class TemplateAvailabilityProviders {
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-
-		String prefix = "spring.template.provider.";
-		if (!environment.getProperty(prefix + "cache", Boolean.class, true)) {
+		Boolean useCache = environment.getProperty("spring.template.provider.cache",
+				Boolean.class, true);
+		if (!useCache) {
 			return findProvider(view, environment, classLoader, resourceLoader);
 		}
 		TemplateAvailabilityProvider provider = this.resolved.get(view);

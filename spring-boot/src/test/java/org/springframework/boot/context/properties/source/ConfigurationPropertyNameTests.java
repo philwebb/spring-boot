@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -86,9 +85,7 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	@Ignore
 	public void ofNameShouldNotContainInvalidChars() throws Exception {
-		// FIXME
 		String invalid = "_@$%*+=':;";
 		for (char c : invalid.toCharArray()) {
 			try {

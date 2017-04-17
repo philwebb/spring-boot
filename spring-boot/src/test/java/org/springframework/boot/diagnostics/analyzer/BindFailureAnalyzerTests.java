@@ -16,7 +16,9 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -32,6 +34,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -76,25 +80,49 @@ public class BindFailureAnalyzerTests {
 				.contains("Reason: This object could not be bound.");
 	}
 
+	@Test
+	public void bindExceptionWithOriginDueToValidationFailure() throws Exception {
+		FailureAnalysis analysis = performAnalysis(
+				FieldValidationFailureConfiguration.class, "test.foo.value=4");
+		assertThat(analysis.getDescription()).contains("Origin: \"test.foo.value\" from property source \"test\"");
+
+	}
+
 	private static String failure(String property, String value, String reason) {
 		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property,
 				value, reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration) {
-		BeanCreationException failure = createFailure(configuration);
+	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
+		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration) {
+	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
 		try {
-			new AnnotationConfigApplicationContext(configuration).close();
+			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+			addEnvironment(context, environment);
+			context.register(configuration);
+			context.refresh();
+			context.close();
 			return null;
 		}
 		catch (BeanCreationException ex) {
 			return ex;
 		}
+	}
+
+	private void addEnvironment(AnnotationConfigApplicationContext context, String[] environment) {
+		MutablePropertySources sources = context.getEnvironment().getPropertySources();
+		Map<String, Object> map = new HashMap<>();
+		for (String pair : environment) {
+			int index = pair.indexOf("=");
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
+			map.put(key.trim(), value.trim());
+		}
+		sources.addFirst(new MapPropertySource("test", map));
 	}
 
 	@EnableConfigurationProperties(FieldValidationFailureProperties.class)

@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
@@ -111,7 +112,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	private XADataSource bindXaProperties(XADataSource target,
 			DataSourceProperties dataSourceProperties) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties));
-		return binder.bind("", Bindable.ofInstance(target));
+		return binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
 	private ConfigurationPropertySource getBinderSource(

@@ -62,8 +62,6 @@ class DefaultLogbackConfiguration {
 
 	private final LogFile logFile;
 
-	private final String prefix = "logging.pattern.";
-
 	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext,
 			LogFile logFile) {
 		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
@@ -75,10 +73,9 @@ class DefaultLogbackConfiguration {
 			return new PropertySourcesPropertyResolver(null);
 		}
 		if (environment instanceof ConfigurableEnvironment) {
-			PropertyResolver resolver = new PropertySourcesPropertyResolver(
+			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 					((ConfigurableEnvironment) environment).getPropertySources());
-			((PropertySourcesPropertyResolver) resolver)
-					.setIgnoreUnresolvableNestedPlaceholders(true);
+			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;
 		}
 		return environment;
@@ -121,7 +118,8 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty(this.prefix + "console", CONSOLE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.console",
+				CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
@@ -134,7 +132,8 @@ class DefaultLogbackConfiguration {
 			String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty(this.prefix + "file", FILE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty("logging.pattern.file",
+				FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);

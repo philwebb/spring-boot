@@ -36,6 +36,7 @@ import org.mockito.InOrder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -343,19 +344,22 @@ public class BinderTests {
 		assertThat(result).containsEntry("bin", 4);
 	}
 
+	@Test
 	public void bindToMapWhenMultipleInSameSourceCandidateShouldBindFirst()
 			throws Exception {
-		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
-		source.put("foo.bar", "1");
-		source.put("foo.b-az", "2");
-		source.put("foo.ba-z", "3");
-		source.put("foo.bin", "4");
-		this.sources.add(source);
+		Map<String, Object> map = new HashMap<>();
+		map.put("foo.bar", "1");
+		map.put("foo.b-az", "2");
+		map.put("foo.ba-z", "3");
+		map.put("foo.bin", "4");
+		MapConfigurationPropertySource propertySource = new MapConfigurationPropertySource(map);
+		this.sources.add(propertySource);
 		Map<String, Integer> result = this.binder.bind("foo",
 				Bindable.of(STRING_INTEGER_MAP));
-		assertThat(result).hasSize(3);
+		assertThat(result).hasSize(4);
 		assertThat(result).containsEntry("bar", 1);
-		assertThat(result).containsEntry("baz", 2);
+		assertThat(result).containsEntry("b-az", 2);
+		assertThat(result).containsEntry("ba-z", 3);
 		assertThat(result).containsEntry("bin", 4);
 	}
 
@@ -477,7 +481,14 @@ public class BinderTests {
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.BAZ_BOO);
 	}
 
-	// FIXME null check unbound map
+	@Test
+	public void bindToMapWithNoPropertiesShouldReturnNull() throws Exception {
+		this.binder = new Binder(this.sources);
+		Map<String, ExampleEnum> result = this.binder.bind("foo",
+				Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
+						ExampleEnum.class)));
+		assertThat(result).isNull();
+	}
 
 	@Test
 	public void bindToMapShouldTriggerOnSuccess() throws Exception {
@@ -796,13 +807,13 @@ public class BinderTests {
 			fail("No exception thrown");
 		}
 		catch (BindException ex) {
-			// Set<ConfigurationProperty> unbound =
-			// ((UnboundConfigurationPropertiesException) ex
-			// .getCause()).getUnboundConfigurationProperties();
-			// assertThat(unbound.size()).isEqualTo(1);
-			// ConfigurationProperty property = unbound.iterator().next();
-			// assertThat(property.getName().toString()).isEqualTo("foo[3]");
-			// assertThat(property.getValue()).isEqualTo("3");
+			Set<ConfigurationProperty> unbound =
+					((UnboundConfigurationPropertiesException) ex
+							.getCause()).getUnboundConfigurationProperties();
+			assertThat(unbound.size()).isEqualTo(1);
+			ConfigurationProperty property = unbound.iterator().next();
+			assertThat(property.getName().toString()).isEqualTo("foo[3]");
+			assertThat(property.getValue()).isEqualTo("3");
 		}
 	}
 
@@ -977,10 +988,6 @@ public class BinderTests {
 	private static ConfigurationPropertyName eqName(String name) {
 		return eq(ConfigurationPropertyName.of(name));
 	}
-
-	// FIXME exceptions
-
-	// FIXME same map/list item in source twice
 
 	public static class JavaBean {
 

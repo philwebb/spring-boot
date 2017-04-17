@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -37,21 +40,24 @@ class SessionCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Session Condition");
-		String prefix = "spring.session.";
 		Environment environment = context.getEnvironment();
-		StoreType sessionStoreType = SessionStoreMappings
+		StoreType required = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		if (!environment.containsProperty(prefix + "store-type")) {
+		if (!environment.containsProperty("spring.session.store-type")) {
 			return ConditionOutcome.noMatch(
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = environment.getProperty(prefix + "store-type").replace('-', '_').toUpperCase();
-		if (value.equals(sessionStoreType.name())) {
-			return ConditionOutcome.match(message
-					.found("spring.session.store-type property").items(sessionStoreType));
+		try {
+			StoreType specified = Binder.get(environment)
+					.bind("spring.session.store-type", Bindable.of(StoreType.class));
+			ConditionMessage foundMessage = message
+					.found("spring.session.store-type property").items(specified);
+			return new ConditionOutcome(specified == required, foundMessage);
 		}
-		return ConditionOutcome.noMatch(
-				message.found("spring.session.store-type property").items(value));
+		catch (BindException ex) {
+			return ConditionOutcome.noMatch(
+					message.found("invalid spring.session.store-type property").atAll());
+		}
 	}
 
 }

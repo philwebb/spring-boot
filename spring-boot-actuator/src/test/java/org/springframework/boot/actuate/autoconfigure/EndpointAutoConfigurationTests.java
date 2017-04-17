@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -57,7 +56,7 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -65,8 +64,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.validation.BindException;
@@ -314,20 +311,19 @@ public class EndpointAutoConfigurationTests {
 
 		private static class GitFullInfoContributor implements InfoContributor {
 
+			private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
+					.forClassWithGenerics(Map.class, String.class, Object.class);
+
 			private Map<String, Object> content = new LinkedHashMap<>();
 
 			GitFullInfoContributor(Resource location) throws BindException, IOException {
-				if (location.exists()) {
-					Properties gitInfoProperties = PropertiesLoaderUtils
-							.loadProperties(location);
-					PropertiesPropertySource gitPropertySource = new PropertiesPropertySource(
-							"git", gitInfoProperties);
-					MutablePropertySources propertySources = new MutablePropertySources();
-					propertySources.addFirst(gitPropertySource);
-					Map<String, Object> info = new Binder(ConfigurationPropertySources.get(propertySources))
-							.bind("info", Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class), this.content));
-					this.content = info;
+				if (!location.exists()) {
+					return;
 				}
+				MapConfigurationPropertySource source = new MapConfigurationPropertySource(
+						PropertiesLoaderUtils.loadProperties(location));
+				this.content = new Binder(source).bind("info",
+						Bindable.of(STRING_OBJECT_MAP, this.content));
 			}
 
 			@Override

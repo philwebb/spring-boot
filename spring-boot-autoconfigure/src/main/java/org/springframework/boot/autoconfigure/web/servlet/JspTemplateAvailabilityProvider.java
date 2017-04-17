@@ -42,10 +42,9 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 	}
 
 	private String getResourceName(String view, Environment environment) {
-		String propertyPrefix = "spring.mvc.view.";
-		String prefix = environment.getProperty(propertyPrefix + "prefix",
+		String prefix = environment.getProperty("spring.mvc.view.prefix",
 				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = environment.getProperty(propertyPrefix + "suffix",
+		String suffix = environment.getProperty("spring.mvc.view.suffix",
 				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
 		return prefix + view + suffix;
 	}

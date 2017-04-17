@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -59,8 +62,8 @@ import static org.junit.Assert.fail;
  * @author Christian Dupuis
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-@Deprecated
 public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Rule
@@ -89,9 +92,10 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex.getCause();
-			assertThat(bex.getMessage()).startsWith("Failed to bind properties under 'test' to "
-					+ PropertyWithValidatingSetter.class.getName());
+			BindException bindException = (BindException) ex.getCause();
+			assertThat(bindException.getMessage())
+					.startsWith("Failed to bind properties under 'test' to "
+							+ PropertyWithValidatingSetter.class.getName());
 		}
 	}
 
@@ -106,9 +110,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
-			BindException bex = (BindException) ex
-					.getCause();
-			assertThat(bex.getMessage())
+			BindException bindException = (BindException) ex.getCause();
+			assertThat(bindException.getMessage())
 					.startsWith("Failed to bind properties under 'com.example' to "
 							+ TestConfiguration.class.getName());
 		}
@@ -322,6 +325,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void bindWithIgnoreInvalidFieldsAnnotation() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"com.example.bar=spam");
+		this.context.register(TestConfigurationWithIgnoreErrors.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(TestConfigurationWithIgnoreErrors.class).getBar()).isEqualTo(0);
+	}
+
+	@Test
+	public void bindWithNoIgnoreInvalidFieldsAnnotation() {
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
+				"com.example.foo=hello");
+		this.context.register(TestConfiguration.class);
+		this.thrown.expect(BeanCreationException.class);
+		this.context.refresh();
+	}
+
+	@Test
 	public void multiplePropertySourcesPlaceholderConfigurer() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MultiplePropertySourcesPlaceholderConfigurer.class);
@@ -341,14 +364,29 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				.containsEntry("foo", "bar");
 	}
 
+	@Test
+	public void systemPropertiesShouldBindToMap() throws Exception {
+		MockEnvironment env = new MockEnvironment();
+		MutablePropertySources propertySources = env.getPropertySources();
+		propertySources.addLast(new SystemEnvironmentPropertySource("system",
+				Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(PropertiesWithComplexMap.class);
+		this.context.refresh();
+		Map<String, Map<String, String>> map = this.context.getBean(PropertiesWithComplexMap.class).getMap();
+		Map<String, String> foo = map.get("foo");
+		assertThat(foo).containsEntry("bar", "baz");
+	}
+
 	private void assertBindingFailure(int errorCount) {
 		try {
 			this.context.refresh();
 			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
-			BindValidationException bex = (BindValidationException) ex.getRootCause();
-			assertThat(bex.getValidationErrors().getAllErrors().size()).isEqualTo(errorCount);
+			assertThat(((BindValidationException) ex.getRootCause()).getValidationErrors()
+					.getAllErrors().size()).isEqualTo(errorCount);
 		}
 	}
 
@@ -456,6 +494,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	@ConfigurationProperties(prefix = "com.example", ignoreUnknownFields = false)
 	public static class TestConfiguration {
 
+		private int foo;
+
 		private String bar;
 
 		public void setBar(String bar) {
@@ -463,6 +503,30 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 		public String getBar() {
+			return this.bar;
+		}
+
+		public int getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(int foo) {
+			this.foo = foo;
+		}
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "com.example", ignoreInvalidFields = true)
+	public static class TestConfigurationWithIgnoreErrors {
+
+		private long bar;
+
+		public void setBar(long bar) {
+			this.bar = bar;
+		}
+
+		public long getBar() {
 			return this.bar;
 		}
 
@@ -674,6 +738,23 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		}
 
 		public void setMap(Map<String, String> map) {
+			this.map = map;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertiesWithComplexMap {
+
+		private Map<String, Map<String, String>> map;
+
+		public Map<String, Map<String, String>> getMap() {
+			return this.map;
+		}
+
+		public void setMap(Map<String, Map<String, String>> map) {
 			this.map = map;
 		}
 

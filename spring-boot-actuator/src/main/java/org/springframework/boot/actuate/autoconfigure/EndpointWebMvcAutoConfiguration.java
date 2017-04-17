@@ -132,9 +132,9 @@ public class EndpointWebMvcAutoConfiguration
 	@Override
 	public void afterSingletonsInstantiated() {
 		ManagementServerPort managementPort = ManagementServerPort.DIFFERENT;
+		Environment environment = this.applicationContext.getEnvironment();
 		if (this.applicationContext instanceof WebApplicationContext) {
-			managementPort = ManagementServerPort
-					.get(this.applicationContext.getEnvironment());
+			managementPort = ManagementServerPort.get(environment);
 		}
 		if (managementPort == ManagementServerPort.DIFFERENT) {
 			if (this.applicationContext instanceof ServletWebServerApplicationContext
@@ -149,16 +149,14 @@ public class EndpointWebMvcAutoConfiguration
 			}
 		}
 		if (managementPort == ManagementServerPort.SAME) {
-			if (this.applicationContext.getEnvironment().getProperty("management.ssl.enabled") != null) {
+			if (environment.getProperty("management.ssl.enabled") != null) {
 				throw new IllegalStateException(
 						"Management-specific SSL cannot be configured as the management "
 								+ "server is not listening on a separate port");
 			}
-			if (this.applicationContext
-					.getEnvironment() instanceof ConfigurableEnvironment) {
+			if (environment instanceof ConfigurableEnvironment) {
 				addLocalManagementPortPropertyAlias(
-						(ConfigurableEnvironment) this.applicationContext
-								.getEnvironment());
+						(ConfigurableEnvironment) environment);
 			}
 		}
 	}
@@ -354,7 +352,7 @@ public class EndpointWebMvcAutoConfiguration
 		}
 
 		private static Integer getPortProperty(Environment environment, String prefix) {
-			return environment.getProperty(prefix +  "port", Integer.class);
+			return environment.getProperty(prefix + "port", Integer.class);
 		}
 
 	}

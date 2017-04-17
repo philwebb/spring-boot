@@ -173,7 +173,7 @@ public class JpaProperties {
 			return this.useNewIdGeneratorMappings;
 		}
 
-		public void setUseNewIdGeneratorMappings(boolean useNewIdGeneratorMappings) {
+		public void setUseNewIdGeneratorMappings(Boolean useNewIdGeneratorMappings) {
 			this.useNewIdGeneratorMappings = useNewIdGeneratorMappings;
 		}
 

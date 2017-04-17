@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.cache;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -43,18 +46,22 @@ class CacheCondition extends SpringBootCondition {
 		}
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache",
 				sourceClass);
-		String prefix = "spring.cache.";
 		Environment environment = context.getEnvironment();
-		if (!environment.containsProperty(prefix + "type")) {
-			return ConditionOutcome.match(message.because("automatic cache type"));
+		try {
+			CacheType specified = Binder.get(environment).bind("spring.cache.type",
+					Bindable.of(CacheType.class));
+			if (specified == null) {
+				return ConditionOutcome.match(message.because("automatic cache type"));
+			}
+			CacheType required = CacheConfigurations
+					.getType(((AnnotationMetadata) metadata).getClassName());
+			if (required == specified) {
+				return ConditionOutcome.match(message.because(specified + " cache type"));
+			}
 		}
-		CacheType cacheType = CacheConfigurations
-				.getType(((AnnotationMetadata) metadata).getClassName());
-		String value = environment.getProperty(prefix + "type").replace('-', '_').toUpperCase();
-		if (value.equals(cacheType.name())) {
-			return ConditionOutcome.match(message.because(value + " cache type"));
+		catch (BindException ex) {
 		}
-		return ConditionOutcome.noMatch(message.because(value + " cache type"));
+		return ConditionOutcome.noMatch(message.because("unknown cache type"));
 	}
 
 }

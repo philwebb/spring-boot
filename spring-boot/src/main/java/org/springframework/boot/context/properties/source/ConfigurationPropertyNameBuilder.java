@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Element;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Builder class that can be used to create {@link ConfigurationPropertyName
@@ -37,6 +38,7 @@ import org.springframework.util.Assert;
  * {@link ConfigurationPropertyName name}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  * @see ConfigurationPropertyName
  */
@@ -150,6 +152,8 @@ public class ConfigurationPropertyNameBuilder {
 	 * @return a new initialized builder instance
 	 */
 	public ConfigurationPropertyNameBuilder from(Iterator<Element> elements) {
+		Assert.state(CollectionUtils.isEmpty(this.elements),
+				"Existing elements must not be present");
 		return new ConfigurationPropertyNameBuilder(this.processor, toList(elements));
 	}
 

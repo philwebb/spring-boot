@@ -157,7 +157,8 @@ public class OAuth2RestOperationsConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			String clientId = context.getEnvironment().getProperty("security.oauth2.client.client-id");
+			String clientId = context.getEnvironment()
+					.getProperty("security.oauth2.client.client-id");
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth Client ID");
 			if (StringUtils.hasLength(clientId)) {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -24,15 +25,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -157,8 +160,6 @@ public class JavaBeanBinderTests {
 				entry(ExampleEnum.BAR_BAZ, 2));
 	}
 
-	// FIXME unbound elements in list with extra
-
 	@Test
 	public void bindToClassShouldBindToList() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -168,6 +169,17 @@ public class JavaBeanBinderTests {
 		ExampleListBean bean = bind(Bindable.of(ExampleListBean.class), this.binder);
 		assertThat(bean.getList()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
+	}
+
+	@Test
+	public void bindToListIfUnboundElementsPresentShouldThrowException() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.list[0]", "foo-bar");
+		source.put("foo.list[2]", "bar-baz");
+		this.sources.add(source);
+		this.thrown.expect(BindException.class);
+		this.thrown.expectCause(Matchers.instanceOf(UnboundConfigurationPropertiesException.class));
+		bind(Bindable.of(ExampleListBean.class), this.binder);
 	}
 
 	@Test
@@ -294,7 +306,6 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	@Ignore //FIXME we have some classes like this
 	public void bindToClassWhenHasNoSetterAndImmutableShouldThrowException()
 			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -369,7 +380,6 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	@Ignore
 	public void bindToClassWhenPropertyCannotBeConvertedAndIgnoreErrorsShouldNotSetValue()
 			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -378,13 +388,12 @@ public class JavaBeanBinderTests {
 		source.put("foo.string-value", "foo");
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
-		// FIXME
-		// ExampleValueBean bean = bind(Bindable.of(ExampleValueBean.class), this.binder,
-		// new BindingOptions().ignoreErrors());
-		// assertThat(bean.getIntValue()).isEqualTo(12);
-		// assertThat(bean.getLongValue()).isEqualTo(0);
-		// assertThat(bean.getStringValue()).isEqualTo("foo");
-		// assertThat(bean.getEnumValue()).isEqualTo(ExampleEnum.FOO_BAR);
+		IgnoreErrorsBindHandler handler = new IgnoreErrorsBindHandler();
+		ExampleValueBean bean = this.binder.bind(this.name, Bindable.of(ExampleValueBean.class), handler);
+		assertThat(bean.getIntValue()).isEqualTo(12);
+		assertThat(bean.getLongValue()).isEqualTo(0);
+		assertThat(bean.getStringValue()).isEqualTo("foo");
+		assertThat(bean.getEnumValue()).isEqualTo(ExampleEnum.FOO_BAR);
 	}
 
 	@Test
@@ -422,18 +431,25 @@ public class JavaBeanBinderTests {
 	public void bindtoInstanceWithExistingValueShouldReturnExisting() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
-		Dunno dunno = new Dunno();
-		ExampleDefaultsBean1 bean1 = new ExampleDefaultsBean1();
-		dunno.setBean(bean1);
-		Dunno bean = bind(Bindable.of(Dunno.class, dunno), this.binder);
-		assertThat(bean.getBean()).isEqualTo(bean1);
+		ExampleNestedBean existingValue = new ExampleNestedBean();
+		ExampleValueBean valueBean = new ExampleValueBean();
+		existingValue.setValueBean(valueBean);
+		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class, existingValue), this.binder);
+		assertThat(bean.getValueBean()).isEqualTo(valueBean);
+	}
+
+	@Test
+	public void bindWithAnnotations() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.date", "2014-04-01");
+		this.sources.add(source);
+		ConverterAnnotatedExampleBean bean = bind(Bindable.of(ConverterAnnotatedExampleBean.class), this.binder);
+		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
 	}
 
 	private <T> T bind(Bindable<T> bindable, Binder binder) {
 		return binder.bind(this.name, bindable);
 	}
-
-	// FIXME annotations
 
 	public static class ExampleValueBean {
 
@@ -757,51 +773,26 @@ public class JavaBeanBinderTests {
 
 	}
 
-	public class Dunno {
-
-		private ExampleDefaultsBean1 bean;
-
-		public ExampleDefaultsBean1 getBean() {
-			return this.bean;
-		}
-
-		public void setBean(ExampleDefaultsBean1 bean) {
-			this.bean = bean;
-		}
-
-	}
-
-	public static class ExampleDefaultsBean1 {
-
-		private int foo = 123;
-
-		private int bar = 456;
-
-		// private ExampleDefaultsBean e = new ExampleDefaultsBean();
-
-		public int getFoo() {
-			return this.foo;
-		}
-
-		public void setFoo(int foo) {
-			this.foo = foo;
-		}
-
-		public int getBar() {
-			return this.bar;
-		}
-
-		public void setBar(int bar) {
-			this.bar = bar;
-		}
-
-	}
-
 	public enum ExampleEnum {
 
 		FOO_BAR,
 
 		BAR_BAZ
+
+	}
+
+	public static class ConverterAnnotatedExampleBean {
+
+		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+		private LocalDate date;
+
+		public LocalDate getDate() {
+			return this.date;
+		}
+
+		public void setDate(LocalDate date) {
+			this.date = date;
+		}
 
 	}
 

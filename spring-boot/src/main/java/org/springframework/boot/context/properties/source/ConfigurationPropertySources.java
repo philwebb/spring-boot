@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -62,9 +63,21 @@ public class ConfigurationPropertySources
 
 	@Override
 	public Iterator<ConfigurationPropertySource> iterator() {
-		return StreamSupport.stream(this.propertySources.spliterator(), false)
+		return streamPropertySources(this.propertySources)
 				.filter(s -> !(s instanceof ConfigurationPropertySourcesPropertySource))
 				.map(this::adapt).collect(Collectors.toList()).iterator();
+	}
+
+	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
+		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten);
+	}
+
+	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
+		if (source.getSource() instanceof ConfigurableEnvironment) {
+			return streamPropertySources(
+					((ConfigurableEnvironment) source.getSource()).getPropertySources());
+		}
+		return Stream.of(source);
 	}
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
@@ -119,6 +132,9 @@ public class ConfigurationPropertySources
 	 * @return a {@link ConfigurationPropertySources} instance
 	 */
 	public static ConfigurationPropertySources get(PropertySources propertySources) {
+		if (propertySources == null) {
+			return null;
+		}
 		PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
 		if (source != null) {
 			return (ConfigurationPropertySources) source.getSource();
@@ -127,26 +143,9 @@ public class ConfigurationPropertySources
 	}
 
 	/**
-	 * Get a {@link ConfigurationPropertySources} instance for the specified
-	 * {@link PropertySource} (either previously {@link #attach(MutablePropertySources)
-	 * attached} or a new instance.
-	 * @param propertySource the source property source
-	 * @return a {@link ConfigurationPropertySources} instance
-	 */
-	public static ConfigurationPropertySources get(PropertySource propertySource) {
-		if (propertySource.getName().equals(PROPERTY_SOURCE_NAME)) {
-			return (ConfigurationPropertySources) propertySource.getSource();
-		}
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(propertySource);
-		return new ConfigurationPropertySources(sources);
-	}
-
-	/**
-	 * Get a {@link ConfigurationPropertySources} instance for the
-	 * {@link PropertySources} from the specified {@link ConfigurableEnvironment},
-	 * (either previously {@link #attach(MutablePropertySources)
-	 * attached} or a new instance.
+	 * Get a {@link ConfigurationPropertySources} instance for the {@link PropertySources}
+	 * from the specified {@link ConfigurableEnvironment}, (either previously
+	 * {@link #attach(MutablePropertySources) attached} or a new instance.
 	 * @param environment the configurable environment
 	 * @return a {@link ConfigurationPropertySources} instance
 	 */

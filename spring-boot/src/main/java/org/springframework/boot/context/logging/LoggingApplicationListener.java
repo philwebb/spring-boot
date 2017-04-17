@@ -298,14 +298,17 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
-		if (environment instanceof ConfigurableEnvironment) {
-			Map<String, String> levels = Binder.get(environment).bind("logging.level",
-					Bindable.of(STRING_STRING_MAP));
-			if (levels != null) {
-				for (Entry<String, String> entry : levels.entrySet()) {
-					setLogLevel(system, environment, entry.getKey(),
-							entry.getValue().toString());
-				}
+		if (!(environment instanceof ConfigurableEnvironment)) {
+			return;
+		}
+		Binder binder = Binder.get(environment);
+		Map<String, String> levels = binder.bind("logging.level",
+				Bindable.of(STRING_STRING_MAP));
+		if (levels != null) {
+			for (Entry<String, String> entry : levels.entrySet()) {
+				String name = entry.getKey();
+				String level = entry.getValue();
+				setLogLevel(system, environment, name, level);
 			}
 		}
 	}
@@ -313,10 +316,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private void setLogLevel(LoggingSystem system, Environment environment, String name,
 			String level) {
 		try {
-			if (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME)) {
-				name = null;
-			}
-			level = environment.resolvePlaceholders(level);
+			name = (name.equalsIgnoreCase(LoggingSystem.ROOT_LOGGER_NAME) ? null : name);
 			system.setLogLevel(name, coerceLogLevel(level));
 		}
 		catch (RuntimeException ex) {

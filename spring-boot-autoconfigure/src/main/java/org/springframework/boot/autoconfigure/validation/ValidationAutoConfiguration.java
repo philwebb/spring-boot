@@ -50,15 +50,11 @@ public class ValidationAutoConfiguration {
 	public static MethodValidationPostProcessor methodValidationPostProcessor(
 			Environment environment, Validator validator) {
 		MethodValidationPostProcessor processor = new MethodValidationPostProcessor();
-		processor.setProxyTargetClass(determineProxyTargetClass(environment));
+		boolean proxyTargetClass = environment
+				.getProperty("spring.aop.proxy-target-class", Boolean.class, true);
+		processor.setProxyTargetClass(proxyTargetClass);
 		processor.setValidator(validator);
 		return processor;
-	}
-
-	private static boolean determineProxyTargetClass(Environment environment) {
-		Boolean value = environment.getProperty("spring.aop.proxy-target-class",
-				Boolean.class);
-		return (value != null ? value : true);
 	}
 
 }

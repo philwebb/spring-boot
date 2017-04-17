@@ -106,9 +106,10 @@ public class LoggingSystemProperties {
 		return this.environment;
 	}
 
-	private void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName) {
-		String prefix = "logging.";
-		setSystemProperty(systemPropertyName, resolver.getProperty(prefix + propertyName));
+	private void setSystemProperty(PropertyResolver resolver, String systemPropertyName,
+			String propertyName) {
+		setSystemProperty(systemPropertyName,
+				resolver.getProperty("logging." + propertyName));
 	}
 
 	private void setSystemProperty(String name, String value) {

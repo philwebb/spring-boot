@@ -40,16 +40,17 @@ class OnBootstrapHostsCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		List<String> property = Binder.get(context.getEnvironment())
-				.bind("spring.couchbase.bootstrap-hosts", Bindable.of(STRING_LIST));
+		String name = "spring.couchbase.bootstrap-hosts";
+		List<String> property = Binder.get(context.getEnvironment()).bind(name,
+				Bindable.of(STRING_LIST));
 		if (property != null) {
 			return ConditionOutcome.match(ConditionMessage
 					.forCondition(OnBootstrapHostsCondition.class.getName())
-					.found("property").items("spring.couchbase.bootstrap-hosts"));
+					.found("property").items(name));
 		}
-		return ConditionOutcome.noMatch(ConditionMessage
-				.forCondition(OnBootstrapHostsCondition.class.getName())
-				.didNotFind("property").items("spring.couchbase.bootstrap-hosts"));
+		return ConditionOutcome.noMatch(
+				ConditionMessage.forCondition(OnBootstrapHostsCondition.class.getName())
+						.didNotFind("property").items(name));
 	}
 
 }

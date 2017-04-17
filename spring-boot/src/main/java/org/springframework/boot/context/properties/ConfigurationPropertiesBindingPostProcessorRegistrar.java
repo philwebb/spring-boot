@@ -28,7 +28,6 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@Deprecated
 public class ConfigurationPropertiesBindingPostProcessorRegistrar
 		implements ImportBeanDefinitionRegistrar {
 

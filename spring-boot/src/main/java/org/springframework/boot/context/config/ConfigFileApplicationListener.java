@@ -38,6 +38,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -60,6 +61,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -257,8 +259,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void reorderSources(ConfigurableEnvironment environment) {
-			ConfigurationPropertySourcesDunno
-					.finishAndRelocate(environment.getPropertySources());
+			LoadedPropertySources.finishAndRelocate(environment.getPropertySources());
 			PropertySource<?> defaultProperties = environment.getPropertySources()
 					.remove(DEFAULT_PROPERTIES);
 			if (defaultProperties != null) {
@@ -345,11 +346,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<Profile> active = bindToSpringProfiles(
-					this.environment.getPropertySources(), "spring.profiles.active");
+			Set<Profile> active = getProfiles(this.environment, "spring.profiles.active");
 			Set<Profile> activeProfiles = new LinkedHashSet<>(active);
-			Set<Profile> include = bindToSpringProfiles(
-					this.environment.getPropertySources(), "spring.profiles.include");
+			Set<Profile> include = getProfiles(this.environment,
+					"spring.profiles.include");
 			activeProfiles.addAll(include);
 			maybeActivateProfiles(activeProfiles);
 			return activeProfiles;
@@ -478,38 +478,35 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		private void handleProfileProperties(PropertySource<?> propertySource) {
 			MutablePropertySources propertySources = new MutablePropertySources();
 			propertySources.addFirst(propertySource);
-			Set<Profile> active = bindToSpringProfiles(propertySources,
-					"spring.profiles.active");
-			Set<Profile> include = bindToSpringProfiles(propertySources,
+			Set<Profile> active = getProfiles(propertySources, "spring.profiles.active");
+			Set<Profile> include = getProfiles(propertySources,
 					"spring.profiles.include");
 			maybeActivateProfiles(active);
 			addProfiles(include);
 		}
 
-		private Set<Profile> bindToSpringProfiles(PropertySources propertySources,
+		private Set<Profile> getProfiles(ConfigurableEnvironment environment,
 				String name) {
-			String[] bound = new Binder(ConfigurationPropertySources.get(propertySources))
-					.bind(name, Bindable.of(String[].class));
-			List<String> profileNames = (bound == null ? Collections.emptyList()
-					: resolvePlaceholders(Arrays.asList((bound))));
+			return getProfiles(environment.getPropertySources(), name);
+		}
+
+		private Set<Profile> getProfiles(PropertySources sources, String name) {
+			String[] profileNames = new Binder(ConfigurationPropertySources.get(sources),
+					new PropertySourcesPlaceholdersResolver(this.environment)).bind(name,
+							Bindable.of(String[].class));
 			return asProfileSet(profileNames);
 		}
 
-		private Set<Profile> asProfileSet(List<String> profileNames) {
+		private Set<Profile> asProfileSet(String[] profileNames) {
+			if (ObjectUtils.isEmpty(profileNames)) {
+				return Collections.emptySet();
+			}
 			List<Profile> profiles = new ArrayList<>();
 			for (String profileName : profileNames) {
 				profiles.add(new Profile(profileName));
 			}
 			Collections.reverse(profiles);
 			return new LinkedHashSet<>(profiles);
-		}
-
-		private List<String> resolvePlaceholders(List<String> values) {
-			List<String> resolved = new ArrayList<>();
-			for (String value : values) {
-				resolved.add(this.environment.resolvePlaceholders(value));
-			}
-			return resolved;
 		}
 
 		private void maybeActivateProfiles(Set<Profile> profiles) {
@@ -610,19 +607,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			for (PropertySource<?> item : sources) {
 				reorderedSources.add(item);
 			}
-			addConfigurationProperties(
-					new ConfigurationPropertySourcesDunno(reorderedSources));
+			addConfigurationProperties(new LoadedPropertySources(reorderedSources));
 		}
 
-		private void addConfigurationProperties(
-				ConfigurationPropertySourcesDunno configurationSources) {
+		private void addConfigurationProperties(LoadedPropertySources loadedSources) {
 			MutablePropertySources existingSources = this.environment
 					.getPropertySources();
 			if (existingSources.contains(DEFAULT_PROPERTIES)) {
-				existingSources.addBefore(DEFAULT_PROPERTIES, configurationSources);
+				existingSources.addBefore(DEFAULT_PROPERTIES, loadedSources);
 			}
 			else {
-				existingSources.addLast(configurationSources);
+				existingSources.addLast(loadedSources);
 			}
 		}
 
@@ -679,14 +674,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	 * Holds the configuration {@link PropertySource}s as they are loaded can relocate
 	 * them once configuration classes have been processed.
 	 */
-	static class ConfigurationPropertySourcesDunno
+	static class LoadedPropertySources
 			extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
 		private final Collection<PropertySource<?>> sources;
 
 		private final String[] names;
 
-		ConfigurationPropertySourcesDunno(Collection<PropertySource<?>> sources) {
+		LoadedPropertySources(Collection<PropertySource<?>> sources) {
 			super(APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME, sources);
 			this.sources = sources;
 			List<String> names = new ArrayList<>();
@@ -712,7 +707,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 
 		public static void finishAndRelocate(MutablePropertySources propertySources) {
 			String name = APPLICATION_CONFIGURATION_PROPERTY_SOURCE_NAME;
-			ConfigurationPropertySourcesDunno removed = (ConfigurationPropertySourcesDunno) propertySources
+			LoadedPropertySources removed = (LoadedPropertySources) propertySources
 					.get(name);
 			if (removed != null) {
 				for (PropertySource<?> propertySource : removed.sources) {

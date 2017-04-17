@@ -37,10 +37,9 @@ class LocalDebugPortAvailableCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Local Debug Port Condition");
-		Integer port = context.getEnvironment().getProperty("spring.devtools.remote.debug.local-port", Integer.class);
-		if (port == null) {
-			port = RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT;
-		}
+		Integer port = context.getEnvironment().getProperty(
+				"spring.devtools.remote.debug.local-port", Integer.class,
+				RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT);
 		if (isPortAvailable(port)) {
 			return ConditionOutcome.match(message.foundExactly("local debug port"));
 		}

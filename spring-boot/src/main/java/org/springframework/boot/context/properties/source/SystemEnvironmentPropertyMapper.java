@@ -129,7 +129,7 @@ class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private String createElement(String value) {
-		value = value.replace("-", "");
+		value = value.toLowerCase();
 		return (isNumber(value) ? "[" + value + "]" : value);
 	}
 

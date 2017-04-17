@@ -17,6 +17,8 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -61,8 +63,9 @@ class JavaBeanBinder implements BeanBinder {
 		ResolvableType type = getResolvableType(property);
 		Supplier<Object> existingValue = bean.getPropertyValue(property);
 		String propertyName = BeanPropertyName.toDashedForm(property);
+		Annotation[] annotations = getAnnotations(bean, property);
 		Object bound = propertyBinder.bind(propertyName,
-				Bindable.of(type, existingValue));
+				Bindable.of(type, existingValue).withAnnotations(annotations));
 		if (bound == null) {
 			return null;
 		}
@@ -82,6 +85,17 @@ class JavaBeanBinder implements BeanBinder {
 		else {
 			return ResolvableType.forMethodReturnType(property.getReadMethod());
 		}
+	}
+
+	private Annotation[] getAnnotations(Bean<?> bean, Property property) {
+		try {
+			Field field = bean.getType().getDeclaredField(property.getName());
+			return field.getDeclaredAnnotations();
+		}
+		catch (NoSuchFieldException ex) {
+			//FIXME
+		}
+		return null;
 	}
 
 	/**
@@ -123,6 +137,10 @@ class JavaBeanBinder implements BeanBinder {
 
 		public List<Property> getProperties() {
 			return this.properties;
+		}
+
+		public Class<?> getType() {
+			return this.type;
 		}
 
 		public Supplier<Object> getPropertyValue(Property property) {

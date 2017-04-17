@@ -63,9 +63,10 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		if (context.getEnvironment().containsProperty(this.prefix + this.propertyName)) {
-			return ConditionOutcome.match(startConditionMessage()
-					.foundExactly("property " + this.prefix + this.propertyName));
+		String property = this.prefix + this.propertyName;
+		if (context.getEnvironment().containsProperty(property)) {
+			return ConditionOutcome
+					.match(startConditionMessage().foundExactly("property " + property));
 		}
 		return getResourceOutcome(context, metadata);
 	}

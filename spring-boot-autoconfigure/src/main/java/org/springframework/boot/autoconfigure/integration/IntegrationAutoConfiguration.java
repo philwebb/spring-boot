@@ -97,17 +97,14 @@ public class IntegrationAutoConfiguration {
 		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter() {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String prefix = "spring.jmx.";
 			String defaultDomain = this.environment
-					.getProperty(prefix + "default-domain");
+					.getProperty("spring.jmx.default-domain");
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String server = this.environment.getProperty(prefix + "server",
+			String serverBean = this.environment.getProperty("spring.jmx.server",
 					"mbeanServer");
-			if (StringUtils.hasLength(server)) {
-				exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
-			}
+			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
 			return exporter;
 		}
 

@@ -62,7 +62,6 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenIgnoringErrorsShouldBind() throws Exception {
-		this.thrown.expect(BindException.class);
 		Example bound = this.binder.bind("example", Bindable.of(Example.class),
 				new IgnoreErrorsBindHandler());
 		assertThat(bound.getFoo()).isEqualTo(0);

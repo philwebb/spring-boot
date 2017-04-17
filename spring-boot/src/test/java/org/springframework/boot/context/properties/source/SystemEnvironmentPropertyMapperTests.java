@@ -51,7 +51,7 @@ public class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapper
 		assertThat(namesFromString("HOST_0_1")).containsExactly("host[0][1]");
 		assertThat(namesFromString("HOST_0_NAME")).containsExactly("host[0].name");
 		assertThat(namesFromString("HOST_F00_NAME")).containsExactly("host.f00.name");
-		assertThat(namesFromString("S-ERVER")).containsExactly("server");
+		assertThat(namesFromString("S-ERVER")).containsExactly("s-erver");
 		assertThat(namesFromString("SERVERS__", "1,2,3")).containsExactly("servers[0]",
 				"servers[1]", "servers[2]");
 		assertThat(namesFromString("SERVERS_0__", "1,2,3"))

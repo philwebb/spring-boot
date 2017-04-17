@@ -41,7 +41,7 @@ public class PersistenceExceptionTranslationAutoConfiguration {
 	public static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(
 			Environment environment) {
 		PersistenceExceptionTranslationPostProcessor postProcessor = new PersistenceExceptionTranslationPostProcessor();
-		Boolean proxyTargetClass = environment.getProperty(
+		boolean proxyTargetClass = environment.getProperty(
 				"spring.aop.proxy-target-class", Boolean.class, Boolean.TRUE);
 		postProcessor.setProxyTargetClass(proxyTargetClass);
 		return postProcessor;

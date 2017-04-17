@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
@@ -150,6 +151,29 @@ public class ConfigurationPropertySourcesTests {
 		environment.getPropertySources().addFirst(propertySource);
 		ConfigurationPropertySources.attach(environment);
 		assertThat(environment.getProperty("foo-bar")).isEqualTo("Spring Boot Boot");
+	}
+
+	@Test
+	public void environmentSourceShouldBeFlattened() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		environment.getPropertySources().addFirst(new MapPropertySource("foo",
+				Collections.<String, Object>singletonMap("foo", "bar")));
+		environment.getPropertySources().addFirst(new MapPropertySource("far",
+				Collections.<String, Object>singletonMap("far", "far")));
+		MutablePropertySources sources = new MutablePropertySources();
+		sources.addFirst(new PropertySource<Environment>("env", environment) {
+
+			@Override
+			public String getProperty(String key) {
+				return this.source.getProperty(key);
+			}
+
+		});
+		sources.addLast(new MapPropertySource("baz",
+				Collections.<String, Object>singletonMap("baz", "barf")));
+		ConfigurationPropertySources configurationSources = ConfigurationPropertySources
+				.get(sources);
+		assertThat(configurationSources.iterator()).hasSize(5);
 	}
 
 }
