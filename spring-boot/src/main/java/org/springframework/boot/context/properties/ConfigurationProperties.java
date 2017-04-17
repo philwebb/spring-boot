@@ -70,6 +70,7 @@ public @interface ConfigurationProperties {
 	 * names should be ignored.
 	 * @return the flag value (default false)
 	 */
+	@Deprecated
 	boolean ignoreNestedProperties() default false;
 
 	/**

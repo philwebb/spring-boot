@@ -29,7 +29,9 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -37,7 +39,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -232,9 +233,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			MergedContextConfiguration configuration) {
 		PropertySources sources = convertToPropertySources(
 				configuration.getPropertySourceProperties());
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				new PropertySourcesPropertyResolver(sources), "spring.main.");
-		String property = resolver.getProperty("web-application-type");
+		Binder binder = new Binder(ConfigurationPropertySources.get(sources));
+		String property = binder.bind("spring.main.web-application-type",
+				Bindable.of(String.class));
 		return (property != null ? WebApplicationType.valueOf(property.toUpperCase())
 				: null);
 	}

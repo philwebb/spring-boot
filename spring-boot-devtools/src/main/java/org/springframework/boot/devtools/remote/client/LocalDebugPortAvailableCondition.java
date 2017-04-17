@@ -21,7 +21,6 @@ import javax.net.ServerSocketFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.devtools.autoconfigure.RemoteDevToolsProperties;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -38,9 +37,7 @@ class LocalDebugPortAvailableCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Local Debug Port Condition");
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.devtools.remote.debug.");
-		Integer port = resolver.getProperty("local-port", Integer.class);
+		Integer port = context.getEnvironment().getProperty("spring.devtools.remote.debug.local-port", Integer.class);
 		if (port == null) {
 			port = RemoteDevToolsProperties.Debug.DEFAULT_LOCAL_PORT;
 		}

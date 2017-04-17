@@ -18,10 +18,10 @@ package org.springframework.boot.context.config;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * An {@link ApplicationListener} that configures {@link AnsiOutput} depending on the
@@ -36,16 +36,16 @@ public class AnsiOutputApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				event.getEnvironment(), "spring.output.ansi.");
-		if (resolver.containsProperty("enabled")) {
-			String enabled = resolver.getProperty("enabled");
+		String prefix = "spring.output.ansi.";
+		ConfigurableEnvironment environment = event.getEnvironment();
+		if (environment.containsProperty(prefix + "enabled")) {
+			String enabled = environment.getProperty(prefix + "enabled");
 			AnsiOutput.setEnabled(Enum.valueOf(Enabled.class, enabled.toUpperCase()));
 		}
 
-		if (resolver.containsProperty("console-available")) {
+		if (environment.containsProperty(prefix + "console-available")) {
 			AnsiOutput.setConsoleAvailable(
-					resolver.getProperty("console-available", Boolean.class));
+					environment.getProperty(prefix + "console-available", Boolean.class));
 		}
 	}
 

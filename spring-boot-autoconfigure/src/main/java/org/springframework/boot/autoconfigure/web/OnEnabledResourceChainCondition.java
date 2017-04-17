@@ -19,11 +19,9 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
@@ -66,9 +64,8 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 
 	private Boolean getEnabledProperty(ConfigurableEnvironment environment, String key,
 			Boolean defaultValue) {
-		PropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.resources.chain." + key);
-		return resolver.getProperty("enabled", Boolean.class, defaultValue);
+		String prefix = "spring.resources.chain." + key;
+		return environment.getProperty(prefix + "enabled", Boolean.class, defaultValue);
 	}
 
 }

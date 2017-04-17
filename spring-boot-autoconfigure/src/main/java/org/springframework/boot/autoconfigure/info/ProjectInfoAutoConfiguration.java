@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
@@ -33,7 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -94,13 +93,10 @@ public class ProjectInfoAutoConfiguration {
 			if (loader == null) {
 				loader = this.defaultResourceLoader;
 			}
-			PropertyResolver propertyResolver = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					propertyResolver, "spring.info.git.");
-			String location = resolver.getProperty("location");
+			Environment environment = context.getEnvironment();
+			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {
-				resolver = new RelaxedPropertyResolver(propertyResolver, "spring.git.");
-				location = resolver.getProperty("properties");
+				location = environment.getProperty("spring.git.properties");
 				if (location == null) {
 					location = "classpath:git.properties";
 				}

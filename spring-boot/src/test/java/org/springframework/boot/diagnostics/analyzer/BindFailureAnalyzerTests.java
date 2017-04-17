@@ -162,6 +162,7 @@ public class BindFailureAnalyzerTests {
 	}
 
 	@ConfigurationProperties("foo.bar")
+	@Validated
 	static class ObjectErrorFailureProperties implements Validator {
 
 		@Override

@@ -19,10 +19,10 @@ package org.springframework.boot.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * An {@link ApplicationListener} that halts application startup if the system file
@@ -56,11 +56,11 @@ public class FileEncodingApplicationListener
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				event.getEnvironment(), "spring.");
-		if (resolver.containsProperty("mandatoryFileEncoding")) {
+		ConfigurableEnvironment environment = event.getEnvironment();
+		String prefix = "spring.";
+		if (environment.containsProperty(prefix + "mandatory-file-encoding")) {
 			String encoding = System.getProperty("file.encoding");
-			String desired = resolver.getProperty("mandatoryFileEncoding");
+			String desired = environment.getProperty(prefix + "mandatory-file-encoding");
 			if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
 				logger.error("System property 'file.encoding' is currently '" + encoding
 						+ "'. It should be '" + desired

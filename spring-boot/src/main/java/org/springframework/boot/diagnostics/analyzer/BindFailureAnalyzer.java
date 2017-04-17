@@ -16,10 +16,13 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import java.util.List;
+
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
@@ -34,24 +37,29 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BindException cause) {
-		if (CollectionUtils.isEmpty(cause.getAllErrors())) {
-			return null;
-		}
-		StringBuilder description = new StringBuilder(
-				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (ObjectError error : cause.getAllErrors()) {
-			if (error instanceof FieldError) {
-				FieldError fieldError = (FieldError) error;
-				description.append(String.format("%n    Property: %s",
-						cause.getObjectName() + "." + fieldError.getField()));
-				description.append(
-						String.format("%n    Value: %s", fieldError.getRejectedValue()));
+		if (cause.getCause() instanceof BindValidationException) {
+			BindValidationException validationException = (BindValidationException) cause.getCause();
+			List<ObjectError> validationErrors = validationException.getValidationErrors().getAllErrors();
+			if (CollectionUtils.isEmpty(validationErrors)) {
+				return null;
 			}
-			description.append(
-					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+			StringBuilder description = new StringBuilder(
+					String.format("Binding to target %s failed:%n", cause.getTarget()));
+			for (ObjectError error : validationErrors) {
+				if (error instanceof FieldError) {
+					FieldError fieldError = (FieldError) error;
+					description.append(String.format("%n    Property: %s",
+							error.getObjectName() + "." + fieldError.getField()));
+					description.append(
+							String.format("%n    Value: %s", fieldError.getRejectedValue()));
+				}
+				description.append(
+						String.format("%n    Reason: %s%n", error.getDefaultMessage()));
+			}
+			return new FailureAnalysis(description.toString(),
+					"Update your application's configuration", cause);
 		}
-		return new FailureAnalysis(description.toString(),
-				"Update your application's configuration", cause);
+		return null; //FIXME analyze other bind failures
 	}
 
 }

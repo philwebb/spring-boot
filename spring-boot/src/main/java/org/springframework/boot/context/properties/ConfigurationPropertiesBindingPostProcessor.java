@@ -34,7 +34,15 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.context.properties.bind.BindHandler;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
+import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
+import org.springframework.boot.context.properties.bind.handler.IgnoreNestedPropertiesBindHandler;
+import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
+import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -59,7 +67,6 @@ import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -107,6 +114,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private Environment environment = new StandardEnvironment();
 
 	private ApplicationContext applicationContext;
+
+	private Binder binder;
 
 	private List<Converter<?, ?>> converters = Collections.emptyList();
 
@@ -288,15 +297,16 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils
 				.findAnnotation(bean.getClass(), ConfigurationProperties.class);
+		Object bound = bean;
 		if (annotation != null) {
-			postProcessBeforeInitialization(bean, beanName, annotation);
+			bound = postProcessBeforeInitialization(bean, beanName, annotation);
 		}
 		annotation = this.beans.findFactoryAnnotation(beanName,
 				ConfigurationProperties.class);
 		if (annotation != null) {
-			postProcessBeforeInitialization(bean, beanName, annotation);
+			bound = postProcessBeforeInitialization(bean, beanName, annotation);
 		}
-		return bean;
+		return bound;
 	}
 
 	@Override
@@ -305,27 +315,28 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return bean;
 	}
 
-	private void postProcessBeforeInitialization(Object bean, String beanName,
+	private Object postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Object target = bean;
-		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<>(
-				target);
-		factory.setPropertySources(this.propertySources);
-		factory.setValidator(determineValidator(bean));
-		// If no explicit conversion service is provided we add one so that (at least)
-		// comma-separated arrays of convertibles can be bound automatically
-		factory.setConversionService(this.conversionService == null
-				? getDefaultConversionService() : this.conversionService);
-		if (annotation != null) {
-			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
-			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
-			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
-			if (StringUtils.hasLength(annotation.prefix())) {
-				factory.setTargetName(annotation.prefix());
-			}
-		}
+		ConfigurationPropertySources sources = ConfigurationPropertySources
+				.get(this.propertySources);
+		PropertySourcesPlaceholdersResolver placeholdersResolver = new PropertySourcesPlaceholdersResolver(
+				this.propertySources);
+		this.binder = new Binder(sources, placeholdersResolver,
+				getDefaultConversionService());
+		BindHandler handler = BindHandler.DEFAULT;
+		handler = (annotation.ignoreInvalidFields() ? new IgnoreErrorsBindHandler(handler)
+				: handler);
+		handler = (annotation.ignoreUnknownFields() ? handler
+				: new NoUnboundElementsBindHandler(handler));
+		handler = (annotation.ignoreNestedProperties()
+				? new IgnoreNestedPropertiesBindHandler() : handler);
+		Validator validator = determineValidator(bean);
+		handler = (validator == null ? new ValidationBindHandler(handler)
+				: new ValidationBindHandler(handler, validator));
+		Bindable<?> bindable = Bindable.ofInstance(target);
 		try {
-			factory.bindPropertiesToTarget();
+			return this.binder.bind(annotation.prefix(), bindable, handler);
 		}
 		catch (Exception ex) {
 			String targetClass = ClassUtils.getShortName(target.getClass());

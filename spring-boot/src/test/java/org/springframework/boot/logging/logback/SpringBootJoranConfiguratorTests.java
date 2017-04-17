@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.mock.env.MockEnvironment;
@@ -139,6 +140,7 @@ public class SpringBootJoranConfiguratorTests {
 	public void relaxedSpringProperty() throws Exception {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"my.EXAMPLE_PROPERTY=test");
+		ConfigurationPropertySources.attach(this.environment);
 		initialize("property.xml");
 		assertThat(this.context.getProperty("MINE")).isEqualTo("test");
 	}

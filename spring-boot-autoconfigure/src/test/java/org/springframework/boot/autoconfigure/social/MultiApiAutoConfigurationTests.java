@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.linkedin.api.LinkedIn;
@@ -111,6 +112,7 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 	private void setupContext(String... environment) {
 		this.context = new AnnotationConfigWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);

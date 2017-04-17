@@ -30,9 +30,9 @@ import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
@@ -62,6 +62,8 @@ class DefaultLogbackConfiguration {
 
 	private final LogFile logFile;
 
+	private final String prefix = "logging.pattern.";
+
 	DefaultLogbackConfiguration(LoggingInitializationContext initializationContext,
 			LogFile logFile) {
 		this.patterns = getPatternsResolver(initializationContext.getEnvironment());
@@ -72,8 +74,14 @@ class DefaultLogbackConfiguration {
 		if (environment == null) {
 			return new PropertySourcesPropertyResolver(null);
 		}
-		return RelaxedPropertyResolver.ignoringUnresolvableNestedPlaceholders(environment,
-				"logging.pattern.");
+		if (environment instanceof ConfigurableEnvironment) {
+			PropertyResolver resolver = new PropertySourcesPropertyResolver(
+					((ConfigurableEnvironment) environment).getPropertySources());
+			((PropertySourcesPropertyResolver) resolver)
+					.setIgnoreUnresolvableNestedPlaceholders(true);
+			return resolver;
+		}
+		return environment;
 	}
 
 	public void apply(LogbackConfigurator config) {
@@ -113,7 +121,7 @@ class DefaultLogbackConfiguration {
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("console", CONSOLE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty(this.prefix + "console", CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		encoder.setCharset(UTF8);
 		config.start(encoder);
@@ -126,7 +134,7 @@ class DefaultLogbackConfiguration {
 			String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		String logPattern = this.patterns.getProperty("file", FILE_LOG_PATTERN);
+		String logPattern = this.patterns.getProperty(this.prefix + "file", FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
 		appender.setEncoder(encoder);
 		config.start(encoder);

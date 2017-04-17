@@ -15,8 +15,7 @@
  */
 
 /**
- * Support for external configuration binding via the {@code @ConfigurationProperties}
- * annotation.
+ * Support for external configuration properties.
  *
  * @see org.springframework.boot.context.properties.ConfigurationProperties
  * @see org.springframework.boot.context.properties.EnableConfigurationProperties

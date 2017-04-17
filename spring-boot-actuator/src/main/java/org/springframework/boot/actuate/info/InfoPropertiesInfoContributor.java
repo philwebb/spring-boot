@@ -17,11 +17,15 @@
 package org.springframework.boot.actuate.info;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.boot.bind.PropertySourcesBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.info.InfoProperties;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +38,9 @@ import org.springframework.util.StringUtils;
  */
 public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 		implements InfoContributor {
+
+	private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
+			.forClassWithGenerics(Map.class, String.class, Object.class);
 
 	private final T properties;
 
@@ -85,7 +92,9 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		return new PropertySourcesBinder(propertySource).extractAll("");
+		Map<String, Object> existingValue = new LinkedHashMap<>();
+		return new Binder(ConfigurationPropertySources.get(propertySource)).bind("",
+				Bindable.of(STRING_OBJECT_MAP, existingValue));
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.bind.RelaxedNames;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -38,7 +37,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -62,8 +60,6 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	private Map<String, HttpStatus> statusMapping = new HashMap<>();
 
-	private RelaxedPropertyResolver securityPropertyResolver;
-
 	private long lastAccess = 0;
 
 	private Health cached;
@@ -73,12 +69,13 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure) {
-		this(delegate, secure, null);
+		this(delegate, secure, new ArrayList<>(Arrays.asList("ROLE_ACTUATOR")));
 	}
 
 	public HealthMvcEndpoint(HealthEndpoint delegate, boolean secure,
 			List<String> roles) {
 		super(delegate);
+		Assert.notNull(roles, "Roles must not be null");
 		this.secure = secure;
 		setupDefaultStatusMapping();
 		this.roles = roles;
@@ -91,8 +88,6 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.securityPropertyResolver = new RelaxedPropertyResolver(environment,
-				"management.security.");
 	}
 
 	/**
@@ -153,15 +148,23 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	private HttpStatus getStatus(Health health) {
 		String code = health.getStatus().getCode();
 		if (code != null) {
-			code = code.toLowerCase().replace('_', '-');
-			for (String candidate : RelaxedNames.forCamelCase(code)) {
-				HttpStatus status = this.statusMapping.get(candidate);
-				if (status != null) {
-					return status;
-				}
-			}
+			String uniformCode = getUniformValue(code.toLowerCase());
+			String status = this.statusMapping.keySet().stream()
+					.filter(k -> uniformCode.equals(getUniformValue(k.toLowerCase())))
+					.findFirst().orElse(null);
+			return (status != null ? this.statusMapping.get(status) : null);
 		}
 		return null;
+	}
+
+	private String getUniformValue(String code) {
+		StringBuilder builder = new StringBuilder();
+		for (char c : code.toCharArray()) {
+			if (Character.isAlphabetic(c) || Character.isDigit(c)) {
+				builder.append(c);
+			}
+		}
+		return builder.toString();
 	}
 
 	private Health getHealth(HttpServletRequest request, Principal principal) {
@@ -207,13 +210,7 @@ public class HealthMvcEndpoint extends AbstractEndpointMvcAdapter<HealthEndpoint
 	}
 
 	private List<String> getRoles() {
-		if (this.roles != null) {
-			return this.roles;
-		}
-		String[] roles = StringUtils.commaDelimitedListToStringArray(
-				this.securityPropertyResolver.getProperty("roles", "ROLE_ACTUATOR"));
-		roles = StringUtils.trimArrayElements(roles);
-		return Arrays.asList(roles);
+		return this.roles;
 	}
 
 	private boolean isSpringSecurityAuthentication(Principal principal) {

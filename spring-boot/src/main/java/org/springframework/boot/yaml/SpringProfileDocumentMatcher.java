@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
 import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
@@ -50,6 +50,8 @@ import org.springframework.util.StringUtils;
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
+	private static String[] NO_PROFILES = {};
+
 	private String[] activeProfiles = new String[0];
 
 	public SpringProfileDocumentMatcher(String... profiles) {
@@ -69,14 +71,11 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	protected List<String> extractSpringProfiles(Properties properties) {
-		SpringProperties springProperties = new SpringProperties();
 		MutablePropertySources propertySources = new MutablePropertySources();
 		propertySources.addFirst(new PropertiesPropertySource("profiles", properties));
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				propertySources);
-		new RelaxedDataBinder(springProperties, "spring").bind(propertyValues);
-		List<String> profiles = springProperties.getProfiles();
-		return profiles;
+		ConfigurationPropertySources sources = ConfigurationPropertySources.get(propertySources);
+		String[] profiles = new Binder(sources).bind("spring.profiles", Bindable.of(String[].class));
+		return Arrays.asList(profiles == null ? NO_PROFILES : profiles);
 	}
 
 	private MatchStatus matches(List<String> profiles) {

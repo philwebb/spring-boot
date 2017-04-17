@@ -63,7 +63,7 @@ public class SamplePropertyValidationApplicationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "sample.host:xxxxxx",
 				"sample.port:9090");
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("xxxxxx");
+		this.thrown.expectMessage("Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 
@@ -71,8 +71,7 @@ public class SamplePropertyValidationApplicationTests {
 	public void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("null");
-		this.thrown.expectMessage("host");
+		this.thrown.expectMessage("Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 

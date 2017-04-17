@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.info;
 
-import org.springframework.boot.bind.PropertySourcesBinder;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
@@ -28,15 +32,22 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class EnvironmentInfoContributor implements InfoContributor {
 
-	private final PropertySourcesBinder binder;
+	private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
+			.forClassWithGenerics(Map.class, String.class, Object.class);
+
+	private final ConfigurableEnvironment environment;
 
 	public EnvironmentInfoContributor(ConfigurableEnvironment environment) {
-		this.binder = new PropertySourcesBinder(environment);
+		this.environment = environment;
 	}
 
 	@Override
 	public void contribute(Info.Builder builder) {
-		builder.withDetails(this.binder.extractAll("info"));
+		Map<String, Object> info = Binder.get(this.environment).bind("info",
+				Bindable.of(STRING_OBJECT_MAP));
+		if (info != null) {
+			builder.withDetails(info);
+		}
 	}
 
 }

@@ -17,9 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
@@ -38,11 +36,10 @@ public class ThymeleafTemplateAvailabilityProvider
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("org.thymeleaf.spring5.SpringTemplateEngine",
 				classLoader)) {
-			PropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"spring.thymeleaf.");
-			String prefix = resolver.getProperty("prefix",
+			String propertyPrefix = "spring.thymeleaf.";
+			String prefix = environment.getProperty(propertyPrefix + "prefix",
 					ThymeleafProperties.DEFAULT_PREFIX);
-			String suffix = resolver.getProperty("suffix",
+			String suffix = environment.getProperty(propertyPrefix + "suffix",
 					ThymeleafProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource;
 
+import java.util.Map;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -28,7 +30,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerConfiguration.ResourceServerCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +41,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
@@ -150,6 +155,10 @@ public class OAuth2ResourceServerConfiguration {
 	protected static class ResourceServerCondition extends SpringBootCondition
 			implements ConfigurationCondition {
 
+		private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
+				.forClassWithGenerics(Map.class, ResolvableType.forClass(String.class),
+						ResolvableType.forClass(Object.class));
+
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
 				+ "security.oauth2.config.annotation.web.configuration."
 				+ "AuthorizationServerEndpointsConfiguration";
@@ -165,32 +174,40 @@ public class OAuth2ResourceServerConfiguration {
 			ConditionMessage.Builder message = ConditionMessage
 					.forCondition("OAuth ResourceServer Condition");
 			Environment environment = context.getEnvironment();
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"security.oauth2.resource.");
-			if (hasOAuthClientId(environment)) {
-				return ConditionOutcome.match(message.foundExactly("client-id property"));
-			}
-			if (!resolver.getSubProperties("jwt").isEmpty()) {
-				return ConditionOutcome
-						.match(message.foundExactly("JWT resource configuration"));
-			}
-			if (!resolver.getSubProperties("jwk").isEmpty()) {
-				return ConditionOutcome
-						.match(message.foundExactly("JWK resource configuration"));
-			}
-			if (StringUtils.hasText(resolver.getProperty("user-info-uri"))) {
-				return ConditionOutcome
-						.match(message.foundExactly("user-info-uri property"));
-			}
-			if (StringUtils.hasText(resolver.getProperty("token-info-uri"))) {
-				return ConditionOutcome
-						.match(message.foundExactly("token-info-uri property"));
-			}
-			if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
-				if (AuthorizationServerEndpointsConfigurationBeanCondition
-						.matches(context)) {
-					return ConditionOutcome.match(
-							message.found("class").items(AUTHORIZATION_ANNOTATION));
+			String prefix = "security.oauth2.resource.";
+			if (environment instanceof ConfigurableEnvironment) {
+				if (hasOAuthClientId(environment)) {
+					return ConditionOutcome
+							.match(message.foundExactly("client-id property"));
+				}
+				Binder binder = Binder.get(environment);
+				Map<String, Object> jwt = binder.bind(prefix + "jwt",
+						Bindable.of(STRING_OBJECT_MAP));
+				if (jwt != null) {
+					return ConditionOutcome
+							.match(message.foundExactly("JWT resource configuration"));
+				}
+				Object jwk = binder.bind(prefix + "jwk", Bindable.of(STRING_OBJECT_MAP));
+				if (jwk != null) {
+					return ConditionOutcome
+							.match(message.foundExactly("JWK resource configuration"));
+				}
+				if (StringUtils
+						.hasText(environment.getProperty(prefix + "user-info-uri"))) {
+					return ConditionOutcome
+							.match(message.foundExactly("user-info-uri property"));
+				}
+				if (StringUtils
+						.hasText(environment.getProperty(prefix + "token-info-uri"))) {
+					return ConditionOutcome
+							.match(message.foundExactly("token-info-uri property"));
+				}
+				if (ClassUtils.isPresent(AUTHORIZATION_ANNOTATION, null)) {
+					if (AuthorizationServerEndpointsConfigurationBeanCondition
+							.matches(context)) {
+						return ConditionOutcome.match(
+								message.found("class").items(AUTHORIZATION_ANNOTATION));
+					}
 				}
 			}
 			return ConditionOutcome.noMatch(
@@ -199,9 +216,8 @@ public class OAuth2ResourceServerConfiguration {
 		}
 
 		private boolean hasOAuthClientId(Environment environment) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-					"security.oauth2.client.");
-			return StringUtils.hasLength(resolver.getProperty("client-id", ""));
+			return StringUtils.hasLength(
+					environment.getProperty("security.oauth2.client.client-id", ""));
 		}
 
 	}

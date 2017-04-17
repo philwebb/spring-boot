@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.web.client;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -38,7 +37,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 
 	private final String scheme;
 
-	private RelaxedPropertyResolver servletPropertyResolver;
+	private final String prefix = "server.servlet.";
 
 	/**
 	 * Create a new {@code LocalHostUriTemplateHandler} that will generate {@code http}
@@ -63,14 +62,12 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 		Assert.notNull(scheme, "Scheme must not be null");
 		this.environment = environment;
 		this.scheme = scheme;
-		this.servletPropertyResolver = new RelaxedPropertyResolver(environment,
-				"server.servlet.");
 	}
 
 	@Override
 	public String getRootUri() {
 		String port = this.environment.getProperty("local.server.port", "8080");
-		String contextPath = this.servletPropertyResolver.getProperty("context-path", "");
+		String contextPath = this.environment.getProperty(this.prefix + "context-path", "");
 		return this.scheme + "://localhost:" + port + contextPath;
 	}
 

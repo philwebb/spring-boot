@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -115,9 +114,7 @@ public class EndpointMBeanExportAutoConfiguration {
 		}
 
 		private boolean isEnabled(ConditionContext context, String prefix) {
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					context.getEnvironment(), prefix);
-			return resolver.getProperty("enabled", Boolean.class, true);
+			return context.getEnvironment().getProperty(prefix + "enabled", Boolean.class, true);
 		}
 
 	}

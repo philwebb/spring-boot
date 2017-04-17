@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,13 +54,15 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
 
-	private RelaxedPropertyResolver propertyResolver;
+	private Environment environment;
 
 	private BeanFactory beanFactory;
 
+	private final String prefix = "spring.jmx.";
+
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.jmx.");
+		this.environment = environment;
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
 		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
 		exporter.setNamingStrategy(namingStrategy);
-		String server = this.propertyResolver.getProperty("server", "mbeanServer");
+		String server = this.environment.getProperty(this.prefix + "server", "mbeanServer");
 		if (StringUtils.hasLength(server)) {
 			exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
 		}
@@ -88,7 +89,7 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(
 				new AnnotationJmxAttributeSource());
-		String defaultDomain = this.propertyResolver.getProperty("default-domain");
+		String defaultDomain = this.environment.getProperty(this.prefix + "default-domain");
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}

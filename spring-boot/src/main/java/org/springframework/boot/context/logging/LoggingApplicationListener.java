@@ -26,11 +26,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingInitializationContext;
@@ -81,6 +82,9 @@ import org.springframework.util.StringUtils;
  * @see LoggingSystem#get(ClassLoader)
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
+
+	private static final ResolvableType STRING_STRING_MAP = ResolvableType
+			.forClassWithGenerics(Map.class, String.class, String.class);
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -294,10 +298,15 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	protected void setLogLevels(LoggingSystem system, Environment environment) {
-		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
-				.getSubProperties("logging.level.");
-		for (Entry<String, Object> entry : levels.entrySet()) {
-			setLogLevel(system, environment, entry.getKey(), entry.getValue().toString());
+		if (environment instanceof ConfigurableEnvironment) {
+			Map<String, String> levels = Binder.get(environment).bind("logging.level",
+					Bindable.of(STRING_STRING_MAP));
+			if (levels != null) {
+				for (Entry<String, String> entry : levels.entrySet()) {
+					setLogLevel(system, environment, entry.getKey(),
+							entry.getValue().toString());
+				}
+			}
 		}
 	}
 
@@ -324,7 +333,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void registerShutdownHookIfNecessary(Environment environment,
 			LoggingSystem loggingSystem) {
-		boolean registerShutdownHook = new RelaxedPropertyResolver(environment)
+		boolean registerShutdownHook = environment
 				.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, false);
 		if (registerShutdownHook) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();

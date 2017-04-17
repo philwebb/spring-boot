@@ -27,7 +27,9 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.mock.web.SpringBootMockServletContext;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
@@ -43,7 +45,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -172,9 +173,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private boolean hasCustomServerPort(List<String> properties) {
 		PropertySources sources = convertToPropertySources(properties);
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				new PropertySourcesPropertyResolver(sources), "server.");
-		return resolver.containsProperty("port");
+		Binder binder = new Binder(ConfigurationPropertySources.get(sources));
+		String port = binder.bind("server.port", Bindable.of(String.class));
+		return StringUtils.hasText(port);
 	}
 
 	private PropertySources convertToPropertySources(List<String> properties) {

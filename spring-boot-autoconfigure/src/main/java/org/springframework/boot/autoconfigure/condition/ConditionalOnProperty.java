@@ -122,10 +122,4 @@ public @interface ConditionalOnProperty {
 	 */
 	boolean matchIfMissing() default false;
 
-	/**
-	 * If relaxed names should be checked. Defaults to {@code true}.
-	 * @return if relaxed names are used
-	 */
-	boolean relaxedNames() default true;
-
 }

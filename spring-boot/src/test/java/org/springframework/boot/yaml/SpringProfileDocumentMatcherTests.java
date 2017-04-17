@@ -39,7 +39,7 @@ public class SpringProfileDocumentMatcherTests {
 	@Test
 	public void matchesSingleProfile() throws IOException {
 		DocumentMatcher matcher = new SpringProfileDocumentMatcher("foo", "bar");
-		Properties properties = getProperties("spring.profiles: foo");
+		Properties properties = getProperties("spring.ProfILEs: foo");
 		assertThat(matcher.matches(properties)).isEqualTo(MatchStatus.FOUND);
 	}
 

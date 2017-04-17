@@ -169,7 +169,7 @@ public class JpaProperties {
 			this.ddlAuto = ddlAuto;
 		}
 
-		public boolean isUseNewIdGeneratorMappings() {
+		public Boolean isUseNewIdGeneratorMappings() {
 			return this.useNewIdGeneratorMappings;
 		}
 

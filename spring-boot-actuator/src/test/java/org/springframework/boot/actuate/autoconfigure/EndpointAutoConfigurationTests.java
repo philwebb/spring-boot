@@ -55,13 +55,17 @@ import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
-import org.springframework.boot.bind.PropertySourcesBinder;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -318,8 +322,11 @@ public class EndpointAutoConfigurationTests {
 							.loadProperties(location);
 					PropertiesPropertySource gitPropertySource = new PropertiesPropertySource(
 							"git", gitInfoProperties);
-					this.content = new PropertySourcesBinder(gitPropertySource)
-							.extractAll("git");
+					MutablePropertySources propertySources = new MutablePropertySources();
+					propertySources.addFirst(gitPropertySource);
+					Map<String, Object> info = new Binder(ConfigurationPropertySources.get(propertySources))
+							.bind("info", Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class), this.content));
+					this.content = info;
 				}
 			}
 

@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.condition;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -49,10 +49,10 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 
 	private ConditionOutcome determineEndpointOutcome(String endpointName,
 			boolean enabledByDefault, ConditionContext context) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "endpoints." + endpointName + ".");
-		if (resolver.containsProperty("enabled") || !enabledByDefault) {
-			boolean match = resolver.getProperty("enabled", Boolean.class,
+		String prefix = "endpoints." + endpointName + ".";
+		Environment environment = context.getEnvironment();
+		if (environment.containsProperty(prefix + "enabled") || !enabledByDefault) {
+			boolean match = environment.getProperty(prefix + "enabled", Boolean.class,
 					enabledByDefault);
 			ConditionMessage message = ConditionMessage
 					.forCondition(ConditionalOnEnabledEndpoint.class,
@@ -64,9 +64,8 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	}
 
 	private ConditionOutcome determineAllEndpointsOutcome(ConditionContext context) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "endpoints.");
-		boolean match = Boolean.valueOf(resolver.getProperty("enabled", "true"));
+		Environment environment = context.getEnvironment();
+		boolean match = Boolean.valueOf(environment.getProperty("endpoints.enabled", "true"));
 		ConditionMessage message = ConditionMessage
 				.forCondition(ConditionalOnEnabledEndpoint.class)
 				.because("All endpoints are " + (match ? "enabled" : "disabled")

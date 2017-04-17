@@ -33,9 +33,7 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiColors;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -92,12 +90,11 @@ public class ImageBanner implements Banner {
 
 	private void printBanner(Environment environment, PrintStream out)
 			throws IOException {
-		PropertyResolver properties = new RelaxedPropertyResolver(environment,
-				"banner.image.");
-		int width = properties.getProperty("width", Integer.class, 76);
-		int height = properties.getProperty("height", Integer.class, 0);
-		int margin = properties.getProperty("margin", Integer.class, 2);
-		boolean invert = properties.getProperty("invert", Boolean.class, false);
+		String prefix = "banner.image.";
+		int width = environment.getProperty(prefix + "width", Integer.class, 76);
+		int height = environment.getProperty(prefix + "height", Integer.class, 0);
+		int margin = environment.getProperty(prefix + "margin", Integer.class, 2);
+		boolean invert = environment.getProperty(prefix + "invert", Boolean.class, false);
 		BufferedImage image = readImage(width, height);
 		printBanner(image, margin, invert, out);
 	}

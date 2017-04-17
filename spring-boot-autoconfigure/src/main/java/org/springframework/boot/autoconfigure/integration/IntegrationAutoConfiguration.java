@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -83,7 +82,7 @@ public class IntegrationAutoConfiguration {
 
 		private BeanFactory beanFactory;
 
-		private RelaxedPropertyResolver propertyResolver;
+		private Environment environment;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -92,18 +91,20 @@ public class IntegrationAutoConfiguration {
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.propertyResolver = new RelaxedPropertyResolver(environment,
-					"spring.jmx.");
+			this.environment = environment;
 		}
 
 		@Bean
 		public IntegrationMBeanExporter integrationMbeanExporter() {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = this.propertyResolver.getProperty("default-domain");
+			String prefix = "spring.jmx.";
+			String defaultDomain = this.environment
+					.getProperty(prefix + "default-domain");
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String server = this.propertyResolver.getProperty("server", "mbeanServer");
+			String server = this.environment.getProperty(prefix + "server",
+					"mbeanServer");
 			if (StringUtils.hasLength(server)) {
 				exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
 			}

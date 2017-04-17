@@ -19,9 +19,8 @@ package org.springframework.boot.autoconfigure.template;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
@@ -57,10 +56,8 @@ public abstract class PathBasedTemplateAvailabilityProvider
 		if (ClassUtils.isPresent(this.className, classLoader)) {
 			TemplateAvailabilityProperties properties = BeanUtils
 					.instantiateClass(this.propertiesClass);
-			RelaxedDataBinder binder = new RelaxedDataBinder(properties,
-					this.propertyPrefix);
-			binder.bind(new PropertySourcesPropertyValues(
-					((ConfigurableEnvironment) environment).getPropertySources()));
+			Binder binder = Binder.get(environment);
+			binder.bind(this.propertyPrefix, Bindable.ofInstance(properties));
 			return isTemplateAvailable(view, resourceLoader, properties);
 		}
 		return false;

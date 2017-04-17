@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -57,9 +56,8 @@ public class ValidationAutoConfiguration {
 	}
 
 	private static boolean determineProxyTargetClass(Environment environment) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
-				"spring.aop.");
-		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
+		Boolean value = environment.getProperty("spring.aop.proxy-target-class",
+				Boolean.class);
 		return (value != null ? value : true);
 	}
 

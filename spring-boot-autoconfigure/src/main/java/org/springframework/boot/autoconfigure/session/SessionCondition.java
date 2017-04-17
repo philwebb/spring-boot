@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.session;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -37,15 +37,15 @@ class SessionCondition extends SpringBootCondition {
 			AnnotatedTypeMetadata metadata) {
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition("Session Condition");
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.session.");
+		String prefix = "spring.session.";
+		Environment environment = context.getEnvironment();
 		StoreType sessionStoreType = SessionStoreMappings
 				.getType(((AnnotationMetadata) metadata).getClassName());
-		if (!resolver.containsProperty("store-type")) {
+		if (!environment.containsProperty(prefix + "store-type")) {
 			return ConditionOutcome.noMatch(
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
-		String value = resolver.getProperty("store-type").replace('-', '_').toUpperCase();
+		String value = environment.getProperty(prefix + "store-type").replace('-', '_').toUpperCase();
 		if (value.equals(sessionStoreType.name())) {
 			return ConditionOutcome.match(message
 					.found("spring.session.store-type property").items(sessionStoreType));

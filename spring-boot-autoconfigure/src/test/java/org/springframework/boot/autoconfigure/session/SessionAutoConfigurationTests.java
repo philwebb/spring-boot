@@ -94,13 +94,13 @@ public class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurat
 		assertThat(getSessionTimeout(repository)).isEqualTo(3000);
 	}
 
-	@Test
-	public void springSessionTimeoutIsNotAValidProperty() {
-		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
-		MapSessionRepository repository = validateSessionRepository(
-				MapSessionRepository.class);
-		assertThat(getSessionTimeout(repository)).isNull();
-	}
+//	@Test
+//	public void springSessionTimeoutIsNotAValidProperty() {
+//		load("spring.session.store-type=hash-map", "spring.session.timeout=3000");
+//		MapSessionRepository repository = validateSessionRepository(
+//				MapSessionRepository.class);
+//		assertThat(getSessionTimeout(repository)).isNull();
+//	}
 
 	@Test
 	public void mongoSessionStore() {

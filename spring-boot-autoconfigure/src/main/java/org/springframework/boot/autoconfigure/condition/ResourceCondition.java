@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -64,9 +63,7 @@ public abstract class ResourceCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), this.prefix);
-		if (resolver.containsProperty(this.propertyName)) {
+		if (context.getEnvironment().containsProperty(this.prefix + this.propertyName)) {
 			return ConditionOutcome.match(startConditionMessage()
 					.foundExactly("property " + this.prefix + this.propertyName));
 		}

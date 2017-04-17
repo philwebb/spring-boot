@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -43,6 +44,7 @@ public class FileEncodingApplicationListenerTests {
 	public void testIllegalState() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.mandatory_file_encoding=FOO");
+		ConfigurationPropertySources.attach(this.environment);
 		this.initializer.onApplicationEvent(this.event);
 	}
 

@@ -24,7 +24,6 @@ import ch.qos.logback.core.joran.spi.InterpretationContext;
 import ch.qos.logback.core.util.OptionHelper;
 import org.xml.sax.Attributes;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 
 /**
@@ -72,9 +71,7 @@ class SpringPropertyAction extends Action {
 		int lastDot = source.lastIndexOf(".");
 		if (lastDot > 0) {
 			String prefix = source.substring(0, lastDot + 1);
-			RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-					this.environment, prefix);
-			return resolver.getProperty(source.substring(lastDot + 1), defaultValue);
+			return this.environment.getProperty(prefix + source.substring(lastDot + 1), defaultValue);
 		}
 		return defaultValue;
 	}

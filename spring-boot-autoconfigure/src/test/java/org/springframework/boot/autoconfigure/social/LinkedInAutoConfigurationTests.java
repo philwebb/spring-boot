@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.social;
 
 import org.junit.Test;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.test.util.EnvironmentTestUtils;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -38,6 +39,7 @@ public class LinkedInAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.linkedin.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.linkedin.appSecret:secret");
+		ConfigurationPropertySources.attach(this.context.getEnvironment());
 		this.context.register(LinkedInAutoConfiguration.class);
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
