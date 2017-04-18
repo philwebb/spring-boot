@@ -63,7 +63,6 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -412,12 +411,9 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@Override
+		@ConditionalOnMissingBean(name = "mvcValidator")
 		public Validator mvcValidator() {
-			if (!ClassUtils.isPresent("javax.validation.Validator",
-					getClass().getClassLoader())) {
-				return super.mvcValidator();
-			}
-			return WebMvcValidator.get(getApplicationContext(), getValidator());
+			return super.mvcValidator();
 		}
 
 		@Override

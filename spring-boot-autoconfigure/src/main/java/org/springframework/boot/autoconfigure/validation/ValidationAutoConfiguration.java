@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.validation;
 import javax.validation.Validator;
 import javax.validation.executable.ExecutableValidator;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,7 +27,6 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -45,10 +43,9 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 public class ValidationAutoConfiguration {
 
-	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	@Bean(name = { "validator", "mvcValidator" })
 	@ConditionalOnMissingBean
-	public static Validator jsr303Validator() {
+	public static Validator validator() {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
