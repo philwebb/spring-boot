@@ -30,11 +30,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -49,20 +57,27 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.web.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -140,6 +155,11 @@ public class WebMvcAutoConfiguration {
 	 */
 	public static final String SKIP_PATH_EXTENSION_CONTENT_NEGOTIATION_ATTRIBUTE = PathExtensionContentNegotiationStrategy.class
 			.getName() + ".SKIP";
+
+	@Bean
+	public static MvcValidatorPostProcessor mvcValidatorAliasPostProcessor() {
+		return new MvcValidatorPostProcessor();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
@@ -366,9 +386,12 @@ public class WebMvcAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
 	@Configuration
-	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
+	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration
+			implements InitializingBean {
 
 		private final WebMvcProperties mvcProperties;
+
+		private final ApplicationContext context;
 
 		private final ListableBeanFactory beanFactory;
 
@@ -377,9 +400,10 @@ public class WebMvcAutoConfiguration {
 		public EnableWebMvcConfiguration(
 				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
-				ListableBeanFactory beanFactory) {
+				ApplicationContext context, ListableBeanFactory beanFactory) {
 			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
+			this.context = context;
 			this.beanFactory = beanFactory;
 		}
 
@@ -411,9 +435,9 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@Override
-		@ConditionalOnMissingBean(name = "mvcValidator")
+		@Conditional(DisableMvcValidatorCondition.class)
 		public Validator mvcValidator() {
-			return super.mvcValidator();
+			return this.context.getBean("mvcValidator", Validator.class);
 		}
 
 		@Override
@@ -475,6 +499,16 @@ public class WebMvcAutoConfiguration {
 				}
 			}
 			return manager;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			Assert.state(getValidator() == null,
+					"Found unexpected validator configuration. A Spring Boot MVC "
+							+ "validator should be registered as bean named "
+							+ "'mvcValidator' and not returned from "
+							+ "WebMvcConfigurer.getValidator()");
+			this.context.getBean("mvcValidator");
 		}
 
 	}
@@ -598,6 +632,73 @@ public class WebMvcAutoConfiguration {
 				return Collections.emptyList();
 			}
 			return this.delegate.resolveMediaTypes(webRequest);
+		}
+
+	}
+
+	/**
+	 * Condition used to disable the default MVC validator registration.
+	 */
+	static class DisableMvcValidatorCondition implements ConfigurationCondition {
+
+		@Override
+		public ConfigurationPhase getConfigurationPhase() {
+			return ConfigurationPhase.REGISTER_BEAN;
+		}
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			return false;
+		}
+
+	}
+
+	/**
+	 * {@link BeanFactoryPostProcessor} to deal with the MVC validator bean registration.
+	 * Uses the following rules:
+	 * <ul>
+	 * <li></li>
+	 * </ul>
+	 */
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	static class MvcValidatorPostProcessor
+			implements BeanDefinitionRegistryPostProcessor {
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			if (registry instanceof ListableBeanFactory) {
+				postProcess(registry, (ListableBeanFactory) registry);
+			}
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+		}
+
+		private void postProcess(BeanDefinitionRegistry registry,
+				ListableBeanFactory beanFactory) {
+			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					beanFactory, Validator.class, false, false);
+			if (validatorBeans.length == 0) {
+				RootBeanDefinition definition = new RootBeanDefinition();
+				definition.setBeanClass(getClass());
+				definition.setFactoryMethodName("mvcValidator");
+				registry.registerBeanDefinition("mvcValidator", definition);
+			}
+			else if (validatorBeans.length == 1) {
+				registry.registerAlias(validatorBeans[0], "mvcValidator");
+			}
+			else {
+				throw new IllegalStateException(
+						"No single MVC Validator candidate found. "
+								+ "Please register an explicit 'mvcValidator' bean");
+			}
+		}
+
+		static Validator mvcValidator() {
+			return new WebMvcConfigurationSupport().mvcValidator();
 		}
 
 	}

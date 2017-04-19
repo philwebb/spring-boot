@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Condition;
 import org.joda.time.DateTime;
@@ -37,8 +36,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -653,6 +654,30 @@ public class WebMvcAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	public void webMvcConfigurerAdapterCannotSupplyValidator() throws Exception {
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("unexpected validator configuration");
+		load(WebMvcConfigurerAdapterSupplyingValidator.class);
+	}
+
+	@Test
+	public void mvcUsesAutoConfiguedValidatorByDefault() throws Exception {
+		load();
+		Object localValidator = this.context.getBean("localValidator");
+		Object mvcValidator = this.context.getBean("mvcValidator");
+		assertThat(mvcValidator).isSameAs(localValidator);
+	}
+
+	@Test
+	public void mvcUsesUserDefinedValidator() throws Exception {
+		load(CustomValidator.class);
+		Object customValidator = this.context.getBean("customValidator");
+		Object mvcValidator = this.context.getBean("mvcValidator");
+		assertThat(mvcValidator).isSameAs(customValidator);
+		assertThat(this.context.getBean(Validator.class)).isEqualTo(customValidator);
+	}
+
 	// @Test
 	// public void validationNoJsr303ValidatorExposedByDefault() {
 	// load();
@@ -662,17 +687,17 @@ public class WebMvcAutoConfigurationTests {
 	// assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 	// }
 
-	@Test
-	public void validationCustomConfigurerTakesPrecedence() {
-		load(MvcValidator.class);
-		assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
-				.isEmpty();
-		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
-		Validator validator = this.context.getBean(Validator.class);
-		assertThat(validator)
-				.isSameAs(this.context.getBean(MvcValidator.class).validator);
-	}
+	// @Test
+	// public void validationCustomConfigurerTakesPrecedence() {
+	// load(MvcValidator.class);
+	// assertThat(this.context.getBeansOfType(ValidatorFactory.class)).isEmpty();
+	// assertThat(this.context.getBeansOfType(javax.validation.Validator.class))
+	// .isEmpty();
+	// assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
+	// Validator validator = this.context.getBean(Validator.class);
+	// assertThat(validator)
+	// .isSameAs(this.context.getBean(MvcValidator.class).validator);
+	// }
 
 	// @Test
 	// public void validationCustomConfigurerTakesPrecedenceAndDoNotExposeJsr303() {
@@ -722,7 +747,8 @@ public class WebMvcAutoConfigurationTests {
 		if (config != null) {
 			configClasses.add(config);
 		}
-		configClasses.addAll(Arrays.asList(Config.class, WebMvcAutoConfiguration.class,
+		configClasses.addAll(Arrays.asList(Config.class,
+				ValidationAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class));
 		this.context.register(configClasses.toArray(new Class<?>[configClasses.size()]));
@@ -894,39 +920,52 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class MvcValidator extends WebMvcConfigurerAdapter {
-
-		private final Validator validator = mock(Validator.class);
-
-		@Override
-		public Validator getValidator() {
-			return this.validator;
-		}
-
-	}
-
-	@Configuration
-	protected static class MvcJsr303Validator extends WebMvcConfigurerAdapter {
-
-		private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+	protected static class WebMvcConfigurerAdapterSupplyingValidator
+			extends WebMvcConfigurerAdapter {
 
 		@Override
 		public Validator getValidator() {
-			return this.validator;
+			return mock(Validator.class);
 		}
 
 	}
 
-	@Configuration
-	static class Jsr303Validator {
-
-		@Bean
-		public javax.validation.Validator jsr303Validator() {
-			return mock(javax.validation.Validator.class);
-		}
-
-	}
-
+	//
+	// @Configuration
+	// protected static class MvcValidator extends WebMvcConfigurerAdapter {
+	//
+	// private final Validator validator = mock(Validator.class);
+	//
+	// @Override
+	// public Validator getValidator() {
+	// return this.validator;
+	// }
+	//
+	// }
+	//
+	// @Configuration
+	// protected static class MvcJsr303Validator extends WebMvcConfigurerAdapter {
+	//
+	// private final LocalValidatorFactoryBean validator = new
+	// LocalValidatorFactoryBean();
+	//
+	// @Override
+	// public Validator getValidator() {
+	// return this.validator;
+	// }
+	//
+	// }
+	//
+	// @Configuration
+	// static class Jsr303Validator {
+	//
+	// @Bean
+	// public javax.validation.Validator jsr303Validator() {
+	// return mock(javax.validation.Validator.class);
+	// }
+	//
+	// }
+	//
 	@Configuration
 	static class CustomValidator {
 
