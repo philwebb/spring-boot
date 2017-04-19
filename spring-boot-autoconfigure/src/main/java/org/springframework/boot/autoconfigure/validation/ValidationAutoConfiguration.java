@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
+import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
@@ -59,14 +60,6 @@ public class ValidationAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(org.springframework.validation.Validator.class)
-	@ConditionalOnSingleCandidate(Validator.class)
-	public SpringOnlyValidatorAdapter jsr303ValidatorAdapter(Validator validator) {
-		return new SpringOnlyValidatorAdapter(validator);
-
-	}
-
-	@Bean
 	@ConditionalOnBean(Validator.class)
 	@ConditionalOnMissingBean
 	public static MethodValidationPostProcessor methodValidationPostProcessor(
@@ -82,6 +75,19 @@ public class ValidationAutoConfiguration {
 				"spring.aop.");
 		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
 		return (value != null ? value : true);
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(org.springframework.validation.Validator.class)
+	static class jsr303ValidatorAdapterConfiguration {
+
+		@Bean
+		@ConditionalOnSingleCandidate(Validator.class)
+		@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+		public SmartValidator jsr303ValidatorAdapter(Validator validator) {
+			return new DelegatingValidator(validator);
+		}
+
 	}
 
 }

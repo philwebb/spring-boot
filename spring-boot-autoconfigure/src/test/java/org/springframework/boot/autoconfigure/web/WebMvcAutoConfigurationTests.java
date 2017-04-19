@@ -39,6 +39,7 @@ import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.DelegatingValidator;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
@@ -65,7 +66,6 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.filter.HttpPutFormContentFilter;
@@ -750,21 +750,30 @@ public class WebMvcAutoConfigurationTests {
 		String[] jsrValidatorBeans = this.context
 				.getBeanNamesForType(javax.validation.Validator.class);
 		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
-		assertThat(mvcValidator).isInstanceOf(OptionalValidatorFactoryBean.class);
+		assertThat(mvcValidator).isInstanceOf(DelegatingValidator.class);
 		assertThat(springValidatorBeans).containsExactly("mvcValidator");
-		assertThat(jsrValidatorBeans).containsExactly("mvcValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndNoMvcValidatorShouldThrowException()
+	public void validatorWhenMultipleValidatorsAndNoMvcValidatorShouldAddMvc()
 			throws Exception {
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.thrown.expectMessage("expected 'mvcValidator'");
 		load(MultipleValidatorsAndNoMvcValidator.class);
+		Object customValidator1 = this.context.getBean("customValidator1");
+		Object customValidator2 = this.context.getBean("customValidator2");
+		Object mvcValidator = this.context.getBean("mvcValidator");
+		String[] jsrValidatorBeans = this.context
+				.getBeanNamesForType(javax.validation.Validator.class);
+		String[] springValidatorBeans = this.context.getBeanNamesForType(Validator.class);
+		assertThat(mvcValidator).isNotSameAs(customValidator1)
+				.isNotSameAs(customValidator2);
+		assertThat(springValidatorBeans).containsExactly("customValidator1",
+				"customValidator2", "mvcValidator");
+		assertThat(jsrValidatorBeans).isEmpty();
 	}
 
 	@Test
-	public void validatorWhenMultipleValidatorsAndMvcValidatorShouldThrowException()
+	public void validatorWhenMultipleValidatorsAndMvcValidatorShouldUseMvc()
 			throws Exception {
 		load(MultipleValidatorsAndMvcValidator.class);
 		Object customValidator = this.context.getBean("customValidator");

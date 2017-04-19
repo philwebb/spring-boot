@@ -16,25 +16,32 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import javax.validation.Validator;
+import reactor.core.support.Assert;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
+import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 /**
- * Adapter that takes a JSR-303 {@code javax.validator.Validator} and exposes it as a
- * Spring {@link org.springframework.validation.Validator} without implementing the
- * JSR-303 Validator interface itself.
+ * {@link Validator} implementation that delegates calls to another {@link Validator}.
+ * This {@link Validator} implements Spring's {@link SmartValidator} interface but does
+ * not implement the JSR-303 {@code javax.validator.Validator} interface.
  *
  * @author Phillip Webb
+ * @since 1.5.3
  */
-class SpringOnlyValidatorAdapter implements SmartValidator {
+public class DelegatingValidator implements SmartValidator {
 
-	private final SpringValidatorAdapter delegate;
+	private final Validator delegate;
 
-	SpringOnlyValidatorAdapter(Validator targetValidator) {
-		this.delegate = new SpringValidatorAdapter(targetValidator);
+	public DelegatingValidator(javax.validation.Validator validator) {
+		this.delegate = new SpringValidatorAdapter(validator);
+	}
+
+	public DelegatingValidator(Validator validator) {
+		Assert.notNull(validator, "Validator must not be null");
+		this.delegate = validator;
 	}
 
 	@Override
@@ -49,7 +56,12 @@ class SpringOnlyValidatorAdapter implements SmartValidator {
 
 	@Override
 	public void validate(Object target, Errors errors, Object... validationHints) {
-		this.delegate.validate(target, errors, validationHints);
+		if (this.delegate instanceof SmartValidator) {
+			((SmartValidator) this.delegate).validate(target, errors, validationHints);
+		}
+		else {
+			this.delegate.validate(target, errors);
+		}
 	}
 
 }

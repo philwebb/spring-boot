@@ -51,6 +51,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.validation.DelegatingValidator;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -663,7 +664,8 @@ public class WebMvcAutoConfiguration {
 	 * <li>With no validators - Uses standard
 	 * {@link WebMvcConfigurationSupport#mvcValidator()} logic.</li>
 	 * <li>With a single validator - Uses an alias.</li>
-	 * <li>With multiple validators - Fails if an mvcValidator bean is not defined.</li>
+	 * <li>With multiple validators - Registers a mvcValidator bean if not already
+	 * defined.</li>
 	 * </ul>
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE)
@@ -688,26 +690,28 @@ public class WebMvcAutoConfiguration {
 			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					beanFactory, Validator.class, false, false);
 			if (validatorBeans.length == 0) {
-				RootBeanDefinition definition = new RootBeanDefinition();
-				definition.setBeanClass(getClass());
-				definition.setFactoryMethodName("mvcValidator");
-				registry.registerBeanDefinition("mvcValidator", definition);
+				registerDefaultMvcValidator(registry);
 			}
 			else if (validatorBeans.length == 1) {
 				registry.registerAlias(validatorBeans[0], "mvcValidator");
 			}
 			else {
 				if (!ObjectUtils.containsElement(validatorBeans, "mvcValidator")) {
-					throw new NoSuchBeanDefinitionException(Validator.class,
-							"expected 'mvcValidator' bean but found " + StringUtils
-									.arrayToCommaDelimitedString(validatorBeans));
+					registerDefaultMvcValidator(registry);
 				}
-
 			}
 		}
 
+		private void registerDefaultMvcValidator(BeanDefinitionRegistry registry) {
+			RootBeanDefinition definition = new RootBeanDefinition();
+			definition.setBeanClass(getClass());
+			definition.setFactoryMethodName("mvcValidator");
+			registry.registerBeanDefinition("mvcValidator", definition);
+		}
+
 		static Validator mvcValidator() {
-			return new WebMvcConfigurationSupport().mvcValidator();
+			Validator validator = new WebMvcConfigurationSupport().mvcValidator();
+			return new DelegatingValidator(validator);
 		}
 
 	}
