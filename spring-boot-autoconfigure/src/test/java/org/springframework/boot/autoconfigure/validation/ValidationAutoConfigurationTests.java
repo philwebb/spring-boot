@@ -43,6 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ValidationAutoConfigurationTests {
 
+	// See also WebMvcAutoConfigurationTests
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 

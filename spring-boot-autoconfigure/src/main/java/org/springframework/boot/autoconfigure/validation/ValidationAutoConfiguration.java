@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.annotation.Bean;
@@ -50,11 +51,19 @@ public class ValidationAutoConfiguration {
 	@ConditionalOnMissingBean(type = { "javax.validation.Validator",
 			"org.springframework.validation.Validator" })
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public static LocalValidatorFactoryBean localValidator() {
+	public static LocalValidatorFactoryBean defaultValidator() {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory();
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(org.springframework.validation.Validator.class)
+	@ConditionalOnSingleCandidate(Validator.class)
+	public SpringOnlyValidatorAdapter jsr303ValidatorAdapter(Validator validator) {
+		return new SpringOnlyValidatorAdapter(validator);
+
 	}
 
 	@Bean

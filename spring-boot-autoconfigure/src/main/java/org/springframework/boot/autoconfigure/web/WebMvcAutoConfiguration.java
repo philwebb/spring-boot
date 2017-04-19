@@ -78,6 +78,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -637,7 +638,9 @@ public class WebMvcAutoConfiguration {
 	}
 
 	/**
-	 * Condition used to disable the default MVC validator registration.
+	 * Condition used to disable the default MVC validator registration. The
+	 * {@link MvcValidatorPostProcessor} is used to configure the {@code mvcValidator}
+	 * bean.
 	 */
 	static class DisableMvcValidatorCondition implements ConfigurationCondition {
 
@@ -655,9 +658,12 @@ public class WebMvcAutoConfiguration {
 
 	/**
 	 * {@link BeanFactoryPostProcessor} to deal with the MVC validator bean registration.
-	 * Uses the following rules:
+	 * Applies the following rules:
 	 * <ul>
-	 * <li></li>
+	 * <li>With no validators - Uses standard
+	 * {@link WebMvcConfigurationSupport#mvcValidator()} logic.</li>
+	 * <li>With a single validator - Uses an alias.</li>
+	 * <li>With multiple validators - Fails if an mvcValidator bean is not defined.</li>
 	 * </ul>
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE)
@@ -691,9 +697,12 @@ public class WebMvcAutoConfiguration {
 				registry.registerAlias(validatorBeans[0], "mvcValidator");
 			}
 			else {
-				throw new IllegalStateException(
-						"No single MVC Validator candidate found. "
-								+ "Please register an explicit 'mvcValidator' bean");
+				if (!ObjectUtils.containsElement(validatorBeans, "mvcValidator")) {
+					throw new NoSuchBeanDefinitionException(Validator.class,
+							"expected 'mvcValidator' bean but found " + StringUtils
+									.arrayToCommaDelimitedString(validatorBeans));
+				}
+
 			}
 		}
 
