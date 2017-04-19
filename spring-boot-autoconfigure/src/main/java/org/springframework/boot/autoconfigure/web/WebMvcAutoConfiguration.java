@@ -79,6 +79,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -672,6 +673,8 @@ public class WebMvcAutoConfiguration {
 	static class MvcValidatorPostProcessor
 			implements BeanDefinitionRegistryPostProcessor {
 
+		private static final String JSR303_VALIDATOR_CLASS = "javax.validation.Validator";
+
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
 				throws BeansException {
@@ -690,19 +693,20 @@ public class WebMvcAutoConfiguration {
 			String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					beanFactory, Validator.class, false, false);
 			if (validatorBeans.length == 0) {
-				registerDefaultMvcValidator(registry);
+				registerMvcValidator(registry, beanFactory);
 			}
 			else if (validatorBeans.length == 1) {
 				registry.registerAlias(validatorBeans[0], "mvcValidator");
 			}
 			else {
 				if (!ObjectUtils.containsElement(validatorBeans, "mvcValidator")) {
-					registerDefaultMvcValidator(registry);
+					registerMvcValidator(registry, beanFactory);
 				}
 			}
 		}
 
-		private void registerDefaultMvcValidator(BeanDefinitionRegistry registry) {
+		private void registerMvcValidator(BeanDefinitionRegistry registry,
+				ListableBeanFactory beanFactory) {
 			RootBeanDefinition definition = new RootBeanDefinition();
 			definition.setBeanClass(getClass());
 			definition.setFactoryMethodName("mvcValidator");
@@ -711,7 +715,15 @@ public class WebMvcAutoConfiguration {
 
 		static Validator mvcValidator() {
 			Validator validator = new WebMvcConfigurationSupport().mvcValidator();
-			return new DelegatingValidator(validator);
+			try {
+				if (ClassUtils.forName(JSR303_VALIDATOR_CLASS, null)
+						.isInstance(validator)) {
+					return new DelegatingValidator(validator);
+				}
+			}
+			catch (Exception ex) {
+			}
+			return validator;
 		}
 
 	}

@@ -16,8 +16,12 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import reactor.core.support.Assert;
-
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.Validator;
@@ -31,7 +35,8 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
  * @author Phillip Webb
  * @since 1.5.3
  */
-public class DelegatingValidator implements SmartValidator {
+public class DelegatingValidator implements SmartValidator, ApplicationContextAware,
+		InitializingBean, DisposableBean {
 
 	private final Validator delegate;
 
@@ -61,6 +66,29 @@ public class DelegatingValidator implements SmartValidator {
 		}
 		else {
 			this.delegate.validate(target, errors);
+		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		if (this.delegate instanceof ApplicationContextAware) {
+			((ApplicationContextAware) this.delegate)
+					.setApplicationContext(applicationContext);
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (this.delegate instanceof InitializingBean) {
+			((InitializingBean) this.delegate).afterPropertiesSet();
+		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (this.delegate instanceof DisposableBean) {
+			((DisposableBean) this.delegate).destroy();
 		}
 	}
 
