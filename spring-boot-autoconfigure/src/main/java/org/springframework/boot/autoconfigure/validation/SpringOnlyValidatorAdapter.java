@@ -33,7 +33,7 @@ class SpringOnlyValidatorAdapter implements SmartValidator {
 
 	private final SpringValidatorAdapter delegate;
 
-	public SpringOnlyValidatorAdapter(Validator targetValidator) {
+	SpringOnlyValidatorAdapter(Validator targetValidator) {
 		this.delegate = new SpringValidatorAdapter(targetValidator);
 	}
 
