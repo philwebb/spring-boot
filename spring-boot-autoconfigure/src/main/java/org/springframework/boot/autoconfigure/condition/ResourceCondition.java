@@ -38,35 +38,31 @@ public abstract class ResourceCondition extends SpringBootCondition {
 
 	private final String name;
 
-	private final String prefix;
-
-	private final String propertyName;
+	private final String property;
 
 	private final String[] resourceLocations;
 
 	/**
 	 * Create a new condition.
 	 * @param name the name of the component
-	 * @param prefix the prefix of the configuration key
-	 * @param propertyName the name of the configuration key
+	 * @param property the configuration property
 	 * @param resourceLocations default location(s) where the configuration file can be
 	 * found if the configuration key is not specified
+	 * @since 2.0.0
 	 */
-	protected ResourceCondition(String name, String prefix, String propertyName,
+	protected ResourceCondition(String name, String property,
 			String... resourceLocations) {
 		this.name = name;
-		this.prefix = (prefix.endsWith(".") ? prefix : prefix + ".");
-		this.propertyName = propertyName;
+		this.property = property;
 		this.resourceLocations = resourceLocations;
 	}
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		String property = this.prefix + this.propertyName;
-		if (context.getEnvironment().containsProperty(property)) {
-			return ConditionOutcome
-					.match(startConditionMessage().foundExactly("property " + property));
+		if (context.getEnvironment().containsProperty(this.property)) {
+			return ConditionOutcome.match(
+					startConditionMessage().foundExactly("property " + this.property));
 		}
 		return getResourceOutcome(context, metadata);
 	}

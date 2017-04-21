@@ -96,7 +96,7 @@ public class ResourceConditionTests {
 	private static class DefaultLocationResourceCondition extends ResourceCondition {
 
 		DefaultLocationResourceCondition() {
-			super("test", "spring.foo.test.", "config", "classpath:/logging.properties");
+			super("test", "spring.foo.test.config", "classpath:/logging.properties");
 		}
 
 	}
@@ -105,7 +105,7 @@ public class ResourceConditionTests {
 			extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
-			super("test", "spring.foo.test", "config",
+			super("test", "spring.foo.test.config",
 					"classpath:/this-file-does-not-exist.xml");
 		}
 

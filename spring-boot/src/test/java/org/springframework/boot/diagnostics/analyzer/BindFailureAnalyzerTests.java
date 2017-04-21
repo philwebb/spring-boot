@@ -84,8 +84,8 @@ public class BindFailureAnalyzerTests {
 	public void bindExceptionWithOriginDueToValidationFailure() throws Exception {
 		FailureAnalysis analysis = performAnalysis(
 				FieldValidationFailureConfiguration.class, "test.foo.value=4");
-		assertThat(analysis.getDescription()).contains("Origin: \"test.foo.value\" from property source \"test\"");
-
+		assertThat(analysis.getDescription())
+				.contains("Origin: \"test.foo.value\" from property source \"test\"");
 	}
 
 	private static String failure(String property, String value, String reason) {
@@ -93,13 +93,15 @@ public class BindFailureAnalyzerTests {
 				value, reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
+	private FailureAnalysis performAnalysis(Class<?> configuration,
+			String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
+	private BeanCreationException createFailure(Class<?> configuration,
+			String... environment) {
 		try {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			addEnvironment(context, environment);
@@ -113,7 +115,8 @@ public class BindFailureAnalyzerTests {
 		}
 	}
 
-	private void addEnvironment(AnnotationConfigApplicationContext context, String[] environment) {
+	private void addEnvironment(AnnotationConfigApplicationContext context,
+			String[] environment) {
 		MutablePropertySources sources = context.getEnvironment().getPropertySources();
 		Map<String, Object> map = new HashMap<>();
 		for (String pair : environment) {

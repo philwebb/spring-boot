@@ -172,13 +172,15 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToListIfUnboundElementsPresentShouldThrowException() throws Exception {
+	public void bindToListIfUnboundElementsPresentShouldThrowException()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[2]", "bar-baz");
 		this.sources.add(source);
 		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(Matchers.instanceOf(UnboundConfigurationPropertiesException.class));
+		this.thrown.expectCause(
+				Matchers.instanceOf(UnboundConfigurationPropertiesException.class));
 		bind(Bindable.of(ExampleListBean.class), this.binder);
 	}
 
@@ -389,7 +391,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
 		IgnoreErrorsBindHandler handler = new IgnoreErrorsBindHandler();
-		ExampleValueBean bean = this.binder.bind(this.name, Bindable.of(ExampleValueBean.class), handler);
+		ExampleValueBean bean = this.binder.bind(this.name,
+				Bindable.of(ExampleValueBean.class), handler);
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(0);
 		assertThat(bean.getStringValue()).isEqualTo("foo");
@@ -434,7 +437,8 @@ public class JavaBeanBinderTests {
 		ExampleNestedBean existingValue = new ExampleNestedBean();
 		ExampleValueBean valueBean = new ExampleValueBean();
 		existingValue.setValueBean(valueBean);
-		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class, existingValue), this.binder);
+		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class, existingValue),
+				this.binder);
 		assertThat(bean.getValueBean()).isEqualTo(valueBean);
 	}
 
@@ -443,7 +447,8 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.date", "2014-04-01");
 		this.sources.add(source);
-		ConverterAnnotatedExampleBean bean = bind(Bindable.of(ConverterAnnotatedExampleBean.class), this.binder);
+		ConverterAnnotatedExampleBean bean = bind(
+				Bindable.of(ConverterAnnotatedExampleBean.class), this.binder);
 		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
 	}
 

@@ -66,13 +66,14 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	}
 
 	private boolean shouldValidate(Bindable<?> target) {
-		Validated annotation = AnnotationUtils.findAnnotation(target.getBoxedType().resolve(),
-				Validated.class);
+		Validated annotation = AnnotationUtils
+				.findAnnotation(target.getBoxedType().resolve(), Validated.class);
 		return (annotation != null);
 	}
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, ConfigurationProperty property, Object result) {
+	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
+			BindContext context, ConfigurationProperty property, Object result) {
 		if (property != null) {
 			this.bound.add(property);
 		}
@@ -88,8 +89,8 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		super.onFinish(name, target, context, result);
 	}
 
-	private void validate(ConfigurationPropertyName name,
-			Bindable target, Object result) {
+	private void validate(ConfigurationPropertyName name, Bindable<?> target,
+			Object result) {
 		BindingResult errors = new BeanPropertyBindingResult(result, name.toString());
 		Class<?> resolve = target.getBoxedType().resolve();
 		for (Validator validator : this.validators) {

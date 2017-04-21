@@ -34,9 +34,8 @@ public abstract class HazelcastConfigResourceCondition extends ResourceCondition
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
-	protected HazelcastConfigResourceCondition(String prefix, String propertyName) {
-		super("Hazelcast", prefix, propertyName, "file:./hazelcast.xml",
-				"classpath:/hazelcast.xml");
+	protected HazelcastConfigResourceCondition(String property) {
+		super("Hazelcast", property, "file:./hazelcast.xml", "classpath:/hazelcast.xml");
 	}
 
 	@Override

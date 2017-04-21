@@ -54,7 +54,8 @@ public abstract class PathBasedTemplateAvailabilityProvider
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent(this.className, classLoader)) {
 			Binder binder = Binder.get(environment);
-			TemplateAvailabilityProperties properties = binder.bind(this.propertyPrefix, Bindable.withNewInstance(this.propertiesClass));
+			TemplateAvailabilityProperties properties = binder.bind(this.propertyPrefix,
+					Bindable.ofNewInstance(this.propertiesClass));
 			return isTemplateAvailable(view, resourceLoader, properties);
 		}
 		return false;

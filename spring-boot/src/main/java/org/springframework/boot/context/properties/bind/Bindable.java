@@ -157,14 +157,14 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Create a new {@link Bindable} of the specified type with an
-	 * existing value equal to a new instance of that type.
+	 * Create a new {@link Bindable} of the specified type with an existing value equal to
+	 * a new instance of that type.
 	 * @param <T> The source type
 	 * @param type the type (must not be {@code null} and must have a default constructor)
 	 * @return a {@link Bindable} instance
 	 * @see #of(Class, Object)
 	 */
-	public static <T> Bindable<T> withNewInstance(Class<T> type) {
+	public static <T> Bindable<T> ofNewInstance(Class<T> type) {
 		Assert.notNull(type, "Type must not be null");
 		Assert.state(hasDefaultConstructor(type), "Type must have default constructor");
 		T instance = BeanUtils.instantiateClass(type);

@@ -45,7 +45,8 @@ public class PropertySourcesPlaceholdersResolverTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void placeholderResolverIfEnvironmentNullShouldThrowException() throws Exception {
+	public void placeholderResolverIfEnvironmentNullShouldThrowException()
+			throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
 		new PropertySourcesPlaceholdersResolver((Environment) null);
@@ -70,14 +71,16 @@ public class PropertySourcesPlaceholdersResolverTests {
 	public void resolveIfPlaceholderAbsentAndNoDefaultShouldThrowException() {
 		this.resolver = new PropertySourcesPlaceholdersResolver((PropertySources) null);
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Could not resolve placeholder 'FOO' in value \"${FOO}\"");
+		this.thrown
+				.expectMessage("Could not resolve placeholder 'FOO' in value \"${FOO}\"");
 		this.resolver.resolvePlaceholders("${FOO}");
 	}
 
 	@Test
 	public void resolveIfHelperPresentShouldUseIt() {
 		MutablePropertySources sources = getPropertySources();
-		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<", ">");
+		TestPropertyPlaceholderHelper helper = new TestPropertyPlaceholderHelper("$<",
+				">");
 		this.resolver = new PropertySourcesPlaceholdersResolver(sources, helper);
 		Object resolved = this.resolver.resolvePlaceholders("$<FOO>");
 		assertThat(resolved).isEqualTo("hello world");
@@ -93,7 +96,8 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	static class TestPropertyPlaceholderHelper extends PropertyPlaceholderHelper {
 
-		TestPropertyPlaceholderHelper(String placeholderPrefix, String placeholderSuffix) {
+		TestPropertyPlaceholderHelper(String placeholderPrefix,
+				String placeholderSuffix) {
 			super(placeholderPrefix, placeholderSuffix);
 		}
 

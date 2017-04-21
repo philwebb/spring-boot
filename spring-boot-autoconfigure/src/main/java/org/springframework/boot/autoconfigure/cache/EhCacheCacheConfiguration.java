@@ -78,7 +78,7 @@ class EhCacheCacheConfiguration {
 	static class ConfigAvailableCondition extends ResourceCondition {
 
 		ConfigAvailableCondition() {
-			super("EhCache", "spring.cache.ehcache", "config", "classpath:/ehcache.xml");
+			super("EhCache", "spring.cache.ehcache.config", "classpath:/ehcache.xml");
 		}
 
 	}

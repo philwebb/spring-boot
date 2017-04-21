@@ -73,7 +73,8 @@ class JavaBeanBinder implements BeanBinder {
 			bean.setPropertyValue(property, bound);
 		}
 		else if (existingValue == null || !bound.equals(existingValue.get())) {
-			throw new IllegalStateException("No setter found for property: " + property.getName());
+			throw new IllegalStateException(
+					"No setter found for property: " + property.getName());
 		}
 		return bound;
 	}
@@ -92,10 +93,9 @@ class JavaBeanBinder implements BeanBinder {
 			Field field = bean.getType().getDeclaredField(property.getName());
 			return field.getDeclaredAnnotations();
 		}
-		catch (NoSuchFieldException ex) {
-			//FIXME
+		catch (Exception ex) {
+			return null;
 		}
-		return null;
 	}
 
 	/**

@@ -41,9 +41,11 @@ public class IgnoreErrorsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
-	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
-			ConfigurationProperty property, Exception error) throws Exception {
-		return (target.getExistingValue() == null ? null : target.getExistingValue().get());
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
+			BindContext context, ConfigurationProperty property, Exception error)
+					throws Exception {
+		return (target.getExistingValue() == null ? null
+				: target.getExistingValue().get());
 	}
 
 }

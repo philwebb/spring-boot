@@ -87,7 +87,7 @@ public class HazelcastAutoConfiguration {
 	static class ConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
 		ConfigAvailableCondition() {
-			super("spring.hazelcast", "config");
+			super("spring.hazelcast.config");
 		}
 
 	}

@@ -331,7 +331,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				"com.example.bar=spam");
 		this.context.register(TestConfigurationWithIgnoreErrors.class);
 		this.context.refresh();
-		assertThat(this.context.getBean(TestConfigurationWithIgnoreErrors.class).getBar()).isEqualTo(0);
+		assertThat(this.context.getBean(TestConfigurationWithIgnoreErrors.class).getBar())
+				.isEqualTo(0);
 	}
 
 	@Test
@@ -374,7 +375,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(PropertiesWithComplexMap.class);
 		this.context.refresh();
-		Map<String, Map<String, String>> map = this.context.getBean(PropertiesWithComplexMap.class).getMap();
+		Map<String, Map<String, String>> map = this.context
+				.getBean(PropertiesWithComplexMap.class).getMap();
 		Map<String, String> foo = map.get("foo");
 		assertThat(foo).containsEntry("bar", "baz");
 	}
