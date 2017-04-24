@@ -17,6 +17,7 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -88,9 +89,35 @@ public class BindFailureAnalyzerTests {
 				.contains("Origin: \"test.foo.value\" from property source \"test\"");
 	}
 
+	@Test
+	public void bindExceptionDueToUnboundElements() throws Exception {
+		FailureAnalysis analysis = performAnalysis(
+				UnboundElementsFailureConfiguration.class, "test.foo.listValue[0]=hello",
+				"test.foo.listValue[2]=world");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.listvalue[2]",
+				"world", "\"test.foo.listValue[2]\" from property source \"test\"",
+				"The elements [test.foo.listvalue[2]] were left unbound."));
+	}
+
+	@Test
+	public void bindExceptionDueToOtherFailure() throws Exception {
+		FailureAnalysis analysis = performAnalysis(GenericFailureConfiguration.class,
+				"test.foo.value=${BAR}");
+		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "${BAR}",
+				"\"test.foo.value\" from property source \"test\"",
+				"Could not resolve placeholder 'BAR' in value \"${BAR}\""));
+	}
+
 	private static String failure(String property, String value, String reason) {
 		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property,
 				value, reason);
+	}
+
+	private static String failure(String property, String value, String origin,
+			String reason) {
+		return String.format(
+				"Property: %s%n    Value: %s%n    Origin: %s%n    Reason: %s", property,
+				value, origin, reason);
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration,
@@ -135,6 +162,16 @@ public class BindFailureAnalyzerTests {
 
 	@EnableConfigurationProperties(ObjectErrorFailureProperties.class)
 	static class ObjectValidationFailureConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(UnboundElementsFailureProperties.class)
+	static class UnboundElementsFailureConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(GenericFailureProperties.class)
+	static class GenericFailureConfiguration {
 
 	}
 
@@ -206,6 +243,34 @@ public class BindFailureAnalyzerTests {
 			return true;
 		}
 
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class UnboundElementsFailureProperties {
+
+		private List<String> listValue;
+
+		public List<String> getListValue() {
+			return this.listValue;
+		}
+
+		public void setListValue(List<String> listValue) {
+			this.listValue = listValue;
+		}
+	}
+
+	@ConfigurationProperties("test.foo")
+	static class GenericFailureProperties {
+
+		private String value;
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 
 }

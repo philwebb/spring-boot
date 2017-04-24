@@ -219,7 +219,7 @@ public class Binder {
 			if (ex instanceof BindException) {
 				throw (BindException) ex;
 			}
-			throw new BindException(target, name, origin, ex);
+			throw new BindException(target, property, name, origin, ex);
 		}
 	}
 

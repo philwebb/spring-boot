@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
 
@@ -30,12 +31,15 @@ public class BindException extends RuntimeException {
 
 	private final Bindable<?> target;
 
+	private final ConfigurationProperty property;
+
 	private final ConfigurationPropertyName name;
 
-	BindException(Bindable<?> target, ConfigurationPropertyName name, Origin origin,
-			Throwable cause) {
+	BindException(Bindable<?> target, ConfigurationProperty property,
+			ConfigurationPropertyName name, Origin origin, Throwable cause) {
 		super(buildMessage(name, target), cause);
 		this.target = target;
+		this.property = property;
 		this.name = name;
 	}
 
@@ -47,6 +51,10 @@ public class BindException extends RuntimeException {
 	 * Return the configuration property name of the item that was being bound.
 	 * @return the configuration property name
 	 */
+	public ConfigurationProperty getProperty() {
+		return this.property;
+	}
+
 	public ConfigurationPropertyName getName() {
 		return this.name;
 	}
