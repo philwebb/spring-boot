@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 
 /**
@@ -51,12 +50,11 @@ public interface BindHandler {
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @param property the source {@link ConfigurationProperty} or {#code null}
-	 * @param result of the bind operation (never {@code null})
+	 * @param result the bound result (never {@code null})
 	 * @return the actual result that should be used (may be {@code null})
 	 */
 	default Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Object result) {
+			BindContext context, Object result) {
 		return result;
 	}
 
@@ -67,14 +65,12 @@ public interface BindHandler {
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @param property the source {@link ConfigurationProperty} or {#code null}
 	 * @param error the cause of the error (if the exception stands it may be re-thrown)
 	 * @return the actual result that should be used (may be {@code null}).
 	 * @throws Exception if the binding isn't valid
 	 */
 	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Exception error)
-					throws Exception {
+			BindContext context, Exception error) throws Exception {
 		throw error;
 	}
 
@@ -83,7 +79,7 @@ public interface BindHandler {
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @param result of the bind operation (may be {@code null})
+	 * @param result the bound result (may be {@code null})
 	 * @throws Exception if the binding isn't valid
 	 */
 	default void onFinish(ConfigurationPropertyName name, Bindable<?> target,

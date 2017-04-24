@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.util.Assert;
 
@@ -54,15 +53,14 @@ public abstract class AbstractBindHandler implements BindHandler {
 
 	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Object result) {
-		return this.parent.onSuccess(name, target, context, property, result);
+			BindContext context, Object result) {
+		return this.parent.onSuccess(name, target, context, result);
 	}
 
 	@Override
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Exception error)
-					throws Exception {
-		return this.parent.onFailure(name, target, context, property, error);
+			BindContext context, Exception error) throws Exception {
+		return this.parent.onFailure(name, target, context, error);
 	}
 
 	@Override

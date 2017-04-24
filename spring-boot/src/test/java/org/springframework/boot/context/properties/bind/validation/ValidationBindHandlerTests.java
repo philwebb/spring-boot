@@ -131,7 +131,7 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldFailIfExistingValueInvalid() throws Exception {
+	public void bindShouldFailIfExistingValueIsInvalid() throws Exception {
 		ExampleValidatedBean existingValue = new ExampleValidatedBean();
 		BindValidationException cause = bindAndExpectValidationError(
 				() -> this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
@@ -155,6 +155,8 @@ public class ValidationBindHandlerTests {
 			action.run();
 		}
 		catch (BindException ex) {
+			ex.printStackTrace();
+
 			BindValidationException cause = (BindValidationException) ex.getCause();
 			return cause;
 		}

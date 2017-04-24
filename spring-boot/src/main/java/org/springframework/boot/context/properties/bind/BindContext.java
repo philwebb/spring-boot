@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.convert.ConversionService;
 
@@ -41,6 +42,13 @@ public interface BindContext {
 	 * @return the sources
 	 */
 	Iterable<ConfigurationPropertySource> getSources();
+
+	/**
+	 * Return the {@link ConfigurationProperty} actually being bound or {@code null} if
+	 * the property has not yet been determined.
+	 * @return the configuration property (may be {@code null}).
+	 */
+	ConfigurationProperty getConfigurationProperty();
 
 	/**
 	 * Return the {@link PlaceholdersResolver} being used by the binder.

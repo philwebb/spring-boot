@@ -111,18 +111,15 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindToInstanceWithNoPropertiesShouldReturnExistingInstance()
-			throws Exception {
+	public void bindToInstanceWithNoPropertiesShouldReturnUnbound() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
-		ExampleDefaultsBean boundBean = this.binder
-				.bind("foo",
-						Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean))
-				.get();
-		assertThat(boundBean).isSameAs(bean);
-		assertThat(boundBean.getFoo()).isEqualTo(123);
-		assertThat(boundBean.getBar()).isEqualTo(456);
+		BindResult<ExampleDefaultsBean> boundBean = this.binder.bind("foo",
+				Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean));
+		assertThat(boundBean.isBound()).isFalse();
+		assertThat(bean.getFoo()).isEqualTo(123);
+		assertThat(bean.getBar()).isEqualTo(456);
 	}
 
 	@Test
@@ -298,10 +295,9 @@ public class JavaBeanBinderTests {
 		source.put("foo.value-bean.string-value", "foo");
 		source.setNonIterable(true);
 		this.sources.add(source);
-		ExampleNestedBeanWithoutSetterOrType bean = this.binder
-				.bind("foo", Bindable.of(ExampleNestedBeanWithoutSetterOrType.class))
-				.get();
-		assertThat(bean).isNull();
+		BindResult<ExampleNestedBeanWithoutSetterOrType> bean = this.binder.bind("foo",
+				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class));
+		assertThat(bean.isBound()).isFalse();
 	}
 
 	@Test
@@ -333,31 +329,31 @@ public class JavaBeanBinderTests {
 		source.put("faf.value-bean.int-value", "123");
 		this.sources.add(source);
 		ExampleNestedBean bean = new ExampleNestedBean();
-		ExampleNestedBean boundBean = this.binder
-				.bind("foo", Bindable.of(ExampleNestedBean.class).withExistingValue(bean))
-				.get();
-		assertThat(boundBean).isEqualTo(bean);
+		BindResult<ExampleNestedBean> boundBean = this.binder.bind("foo",
+				Bindable.of(ExampleNestedBean.class).withExistingValue(bean));
+		assertThat(boundBean.isBound()).isFalse();
 		assertThat(bean.getValueBean()).isNull();
 	}
 
 	@Test
-	public void bindToClassWhenPropertiesMissingShouldReturnNull() throws Exception {
+	public void bindToClassWhenPropertiesMissingShouldReturnUnbound() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.int-value", "12");
 		this.sources.add(source);
-		ExampleValueBean bean = this.binder
-				.bind("foo", Bindable.of(ExampleValueBean.class)).get();
-		assertThat(bean).isNull();
+		BindResult<ExampleValueBean> bean = this.binder.bind("foo",
+				Bindable.of(ExampleValueBean.class));
+		assertThat(bean.isBound()).isFalse();
 	}
 
 	@Test
-	public void bindToClassWhenNoDefaultConstructorShouldReturnNull() throws Exception {
+	public void bindToClassWhenNoDefaultConstructorShouldReturnUnbound()
+			throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
 		this.sources.add(source);
-		ExampleWithNonDefaultConstructor bean = this.binder
-				.bind("foo", Bindable.of(ExampleWithNonDefaultConstructor.class)).get();
-		assertThat(bean).isNull();
+		BindResult<ExampleWithNonDefaultConstructor> bean = this.binder.bind("foo",
+				Bindable.of(ExampleWithNonDefaultConstructor.class));
+		assertThat(bean.isBound()).isFalse();
 	}
 
 	@Test
@@ -444,16 +440,15 @@ public class JavaBeanBinderTests {
 	}
 
 	@Test
-	public void bindtoInstanceWithExistingValueShouldReturnExisting() throws Exception {
+	public void bindtoInstanceWithExistingValueShouldReturnUnbound() throws Exception {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleNestedBean existingValue = new ExampleNestedBean();
 		ExampleValueBean valueBean = new ExampleValueBean();
 		existingValue.setValueBean(valueBean);
-		ExampleNestedBean bean = this.binder.bind("foo",
-				Bindable.of(ExampleNestedBean.class).withExistingValue(existingValue))
-				.get();
-		assertThat(bean.getValueBean()).isEqualTo(valueBean);
+		BindResult<ExampleNestedBean> result = this.binder.bind("foo",
+				Bindable.of(ExampleNestedBean.class).withExistingValue(existingValue));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test

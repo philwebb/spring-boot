@@ -20,7 +20,6 @@ import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 
 /**
@@ -42,8 +41,7 @@ public class IgnoreErrorsBindHandler extends AbstractBindHandler {
 
 	@Override
 	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Exception error)
-					throws Exception {
+			BindContext context, Exception error) throws Exception {
 		return (target.getValue() == null ? null : target.getValue().get());
 	}
 

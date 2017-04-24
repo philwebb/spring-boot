@@ -177,55 +177,43 @@ public class Binder {
 			BindHandler handler) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
-		Context context = new Context();
 		handler = (handler != null ? handler : BindHandler.DEFAULT);
+		Context context = new Context();
 		T bound = bind(name, target, handler, context);
-		if (bound == null && target.getValue() != null) {
-			bound = target.getValue().get();
-		}
-		try {
-			handler.onFinish(name, target, context, bound);
-		}
-		catch (Exception ex) {
-			return BindResult.of(handleBindError(name, target, handler, context, ex));
-		}
 		return BindResult.of(bound);
 	}
 
-	private final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
+	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) {
 		try {
-			Object result = null;
-			if (handler.onStart(name, target, context)) {
-				result = doBind(name, target, handler, context);
+			if (!handler.onStart(name, target, context)) {
+				return null;
 			}
-			return (result == null ? null
-					: this.conversionService.convert(result, target));
+			Object bound = bindObject(name, target, handler, context);
+			return handleBindResult(name, target, handler, context, bound);
 		}
 		catch (Exception ex) {
 			return handleBindError(name, target, handler, context, ex);
 		}
 	}
 
-	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, Exception error) {
-		if (error instanceof ConfigurationPropertyBindException) {
-			return handleBindError(name, target, handler, context,
-					((ConfigurationPropertyBindException) error)
-							.getConfigurationProperty(),
-					(Exception) error.getCause());
+	private <T> T handleBindResult(ConfigurationPropertyName name, Bindable<T> target,
+			BindHandler handler, Context context, Object result) throws Exception {
+		result = convert(result, target);
+		if (result != null) {
+			result = handler.onSuccess(name, target, context, result);
+			result = convert(result, target);
 		}
-		return handleBindError(name, target, handler, context, null, error);
+		handler.onFinish(name, target, context, result);
+		return convert(result, target);
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, ConfigurationProperty property,
-			Exception error) {
+			BindHandler handler, Context context, Exception error) {
 		Origin origin = Origin.from(error);
 		try {
-			Object result = handler.onFailure(name, target, context, property, error);
-			return (result == null ? null
-					: this.conversionService.convert(result, target));
+			Object result = handler.onFailure(name, target, context, error);
+			return convert(result, target);
 		}
 		catch (Exception ex) {
 			if (ex instanceof BindException) {
@@ -235,25 +223,24 @@ public class Binder {
 		}
 	}
 
-	private <T> Object doBind(ConfigurationPropertyName name, Bindable<T> target,
+	private <T> T convert(Object value, Bindable<T> target) {
+		if (value == null) {
+			return null;
+		}
+		return this.conversionService.convert(value, target);
+	}
+
+	private <T> Object bindObject(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context) throws Exception {
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
-			AggregateElementBinder itemBinder = (itemName, itemTarget, source) -> {
-				if (source != null) {
-					Binder sourceBinder = new Binder(Collections.singleton(source));
-					return sourceBinder.bind(itemName, itemTarget, handler, context);
-				}
-				return bind(itemName, itemTarget, handler, context);
-			};
-			Object result = aggregateBinder.bind(name, target, itemBinder);
-			return handleBindResult(name, target, handler, context, result, null);
+			return bindAggregate(name, target, handler, context, aggregateBinder);
 		}
 		ConfigurationProperty property = findProperty(name);
 		if (property != null) {
-			return doBindValue(name, target, handler, context, property);
+			return bindProperty(name, target, handler, context, property);
 		}
-		return doBindBean(name, target, handler, context);
+		return bindBean(name, target, handler, context);
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
@@ -269,27 +256,33 @@ public class Binder {
 		return null;
 	}
 
+	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
+			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
+		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
+			Binder binder = (source == null ? Binder.this : new Binder(source));
+			return binder.bind(itemName, itemTarget, handler, context.increaseDepth());
+		};
+		return aggregateBinder.bind(name, target, elementBinder);
+	}
+
 	private ConfigurationProperty findProperty(ConfigurationPropertyName name) {
 		return streamSources().map((source) -> source.getConfigurationProperty(name))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
-	private <T> Object doBindValue(ConfigurationPropertyName name, Bindable<T> target,
+	private <T> Object bindProperty(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, ConfigurationProperty property) {
-		try {
-			Object result = property.getValue();
-			result = this.placeholdersResolver.resolvePlaceholders(result);
-			result = this.conversionService.convert(result, target);
-			return handleBindResult(name, target, handler, context, result, property);
-		}
-		catch (Exception ex) {
-			throw new ConfigurationPropertyBindException(property, ex);
-		}
+		context.setConfigurationProperty(property);
+		Object result = property.getValue();
+		result = this.placeholdersResolver.resolvePlaceholders(result);
+		result = this.conversionService.convert(result, target);
+		return result;
 	}
 
-	private Object doBindBean(ConfigurationPropertyName name, Bindable<?> target,
+	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context) throws Exception {
-		BeanPropertyBinder propertyBinder = getPropertyBinder(context, name, handler);
+		BeanPropertyBinder propertyBinder = getPropertyBinder(context.increaseDepth(),
+				name, handler);
 		boolean noKnownBindableProperties = !propertyBinder.hasKnownBindableProperties();
 		if (noKnownBindableProperties && isUnbindableBean(target)) {
 			return null;
@@ -299,9 +292,8 @@ public class Binder {
 			return null;
 		}
 		context.setBean(type);
-		Object result = BEAN_BINDERS.stream().map((b) -> b.bind(target, propertyBinder))
+		return BEAN_BINDERS.stream().map((b) -> b.bind(target, propertyBinder))
 				.filter(Objects::nonNull).findFirst().orElse(null);
-		return handleBindResult(name, target, handler, context, result, null);
 	}
 
 	private BeanPropertyBinder getPropertyBinder(Context context,
@@ -316,9 +308,9 @@ public class Binder {
 			}
 
 			@Override
-			public Object bind(String propertyName, Bindable<?> target) {
+			public Object bindProperty(String propertyName, Bindable<?> target) {
 				return Binder.this.bind(name.append(propertyName), target, handler,
-						context.increaseDepth());
+						context);
 			}
 
 		};
@@ -331,16 +323,6 @@ public class Binder {
 		}
 		String packageName = ClassUtils.getPackageName(resolved);
 		return packageName.startsWith("java.");
-	}
-
-	private <T> Object handleBindResult(ConfigurationPropertyName name,
-			Bindable<T> target, BindHandler handler, Context context, Object result,
-			ConfigurationProperty property) throws Exception {
-		if (result != null) {
-			result = handler.onSuccess(name, target, context, property, result);
-		}
-		handler.onFinish(name, target, context, result);
-		return result;
 	}
 
 	private Stream<ConfigurationPropertySource> streamSources() {
@@ -365,6 +347,8 @@ public class Binder {
 	final class Context implements BindContext {
 
 		private final Context parent;
+
+		private ConfigurationProperty configurationProperty;
 
 		private Class<?> bean;
 
@@ -400,6 +384,16 @@ public class Binder {
 		@Override
 		public Iterable<ConfigurationPropertySource> getSources() {
 			return Binder.this.sources;
+		}
+
+		@Override
+		public ConfigurationProperty getConfigurationProperty() {
+			return this.configurationProperty;
+		}
+
+		public void setConfigurationProperty(
+				ConfigurationProperty configurationProperty) {
+			this.configurationProperty = configurationProperty;
 		}
 
 		@Override

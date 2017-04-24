@@ -64,7 +64,7 @@ class JavaBeanBinder implements BeanBinder {
 		Supplier<Object> value = bean.getPropertyValue(property);
 		String propertyName = BeanPropertyName.toDashedForm(property);
 		Annotation[] annotations = getAnnotations(bean, property);
-		Object bound = propertyBinder.bind(propertyName,
+		Object bound = propertyBinder.bindProperty(propertyName,
 				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
 		if (bound == null) {
 			return null;

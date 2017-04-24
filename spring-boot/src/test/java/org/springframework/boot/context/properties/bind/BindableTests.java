@@ -149,7 +149,7 @@ public class BindableTests {
 				.withAnnotations(annotation);
 		System.out.println(bindable.toString());
 		assertThat(bindable.toString()).contains("type = java.lang.String, "
-				+ "existingValue = 'provided', annotations = array<Annotation>["
+				+ "value = 'provided', annotations = array<Annotation>["
 				+ "@org.springframework.boot.context.properties.bind."
 				+ "BindableTests$TestAnnotation()]");
 	}
@@ -166,7 +166,7 @@ public class BindableTests {
 				.withAnnotations(annotation);
 		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
-		assertThat(bindable1).isNotEqualTo(bindable3);
+		assertThat(bindable1).isEqualTo(bindable3);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

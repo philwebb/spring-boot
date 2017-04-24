@@ -133,9 +133,9 @@ public final class Bindable<T> {
 
 	public Bindable<T> withExistingValue(T existingValue) {
 		Assert.isTrue(
-				this.value == null || this.type.isArray()
-						|| this.boxedType.resolve().isInstance(this.value),
-				"Value must be an instance of " + this.type);
+				existingValue == null || this.type.isArray()
+						|| this.boxedType.resolve().isInstance(existingValue),
+				"ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
 		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
@@ -168,6 +168,7 @@ public final class Bindable<T> {
 	 * @see #of(ResolvableType)
 	 */
 	public static <T> Bindable<T> of(Class<T> type) {
+		Assert.notNull(type, "Type must not be null");
 		return of(ResolvableType.forClass(type));
 	}
 

@@ -50,8 +50,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -172,8 +170,7 @@ public class BinderTests {
 		Bindable<Integer> target = Bindable.of(Integer.class);
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
-		ordered.verify(handler).onSuccess(eqName("foo"), eq(target), any(), notNull(),
-				eq(1));
+		ordered.verify(handler).onSuccess(eqName("foo"), eq(target), any(), eq(1));
 	}
 
 	@Test
@@ -449,8 +446,8 @@ public class BinderTests {
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.bar"),
-				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
-		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(), isNull(),
+				eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(),
 				isA(Map.class));
 	}
 
@@ -667,9 +664,9 @@ public class BinderTests {
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
-				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
+				eq(Bindable.of(Integer.class)), any(), eq(1));
 		inOrder.verify(handler).onSuccess(eqName("foo"), eq(INTEGER_LIST), any(),
-				isNull(), isA(List.class));
+				isA(List.class));
 	}
 
 	@Test
@@ -804,8 +801,8 @@ public class BinderTests {
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
-				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
-		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(), isNull(),
+				eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(),
 				isA(Integer[].class));
 	}
 
@@ -868,8 +865,8 @@ public class BinderTests {
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.value"),
-				eq(Bindable.of(String.class)), any(), notNull(), eq("bar"));
-		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(), isNull(),
+				eq(Bindable.of(String.class)), any(), eq("bar"));
+		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(),
 				isA(JavaBean.class));
 	}
 

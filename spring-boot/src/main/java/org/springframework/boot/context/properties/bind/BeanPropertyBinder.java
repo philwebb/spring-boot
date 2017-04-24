@@ -41,6 +41,6 @@ interface BeanPropertyBinder {
 	 * @param target the target bindable
 	 * @return the bound value or {@code null}
 	 */
-	Object bind(String propertyName, Bindable<?> target);
+	Object bindProperty(String propertyName, Bindable<?> target);
 
 }

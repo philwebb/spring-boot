@@ -51,9 +51,9 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, ConfigurationProperty property, Object result) {
+			BindContext context, Object result) {
 		this.boundNames.add(name);
-		return super.onSuccess(name, target, context, property, result);
+		return super.onSuccess(name, target, context, result);
 	}
 
 	@Override
