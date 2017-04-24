@@ -170,7 +170,7 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<Integer> target = Bindable.of(Integer.class);
-		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
+		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
 		ordered.verify(handler).onSuccess(eqName("foo"), eq(target), any(), notNull(),
 				eq(1));
@@ -446,7 +446,7 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP;
-		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
+		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.bar"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
@@ -664,7 +664,7 @@ public class BinderTests {
 	public void bindToCollectionShouldTriggerOnSuccess() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
 		BindHandler handler = mockBindHandler();
-		this.binder.bind(ConfigurationPropertyName.of("foo"), INTEGER_LIST, handler);
+		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
@@ -801,7 +801,7 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<Integer[]> target = INTEGER_ARRAY;
-		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
+		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
@@ -865,7 +865,7 @@ public class BinderTests {
 				.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
-		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
+		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.value"),
 				eq(Bindable.of(String.class)), any(), notNull(), eq("bar"));

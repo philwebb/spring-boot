@@ -27,7 +27,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
@@ -63,8 +62,8 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenIgnoringErrorsShouldBind() throws Exception {
-		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
-				Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class),
+				new IgnoreErrorsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo(0);
 	}
 

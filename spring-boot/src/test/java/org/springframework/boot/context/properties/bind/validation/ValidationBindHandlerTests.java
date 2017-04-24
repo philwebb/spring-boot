@@ -82,8 +82,7 @@ public class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
 		this.thrown.expect(BindException.class);
 		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind(ConfigurationPropertyName.of("foo"),
-				Bindable.of(ExampleValidatedBean.class), this.handler);
+		this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class), this.handler);
 	}
 
 	@Test
@@ -91,8 +90,8 @@ public class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
 		this.thrown.expect(BindException.class);
 		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind(ConfigurationPropertyName.of("foo"),
-				Bindable.of(ExampleValidatedWithNestedBean.class), this.handler);
+		this.binder.bind("foo", Bindable.of(ExampleValidatedWithNestedBean.class),
+				this.handler);
 	}
 
 	@Test

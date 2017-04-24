@@ -66,8 +66,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.foo", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
-				Bindable.of(Example.class), new NoUnboundElementsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class),
+				new NoUnboundElementsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -79,8 +79,8 @@ public class NoUnboundElementsBindHandlerTests {
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
 		try {
-			this.binder.bind(ConfigurationPropertyName.of("example"),
-					Bindable.of(Example.class), new NoUnboundElementsBindHandler());
+			this.binder.bind("example", Bindable.of(Example.class),
+					new NoUnboundElementsBindHandler());
 			fail("did not throw");
 		}
 		catch (BindException ex) {
@@ -97,8 +97,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("other.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
-				Bindable.of(Example.class), new NoUnboundElementsBindHandler()).get();
+		Example bound = this.binder.bind("example", Bindable.of(Example.class),
+				new NoUnboundElementsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 

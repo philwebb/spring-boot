@@ -41,7 +41,6 @@ import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBind
 import org.springframework.boot.context.properties.bind.handler.IgnoreNestedPropertiesBindHandler;
 import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
 import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.validation.MessageInterpolatorFactory;
 import org.springframework.context.ApplicationContext;
@@ -312,13 +311,11 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private Object postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Binder binder = getBinder();
-		ConfigurationPropertyName prefix = ConfigurationPropertyName
-				.of(annotation.prefix());
 		Validator validator = determineValidator(bean);
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.ofInstance(bean);
 		try {
-			binder.bind(prefix, bindable, handler);
+			binder.bind(annotation.prefix(), bindable, handler);
 			return bean;
 		}
 		catch (Exception ex) {

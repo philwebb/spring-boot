@@ -160,6 +160,19 @@ public class Binder {
 	 * @param <T> the bound type
 	 * @return the binding result (never {@code null})
 	 */
+	public <T> BindResult<T> bind(String name, Bindable<T> target, BindHandler handler) {
+		return bind(ConfigurationPropertyName.of(name), target, handler);
+	}
+
+	/**
+	 * Bind the specified target {@link Bindable} using this binders
+	 * {@link ConfigurationPropertySource property sources}.
+	 * @param name the configuration property name to bind
+	 * @param target the target bindable
+	 * @param handler the bind handler (may be {@code null})
+	 * @param <T> the bound type
+	 * @return the binding result (never {@code null})
+	 */
 	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler) {
 		Assert.notNull(name, "Name must not be null");
