@@ -322,8 +322,8 @@ public class EndpointAutoConfigurationTests {
 				}
 				MapConfigurationPropertySource source = new MapConfigurationPropertySource(
 						PropertiesLoaderUtils.loadProperties(location));
-				this.content = new Binder(source).bind("info",
-						Bindable.of(STRING_OBJECT_MAP, this.content));
+				new Binder(source).bind("info",
+						Bindable.of(STRING_OBJECT_MAP).withExistingValue(this.content));
 			}
 
 			@Override

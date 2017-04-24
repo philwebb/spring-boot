@@ -78,4 +78,13 @@ public class BindResult<T> {
 		return null;
 	}
 
+	/**
+	 * @param bound
+	 * @return
+	 */
+	public static <T> BindResult<T> of(T bound) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
 }

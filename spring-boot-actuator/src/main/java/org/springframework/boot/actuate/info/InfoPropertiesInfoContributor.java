@@ -25,7 +25,6 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.info.InfoProperties;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
@@ -40,8 +39,8 @@ import org.springframework.util.StringUtils;
 public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 		implements InfoContributor {
 
-	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.of(
-			ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class));
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
+			.mapOf(String.class, Object.class);
 
 	private final T properties;
 

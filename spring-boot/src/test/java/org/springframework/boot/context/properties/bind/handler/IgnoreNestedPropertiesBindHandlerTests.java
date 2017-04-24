@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
@@ -51,15 +52,16 @@ public class IgnoreNestedPropertiesBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIngoringNestedShouldBindAll() throws Exception {
-		Example bound = this.binder.bind("example", Bindable.of(Example.class));
+		Example bound = this.binder.bind("example", Bindable.of(Example.class)).get();
 		assertThat(bound.getFoo()).isEqualTo("foovalue");
 		assertThat(bound.getNested().getBar()).isEqualTo("barvalue");
 	}
 
 	@Test
 	public void bindWhenIngoringNestedShouldFilterNested() throws Exception {
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreNestedPropertiesBindHandler());
+		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
+				Bindable.of(Example.class), new IgnoreNestedPropertiesBindHandler())
+				.get();
 		assertThat(bound.getFoo()).isEqualTo("foovalue");
 		assertThat(bound.getNested()).isNull();
 	}

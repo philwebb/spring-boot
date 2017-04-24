@@ -71,20 +71,19 @@ public class BindableTests {
 		String instance = "foo";
 		ResolvableType type = ResolvableType.forClass(String.class);
 		assertThat(Bindable.ofInstance(instance).getType()).isEqualTo(type);
-		assertThat(Bindable.ofInstance(instance).getExistingValue().get())
-				.isEqualTo("foo");
+		assertThat(Bindable.ofInstance(instance).getValue().get()).isEqualTo("foo");
 	}
 
 	@Test
 	public void ofClassWithExistingValueShouldSetTypeAndExistingValue() throws Exception {
-		assertThat(Bindable.of(String.class, "foo").getExistingValue().get())
+		assertThat(Bindable.of(String.class).withExistingValue("foo").getValue().get())
 				.isEqualTo("foo");
 	}
 
 	@Test
 	public void ofTypeWithExistingValueShouldSetTypeAndExistingValue() throws Exception {
-		assertThat(Bindable.of(ResolvableType.forClass(String.class), "foo")
-				.getExistingValue().get()).isEqualTo("foo");
+		assertThat(Bindable.of(ResolvableType.forClass(String.class))
+				.withExistingValue("foo").getValue().get()).isEqualTo("foo");
 	}
 
 	@Test
@@ -93,15 +92,16 @@ public class BindableTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage(
 				"ExistingValue must be an instance of " + String.class.getName());
-		Bindable.of(ResolvableType.forClass(String.class), 123);
+		Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123);
 	}
 
 	@Test
 	public void ofTypeWhenPrimitiveWithExistingValueWrapperShouldNotThrowException()
 			throws Exception {
-		Bindable<Integer> bindable = Bindable.of(ResolvableType.forClass(int.class), 123);
+		Bindable<Integer> bindable = Bindable
+				.<Integer>of(ResolvableType.forClass(int.class)).withExistingValue(123);
 		assertThat(bindable.getType().resolve()).isEqualTo(int.class);
-		assertThat(bindable.getExistingValue().get()).isEqualTo(123);
+		assertThat(bindable.getValue().get()).isEqualTo(123);
 	}
 
 	@Test
@@ -142,51 +142,31 @@ public class BindableTests {
 	}
 
 	@Test
-	public void withDefaultValueShouldSetDefaultValue() throws Exception {
-		assertThat(Bindable.of(String.class).withDefaultValue("foo").getDefaultValue())
-				.isEqualTo("foo");
-	}
-
-	@Test
 	public void toStringShouldShowDetails() throws Exception {
 		Annotation annotation = AnnotationUtils
 				.synthesizeAnnotation(TestAnnotation.class);
-		Bindable<String> bindable = Bindable.of(String.class, "foo")
-				.withAnnotations(annotation).withDefaultValue("faf");
+		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo")
+				.withAnnotations(annotation);
 		System.out.println(bindable.toString());
 		assertThat(bindable.toString()).contains("type = java.lang.String, "
 				+ "existingValue = 'provided', annotations = array<Annotation>["
 				+ "@org.springframework.boot.context.properties.bind."
-				+ "BindableTests$TestAnnotation()], defaultValue = 'faf'");
+				+ "BindableTests$TestAnnotation()]");
 	}
 
 	@Test
 	public void equalsAndHashcode() throws Exception {
 		Annotation annotation = AnnotationUtils
 				.synthesizeAnnotation(TestAnnotation.class);
-		Bindable<String> bindable1 = Bindable.of(String.class, "foo")
-				.withAnnotations(annotation).withDefaultValue("faf");
-		Bindable<String> bindable2 = Bindable.of(String.class, "foo")
-				.withAnnotations(annotation).withDefaultValue("faf");
-		Bindable<String> bindable3 = Bindable.of(String.class, "fof")
-				.withAnnotations(annotation).withDefaultValue("fif");
+		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo")
+				.withAnnotations(annotation);
+		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo")
+				.withAnnotations(annotation);
+		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof")
+				.withAnnotations(annotation);
 		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
 		assertThat(bindable1).isNotEqualTo(bindable3);
-	}
-
-	@Test
-	public void withNewInstanceShouldSetExistingValue() throws Exception {
-		Bindable<TestNewInstance> bindable = Bindable
-				.ofNewInstance(TestNewInstance.class);
-		assertThat(bindable.getExistingValue().get().getFoo()).isEqualTo("hello world");
-	}
-
-	@Test
-	public void withNewInstanceIfNoDefaultConstructorShouldFail() throws Exception {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Type must have default constructor");
-		Bindable.ofNewInstance(TestNewInstanceWithNoDefaultConstructor.class);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

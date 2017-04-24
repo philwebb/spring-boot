@@ -25,10 +25,13 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @param <T> The type being bound
  * @since 2.0.0
  */
-public interface BindHandler<T> {
+public interface BindHandler {
+
+	public static BindHandler DEFAULT = new BindHandler() {
+
+	};
 
 	/**
 	 * Called when binding of an element starts but before any result has been determined.
@@ -80,26 +83,11 @@ public interface BindHandler<T> {
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @param result of the bind operation
+	 * @param result of the bind operation (may be {@code null})
 	 * @throws Exception if the binding isn't valid
 	 */
 	default void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, BindResult<?> result) throws Exception {
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> BindHandler<T> none() {
-		return (BindHandler<T>) NoOpBindHander.INSTANCE;
-	}
-
-	/**
-	 * Empty no-op {@link BindHandler} returned by {@link BindHandler#none()}.
-	 * @param <T> The type being bound
-	 */
-	static class NoOpBindHander<T> implements BindHandler<T> {
-
-		static BindHandler<?> INSTANCE = new NoOpBindHander<Object>();
-
+			BindContext context, Object result) throws Exception {
 	}
 
 }

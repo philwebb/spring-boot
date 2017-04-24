@@ -41,7 +41,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -156,8 +155,7 @@ public class OAuth2ResourceServerConfiguration {
 			implements ConfigurationCondition {
 
 		private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
-				.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
-						Object.class));
+				.mapOf(String.class, Object.class);
 
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
 				+ "security.oauth2.config.annotation.web.configuration."

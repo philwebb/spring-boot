@@ -83,8 +83,8 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
 
-	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.of(
-			ResolvableType.forClassWithGenerics(Map.class, String.class, String.class));
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
+			.mapOf(String.class, String.class);
 
 	/**
 	 * The default order for the LoggingApplicationListener.

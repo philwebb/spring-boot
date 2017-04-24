@@ -45,15 +45,15 @@ abstract class AggregateBinder<T> {
 	@SuppressWarnings("unchecked")
 	public final Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder itemBinder) {
-		Supplier<?> existing = target.getExistingValue();
-		Class<?> type = (existing == null ? target.getType().resolve()
+		Supplier<?> value = target.getValue();
+		Class<?> type = (value == null ? target.getType().resolve()
 				: ResolvableType.forClass(AggregateBinder.class, getClass())
 						.resolveGeneric());
 		Object result = doBind(name, target, itemBinder, type);
-		if (result == null || existing == null || existing.get() == null) {
+		if (result == null || value == null || value.get() == null) {
 			return result;
 		}
-		return merge((T) existing.get(), (T) result);
+		return merge((T) value.get(), (T) result);
 	}
 
 	/**

@@ -25,7 +25,6 @@ import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -36,7 +35,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 class OnBootstrapHostsCondition extends SpringBootCondition {
 
 	private static final Bindable<List<String>> STRING_LIST = Bindable
-			.of(ResolvableType.forClassWithGenerics(List.class, String.class));
+			.listOf(String.class);
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,

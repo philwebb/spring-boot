@@ -26,6 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
@@ -53,7 +54,9 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind("example", Bindable.of(Example.class));
+		Example bound = this.binder
+				.bind(ConfigurationPropertyName.of("example"), Bindable.of(Example.class))
+				.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -63,8 +66,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("example.foo", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new NoUnboundElementsBindHandler());
+		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
+				Bindable.of(Example.class), new NoUnboundElementsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
@@ -76,8 +79,8 @@ public class NoUnboundElementsBindHandlerTests {
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
 		try {
-			this.binder.bind("example", Bindable.of(Example.class),
-					new NoUnboundElementsBindHandler());
+			this.binder.bind(ConfigurationPropertyName.of("example"),
+					Bindable.of(Example.class), new NoUnboundElementsBindHandler());
 			fail("did not throw");
 		}
 		catch (BindException ex) {
@@ -94,8 +97,8 @@ public class NoUnboundElementsBindHandlerTests {
 		source.put("other.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		Example bound = this.binder.bind("example", Bindable.of(Example.class),
-				new NoUnboundElementsBindHandler());
+		Example bound = this.binder.bind(ConfigurationPropertyName.of("example"),
+				Bindable.of(Example.class), new NoUnboundElementsBindHandler()).get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 

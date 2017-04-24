@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
-import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -84,7 +83,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, BindResult<?> result) throws Exception {
+			BindContext context, Object result) throws Exception {
 		if (this.validate && result != null) {
 			validate(name, target, result);
 		}

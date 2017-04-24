@@ -46,6 +46,7 @@ import org.springframework.util.ClassUtils;
  * {@link ConfigurationPropertySource ConfigurationPropertySources}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class Binder {
@@ -88,7 +89,7 @@ public class Binder {
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
-	 * @param placeholdersResolver strategy to resolve any property placeholders
+	 * @param placeholdersResolver strategy to resolve any property place-holders
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
 			PlaceholdersResolver placeholdersResolver) {
@@ -98,7 +99,7 @@ public class Binder {
 	/**
 	 * Create a new {@link Binder} instance for the specified sources.
 	 * @param sources the sources used for binding
-	 * @param placeholdersResolver strategy to resolve any property placeholders
+	 * @param placeholdersResolver strategy to resolve any property place-holders
 	 * @param conversionService the conversion service to convert values
 	 */
 	public Binder(Iterable<ConfigurationPropertySource> sources,
@@ -160,33 +161,32 @@ public class Binder {
 	 * @return the binding result (never {@code null})
 	 */
 	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler<? extends T> handler) {
+			BindHandler handler) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
 		Context context = new Context();
-		handler = (handler != null ? handler : BindHandler.none());
-		T bound = bindInstance(name, target, handler, context);
-		if (bound == null && target.getExistingValue() != null) {
-			bound = target.getExistingValue().get();
+		handler = (handler != null ? handler : BindHandler.DEFAULT);
+		T bound = bind(name, target, handler, context);
+		if (bound == null && target.getValue() != null) {
+			bound = target.getValue().get();
 		}
 		try {
 			handler.onFinish(name, target, context, bound);
 		}
 		catch (Exception ex) {
-			return handleBindError(name, target, handler, context, ex);
+			return BindResult.of(handleBindError(name, target, handler, context, ex));
 		}
-		return bound;
+		return BindResult.of(bound);
 	}
 
-	private final <T> T bindInstance(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler<T> handler, Context context) {
-		handler = (handler != null ? handler : BindHandler.none());
+	private final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
+			BindHandler handler, Context context) {
 		try {
 			Object result = null;
 			if (handler.onStart(name, target, context)) {
 				result = doBind(name, target, handler, context);
 			}
-			result = (result != null ? result : target.getDefaultValue());
+			result = (result != null ? result : target.getValue());
 			return (result == null ? null
 					: this.conversionService.convert(result, target));
 		}
@@ -196,7 +196,7 @@ public class Binder {
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler<T> handler, Context context, Exception error) {
+			BindHandler handler, Context context, Exception error) {
 		if (error instanceof ConfigurationPropertyBindException) {
 			return handleBindError(name, target, handler, context,
 					((ConfigurationPropertyBindException) error)
@@ -207,7 +207,7 @@ public class Binder {
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler<T> handler, Context context, ConfigurationProperty property,
+			BindHandler handler, Context context, ConfigurationProperty property,
 			Exception error) {
 		Origin origin = Origin.from(error);
 		try {
@@ -224,7 +224,7 @@ public class Binder {
 	}
 
 	private <T> Object doBind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler<?> handler, Context context) throws Exception {
+			BindHandler handler, Context context) throws Exception {
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
 			AggregateElementBinder itemBinder = (itemName, itemTarget, source) -> {

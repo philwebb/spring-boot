@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
@@ -32,8 +31,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class EnvironmentInfoContributor implements InfoContributor {
 
-	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.of(
-			ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class));
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
+			.mapOf(String.class, Object.class);
 
 	private final ConfigurableEnvironment environment;
 

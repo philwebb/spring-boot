@@ -18,10 +18,11 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
@@ -44,19 +45,16 @@ public final class Bindable<T> {
 
 	private final ResolvableType boxedType;
 
-	private final Supplier<T> existingValue;
+	private final Supplier<T> value;
 
 	private final Annotation[] annotations;
 
-	private final Object defaultValue;
-
-	private Bindable(ResolvableType type, ResolvableType boxedType,
-			Supplier<T> existingValue, Annotation[] annotations, Object defaultValue) {
+	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value,
+			Annotation[] annotations) {
 		this.type = type;
 		this.boxedType = boxedType;
-		this.existingValue = existingValue;
+		this.value = value;
 		this.annotations = annotations;
-		this.defaultValue = defaultValue;
 	}
 
 	/**
@@ -72,11 +70,11 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Return the existing object value or {@code null}.
-	 * @return the existing value
+	 * Return a supplier that provides the object value or {@code null}.
+	 * @return the value or {@code null}
 	 */
-	public Supplier<T> getExistingValue() {
-		return this.existingValue;
+	public Supplier<T> getValue() {
+		return this.value;
 	}
 
 	/**
@@ -87,22 +85,12 @@ public final class Bindable<T> {
 		return this.annotations;
 	}
 
-	/**
-	 * Return the default value to be returned if binding fails.
-	 * @return the default value or {@code null}
-	 */
-	public Object getDefaultValue() {
-		return this.defaultValue;
-	}
-
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("type", this.type);
-		creator.append("existingValue",
-				(this.existingValue == null ? "none" : "provided"));
+		creator.append("value", (this.value == null ? "none" : "provided"));
 		creator.append("annotations", this.annotations);
-		creator.append("defaultValue", this.defaultValue);
 		return creator.toString();
 	}
 
@@ -112,7 +100,6 @@ public final class Bindable<T> {
 		int result = 1;
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.defaultValue);
 		return result;
 	}
 
@@ -128,7 +115,6 @@ public final class Bindable<T> {
 		boolean result = true;
 		result = result && nullSafeEquals(this.type.resolve(), other.type.resolve());
 		result = result && nullSafeEquals(this.annotations, other.annotations);
-		result = result && nullSafeEquals(this.defaultValue, other.defaultValue);
 		return result;
 	}
 
@@ -142,39 +128,20 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
-		return new Bindable<T>(this.type, this.boxedType, this.existingValue, annotations,
-				this.defaultValue);
+		return new Bindable<T>(this.type, this.boxedType, this.value, annotations);
 	}
 
-	/**
-	 * Create an updated {@link Bindable} instance with the specified default value.
-	 * @param defaultValue the default value or {@code null}
-	 * @return an updated {@link Bindable}
-	 */
-	public Bindable<T> withDefaultValue(Object defaultValue) {
-		return new Bindable<T>(this.type, this.boxedType, this.existingValue,
-				this.annotations, defaultValue);
+	public Bindable<T> withExistingValue(T existingValue) {
+		Assert.isTrue(
+				this.value == null || this.type.isArray()
+						|| this.boxedType.resolve().isInstance(this.value),
+				"Value must be an instance of " + this.type);
+		Supplier<T> value = (existingValue == null ? null : () -> existingValue);
+		return new Bindable<>(this.type, this.boxedType, value, NO_ANNOTATIONS);
 	}
 
-	/**
-	 * Create a new {@link Bindable} of the specified type with an existing value equal to
-	 * a new instance of that type.
-	 * @param <T> The source type
-	 * @param type the type (must not be {@code null} and must have a default constructor)
-	 * @return a {@link Bindable} instance
-	 * @see #of(Class, Object)
-	 */
-	@Deprecated
-	public static <T> Bindable<T> ofNewInstance(Class<T> type) {
-		Assert.notNull(type, "Type must not be null");
-		Assert.state(hasDefaultConstructor(type), "Type must have default constructor");
-		T instance = BeanUtils.instantiateClass(type);
-		return of(type, instance);
-	}
-
-	private static boolean hasDefaultConstructor(Class<?> type) {
-		return Arrays.stream(type.getDeclaredConstructors())
-				.anyMatch((c) -> c.getParameterCount() == 0);
+	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
+		return new Bindable<>(this.type, this.boxedType, suppliedValue, NO_ANNOTATIONS);
 	}
 
 	/**
@@ -183,11 +150,14 @@ public final class Bindable<T> {
 	 * @param <T> The source type
 	 * @param instance the instance (must not be {@code null})
 	 * @return a {@link Bindable} instance
-	 * @see #of(Class, Object)
+	 * @see #of(ResolvableType)
+	 * @see #withExistingValue(Object)
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> Bindable<T> ofInstance(T instance) {
 		Assert.notNull(instance, "Instance must not be null");
-		return of(instance.getClass(), instance);
+		Class<T> type = (Class<T>) instance.getClass();
+		return of(type).withExistingValue(instance);
 	}
 
 	/**
@@ -195,11 +165,25 @@ public final class Bindable<T> {
 	 * @param <T> The source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
-	 * @see #of(Class, Object)
 	 * @see #of(ResolvableType)
 	 */
 	public static <T> Bindable<T> of(Class<T> type) {
-		return of(type, null);
+		return of(ResolvableType.forClass(type));
+	}
+
+	// FIXME DC
+	public static <E> Bindable<List<E>> listOf(Class<E> elementType) {
+		return of(ResolvableType.forClassWithGenerics(List.class, elementType));
+	}
+
+	// FIXME DC
+	public static <E> Bindable<Set<E>> setOf(Class<E> elementType) {
+		return of(ResolvableType.forClassWithGenerics(Set.class, elementType));
+	}
+
+	// FIXME DC
+	public static <K, V> Bindable<Map<K, V>> mapOf(Class<K> keyType, Class<V> valueType) {
+		return of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
 	}
 
 	/**
@@ -207,76 +191,12 @@ public final class Bindable<T> {
 	 * @param <T> The source type
 	 * @param type the type (must not be {@code null})
 	 * @return a {@link Bindable} instance
-	 * @see #of(ResolvableType, Object)
 	 * @see #of(Class)
 	 */
 	public static <T> Bindable<T> of(ResolvableType type) {
-		return of(type, null);
-	}
-
-	/**
-	 * Create a new {@link Bindable} of the specified type with an existing value.
-	 * @param <T> The source type
-	 * @param type the type (must not be {@code null})
-	 * @param existingValue the existing value (may be {@code null})
-	 * @return a {@link Bindable} instance
-	 * @see #of(ResolvableType, Supplier)
-	 */
-	public static <T> Bindable<T> of(Class<?> type, T existingValue) {
 		Assert.notNull(type, "Type must not be null");
-		Supplier<T> supplier = (existingValue == null ? null : () -> existingValue);
-		return of(ResolvableType.forClass(type), supplier, true);
-	}
-
-	/**
-	 * Create a new {@link Bindable} of the specified type with an existing value.
-	 * @param <T> The source type
-	 * @param type the type (must not be {@code null})
-	 * @param existingValue the existing value (may be {@code null})
-	 * @return a {@link Bindable} instance
-	 * @see #of(ResolvableType, Supplier)
-	 */
-	public static <T> Bindable<T> of(Class<?> type, Supplier<T> existingValue) {
-		Assert.notNull(type, "Type must not be null");
-		return of(ResolvableType.forClass(type), existingValue, false);
-	}
-
-	/**
-	 * Create a new {@link Bindable} of the specified type with an existing value.
-	 * @param <T> The source type
-	 * @param type the type (must not be {@code null})
-	 * @param existingValue the existing value (may be {@code null})
-	 * @return a {@link Bindable} instance
-	 */
-	public static <T> Bindable<T> of(ResolvableType type, T existingValue) {
-		Assert.notNull(type, "Type must not be null");
-		Supplier<T> supplier = (existingValue == null ? null : () -> existingValue);
-		return of(type, supplier, true);
-	}
-
-	/**
-	 * Create a new {@link Bindable} of the specified type with an existing value.
-	 * @param <T> The source type
-	 * @param type the type (must not be {@code null})
-	 * @param existingValue the existing value (may be {@code null})
-	 * @return a {@link Bindable} instance
-	 */
-	public static <T> Bindable<T> of(ResolvableType type, Supplier<T> existingValue) {
-		Assert.notNull(type, "Type must not be null");
-		return of(type, existingValue, false);
-	}
-
-	private static <T> Bindable<T> of(ResolvableType type, Supplier<T> existingValue,
-			boolean checkType) {
 		ResolvableType boxedType = box(type);
-		if (checkType && existingValue != null) {
-			T instance = existingValue.get();
-			Assert.isTrue(
-					instance == null || type.isArray()
-							|| boxedType.resolve().isInstance(instance),
-					"ExistingValue must be an instance of " + type);
-		}
-		return new Bindable<>(type, boxedType, existingValue, NO_ANNOTATIONS, null);
+		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS);
 	}
 
 	private static ResolvableType box(ResolvableType type) {

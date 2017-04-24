@@ -70,7 +70,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.string-value", "foo");
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
-		ExampleValueBean bean = bind(Bindable.of(ExampleValueBean.class), this.binder);
+		ExampleValueBean bean = bind(Bindable.of(ExampleValueBean.class), this.binder)
+				.get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.getStringValue()).isEqualTo("foo");
@@ -86,7 +87,7 @@ public class JavaBeanBinderTests {
 		source.put("enum-value", "foo-bar");
 		this.sources.add(source);
 		ExampleValueBean bean = this.binder.bind(ConfigurationPropertyName.of(""),
-				Bindable.of(ExampleValueBean.class));
+				Bindable.of(ExampleValueBean.class)).get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.getStringValue()).isEqualTo("foo");
@@ -102,8 +103,9 @@ public class JavaBeanBinderTests {
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
 		ExampleValueBean bean = new ExampleValueBean();
-		ExampleValueBean boundBean = bind(Bindable.of(ExampleValueBean.class, bean),
-				this.binder);
+		ExampleValueBean boundBean = bind(
+				Bindable.of(ExampleValueBean.class).withExistingValue(bean), this.binder)
+						.get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
@@ -117,8 +119,9 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source);
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
-		ExampleDefaultsBean boundBean = bind(Bindable.of(ExampleDefaultsBean.class, bean),
-				this.binder);
+		ExampleDefaultsBean boundBean = bind(
+				Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean),
+				this.binder).get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(boundBean.getFoo()).isEqualTo(123);
 		assertThat(boundBean.getBar()).isEqualTo(456);
@@ -130,7 +133,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.bar", "999");
 		this.sources.add(source);
 		ExampleDefaultsBean bean = bind(Bindable.of(ExampleDefaultsBean.class),
-				this.binder);
+				this.binder).get();
 		assertThat(bean.getFoo()).isEqualTo(123);
 		assertThat(bean.getBar()).isEqualTo(999);
 	}
@@ -142,8 +145,9 @@ public class JavaBeanBinderTests {
 		this.sources.add(source);
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
 		bean.setFoo(888);
-		ExampleDefaultsBean boundBean = bind(Bindable.of(ExampleDefaultsBean.class, bean),
-				this.binder);
+		ExampleDefaultsBean boundBean = bind(
+				Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean),
+				this.binder).get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getFoo()).isEqualTo(888);
 		assertThat(bean.getBar()).isEqualTo(999);
@@ -155,7 +159,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.map.foo-bar", "1");
 		source.put("foo.map.bar-baz", "2");
 		this.sources.add(source);
-		ExampleMapBean bean = bind(Bindable.of(ExampleMapBean.class), this.binder);
+		ExampleMapBean bean = bind(Bindable.of(ExampleMapBean.class), this.binder).get();
 		assertThat(bean.getMap()).containsExactly(entry(ExampleEnum.FOO_BAR, 1),
 				entry(ExampleEnum.BAR_BAZ, 2));
 	}
@@ -166,7 +170,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[1]", "bar-baz");
 		this.sources.add(source);
-		ExampleListBean bean = bind(Bindable.of(ExampleListBean.class), this.binder);
+		ExampleListBean bean = bind(Bindable.of(ExampleListBean.class), this.binder)
+				.get();
 		assertThat(bean.getList()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -190,7 +195,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.set[0]", "foo-bar");
 		source.put("foo.set[1]", "bar-baz");
 		this.sources.add(source);
-		ExampleSetBean bean = bind(Bindable.of(ExampleSetBean.class), this.binder);
+		ExampleSetBean bean = bind(Bindable.of(ExampleSetBean.class), this.binder).get();
 		assertThat(bean.getSet()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -202,7 +207,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.collection[1]", "bar-baz");
 		this.sources.add(source);
 		ExampleCollectionBean bean = bind(Bindable.of(ExampleCollectionBean.class),
-				this.binder);
+				this.binder).get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -214,7 +219,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.map.bar-baz", "2");
 		this.sources.add(source);
 		ExampleMapBeanWithoutSetter bean = bind(
-				Bindable.of(ExampleMapBeanWithoutSetter.class), this.binder);
+				Bindable.of(ExampleMapBeanWithoutSetter.class), this.binder).get();
 		assertThat(bean.getMap()).containsExactly(entry(ExampleEnum.FOO_BAR, 1),
 				entry(ExampleEnum.BAR_BAZ, 2));
 	}
@@ -226,7 +231,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.list[1]", "bar-baz");
 		this.sources.add(source);
 		ExampleListBeanWithoutSetter bean = bind(
-				Bindable.of(ExampleListBeanWithoutSetter.class), this.binder);
+				Bindable.of(ExampleListBeanWithoutSetter.class), this.binder).get();
 		assertThat(bean.getList()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -238,7 +243,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.set[1]", "bar-baz");
 		this.sources.add(source);
 		ExampleSetBeanWithoutSetter bean = bind(
-				Bindable.of(ExampleSetBeanWithoutSetter.class), this.binder);
+				Bindable.of(ExampleSetBeanWithoutSetter.class), this.binder).get();
 		assertThat(bean.getSet()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -250,7 +255,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.collection[1]", "bar-baz");
 		this.sources.add(source);
 		ExampleCollectionBeanWithoutSetter bean = bind(
-				Bindable.of(ExampleCollectionBeanWithoutSetter.class), this.binder);
+				Bindable.of(ExampleCollectionBeanWithoutSetter.class), this.binder).get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR,
 				ExampleEnum.BAR_BAZ);
 	}
@@ -261,7 +266,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.value-bean.int-value", "123");
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
-		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class), this.binder);
+		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class), this.binder)
+				.get();
 		assertThat(bean.getValueBean().getIntValue()).isEqualTo(123);
 		assertThat(bean.getValueBean().getStringValue()).isEqualTo("foo");
 	}
@@ -274,7 +280,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
 		ExampleNestedBeanWithoutSetterOrType bean = bind(
-				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class), this.binder);
+				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class), this.binder)
+						.get();
 		ExampleValueBean valueBean = (ExampleValueBean) bean.getValueBean();
 		assertThat(valueBean.getIntValue()).isEqualTo(123);
 		assertThat(valueBean.getStringValue()).isEqualTo("foo");
@@ -291,7 +298,8 @@ public class JavaBeanBinderTests {
 		source.setNonIterable(true);
 		this.sources.add(source);
 		ExampleNestedBeanWithoutSetterOrType bean = bind(
-				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class), this.binder);
+				Bindable.of(ExampleNestedBeanWithoutSetterOrType.class), this.binder)
+						.get();
 		assertThat(bean).isNull();
 	}
 
@@ -302,7 +310,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
 		ExampleNestedBeanWithoutSetter bean = bind(
-				Bindable.of(ExampleNestedBeanWithoutSetter.class), this.binder);
+				Bindable.of(ExampleNestedBeanWithoutSetter.class), this.binder).get();
 		assertThat(bean.getValueBean().getIntValue()).isEqualTo(123);
 		assertThat(bean.getValueBean().getStringValue()).isEqualTo("foo");
 	}
@@ -323,8 +331,9 @@ public class JavaBeanBinderTests {
 		source.put("faf.value-bean.int-value", "123");
 		this.sources.add(source);
 		ExampleNestedBean bean = new ExampleNestedBean();
-		ExampleNestedBean boundBean = bind(Bindable.of(ExampleNestedBean.class, bean),
-				this.binder);
+		ExampleNestedBean boundBean = bind(
+				Bindable.of(ExampleNestedBean.class).withExistingValue(bean), this.binder)
+						.get();
 		assertThat(boundBean).isEqualTo(bean);
 		assertThat(bean.getValueBean()).isNull();
 	}
@@ -334,7 +343,8 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("faf.int-value", "12");
 		this.sources.add(source);
-		ExampleValueBean bean = bind(Bindable.of(ExampleValueBean.class), this.binder);
+		ExampleValueBean bean = bind(Bindable.of(ExampleValueBean.class), this.binder)
+				.get();
 		assertThat(bean).isNull();
 	}
 
@@ -344,7 +354,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.value", "bar");
 		this.sources.add(source);
 		ExampleWithNonDefaultConstructor bean = bind(
-				Bindable.of(ExampleWithNonDefaultConstructor.class), this.binder);
+				Bindable.of(ExampleWithNonDefaultConstructor.class), this.binder).get();
 		assertThat(bean).isNull();
 	}
 
@@ -355,8 +365,9 @@ public class JavaBeanBinderTests {
 		this.sources.add(source);
 		ExampleWithNonDefaultConstructor bean = new ExampleWithNonDefaultConstructor(
 				"faf");
-		ExampleWithNonDefaultConstructor boundBean = bind(
-				Bindable.of(ExampleWithNonDefaultConstructor.class, bean), this.binder);
+		ExampleWithNonDefaultConstructor boundBean = bind(Bindable
+				.of(ExampleWithNonDefaultConstructor.class).withExistingValue(bean),
+				this.binder).get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getValue()).isEqualTo("bar");
 	}
@@ -368,7 +379,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.long-value", "456");
 		this.sources.add(source);
 		ExampleSubclassBean bean = bind(Bindable.of(ExampleSubclassBean.class),
-				this.binder);
+				this.binder).get();
 		assertThat(bean.getIntValue()).isEqualTo(123);
 		assertThat(bean.getLongValue()).isEqualTo(456);
 	}
@@ -391,8 +402,8 @@ public class JavaBeanBinderTests {
 		source.put("foo.enum-value", "foo-bar");
 		this.sources.add(source);
 		IgnoreErrorsBindHandler handler = new IgnoreErrorsBindHandler();
-		ExampleValueBean bean = this.binder.bind(this.name,
-				Bindable.of(ExampleValueBean.class), handler);
+		ExampleValueBean bean = this.binder
+				.bind(this.name, Bindable.of(ExampleValueBean.class), handler).get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(0);
 		assertThat(bean.getStringValue()).isEqualTo("foo");
@@ -405,7 +416,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.value", "123");
 		this.sources.add(source);
 		ExampleMismatchBean bean = bind(Bindable.of(ExampleMismatchBean.class),
-				this.binder);
+				this.binder).get();
 		assertThat(bean.getValue()).isEqualTo("123");
 	}
 
@@ -416,7 +427,7 @@ public class JavaBeanBinderTests {
 		source.setNonIterable(true);
 		this.sources.add(source);
 		ExampleWithThrowingGetters bean = bind(
-				Bindable.of(ExampleWithThrowingGetters.class), this.binder);
+				Bindable.of(ExampleWithThrowingGetters.class), this.binder).get();
 		assertThat(bean.getValue()).isEqualTo(123);
 	}
 
@@ -426,7 +437,7 @@ public class JavaBeanBinderTests {
 		source.put("foo.value", "123");
 		this.sources.add(source);
 		ExampleWithSelfReference bean = bind(Bindable.of(ExampleWithSelfReference.class),
-				this.binder);
+				this.binder).get();
 		assertThat(bean.getValue()).isEqualTo(123);
 	}
 
@@ -437,8 +448,9 @@ public class JavaBeanBinderTests {
 		ExampleNestedBean existingValue = new ExampleNestedBean();
 		ExampleValueBean valueBean = new ExampleValueBean();
 		existingValue.setValueBean(valueBean);
-		ExampleNestedBean bean = bind(Bindable.of(ExampleNestedBean.class, existingValue),
-				this.binder);
+		ExampleNestedBean bean = bind(
+				Bindable.of(ExampleNestedBean.class).withExistingValue(existingValue),
+				this.binder).get();
 		assertThat(bean.getValueBean()).isEqualTo(valueBean);
 	}
 
@@ -448,11 +460,11 @@ public class JavaBeanBinderTests {
 		source.put("foo.date", "2014-04-01");
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = bind(
-				Bindable.of(ConverterAnnotatedExampleBean.class), this.binder);
+				Bindable.of(ConverterAnnotatedExampleBean.class), this.binder).get();
 		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
 	}
 
-	private <T> T bind(Bindable<T> bindable, Binder binder) {
+	private <T> BindResult<T> bind(Bindable<T> bindable, Binder binder) {
 		return binder.bind(this.name, bindable);
 	}
 

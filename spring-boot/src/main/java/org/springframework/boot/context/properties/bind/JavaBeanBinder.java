@@ -61,18 +61,18 @@ class JavaBeanBinder implements BeanBinder {
 	private Object bind(Bean<?> bean, Property property,
 			BeanPropertyBinder propertyBinder) {
 		ResolvableType type = getResolvableType(property);
-		Supplier<Object> existingValue = bean.getPropertyValue(property);
+		Supplier<Object> value = bean.getPropertyValue(property);
 		String propertyName = BeanPropertyName.toDashedForm(property);
 		Annotation[] annotations = getAnnotations(bean, property);
 		Object bound = propertyBinder.bind(propertyName,
-				Bindable.of(type, existingValue).withAnnotations(annotations));
+				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
 		if (bound == null) {
 			return null;
 		}
 		if (property.getWriteMethod() != null) {
 			bean.setPropertyValue(property, bound);
 		}
-		else if (existingValue == null || !bound.equals(existingValue.get())) {
+		else if (value == null || !bound.equals(value.get())) {
 			throw new IllegalStateException(
 					"No setter found for property: " + property.getName());
 		}
@@ -188,16 +188,15 @@ class JavaBeanBinder implements BeanBinder {
 		public static <T> Bean<T> get(Bindable<T> bindable,
 				boolean useExistingValueForType) {
 			Class<?> type = bindable.getType().resolve();
-			Supplier<T> existingValue = bindable.getExistingValue();
-			if (existingValue == null
-					&& (type.isInterface() || !hasDefaultConstructor(type))) {
+			Supplier<T> value = bindable.getValue();
+			if (value == null && (type.isInterface() || !hasDefaultConstructor(type))) {
 				return null;
 			}
-			if (useExistingValueForType && existingValue != null) {
-				T instance = existingValue.get();
+			if (useExistingValueForType && value != null) {
+				T instance = value.get();
 				type = (instance != null ? instance.getClass() : type);
 			}
-			return new Bean<>(type, existingValue);
+			return new Bean<>(type, value);
 		}
 
 		private static boolean hasDefaultConstructor(Class<?> type) {

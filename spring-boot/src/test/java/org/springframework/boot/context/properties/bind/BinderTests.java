@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,26 +63,25 @@ import static org.mockito.Mockito.withSettings;
  */
 public class BinderTests {
 
-	private static final ResolvableType STRING_STRING_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, String.class);
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable
+			.mapOf(String.class, String.class);
 
-	private static final ResolvableType STRING_INTEGER_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, Integer.class);
+	private static final Bindable<Map<String, Integer>> STRING_INTEGER_MAP = Bindable
+			.mapOf(String.class, Integer.class);
 
-	private static final ResolvableType INTEGER_INTEGER_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, Integer.class, Integer.class);
+	private static final Bindable<Map<Integer, Integer>> INTEGER_INTEGER_MAP = Bindable
+			.mapOf(Integer.class, Integer.class);
 
-	private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, Object.class);
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
+			.mapOf(String.class, Object.class);
 
-	private static final ResolvableType INTEGER_LIST = ResolvableType
-			.forClassWithGenerics(List.class, Integer.class);
+	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable
+			.listOf(Integer.class);
 
-	private static final ResolvableType INTEGER_ARRAY = ResolvableType
-			.forArrayComponent(ResolvableType.forClass(Integer.class));
+	private static final Bindable<Integer[]> INTEGER_ARRAY = Bindable.of(Integer[].class);
 
-	private static final ResolvableType STRING_LIST = ResolvableType
-			.forClassWithGenerics(List.class, String.class);
+	private static final Bindable<List<String>> STRING_LIST = Bindable
+			.listOf(String.class);
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -120,57 +118,40 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToValueWhenPropertyIsMissingShouldReturnNull() throws Exception {
+	public void bindToValueWhenPropertyIsMissingShouldReturnUnbound() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource());
-		String result = this.binder.bind("foo", Bindable.of(String.class));
-		assertThat(result).isNull();
-	}
-
-	@Test
-	public void bindToValueWhenPropertyIsMissingShouldReturnDefault() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource());
-		Integer result = this.binder.bind("foo",
-				Bindable.of(Integer.class).withDefaultValue(123));
-		assertThat(result).isEqualTo(123);
-	}
-
-	@Test
-	public void bindToValueWhenPropertyIsMissingShouldReturnConvertedDefault()
-			throws Exception {
-		this.sources.add(new MockConfigurationPropertySource());
-		Integer result = this.binder.bind("foo",
-				Bindable.of(Integer.class).withDefaultValue("123"));
-		assertThat(result).isEqualTo(123);
+		BindResult<String> result = this.binder.bind("foo", Bindable.of(String.class));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
 	public void bindToValueShouldReturnPropertyValue() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
-		Integer result = this.binder.bind("foo", Bindable.of(Integer.class));
-		assertThat(result).isEqualTo(123);
+		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
+		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
 	public void bindToValueShouldReturnPropertyValueFromSecondSource() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("bar", 234));
-		Integer result = this.binder.bind("bar", Bindable.of(Integer.class));
-		assertThat(result).isEqualTo(234);
+		BindResult<Integer> result = this.binder.bind("bar", Bindable.of(Integer.class));
+		assertThat(result.get()).isEqualTo(234);
 	}
 
 	@Test
 	public void bindToValueShouldReturnConvertedPropertyValue() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", "123"));
-		Integer result = this.binder.bind("foo", Bindable.of(Integer.class));
-		assertThat(result).isEqualTo(123);
+		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
+		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
 	public void bindToValueWhenMultipleCandidatesShouldReturnFirst() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", 123));
 		this.sources.add(new MockConfigurationPropertySource("foo", 234));
-		Integer result = this.binder.bind("foo", Bindable.of(Integer.class));
-		assertThat(result).isEqualTo(123);
+		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
+		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
@@ -180,8 +161,8 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1${bar}"));
 		this.binder = new Binder(this.sources,
 				new PropertySourcesPlaceholdersResolver(environment));
-		Integer result = this.binder.bind("foo", Bindable.of(Integer.class));
-		assertThat(result).isEqualTo(123);
+		BindResult<Integer> result = this.binder.bind("foo", Bindable.of(Integer.class));
+		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
@@ -189,9 +170,9 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<Integer> target = Bindable.of(Integer.class);
-		this.binder.bind("foo", target, handler);
-		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(), notNull(),
+		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
+		InOrder ordered = inOrder(handler);
+		ordered.verify(handler).onSuccess(eqName("foo"), eq(target), any(), notNull(),
 				eq(1));
 	}
 
@@ -202,8 +183,7 @@ public class BinderTests {
 		source.put("foo.[baz]", "2");
 		source.put("foo[BiNg]", "3");
 		this.sources.add(source);
-		Map<String, String> result = this.binder.bind("foo",
-				Bindable.of(STRING_STRING_MAP));
+		Map<String, String> result = this.binder.bind("foo", STRING_STRING_MAP).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("bar", "1");
 		assertThat(result).containsEntry("baz", "2");
@@ -216,7 +196,7 @@ public class BinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar", "1");
 		this.sources.add(source);
-		Map<String, Object> result = this.binder.bind("", Bindable.of(STRING_OBJECT_MAP));
+		Map<String, Object> result = this.binder.bind("", STRING_OBJECT_MAP).get();
 		assertThat((Map<String, Object>) result.get("foo")).containsEntry("bar", "1");
 	}
 
@@ -228,8 +208,7 @@ public class BinderTests {
 		source.put("foo[BiNg]", "3");
 		source.put("faf.bar", "x");
 		this.sources.add(source);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.of(STRING_INTEGER_MAP));
+		Map<String, Integer> result = this.binder.bind("foo", STRING_INTEGER_MAP).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("baz", 2);
@@ -239,7 +218,7 @@ public class BinderTests {
 	@Test
 	public void bindToMapShouldBindToMapValue() throws Exception {
 		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class,
-				ResolvableType.forClass(String.class), STRING_INTEGER_MAP);
+				ResolvableType.forClass(String.class), STRING_INTEGER_MAP.getType());
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar.baz", "1");
 		source.put("foo.bar.bin", "2");
@@ -247,8 +226,8 @@ public class BinderTests {
 		source.put("foo.far.bin", "4");
 		source.put("faf.far.bin", "x");
 		this.sources.add(source);
-		Map<String, Map<String, Integer>> result = this.binder.bind("foo",
-				Bindable.of(type));
+		Map<String, Map<String, Integer>> result = this.binder
+				.bind("foo", Bindable.<Map<String, Map<String, Integer>>>of(type)).get();
 		System.out.println(result);
 		assertThat(result).hasSize(2);
 		assertThat(result.get("bar")).containsEntry("baz", 1).containsEntry("bin", 2);
@@ -258,7 +237,7 @@ public class BinderTests {
 	@Test
 	public void bindToMapShouldBindNestedMapValue() throws Exception {
 		ResolvableType nestedType = ResolvableType.forClassWithGenerics(Map.class,
-				ResolvableType.forClass(String.class), STRING_INTEGER_MAP);
+				ResolvableType.forClass(String.class), STRING_INTEGER_MAP.getType());
 		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class,
 				ResolvableType.forClass(String.class), nestedType);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
@@ -268,8 +247,10 @@ public class BinderTests {
 		source.put("foo.nested.far.bin", "4");
 		source.put("faf.nested.far.bin", "x");
 		this.sources.add(source);
-		Map<String, Map<String, Map<String, Integer>>> result = this.binder.bind("foo",
-				Bindable.of(type));
+		Bindable<Map<String, Map<String, Map<String, Integer>>>> target = Bindable
+				.of(type);
+		Map<String, Map<String, Map<String, Integer>>> result = this.binder
+				.bind("foo", target).get();
 		Map<String, Map<String, Integer>> nested = result.get("nested");
 		assertThat(nested).hasSize(2);
 		assertThat(nested.get("bar")).containsEntry("baz", 1).containsEntry("bin", 2);
@@ -279,8 +260,6 @@ public class BinderTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void bindToMapWhenMapValueIsObjectShouldBindNestedMapValue() throws Exception {
-		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class, String.class,
-				Object.class);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.bar.baz", "1");
 		source.put("foo.nested.bar.bin", "2");
@@ -288,7 +267,8 @@ public class BinderTests {
 		source.put("foo.nested.far.bin", "4");
 		source.put("faf.nested.far.bin", "x");
 		this.sources.add(source);
-		Map<String, Object> result = this.binder.bind("foo", Bindable.of(type));
+		Map<String, Object> result = this.binder
+				.bind("foo", Bindable.mapOf(String.class, Object.class)).get();
 		Map<String, Object> nested = (Map<String, Object>) result.get("nested");
 		assertThat(nested).hasSize(2);
 		Map<String, Object> bar = (Map<String, Object>) nested.get("bar");
@@ -300,14 +280,13 @@ public class BinderTests {
 	@Test
 	public void bindToMapWhenMapValueIsObjectAndNoRootShouldBindNestedMapValue()
 			throws Exception {
-		ResolvableType type = ResolvableType.forClassWithGenerics(Map.class, String.class,
-				Object.class);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("commit.id", "abcdefg");
 		source.put("branch", "master");
 		source.put("foo", "bar");
 		this.sources.add(source);
-		Map<String, Object> result = this.binder.bind("", Bindable.of(type));
+		Map<String, Object> result = this.binder
+				.bind("", Bindable.mapOf(String.class, Object.class)).get();
 		assertThat(result.get("commit"))
 				.isEqualTo(Collections.singletonMap("id", "abcdefg"));
 		assertThat(result.get("branch")).isEqualTo("master");
@@ -320,8 +299,7 @@ public class BinderTests {
 		source.put("bar.baz", "1");
 		source.put("bar.bin", "2");
 		this.sources.add(source);
-		Map<String, Integer> result = this.binder.bind("",
-				Bindable.of(STRING_INTEGER_MAP));
+		Map<String, Integer> result = this.binder.bind("", STRING_INTEGER_MAP).get();
 		assertThat(result).hasSize(2);
 		assertThat(result).containsEntry("bar.baz", 1).containsEntry("bar.bin", 2);
 	}
@@ -336,8 +314,7 @@ public class BinderTests {
 		source2.put("foo.baz", "3");
 		source2.put("foo.bin", "4");
 		this.sources.add(source2);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.of(STRING_INTEGER_MAP));
+		Map<String, Integer> result = this.binder.bind("foo", STRING_INTEGER_MAP).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("baz", 2);
@@ -352,10 +329,10 @@ public class BinderTests {
 		map.put("foo.b-az", "2");
 		map.put("foo.ba-z", "3");
 		map.put("foo.bin", "4");
-		MapConfigurationPropertySource propertySource = new MapConfigurationPropertySource(map);
+		MapConfigurationPropertySource propertySource = new MapConfigurationPropertySource(
+				map);
 		this.sources.add(propertySource);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.of(STRING_INTEGER_MAP));
+		Map<String, Integer> result = this.binder.bind("foo", STRING_INTEGER_MAP).get();
 		assertThat(result).hasSize(4);
 		assertThat(result).containsEntry("bar", 1);
 		assertThat(result).containsEntry("b-az", 2);
@@ -370,8 +347,9 @@ public class BinderTests {
 		Map<String, Integer> existing = new HashMap<>();
 		existing.put("bar", 1000);
 		existing.put("baz", 1001);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.of(STRING_INTEGER_MAP, existing));
+		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP
+				.withExistingValue(existing);
+		Map<String, Integer> result = this.binder.bind("foo", target).get();
 		assertThat(result).isExactlyInstanceOf(HashMap.class);
 		assertThat(result).isSameAs(existing);
 		assertThat(result).hasSize(2);
@@ -384,40 +362,18 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1"));
 		ResolvableType type = ResolvableType.forClassWithGenerics(HashMap.class,
 				String.class, Integer.class);
-		Object defaultMap = this.binder.bind("foo", Bindable.of(STRING_INTEGER_MAP));
-		Object customMap = this.binder.bind("foo", Bindable.of(type));
+		Object defaultMap = this.binder.bind("foo", STRING_INTEGER_MAP).get();
+		Object customMap = this.binder.bind("foo", Bindable.of(type)).get();
 		assertThat(customMap).isExactlyInstanceOf(HashMap.class)
 				.isNotInstanceOf(defaultMap.getClass());
 	}
 
 	@Test
-	public void bindToMapWhenNoValueShouldReturnNull() throws Exception {
+	public void bindToMapWhenNoValueShouldReturnUnbound() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.of(STRING_INTEGER_MAP));
-		assertThat(result).isNull();
-	}
-
-	@Test
-	public void bindToMapWhenNoValueShouldReturnDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		Map<String, Integer> defaultValue = Collections.singletonMap("bar", 123);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.<Map<String, Integer>>of(STRING_INTEGER_MAP)
-						.withDefaultValue(defaultValue));
-		assertThat(result).isEqualTo(defaultValue);
-	}
-
-	@Test
-	public void bindToMapWhenNoValueShouldConvertDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		Map<String, Integer> defaultValue = Collections.singletonMap("bar", 123);
-		Map<String, Integer> result = this.binder.bind("foo",
-				Bindable.<Map<String, Integer>>of(ResolvableType
-						.forClassWithGenerics(TreeMap.class, String.class, Integer.class))
-				.withDefaultValue(defaultValue));
-		assertThat(result).isExactlyInstanceOf(TreeMap.class);
-		assertThat(result).isEqualTo(defaultValue);
+		BindResult<Map<String, Integer>> result = this.binder.bind("foo",
+				STRING_INTEGER_MAP);
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
@@ -427,8 +383,7 @@ public class BinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[9]", "3");
 		this.sources.add(source);
-		Map<Integer, Integer> result = this.binder.bind("foo",
-				Bindable.of(INTEGER_INTEGER_MAP));
+		Map<Integer, Integer> result = this.binder.bind("foo", INTEGER_INTEGER_MAP).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry(0, 1);
 		assertThat(result).containsEntry(1, 2);
@@ -442,8 +397,7 @@ public class BinderTests {
 		source.put("foo.bbb.ccc.ddd", "a");
 		source.put("foo.ccc.ddd.eee", "r");
 		this.sources.add(source);
-		Map<String, String> result = this.binder.bind("foo", Bindable.of(ResolvableType
-				.forClassWithGenerics(Map.class, String.class, String.class)));
+		Map<String, String> result = this.binder.bind("foo", STRING_STRING_MAP).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("aaa.bbb.ccc", "b");
 		assertThat(result).containsEntry("bbb.ccc.ddd", "a");
@@ -457,9 +411,8 @@ public class BinderTests {
 		source.put("foo.bbb.ccc.ddd", "BAR_BAZ");
 		source.put("foo.ccc.ddd.eee", "bazboo");
 		this.sources.add(source);
-		Map<String, ExampleEnum> result = this.binder.bind("foo",
-				Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
-						ExampleEnum.class)));
+		Map<String, ExampleEnum> result = this.binder
+				.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class)).get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.FOO_BAR);
 		assertThat(result).containsEntry("bbb.ccc.ddd", ExampleEnum.BAR_BAZ);
@@ -475,27 +428,25 @@ public class BinderTests {
 		this.sources.add(source);
 		this.binder = new Binder(this.sources,
 				new PropertySourcesPlaceholdersResolver(environment));
-		Map<String, ExampleEnum> result = this.binder.bind("foo",
-				Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
-						ExampleEnum.class)));
+		Map<String, ExampleEnum> result = this.binder
+				.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class)).get();
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.BAZ_BOO);
 	}
 
 	@Test
-	public void bindToMapWithNoPropertiesShouldReturnNull() throws Exception {
+	public void bindToMapWithNoPropertiesShouldReturnUnbound() throws Exception {
 		this.binder = new Binder(this.sources);
-		Map<String, ExampleEnum> result = this.binder.bind("foo",
-				Bindable.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
-						ExampleEnum.class)));
-		assertThat(result).isNull();
+		BindResult<Map<String, ExampleEnum>> result = this.binder.bind("foo",
+				Bindable.mapOf(String.class, ExampleEnum.class));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
 	public void bindToMapShouldTriggerOnSuccess() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo.bar", "1", "line1"));
 		BindHandler handler = mockBindHandler();
-		Bindable<Map<String, Integer>> target = Bindable.of(STRING_INTEGER_MAP);
-		this.binder.bind("foo", target, handler);
+		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP;
+		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.bar"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
@@ -510,7 +461,7 @@ public class BinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[2]", "3");
 		this.sources.add(source);
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -523,9 +474,9 @@ public class BinderTests {
 		source.put("foo[1][0]", "3");
 		source.put("foo[1][1]", "4");
 		this.sources.add(source);
-		ResolvableType type = ResolvableType.forClassWithGenerics(List.class,
-				INTEGER_LIST);
-		List<List<Integer>> result = this.binder.bind("foo", Bindable.of(type));
+		Bindable<List<List<Integer>>> target = Bindable.of(
+				ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
+		List<List<Integer>> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(2);
 		assertThat(result.get(0)).containsExactly(1, 2);
 		assertThat(result.get(1)).containsExactly(3, 4);
@@ -539,7 +490,7 @@ public class BinderTests {
 		source.put("foo[0]", "1");
 		source.put("foo[2]", "3");
 		this.sources.add(source);
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -551,7 +502,7 @@ public class BinderTests {
 		source.put("foo[3]", "3");
 		this.sources.add(source);
 		try {
-			this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+			this.binder.bind("foo", INTEGER_LIST);
 			fail("No exception thrown");
 		}
 		catch (BindException ex) {
@@ -574,7 +525,7 @@ public class BinderTests {
 		source.put("foo[2]", "3");
 		source.setNonIterable(true);
 		this.sources.add(source);
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -592,7 +543,7 @@ public class BinderTests {
 		source3.put("foo[1]", "8");
 		source3.put("foo[2]", "9");
 		this.sources.add(source3);
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
@@ -603,8 +554,8 @@ public class BinderTests {
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
 		existing.add(1001);
-		List<Integer> result = this.binder.bind("foo",
-				Bindable.of(INTEGER_LIST, existing));
+		List<Integer> result = this.binder
+				.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
 		assertThat(result).isExactlyInstanceOf(LinkedList.class);
 		assertThat(result).isSameAs(existing);
 		assertThat(result).containsExactly(1);
@@ -616,8 +567,8 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("faf[0]", "1"));
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
-		List<Integer> result = this.binder.bind("foo",
-				Bindable.of(INTEGER_LIST, existing));
+		List<Integer> result = this.binder
+				.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
 		assertThat(result).isEqualTo(existing);
 	}
 
@@ -626,45 +577,24 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
 		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class,
 				Integer.class);
-		Object defaultList = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		Object defaultList = this.binder.bind("foo", INTEGER_LIST);
 		Object customList = this.binder.bind("foo", Bindable.of(type));
 		assertThat(customList).isExactlyInstanceOf(LinkedList.class)
 				.isNotInstanceOf(defaultList.getClass());
 	}
 
 	@Test
-	public void bindToCollectionWhenNoValueShouldReturnNull() throws Exception {
+	public void bindToCollectionWhenNoValueShouldReturnUnbound() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
-		assertThat(result).isNull();
-	}
-
-	@Test
-	public void bindToCollectionWhenNoValueShouldReturnDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		List<Integer> defaultValue = Collections.singletonList(123);
-		List<Integer> result = this.binder.bind("foo",
-				Bindable.<List<Integer>>of(INTEGER_LIST).withDefaultValue(defaultValue));
-		assertThat(result).isEqualTo(defaultValue);
-	}
-
-	@Test
-	public void bindToCollectionWhenNoValueShouldConvertDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		List<Integer> defaultValue = Collections.singletonList(123);
-		List<Integer> result = this.binder.bind("foo",
-				Bindable.<List<Integer>>of(ResolvableType
-						.forClassWithGenerics(LinkedList.class, Integer.class))
-				.withDefaultValue(defaultValue));
-		assertThat(result).isExactlyInstanceOf(LinkedList.class);
-		assertThat(result).isEqualTo(defaultValue);
+		BindResult<List<Integer>> result = this.binder.bind("foo", INTEGER_LIST);
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
 	public void bindToCollectionWhenCommaListShouldReturnPopulatedCollection()
 			throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1,2,3"));
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -677,7 +607,7 @@ public class BinderTests {
 		this.binder = new Binder(this.sources,
 				new PropertySourcesPlaceholdersResolver(environment));
 		this.sources.add(new MockConfigurationPropertySource("foo", "${bar}"));
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 
 	}
@@ -691,7 +621,7 @@ public class BinderTests {
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
 		source2.put("foo[0]", "2");
 		source2.put("foo[1]", "3");
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
@@ -704,7 +634,7 @@ public class BinderTests {
 		this.sources.add(source1);
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
 		source2.put("foo", "2,3");
-		List<Integer> result = this.binder.bind("foo", Bindable.of(INTEGER_LIST));
+		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
@@ -715,7 +645,7 @@ public class BinderTests {
 		source.put("foo[0]", "1,2");
 		source.put("foo[1]", "3");
 		this.sources.add(source);
-		List<String> result = this.binder.bind("foo", Bindable.of(STRING_LIST));
+		List<String> result = this.binder.bind("foo", STRING_LIST).get();
 		assertThat(result).containsExactly("1,2", "3");
 	}
 
@@ -726,7 +656,7 @@ public class BinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[2]", "3");
 		this.sources.add(source);
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
+		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -734,13 +664,12 @@ public class BinderTests {
 	public void bindToCollectionShouldTriggerOnSuccess() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
 		BindHandler handler = mockBindHandler();
-		Bindable<List<Integer>> target = Bindable.of(INTEGER_LIST);
-		this.binder.bind("foo", target, handler);
+		this.binder.bind(ConfigurationPropertyName.of("foo"), INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
-		inOrder.verify(handler).onSuccess(eqName("foo"), eq(target), any(), isNull(),
-				isA(List.class));
+		inOrder.verify(handler).onSuccess(eqName("foo"), eq(INTEGER_LIST), any(),
+				isNull(), isA(List.class));
 	}
 
 	@Test
@@ -750,7 +679,7 @@ public class BinderTests {
 		source.put("foo[1]", "2");
 		source.put("foo[2]", "3");
 		this.sources.add(source);
-		int[] result = this.binder.bind("foo", Bindable.of(int[].class));
+		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -762,8 +691,9 @@ public class BinderTests {
 		source.put("foo[1][0]", "3");
 		source.put("foo[1][1]", "4");
 		this.sources.add(source);
-		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_ARRAY);
-		Integer[][] result = this.binder.bind("foo", Bindable.of(type));
+		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_ARRAY.getType());
+		Bindable<Integer[][]> target = Bindable.of(type);
+		Integer[][] result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(2);
 		assertThat(result[0]).containsExactly(1, 2);
 		assertThat(result[1]).containsExactly(3, 4);
@@ -777,8 +707,9 @@ public class BinderTests {
 		source.put("foo[1][0]", "3");
 		source.put("foo[1][1]", "4");
 		this.sources.add(source);
-		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_LIST);
-		List<Integer>[] result = this.binder.bind("foo", Bindable.of(type));
+		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_LIST.getType());
+		Bindable<List<Integer>[]> target = Bindable.of(type);
+		List<Integer>[] result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(2);
 		assertThat(result[0]).containsExactly(1, 2);
 		assertThat(result[1]).containsExactly(3, 4);
@@ -791,7 +722,7 @@ public class BinderTests {
 		source.put("foo[0]", "1");
 		source.put("foo[2]", "3");
 		this.sources.add(source);
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
+		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -803,13 +734,12 @@ public class BinderTests {
 		source.put("foo[3]", "3");
 		this.sources.add(source);
 		try {
-			this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
+			this.binder.bind("foo", INTEGER_ARRAY);
 			fail("No exception thrown");
 		}
 		catch (BindException ex) {
-			Set<ConfigurationProperty> unbound =
-					((UnboundConfigurationPropertiesException) ex
-							.getCause()).getUnboundConfigurationProperties();
+			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
+					.getCause()).getUnboundConfigurationProperties();
 			assertThat(unbound.size()).isEqualTo(1);
 			ConfigurationProperty property = unbound.iterator().next();
 			assertThat(property.getName().toString()).isEqualTo("foo[3]");
@@ -825,7 +755,7 @@ public class BinderTests {
 		source.put("foo[2]", "3");
 		source.setNonIterable(true);
 		this.sources.add(source);
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
+		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -843,7 +773,7 @@ public class BinderTests {
 		source3.put("foo[1]", "8");
 		source3.put("foo[2]", "9");
 		this.sources.add(source3);
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
+		Integer[] result = this.binder.bind("foo", INTEGER_ARRAY).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
@@ -854,43 +784,24 @@ public class BinderTests {
 		Integer[] existing = new Integer[2];
 		existing[0] = 1000;
 		existing[1] = 1001;
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY, existing));
+		Integer[] result = this.binder
+				.bind("foo", INTEGER_ARRAY.withExistingValue(existing)).get();
 		assertThat(result).containsExactly(1);
 	}
 
 	@Test
-	public void bindToArrayWhenNoValueShouldReturnNull() throws Exception {
+	public void bindToArrayWhenNoValueShouldReturnUnbound() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		Integer[] result = this.binder.bind("foo", Bindable.of(INTEGER_ARRAY));
-		assertThat(result).isNull();
-	}
-
-	@Test
-	public void bindToArrayWhenNoValueShouldReturnDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		Integer[] defaultValue = new Integer[] { 1 };
-		Integer[] result = this.binder.bind("foo",
-				Bindable.<Integer[]>of(INTEGER_ARRAY).withDefaultValue(defaultValue));
-		assertThat(result).isEqualTo(defaultValue);
-		assertThat(result).isSameAs(defaultValue);
-	}
-
-	@Test
-	public void bindToArrayWhenNoValueShouldConvertDefaultValue() throws Exception {
-		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
-		int[] defaultValue = new int[] { 123 };
-		Integer[] result = this.binder.bind("foo",
-				Bindable.<Integer[]>of(INTEGER_ARRAY).withDefaultValue(defaultValue));
-		assertThat(result).isExactlyInstanceOf(Integer[].class);
-		assertThat(result).containsExactly(123);
+		BindResult<Integer[]> result = this.binder.bind("foo", INTEGER_ARRAY);
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
 	public void bindToArrayShouldTriggerOnSuccess() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
 		BindHandler handler = mockBindHandler();
-		Bindable<Integer[]> target = Bindable.of(INTEGER_ARRAY);
-		this.binder.bind("foo", target, handler);
+		Bindable<Integer[]> target = INTEGER_ARRAY;
+		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo[0]"),
 				eq(Bindable.of(Integer.class)), any(), notNull(), eq(1));
@@ -902,7 +813,7 @@ public class BinderTests {
 	public void bindToArrayWhenCommaListShouldReturnPopulatedCollection()
 			throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1,2,3"));
-		int[] result = this.binder.bind("foo", Bindable.of(int[].class));
+		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
@@ -914,7 +825,7 @@ public class BinderTests {
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
 		source2.put("foo[0]", "2");
 		source2.put("foo[1]", "3");
-		int[] result = this.binder.bind("foo", Bindable.of(int[].class));
+		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
@@ -926,14 +837,14 @@ public class BinderTests {
 		this.sources.add(source1);
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
 		source2.put("foo", "2,3");
-		int[] result = this.binder.bind("foo", Bindable.of(int[].class));
+		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2);
 	}
 
 	@Test
 	public void bindToJavaBeanShouldReturnPopulatedBean() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo.value", "bar"));
-		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class));
+		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
 		assertThat(result.getValue()).isEqualTo("bar");
 	}
 
@@ -944,7 +855,7 @@ public class BinderTests {
 				"foo.value", "bar");
 		source.setNonIterable(true);
 		this.sources.add(source);
-		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class));
+		JavaBean result = this.binder.bind("foo", Bindable.of(JavaBean.class)).get();
 		assertThat(result.getValue()).isEqualTo("bar");
 	}
 
@@ -954,7 +865,7 @@ public class BinderTests {
 				.add(new MockConfigurationPropertySource("foo.value", "bar", "line1"));
 		BindHandler handler = mockBindHandler();
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
-		this.binder.bind("foo", target, handler);
+		this.binder.bind(ConfigurationPropertyName.of("foo"), target, handler);
 		InOrder inOrder = inOrder(handler);
 		inOrder.verify(handler).onSuccess(eqName("foo.value"),
 				eq(Bindable.of(String.class)), any(), notNull(), eq("bar"));
@@ -975,8 +886,9 @@ public class BinderTests {
 		DateTimeFormat annotation = AnnotationUtils.synthesizeAnnotation(
 				Collections.singletonMap("iso", DateTimeFormat.ISO.DATE),
 				DateTimeFormat.class, null);
-		LocalDate result = this.binder.bind("foo",
-				Bindable.of(LocalDate.class).withAnnotations(annotation));
+		LocalDate result = this.binder
+				.bind("foo", Bindable.of(LocalDate.class).withAnnotations(annotation))
+				.get();
 		assertThat(result.toString()).isEqualTo("2014-04-01");
 	}
 
