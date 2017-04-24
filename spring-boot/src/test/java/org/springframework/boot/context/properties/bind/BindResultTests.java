@@ -220,7 +220,7 @@ public class BindResultTests {
 			this.value = "new";
 		}
 
-		public ExampleBean(String value) {
+		ExampleBean(String value) {
 			this.value = value;
 		}
 

@@ -29,12 +29,12 @@ import org.springframework.util.ObjectUtils;
  * A container object to return result of a {@link Binder} bind operation. May contain
  * either a successfully bound object or an empty result.
  *
+ * @param <T> The result type
  * @author Phillip Webb
  * @author Madhura Bhave
- * @param <T> The result type
  * @since 2.0.0
  */
-public class BindResult<T> {
+public final class BindResult<T> {
 
 	private static final BindResult<?> UNBOUND = new BindResult<>(null);
 
