@@ -199,7 +199,6 @@ public class Binder {
 			if (handler.onStart(name, target, context)) {
 				result = doBind(name, target, handler, context);
 			}
-			result = (result != null ? result : target.getValue());
 			return (result == null ? null
 					: this.conversionService.convert(result, target));
 		}

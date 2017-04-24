@@ -562,14 +562,14 @@ public class BinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenHasExistingCollectionButNoValueShouldReturnExisting()
+	public void bindToCollectionWhenHasExistingCollectionButNoValueShouldReturnUnbound()
 			throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("faf[0]", "1"));
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
-		List<Integer> result = this.binder
-				.bind("foo", INTEGER_LIST.withExistingValue(existing)).get();
-		assertThat(result).isEqualTo(existing);
+		BindResult<List<Integer>> result = this.binder.bind("foo",
+				INTEGER_LIST.withExistingValue(existing));
+		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
@@ -577,8 +577,8 @@ public class BinderTests {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
 		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class,
 				Integer.class);
-		Object defaultList = this.binder.bind("foo", INTEGER_LIST);
-		Object customList = this.binder.bind("foo", Bindable.of(type));
+		Object defaultList = this.binder.bind("foo", INTEGER_LIST).get();
+		Object customList = this.binder.bind("foo", Bindable.of(type)).get();
 		assertThat(customList).isExactlyInstanceOf(LinkedList.class)
 				.isNotInstanceOf(defaultList.getClass());
 	}
