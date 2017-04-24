@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.bind.BindException;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
@@ -48,11 +47,12 @@ class SessionCondition extends SpringBootCondition {
 					message.didNotFind("spring.session.store-type property").atAll());
 		}
 		try {
-			StoreType specified = Binder.get(environment)
-					.bind("spring.session.store-type", Bindable.of(StoreType.class));
-			ConditionMessage foundMessage = message
-					.found("spring.session.store-type property").items(specified);
-			return new ConditionOutcome(specified == required, foundMessage);
+			Binder binder = Binder.get(environment);
+			return binder.bind("spring.session.store-type", StoreType.class)
+					.map((t) -> new ConditionOutcome(t == required,
+							message.found("spring.session.store-type property").items(t)))
+					.orElse(ConditionOutcome.noMatch(message
+							.didNotFind("spring.session.store-type property").atAll()));
 		}
 		catch (BindException ex) {
 			return ConditionOutcome.noMatch(

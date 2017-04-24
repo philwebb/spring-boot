@@ -155,9 +155,9 @@ public class OAuth2ResourceServerConfiguration {
 	protected static class ResourceServerCondition extends SpringBootCondition
 			implements ConfigurationCondition {
 
-		private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
-				.forClassWithGenerics(Map.class, ResolvableType.forClass(String.class),
-						ResolvableType.forClass(Object.class));
+		private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable
+				.of(ResolvableType.forClassWithGenerics(Map.class, String.class,
+						Object.class));
 
 		private static final String AUTHORIZATION_ANNOTATION = "org.springframework."
 				+ "security.oauth2.config.annotation.web.configuration."
@@ -182,23 +182,20 @@ public class OAuth2ResourceServerConfiguration {
 				return ConditionOutcome.match(message.foundExactly("client-id property"));
 			}
 			Binder binder = Binder.get(environment);
-			if (binder.bind("security.oauth2.resource.jwt",
-					Bindable.of(STRING_OBJECT_MAP)) != null) {
+			String prefix = "security.oauth2.resource.";
+			if (binder.bind(prefix + "jwt", STRING_OBJECT_MAP).isBound()) {
 				return ConditionOutcome
 						.match(message.foundExactly("JWT resource configuration"));
 			}
-			if (binder.bind("security.oauth2.resource.jwk",
-					Bindable.of(STRING_OBJECT_MAP)) != null) {
+			if (binder.bind(prefix + "jwk", STRING_OBJECT_MAP).isBound()) {
 				return ConditionOutcome
 						.match(message.foundExactly("JWK resource configuration"));
 			}
-			if (StringUtils.hasText(
-					environment.getProperty("security.oauth2.resource.user-info-uri"))) {
+			if (StringUtils.hasText(environment.getProperty(prefix + "user-info-uri"))) {
 				return ConditionOutcome
 						.match(message.foundExactly("user-info-uri property"));
 			}
-			if (StringUtils.hasText(
-					environment.getProperty("security.oauth2.resource.token-info-uri"))) {
+			if (StringUtils.hasText(environment.getProperty(prefix + "token-info-uri"))) {
 				return ConditionOutcome
 						.match(message.foundExactly("token-info-uri property"));
 			}

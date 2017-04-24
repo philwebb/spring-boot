@@ -42,8 +42,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
- * Binds objects from one or more {@link ConfigurationPropertySource
- * ConfigurationPropertySources}.
+ * A container object which Binds objects from one or more
+ * {@link ConfigurationPropertySource ConfigurationPropertySources}.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -112,16 +112,28 @@ public class Binder {
 	}
 
 	/**
+	 * Bind the specified target {@link Class} using this binders
+	 * {@link ConfigurationPropertySource property sources}.
+	 * @param name the configuration property name to bind
+	 * @param target the target class
+	 * @param <T> the bound type
+	 * @return the binding result (never {@code null})
+	 * @see #bind(ConfigurationPropertyName, Bindable, BindHandler)
+	 */
+	public <T> BindResult<T> bind(String name, Class<T> target) {
+		return bind(name, Bindable.of(target));
+	}
+
+	/**
 	 * Bind the specified target {@link Bindable} using this binders
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
 	 * @param <T> the bound type
-	 * @return the bound instance or {@code null}. Bound instances may be new objects or
-	 * may be {@link Bindable#getExistingValue() existing values} that have been updated
-	 * by the binder
+	 * @return the binding result (never {@code null})
+	 * @see #bind(ConfigurationPropertyName, Bindable, BindHandler)
 	 */
-	public <T> T bind(String name, Bindable<T> target) {
+	public <T> BindResult<T> bind(String name, Bindable<T> target) {
 		return bind(ConfigurationPropertyName.of(name), target, null);
 	}
 
@@ -130,27 +142,11 @@ public class Binder {
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
-	 * @param handler the bind handler or {@code null}
 	 * @param <T> the bound type
-	 * @return the bound instance or the default value. Bound instances may be new objects
-	 * or may be {@link Bindable#getExistingValue() existing values} that have been
-	 * updated by the binder
+	 * @return the binding result (never {@code null})
+	 * @see #bind(ConfigurationPropertyName, Bindable, BindHandler)
 	 */
-	public <T> T bind(String name, Bindable<T> target, BindHandler handler) {
-		return bind(ConfigurationPropertyName.of(name), target, handler);
-	}
-
-	/**
-	 * Bind the specified target {@link Bindable} using this binders
-	 * {@link ConfigurationPropertySource property sources}.
-	 * @param name the configuration property name to bind
-	 * @param target the target bindable
-	 * @param <T> the bound type
-	 * @return the bound instance or {@code null}. Bound instances may be new objects or
-	 * may be {@link Bindable#getExistingValue() existing values} that have been updated
-	 * by the binder
-	 */
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target) {
+	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target) {
 		return bind(name, target, null);
 	}
 
@@ -159,19 +155,17 @@ public class Binder {
 	 * {@link ConfigurationPropertySource property sources}.
 	 * @param name the configuration property name to bind
 	 * @param target the target bindable
-	 * @param handler the bind handler or {@code null}
+	 * @param handler the bind handler (may be {@code null})
 	 * @param <T> the bound type
-	 * @return the bound instance or the default value. Bound instances may be new objects
-	 * or may be {@link Bindable#getExistingValue() existing values} that have been
-	 * updated by the binder
+	 * @return the binding result (never {@code null})
 	 */
-	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler) {
+	public <T> BindResult<T> bind(ConfigurationPropertyName name, Bindable<T> target,
+			BindHandler<? extends T> handler) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(target, "Target must not be null");
 		Context context = new Context();
-		handler = (handler != null ? handler : BindHandler.DEFAULT);
-		T bound = bind(name, target, handler, context);
+		handler = (handler != null ? handler : BindHandler.none());
+		T bound = bindInstance(name, target, handler, context);
 		if (bound == null && target.getExistingValue() != null) {
 			bound = target.getExistingValue().get();
 		}
@@ -184,9 +178,9 @@ public class Binder {
 		return bound;
 	}
 
-	protected final <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context) {
-		handler = (handler != null ? handler : BindHandler.DEFAULT);
+	private final <T> T bindInstance(ConfigurationPropertyName name, Bindable<T> target,
+			BindHandler<T> handler, Context context) {
+		handler = (handler != null ? handler : BindHandler.none());
 		try {
 			Object result = null;
 			if (handler.onStart(name, target, context)) {
@@ -202,7 +196,7 @@ public class Binder {
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, Exception error) {
+			BindHandler<T> handler, Context context, Exception error) {
 		if (error instanceof ConfigurationPropertyBindException) {
 			return handleBindError(name, target, handler, context,
 					((ConfigurationPropertyBindException) error)
@@ -213,7 +207,7 @@ public class Binder {
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context, ConfigurationProperty property,
+			BindHandler<T> handler, Context context, ConfigurationProperty property,
 			Exception error) {
 		Origin origin = Origin.from(error);
 		try {
@@ -230,7 +224,7 @@ public class Binder {
 	}
 
 	private <T> Object doBind(ConfigurationPropertyName name, Bindable<T> target,
-			BindHandler handler, Context context) throws Exception {
+			BindHandler<?> handler, Context context) throws Exception {
 		AggregateBinder<?> aggregateBinder = getAggregateBinder(target, context);
 		if (aggregateBinder != null) {
 			AggregateElementBinder itemBinder = (itemName, itemTarget, source) -> {

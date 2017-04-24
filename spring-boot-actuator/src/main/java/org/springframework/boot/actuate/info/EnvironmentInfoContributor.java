@@ -32,8 +32,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 public class EnvironmentInfoContributor implements InfoContributor {
 
-	private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, Object.class);
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.of(
+			ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class));
 
 	private final ConfigurableEnvironment environment;
 
@@ -43,11 +43,8 @@ public class EnvironmentInfoContributor implements InfoContributor {
 
 	@Override
 	public void contribute(Info.Builder builder) {
-		Map<String, Object> info = Binder.get(this.environment).bind("info",
-				Bindable.of(STRING_OBJECT_MAP));
-		if (info != null) {
-			builder.withDetails(info);
-		}
+		Binder binder = Binder.get(this.environment);
+		binder.bind("info", STRING_OBJECT_MAP).ifBound(builder::withDetails);
 	}
 
 }

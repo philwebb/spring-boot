@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -111,10 +110,9 @@ public class CassandraDataAutoConfiguration {
 		session.setCluster(this.cluster);
 		session.setConverter(converter);
 		session.setKeyspaceName(this.properties.getKeyspaceName());
-		SchemaAction schemaAction = Binder.get(this.environment).bind(
-				"spring.data.cassandra.schema-action",
-				Bindable.of(SchemaAction.class).withDefaultValue(SchemaAction.NONE));
-		session.setSchemaAction(schemaAction);
+		Binder binder = Binder.get(this.environment);
+		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class)
+				.ifBound(session::setSchemaAction);
 		return session;
 	}
 

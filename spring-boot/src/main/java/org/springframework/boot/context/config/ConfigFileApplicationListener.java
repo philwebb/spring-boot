@@ -36,7 +36,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -61,7 +60,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -491,16 +489,13 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private Set<Profile> getProfiles(PropertySources sources, String name) {
-			String[] profileNames = new Binder(ConfigurationPropertySources.get(sources),
-					new PropertySourcesPlaceholdersResolver(this.environment)).bind(name,
-							Bindable.of(String[].class));
-			return asProfileSet(profileNames);
+			Binder binder = new Binder(ConfigurationPropertySources.get(sources),
+					new PropertySourcesPlaceholdersResolver(this.environment));
+			return binder.bind(name, String[].class).map(this::asProfileSet)
+					.orElse(Collections.emptySet());
 		}
 
 		private Set<Profile> asProfileSet(String[] profileNames) {
-			if (ObjectUtils.isEmpty(profileNames)) {
-				return Collections.emptySet();
-			}
 			List<Profile> profiles = new ArrayList<>();
 			for (String profileName : profileNames) {
 				profiles.add(new Profile(profileName));

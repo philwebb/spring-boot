@@ -23,6 +23,7 @@ import java.util.TreeSet;
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.UnboundConfigurationPropertiesException;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -34,6 +35,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  * have been bound.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class NoUnboundElementsBindHandler extends AbstractBindHandler {
@@ -57,7 +59,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+			BindContext context, BindResult<?> result) throws Exception {
 		if (context.getDepth() == 0) {
 			checkNoUnboundElements(name, context);
 		}

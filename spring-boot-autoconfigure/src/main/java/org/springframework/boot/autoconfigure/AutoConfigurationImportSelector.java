@@ -35,7 +35,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -212,14 +211,10 @@ public class AutoConfigurationImportSelector
 		String name = "spring.autoconfigure.exclude";
 		if (getEnvironment() instanceof ConfigurableEnvironment) {
 			Binder binder = Binder.get(getEnvironment());
-			String[] excludes = binder.bind(name, Bindable.of(String[].class));
-			return asList(excludes);
+			return binder.bind(name, String[].class).map(Arrays::asList)
+					.orElse(Collections.emptyList());
 		}
 		String[] excludes = getEnvironment().getProperty(name, String[].class);
-		return asList(excludes);
-	}
-
-	private List<String> asList(String[] excludes) {
 		return (excludes == null ? Collections.emptyList() : Arrays.asList(excludes));
 	}
 

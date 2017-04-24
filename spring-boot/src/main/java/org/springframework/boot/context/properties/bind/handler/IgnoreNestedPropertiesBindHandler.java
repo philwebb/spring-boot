@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  * {@link BindHandler} to limit binding to only first level properties.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class IgnoreNestedPropertiesBindHandler extends AbstractBindHandler {

@@ -164,6 +164,7 @@ public final class Bindable<T> {
 	 * @return a {@link Bindable} instance
 	 * @see #of(Class, Object)
 	 */
+	@Deprecated
 	public static <T> Bindable<T> ofNewInstance(Class<T> type) {
 		Assert.notNull(type, "Type must not be null");
 		Assert.state(hasDefaultConstructor(type), "Type must have default constructor");

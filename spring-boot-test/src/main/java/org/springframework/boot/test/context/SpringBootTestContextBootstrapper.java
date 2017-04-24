@@ -96,7 +96,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		verifyConfiguration(context.getTestClass());
 		WebEnvironment webEnvironment = getWebEnvironment(context.getTestClass());
 		if (webEnvironment == WebEnvironment.MOCK
-				&& deduceWebApplication() == WebApplicationType.SERVLET) {
+				&& deduceWebApplicationType() == WebApplicationType.SERVLET) {
 			context.setAttribute(ACTIVATE_SERVLET_LISTENER, true);
 		}
 		else if (webEnvironment != null && webEnvironment.isEmbedded()) {
@@ -179,15 +179,17 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	private WebApplicationType getWebApplicationType(
 			MergedContextConfiguration configuration) {
-		WebApplicationType webApplicationType = getConfiguredWebApplicationType(
-				configuration);
-		if (webApplicationType != null) {
-			return webApplicationType;
-		}
-		return deduceWebApplication();
+		ConfigurationPropertySource source = new MapConfigurationPropertySource(
+				TestPropertySourceUtils.convertInlinedPropertiesToMap(
+						configuration.getPropertySourceProperties()));
+		Binder binder = new Binder(source);
+		return binder
+				.bind("spring.main.web-application-type",
+						Bindable.of(WebApplicationType.class))
+				.orElseGet(this::deduceWebApplicationType);
 	}
 
-	private WebApplicationType deduceWebApplication() {
+	private WebApplicationType deduceWebApplicationType() {
 		if (ClassUtils.isPresent(REACTIVE_WEB_ENVIRONMENT_CLASS, null)
 				&& !ClassUtils.isPresent(MVC_WEB_ENVIRONMENT_CLASS, null)) {
 			return WebApplicationType.REACTIVE;
@@ -224,16 +226,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			}
 		}
 		return false;
-	}
-
-	private WebApplicationType getConfiguredWebApplicationType(
-			MergedContextConfiguration configuration) {
-		ConfigurationPropertySource source = new MapConfigurationPropertySource(
-				TestPropertySourceUtils.convertInlinedPropertiesToMap(
-						configuration.getPropertySourceProperties()));
-		Binder binder = new Binder(source);
-		return binder.bind("spring.main.web-application-type",
-				Bindable.of(WebApplicationType.class));
 	}
 
 	protected Class<?>[] getOrFindConfigurationClasses(

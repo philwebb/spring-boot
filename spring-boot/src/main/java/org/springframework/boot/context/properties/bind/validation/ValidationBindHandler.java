@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -36,6 +37,7 @@ import org.springframework.validation.annotation.Validated;
  * {@link BindHandler} to apply {@link Validator Validators} to bound results.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class ValidationBindHandler extends AbstractBindHandler {
@@ -82,7 +84,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result) throws Exception {
+			BindContext context, BindResult<?> result) throws Exception {
 		if (this.validate && result != null) {
 			validate(name, target, result);
 		}

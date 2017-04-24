@@ -16,9 +16,9 @@
 
 package org.springframework.boot.context.logging;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
@@ -83,8 +83,8 @@ import org.springframework.util.StringUtils;
  */
 public class LoggingApplicationListener implements GenericApplicationListener {
 
-	private static final ResolvableType STRING_STRING_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, String.class);
+	private static final Bindable<Map<String, String>> STRING_STRING_MAP = Bindable.of(
+			ResolvableType.forClassWithGenerics(Map.class, String.class, String.class));
 
 	/**
 	 * The default order for the LoggingApplicationListener.
@@ -302,15 +302,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 			return;
 		}
 		Binder binder = Binder.get(environment);
-		Map<String, String> levels = binder.bind("logging.level",
-				Bindable.of(STRING_STRING_MAP));
-		if (levels != null) {
-			for (Entry<String, String> entry : levels.entrySet()) {
-				String name = entry.getKey();
-				String level = entry.getValue();
-				setLogLevel(system, environment, name, level);
-			}
-		}
+		binder.bind("logging.level", STRING_STRING_MAP).orElseGet(Collections::emptyMap)
+				.forEach((name, level) -> setLogLevel(system, environment, name, level));
 	}
 
 	private void setLogLevel(LoggingSystem system, Environment environment, String name,

@@ -169,8 +169,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 
 	private boolean hasCustomServerPort(List<String> properties) {
 		Binder binder = new Binder(convertToConfigurationPropertySource(properties));
-		String port = binder.bind("server.port", Bindable.of(String.class));
-		return StringUtils.hasText(port);
+		return binder.bind("server.port", Bindable.of(String.class)).isBound();
 	}
 
 	private MapConfigurationPropertySource convertToConfigurationPropertySource(

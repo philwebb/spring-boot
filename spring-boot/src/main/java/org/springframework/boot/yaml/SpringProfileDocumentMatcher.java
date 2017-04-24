@@ -48,8 +48,6 @@ import org.springframework.util.StringUtils;
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
-	private static String[] NO_PROFILES = {};
-
 	private String[] activeProfiles = new String[0];
 
 	public SpringProfileDocumentMatcher(String... profiles) {
@@ -69,9 +67,9 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	}
 
 	protected List<String> extractSpringProfiles(Properties properties) {
-		String[] profiles = new Binder(new MapConfigurationPropertySource(properties))
-				.bind("spring.profiles", Bindable.of(String[].class));
-		return Arrays.asList(profiles == null ? NO_PROFILES : profiles);
+		Binder binder = new Binder(new MapConfigurationPropertySource(properties));
+		return binder.bind("spring.profiles", Bindable.of(String[].class))
+				.map(Arrays::asList).orElse(Collections.emptyList());
 	}
 
 	private MatchStatus matches(List<String> profiles) {

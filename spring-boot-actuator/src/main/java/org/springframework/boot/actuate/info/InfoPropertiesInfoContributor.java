@@ -40,8 +40,8 @@ import org.springframework.util.StringUtils;
 public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 		implements InfoContributor {
 
-	private static final ResolvableType STRING_OBJECT_MAP = ResolvableType
-			.forClassWithGenerics(Map.class, String.class, Object.class);
+	private static final Bindable<Map<String, Object>> STRING_OBJECT_MAP = Bindable.of(
+			ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class));
 
 	private final T properties;
 
@@ -95,9 +95,8 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties>
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
 		MutablePropertySources sources = new MutablePropertySources();
 		sources.addFirst(propertySource);
-		Map<String, Object> existingValue = new LinkedHashMap<>();
-		return new Binder(ConfigurationPropertySources.get(sources)).bind("",
-				Bindable.of(STRING_OBJECT_MAP, existingValue));
+		return new Binder(ConfigurationPropertySources.get(sources))
+				.bind("", STRING_OBJECT_MAP).orElseGet(LinkedHashMap::new);
 	}
 
 	/**

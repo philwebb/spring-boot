@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
@@ -34,16 +35,16 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 class OnBootstrapHostsCondition extends SpringBootCondition {
 
-	private static final ResolvableType STRING_LIST = ResolvableType
-			.forClassWithGenerics(List.class, String.class);
+	private static final Bindable<List<String>> STRING_LIST = Bindable
+			.of(ResolvableType.forClassWithGenerics(List.class, String.class));
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		String name = "spring.couchbase.bootstrap-hosts";
-		List<String> property = Binder.get(context.getEnvironment()).bind(name,
-				Bindable.of(STRING_LIST));
-		if (property != null) {
+		BindResult<?> property = Binder.get(context.getEnvironment()).bind(name,
+				STRING_LIST);
+		if (property.isBound()) {
 			return ConditionOutcome.match(ConditionMessage
 					.forCondition(OnBootstrapHostsCondition.class.getName())
 					.found("property").items(name));

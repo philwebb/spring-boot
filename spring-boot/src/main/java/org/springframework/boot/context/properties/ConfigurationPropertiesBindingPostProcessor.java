@@ -315,7 +315,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		BindHandler handler = getBindHandler(annotation, validator);
 		Bindable<?> bindable = Bindable.ofInstance(bean);
 		try {
-			return binder.bind(annotation.prefix(), bindable, handler);
+			return binder.bind(annotation.prefix(), bindable, handler).get();
 		}
 		catch (Exception ex) {
 			String targetClass = ClassUtils.getShortName(bean.getClass());

@@ -19,7 +19,6 @@ package org.springframework.boot.context.config;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -39,11 +38,9 @@ public class AnsiOutputApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		AnsiOutput.Enabled enabled = Binder.get(environment).bind(
-				"spring.output.ansi.enabled", Bindable.of(AnsiOutput.Enabled.class));
-		if (enabled != null) {
-			AnsiOutput.setEnabled(enabled);
-		}
+		Binder.get(environment)
+				.bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
+				.ifBound(AnsiOutput::setEnabled);
 		AnsiOutput.setConsoleAvailable(environment
 				.getProperty("spring.output.ansi.console-available", Boolean.class));
 	}

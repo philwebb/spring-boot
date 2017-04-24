@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.bind.BindException;
-import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
@@ -48,15 +48,16 @@ class CacheCondition extends SpringBootCondition {
 				sourceClass);
 		Environment environment = context.getEnvironment();
 		try {
-			CacheType specified = Binder.get(environment).bind("spring.cache.type",
-					Bindable.of(CacheType.class));
-			if (specified == null) {
+			BindResult<CacheType> specified = Binder.get(environment)
+					.bind("spring.cache.type", CacheType.class);
+			if (!specified.isBound()) {
 				return ConditionOutcome.match(message.because("automatic cache type"));
 			}
 			CacheType required = CacheConfigurations
 					.getType(((AnnotationMetadata) metadata).getClassName());
-			if (required == specified) {
-				return ConditionOutcome.match(message.because(specified + " cache type"));
+			if (specified.get() == required) {
+				return ConditionOutcome
+						.match(message.because(specified.get() + " cache type"));
 			}
 		}
 		catch (BindException ex) {

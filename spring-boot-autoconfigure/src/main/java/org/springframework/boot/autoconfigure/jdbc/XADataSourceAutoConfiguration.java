@@ -109,10 +109,10 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		}
 	}
 
-	private XADataSource bindXaProperties(XADataSource target,
+	private void bindXaProperties(XADataSource target,
 			DataSourceProperties dataSourceProperties) {
 		Binder binder = new Binder(getBinderSource(dataSourceProperties));
-		return binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
+		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(target));
 	}
 
 	private ConfigurationPropertySource getBinderSource(

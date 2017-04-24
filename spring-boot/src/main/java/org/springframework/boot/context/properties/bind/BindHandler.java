@@ -24,14 +24,11 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  * {@link Binder binding}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
+ * @param <T> The type being bound
  * @since 2.0.0
  */
-public interface BindHandler {
-
-	/**
-	 * The default {@link BindHandler} instance.
-	 */
-	BindHandler DEFAULT = new DefaultBindHandler();
+public interface BindHandler<T> {
 
 	/**
 	 * Called when binding of an element starts but before any result has been determined.
@@ -68,9 +65,8 @@ public interface BindHandler {
 	 * @param target the item being bound
 	 * @param context the bind context
 	 * @param property the source {@link ConfigurationProperty} or {#code null}
-	 * @param error the cause of the error
-	 * @return the actual result that should be used (may be {@code null}). If the
-	 * exception stands it should be re-thrown.
+	 * @param error the cause of the error (if the exception stands it may be re-thrown)
+	 * @return the actual result that should be used (may be {@code null}).
 	 * @throws Exception if the binding isn't valid
 	 */
 	default Object onFailure(ConfigurationPropertyName name, Bindable<?> target,
@@ -80,23 +76,29 @@ public interface BindHandler {
 	}
 
 	/**
-	 * Called when binding finishes, regardless of whether the property was bound
-	 * or not.
+	 * Called when binding finishes, regardless of whether the property was bound or not.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
-	 * @param result of the bind operation (can be {@code null} if nothing is bound)
+	 * @param result of the bind operation
 	 * @throws Exception if the binding isn't valid
 	 */
 	default void onFinish(ConfigurationPropertyName name, Bindable<?> target,
-			BindContext context, Object result)
-			throws Exception {
+			BindContext context, BindResult<?> result) throws Exception {
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> BindHandler<T> none() {
+		return (BindHandler<T>) NoOpBindHander.INSTANCE;
 	}
 
 	/**
-	 * Default {@link BindHandler} implementation.
+	 * Empty no-op {@link BindHandler} returned by {@link BindHandler#none()}.
+	 * @param <T> The type being bound
 	 */
-	class DefaultBindHandler implements BindHandler {
+	static class NoOpBindHander<T> implements BindHandler<T> {
+
+		static BindHandler<?> INSTANCE = new NoOpBindHander<Object>();
 
 	}
 
