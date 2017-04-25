@@ -26,6 +26,7 @@ import org.springframework.core.ResolvableType;
  *
  * @param <T> the type being bound
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 abstract class AggregateBinder<T> {
 

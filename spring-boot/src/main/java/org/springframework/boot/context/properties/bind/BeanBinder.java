@@ -20,6 +20,7 @@ package org.springframework.boot.context.properties.bind;
  * Internal strategy used by {@link Binder} to bind beans.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 interface BeanBinder {
 

@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link Bindable}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class BindableTests {
 

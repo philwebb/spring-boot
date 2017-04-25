@@ -44,6 +44,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link JavaBeanBinder}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class JavaBeanBinderTests {
 

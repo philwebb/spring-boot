@@ -24,6 +24,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  * elements.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @FunctionalInterface
 interface AggregateElementBinder {

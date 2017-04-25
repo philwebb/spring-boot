@@ -22,6 +22,7 @@ import org.springframework.core.env.PropertyResolver;
  * Optional strategy that used by a {@link Binder} to resolve property placeholders.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  * @see PropertySourcesPlaceholdersResolver
  */

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BeanPropertyName}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class BeanPropertyNameTests {
 

@@ -38,6 +38,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * Tests for {@link BindResult}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 public class BindResultTests {
 

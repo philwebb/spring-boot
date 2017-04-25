@@ -22,6 +22,7 @@ import org.springframework.core.convert.Property;
  * Internal utility to help when dealing with Java Bean property names.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 abstract class BeanPropertyName {
 

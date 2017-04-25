@@ -20,9 +20,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
@@ -30,6 +28,7 @@ import org.springframework.util.ObjectUtils;
  * {@link AggregateBinder} for arrays.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class ArrayBinder extends IndexedElementsBinder<Object> {
 
@@ -40,44 +39,21 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 	@Override
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, Class<?> type) {
-		ResolvableType elementType = target.getType().getComponentType();
-		AggregateSupplier<List<Object>> collection = new AggregateSupplier<>(
+		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
 				ArrayList::new);
-		return bindToArray(name, target, elementBinder, collection, elementType);
-	}
-
-	private Object bindToArray(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, AggregateSupplier<List<Object>> collection,
-			ResolvableType elementType) {
-		for (ConfigurationPropertySource source : getContext().getSources()) {
-			Object array = bindToArray(name, target, elementBinder, collection, elementType,
-					source);
-			if (array != null) {
-				return array;
+		ResolvableType elementType = target.getType().getComponentType();
+		ResolvableType collectionType = ResolvableType.forClassWithGenerics(List.class,
+				elementType);
+		bindIndexed(name, target, elementBinder, collection, collectionType, elementType);
+		if (collection.wasSupplied()) {
+			List<Object> list = (List<Object>) collection.get();
+			Object array = Array.newInstance(elementType.resolve(), list.size());
+			for (int i = 0; i < list.size(); i++) {
+				Array.set(array, i, list.get(i));
 			}
+			return (ObjectUtils.isEmpty(array) ? null : array);
 		}
 		return null;
-	}
-
-	private Object bindToArray(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder, AggregateSupplier<List<Object>> collection,
-			ResolvableType elementType, ConfigurationPropertySource source) {
-		ConfigurationProperty property = source.getConfigurationProperty(name);
-		if (property != null) {
-			return convert(property, target.getType());
-		}
-		else {
-			bindIndexed(source, name, elementBinder, collection, elementType);
-			if (collection.wasSupplied() && collection.get() != null) {
-				List<Object> list = collection.get();
-				Object array = Array.newInstance(elementType.resolve(), list.size());
-				for (int i = 0; i < list.size(); i++) {
-					Array.set(array, i, list.get(i));
-				}
-				return (ObjectUtils.isEmpty(array) ? null : array);
-			}
-			return null;
-		}
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  * left unbound.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class UnboundConfigurationPropertiesException extends RuntimeException {

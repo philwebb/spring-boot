@@ -23,6 +23,7 @@ import org.springframework.boot.origin.Origin;
  * Exception thrown when binding fails.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class BindException extends RuntimeException {

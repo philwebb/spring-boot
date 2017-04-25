@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
@@ -36,6 +37,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @param <T> the type being bound
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
@@ -43,16 +45,40 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		super(context);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected final <E> void bindIndexed(ConfigurationPropertySource source,
+	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
+			ResolvableType collectionType, ResolvableType elementType) {
+		for (ConfigurationPropertySource source : getContext().getSources()) {
+			bindIndexed(source, name, elementBinder, collection, collectionType,
+					elementType);
+			if (collection.wasSupplied() && collection.get() != null) {
+				return;
+			}
+		}
+	}
+
+	private void bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			AggregateSupplier<? extends Collection<E>> collection,
+			IndexedCollectionSupplier collection, ResolvableType collectionType,
 			ResolvableType elementType) {
+		ConfigurationProperty property = source.getConfigurationProperty(root);
+		if (property != null) {
+			Collection<Object> converted = convert(property, collectionType);
+			collection.get().addAll(converted);
+		}
+		else {
+			bindIndexed(source, root, elementBinder, collection, elementType);
+		}
+	}
+
+	private final void bindIndexed(ConfigurationPropertySource source,
+			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
+			IndexedCollectionSupplier collection, ResolvableType elementType) {
 		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root.append("[" + i + "]");
-			E value = (E) elementBinder.bind(name, Bindable.of(elementType), source);
+			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;
 			}
@@ -62,7 +88,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		assertNoUnboundChildren(knownIndexedChildren);
 	}
 
-	protected final MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
+	private final MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
 			ConfigurationPropertySource source, ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
 		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
@@ -76,7 +102,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return children;
 	}
 
-	protected final void assertNoUnboundChildren(
+	private final void assertNoUnboundChildren(
 			MultiValueMap<String, ConfigurationProperty> children) {
 		if (!children.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(
@@ -86,11 +112,20 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <C> C convert(ConfigurationProperty property, ResolvableType type) {
+	private <C> C convert(ConfigurationProperty property, ResolvableType type) {
 		Object value = property.getValue();
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
 		return (C) conversionService.convert(value, type);
+	}
+
+	protected static class IndexedCollectionSupplier
+			extends AggregateSupplier<Collection<Object>> {
+
+		public IndexedCollectionSupplier(Supplier<Collection<Object>> supplier) {
+			super(supplier);
+		}
+
 	}
 
 }

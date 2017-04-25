@@ -33,6 +33,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @param <T> The source type
  * @author Philip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  * @see Bindable#of(Class)
  * @see Bindable#of(ResolvableType)

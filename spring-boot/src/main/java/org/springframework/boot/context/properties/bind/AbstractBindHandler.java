@@ -23,6 +23,7 @@ import org.springframework.util.Assert;
  * Abstract base class for {@link BindHandler} implementations.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public abstract class AbstractBindHandler implements BindHandler {

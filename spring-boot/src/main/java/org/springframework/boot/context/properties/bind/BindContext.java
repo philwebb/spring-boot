@@ -25,6 +25,7 @@ import org.springframework.core.convert.ConversionService;
  * Context information for use by {@link BindHandler BindHandlers}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public interface BindContext {

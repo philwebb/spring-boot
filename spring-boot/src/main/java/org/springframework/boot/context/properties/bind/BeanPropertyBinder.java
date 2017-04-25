@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  * properties.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 interface BeanPropertyBinder {
 

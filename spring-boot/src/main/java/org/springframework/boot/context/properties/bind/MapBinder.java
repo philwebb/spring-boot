@@ -32,6 +32,7 @@ import org.springframework.core.ResolvableType;
  * {@link AggregateBinder} for Maps.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class MapBinder extends AggregateBinder<Map<Object, Object>> {
 

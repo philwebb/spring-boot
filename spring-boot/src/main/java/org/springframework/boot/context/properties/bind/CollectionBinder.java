@@ -18,9 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
 
-import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
 
@@ -28,6 +26,7 @@ import org.springframework.core.ResolvableType;
  * {@link AggregateBinder} for collections.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 
@@ -37,41 +36,16 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 
 	@Override
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder, Class<?> type) {
-		AggregateSupplier<Collection<Object>> collection = new AggregateSupplier<>(
+			AggregateElementBinder elementBinder, Class<?> type) {
+		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
 				() -> CollectionFactory.createCollection(type, 0));
 		ResolvableType elementType = target.getType().asCollection().getGeneric();
-		return bindToCollection(name, target, itemBinder, collection, target.getType(),
+		bindIndexed(name, target, elementBinder, collection, target.getType(),
 				elementType);
-	}
-
-	protected final <E> Collection<E> bindToCollection(ConfigurationPropertyName name,
-			Bindable<?> target, AggregateElementBinder itemBinder,
-			AggregateSupplier<? extends Collection<E>> collection,
-			ResolvableType collectionType, ResolvableType elementType) {
-		for (ConfigurationPropertySource source : getContext().getSources()) {
-			bindToCollection(source, name, target, itemBinder, collection, collectionType,
-					elementType);
-			if (collection.wasSupplied() && collection.get() != null) {
-				return collection.get();
-			}
+		if (collection.wasSupplied()) {
+			return collection.get();
 		}
-		return (!collection.wasSupplied() || collection.get() == null ? null
-				: collection.get());
-	}
-
-	private <E> void bindToCollection(ConfigurationPropertySource source,
-			ConfigurationPropertyName root, Bindable<?> target,
-			AggregateElementBinder elementBinder,
-			AggregateSupplier<? extends Collection<E>> collection,
-			ResolvableType collectionType, ResolvableType elementType) {
-		ConfigurationProperty property = source.getConfigurationProperty(root);
-		if (property != null) {
-			collection.get().addAll(convert(property, collectionType));
-		}
-		else {
-			bindIndexed(source, root, elementBinder, collection, elementType);
-		}
+		return null;
 	}
 
 	@Override

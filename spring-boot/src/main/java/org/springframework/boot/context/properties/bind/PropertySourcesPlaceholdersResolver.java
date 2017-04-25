@@ -28,6 +28,7 @@ import org.springframework.util.SystemPropertyUtils;
  * {@link PlaceholdersResolver} to resolve placeholders from {@link PropertySources}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver {
