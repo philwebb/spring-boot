@@ -175,6 +175,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} {@link List} of the specified element type.
+	 * @param <E> the element type
 	 * @param elementType the list element type
 	 * @return a {@link Bindable} instance
 	 */
@@ -184,6 +185,7 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} {@link Set} of the specified element type.
+	 * @param <E> the element type
 	 * @param elementType the set element type
 	 * @return a {@link Bindable} instance
 	 */
@@ -193,6 +195,8 @@ public final class Bindable<T> {
 
 	/**
 	 * Create a new {@link Bindable} {@link Map} of the specified kay and value type.
+	 * @param <K> the key type
+	 * @param <V> the value type
 	 * @param keyType the map key type
 	 * @param valueType the map value type
 	 * @return a {@link Bindable} instance

@@ -225,8 +225,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenCommaListShouldReturnPopulatedCollection()
-			throws Exception {
+	public void bindToArrayWhenCommaListShouldReturnPopulatedArray() throws Exception {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1,2,3"));
 		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2, 3);
@@ -254,6 +253,13 @@ public class ArrayBinderTests {
 		source2.put("foo", "2,3");
 		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2);
+	}
+
+	@Test
+	public void bindToArrayShouldBindCharArray() throws Exception {
+		this.sources.add(new MockConfigurationPropertySource("foo", "word"));
+		char[] result = this.binder.bind("foo", Bindable.of(char[].class)).get();
+		assertThat(result).containsExactly("word".toCharArray());
 	}
 
 }

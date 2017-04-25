@@ -42,9 +42,8 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 		IndexedCollectionSupplier collection = new IndexedCollectionSupplier(
 				ArrayList::new);
 		ResolvableType elementType = target.getType().getComponentType();
-		ResolvableType collectionType = ResolvableType.forClassWithGenerics(List.class,
+		bindIndexed(name, target, elementBinder, collection, target.getType(),
 				elementType);
-		bindIndexed(name, target, elementBinder, collection, collectionType, elementType);
 		if (collection.wasSupplied()) {
 			List<Object> list = (List<Object>) collection.get();
 			Object array = Array.newInstance(elementType.resolve(), list.size());

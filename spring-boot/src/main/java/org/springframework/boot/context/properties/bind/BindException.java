@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import com.arjuna.ats.internal.arjuna.objectstore.jdbc.drivers.mariadb_driver;
-
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;

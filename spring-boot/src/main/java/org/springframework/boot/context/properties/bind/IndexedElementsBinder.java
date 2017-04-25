@@ -47,9 +47,9 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	protected final void bindIndexed(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
-			ResolvableType collectionType, ResolvableType elementType) {
+			ResolvableType aggregateType, ResolvableType elementType) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
-			bindIndexed(source, name, elementBinder, collection, collectionType,
+			bindIndexed(source, name, elementBinder, collection, aggregateType,
 					elementType);
 			if (collection.wasSupplied() && collection.get() != null) {
 				return;
@@ -59,19 +59,22 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			IndexedCollectionSupplier collection, ResolvableType collectionType,
+			IndexedCollectionSupplier collection, ResolvableType aggregateType,
 			ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
-			Collection<Object> converted = convert(property, collectionType);
-			collection.get().addAll(converted);
+			Object aggregate = convert(property.getValue(), aggregateType);
+			ResolvableType collectionType = ResolvableType
+					.forClassWithGenerics(collection.get().getClass(), elementType);
+			Collection<Object> elements = convert(aggregate, collectionType);
+			collection.get().addAll(elements);
 		}
 		else {
 			bindIndexed(source, root, elementBinder, collection, elementType);
 		}
 	}
 
-	private final void bindIndexed(ConfigurationPropertySource source,
+	private void bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
 			IndexedCollectionSupplier collection, ResolvableType elementType) {
 		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
@@ -88,7 +91,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		assertNoUnboundChildren(knownIndexedChildren);
 	}
 
-	private final MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
+	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
 			ConfigurationPropertySource source, ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
 		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
@@ -102,7 +105,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return children;
 	}
 
-	private final void assertNoUnboundChildren(
+	private void assertNoUnboundChildren(
 			MultiValueMap<String, ConfigurationProperty> children) {
 		if (!children.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(
@@ -112,13 +115,16 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <C> C convert(ConfigurationProperty property, ResolvableType type) {
-		Object value = property.getValue();
+	private <C> C convert(Object value, ResolvableType type) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
 		return (C) conversionService.convert(value, type);
 	}
 
+	/**
+	 * {@link AggregateBinder.AggregateSupplier AggregateSupplier} for an index
+	 * collection.
+	 */
 	protected static class IndexedCollectionSupplier
 			extends AggregateSupplier<Collection<Object>> {
 
