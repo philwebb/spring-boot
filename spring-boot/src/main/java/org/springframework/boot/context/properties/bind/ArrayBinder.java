@@ -20,7 +20,6 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -40,15 +39,19 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 
 	@Override
 	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder, Class<?> type) {
+			AggregateElementBinder elementBinder, Class<?> type) {
 		ResolvableType elementType = target.getType().getComponentType();
-		return bindToArray(name, target, itemBinder, elementType);
+		AggregateSupplier<List<Object>> collection = new AggregateSupplier<>(
+				ArrayList::new);
+		return bindToArray(name, target, elementBinder, collection, elementType);
 	}
 
 	private Object bindToArray(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder, ResolvableType elementType) {
+			AggregateElementBinder elementBinder, AggregateSupplier<List<Object>> collection,
+			ResolvableType elementType) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
-			Object array = bindToArray(name, target, itemBinder, elementType, source);
+			Object array = bindToArray(name, target, elementBinder, collection, elementType,
+					source);
 			if (array != null) {
 				return array;
 			}
@@ -57,16 +60,14 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 	}
 
 	private Object bindToArray(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder, ResolvableType elementType,
-			ConfigurationPropertySource source) {
+			AggregateElementBinder elementBinder, AggregateSupplier<List<Object>> collection,
+			ResolvableType elementType, ConfigurationPropertySource source) {
 		ConfigurationProperty property = source.getConfigurationProperty(name);
 		if (property != null) {
 			return convert(property, target.getType());
 		}
 		else {
-			AggregateSupplier<List<Object>> collection = new AggregateSupplier<>(
-					ArrayList::new);
-			bindIndexed(source, name, itemBinder, collection, elementType);
+			bindIndexed(source, name, elementBinder, collection, elementType);
 			if (collection.wasSupplied() && collection.get() != null) {
 				List<Object> list = collection.get();
 				Object array = Array.newInstance(elementType.resolve(), list.size());
@@ -77,13 +78,6 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 			}
 			return null;
 		}
-	}
-
-	private Object convert(ConfigurationProperty property, ResolvableType type) {
-		Object value = property.getValue();
-		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-		BinderConversionService conversionService = getContext().getConversionService();
-		return conversionService.convert(value, type);
 	}
 
 	@Override

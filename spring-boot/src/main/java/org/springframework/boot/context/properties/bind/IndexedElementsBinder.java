@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -82,6 +83,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 					children.values().stream().flatMap(List::stream)
 							.collect(Collectors.toCollection(TreeSet::new)));
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected <C> C convert(ConfigurationProperty property, ResolvableType type) {
+		Object value = property.getValue();
+		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
+		BinderConversionService conversionService = getContext().getConversionService();
+		return (C) conversionService.convert(value, type);
 	}
 
 }

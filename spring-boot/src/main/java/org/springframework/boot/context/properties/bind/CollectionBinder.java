@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
 
-import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -73,15 +72,6 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		else {
 			bindIndexed(source, root, elementBinder, collection, elementType);
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <E> Collection<E> convert(ConfigurationProperty property,
-			ResolvableType type) {
-		Object value = property.getValue();
-		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
-		BinderConversionService conversionService = getContext().getConversionService();
-		return (Collection<E>) conversionService.convert(value, type);
 	}
 
 	@Override
