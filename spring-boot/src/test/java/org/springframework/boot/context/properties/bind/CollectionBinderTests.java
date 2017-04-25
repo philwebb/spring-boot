@@ -111,7 +111,7 @@ public class CollectionBinderTests {
 		catch (BindException ex) {
 			ex.printStackTrace();
 			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-					.getCause()).getUnboundConfigurationProperties();
+					.getCause()).getUnboundProperties();
 			assertThat(unbound).hasSize(1);
 			ConfigurationProperty property = unbound.iterator().next();
 			assertThat(property.getName().toString()).isEqualTo("foo[3]");

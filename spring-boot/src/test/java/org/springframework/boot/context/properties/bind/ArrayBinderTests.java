@@ -153,7 +153,7 @@ public class ArrayBinderTests {
 		}
 		catch (BindException ex) {
 			Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex
-					.getCause()).getUnboundConfigurationProperties();
+					.getCause()).getUnboundProperties();
 			assertThat(unbound.size()).isEqualTo(1);
 			ConfigurationProperty property = unbound.iterator().next();
 			assertThat(property.getName().toString()).isEqualTo("foo[3]");

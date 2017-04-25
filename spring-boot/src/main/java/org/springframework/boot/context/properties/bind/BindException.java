@@ -16,9 +16,12 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import com.arjuna.ats.internal.arjuna.objectstore.jdbc.drivers.mariadb_driver;
+
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginProvider;
 
 /**
  * Exception thrown when binding fails.
@@ -27,7 +30,7 @@ import org.springframework.boot.origin.Origin;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class BindException extends RuntimeException {
+public class BindException extends RuntimeException implements OriginProvider {
 
 	private final Bindable<?> target;
 
@@ -35,14 +38,26 @@ public class BindException extends RuntimeException {
 
 	private final ConfigurationPropertyName name;
 
-	BindException(Bindable<?> target, ConfigurationProperty property,
-			ConfigurationPropertyName name, Origin origin, Throwable cause) {
+	BindException(ConfigurationPropertyName name, Bindable<?> target,
+			ConfigurationProperty property, Throwable cause) {
 		super(buildMessage(name, target), cause);
+		this.name = name;
 		this.target = target;
 		this.property = property;
-		this.name = name;
 	}
 
+	/**
+	 * Return the name of the configuration property being bound.
+	 * @return the configuration property name
+	 */
+	public ConfigurationPropertyName getName() {
+		return this.name;
+	}
+
+	/**
+	 * Return the target being bound.
+	 * @return the bind target
+	 */
 	public Bindable<?> getTarget() {
 		return this.target;
 	}
@@ -55,14 +70,18 @@ public class BindException extends RuntimeException {
 		return this.property;
 	}
 
-	public ConfigurationPropertyName getName() {
-		return this.name;
+	@Override
+	public Origin getOrigin() {
+		return Origin.from(this.name);
 	}
 
-	private static String buildMessage(
-			ConfigurationPropertyName configurationPropertyName, Bindable<?> target) {
-		return "Failed to bind properties under '" + configurationPropertyName + "' to "
-				+ target.getType();
+	private static String buildMessage(ConfigurationPropertyName name,
+			Bindable<?> target) {
+		StringBuilder message = new StringBuilder();
+		message.append("Failed to bind properties");
+		message.append(name == null ? "" : " under '" + name + "'");
+		message.append(" to " + target.getType());
+		return message.toString();
 	}
 
 }

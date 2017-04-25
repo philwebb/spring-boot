@@ -33,7 +33,6 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.origin.Origin;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -210,7 +209,6 @@ public class Binder {
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, Exception error) {
-		Origin origin = Origin.from(error);
 		try {
 			Object result = handler.onFailure(name, target, context, error);
 			return convert(result, target);
@@ -219,7 +217,7 @@ public class Binder {
 			if (ex instanceof BindException) {
 				throw (BindException) ex;
 			}
-			throw new BindException(target, property, name, origin, ex);
+			throw new BindException(name, target, context.getConfigurationProperty(), ex);
 		}
 	}
 

@@ -391,7 +391,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		MutablePropertySources propertySources = env.getPropertySources();
 		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
 				Collections.singletonMap("COM_EXAMPLE_FOO", "10")));
-		propertySources.addLast(new MapPropertySource("test", Collections.singletonMap("com.example.foo", 5)));
+		propertySources.addLast(new MapPropertySource("test",
+				Collections.singletonMap("com.example.foo", 5)));
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		int foo = this.context.getBean(TestConfiguration.class).getFoo();
@@ -399,7 +400,8 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	public void overridingPropertiesWithPlaceholderResolutionInEnvShouldOverride() throws Exception {
+	public void overridingPropertiesWithPlaceholderResolutionInEnvShouldOverride()
+			throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		ConfigurableEnvironment env = this.context.getEnvironment();
 		MutablePropertySources propertySources = env.getPropertySources();

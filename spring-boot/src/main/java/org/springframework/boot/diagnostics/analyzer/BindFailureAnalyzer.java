@@ -60,15 +60,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
 		for (ObjectError error : errors) {
 			if (error instanceof FieldError) {
-				FieldError fieldError = (FieldError) error;
-				Origin origin = Origin.from(fieldError);
-				description.append(String.format("%n    Property: %s",
-						error.getObjectName() + "." + fieldError.getField()));
-				description.append(
-						String.format("%n    Value: %s", fieldError.getRejectedValue()));
-				if (origin != null) {
-					description.append(String.format("%n    Origin: %s", origin));
-				}
+				appendFieldError(description, (FieldError) error);
 			}
 			description.append(
 					String.format("%n    Reason: %s%n", error.getDefaultMessage()));
@@ -76,14 +68,23 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 		return getFailureAnalysis(description, cause);
 	}
 
-	private FailureAnalysis analyzeUnboundConfigurationPropertiesException(BindException cause,
-			UnboundConfigurationPropertiesException exception) {
+	private void appendFieldError(StringBuilder description, FieldError error) {
+		Origin origin = Origin.from(error);
+		description.append(String.format("%n    Property: %s",
+				error.getObjectName() + "." + error.getField()));
+		description.append(String.format("%n    Value: %s", error.getRejectedValue()));
+		if (origin != null) {
+			description.append(String.format("%n    Origin: %s", origin));
+		}
+	}
+
+	private FailureAnalysis analyzeUnboundConfigurationPropertiesException(
+			BindException cause, UnboundConfigurationPropertiesException exception) {
 		StringBuilder description = new StringBuilder(
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
-		for (ConfigurationProperty property : exception.getUnboundConfigurationProperties()) {
+		for (ConfigurationProperty property : exception.getUnboundProperties()) {
 			buildDescription(description, property);
-			description.append(
-					String.format("%n    Reason: %s", exception.getMessage()));
+			description.append(String.format("%n    Reason: %s", exception.getMessage()));
 		}
 		return getFailureAnalysis(description, cause);
 	}
@@ -93,24 +94,22 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 				String.format("Binding to target %s failed:%n", cause.getTarget()));
 		ConfigurationProperty property = cause.getProperty();
 		buildDescription(description, property);
-		description.append(
-				String.format("%n    Reason: %s", getMessage(cause)));
+		description.append(String.format("%n    Reason: %s", getMessage(cause)));
 		return getFailureAnalysis(description, cause);
 	}
 
-	private void buildDescription(StringBuilder description, ConfigurationProperty property) {
+	private void buildDescription(StringBuilder description,
+			ConfigurationProperty property) {
 		if (property != null) {
-			description.append(
-					String.format("%n    Property: %s", property.getName()));
-			description.append(
-					String.format("%n    Value: %s", property.getValue()));
-			description.append(
-					String.format("%n    Origin: %s", property.getOrigin()));
+			description.append(String.format("%n    Property: %s", property.getName()));
+			description.append(String.format("%n    Value: %s", property.getValue()));
+			description.append(String.format("%n    Origin: %s", property.getOrigin()));
 		}
 	}
 
 	private String getMessage(BindException cause) {
-		if (cause.getCause() != null && StringUtils.hasText(cause.getCause().getMessage())) {
+		if (cause.getCause() != null
+				&& StringUtils.hasText(cause.getCause().getMessage())) {
 			return cause.getCause().getMessage();
 		}
 		return cause.getMessage();
@@ -120,4 +119,5 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 		return new FailureAnalysis(description.toString(),
 				"Update your application's configuration", cause);
 	}
+
 }
