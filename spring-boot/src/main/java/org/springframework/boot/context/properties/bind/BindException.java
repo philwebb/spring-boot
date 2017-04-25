@@ -42,6 +42,10 @@ public class BindException extends RuntimeException {
 		return this.target;
 	}
 
+	/**
+	 * Return the configuration property name of the item that was being bound.
+	 * @return the configuration property name
+	 */
 	public ConfigurationPropertyName getName() {
 		return this.name;
 	}

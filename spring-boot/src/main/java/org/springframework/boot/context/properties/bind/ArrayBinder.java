@@ -44,15 +44,10 @@ class ArrayBinder extends AggregateBinder<Object> {
 	}
 
 	@Override
-	protected Object doBind(ConfigurationPropertyName name, Bindable<?> target,
+	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder itemBinder, Class<?> type) {
 		ResolvableType elementType = target.getType().getComponentType();
 		return bindToArray(name, target, itemBinder, elementType);
-	}
-
-	@Override
-	protected Object merge(Object existing, Object additional) {
-		return additional;
 	}
 
 	private Object bindToArray(ConfigurationPropertyName name, Bindable<?> target,
@@ -129,6 +124,11 @@ class ArrayBinder extends AggregateBinder<Object> {
 					children.values().stream().flatMap(List::stream)
 							.collect(Collectors.toCollection(TreeSet::new)));
 		}
+	}
+
+	@Override
+	protected Object merge(Object existing, Object additional) {
+		return additional;
 	}
 
 }

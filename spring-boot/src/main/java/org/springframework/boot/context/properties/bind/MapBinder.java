@@ -40,7 +40,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	}
 
 	@Override
-	protected Object doBind(ConfigurationPropertyName name, Bindable<?> target,
+	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder, Class<?> type) {
 		Map<Object, Object> map = CollectionFactory.createMap(type, 0);
 		for (ConfigurationPropertySource source : getContext().getSources()) {

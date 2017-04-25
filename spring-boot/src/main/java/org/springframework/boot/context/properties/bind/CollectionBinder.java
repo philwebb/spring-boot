@@ -43,7 +43,7 @@ class CollectionBinder extends AggregateBinder<Collection<Object>> {
 	}
 
 	@Override
-	protected Object doBind(ConfigurationPropertyName name, Bindable<?> target,
+	protected Object bind(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder itemBinder, Class<?> type) {
 		AggregateSupplier<Collection<Object>> collection = new AggregateSupplier<>(
 				() -> CollectionFactory.createCollection(type, 0));
@@ -83,11 +83,11 @@ class CollectionBinder extends AggregateBinder<Collection<Object>> {
 
 	@SuppressWarnings("unchecked")
 	private <E> Collection<E> convert(ConfigurationProperty property,
-			ResolvableType collectionType) {
+			ResolvableType type) {
 		Object value = property.getValue();
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
-		return (Collection<E>) conversionService.convert(value, collectionType);
+		return (Collection<E>) conversionService.convert(value, type);
 	}
 
 	@SuppressWarnings("unchecked")

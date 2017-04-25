@@ -49,7 +49,7 @@ abstract class AggregateBinder<T> {
 		Class<?> type = (value == null ? target.getType().resolve()
 				: ResolvableType.forClass(AggregateBinder.class, getClass())
 						.resolveGeneric());
-		Object result = doBind(name, target, itemBinder, type);
+		Object result = bind(name, target, itemBinder, type);
 		if (result == null || value == null || value.get() == null) {
 			return result;
 		}
@@ -60,12 +60,12 @@ abstract class AggregateBinder<T> {
 	 * Perform the actual aggregate binding.
 	 * @param name the configuration property name to bind
 	 * @param target the target to bind
-	 * @param itemBinder an item binder
+	 * @param elementBinder an element binder
 	 * @param type the aggregate actual type to use
 	 * @return the bound result
 	 */
-	protected abstract Object doBind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder itemBinder, Class<?> type);
+	protected abstract Object bind(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder, Class<?> type);
 
 	/**
 	 * Merge any additional elements into the existing aggregate.

@@ -172,17 +172,30 @@ public final class Bindable<T> {
 		return of(ResolvableType.forClass(type));
 	}
 
-	// FIXME DC
+	/**
+	 * Create a new {@link Bindable} {@link List} of the specified element type.
+	 * @param elementType the list element type
+	 * @return a {@link Bindable} instance
+	 */
 	public static <E> Bindable<List<E>> listOf(Class<E> elementType) {
 		return of(ResolvableType.forClassWithGenerics(List.class, elementType));
 	}
 
-	// FIXME DC
+	/**
+	 * Create a new {@link Bindable} {@link Set} of the specified element type.
+	 * @param elementType the set element type
+	 * @return a {@link Bindable} instance
+	 */
 	public static <E> Bindable<Set<E>> setOf(Class<E> elementType) {
 		return of(ResolvableType.forClassWithGenerics(Set.class, elementType));
 	}
 
-	// FIXME DC
+	/**
+	 * Create a new {@link Bindable} {@link Map} of the specified kay and value type.
+	 * @param keyType the map key type
+	 * @param valueType the map value type
+	 * @return a {@link Bindable} instance
+	 */
 	public static <K, V> Bindable<Map<K, V>> mapOf(Class<K> keyType, Class<V> valueType) {
 		return of(ResolvableType.forClassWithGenerics(Map.class, keyType, valueType));
 	}
