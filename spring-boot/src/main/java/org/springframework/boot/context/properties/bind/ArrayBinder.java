@@ -23,10 +23,8 @@ import java.util.List;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -66,12 +64,18 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 			return convert(property, target.getType());
 		}
 		else {
-			List<Object> list = bindIndexed(source, name, itemBinder, elementType);
-			Object array = Array.newInstance(elementType.resolve(), list.size());
-			for (int i = 0; i < list.size(); i++) {
-				Array.set(array, i, list.get(i));
+			AggregateSupplier<List<Object>> collection = new AggregateSupplier<>(
+					ArrayList::new);
+			bindIndexed(source, name, itemBinder, collection, elementType);
+			if (collection.wasSupplied() && collection.get() != null) {
+				List<Object> list = collection.get();
+				Object array = Array.newInstance(elementType.resolve(), list.size());
+				for (int i = 0; i < list.size(); i++) {
+					Array.set(array, i, list.get(i));
+				}
+				return (ObjectUtils.isEmpty(array) ? null : array);
 			}
-			return (ObjectUtils.isEmpty(array) ? null : array);
+			return null;
 		}
 	}
 
@@ -80,25 +84,6 @@ class ArrayBinder extends IndexedElementsBinder<Object> {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
 		return conversionService.convert(value, type);
-	}
-
-	private List<Object> bindIndexed(ConfigurationPropertySource source,
-			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			ResolvableType elementType) {
-		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
-				source, root);
-		List<Object> list = new ArrayList<>();
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.append("[" + i + "]");
-			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
-			if (value == null) {
-				break;
-			}
-			knownIndexedChildren.remove(name.getElement().getValue(Form.UNIFORM));
-			list.add(value);
-		}
-		assertNoUnboundChildren(knownIndexedChildren);
-		return list;
 	}
 
 	@Override

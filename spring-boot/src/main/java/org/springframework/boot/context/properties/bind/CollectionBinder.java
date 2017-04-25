@@ -21,11 +21,9 @@ import java.util.Collection;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.MultiValueMap;
 
 /**
  * {@link AggregateBinder} for collections.
@@ -84,25 +82,6 @@ class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
 		return (Collection<E>) conversionService.convert(value, type);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <E> void bindIndexed(ConfigurationPropertySource source,
-			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			AggregateSupplier<? extends Collection<E>> collection,
-			ResolvableType elementType) {
-		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
-				source, root);
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.append("[" + i + "]");
-			E value = (E) elementBinder.bind(name, Bindable.of(elementType), source);
-			if (value == null) {
-				break;
-			}
-			knownIndexedChildren.remove(name.getElement().getValue(Form.UNIFORM));
-			collection.get().add(value);
-		}
-		assertNoUnboundChildren(knownIndexedChildren);
 	}
 
 	@Override
