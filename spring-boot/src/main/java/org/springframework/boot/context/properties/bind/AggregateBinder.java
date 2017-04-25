@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.core.ResolvableType;
 
 /**
- * Internal strategy used by {@link Binder} to bind aggregates (Maps, Lists, Arrays etc).
+ * Internal strategy used by {@link Binder} to bind aggregates (Maps, Lists, Arrays).
  *
  * @param <T> the type being bound
  * @author Phillip Webb

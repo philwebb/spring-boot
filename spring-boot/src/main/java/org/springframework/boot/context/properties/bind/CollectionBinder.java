@@ -17,9 +17,6 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -28,7 +25,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -36,7 +32,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Phillip Webb
  */
-class CollectionBinder extends AggregateBinder<Collection<Object>> {
+class CollectionBinder extends IndexedElementsBinder<Collection<Object>> {
 
 	CollectionBinder(BindContext context) {
 		super(context);
@@ -107,29 +103,6 @@ class CollectionBinder extends AggregateBinder<Collection<Object>> {
 			collection.get().add(value);
 		}
 		assertNoUnboundChildren(knownIndexedChildren);
-	}
-
-	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
-			ConfigurationPropertySource source, ConfigurationPropertyName root) {
-		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
-		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
-			name = rollUp(name, root);
-			if (name.getElement().isIndexed()) {
-				String key = name.getElement().getValue(Form.UNIFORM);
-				ConfigurationProperty value = source.getConfigurationProperty(name);
-				children.add(key, value);
-			}
-		}
-		return children;
-	}
-
-	private void assertNoUnboundChildren(
-			MultiValueMap<String, ConfigurationProperty> children) {
-		if (!children.isEmpty()) {
-			throw new UnboundConfigurationPropertiesException(
-					children.values().stream().flatMap(List::stream)
-							.collect(Collectors.toCollection(TreeSet::new)));
-		}
 	}
 
 	@Override

@@ -19,8 +19,6 @@ package org.springframework.boot.context.properties.bind;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -28,7 +26,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;
 
@@ -37,7 +34,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  */
-class ArrayBinder extends AggregateBinder<Object> {
+class ArrayBinder extends IndexedElementsBinder<Object> {
 
 	ArrayBinder(BindContext context) {
 		super(context);
@@ -69,7 +66,12 @@ class ArrayBinder extends AggregateBinder<Object> {
 			return convert(property, target.getType());
 		}
 		else {
-			return bindIndexed(source, name, itemBinder, elementType);
+			List<Object> list = bindIndexed(source, name, itemBinder, elementType);
+			Object array = Array.newInstance(elementType.resolve(), list.size());
+			for (int i = 0; i < list.size(); i++) {
+				Array.set(array, i, list.get(i));
+			}
+			return (ObjectUtils.isEmpty(array) ? null : array);
 		}
 	}
 
@@ -80,12 +82,12 @@ class ArrayBinder extends AggregateBinder<Object> {
 		return conversionService.convert(value, type);
 	}
 
-	private Object bindIndexed(ConfigurationPropertySource source,
+	private List<Object> bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
 			ResolvableType elementType) {
 		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
-		ArrayList<Object> list = new ArrayList<>();
+		List<Object> list = new ArrayList<>();
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root.append("[" + i + "]");
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
@@ -96,34 +98,7 @@ class ArrayBinder extends AggregateBinder<Object> {
 			list.add(value);
 		}
 		assertNoUnboundChildren(knownIndexedChildren);
-		Object array = Array.newInstance(elementType.resolve(), list.size());
-		for (int i = 0; i < list.size(); i++) {
-			Array.set(array, i, list.get(i));
-		}
-		return (ObjectUtils.isEmpty(array) ? null : array);
-	}
-
-	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
-			ConfigurationPropertySource source, ConfigurationPropertyName root) {
-		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
-		for (ConfigurationPropertyName name : source.filter(root::isAncestorOf)) {
-			name = rollUp(name, root);
-			if (name.getElement().isIndexed()) {
-				String key = name.getElement().getValue(Form.UNIFORM);
-				ConfigurationProperty value = source.getConfigurationProperty(name);
-				children.add(key, value);
-			}
-		}
-		return children;
-	}
-
-	private void assertNoUnboundChildren(
-			MultiValueMap<String, ConfigurationProperty> children) {
-		if (!children.isEmpty()) {
-			throw new UnboundConfigurationPropertiesException(
-					children.values().stream().flatMap(List::stream)
-							.collect(Collectors.toCollection(TreeSet::new)));
-		}
+		return list;
 	}
 
 	@Override
