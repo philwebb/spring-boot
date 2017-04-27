@@ -129,7 +129,8 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
-		return new Bindable<T>(this.type, this.boxedType, this.value, annotations);
+		return new Bindable<T>(this.type, this.boxedType, this.value,
+				(annotations == null ? NO_ANNOTATIONS : annotations));
 	}
 
 	public Bindable<T> withExistingValue(T existingValue) {
