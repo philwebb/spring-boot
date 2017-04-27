@@ -16,15 +16,18 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -236,7 +239,7 @@ public class Binder {
 		if (aggregateBinder != null) {
 			return bindAggregate(name, target, handler, context, aggregateBinder);
 		}
-		ConfigurationProperty property = findProperty(name);
+		ConfigurationProperty property = findProperty(name, context);
 		if (property != null) {
 			return bindProperty(name, target, handler, context, property);
 		}
@@ -260,14 +263,17 @@ public class Binder {
 	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target,
 			BindHandler handler, Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
-			Binder binder = (source == null ? Binder.this : new Binder(source));
-			return binder.bind(itemName, itemTarget, handler, context.increaseDepth());
+			return context.withSource(source,
+					() -> Binder.this.bind(itemName, itemTarget, handler, context));
 		};
-		return aggregateBinder.bind(name, target, elementBinder);
+		return context.withIncreasedDepth(
+				() -> aggregateBinder.bind(name, target, elementBinder));
 	}
 
-	private ConfigurationProperty findProperty(ConfigurationPropertyName name) {
-		return streamSources().map((source) -> source.getConfigurationProperty(name))
+	private ConfigurationProperty findProperty(ConfigurationPropertyName name,
+			Context context) {
+		return context.streamSources()
+				.map((source) -> source.getConfigurationProperty(name))
 				.filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
@@ -282,19 +288,19 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context) throws Exception {
-		BeanPropertyBinder propertyBinder = getPropertyBinder(context.increaseDepth(),
-				name, handler);
-		boolean noKnownBindableProperties = !propertyBinder.hasKnownBindableProperties();
-		if (noKnownBindableProperties && isUnbindableBean(target)) {
+		if (isUnbindableBean(target)) {
 			return null;
 		}
+		BeanPropertyBinder propertyBinder = getPropertyBinder(context, name, handler);
 		Class<?> type = target.getType().resolve();
 		if (context.hasBoundBean(type)) {
 			return null;
 		}
-		context.setBean(type);
-		return BEAN_BINDERS.stream().map((b) -> b.bind(target, propertyBinder))
-				.filter(Objects::nonNull).findFirst().orElse(null);
+		return context.withBean(type, () -> {
+			Stream<?> boundBeans = BEAN_BINDERS.stream()
+					.map((b) -> b.bind(target, propertyBinder));
+			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
+		});
 	}
 
 	private BeanPropertyBinder getPropertyBinder(Context context,
@@ -303,7 +309,7 @@ public class Binder {
 
 			@Override
 			public boolean hasKnownBindableProperties() {
-				return streamSources()
+				return context.streamSources()
 						.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
 						.isPresent();
 			}
@@ -319,15 +325,11 @@ public class Binder {
 
 	private boolean isUnbindableBean(Bindable<?> target) {
 		Class<?> resolved = target.getType().resolve();
-		if (NON_BEAN_CLASSES.contains(resolved)) {
+		if (resolved.isPrimitive() || NON_BEAN_CLASSES.contains(resolved)) {
 			return true;
 		}
 		String packageName = ClassUtils.getPackageName(resolved);
 		return packageName.startsWith("java.");
-	}
-
-	private Stream<ConfigurationPropertySource> streamSources() {
-		return StreamSupport.stream(this.sources.spliterator(), false);
 	}
 
 	/**
@@ -347,44 +349,82 @@ public class Binder {
 	 */
 	final class Context implements BindContext {
 
-		private final Context parent;
+		private int depth;
+
+		private int sourcePushCount;
+
+		private final List<ConfigurationPropertySource> source = Arrays
+				.asList((ConfigurationPropertySource) null);
+
+		private final Deque<Class<?>> beans = new ArrayDeque<>();
 
 		private ConfigurationProperty configurationProperty;
 
-		private Class<?> bean;
-
-		Context() {
-			this(null, null);
+		void increaseDepth() {
+			this.depth++;
 		}
 
-		Context(Context parent, Class<?> bean) {
-			this.parent = parent;
-			this.bean = bean;
-		}
-
-		public boolean hasBoundBean(Class<?> bean) {
-			if (this.bean != null && this.bean.equals(bean)) {
-				return true;
-			}
-			return (this.parent != null ? this.parent.hasBoundBean(bean) : false);
-		}
-
-		public void setBean(Class<?> bean) {
-			this.bean = bean;
-		}
-
-		public Context increaseDepth() {
-			return new Context(this, null);
+		void decreaseDepth() {
+			this.depth--;
 		}
 
 		@Override
 		public int getDepth() {
-			return (this.parent == null ? 0 : this.parent.getDepth() + 1);
+			return this.depth;
+		}
+
+		public <T> T withSource(ConfigurationPropertySource source,
+				Supplier<T> supplier) {
+			if (source == null) {
+				return supplier.get();
+			}
+			this.source.set(0, source);
+			this.sourcePushCount++;
+			try {
+				return supplier.get();
+			}
+			finally {
+				this.sourcePushCount--;
+			}
+		}
+
+		public <T> T withBean(Class<?> bean, Supplier<T> supplier) {
+			this.beans.push(bean);
+			try {
+				return withIncreasedDepth(supplier);
+			}
+			finally {
+				this.beans.pop();
+			}
+		}
+
+		public <T> T withIncreasedDepth(Supplier<T> supplier) {
+			increaseDepth();
+			try {
+				return supplier.get();
+			}
+			finally {
+				decreaseDepth();
+			}
+		}
+
+		private Stream<ConfigurationPropertySource> streamSources() {
+			if (this.sourcePushCount > 0) {
+				return this.source.stream();
+			}
+			return StreamSupport.stream(Binder.this.sources.spliterator(), false);
 		}
 
 		@Override
 		public Iterable<ConfigurationPropertySource> getSources() {
+			if (this.sourcePushCount > 0) {
+				return this.source;
+			}
 			return Binder.this.sources;
+		}
+
+		public boolean hasBoundBean(Class<?> bean) {
+			return this.beans.contains(bean);
 		}
 
 		@Override
@@ -392,8 +432,7 @@ public class Binder {
 			return this.configurationProperty;
 		}
 
-		public void setConfigurationProperty(
-				ConfigurationProperty configurationProperty) {
+		void setConfigurationProperty(ConfigurationProperty configurationProperty) {
 			this.configurationProperty = configurationProperty;
 		}
 
