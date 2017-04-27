@@ -118,7 +118,7 @@ public class ValidationBindHandlerTests {
 		Set<ConfigurationProperty> boundProperties = cause.getValidationErrors()
 				.getBoundProperties();
 		assertThat(boundProperties).extracting((p) -> p.getName().toString())
-				.containsExactly("foo.nested.age", "foo.nested.name");
+				.contains("foo.nested.age", "foo.nested.name");
 	}
 
 	@Test

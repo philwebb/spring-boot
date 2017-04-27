@@ -152,10 +152,14 @@ class JavaBeanBinder implements BeanBinder {
 		@SuppressWarnings("unchecked")
 		public BeanSupplier<T> getSupplier(Bindable<T> target) {
 			return new BeanSupplier<T>(() -> {
+				T instance = null;
 				if (target.getValue() != null) {
-					return target.getValue().get();
+					instance = target.getValue().get();
 				}
-				return (T) BeanUtils.instantiateClass(this.type);
+				if (instance == null) {
+					instance = (T) BeanUtils.instantiateClass(this.type);
+				}
+				return instance;
 			});
 		}
 
@@ -200,7 +204,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		private T instance;
 
-		public BeanSupplier(Supplier<T> factory) {
+		BeanSupplier(Supplier<T> factory) {
 			this.factory = factory;
 		}
 
