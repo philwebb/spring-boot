@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link BeanBinder} for mutable Java Beans.
@@ -97,45 +96,47 @@ class JavaBeanBinder implements BeanBinder {
 		}
 
 		private void putProperties(Class<?> type) {
-			ReflectionUtils.doWithMethods(type, this::addGetter, this::isGetter);
-			ReflectionUtils.doWithMethods(type, this::addSetter, this::isSetter);
-			ReflectionUtils.doWithFields(type, this::addField);
+			while (type != null && !Object.class.equals(type)) {
+				for (Method method : type.getDeclaredMethods()) {
+					if (isCandidate(method)) {
+						addMethod(method);
+					}
+				}
+				for (Field field : type.getDeclaredFields()) {
+					addField(field);
+				}
+				type = type.getSuperclass();
+			}
 		}
 
-		private boolean isGetter(Method method) {
-			return (isPropertyCandidate(method) && (method.getParameterCount() == 0)
-					&& (method.getName().startsWith("get")
-							|| (method.getName().startsWith("is")
-									&& Boolean.TYPE.equals(method.getReturnType()))));
-		}
-
-		private boolean isSetter(Method method) {
-			return (isPropertyCandidate(method) && (method.getParameterCount() == 1)
-					&& method.getName().startsWith("set"));
-		}
-
-		private boolean isPropertyCandidate(Method method) {
+		private boolean isCandidate(Method method) {
 			return Modifier.isPublic(method.getModifiers())
 					&& !Object.class.equals(method.getDeclaringClass())
 					&& !Class.class.equals(method.getDeclaringClass());
 		}
 
-		private void addGetter(Method method) {
+		private void addMethod(Method method) {
 			String name = method.getName();
-			name = (name.startsWith("get") ? name.substring(3) : name);
-			name = (name.startsWith("is") ? name.substring(2) : name);
-			name = Introspector.decapitalize(name);
-			this.properties.computeIfAbsent(name,
-					(key) -> new BeanProperty<T>(this, key, method));
+			int parameterCount = method.getParameterCount();
+			if (name.startsWith("get") && parameterCount == 0) {
+				name = Introspector.decapitalize(name.substring(3));
+				this.properties.computeIfAbsent(name, this::createBeanProperty)
+						.addGetter(method);
+			}
+			else if (name.startsWith("is") && parameterCount == 0) {
+				name = Introspector.decapitalize(name.substring(2));
+				this.properties.computeIfAbsent(name, this::createBeanProperty)
+						.addGetter(method);
+			}
+			else if (name.startsWith("set") && parameterCount == 1) {
+				name = Introspector.decapitalize(name.substring(3));
+				this.properties.computeIfAbsent(name, this::createBeanProperty)
+						.addSetter(method);
+			}
 		}
 
-		private void addSetter(Method method) {
-			String name = method.getName();
-			name = (name.startsWith("set") ? name.substring(3) : name);
-			name = Introspector.decapitalize(name);
-			BeanProperty<T> property = this.properties.computeIfAbsent(name,
-					(key) -> new BeanProperty<T>(this, key, null));
-			property.addSetter(method);
+		private BeanProperty<T> createBeanProperty(String name) {
+			return new BeanProperty<>(this, name);
 		}
 
 		private void addField(Field field) {
@@ -210,16 +211,21 @@ class JavaBeanBinder implements BeanBinder {
 
 		private final String name;
 
-		private final Method getter;
+		private Method getter;
 
 		private Method setter;
 
 		private Field field;
 
-		BeanProperty(Bean<T> bean, String name, Method getter) {
+		BeanProperty(Bean<T> bean, String name) {
 			this.bean = bean;
 			this.name = BeanPropertyName.toDashedForm(name);
-			this.getter = getter;
+		}
+
+		public void addGetter(Method getter) {
+			if (this.getter == null) {
+				this.getter = getter;
+			}
 		}
 
 		public void addSetter(Method setter) {
