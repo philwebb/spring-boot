@@ -185,7 +185,7 @@ public class ConfigurationPropertyNameBuilder {
 		return new ConfigurationPropertyNameBuilder(this.processor, elements);
 	}
 
-	private Element buildElement(String value) {
+	Element buildElement(String value) {
 		return new Element(this.processor.apply(value));
 	}
 

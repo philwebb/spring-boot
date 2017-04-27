@@ -201,9 +201,23 @@ public final class ConfigurationPropertyName
 		return result;
 	}
 
+	/**
+	 * Create a new {@link ConfigurationPropertyName} by appending the given index.
+	 * @param index the index to append
+	 * @return a new {@link ConfigurationPropertyName}
+	 */
+	public ConfigurationPropertyName appendIndex(int index) {
+		return append("[" + index + "]");
+	}
+
+	/**
+	 * Create a new {@link ConfigurationPropertyName} by appending the given element.
+	 * @param element the element to append
+	 * @return a new {@link ConfigurationPropertyName}
+	 */
 	public ConfigurationPropertyName append(String element) {
 		if (StringUtils.hasLength(element)) {
-			return BUILDER.from(this).append(element).build();
+			return new ConfigurationPropertyName(this, BUILDER.buildElement(element));
 		}
 		return this;
 	}

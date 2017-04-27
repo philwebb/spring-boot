@@ -80,7 +80,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.append("[" + i + "]");
+			ConfigurationPropertyName name = root.appendIndex(i);
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;
