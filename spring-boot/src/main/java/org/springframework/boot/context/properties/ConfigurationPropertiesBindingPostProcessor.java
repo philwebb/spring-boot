@@ -120,6 +120,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConfigurationPropertySources configurationSources;
 
+	private Binder binder;
+
 	/**
 	 * A list of custom converters (in addition to the defaults) to use when converting
 	 * properties for binding.
@@ -327,13 +329,18 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private Binder getBinder() {
-		ConversionService conversionService = this.conversionService;
-		if (conversionService == null) {
-			conversionService = getDefaultConversionService();
+		Binder binder = this.binder;
+		if (binder == null) {
+			ConversionService conversionService = this.conversionService;
+			if (conversionService == null) {
+				conversionService = getDefaultConversionService();
+			}
+			binder = new Binder(this.configurationSources,
+					new PropertySourcesPlaceholdersResolver(this.propertySources),
+					conversionService);
+			this.binder = binder;
 		}
-		return new Binder(this.configurationSources,
-				new PropertySourcesPlaceholdersResolver(this.propertySources),
-				conversionService);
+		return binder;
 	}
 
 	private ConversionService getDefaultConversionService() {
