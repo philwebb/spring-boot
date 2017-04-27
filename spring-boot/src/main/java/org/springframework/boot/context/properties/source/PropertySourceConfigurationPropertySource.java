@@ -85,21 +85,11 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		Cache cache = getCache();
-		if (cache != null && cache.isKnownMissingName(name)) {
-			return null;
-		}
 		ConfigurationProperty configurationProperty = findDirectly(name);
 		if (configurationProperty == null) {
 			configurationProperty = findByEnumeration(name);
 		}
-		if (configurationProperty != null) {
-			return configurationProperty;
-		}
-		if (cache != null) {
-			cache.markKnownMissingName(name);
-		}
-		return null;
+		return configurationProperty;
 	}
 
 	private ConfigurationProperty findDirectly(ConfigurationPropertyName name) {
