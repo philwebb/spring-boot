@@ -16,20 +16,18 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.beans.PropertyDescriptor;
+import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.Property;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link BeanBinder} for mutable Java Beans.
@@ -45,138 +43,120 @@ class JavaBeanBinder implements BeanBinder {
 		if (bean == null) {
 			return null;
 		}
-		boolean bound = bind(bean, propertyBinder);
-		return (bound ? bean.getInstance() : null);
+		boolean bound = bind(bindable, propertyBinder, bean);
+		return (bound ? bean.getInstance(bindable) : null);
 	}
 
-	private boolean bind(Bean<?> bean, BeanPropertyBinder propertyBinder) {
+	private <T> boolean bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder,
+			Bean<T> bean) {
 		boolean bound = false;
-		for (Property property : bean.getProperties()) {
-			Object boundValue = bind(bean, property, propertyBinder);
-			bound |= boundValue != null;
+		for (Map.Entry<String, BeanProperty<T>> entry : bean.getProperties().entrySet()) {
+			bound |= bind(bindable, propertyBinder, entry.getValue());
 		}
 		return bound;
 	}
 
-	private Object bind(Bean<?> bean, Property property,
-			BeanPropertyBinder propertyBinder) {
-		ResolvableType type = getResolvableType(property);
-		Supplier<Object> value = bean.getPropertyValue(property);
-		String propertyName = BeanPropertyName.toDashedForm(property);
-		Annotation[] annotations = getAnnotations(bean, property);
+	private <T> boolean bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder,
+			BeanProperty<T> property) {
+		String propertyName = property.getName();
+		ResolvableType type = property.getType();
+		Supplier<Object> value = property.getValue(bindable);
+		Annotation[] annotations = property.getAnnotations();
 		Object bound = propertyBinder.bindProperty(propertyName,
 				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
 		if (bound == null) {
-			return null;
+			return false;
 		}
-		if (property.getWriteMethod() != null) {
-			bean.setPropertyValue(property, bound);
+		if (property.isSettable()) {
+			property.setValue(bindable, bound);
 		}
 		else if (value == null || !bound.equals(value.get())) {
 			throw new IllegalStateException(
 					"No setter found for property: " + property.getName());
 		}
-		return bound;
-	}
-
-	private ResolvableType getResolvableType(Property property) {
-		if (property.getWriteMethod() != null) {
-			return ResolvableType.forMethodParameter(property.getWriteMethod(), 0);
-		}
-		else {
-			return ResolvableType.forMethodReturnType(property.getReadMethod());
-		}
-	}
-
-	private Annotation[] getAnnotations(Bean<?> bean, Property property) {
-		try {
-			Field field = bean.getType().getDeclaredField(property.getName());
-			return field.getDeclaredAnnotations();
-		}
-		catch (Exception ex) {
-			return null;
-		}
+		return true;
 	}
 
 	/**
 	 * The bean being bound.
 	 */
-	private static class Bean<T> {
+	private static final class Bean<T> {
+
+		private static Bean<?> cached;
 
 		private final Class<?> type;
 
-		private final Supplier<T> existingValue;
-
-		private final List<Property> properties;
+		private final Map<String, BeanProperty<T>> properties = new LinkedHashMap<>();
 
 		private T instance;
 
-		Bean(Class<?> type, Supplier<T> existingValue) {
+		Bean(Class<?> type) {
 			this.type = type;
-			this.existingValue = existingValue;
-			this.properties = convertToProperties(type,
-					BeanUtils.getPropertyDescriptors(type));
+			putProperties(type);
 		}
 
-		private List<Property> convertToProperties(Class<?> type,
-				PropertyDescriptor[] descriptors) {
-			Stream<Property> properties = Arrays.stream(descriptors)
-					.map((descriptor) -> convertToProperty(type, descriptor))
-					.filter(p -> !isFiltered(p));
-			return Collections.unmodifiableList(properties.collect(Collectors.toList()));
+		private void putProperties(Class<?> type) {
+			ReflectionUtils.doWithMethods(type, this::addGetter, this::isGetter);
+			ReflectionUtils.doWithMethods(type, this::addSetter, this::isSetter);
+			ReflectionUtils.doWithFields(type, this::addField);
 		}
 
-		private Property convertToProperty(Class<?> type, PropertyDescriptor descriptor) {
-			return new Property(type, descriptor.getReadMethod(),
-					descriptor.getWriteMethod(), descriptor.getName());
+		private boolean isGetter(Method method) {
+			return (isPropertyCandidate(method) && (method.getParameterCount() == 0)
+					&& (method.getName().startsWith("get")
+							|| (method.getName().startsWith("is")
+									&& Boolean.TYPE.equals(method.getReturnType()))));
 		}
 
-		private boolean isFiltered(Property property) {
-			return "class".equals(property.getName());
+		private boolean isSetter(Method method) {
+			return (isPropertyCandidate(method) && (method.getParameterCount() == 1)
+					&& method.getName().startsWith("set"));
 		}
 
-		public List<Property> getProperties() {
-			return this.properties;
+		private boolean isPropertyCandidate(Method method) {
+			return Modifier.isPublic(method.getModifiers())
+					&& !Object.class.equals(method.getDeclaringClass())
+					&& !Class.class.equals(method.getDeclaringClass());
+		}
+
+		private void addGetter(Method method) {
+			String name = method.getName();
+			name = (name.startsWith("get") ? name.substring(3) : name);
+			name = (name.startsWith("is") ? name.substring(2) : name);
+			name = Introspector.decapitalize(name);
+			this.properties.computeIfAbsent(name,
+					(key) -> new BeanProperty<T>(this, key, method));
+		}
+
+		private void addSetter(Method method) {
+			String name = method.getName();
+			name = (name.startsWith("set") ? name.substring(3) : name);
+			name = Introspector.decapitalize(name);
+			BeanProperty<T> property = this.properties.computeIfAbsent(name,
+					(key) -> new BeanProperty<T>(this, key, null));
+			property.addSetter(method);
+		}
+
+		private void addField(Field field) {
+			BeanProperty<T> property = this.properties.get(field.getName());
+			if (property != null) {
+				property.addField(field);
+			}
 		}
 
 		public Class<?> getType() {
 			return this.type;
 		}
 
-		public Supplier<Object> getPropertyValue(Property property) {
-			Method readMethod = property.getReadMethod();
-			if (readMethod == null) {
-				return null;
-			}
-			return () -> {
-				try {
-					readMethod.setAccessible(true);
-					return readMethod.invoke(getInstance());
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(
-							"Unable to get value for property " + property.getName(), ex);
-				}
-			};
-		}
-
-		public void setPropertyValue(Property property, Object value) {
-			try {
-				Method writeMethod = property.getWriteMethod();
-				writeMethod.setAccessible(true);
-				writeMethod.invoke(getInstance(), value);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Unable to set value for property " + property.getName(), ex);
-			}
+		public Map<String, BeanProperty<T>> getProperties() {
+			return this.properties;
 		}
 
 		@SuppressWarnings("unchecked")
-		public T getInstance() {
+		public T getInstance(Bindable<T> bindable) {
 			if (this.instance == null) {
-				if (this.existingValue != null) {
-					this.instance = this.existingValue.get();
+				if (bindable.getValue() != null) {
+					this.instance = bindable.getValue().get();
 				}
 				if (this.instance == null) {
 					this.instance = (T) BeanUtils.instantiateClass(this.type);
@@ -185,23 +165,123 @@ class JavaBeanBinder implements BeanBinder {
 			return this.instance;
 		}
 
+		@SuppressWarnings("unchecked")
 		public static <T> Bean<T> get(Bindable<T> bindable,
 				boolean useExistingValueForType) {
 			Class<?> type = bindable.getType().resolve();
 			Supplier<T> value = bindable.getValue();
-			if (value == null && (type.isInterface() || !hasDefaultConstructor(type))) {
+			if (value == null && !isInstantiatable(type)) {
 				return null;
 			}
 			if (useExistingValueForType && value != null) {
 				T instance = value.get();
 				type = (instance != null ? instance.getClass() : type);
 			}
-			return new Bean<>(type, value);
+			Bean<?> bean = Bean.cached;
+			if (bean == null || !type.equals(bean.getType())) {
+				bean = new Bean<>(type);
+				cached = bean;
+			}
+			return (Bean<T>) bean;
 		}
 
-		private static boolean hasDefaultConstructor(Class<?> type) {
-			return Arrays.stream(type.getDeclaredConstructors())
-					.filter((c) -> c.getParameterCount() == 0).findFirst().isPresent();
+		private static boolean isInstantiatable(Class<?> type) {
+			if (type.isInterface()) {
+				return false;
+			}
+			try {
+				type.getDeclaredConstructor();
+				return true;
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
+
+	}
+
+	/**
+	 * A bean property being bound.
+	 */
+	private static final class BeanProperty<T> {
+
+		private final Bean<T> bean;
+
+		private final String name;
+
+		private final Method getter;
+
+		private Method setter;
+
+		private Field field;
+
+		public BeanProperty(Bean<T> bean, String name, Method getter) {
+			this.bean = bean;
+			this.name = BeanPropertyName.toDashedForm(name);
+			this.getter = getter;
+		}
+
+		public void addSetter(Method setter) {
+			if (this.setter == null) {
+				this.setter = setter;
+			}
+		}
+
+		public void addField(Field field) {
+			if (this.field == null) {
+				this.field = field;
+			}
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public ResolvableType getType() {
+			if (this.setter != null) {
+				return ResolvableType.forMethodParameter(this.setter, 0);
+			}
+			return ResolvableType.forMethodReturnType(this.getter);
+		}
+
+		public Annotation[] getAnnotations() {
+			try {
+				return (this.field == null ? null : this.field.getDeclaredAnnotations());
+			}
+			catch (Exception ex) {
+				return null;
+			}
+		}
+
+		public Supplier<Object> getValue(Bindable<T> bindable) {
+			if (this.getter == null) {
+				return null;
+			}
+			return () -> {
+				try {
+					this.getter.setAccessible(true);
+					return this.getter.invoke(this.bean.getInstance(bindable));
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(
+							"Unable to get value for property " + this.name, ex);
+				}
+			};
+		}
+
+		public boolean isSettable() {
+			return this.setter != null;
+		}
+
+		public void setValue(Bindable<T> bindable, Object value) {
+			try {
+				this.setter.setAccessible(true);
+				this.setter.invoke(this.bean.getInstance(bindable), value);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(
+						"Unable to set value for property " + this.name, ex);
+			}
 		}
 
 	}

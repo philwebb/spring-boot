@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import org.springframework.core.convert.Property;
-
 /**
  * Internal utility to help when dealing with Java Bean property names.
  *
@@ -30,27 +28,30 @@ abstract class BeanPropertyName {
 	}
 
 	/**
-	 * Return the name of the specified {@link Property} in dashed form.
-	 * @param property the source property
-	 * @return the dashed from
-	 */
-	public static String toDashedForm(Property property) {
-		return toDashedForm(property.getName());
-	}
-
-	/**
 	 * Return the specified Java Bean property name in dashed form.
 	 * @param name the source name
 	 * @return the dashed from
 	 */
 	public static String toDashedForm(String name) {
+		return toDashedForm(name, 0);
+	}
+
+	/**
+	 * Return the specified Java Bean property name in dashed form.
+	 * @param name the source name
+	 * @param start the starting char
+	 * @return the dashed from
+	 */
+	public static String toDashedForm(String name, int start) {
 		StringBuilder result = new StringBuilder();
-		for (char c : name.replace("_", "-").toCharArray()) {
-			if (Character.isUpperCase(c) && result.length() > 0
+		char[] chars = name.replace("_", "-").toCharArray();
+		for (int i = start; i < chars.length; i++) {
+			char ch = chars[i];
+			if (Character.isUpperCase(ch) && result.length() > 0
 					&& result.charAt(result.length() - 1) != '-') {
 				result.append("-");
 			}
-			result.append(Character.toLowerCase(c));
+			result.append(Character.toLowerCase(ch));
 		}
 		return result.toString();
 	}
