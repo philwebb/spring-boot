@@ -27,11 +27,11 @@ interface BeanBinder {
 	/**
 	 * Return a bound bean instance or {@code null} if the {@link BeanBinder} does not
 	 * support the specified {@link Bindable}.
-	 * @param bindable the binable to bind
+	 * @param target the binable to bind
 	 * @param propertyBinder property binder
 	 * @param <T> The source type
 	 * @return a bound instance or {@code null}
 	 */
-	<T> T bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder);
+	<T> T bind(Bindable<T> target, BeanPropertyBinder propertyBinder);
 
 }
