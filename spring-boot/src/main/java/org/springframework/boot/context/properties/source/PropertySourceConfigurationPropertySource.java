@@ -27,7 +27,6 @@ import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -131,16 +130,19 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		return getPropertyMappings().stream()
-				.map((mapping) -> mapping.getConfigurationPropertyName());
+		return getConfigurationPropertyNames().stream();
 	}
 
 	@Override
 	public Iterator<ConfigurationPropertyName> iterator() {
+		return getConfigurationPropertyNames().iterator();
+	}
+
+	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
 		Cache cache = getCache();
 		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
 		if (names != null) {
-			return names.iterator();
+			return names;
 		}
 		List<PropertyMapping> mappings = getPropertyMappings();
 		names = new ArrayList<ConfigurationPropertyName>(mappings.size());
@@ -151,7 +153,7 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		if (cache != null) {
 			cache.setNames(names);
 		}
-		return names.iterator();
+		return names;
 	}
 
 	private List<PropertyMapping> getPropertyMappings() {
@@ -241,14 +243,6 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		private List<ConfigurationPropertyName> names;
 
 		private List<PropertyMapping> mappings;
-
-		public boolean isKnownMissingName(ConfigurationPropertyName name) {
-			return name.equals(this.knownMissingName);
-		}
-
-		public void markKnownMissingName(ConfigurationPropertyName name) {
-			this.knownMissingName = name;
-		}
 
 		public List<ConfigurationPropertyName> getNames() {
 			return this.names;
