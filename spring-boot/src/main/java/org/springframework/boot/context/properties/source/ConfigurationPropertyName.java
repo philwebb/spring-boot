@@ -217,7 +217,10 @@ public final class ConfigurationPropertyName
 	 */
 	public ConfigurationPropertyName append(String element) {
 		if (StringUtils.hasLength(element)) {
-			return new ConfigurationPropertyName(this, BUILDER.buildElement(element));
+			boolean isRoot = (this == EMPTY
+					|| getElement().getValue(Form.ORIGINAL).isEmpty());
+			ConfigurationPropertyName parent = (isRoot ? null : this);
+			return new ConfigurationPropertyName(parent, BUILDER.buildElement(element));
 		}
 		return this;
 	}
