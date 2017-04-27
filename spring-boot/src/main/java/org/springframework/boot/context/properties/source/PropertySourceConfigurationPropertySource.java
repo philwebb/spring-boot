@@ -78,16 +78,8 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 			PropertyMapper mapper) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
-		this.propertySource = extractPropertySource(propertySource);
+		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
-	}
-
-	private PropertySource<?> extractPropertySource(PropertySource<?> propertySource) {
-		if (propertySource instanceof SystemEnvironmentPropertySource) {
-			return new MapPropertySource(propertySource.getName(),
-					((SystemEnvironmentPropertySource) propertySource).getSource());
-		}
-		return propertySource;
 	}
 
 	@Override
