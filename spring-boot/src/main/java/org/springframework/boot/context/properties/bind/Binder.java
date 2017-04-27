@@ -244,10 +244,11 @@ public class Binder {
 	}
 
 	private AggregateBinder<?> getAggregateBinder(Bindable<?> target, Context context) {
-		if (Map.class.isAssignableFrom(target.getType().resolve())) {
+		Class<?> resolvedType = target.getType().resolve();
+		if (Map.class.isAssignableFrom(resolvedType)) {
 			return new MapBinder(context);
 		}
-		if (Collection.class.isAssignableFrom(target.getType().resolve())) {
+		if (Collection.class.isAssignableFrom(resolvedType)) {
 			return new CollectionBinder(context);
 		}
 		if (target.getType().isArray()) {
