@@ -216,7 +216,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		private Field field;
 
-		public BeanProperty(Bean<T> bean, String name, Method getter) {
+		BeanProperty(Bean<T> bean, String name, Method getter) {
 			this.bean = bean;
 			this.name = BeanPropertyName.toDashedForm(name);
 			this.getter = getter;
