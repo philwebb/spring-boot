@@ -43,24 +43,25 @@ class JavaBeanBinder implements BeanBinder {
 		if (bean == null) {
 			return null;
 		}
-		boolean bound = bind(target, propertyBinder, bean);
-		return (bound ? bean.getInstance(target) : null);
+		BeanSupplier<T> beanSupplier = bean.getSupplier(target);
+		boolean bound = bind(target, propertyBinder, bean, beanSupplier);
+		return (bound ? beanSupplier.get() : null);
 	}
 
 	private <T> boolean bind(Bindable<T> target, BeanPropertyBinder propertyBinder,
-			Bean<T> bean) {
+			Bean<T> bean, BeanSupplier<T> beanSupplier) {
 		boolean bound = false;
-		for (Map.Entry<String, BeanProperty<T>> entry : bean.getProperties().entrySet()) {
-			bound |= bind(target, propertyBinder, entry.getValue());
+		for (Map.Entry<String, BeanProperty> entry : bean.getProperties().entrySet()) {
+			bound |= bind(beanSupplier, propertyBinder, entry.getValue());
 		}
 		return bound;
 	}
 
-	private <T> boolean bind(Bindable<T> target, BeanPropertyBinder propertyBinder,
-			BeanProperty<T> property) {
+	private <T> boolean bind(BeanSupplier<T> beanSupplier,
+			BeanPropertyBinder propertyBinder, BeanProperty property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
-		Supplier<Object> value = property.getValue(target);
+		Supplier<Object> value = property.getValue(beanSupplier);
 		Annotation[] annotations = property.getAnnotations();
 		Object bound = propertyBinder.bindProperty(propertyName,
 				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
@@ -68,7 +69,7 @@ class JavaBeanBinder implements BeanBinder {
 			return false;
 		}
 		if (property.isSettable()) {
-			property.setValue(target, bound);
+			property.setValue(beanSupplier, bound);
 		}
 		else if (value == null || !bound.equals(value.get())) {
 			throw new IllegalStateException(
@@ -80,15 +81,13 @@ class JavaBeanBinder implements BeanBinder {
 	/**
 	 * The bean being bound.
 	 */
-	private static final class Bean<T> {
+	private static class Bean<T> {
 
 		private static Bean<?> cached;
 
 		private final Class<?> type;
 
-		private final Map<String, BeanProperty<T>> properties = new LinkedHashMap<>();
-
-		private T instance;
+		private final Map<String, BeanProperty> properties = new LinkedHashMap<>();
 
 		Bean(Class<?> type) {
 			this.type = type;
@@ -120,27 +119,23 @@ class JavaBeanBinder implements BeanBinder {
 			int parameterCount = method.getParameterCount();
 			if (name.startsWith("get") && parameterCount == 0) {
 				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, this::createBeanProperty)
+				this.properties.computeIfAbsent(name, BeanProperty::new)
 						.addGetter(method);
 			}
 			else if (name.startsWith("is") && parameterCount == 0) {
 				name = Introspector.decapitalize(name.substring(2));
-				this.properties.computeIfAbsent(name, this::createBeanProperty)
+				this.properties.computeIfAbsent(name, BeanProperty::new)
 						.addGetter(method);
 			}
 			else if (name.startsWith("set") && parameterCount == 1) {
 				name = Introspector.decapitalize(name.substring(3));
-				this.properties.computeIfAbsent(name, this::createBeanProperty)
+				this.properties.computeIfAbsent(name, BeanProperty::new)
 						.addSetter(method);
 			}
 		}
 
-		private BeanProperty<T> createBeanProperty(String name) {
-			return new BeanProperty<>(this, name);
-		}
-
 		private void addField(Field field) {
-			BeanProperty<T> property = this.properties.get(field.getName());
+			BeanProperty property = this.properties.get(field.getName());
 			if (property != null) {
 				property.addField(field);
 			}
@@ -150,21 +145,18 @@ class JavaBeanBinder implements BeanBinder {
 			return this.type;
 		}
 
-		public Map<String, BeanProperty<T>> getProperties() {
+		public Map<String, BeanProperty> getProperties() {
 			return this.properties;
 		}
 
 		@SuppressWarnings("unchecked")
-		public T getInstance(Bindable<T> bindable) {
-			if (this.instance == null) {
-				if (bindable.getValue() != null) {
-					this.instance = bindable.getValue().get();
+		public BeanSupplier<T> getSupplier(Bindable<T> target) {
+			return new BeanSupplier<T>(() -> {
+				if (target.getValue() != null) {
+					return target.getValue().get();
 				}
-				if (this.instance == null) {
-					this.instance = (T) BeanUtils.instantiateClass(this.type);
-				}
-			}
-			return this.instance;
+				return (T) BeanUtils.instantiateClass(this.type);
+			});
 		}
 
 		@SuppressWarnings("unchecked")
@@ -202,12 +194,30 @@ class JavaBeanBinder implements BeanBinder {
 
 	}
 
+	private static class BeanSupplier<T> implements Supplier<T> {
+
+		private final Supplier<T> factory;
+
+		private T instance;
+
+		public BeanSupplier(Supplier<T> factory) {
+			this.factory = factory;
+		}
+
+		@Override
+		public T get() {
+			if (this.instance == null) {
+				this.instance = this.factory.get();
+			}
+			return this.instance;
+		}
+
+	}
+
 	/**
 	 * A bean property being bound.
 	 */
-	private static final class BeanProperty<T> {
-
-		private final Bean<T> bean;
+	private static class BeanProperty {
 
 		private final String name;
 
@@ -217,8 +227,7 @@ class JavaBeanBinder implements BeanBinder {
 
 		private Field field;
 
-		BeanProperty(Bean<T> bean, String name) {
-			this.bean = bean;
+		BeanProperty(String name) {
 			this.name = BeanPropertyName.toDashedForm(name);
 		}
 
@@ -260,14 +269,14 @@ class JavaBeanBinder implements BeanBinder {
 			}
 		}
 
-		public Supplier<Object> getValue(Bindable<T> bindable) {
+		public Supplier<Object> getValue(Supplier<?> instance) {
 			if (this.getter == null) {
 				return null;
 			}
 			return () -> {
 				try {
 					this.getter.setAccessible(true);
-					return this.getter.invoke(this.bean.getInstance(bindable));
+					return this.getter.invoke(instance.get());
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(
@@ -280,10 +289,10 @@ class JavaBeanBinder implements BeanBinder {
 			return this.setter != null;
 		}
 
-		public void setValue(Bindable<T> bindable, Object value) {
+		public void setValue(Supplier<?> instance, Object value) {
 			try {
 				this.setter.setAccessible(true);
-				this.setter.invoke(this.bean.getInstance(bindable), value);
+				this.setter.invoke(instance.get(), value);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(
