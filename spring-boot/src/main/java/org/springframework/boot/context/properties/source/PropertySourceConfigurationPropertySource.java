@@ -18,14 +18,16 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -63,7 +65,9 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 
 	private final PropertyMapper mapper;
 
-	private final PropertyMappingsCache propertyMappingsCache = new PropertyMappingsCache();
+	private volatile Object cacheKey;
+
+	private volatile Cache cache;
 
 	/**
 	 * Create a new {@link PropertySourceConfigurationPropertySource} implementation.
@@ -74,18 +78,36 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 			PropertyMapper mapper) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
-		this.propertySource = propertySource;
+		this.propertySource = extractPropertySource(propertySource);
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
+	}
+
+	private PropertySource<?> extractPropertySource(PropertySource<?> propertySource) {
+		if (propertySource instanceof SystemEnvironmentPropertySource) {
+			return new MapPropertySource(propertySource.getName(),
+					((SystemEnvironmentPropertySource) propertySource).getSource());
+		}
+		return propertySource;
 	}
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
+		Cache cache = getCache();
+		if (cache != null && cache.isKnownMissingName(name)) {
+			return null;
+		}
 		ConfigurationProperty configurationProperty = findDirectly(name);
 		if (configurationProperty == null) {
 			configurationProperty = findByEnumeration(name);
 		}
-		return configurationProperty;
+		if (configurationProperty != null) {
+			return configurationProperty;
+		}
+		if (cache != null) {
+			cache.markKnownMissingName(name);
+		}
+		return null;
 	}
 
 	private ConfigurationProperty findDirectly(ConfigurationPropertyName name) {
@@ -131,22 +153,68 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 				.map((mapping) -> mapping.getConfigurationPropertyName());
 	}
 
+	@Override
+	public Iterator<ConfigurationPropertyName> iterator() {
+		Cache cache = getCache();
+		List<ConfigurationPropertyName> names = (cache != null ? cache.getNames() : null);
+		if (names != null) {
+			return names.iterator();
+		}
+		List<PropertyMapping> mappings = getPropertyMappings();
+		names = new ArrayList<ConfigurationPropertyName>(mappings.size());
+		for (PropertyMapping mapping : mappings) {
+			names.add(mapping.getConfigurationPropertyName());
+		}
+		names = Collections.unmodifiableList(names);
+		if (cache != null) {
+			cache.setNames(names);
+		}
+		return names.iterator();
+	}
+
 	private List<PropertyMapping> getPropertyMappings() {
 		if (!(this.propertySource instanceof EnumerablePropertySource)) {
 			return Collections.emptyList();
 		}
+		Cache cache = getCache();
+		List<PropertyMapping> mappings = (cache != null ? cache.getMappings() : null);
+		if (mappings != null) {
+			return mappings;
+		}
 		String[] names = ((EnumerablePropertySource<?>) this.propertySource)
 				.getPropertyNames();
-		List<PropertyMapping> mappings = this.propertyMappingsCache.get(names);
-		if (mappings == null) {
-			mappings = new ArrayList<PropertyMapping>(names.length);
-			for (String name : names) {
-				mappings.addAll(this.mapper.map(this.propertySource, name));
-			}
-			mappings = Collections.unmodifiableList(mappings);
-			this.propertyMappingsCache.put(names, mappings);
+		mappings = new ArrayList<PropertyMapping>(names.length);
+		for (String name : names) {
+			mappings.addAll(this.mapper.map(this.propertySource, name));
+		}
+		mappings = Collections.unmodifiableList(mappings);
+		if (cache != null) {
+			cache.setMappings(mappings);
 		}
 		return mappings;
+	}
+
+	private Cache getCache() {
+		Object cacheKey = getCacheKey();
+		if (cacheKey == null) {
+			return null;
+		}
+		if (ObjectUtils.nullSafeEquals(cacheKey, this.cacheKey)) {
+			return this.cache;
+		}
+		this.cache = new Cache();
+		this.cacheKey = cacheKey;
+		return this.cache;
+	}
+
+	private Object getCacheKey() {
+		if (this.propertySource instanceof MapPropertySource) {
+			return ((MapPropertySource) this.propertySource).getSource().keySet();
+		}
+		if (this.propertySource instanceof EnumerablePropertySource) {
+			return ((EnumerablePropertySource<?>) this.propertySource).getPropertyNames();
+		}
+		return null;
 	}
 
 	/**
@@ -163,46 +231,57 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		@Override
 		public List<PropertyMapping> map(PropertySource<?> propertySource,
 				ConfigurationPropertyName configurationPropertyName) {
-			return tryCall(
-					() -> this.mapper.map(propertySource, configurationPropertyName));
-		}
-
-		@Override
-		public List<PropertyMapping> map(PropertySource<?> propertySource,
-				String propertySourceName) {
-			return tryCall(() -> this.mapper.map(propertySource, propertySourceName));
-		}
-
-		private <T> List<T> tryCall(Supplier<List<T>> supplier) {
 			try {
-				return supplier.get();
+				return this.mapper.map(propertySource, configurationPropertyName);
 			}
 			catch (Exception ex) {
 				return Collections.emptyList();
 			}
 		}
-	}
 
-	/**
-	 * Simple cache to store the last known property mappings.
-	 */
-	private static class PropertyMappingsCache {
-
-		private volatile String[] names;
-
-		private volatile List<PropertyMapping> propertyMappings;
-
-		public synchronized List<PropertyMapping> get(String[] names) {
-			if (ObjectUtils.nullSafeEquals(this.names, names)) {
-				return this.propertyMappings;
+		@Override
+		public List<PropertyMapping> map(PropertySource<?> propertySource,
+				String propertySourceName) {
+			try {
+				return this.mapper.map(propertySource, propertySourceName);
 			}
-			return null;
+			catch (Exception ex) {
+				return Collections.emptyList();
+			}
 		}
 
-		public synchronized void put(String[] names,
-				List<PropertyMapping> propertyMappings) {
+	}
+
+	private static class Cache {
+
+		private ConfigurationPropertyName knownMissingName;
+
+		private List<ConfigurationPropertyName> names;
+
+		private List<PropertyMapping> mappings;
+
+		public boolean isKnownMissingName(ConfigurationPropertyName name) {
+			return name.equals(this.knownMissingName);
+		}
+
+		public void markKnownMissingName(ConfigurationPropertyName name) {
+			this.knownMissingName = name;
+		}
+
+		public List<ConfigurationPropertyName> getNames() {
+			return this.names;
+		}
+
+		public void setNames(List<ConfigurationPropertyName> names) {
 			this.names = names;
-			this.propertyMappings = propertyMappings;
+		}
+
+		public List<PropertyMapping> getMappings() {
+			return this.mappings;
+		}
+
+		public void setMappings(List<PropertyMapping> mappings) {
+			this.mappings = mappings;
 		}
 
 	}
