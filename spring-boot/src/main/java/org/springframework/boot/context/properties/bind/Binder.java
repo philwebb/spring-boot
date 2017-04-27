@@ -108,7 +108,9 @@ public class Binder {
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null ? placeholdersResolver
 				: PlaceholdersResolver.NONE);
-		this.conversionService = new BinderConversionService(conversionService);
+		this.conversionService = (conversionService instanceof BinderConversionService
+				? (BinderConversionService) conversionService
+				: new BinderConversionService(conversionService));
 	}
 
 	/**
