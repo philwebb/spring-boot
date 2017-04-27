@@ -38,29 +38,30 @@ import org.springframework.util.ReflectionUtils;
 class JavaBeanBinder implements BeanBinder {
 
 	@Override
-	public <T> T bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder) {
-		Bean<T> bean = Bean.get(bindable, propertyBinder.hasKnownBindableProperties());
+	public <T> T bind(Bindable<T> target, boolean hasKnownBindableProperties,
+			BeanPropertyBinder propertyBinder) {
+		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;
 		}
-		boolean bound = bind(bindable, propertyBinder, bean);
-		return (bound ? bean.getInstance(bindable) : null);
+		boolean bound = bind(target, propertyBinder, bean);
+		return (bound ? bean.getInstance(target) : null);
 	}
 
-	private <T> boolean bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder,
+	private <T> boolean bind(Bindable<T> target, BeanPropertyBinder propertyBinder,
 			Bean<T> bean) {
 		boolean bound = false;
 		for (Map.Entry<String, BeanProperty<T>> entry : bean.getProperties().entrySet()) {
-			bound |= bind(bindable, propertyBinder, entry.getValue());
+			bound |= bind(target, propertyBinder, entry.getValue());
 		}
 		return bound;
 	}
 
-	private <T> boolean bind(Bindable<T> bindable, BeanPropertyBinder propertyBinder,
+	private <T> boolean bind(Bindable<T> target, BeanPropertyBinder propertyBinder,
 			BeanProperty<T> property) {
 		String propertyName = property.getName();
 		ResolvableType type = property.getType();
-		Supplier<Object> value = property.getValue(bindable);
+		Supplier<Object> value = property.getValue(target);
 		Annotation[] annotations = property.getAnnotations();
 		Object bound = propertyBinder.bindProperty(propertyName,
 				Bindable.of(type).withSuppliedValue(value).withAnnotations(annotations));
@@ -68,7 +69,7 @@ class JavaBeanBinder implements BeanBinder {
 			return false;
 		}
 		if (property.isSettable()) {
-			property.setValue(bindable, bound);
+			property.setValue(target, bound);
 		}
 		else if (value == null || !bound.equals(value.get())) {
 			throw new IllegalStateException(

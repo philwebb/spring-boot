@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-
 /**
  * Binder that can be used by {@link BeanBinder} implementations to recursively bind bean
  * properties.
@@ -26,14 +24,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  * @author Madhura Bhave
  */
 interface BeanPropertyBinder {
-
-	/**
-	 * Return {@code true} if this binder has known bindable elements. If names from
-	 * underlying {@link ConfigurationPropertySource} cannot be iterated this method can
-	 * return {@code false}, even though binding may ultimately succeed.
-	 * @return true if there are known bindable properties
-	 */
-	boolean hasKnownBindableProperties();
 
 	/**
 	 * Bind the given property.

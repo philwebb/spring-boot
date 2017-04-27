@@ -288,39 +288,23 @@ public class Binder {
 
 	private Object bindBean(ConfigurationPropertyName name, Bindable<?> target,
 			BindHandler handler, Context context) throws Exception {
-		if (isUnbindableBean(target)) {
+		boolean hasKnownBindableProperties = context.streamSources()
+				.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
+				.isPresent();
+		if (!hasKnownBindableProperties && isUnbindableBean(target)) {
 			return null;
 		}
-		BeanPropertyBinder propertyBinder = getPropertyBinder(context, name, handler);
+		BeanPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(
+				name.append(propertyName), propertyTarget, handler, context);
 		Class<?> type = target.getType().resolve();
 		if (context.hasBoundBean(type)) {
 			return null;
 		}
 		return context.withBean(type, () -> {
-			Stream<?> boundBeans = BEAN_BINDERS.stream()
-					.map((b) -> b.bind(target, propertyBinder));
+			Stream<?> boundBeans = BEAN_BINDERS.stream().map(
+					(b) -> b.bind(target, hasKnownBindableProperties, propertyBinder));
 			return boundBeans.filter(Objects::nonNull).findFirst().orElse(null);
 		});
-	}
-
-	private BeanPropertyBinder getPropertyBinder(Context context,
-			ConfigurationPropertyName name, BindHandler handler) {
-		return new BeanPropertyBinder() {
-
-			@Override
-			public boolean hasKnownBindableProperties() {
-				return context.streamSources()
-						.flatMap((s) -> s.filter(name::isAncestorOf).stream()).findAny()
-						.isPresent();
-			}
-
-			@Override
-			public Object bindProperty(String propertyName, Bindable<?> target) {
-				return Binder.this.bind(name.append(propertyName), target, handler,
-						context);
-			}
-
-		};
 	}
 
 	private boolean isUnbindableBean(Bindable<?> target) {
