@@ -27,7 +27,7 @@ import org.springframework.util.MultiValueMap;
 /**
  * Test {@link PropertyMapper} implementation.
  */
- class TestPropertyMapper implements PropertyMapper {
+class TestPropertyMapper implements PropertyMapper {
 
 	private MultiValueMap<String, PropertyMapping> fromSource = new LinkedMultiValueMap<>();
 
@@ -47,16 +47,15 @@ import org.springframework.util.MultiValueMap;
 		}
 	}
 
-	public void addFromConfigurationProperty(ConfigurationPropertyName from,
-			String to, Function<Object, Object> extractor) {
+	public void addFromConfigurationProperty(ConfigurationPropertyName from, String to,
+			Function<Object, Object> extractor) {
 		this.fromConfig.add(from, new PropertyMapping(to, from, extractor));
 	}
 
 	@Override
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			String propertySourceName) {
-		return this.fromSource.getOrDefault(propertySourceName,
-				Collections.emptyList());
+		return this.fromSource.getOrDefault(propertySourceName, Collections.emptyList());
 	}
 
 	@Override
