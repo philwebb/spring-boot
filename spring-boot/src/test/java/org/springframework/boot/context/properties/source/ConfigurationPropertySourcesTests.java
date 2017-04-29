@@ -177,4 +177,10 @@ public class ConfigurationPropertySourcesTests {
 		assertThat(configurationSources.iterator()).hasSize(5);
 	}
 
+	// FIXME non enumerable
+
+	// FIXME security
+
+	// FIXME decorated
+
 }
