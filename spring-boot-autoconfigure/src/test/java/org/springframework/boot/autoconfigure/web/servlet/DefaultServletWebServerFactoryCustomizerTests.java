@@ -586,7 +586,7 @@ public class DefaultServletWebServerFactoryCustomizerTests {
 			assertThat(requestLog.isExtended()).isTrue();
 			assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
 			assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
-			assertThat(requestLog.getLogTimeZone()).isEqualTo("UTC");
+			assertThat(requestLog.getLogTimeZone()).isEqualTo(timezone);
 			assertThat(requestLog.getLogCookies()).isTrue();
 			assertThat(requestLog.getLogServer()).isTrue();
 			assertThat(requestLog.getLogLatency()).isTrue();
