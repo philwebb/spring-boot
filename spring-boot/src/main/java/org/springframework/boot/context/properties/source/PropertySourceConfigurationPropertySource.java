@@ -101,6 +101,11 @@ class PropertySourceConfigurationPropertySource implements ConfigurationProperty
 		return this.mapper;
 	}
 
+	@Override
+	public String toString() {
+		return this.propertySource.toString();
+	}
+
 	/**
 	 * {@link PropertyMapper} that swallows exceptions when the mapping fails.
 	 */

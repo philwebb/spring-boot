@@ -27,6 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.PropertySource.StubPropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
@@ -71,7 +72,8 @@ public class ConfigurationPropertySources
 	}
 
 	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
-		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten);
+		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten)
+				.filter(this::notStubSource);
 	}
 
 	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
@@ -80,6 +82,10 @@ public class ConfigurationPropertySources
 					((ConfigurableEnvironment) source.getSource()).getPropertySources());
 		}
 		return Stream.of(source);
+	}
+
+	private boolean notStubSource(PropertySource<?> source) {
+		return !(source instanceof StubPropertySource);
 	}
 
 	private ConfigurationPropertySource adapt(PropertySource<?> source) {
