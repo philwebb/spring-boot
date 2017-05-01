@@ -71,8 +71,6 @@ public class Binder {
 
 	private final BinderConversionService conversionService;
 
-	private final boolean fullyIterableSource;
-
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
 	 * {@link DefaultFormattingConversionService} will be used for all conversion.
@@ -117,17 +115,6 @@ public class Binder {
 		this.conversionService = (conversionService instanceof BinderConversionService
 				? (BinderConversionService) conversionService
 				: new BinderConversionService(conversionService));
-		this.fullyIterableSource = !hasNonIterable(sources);
-	}
-
-	private boolean hasNonIterable(Iterable<ConfigurationPropertySource> sources) {
-		for (ConfigurationPropertySource source : sources) {
-			if (!(source instanceof IterableConfigurationPropertySource)) {
-				System.err.println(source);
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
