@@ -114,6 +114,17 @@ public class PropertySourceConfigurationPropertySourceTests {
 				.isEqualTo("TestOrigin key");
 	}
 
+	@Test
+	public void containsDescendantOfShouldReturnEmpty() throws Exception {
+		Map<String, Object> source = new LinkedHashMap<>();
+		source.put("foo.bar", "value");
+		PropertySource<?> propertySource = new MapPropertySource("test", source);
+		PropertySourceConfigurationPropertySource adapter = new PropertySourceConfigurationPropertySource(
+				propertySource, new DefaultPropertyMapper());
+		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
+				.isEmpty();
+	}
+
 	/**
 	 * Test {@link PropertySource} that's also a {@link OriginLookup}.
 	 */

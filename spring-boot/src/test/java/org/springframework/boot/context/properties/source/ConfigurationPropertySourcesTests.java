@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -175,6 +176,24 @@ public class ConfigurationPropertySourcesTests {
 		ConfigurationPropertySources configurationSources = ConfigurationPropertySources
 				.get(sources);
 		assertThat(configurationSources.iterator()).hasSize(5);
+	}
+
+	@Test
+	public void containsDescendantOfForRandomSourceShouldDetectNamesStartingRandom()
+			throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		environment.getPropertySources().addFirst(new RandomValuePropertySource());
+		ConfigurationPropertySource source = ConfigurationPropertySources.get(environment)
+				.iterator().next();
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("")))
+				.contains(true);
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("random")))
+				.contains(true);
+		assertThat(source.containsDescendantOf(ConfigurationPropertyName.of("other")))
+				.contains(false);
+		assertThat(
+				source.containsDescendantOf(ConfigurationPropertyName.of("random.foo")))
+						.contains(false);
 	}
 
 	// FIXME non enumerable
