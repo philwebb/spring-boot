@@ -293,16 +293,17 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils
 				.findAnnotation(bean.getClass(), ConfigurationProperties.class);
-		Object bound = bean;
 		if (annotation != null) {
-			bound = postProcessBeforeInitialization(bean, beanName, annotation);
+			postProcessBeforeInitialization(bean, beanName, annotation);
+			return bean;
 		}
 		annotation = this.beans.findFactoryAnnotation(beanName,
 				ConfigurationProperties.class);
 		if (annotation != null) {
-			bound = postProcessBeforeInitialization(bean, beanName, annotation);
+			postProcessBeforeInitialization(bean, beanName, annotation);
+			return bean;
 		}
-		return bound;
+		return bean;
 	}
 
 	@Override
@@ -311,7 +312,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return bean;
 	}
 
-	private Object postProcessBeforeInitialization(Object bean, String beanName,
+	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Binder binder = getBinder();
 		Validator validator = determineValidator(bean);
@@ -319,7 +320,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		Bindable<?> bindable = Bindable.ofInstance(bean);
 		try {
 			binder.bind(annotation.prefix(), bindable, handler);
-			return bean;
 		}
 		catch (Exception ex) {
 			String targetClass = ClassUtils.getShortName(bean.getClass());
