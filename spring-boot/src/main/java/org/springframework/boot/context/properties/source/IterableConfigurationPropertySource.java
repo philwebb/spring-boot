@@ -63,7 +63,7 @@ public interface IterableConfigurationPropertySource
 
 	@Override
 	default Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-		return Optional.of(stream().anyMatch(name::isAncestorOf));
+		return Optional.of(stream().filter(name::isAncestorOf).findFirst().isPresent());
 	}
 
 	@Override

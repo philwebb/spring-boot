@@ -90,7 +90,7 @@ class PropertySourceIterableConfigurationPropertySource
 
 	@Override
 	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
-		return Optional.of(stream().anyMatch(name::isAncestorOf));
+		return Optional.of(stream().filter(name::isAncestorOf).findFirst().isPresent());
 	}
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
