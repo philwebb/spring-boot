@@ -21,7 +21,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * No-op cache configuration used to disable caching via configuration.
@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 class NoOpCacheConfiguration {

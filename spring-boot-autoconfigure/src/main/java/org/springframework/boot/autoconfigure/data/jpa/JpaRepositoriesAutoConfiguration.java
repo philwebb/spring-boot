@@ -25,12 +25,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
@@ -51,7 +51,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * @author Josh Long
  * @see EnableJpaRepositories
  */
-@Configuration
+@Component
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,

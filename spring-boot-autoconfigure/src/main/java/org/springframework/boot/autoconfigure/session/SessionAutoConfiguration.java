@@ -32,12 +32,12 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration.SessionRepositoryValidator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -50,7 +50,7 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)

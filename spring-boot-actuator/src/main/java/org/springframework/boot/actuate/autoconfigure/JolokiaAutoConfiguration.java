@@ -37,8 +37,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 /**
@@ -61,7 +61,7 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ AgentServlet.class, ServletWrappingController.class })
 @Conditional(JolokiaCondition.class)

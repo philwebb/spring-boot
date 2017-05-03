@@ -27,11 +27,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.support.JmxUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a JNDI located
@@ -41,7 +41,7 @@ import org.springframework.jmx.support.JmxUtils;
  * @author Andy Wilkinson
  * @since 1.2.0
  */
-@Configuration
+@Component
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class,
 		DataSourceAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })

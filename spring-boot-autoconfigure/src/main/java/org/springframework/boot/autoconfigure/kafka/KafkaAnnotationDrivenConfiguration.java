@@ -19,11 +19,11 @@ package org.springframework.boot.autoconfigure.kafka;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerConfigUtils;
 import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for Kafka annotation-driven support.
@@ -31,7 +31,7 @@ import org.springframework.kafka.core.ConsumerFactory;
  * @author Gary Russell
  * @since 1.5.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(EnableKafka.class)
 class KafkaAnnotationDrivenConfiguration {
 

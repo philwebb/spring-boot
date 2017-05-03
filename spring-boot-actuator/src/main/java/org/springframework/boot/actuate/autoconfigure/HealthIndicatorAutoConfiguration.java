@@ -71,7 +71,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.couchbase.core.CouchbaseOperations;
@@ -81,6 +80,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
@@ -93,7 +93,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@Configuration
+@Component
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ CassandraAutoConfiguration.class,
 		CassandraDataAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
@@ -131,7 +131,7 @@ public class HealthIndicatorAutoConfiguration {
 		return new ApplicationHealthIndicator();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ CassandraOperations.class, Cluster.class })
 	@ConditionalOnBean(CassandraOperations.class)
 	@ConditionalOnEnabledHealthIndicator("cassandra")
@@ -153,7 +153,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ CouchbaseOperations.class, Bucket.class })
 	@ConditionalOnBean(CouchbaseOperations.class)
 	@ConditionalOnEnabledHealthIndicator("couchbase")
@@ -175,7 +175,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ JdbcTemplate.class, AbstractRoutingDataSource.class })
 	@ConditionalOnBean(DataSource.class)
 	@ConditionalOnEnabledHealthIndicator("db")
@@ -235,7 +235,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(LdapOperations.class)
 	@ConditionalOnBean(LdapOperations.class)
 	@ConditionalOnEnabledHealthIndicator("ldap")
@@ -257,7 +257,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(MongoTemplate.class)
 	@ConditionalOnEnabledHealthIndicator("mongo")
 	public static class MongoHealthIndicatorConfiguration extends
@@ -278,7 +278,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(RedisConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("redis")
 	public static class RedisHealthIndicatorConfiguration extends
@@ -299,7 +299,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(RabbitTemplate.class)
 	@ConditionalOnEnabledHealthIndicator("rabbit")
 	public static class RabbitHealthIndicatorConfiguration extends
@@ -320,7 +320,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(SolrClient.class)
 	@ConditionalOnEnabledHealthIndicator("solr")
 	public static class SolrHealthIndicatorConfiguration extends
@@ -340,7 +340,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnEnabledHealthIndicator("diskspace")
 	public static class DiskSpaceHealthIndicatorConfiguration {
 
@@ -358,7 +358,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(JavaMailSenderImpl.class)
 	@ConditionalOnEnabledHealthIndicator("mail")
 	public static class MailHealthIndicatorConfiguration extends
@@ -379,7 +379,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(ConnectionFactory.class)
 	@ConditionalOnEnabledHealthIndicator("jms")
 	public static class JmsHealthIndicatorConfiguration extends

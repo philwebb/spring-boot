@@ -27,8 +27,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for Artemis XA {@link ConnectionFactory}.
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Primary;
  * @author Phillip Webb
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @ConditionalOnClass(TransactionManager.class)
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)

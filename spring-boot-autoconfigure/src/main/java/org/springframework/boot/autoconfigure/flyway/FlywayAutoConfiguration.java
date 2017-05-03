@@ -44,7 +44,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBindin
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
@@ -52,6 +51,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -66,7 +66,7 @@ import org.springframework.util.ObjectUtils;
  * @author Eddú Meléndez
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(Flyway.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "flyway", name = "enabled", matchIfMissing = true)
@@ -80,7 +80,7 @@ public class FlywayAutoConfiguration {
 		return new StringOrNumberToMigrationVersionConverter();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {
@@ -164,7 +164,7 @@ public class FlywayAutoConfiguration {
 		 * Additional configuration to ensure that {@link EntityManagerFactory} beans
 		 * depend-on the {@code flywayInitializer} bean.
 		 */
-		@Configuration
+		@Component
 		@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 		@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 		protected static class FlywayInitializerJpaDependencyConfiguration
@@ -182,7 +182,7 @@ public class FlywayAutoConfiguration {
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
 	 * depend-on the {@code flyway} bean.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	protected static class FlywayJpaDependencyConfiguration

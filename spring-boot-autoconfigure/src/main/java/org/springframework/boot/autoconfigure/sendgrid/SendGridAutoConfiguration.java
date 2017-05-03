@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for SendGrid.
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Patrick Bray
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(SendGrid.class)
 @Conditional(SendGridAutoConfiguration.SendGridPropertyCondition.class)
 @EnableConfigurationProperties(SendGridProperties.class)

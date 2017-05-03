@@ -31,9 +31,9 @@ import org.springframework.boot.autoconfigure.template.TemplateLocation;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mustache.
@@ -42,7 +42,7 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @since 1.2.2
  */
-@Configuration
+@Component
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
 @Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })

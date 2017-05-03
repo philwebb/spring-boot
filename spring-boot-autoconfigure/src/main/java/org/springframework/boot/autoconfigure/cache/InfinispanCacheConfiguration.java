@@ -31,8 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -42,7 +42,7 @@ import org.springframework.util.CollectionUtils;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(SpringEmbeddedCacheManager.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)

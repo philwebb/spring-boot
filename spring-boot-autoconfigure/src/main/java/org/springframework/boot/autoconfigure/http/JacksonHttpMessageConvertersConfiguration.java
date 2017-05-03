@@ -24,10 +24,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for HTTP message converters that use Jackson.
@@ -35,10 +35,10 @@ import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConve
  * @author Andy Wilkinson
  * @since 1.2.2
  */
-@Configuration
+@Component
 class JacksonHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)
 	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY, havingValue = "jackson", matchIfMissing = true)
@@ -55,7 +55,7 @@ class JacksonHttpMessageConvertersConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(XmlMapper.class)
 	@ConditionalOnBean(Jackson2ObjectMapperBuilder.class)
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {

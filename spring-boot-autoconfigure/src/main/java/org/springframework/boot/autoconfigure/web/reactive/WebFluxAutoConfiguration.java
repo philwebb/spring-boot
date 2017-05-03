@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceCh
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -46,6 +45,7 @@ import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
@@ -75,7 +75,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class, RouterFunction.class })
@@ -83,7 +83,7 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class WebFluxAutoConfiguration {
 
-	@Configuration
+	@Component
 	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
 	public static class WebFluxConfig implements WebFluxConfigurer {
@@ -190,7 +190,7 @@ public class WebFluxAutoConfiguration {
 	/**
 	 * Configuration equivalent to {@code @EnableWebFlux}.
 	 */
-	@Configuration
+	@Component
 	public static class EnableWebFluxConfiguration
 			extends DelegatingWebFluxConfiguration {
 
@@ -206,7 +206,7 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnEnabledResourceChain
 	static class ResourceChainCustomizerConfiguration {
 

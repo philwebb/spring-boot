@@ -31,9 +31,9 @@ import org.springframework.cassandra.core.session.DefaultReactiveSessionFactory;
 import org.springframework.cassandra.core.session.ReactiveSession;
 import org.springframework.cassandra.core.session.ReactiveSessionFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive Cassandra
@@ -42,7 +42,7 @@ import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
  * @author Eddú Meléndez
  * @since 2.0.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Cluster.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(Session.class)
 @AutoConfigureAfter(CassandraDataAutoConfiguration.class)

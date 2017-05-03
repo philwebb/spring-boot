@@ -68,6 +68,7 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -126,7 +127,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
@@ -328,7 +329,7 @@ public class WebMvcAutoConfiguration {
 			return new OrderedRequestContextFilter();
 		}
 
-		@Configuration
+		@Component
 		@ConditionalOnProperty(value = "spring.mvc.favicon.enabled", matchIfMissing = true)
 		public static class FaviconConfiguration {
 
@@ -479,7 +480,7 @@ public class WebMvcAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnEnabledResourceChain
 	static class ResourceChainCustomizerConfiguration {
 

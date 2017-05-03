@@ -30,10 +30,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for standard
@@ -43,7 +43,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Component
 @AutoConfigureAfter(ProjectInfoAutoConfiguration.class)
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)

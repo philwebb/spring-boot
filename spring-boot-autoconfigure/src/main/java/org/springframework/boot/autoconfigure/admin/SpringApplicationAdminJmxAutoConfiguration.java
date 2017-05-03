@@ -26,9 +26,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.stereotype.Component;
 
 /**
  * Register a JMX component that allows to administer the current application. Intended
@@ -39,7 +39,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
-@Configuration
+@Component
 @AutoConfigureAfter(JmxAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true", matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {

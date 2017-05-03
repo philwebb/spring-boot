@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurationSupport;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
@@ -41,7 +41,7 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
@@ -72,7 +72,7 @@ public class WebServicesAutoConfiguration {
 		return registration;
 	}
 
-	@Configuration
+	@Component
 	@EnableWs
 	protected static class WsConfiguration {
 

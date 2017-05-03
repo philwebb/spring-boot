@@ -55,7 +55,6 @@ import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.ResourceLoader;
@@ -73,6 +72,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.util.TypeUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.HandlerMapping;
@@ -133,7 +133,7 @@ public class EndpointWebMvcHypermediaManagementContextConfiguration {
 		return new DefaultCurieProvider("boot", new UriTemplate(path));
 	}
 
-	@Configuration
+	@Component
 	static class DocsMvcEndpointConfiguration {
 
 		@Bean

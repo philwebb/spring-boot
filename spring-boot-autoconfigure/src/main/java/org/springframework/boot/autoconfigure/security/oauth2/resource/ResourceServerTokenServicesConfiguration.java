@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -61,6 +60,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
@@ -74,7 +74,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Eddú Meléndez
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnMissingBean(AuthorizationServerEndpointsConfiguration.class)
 public class ResourceServerTokenServicesConfiguration {
 
@@ -88,11 +88,11 @@ public class ResourceServerTokenServicesConfiguration {
 				oauth2ClientContext);
 	}
 
-	@Configuration
+	@Component
 	@Conditional(RemoteTokenCondition.class)
 	protected static class RemoteTokenServicesConfiguration {
 
-		@Configuration
+		@Component
 		@Conditional(TokenInfoCondition.class)
 		protected static class TokenInfoServicesConfiguration {
 
@@ -113,7 +113,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 		}
 
-		@Configuration
+		@Component
 		@ConditionalOnClass(OAuth2ConnectionFactory.class)
 		@Conditional(NotTokenInfoCondition.class)
 		protected static class SocialTokenServicesConfiguration {
@@ -167,7 +167,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 		}
 
-		@Configuration
+		@Component
 		@ConditionalOnMissingClass("org.springframework.social.connect.support.OAuth2ConnectionFactory")
 		@Conditional(NotTokenInfoCondition.class)
 		protected static class UserInfoTokenServicesConfiguration {
@@ -210,7 +210,7 @@ public class ResourceServerTokenServicesConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@Conditional(JwkCondition.class)
 	protected static class JwkTokenStoreConfiguration {
 
@@ -234,7 +234,7 @@ public class ResourceServerTokenServicesConfiguration {
 		}
 	}
 
-	@Configuration
+	@Component
 	@Conditional(JwtTokenCondition.class)
 	protected static class JwtTokenServicesConfiguration {
 

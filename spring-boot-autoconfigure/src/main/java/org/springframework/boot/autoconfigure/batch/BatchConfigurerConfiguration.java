@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -36,7 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnMissingBean(BatchConfigurer.class)
-@Configuration
+@Component
 class BatchConfigurerConfiguration {
 
 	@ConditionalOnMissingBean(name = "entityManagerFactory")

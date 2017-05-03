@@ -25,7 +25,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Generic cache configuration based on arbitrary {@link Cache} instances defined in the
@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnBean(Cache.class)
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)

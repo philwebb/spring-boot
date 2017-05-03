@@ -35,12 +35,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -53,7 +53,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(SpringLiquibase.class)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnProperty(prefix = "liquibase", name = "enabled", matchIfMissing = true)
@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
 		HibernateJpaAutoConfiguration.class })
 public class LiquibaseAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties(LiquibaseProperties.class)
 	@Import(LiquibaseJpaDependencyConfiguration.class)
@@ -129,7 +129,7 @@ public class LiquibaseAutoConfiguration {
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
 	 * depend-on the liquibase bean.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	protected static class LiquibaseJpaDependencyConfiguration

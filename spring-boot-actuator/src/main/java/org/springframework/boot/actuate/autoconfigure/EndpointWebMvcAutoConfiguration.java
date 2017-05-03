@@ -71,6 +71,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -234,7 +235,7 @@ public class EndpointWebMvcAutoConfiguration
 
 	// Put Servlets and Filters in their own nested class so they don't force early
 	// instantiation of ManagementServerProperties.
-	@Configuration
+	@Component
 	@ConditionalOnProperty(prefix = "management", name = "add-application-context-header", havingValue = "true")
 	protected static class ApplicationContextFilterConfiguration {
 
@@ -246,7 +247,7 @@ public class EndpointWebMvcAutoConfiguration
 
 	}
 
-	@Configuration
+	@Component
 	@Conditional(OnManagementMvcCondition.class)
 	@Import(ManagementContextConfigurationsImportSelector.class)
 	protected static class EndpointWebMvcConfiguration {

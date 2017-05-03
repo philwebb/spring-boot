@@ -38,7 +38,7 @@ import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostPro
 import org.springframework.boot.jta.bitronix.BitronixXAConnectionFactoryWrapper;
 import org.springframework.boot.jta.bitronix.BitronixXADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@Configuration
+@Component
 @EnableConfigurationProperties(JtaProperties.class)
 @ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)

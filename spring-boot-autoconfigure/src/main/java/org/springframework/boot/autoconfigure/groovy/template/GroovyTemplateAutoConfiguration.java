@@ -39,8 +39,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
@@ -57,7 +57,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @author Brian Clozel
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(MarkupTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
@@ -66,7 +66,7 @@ public class GroovyTemplateAutoConfiguration {
 	private static final Log logger = LogFactory
 			.getLog(GroovyTemplateAutoConfiguration.class);
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
 	public static class GroovyMarkupConfiguration {
 
@@ -136,7 +136,7 @@ public class GroovyTemplateAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class,
 			UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)

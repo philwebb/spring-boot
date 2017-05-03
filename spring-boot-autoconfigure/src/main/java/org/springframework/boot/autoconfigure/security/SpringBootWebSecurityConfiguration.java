@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -54,6 +53,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -85,7 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@Configuration
+@Component
 @EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnClass({ EnableWebSecurity.class, AuthenticationEntryPoint.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
@@ -222,7 +222,7 @@ public class SpringBootWebSecurityConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", havingValue = "false")
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationNoWebSecurityConfigurerAdapter
@@ -240,7 +240,7 @@ public class SpringBootWebSecurityConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnProperty(prefix = "security.basic", name = "enabled", matchIfMissing = true)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	protected static class ApplicationWebSecurityConfigurerAdapter

@@ -48,11 +48,11 @@ import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -65,7 +65,7 @@ import org.springframework.util.ObjectUtils;
  * @author Stephane Nicoll
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(ServerProperties.class)
 @Import(BeanPostProcessorsRegistrar.class)
@@ -81,7 +81,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	/**
 	 * Nested configuration if Tomcat is being used.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedTomcat {
@@ -96,7 +96,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	/**
 	 * Nested configuration if Jetty is being used.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class,
 			WebAppContext.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
@@ -112,7 +112,7 @@ public class ServletWebServerFactoryAutoConfiguration {
 	/**
 	 * Nested configuration if Undertow is being used.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedUndertow {

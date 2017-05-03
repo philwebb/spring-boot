@@ -60,11 +60,11 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.RegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.WebApplicationInitializer;
@@ -79,7 +79,7 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass(name = { "org.glassfish.jersey.server.spring.SpringComponentProvider",
 		"javax.servlet.ServletRegistration" })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
@@ -234,7 +234,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@ConditionalOnClass(JacksonFeature.class)
 	@ConditionalOnSingleCandidate(ObjectMapper.class)
-	@Configuration
+	@Component
 	static class JacksonResourceConfigCustomizer {
 
 		private static final String JAXB_ANNOTATION_INTROSPECTOR_CLASS_NAME = "com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector";

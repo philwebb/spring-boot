@@ -43,13 +43,13 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.CacheAspectSupport;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -62,7 +62,7 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  * @see EnableCaching
  */
-@Configuration
+@Component
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
@@ -93,7 +93,7 @@ public class CacheAutoConfiguration {
 		return new CacheManagerValidator();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
 	protected static class CacheManagerJpaDependencyConfiguration

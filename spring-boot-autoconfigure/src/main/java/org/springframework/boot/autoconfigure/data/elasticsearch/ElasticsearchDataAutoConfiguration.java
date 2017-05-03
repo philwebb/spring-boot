@@ -23,12 +23,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.MappingElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
@@ -42,7 +42,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
  * @see EnableElasticsearchRepositories
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Client.class, ElasticsearchTemplate.class })
 @AutoConfigureAfter(ElasticsearchAutoConfiguration.class)
 public class ElasticsearchDataAutoConfiguration {

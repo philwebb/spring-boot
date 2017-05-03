@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.annotation.Persistent;
@@ -52,6 +51,7 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -72,7 +72,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
 @EnableConfigurationProperties(MongoProperties.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)

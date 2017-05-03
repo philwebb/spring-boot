@@ -33,8 +33,8 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
@@ -49,7 +49,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
  * @author Stephane Nicoll
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(LiteDeviceDelegatingViewResolver.class)
 @ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true")
@@ -59,7 +59,7 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 		ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	@Configuration
+	@Component
 	protected static class LiteDeviceDelegatingViewResolverFactoryConfiguration {
 
 		@Bean
@@ -70,7 +70,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(FreeMarkerViewResolver.class)
 	protected static class DeviceDelegatingFreeMarkerViewResolverConfiguration {
 
@@ -84,7 +84,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(GroovyMarkupViewResolver.class)
 	protected static class DeviceDelegatingGroovyMarkupViewResolverConfiguration {
 
@@ -98,7 +98,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(InternalResourceViewResolver.class)
 	protected static class DeviceDelegatingJspViewResolverConfiguration {
 
@@ -112,7 +112,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(MustacheViewResolver.class)
 	protected static class DeviceDelegatingMustacheViewResolverConfiguration {
 
@@ -126,7 +126,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(ThymeleafViewResolver.class)
 	protected static class DeviceDelegatingThymeleafViewResolverConfiguration {
 

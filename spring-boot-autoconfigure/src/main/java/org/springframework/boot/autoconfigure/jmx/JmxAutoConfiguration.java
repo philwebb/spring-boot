@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
 import org.springframework.context.annotation.Primary;
@@ -39,6 +38,7 @@ import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
 import org.springframework.jmx.support.RegistrationPolicy;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,7 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Madhura Bhave
  */
-@Configuration
+@Component
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {

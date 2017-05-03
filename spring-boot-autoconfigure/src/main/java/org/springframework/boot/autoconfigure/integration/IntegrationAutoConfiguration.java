@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
@@ -43,6 +42,7 @@ import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,7 +56,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties(IntegrationProperties.class)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
@@ -65,7 +65,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Basic Spring Integration configuration.
 	 */
-	@Configuration
+	@Component
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
 
@@ -74,7 +74,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Spring Integration JMX configuration.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -114,14 +114,14 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration management configuration.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ EnableIntegrationManagement.class,
 			EnableIntegrationMBeanExport.class })
 	@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
 	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 	protected static class IntegrationManagementConfiguration {
 
-		@Configuration
+		@Component
 		@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 		protected static class EnableIntegrationManagementConfiguration {
 		}
@@ -140,7 +140,7 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration JDBC configuration.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass(JdbcMessageStore.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	protected static class IntegrationJdbcConfiguration {

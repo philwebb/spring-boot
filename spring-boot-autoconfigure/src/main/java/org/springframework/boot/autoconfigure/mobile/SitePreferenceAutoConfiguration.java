@@ -26,11 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.site.SitePreferenceHandler;
 import org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor;
 import org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -43,7 +43,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Roy Clarkson
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
 		SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
@@ -62,7 +62,7 @@ public class SitePreferenceAutoConfiguration {
 		return new SitePreferenceHandlerMethodArgumentResolver();
 	}
 
-	@Configuration
+	@Component
 	protected static class SitePreferenceMvcConfiguration implements WebMvcConfigurer {
 
 		private final SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;

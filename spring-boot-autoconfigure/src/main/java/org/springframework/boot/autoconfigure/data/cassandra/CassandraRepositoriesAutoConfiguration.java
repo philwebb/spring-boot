@@ -22,11 +22,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.cassandra.repository.CassandraRepository;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 import org.springframework.data.cassandra.repository.support.CassandraRepositoryFactoryBean;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Cassandra
@@ -36,7 +36,7 @@ import org.springframework.data.cassandra.repository.support.CassandraRepository
  * @see EnableCassandraRepositories
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Session.class, CassandraRepository.class })
 @ConditionalOnProperty(prefix = "spring.data.cassandra.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnMissingBean(CassandraRepositoryFactoryBean.class)

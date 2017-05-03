@@ -28,8 +28,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jta.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for ActiveMQ XA {@link ConnectionFactory}.
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Primary;
  * @author Aurélien Leboulanger
  * @since 1.2.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(TransactionManager.class)
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)
 @ConditionalOnMissingBean(ConnectionFactory.class)

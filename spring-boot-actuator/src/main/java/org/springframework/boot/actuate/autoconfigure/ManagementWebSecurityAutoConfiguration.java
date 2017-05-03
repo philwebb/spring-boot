@@ -53,7 +53,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -70,6 +69,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -85,7 +85,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ EnableWebSecurity.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
@@ -130,7 +130,7 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	protected static class ManagementSecurityPropertiesConfiguration
 			implements SecurityPrerequisite {
 
@@ -156,7 +156,7 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
 	@Conditional(WebSecurityEnablerCondition.class)
 	@EnableWebSecurity
@@ -187,7 +187,7 @@ public class ManagementWebSecurityAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnProperty(prefix = "management.security", name = "enabled", matchIfMissing = true)
 	@EnableConfigurationProperties(SecurityProperties.class)

@@ -28,9 +28,9 @@ import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDepen
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.stereotype.Component;
 
 /**
  * Additional configuration to ensure that {@link EntityManagerFactory} beans depend-on
@@ -39,7 +39,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Stephane Nicoll
  * @since 1.3.2
  */
-@Configuration
+@Component
 @ConditionalOnClass({ HazelcastInstance.class,
 		LocalContainerEntityManagerFactoryBean.class })
 @AutoConfigureAfter({ HazelcastAutoConfiguration.class,

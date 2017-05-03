@@ -45,12 +45,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
@@ -60,7 +60,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  */
-@Configuration
+@Component
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ Registrar.class, DataSourcePoolMetadataProvidersConfiguration.class })
@@ -101,7 +101,7 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
@@ -110,7 +110,7 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnProperty(prefix = "spring.datasource", name = "jmx-enabled")
 	@ConditionalOnClass(name = "org.apache.tomcat.jdbc.pool.DataSourceProxy")
 	@Conditional(DataSourceAutoConfiguration.DataSourceAvailableCondition.class)

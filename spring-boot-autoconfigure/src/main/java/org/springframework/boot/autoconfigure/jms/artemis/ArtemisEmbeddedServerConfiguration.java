@@ -32,8 +32,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration used to create the embedded Artemis server.
@@ -42,7 +42,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass(name = ArtemisConnectionFactoryFactory.EMBEDDED_JMS_CLASS)
 @ConditionalOnProperty(prefix = "spring.artemis.embedded", name = "enabled", havingValue = "true", matchIfMissing = true)
 class ArtemisEmbeddedServerConfiguration {

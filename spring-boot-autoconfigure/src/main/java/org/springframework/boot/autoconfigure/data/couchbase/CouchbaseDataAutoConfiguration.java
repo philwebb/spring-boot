@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Couchbase support.
@@ -49,7 +50,7 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 		SpringBootCouchbaseDataConfiguration.class })
 public class CouchbaseDataAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(Validator.class)
 	public static class ValidationConfiguration {
 

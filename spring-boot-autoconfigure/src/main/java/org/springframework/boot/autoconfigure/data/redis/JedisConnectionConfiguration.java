@@ -26,12 +26,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
 class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 

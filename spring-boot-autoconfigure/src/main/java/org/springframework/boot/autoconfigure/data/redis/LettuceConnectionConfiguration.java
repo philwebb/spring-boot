@@ -29,12 +29,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  */
-@Configuration
+@Component
 @ConditionalOnClass({ GenericObjectPool.class, RedisClient.class,
 		RedisClusterClient.class })
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {

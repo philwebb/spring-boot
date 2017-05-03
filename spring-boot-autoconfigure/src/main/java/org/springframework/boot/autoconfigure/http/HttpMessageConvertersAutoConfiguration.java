@@ -28,10 +28,10 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
@@ -45,7 +45,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass(HttpMessageConverter.class)
 @AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class })
 @Import({ JacksonHttpMessageConvertersConfiguration.class,
@@ -68,7 +68,7 @@ public class HttpMessageConvertersAutoConfiguration {
 				? Collections.<HttpMessageConverter<?>>emptyList() : this.converters);
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(StringHttpMessageConverter.class)
 	@EnableConfigurationProperties(HttpEncodingProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {

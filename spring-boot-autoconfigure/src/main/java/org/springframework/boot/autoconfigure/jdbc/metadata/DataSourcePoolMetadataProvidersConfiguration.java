@@ -23,7 +23,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Register the {@link DataSourcePoolMetadataProvider} instances for the supported data
@@ -32,10 +32,10 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@Configuration
+@Component
 public class DataSourcePoolMetadataProvidersConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(org.apache.tomcat.jdbc.pool.DataSource.class)
 	static class TomcatDataSourcePoolMetadataProviderConfiguration {
 
@@ -56,7 +56,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(HikariDataSource.class)
 	static class HikariPoolDataSourceMetadataProviderConfiguration {
 
@@ -77,7 +77,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(BasicDataSource.class)
 	static class CommonsDbcp2PoolDataSourceMetadataProviderConfiguration {
 

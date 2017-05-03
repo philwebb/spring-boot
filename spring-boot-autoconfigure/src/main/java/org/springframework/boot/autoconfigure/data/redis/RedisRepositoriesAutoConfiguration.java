@@ -23,10 +23,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.repository.support.RedisRepositoryFactoryBean;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis
@@ -36,7 +36,7 @@ import org.springframework.data.redis.repository.support.RedisRepositoryFactoryB
  * @see EnableRedisRepositories
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Jedis.class, EnableRedisRepositories.class })
 @ConditionalOnProperty(prefix = "spring.data.redis.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnMissingBean(RedisRepositoryFactoryBean.class)

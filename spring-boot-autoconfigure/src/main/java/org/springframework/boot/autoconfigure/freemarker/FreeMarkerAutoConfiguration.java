@@ -41,7 +41,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -57,7 +57,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
  * @author Kazuki Shimizu
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ freemarker.template.Configuration.class,
 		FreeMarkerConfigurationFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
@@ -115,7 +115,7 @@ public class FreeMarkerAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnNotWebApplication
 	public static class FreeMarkerNonWebConfiguration extends FreeMarkerConfiguration {
 
@@ -129,7 +129,7 @@ public class FreeMarkerAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {

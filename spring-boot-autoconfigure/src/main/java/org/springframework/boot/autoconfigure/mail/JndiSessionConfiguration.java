@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiLocatorDelegate;
+import org.springframework.stereotype.Component;
 
 /**
  * Auto-configure a {@link Session} available on JNDI.
@@ -33,7 +33,7 @@ import org.springframework.jndi.JndiLocatorDelegate;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass(Session.class)
 @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 @ConditionalOnJndi

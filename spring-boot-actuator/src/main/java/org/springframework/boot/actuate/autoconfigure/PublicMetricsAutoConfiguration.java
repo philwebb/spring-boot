@@ -52,9 +52,9 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link PublicMetrics}.
@@ -65,7 +65,7 @@ import org.springframework.integration.support.management.IntegrationManagementC
  * @author Artem Bilan
  * @since 1.2.0
  */
-@Configuration
+@Component
 @AutoConfigureBefore(EndpointAutoConfiguration.class)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, CacheAutoConfiguration.class,
 		MetricRepositoryAutoConfiguration.class, CacheStatisticsAutoConfiguration.class,
@@ -99,7 +99,7 @@ public class PublicMetricsAutoConfiguration {
 		return new RichGaugeReaderPublicMetrics(richGaugeReader);
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(DataSource.class)
 	@ConditionalOnBean(DataSource.class)
 	static class DataSourceMetricsConfiguration {
@@ -113,7 +113,7 @@ public class PublicMetricsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
 	@ConditionalOnWebApplication
 	static class TomcatMetricsConfiguration {
@@ -126,7 +126,7 @@ public class PublicMetricsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(CacheManager.class)
 	@ConditionalOnBean(CacheManager.class)
 	static class CacheStatisticsConfiguration {
@@ -142,7 +142,7 @@ public class PublicMetricsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(EnableIntegrationManagement.class)
 	static class IntegrationMetricsConfiguration {
 

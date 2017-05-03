@@ -27,12 +27,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
@@ -40,14 +40,14 @@ import org.springframework.jms.support.destination.DestinationResolver;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@Configuration
+	@Component
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;

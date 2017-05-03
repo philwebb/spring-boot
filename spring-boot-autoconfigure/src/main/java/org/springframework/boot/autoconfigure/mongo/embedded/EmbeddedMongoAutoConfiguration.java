@@ -60,12 +60,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -77,7 +77,7 @@ import org.springframework.util.Assert;
  * @author Mark Paluch
  * @since 1.3.0
  */
-@Configuration
+@Component
 @EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
 @AutoConfigureBefore(MongoAutoConfiguration.class)
 @ConditionalOnClass({ Mongo.class, MongodStarter.class })
@@ -186,7 +186,7 @@ public class EmbeddedMongoAutoConfiguration {
 		return (Map<String, Object>) propertySource.getSource();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(Logger.class)
 	@ConditionalOnMissingBean(IRuntimeConfig.class)
 	static class RuntimeConfigConfiguration {
@@ -217,7 +217,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
 	 * {@code embeddedMongoServer} bean.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ MongoClient.class, MongoClientFactoryBean.class })
 	protected static class EmbeddedMongoDependencyConfiguration
 			extends MongoClientDependsOnBeanFactoryPostProcessor {
@@ -232,7 +232,7 @@ public class EmbeddedMongoAutoConfiguration {
 	 * Additional configuration to ensure that {@link MongoClient} beans depend on the
 	 * {@code embeddedMongoServer} bean.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass({ com.mongodb.reactivestreams.client.MongoClient.class,
 			ReactiveMongoClientFactoryBean.class })
 	protected static class EmbeddedReactiveMongoDependencyConfiguration

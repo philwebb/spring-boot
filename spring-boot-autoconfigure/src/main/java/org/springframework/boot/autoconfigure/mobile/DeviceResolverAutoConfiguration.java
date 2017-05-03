@@ -26,11 +26,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -41,7 +41,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  * @author Roy Clarkson
  */
-@Configuration
+@Component
 @ConditionalOnClass({ DeviceResolverHandlerInterceptor.class,
 		DeviceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
@@ -59,7 +59,7 @@ public class DeviceResolverAutoConfiguration {
 		return new DeviceHandlerMethodArgumentResolver();
 	}
 
-	@Configuration
+	@Component
 	@Order(0)
 	protected static class DeviceResolverMvcConfiguration implements WebMvcConfigurer {
 

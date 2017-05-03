@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.context;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link ConfigurationProperties}
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @see EnableConfigurationProperties
  * @see ConfigurationProperties
  */
-@Configuration
+@Component
 @EnableConfigurationProperties
 public class ConfigurationPropertiesAutoConfiguration {
 

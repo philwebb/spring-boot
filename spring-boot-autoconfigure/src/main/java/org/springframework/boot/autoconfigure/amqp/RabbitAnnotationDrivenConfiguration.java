@@ -26,7 +26,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for Spring AMQP annotation driven endpoints.
@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Josh Thornhill
  * @since 1.2.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 

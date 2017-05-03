@@ -40,8 +40,8 @@ import org.springframework.boot.jta.narayana.NarayanaRecoveryManagerBean;
 import org.springframework.boot.jta.narayana.NarayanaXAConnectionFactoryWrapper;
 import org.springframework.boot.jta.narayana.NarayanaXADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
@@ -53,7 +53,7 @@ import org.springframework.util.StringUtils;
  * @author Kazuki Shimizu
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ JtaTransactionManager.class,
 		com.arjuna.ats.jta.UserTransaction.class, XAResourceRecoveryRegistry.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -149,7 +149,7 @@ public class NarayanaJtaConfiguration {
 		return new NarayanaBeanFactoryPostProcessor();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(Message.class)
 	static class NarayanaJtaJmsConfiguration {
 

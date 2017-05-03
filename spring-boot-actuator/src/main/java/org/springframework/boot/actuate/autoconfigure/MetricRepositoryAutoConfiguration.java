@@ -32,8 +32,8 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services. Creates
@@ -69,10 +69,10 @@ import org.springframework.messaging.MessageChannel;
  * @see Exporter
  * @author Dave Syer
  */
-@Configuration
+@Component
 public class MetricRepositoryAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(GaugeService.class)
 	static class FastMetricServicesConfiguration {
 

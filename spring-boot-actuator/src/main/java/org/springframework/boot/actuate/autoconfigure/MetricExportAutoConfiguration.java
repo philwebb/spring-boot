@@ -36,10 +36,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -49,7 +49,7 @@ import org.springframework.util.CollectionUtils;
  * @author Simon Buettner
  * @since 1.3.0
  */
-@Configuration
+@Component
 @EnableScheduling
 @ConditionalOnProperty(value = "spring.metrics.export.enabled", matchIfMissing = true)
 @EnableConfigurationProperties
@@ -100,7 +100,7 @@ public class MetricExportAutoConfiguration {
 		return exporters;
 	}
 
-	@Configuration
+	@Component
 	static class StatsdConfiguration {
 
 		@Bean
@@ -115,7 +115,7 @@ public class MetricExportAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	protected static class MetricExportPropertiesConfiguration {
 
 		@Value("${spring.application.name:application}.${random.value:0000}")
