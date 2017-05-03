@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for HTTP Message converters that use Gson.
@@ -35,11 +35,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  * @author Andy Wilkinson
  * @since 1.2.2
  */
-@Configuration
+@Component
 @ConditionalOnClass(Gson.class)
 class GsonHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(Gson.class)
 	@Conditional(PreferGsonOrMissingJacksonCondition.class)
 	protected static class GsonHttpMessageConverterConfiguration {

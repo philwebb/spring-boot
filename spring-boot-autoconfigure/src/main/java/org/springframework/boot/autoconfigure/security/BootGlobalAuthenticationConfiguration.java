@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link GlobalAuthenticationConfigurerAdapter} to trigger early initialization of
@@ -47,7 +47,7 @@ import org.springframework.security.config.annotation.authentication.configurers
  * @author Rob Winch
  * @since 1.1.11
  */
-@Configuration
+@Component
 @ConditionalOnClass(GlobalAuthenticationConfigurerAdapter.class)
 public class BootGlobalAuthenticationConfiguration {
 

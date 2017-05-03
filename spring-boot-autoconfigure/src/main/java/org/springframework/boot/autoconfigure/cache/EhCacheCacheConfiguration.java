@@ -26,8 +26,8 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * EhCache cache configuration. Only kick in if a configuration file location is set or if
@@ -38,7 +38,7 @@ import org.springframework.core.io.Resource;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Cache.class, EhCacheCacheManager.class })
 @ConditionalOnMissingBean(org.springframework.cache.CacheManager.class)
 @Conditional({ CacheCondition.class,

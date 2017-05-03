@@ -35,9 +35,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
 import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -50,7 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Client.class, TransportClientFactoryBean.class,
 		NodeClientFactoryBean.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)

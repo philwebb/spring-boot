@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -52,6 +51,7 @@ import org.springframework.social.connect.web.ProviderSignInController;
 import org.springframework.social.connect.web.ProviderSignInInterceptor;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.connect.web.thymeleaf.SpringSocialDialect;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
@@ -63,14 +63,14 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
  * @author Craig Walls
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ ConnectController.class, SocialConfigurerAdapter.class })
 @ConditionalOnBean({ ConnectionFactoryLocator.class, UsersConnectionRepository.class })
 @AutoConfigureBefore(ThymeleafAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class SocialWebAutoConfiguration {
 
-	@Configuration
+	@Component
 	@EnableSocial
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	protected static class SocialAutoConfigurationAdapter
@@ -132,7 +132,7 @@ public class SocialWebAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@EnableSocial
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnMissingClass("org.springframework.security.core.context.SecurityContextHolder")
@@ -150,7 +150,7 @@ public class SocialWebAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@EnableSocial
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnClass(SecurityContextHolder.class)
@@ -164,7 +164,7 @@ public class SocialWebAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(SpringTemplateEngine.class)
 	protected static class SpringSocialThymeleafConfig {
 

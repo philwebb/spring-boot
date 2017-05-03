@@ -48,10 +48,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -72,7 +72,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Johannes Edmeier
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(ObjectMapper.class)
 public class JacksonAutoConfiguration {
 
@@ -81,7 +81,7 @@ public class JacksonAutoConfiguration {
 		return new JsonComponentModule();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	static class JacksonObjectMapperConfiguration {
 
@@ -94,7 +94,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class,
 			DateTimeSerializer.class, JacksonJodaDateFormat.class })
 	static class JodaDateTimeJacksonConfiguration {
@@ -145,7 +145,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(ParameterNamesModule.class)
 	static class ParameterNamesModuleConfiguration {
 
@@ -157,7 +157,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	static class JacksonObjectMapperBuilderConfiguration {
 
@@ -188,7 +188,7 @@ public class JacksonAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	@EnableConfigurationProperties(JacksonProperties.class)
 	static class Jackson2ObjectMapperBuilderCustomizerConfiguration {

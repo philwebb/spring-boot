@@ -22,13 +22,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security. Provides an
@@ -44,7 +44,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-@Configuration
+@Component
 @ConditionalOnClass({ AuthenticationManager.class,
 		GlobalAuthenticationConfigurerAdapter.class })
 @EnableConfigurationProperties(SecurityProperties.class)

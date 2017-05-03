@@ -24,14 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor Core.
  *
  * @author Brian Clozel
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Mono.class, Flux.class })
 @EnableConfigurationProperties(ReactorCoreProperties.class)
 public class ReactorCoreAutoConfiguration {

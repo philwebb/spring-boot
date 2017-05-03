@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.hazelcast.HazelcastConfigResourceC
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Hazelcast cache configuration. Can either reuse the {@link HazelcastInstance} that has
@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
-@Configuration
+@Component
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)

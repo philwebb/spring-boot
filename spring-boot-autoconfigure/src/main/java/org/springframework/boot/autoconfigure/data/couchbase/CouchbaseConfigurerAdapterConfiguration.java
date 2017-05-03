@@ -21,8 +21,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.CouchbaseConfigurer;
+import org.springframework.stereotype.Component;
 
 /**
  * Adapt the core Couchbase configuration to an expected {@link CouchbaseConfigurer} if
@@ -30,7 +30,7 @@ import org.springframework.data.couchbase.config.CouchbaseConfigurer;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 @ConditionalOnClass(CouchbaseConfigurer.class)
 @ConditionalOnBean(CouchbaseConfiguration.class)
 class CouchbaseConfigurerAdapterConfiguration {

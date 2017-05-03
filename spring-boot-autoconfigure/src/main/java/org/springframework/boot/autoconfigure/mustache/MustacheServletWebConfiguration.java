@@ -23,10 +23,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class MustacheServletWebConfiguration {
 

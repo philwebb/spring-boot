@@ -33,10 +33,10 @@ import org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.M
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto configuration} for email support.
@@ -46,7 +46,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @since 1.2.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ MimeMessage.class, MimeType.class })
 @ConditionalOnMissingBean(MailSender.class)
 @Conditional(MailSenderCondition.class)

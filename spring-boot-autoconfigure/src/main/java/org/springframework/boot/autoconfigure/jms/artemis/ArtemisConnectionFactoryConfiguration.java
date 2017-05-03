@@ -23,7 +23,7 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for Artemis {@link ConnectionFactory}.
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Eddú Meléndez
  * @author Phillip Webb
  */
-@Configuration
+@Component
 @ConditionalOnMissingBean(ConnectionFactory.class)
 class ArtemisConnectionFactoryConfiguration {
 

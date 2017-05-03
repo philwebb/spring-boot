@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for writing metrics to a
@@ -34,7 +34,7 @@ import org.springframework.messaging.MessageChannel;
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(MessageChannel.class)
 @ConditionalOnBean(name = "metricsChannel")
 @AutoConfigureBefore(MetricRepositoryAutoConfiguration.class)

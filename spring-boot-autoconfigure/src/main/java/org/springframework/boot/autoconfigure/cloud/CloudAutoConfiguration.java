@@ -25,10 +25,10 @@ import org.springframework.cloud.Cloud;
 import org.springframework.cloud.app.ApplicationInstanceInfo;
 import org.springframework.cloud.config.java.CloudScan;
 import org.springframework.cloud.config.java.CloudScanConfiguration;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Cloud.
@@ -45,7 +45,7 @@ import org.springframework.core.Ordered;
  * @author Ramnivas Laddad
  * @since 1.2.0
  */
-@Configuration
+@Component
 @Profile("cloud")
 @AutoConfigureOrder(CloudAutoConfiguration.ORDER)
 @ConditionalOnClass(CloudScanConfiguration.class)

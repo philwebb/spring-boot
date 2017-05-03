@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Actual Elasticsearch health indicator configurations imported by
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  */
 class ElasticsearchHealthIndicatorConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(Client.class)
 	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	@EnableConfigurationProperties(ElasticsearchHealthIndicatorProperties.class)
@@ -69,7 +69,7 @@ class ElasticsearchHealthIndicatorConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(JestClient.class)
 	@ConditionalOnEnabledHealthIndicator("elasticsearch")
 	static class ElasticsearchJestHealthIndicatorConfiguration extends

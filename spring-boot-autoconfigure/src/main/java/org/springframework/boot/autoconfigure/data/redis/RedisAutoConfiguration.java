@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Cluster
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Sentinel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
@@ -44,6 +43,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Marco Aust
  */
-@Configuration
+@Component
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
 @EnableConfigurationProperties(RedisProperties.class)
 public class RedisAutoConfiguration {
@@ -67,7 +67,7 @@ public class RedisAutoConfiguration {
 	/**
 	 * Redis connection configuration.
 	 */
-	@Configuration
+	@Component
 	@ConditionalOnClass(GenericObjectPool.class)
 	protected static class RedisConnectionConfiguration {
 
@@ -222,7 +222,7 @@ public class RedisAutoConfiguration {
 	/**
 	 * Standard Redis configuration.
 	 */
-	@Configuration
+	@Component
 	protected static class RedisConfiguration {
 
 		@Bean

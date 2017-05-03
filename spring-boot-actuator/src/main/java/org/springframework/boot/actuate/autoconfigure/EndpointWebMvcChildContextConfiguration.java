@@ -58,6 +58,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -137,7 +138,7 @@ public class EndpointWebMvcChildContextConfiguration {
 	/**
 	 * Configuration to add {@link HandlerMapping} for {@link MvcEndpoint}s.
 	 */
-	@Configuration
+	@Component
 	protected static class EndpointHandlerMappingConfiguration {
 
 		@Autowired
@@ -149,7 +150,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
 	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.ANCESTORS)
 	public static class EndpointWebMvcChildContextSecurityConfiguration {
@@ -162,7 +163,7 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ LinkDiscoverer.class })
 	@Import(HypermediaHttpMessageConverterConfiguration.class)
 	@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)

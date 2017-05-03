@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * Redis cache configuration.
@@ -35,7 +35,7 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @ConditionalOnBean(RedisTemplate.class)
 @ConditionalOnMissingBean(CacheManager.class)

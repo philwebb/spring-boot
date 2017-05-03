@@ -32,11 +32,11 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
@@ -46,7 +46,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebServlet.class)
 @ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true", matchIfMissing = false)
@@ -76,7 +76,7 @@ public class H2ConsoleAutoConfiguration {
 		return registration;
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
 	@ConditionalOnBean(ObjectPostProcessor.class)
 	@EnableConfigurationProperties(SecurityProperties.class)

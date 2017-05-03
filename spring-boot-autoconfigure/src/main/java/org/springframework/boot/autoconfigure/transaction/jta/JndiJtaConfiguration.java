@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.config.JtaTransactionManagerFactoryBean;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -35,7 +35,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(JtaTransactionManager.class)
 @ConditionalOnJndi({ JtaTransactionManager.DEFAULT_USER_TRANSACTION_NAME,
 		"java:comp/TransactionManager", "java:appserver/TransactionManager",

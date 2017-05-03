@@ -22,11 +22,11 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2SsoDe
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@Component
 @Conditional(NeedsWebSecurityCondition.class)
 public class OAuth2SsoDefaultConfiguration extends WebSecurityConfigurerAdapter
 		implements Ordered {

@@ -39,8 +39,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  */
-@Configuration
+@Component
 @Conditional(JmxEnabledCondition.class)
 @AutoConfigureAfter({ EndpointAutoConfiguration.class, JmxAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)

@@ -47,7 +47,7 @@ import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link CacheStatisticsProvider}
@@ -58,12 +58,12 @@ import org.springframework.context.annotation.Configuration;
  * @author Eddú Meléndez
  * @since 1.3.0
  */
-@Configuration
+@Component
 @AutoConfigureAfter(CacheAutoConfiguration.class)
 @ConditionalOnBean(CacheManager.class)
 public class CacheStatisticsAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Caching.class, JCacheCache.class })
 	static class JCacheCacheStatisticsProviderConfiguration {
 
@@ -74,7 +74,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class, StatisticsGateway.class })
 	static class EhCacheCacheStatisticsProviderConfiguration {
 
@@ -85,7 +85,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ IMap.class, HazelcastCache.class })
 	static class HazelcastCacheStatisticsConfiguration {
 
@@ -96,7 +96,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ SpringCache.class })
 	static class InfinispanCacheStatisticsProviderConfiguration {
 
@@ -107,7 +107,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
 	static class CaffeineCacheStatisticsProviderConfiguration {
 
@@ -118,7 +118,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(ConcurrentMapCache.class)
 	static class ConcurrentMapCacheStatisticsConfiguration {
 
@@ -129,7 +129,7 @@ public class CacheStatisticsAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(NoOpCacheManager.class)
 	static class NoOpCacheStatisticsConfiguration {
 

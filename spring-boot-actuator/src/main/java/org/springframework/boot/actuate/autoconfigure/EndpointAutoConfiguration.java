@@ -61,8 +61,8 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 /**
@@ -78,7 +78,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Meang Akira Tanaka
  * @author Ben Hale
  */
-@Configuration
+@Component
 @AutoConfigureAfter({ FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class })
 @EnableConfigurationProperties(EndpointProperties.class)
 public class EndpointAutoConfiguration {
@@ -185,7 +185,7 @@ public class EndpointAutoConfiguration {
 		return new ConfigurationPropertiesReportEndpoint();
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnClass(Flyway.class)
 	static class FlywayEndpointConfiguration {
@@ -198,7 +198,7 @@ public class EndpointAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnClass(SpringLiquibase.class)
 	static class LiquibaseEndpointConfiguration {
@@ -212,7 +212,7 @@ public class EndpointAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnClass(AbstractHandlerMethodMapping.class)
 	protected static class RequestMappingEndpointConfiguration {
 

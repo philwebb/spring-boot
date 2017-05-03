@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Gson.
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * @author David Liu
  * @since 1.2.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(Gson.class)
 public class GsonAutoConfiguration {
 

@@ -18,16 +18,16 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.stereotype.Component;
 
 /**
  * Shared {@link AuthorizationCodeResourceDetails} configuration.
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Component
 class OAuth2ProtectedResourceDetailsConfiguration {
 
 	@Bean

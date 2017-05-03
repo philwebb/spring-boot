@@ -17,11 +17,11 @@
 package org.springframework.boot.autoconfigure;
 
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
@@ -32,7 +32,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @deprecated as of 1.5 in favor of
  * {@link org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration}
  */
-@Configuration
+@Component
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Deprecated
 @Import(MessageSourceAutoConfiguration.Selector.class)

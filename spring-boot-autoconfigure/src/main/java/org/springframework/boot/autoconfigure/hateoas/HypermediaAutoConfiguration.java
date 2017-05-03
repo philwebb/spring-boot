@@ -34,7 +34,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverers;
@@ -44,6 +43,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.plugin.core.Plugin;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Resource.class, RequestMapping.class, Plugin.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
@@ -65,7 +65,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Import(HypermediaHttpMessageConverterConfiguration.class)
 public class HypermediaAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(LinkDiscoverers.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
@@ -78,7 +78,7 @@ public class HypermediaAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(EntityLinks.class)
 	@EnableEntityLinks
 	protected static class EntityLinksConfiguration {

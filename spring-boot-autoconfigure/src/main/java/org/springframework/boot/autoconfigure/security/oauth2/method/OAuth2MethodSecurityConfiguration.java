@@ -25,12 +25,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecurityExpressionHandler;
+import org.springframework.stereotype.Component;
 
 /**
  * Auto-configure an expression handler for method-level security (if the user already has
@@ -40,7 +40,7 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ OAuth2AccessToken.class })
 @ConditionalOnBean(GlobalMethodSecurityConfiguration.class)
 public class OAuth2MethodSecurityConfiguration

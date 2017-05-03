@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -41,7 +41,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Andy Wilkinson
  * @author Sebastian Kirsch
  */
-@Configuration
+@Component
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
 @ConditionalOnClass({ Servlet.class, ServletRegistration.class,
 		OncePerRequestFilter.class, HandlerMapping.class })

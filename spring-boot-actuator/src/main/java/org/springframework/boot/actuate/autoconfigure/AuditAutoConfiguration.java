@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Dave Syer
  * @author Vedran Pavic
  */
-@Configuration
+@Component
 public class AuditAutoConfiguration {
 
 	private final AuditEventRepository auditEventRepository;

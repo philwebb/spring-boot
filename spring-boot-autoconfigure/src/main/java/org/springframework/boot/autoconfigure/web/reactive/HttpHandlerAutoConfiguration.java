@@ -28,10 +28,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -50,7 +50,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnMissingBean(HttpHandler.class)
@@ -58,7 +58,7 @@ import org.springframework.web.server.session.WebSessionManager;
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class HttpHandlerAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(RouterFunction.class)
 	public static class AnnotationConfig {
 
@@ -75,7 +75,7 @@ public class HttpHandlerAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(RouterFunction.class)
 	public static class FunctionalConfig {
 

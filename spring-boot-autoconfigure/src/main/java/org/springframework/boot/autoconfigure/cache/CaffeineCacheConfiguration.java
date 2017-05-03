@@ -29,7 +29,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ Caffeine.class, CaffeineCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional({ CacheCondition.class })

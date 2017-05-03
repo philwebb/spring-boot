@@ -36,7 +36,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -54,6 +53,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.OAuth2ClientConfiguration;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -63,12 +63,12 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(EnableOAuth2Client.class)
 @Conditional(OAuth2ClientIdCondition.class)
 public class OAuth2RestOperationsConfiguration {
 
-	@Configuration
+	@Component
 	@Conditional(ClientCredentialsCondition.class)
 	protected static class SingletonScopedConfiguration {
 
@@ -87,7 +87,7 @@ public class OAuth2RestOperationsConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnBean(OAuth2ClientConfiguration.class)
 	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)
@@ -102,7 +102,7 @@ public class OAuth2RestOperationsConfiguration {
 			return registration;
 		}
 
-		@Configuration
+		@Component
 		protected static class ClientContextConfiguration {
 
 			@Resource
@@ -123,7 +123,7 @@ public class OAuth2RestOperationsConfiguration {
 	// pass that on to a client that wants to call downstream. We don't even need an
 	// OAuth2ClientContextFilter until we need to refresh the access token. To handle
 	// refresh tokens you need to @EnableOAuth2Client
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(OAuth2ClientConfiguration.class)
 	@Conditional(NoClientCredentialsCondition.class)
 	@Import(OAuth2ProtectedResourceDetailsConfiguration.class)

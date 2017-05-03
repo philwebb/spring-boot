@@ -29,8 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
@@ -42,13 +42,13 @@ import org.springframework.core.io.Resource;
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
-@Configuration
+@Component
 @ConditionalOnClass(HazelcastInstance.class)
 @ConditionalOnMissingBean(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
 public class HazelcastAutoConfiguration {
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(Config.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastConfigFileConfiguration {
@@ -70,7 +70,7 @@ public class HazelcastAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnSingleCandidate(Config.class)
 	static class HazelcastConfigConfiguration {
 

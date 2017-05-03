@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.security.oauth2.OAuth2ClientProper
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.config.annotation.builders.ClientDetailsServiceBuilder;
@@ -48,6 +47,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for a Spring Security OAuth2 authorization server. Back off if another
@@ -58,7 +58,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
  * @author Dave Syer
  * @since 1.3.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(EnableAuthorizationServer.class)
 @ConditionalOnMissingBean(AuthorizationServerConfigurer.class)
 @ConditionalOnBean(AuthorizationServerEndpointsConfiguration.class)
@@ -150,7 +150,7 @@ public class OAuth2AuthorizationServerConfiguration
 		}
 	}
 
-	@Configuration
+	@Component
 	protected static class ClientDetailsLogger {
 
 		private final OAuth2ClientProperties credentials;
@@ -171,7 +171,7 @@ public class OAuth2AuthorizationServerConfiguration
 
 	}
 
-	@Configuration
+	@Component
 	@ConditionalOnMissingBean(BaseClientDetails.class)
 	protected static class BaseClientDetailsConfiguration {
 

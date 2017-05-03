@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto configuration} for testing mail service
@@ -34,7 +34,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@Configuration
+@Component
 @AutoConfigureAfter(MailSenderAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.mail", value = "test-connection")
 @ConditionalOnSingleCandidate(JavaMailSenderImpl.class)

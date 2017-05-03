@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Component
 @ConditionalOnClass(JestClient.class)
 @EnableConfigurationProperties(JestProperties.class)
 @AutoConfigureAfter(GsonAutoConfiguration.class)

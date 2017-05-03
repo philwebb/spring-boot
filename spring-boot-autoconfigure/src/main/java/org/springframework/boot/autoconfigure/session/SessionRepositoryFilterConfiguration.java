@@ -23,15 +23,15 @@ import javax.servlet.DispatcherType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.stereotype.Component;
 
 /**
  * Configuration for customizing the registration of the {@link SessionRepositoryFilter}.
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Component
 @ConditionalOnBean(SessionRepositoryFilter.class)
 class SessionRepositoryFilterConfiguration {
 

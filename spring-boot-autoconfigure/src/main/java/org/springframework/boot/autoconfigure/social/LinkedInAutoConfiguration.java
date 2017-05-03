@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.social.config.annotation.EnableSocial;
@@ -38,6 +37,7 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
@@ -46,14 +46,14 @@ import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
  * @author Craig Walls
  * @since 1.1.0
  */
-@Configuration
+@Component
 @ConditionalOnClass({ SocialConfigurerAdapter.class, LinkedInConnectionFactory.class })
 @ConditionalOnProperty(prefix = "spring.social.linkedin", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class LinkedInAutoConfiguration {
 
-	@Configuration
+	@Component
 	@EnableSocial
 	@EnableConfigurationProperties(LinkedInProperties.class)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
