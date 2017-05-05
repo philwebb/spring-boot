@@ -258,7 +258,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		}
 
 		private void reorderSources(ConfigurableEnvironment environment) {
-			LoadedPropertySources.finishAndRelocate(environment.getPropertySources());
 			PropertySource<?> defaultProperties = environment.getPropertySources()
 					.remove(DEFAULT_PROPERTIES);
 			if (defaultProperties != null) {
@@ -345,9 +344,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			}
 			// Any pre-existing active profiles set via property sources (e.g. System
 			// properties) take precedence over those added in config files.
-			Set<Profile> active = getProfiles(this.environment, "spring.profiles.active");
+			Set<Profile> active = getProfiles(this.environment.getPropertySources(),
+					"spring.profiles.active");
 			Set<Profile> activeProfiles = new LinkedHashSet<>(active);
-			Set<Profile> include = getProfiles(this.environment,
+			Set<Profile> include = getProfiles(this.environment.getPropertySources(),
 					"spring.profiles.include");
 			activeProfiles.addAll(include);
 			maybeActivateProfiles(activeProfiles);
@@ -484,11 +484,6 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			addProfiles(include);
 		}
 
-		private Set<Profile> getProfiles(ConfigurableEnvironment environment,
-				String name) {
-			return getProfiles(environment.getPropertySources(), name);
-		}
-
 		private Set<Profile> getProfiles(PropertySources sources, String name) {
 			Binder binder = new Binder(ConfigurationPropertySources.get(sources),
 					new PropertySourcesPlaceholdersResolver(this.environment));
@@ -615,6 +610,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			else {
 				existingSources.addLast(loadedSources);
 			}
+			LoadedPropertySources
+					.finishAndRelocate(this.environment.getPropertySources());
 		}
 
 	}
@@ -670,7 +667,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 	 * Holds the configuration {@link PropertySource}s as they are loaded can relocate
 	 * them once configuration classes have been processed.
 	 */
-	static class LoadedPropertySources
+	private static class LoadedPropertySources
 			extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
 		private final Collection<PropertySource<?>> sources;
