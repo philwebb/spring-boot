@@ -77,16 +77,8 @@ public class ConfigurationPropertySources
 	}
 
 	private Stream<PropertySource<?>> streamPropertySources(PropertySources sources) {
-		return StreamSupport.stream(sources.spliterator(), false).flatMap(this::flatten)
+		return StreamSupport.stream(sources.spliterator(), false)
 				.filter(this::notStubSource);
-	}
-
-	private Stream<PropertySource<?>> flatten(PropertySource<?> source) {
-		if (source.getSource() instanceof ConfigurableEnvironment) {
-			return streamPropertySources(
-					((ConfigurableEnvironment) source.getSource()).getPropertySources());
-		}
-		return Stream.of(source);
 	}
 
 	private boolean notStubSource(PropertySource<?> source) {
