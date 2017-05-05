@@ -442,7 +442,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					return;
 				}
 				String profileName = (profile == null ? null : profile.getName());
-				String name = "applicationconfig: " + location;
+				String name = "applicationConfig: [" + location + "]";
 				name = (profileName == null ? name : name + "#" + profileName);
 				PropertySource<?> loaded = loader.load(name, resource, profileName);
 				if (loaded == null) {
@@ -591,7 +591,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		private void addLoadedPropertySources() {
 			MutablePropertySources destination = this.environment.getPropertySources();
 			String lastAdded = null;
-			for (MutablePropertySources sources : this.loaded.values()) {
+			List<MutablePropertySources> loaded = new ArrayList<>(this.loaded.values());
+			Collections.reverse(loaded);
+			for (MutablePropertySources sources : loaded) {
 				for (PropertySource<?> source : sources) {
 					if (lastAdded == null) {
 						if (destination.contains(DEFAULT_PROPERTIES)) {
