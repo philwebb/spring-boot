@@ -33,6 +33,7 @@ import org.springframework.core.env.PropertySource;
  * @see PropertySource
  * @see EnumerablePropertySource
  */
+@Deprecated
 public class EnumerableCompositePropertySource
 		extends EnumerablePropertySource<Collection<PropertySource<?>>> {
 
