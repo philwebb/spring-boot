@@ -394,7 +394,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			if (!StringUtils.hasText(name)) {
 				for (PropertySourceLoader loader : this.propertySourceLoaders) {
 					if (canLoadFileExtension(loader, location)) {
-						load(loader, profile, location);
+						load(loader, profile, location,
+								(profile == null ? null : profile.getName()));
 					}
 				}
 			}
@@ -414,21 +415,24 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				String prefix, String ext) {
 			if (profile != null) {
 				// Try the profile-specific file
-				load(loader, null, prefix + "-" + profile + ext);
+				load(loader, profile, prefix + "-" + profile + ext, null);
 				// Support profile section in profile file (gh-340)
-				load(loader, profile, prefix + "-" + profile + ext);
+				load(loader, profile, prefix + "-" + profile + ext, profile.getName());
 				// Try profile specific sections in files we've already processed
 				for (Profile processedProfile : this.processedProfiles) {
 					if (processedProfile != null) {
-						load(loader, profile, prefix + "-" + processedProfile + ext);
+						String previouslyLoaded = prefix + "-" + processedProfile + ext;
+						load(loader, profile, previouslyLoaded, profile.getName());
 					}
 				}
 			}
 			// Also try the profile-specific section (if any) of the normal file
-			load(loader, profile, prefix + ext);
+			load(loader, profile, prefix + ext,
+					(profile == null ? null : profile.getName()));
 		}
 
-		private void load(PropertySourceLoader loader, Profile profile, String location) {
+		private void load(PropertySourceLoader loader, Profile profile, String location,
+				String loadProfile) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				String description = getDescription(profile, location, resource);
@@ -441,10 +445,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 					this.logger.trace("Skipped empty config extension " + description);
 					return;
 				}
-				String profileName = (profile == null ? null : profile.getName());
-				String name = "applicationConfig: [" + location + "]";
-				name = (profileName == null ? name : name + "#" + profileName);
-				PropertySource<?> loaded = loader.load(name, resource, profileName);
+				String name = "applicationConfig: [" + location + "]"
+						+ (loadProfile == null ? "" : "#" + loadProfile);
+				PropertySource<?> loaded = loader.load(name, resource, loadProfile);
 				if (loaded == null) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
