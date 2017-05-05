@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +43,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.testutil.InternalOutputCapture;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -509,19 +510,10 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		assertThat(this.environment.getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		List<String> names = new ArrayList<>();
-		for (org.springframework.core.env.PropertySource<?> source : this.environment
-				.getPropertySources()) {
-			if (source instanceof EnumerableCompositePropertySource) {
-				for (org.springframework.core.env.PropertySource<?> nested : ((EnumerableCompositePropertySource) source)
-						.getSource()) {
-					names.add(nested.getName());
-				}
-			}
-			else {
-				names.add(source.getName());
-			}
-		}
+		List<String> names = StreamSupport
+				.stream(this.environment.getPropertySources().spliterator(), false)
+				.map(org.springframework.core.env.PropertySource::getName)
+				.collect(Collectors.toList());
 		assertThat(names).contains(
 				"applicationConfig: [classpath:/testsetprofiles.yml]#dev",
 				"applicationConfig: [classpath:/testsetprofiles.yml]");
