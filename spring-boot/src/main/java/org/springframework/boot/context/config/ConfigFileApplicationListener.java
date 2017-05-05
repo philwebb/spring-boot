@@ -436,6 +436,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				String description = getDescription(profile, location, resource);
+				if (profile != null) {
+					description = description + " for profile " + profile;
+				}
 				if (resource == null || !resource.exists()) {
 					this.logger.trace("Skipped missing config " + description);
 					return;
@@ -455,7 +458,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 				handleProfileProperties(loaded);
 				this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources())
 						.addLast(loaded);
-				this.logger.debug("Loaded config " + description);
+				this.logger.debug("Loaded config file " + description);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to load property "
@@ -466,12 +469,14 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor,
 		private String getDescription(Profile profile, String location,
 				Resource resource) {
 			try {
-				location = (resource == null ? location
-						: resource.getURI().toASCIIString() + " (" + location + ")");
+				if (resource != null) {
+					String uri = resource.getURI().toASCIIString();
+					return String.format("'%s' (%s)", uri, location);
+				}
 			}
 			catch (IOException ex) {
 			}
-			return location + (profile != null ? " for profile " + profile : "");
+			return String.format("'%s'", location);
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
