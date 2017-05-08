@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -60,7 +59,7 @@ public interface ConfigurationPropertySource {
 	 * @param name the name to check
 	 * @return an optional boolean determining if a descendant is contained in the source
 	 */
-	Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name);
+	PropertySourceContentState containsDescendantOf(ConfigurationPropertyName name);
 
 	/**
 	 * Return a filtered variant of this source, containing only names that match the

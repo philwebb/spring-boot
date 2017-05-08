@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Optional;
-
 import org.springframework.util.Assert;
 
 /**
@@ -53,14 +51,21 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 	}
 
 	@Override
-	public Optional<Boolean> containsDescendantOf(ConfigurationPropertyName name) {
+	public PropertySourceContentState containsDescendantOf(
+			ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
-		Optional<Boolean> result = this.source.containsDescendantOf(name);
-		for (ConfigurationPropertyName alias : getAliases().getAliases(name)) {
-			Optional<Boolean> aliasResult = this.source.containsDescendantOf(alias);
-			result = result.flatMap((r) -> aliasResult.flatMap(a -> Optional.of(r || a)));
+		PropertySourceContentState result = this.source.containsDescendantOf(name);
+		if (result != PropertySourceContentState.ABSENT) {
+			return result;
 		}
-		return result;
+		for (ConfigurationPropertyName alias : getAliases().getAliases(name)) {
+			PropertySourceContentState aliasResult = this.source
+					.containsDescendantOf(alias);
+			if (aliasResult != PropertySourceContentState.ABSENT) {
+				return aliasResult;
+			}
+		}
+		return PropertySourceContentState.ABSENT;
 	}
 
 	protected ConfigurationPropertySource getSource() {

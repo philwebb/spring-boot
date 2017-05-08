@@ -165,11 +165,11 @@ public class SpringIterableConfigurationPropertySourceTests {
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.contains(true);
+				.isEqualTo(PropertySourceContentState.PRESENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("faf")))
-				.contains(false);
+				.isEqualTo(PropertySourceContentState.ABSENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("fof")))
-				.contains(false);
+				.isEqualTo(PropertySourceContentState.ABSENT);
 	}
 
 	/**
