@@ -51,9 +51,9 @@ public class FilteredIterableConfigurationPropertiesSourceTests
 		source.put("faf.bar[0]", "1");
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(PropertySourceContentState.PRESENT);
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("faf")))
-				.isEqualTo(PropertySourceContentState.ABSENT);
+				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {

@@ -47,8 +47,8 @@ class FilteredIterableConfigurationPropertiesSource
 	}
 
 	@Override
-	public PropertySourceContentState containsDescendantOf(ConfigurationPropertyName name) {
-		return PropertySourceContentState.search(this, name::isAncestorOf);
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 }

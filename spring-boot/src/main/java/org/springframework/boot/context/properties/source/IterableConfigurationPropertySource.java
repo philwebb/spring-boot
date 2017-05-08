@@ -61,8 +61,8 @@ public interface IterableConfigurationPropertySource
 	Stream<ConfigurationPropertyName> stream();
 
 	@Override
-	default PropertySourceContentState containsDescendantOf(ConfigurationPropertyName name) {
-		return PropertySourceContentState.search(this, name::isAncestorOf);
+	default ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
+		return ConfigurationPropertyState.search(this, name::isAncestorOf);
 	}
 
 	@Override

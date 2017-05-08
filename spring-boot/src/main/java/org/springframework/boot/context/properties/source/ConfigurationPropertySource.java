@@ -59,7 +59,7 @@ public interface ConfigurationPropertySource {
 	 * @param name the name to check
 	 * @return an optional boolean determining if a descendant is contained in the source
 	 */
-	PropertySourceContentState containsDescendantOf(ConfigurationPropertyName name);
+	ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name);
 
 	/**
 	 * Return a filtered variant of this source, containing only names that match the

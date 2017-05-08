@@ -74,10 +74,10 @@ public class FilteredConfigurationPropertiesSourceTests {
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.UNKNOWN);
+				.willReturn(ConfigurationPropertyState.UNKNOWN);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.UNKNOWN);
+				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test
@@ -87,10 +87,10 @@ public class FilteredConfigurationPropertiesSourceTests {
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.ABSENT);
+				.willReturn(ConfigurationPropertyState.ABSENT);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.ABSENT);
+				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test
@@ -100,10 +100,10 @@ public class FilteredConfigurationPropertiesSourceTests {
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.PRESENT);
+				.willReturn(ConfigurationPropertyState.PRESENT);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.UNKNOWN);
+				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	protected final ConfigurationPropertySource createTestSource() {

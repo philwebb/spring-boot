@@ -51,21 +51,21 @@ class AliasedConfigurationPropertySource implements ConfigurationPropertySource 
 	}
 
 	@Override
-	public PropertySourceContentState containsDescendantOf(
+	public ConfigurationPropertyState containsDescendantOf(
 			ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
-		PropertySourceContentState result = this.source.containsDescendantOf(name);
-		if (result != PropertySourceContentState.ABSENT) {
+		ConfigurationPropertyState result = this.source.containsDescendantOf(name);
+		if (result != ConfigurationPropertyState.ABSENT) {
 			return result;
 		}
 		for (ConfigurationPropertyName alias : getAliases().getAliases(name)) {
-			PropertySourceContentState aliasResult = this.source
+			ConfigurationPropertyState aliasResult = this.source
 					.containsDescendantOf(alias);
-			if (aliasResult != PropertySourceContentState.ABSENT) {
+			if (aliasResult != ConfigurationPropertyState.ABSENT) {
 				return aliasResult;
 			}
 		}
-		return PropertySourceContentState.ABSENT;
+		return ConfigurationPropertyState.ABSENT;
 	}
 
 	protected ConfigurationPropertySource getSource() {

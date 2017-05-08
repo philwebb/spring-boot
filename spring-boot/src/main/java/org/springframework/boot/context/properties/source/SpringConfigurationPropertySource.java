@@ -61,7 +61,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private final PropertyMapper mapper;
 
-	private final Function<ConfigurationPropertyName, PropertySourceContentState> containsDescendantOfMethod;
+	private final Function<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfMethod;
 
 	/**
 	 * Create a new {@link SpringConfigurationPropertySource} implementation.
@@ -72,13 +72,13 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 */
 	SpringConfigurationPropertySource(PropertySource<?> propertySource,
 			PropertyMapper mapper,
-			Function<ConfigurationPropertyName, PropertySourceContentState> containsDescendantOfMethod) {
+			Function<ConfigurationPropertyName, ConfigurationPropertyState> containsDescendantOfMethod) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		this.propertySource = propertySource;
 		this.mapper = new ExceptionSwallowingPropertyMapper(mapper);
 		this.containsDescendantOfMethod = (containsDescendantOfMethod != null
-				? containsDescendantOfMethod : (n) -> PropertySourceContentState.UNKNOWN);
+				? containsDescendantOfMethod : (n) -> ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	@Override
-	public PropertySourceContentState containsDescendantOf(ConfigurationPropertyName name) {
+	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		return this.containsDescendantOfMethod.apply(name);
 	}
 
@@ -172,11 +172,11 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		return source;
 	}
 
-	private static Function<ConfigurationPropertyName, PropertySourceContentState> getContainsDescendantOfMethod(
+	private static Function<ConfigurationPropertyName, ConfigurationPropertyState> getContainsDescendantOfMethod(
 			PropertySource<?> source) {
 		if (source instanceof RandomValuePropertySource) {
 			return (name) -> (name.isAncestorOf(RANDOM) || name.equals(RANDOM)
-					? PropertySourceContentState.PRESENT : PropertySourceContentState.ABSENT);
+					? ConfigurationPropertyState.PRESENT : ConfigurationPropertyState.ABSENT);
 		}
 		return null;
 	}

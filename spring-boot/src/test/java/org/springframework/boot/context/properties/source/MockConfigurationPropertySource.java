@@ -98,9 +98,9 @@ public class MockConfigurationPropertySource
 		}
 
 		@Override
-		public PropertySourceContentState containsDescendantOf(
+		public ConfigurationPropertyState containsDescendantOf(
 				ConfigurationPropertyName name) {
-			return PropertySourceContentState.UNKNOWN;
+			return ConfigurationPropertyState.UNKNOWN;
 		}
 
 	}

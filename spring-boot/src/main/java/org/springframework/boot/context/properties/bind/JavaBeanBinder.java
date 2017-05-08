@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.PropertySourceContentState;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyState;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -41,8 +41,8 @@ class JavaBeanBinder implements BeanBinder {
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target,
 			BindContext context, BeanPropertyBinder propertyBinder) {
-		boolean hasKnownBindableProperties = context.streamSources().anyMatch(
-				(s) -> s.containsDescendantOf(name) == PropertySourceContentState.ABSENT);
+		boolean hasKnownBindableProperties = context.streamSources().anyMatch((
+				s) -> s.containsDescendantOf(name) == ConfigurationPropertyState.PRESENT);
 		Bean<T> bean = Bean.get(target, hasKnownBindableProperties);
 		if (bean == null) {
 			return null;

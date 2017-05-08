@@ -55,64 +55,65 @@ public class AliasedConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty()
+	public void containsDescendantOfWhenSourceReturnsUnknownShouldReturnUnknown()
 			throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.UNKNOWN);
+				.willReturn(ConfigurationPropertyState.UNKNOWN);
 		ConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
 		assertThat(aliased.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.UNKNOWN);
+				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test
-	public void containsDescendantOfWhenAliasReturnsEmptyShouldReturnEmpty()
+	public void containsDescendantOfWhenSourceReturnsPresentShouldReturnPresent()
 			throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.PRESENT);
+				.willReturn(ConfigurationPropertyState.PRESENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
-				.willReturn(PropertySourceContentState.UNKNOWN);
+				.willReturn(ConfigurationPropertyState.UNKNOWN);
 		ConfigurationPropertySource aliased = source
-				.withAliases(new ConfigurationPropertyNameAliases("foo", "bar"));
+				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
 		assertThat(aliased.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.UNKNOWN);
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
-	public void containsDescendantOfWhenAllAreFalseShouldReturnFalse() throws Exception {
+	public void containsDescendantOfWhenAllAreAbsentShouldReturnAbsent()
+			throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.ABSENT);
+				.willReturn(ConfigurationPropertyState.ABSENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
-				.willReturn(PropertySourceContentState.ABSENT);
+				.willReturn(ConfigurationPropertyState.ABSENT);
 		ConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo", "bar"));
 		assertThat(aliased.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.ABSENT);
-
+				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test
-	public void containsDescendantOfWhenAnyIsTrueShouldReturnTrue() throws Exception {
+	public void containsDescendantOfWhenAnyIsPresentShouldReturnPresent()
+			throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class,
 				withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS));
 		given(source.containsDescendantOf(name))
-				.willReturn(PropertySourceContentState.ABSENT);
+				.willReturn(ConfigurationPropertyState.ABSENT);
 		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
-				.willReturn(PropertySourceContentState.PRESENT);
+				.willReturn(ConfigurationPropertyState.PRESENT);
 		ConfigurationPropertySource aliased = source
 				.withAliases(new ConfigurationPropertyNameAliases("foo", "bar"));
 		assertThat(aliased.containsDescendantOf(name))
-				.isEqualTo(PropertySourceContentState.PRESENT);
+				.isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	private Object getValue(ConfigurationPropertySource source, String name) {
