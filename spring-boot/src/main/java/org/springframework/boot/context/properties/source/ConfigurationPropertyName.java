@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Element;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyNameBuilder.ElementValueProcessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -54,7 +54,7 @@ import org.springframework.util.StringUtils;
  * @see ConfigurationPropertySource
  */
 public final class ConfigurationPropertyName
-		implements Iterable<Element>, Comparable<ConfigurationPropertyName> {
+		implements Comparable<ConfigurationPropertyName> {
 
 	/**
 	 * An empty {@link ConfigurationPropertyName}.
@@ -85,16 +85,32 @@ public final class ConfigurationPropertyName
 		return this.parent;
 	}
 
+	public boolean getElementisIndexed() {
+		return getElement().isIndexed();
+	}
+
+	public String getLastElementInUniformForm() {
+		return getElement().getValue(Form.UNIFORM);
+	}
+
+	public Stream<String> streamUniform() {
+		return stream().map((e) -> e.getValue(Form.UNIFORM));
+	}
+
+	public String getKeyName(ConfigurationPropertyName root) {
+		return stream(root).map((e) -> e.getValue(Form.ORIGINAL))
+				.collect(Collectors.joining("."));
+	}
+
 	/**
 	 * Return the element part of this configuration property name.
 	 * @return the element (never {@code null})
 	 */
-	public Element getElement() {
+	private Element getElement() {
 		return this.element;
 	}
 
-	@Override
-	public Iterator<Element> iterator() {
+	private Iterator<Element> iterator() {
 		return stream().iterator();
 	}
 
@@ -102,7 +118,7 @@ public final class ConfigurationPropertyName
 	 * Return a stream of the {@link Element Elements} that make up this name.
 	 * @return a stream of {@link Element} items
 	 */
-	public Stream<Element> stream() {
+	private Stream<Element> stream() {
 		if (this.parent == null) {
 			return Stream.of(this.element);
 		}
@@ -115,7 +131,7 @@ public final class ConfigurationPropertyName
 	 * @param root the root of the name or {@code null} to stream all elements
 	 * @return a stream of {@link Element} items
 	 */
-	public Stream<Element> stream(ConfigurationPropertyName root) {
+	private Stream<Element> stream(ConfigurationPropertyName root) {
 		if (this.parent == null || this.parent.equals(root)) {
 			return Stream.of(this.element);
 		}
@@ -285,7 +301,7 @@ public final class ConfigurationPropertyName
 	/**
 	 * An individual element of the {@link ConfigurationPropertyName}.
 	 */
-	public static final class Element implements Comparable<Element> {
+	static final class Element implements Comparable<Element> {
 
 		private static final Pattern VALUE_PATTERN = Pattern.compile("[\\w\\-]+");
 
@@ -501,6 +517,29 @@ public final class ConfigurationPropertyName
 			return result;
 		}
 
+	}
+
+	public boolean isMultiElement(ConfigurationPropertyName root) {
+		return getParent() != null && !root.equals(getParent());
+	}
+
+	/**
+	 * Roll up the given name to the first element below the root. For example a name of
+	 * {@code foo.bar.baz} rolled up to the root {@code foo} would be {@code foo.bar}.
+	 * @param root the root name
+	 * @return the rolled up name or {@code null}
+	 */
+	public final ConfigurationPropertyName rollUp(ConfigurationPropertyName root) {
+		ConfigurationPropertyName name = this;
+		while (name != null && (name.getParent() != null)
+				&& (!root.equals(name.getParent()))) {
+			name = name.getParent();
+		}
+		return name;
+	}
+
+	public boolean getParentIsNotNull() {
+		return getParent() != null;
 	}
 
 }

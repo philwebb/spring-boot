@@ -18,12 +18,10 @@ package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
@@ -97,7 +95,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
-			if (isMultiElementName(name) && isValueTreatedAsNestedMap()) {
+			if (name.isMultiElement(this.root) && isValueTreatedAsNestedMap()) {
 				return Bindable.of(this.mapType);
 			}
 			return Bindable.of(this.valueType);
@@ -105,15 +103,11 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			if (isMultiElementName(name)
+			if (name.isMultiElement(this.root)
 					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
-				return rollUp(name, this.root);
+				return name.rollUp(this.root);
 			}
 			return name;
-		}
-
-		private boolean isMultiElementName(ConfigurationPropertyName name) {
-			return name.getParent() != null && !this.root.equals(name.getParent());
 		}
 
 		private boolean isValueTreatedAsNestedMap() {
@@ -139,8 +133,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		private String getKeyName(ConfigurationPropertyName name) {
-			return name.stream(this.root).map((e) -> e.getValue(Form.ORIGINAL))
-					.collect(Collectors.joining("."));
+			return name.getKeyName(this.root);
 		}
 
 	}

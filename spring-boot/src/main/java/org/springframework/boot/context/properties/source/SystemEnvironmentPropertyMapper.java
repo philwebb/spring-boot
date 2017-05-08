@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -107,23 +106,21 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private String convertName(ConfigurationPropertyName configurationPropertyName) {
-		return configurationPropertyName.stream()
-				.map(name -> name.getValue(Form.UNIFORM).toUpperCase())
+		return configurationPropertyName.streamUniform().map(String::toUpperCase)
 				.collect(Collectors.joining("_"));
 	}
 
 	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.getElement().isIndexed()
-				&& isNumber(name.getElement().getValue(Form.UNIFORM))
-				&& name.getParent() != null);
+		return (name.getElementisIndexed() && isNumber(name.getLastElementInUniformForm())
+				&& name.getParentIsNotNull());
 	}
 
 	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
 			ConfigurationPropertyName configurationPropertyName) {
 		String propertyName = convertName(configurationPropertyName.getParent()) + "__";
 		if (propertySource.containsProperty(propertyName)) {
-			int index = Integer.parseInt(
-					configurationPropertyName.getElement().getValue(Form.UNIFORM));
+			int index = Integer
+					.parseInt(configurationPropertyName.getLastElementInUniformForm());
 			return Collections.singletonList(new PropertyMapping(propertyName,
 					configurationPropertyName, new ElementExtractor(index)));
 		}

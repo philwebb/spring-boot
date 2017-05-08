@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
@@ -86,7 +85,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			if (value == null) {
 				break;
 			}
-			knownIndexedChildren.remove(name.getElement().getValue(Form.UNIFORM));
+			knownIndexedChildren.remove(name.getLastElementInUniformForm());
 			collection.get().add(value);
 		}
 		assertNoUnboundChildren(knownIndexedChildren);
@@ -100,9 +99,9 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
-			name = rollUp(name, root);
-			if (name.getElement().isIndexed()) {
-				String key = name.getElement().getValue(Form.UNIFORM);
+			name = name.rollUp(root);
+			if (name.getElementisIndexed()) {
+				String key = name.getLastElementInUniformForm();
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}
