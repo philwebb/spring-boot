@@ -130,7 +130,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void ofNameWhenDotAndAssociative() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.[bar]");
-		assertThat(name.toString()).isEqualTo("foo.[bar]");
+		assertThat(name.toString()).isEqualTo("foo[bar]");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
 		assertThat(name.getElement(1, Form.ORIGINAL)).isEqualTo("bar");
 		assertThat(name.isIndexed(0)).isFalse();
@@ -140,7 +140,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void ofNameWhenDoubleRunOnAndAssociative() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo[bar]baz");
-		assertThat(name.toString()).isEqualTo("foo[bar]baz");
+		assertThat(name.toString()).isEqualTo("foo[bar].baz");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
 		assertThat(name.getElement(1, Form.ORIGINAL)).isEqualTo("bar");
 		assertThat(name.getElement(2, Form.ORIGINAL)).isEqualTo("baz");
@@ -152,7 +152,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void ofNameWhenDoubleDotAndAssociative() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.[bar].baz");
-		assertThat(name.toString()).isEqualTo("foo.[bar].baz");
+		assertThat(name.toString()).isEqualTo("foo[bar].baz");
 		assertThat(name.getElement(0, Form.ORIGINAL)).isEqualTo("foo");
 		assertThat(name.getElement(1, Form.ORIGINAL)).isEqualTo("bar");
 		assertThat(name.getElement(2, Form.ORIGINAL)).isEqualTo("baz");

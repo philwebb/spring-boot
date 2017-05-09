@@ -59,9 +59,7 @@ public final class ConfigurationPropertyName
 	 * An empty {@link ConfigurationPropertyName}.
 	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			() -> EMPTY_STRING, new String[0]);
-
-	private final Supplier<CharSequence> name;
+			new String[0]);
 
 	private final CharSequence[] elements;
 
@@ -69,22 +67,22 @@ public final class ConfigurationPropertyName
 
 	private int[] elementHashCodes;
 
-	private ConfigurationPropertyName(Supplier<CharSequence> name,
-			CharSequence[] elements) {
-		this(name, elements, new CharSequence[elements.length]);
+	private String string;
+
+	private ConfigurationPropertyName(CharSequence[] elements) {
+		this(elements, new CharSequence[elements.length]);
 	}
 
-	private ConfigurationPropertyName(Supplier<CharSequence> name,
-			CharSequence[] elements, CharSequence[] uniformElements) {
-		this.name = name;
+	private ConfigurationPropertyName(CharSequence[] elements,
+			CharSequence[] uniformElements) {
 		this.elements = elements;
 		this.uniformElements = uniformElements;
 		for (int i = 0; i < elements.length; i++) {
 			CharSequence element = elements[i];
 			if ((!isIndexed(element) && !ElementValidator.isValidElement(element))
 					|| (i > 0 && EMPTY_STRING.equals(element))) {
-				throw new IllegalArgumentException(
-						"Configuration property name '" + name.get() + "' is not valid");
+				throw new IllegalArgumentException("Configuration property name '"
+						+ toString(this.elements) + "' is not valid");
 			}
 		}
 	}
@@ -191,9 +189,7 @@ public final class ConfigurationPropertyName
 		elements[length] = elementValue;
 		CharSequence[] uniformElements = new CharSequence[length + 1];
 		System.arraycopy(this.uniformElements, 0, uniformElements, 0, length);
-		String separator = (isIndexed(elementValue) || length == 0 ? EMPTY_STRING : ".");
-		Supplier<CharSequence> name = () -> this.name.get() + separator + elementValue;
-		return new ConfigurationPropertyName(name, elements, uniformElements);
+		return new ConfigurationPropertyName(elements, uniformElements);
 	}
 
 	/**
@@ -277,6 +273,21 @@ public final class ConfigurationPropertyName
 
 	@Override
 	public String toString() {
+		if (this.string == null) {
+			this.string = toString(this.elements);
+		}
+		return this.string;
+	}
+
+	private String toString(CharSequence[] elements) {
+		StringBuilder result = new StringBuilder();
+		for (CharSequence element : elements) {
+			if (result.length() > 0 && !isIndexed(element)) {
+				result.append(".");
+			}
+			result.append(element);
+		}
+		return result.toString();
 	}
 
 	@Override
@@ -421,7 +432,7 @@ public final class ConfigurationPropertyName
 				elements.add(elementValue);
 			}
 		});
-		return new ConfigurationPropertyName(() -> name,
+		return new ConfigurationPropertyName(
 				elements.toArray(new CharSequence[elements.size()]));
 	}
 
