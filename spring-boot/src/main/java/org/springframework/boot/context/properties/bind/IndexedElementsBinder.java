@@ -80,7 +80,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private void bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
 			IndexedCollectionSupplier collection, ResolvableType elementType) {
-		MultiValueMap<CharSequence, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
+		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root
@@ -95,17 +95,17 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		assertNoUnboundChildren(knownIndexedChildren);
 	}
 
-	private MultiValueMap<CharSequence, ConfigurationProperty> getKnownIndexedChildren(
+	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
 			ConfigurationPropertySource source, ConfigurationPropertyName root) {
-		MultiValueMap<CharSequence, ConfigurationProperty> children = new LinkedMultiValueMap<>();
+		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
 		if (!(source instanceof IterableConfigurationPropertySource)) {
 			return children;
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
-			name = name.rollUp(root);
+			name = name.chop(root.getNumberOfElements() + 1);
 			if (name.isLastElementIndexed()) {
-				CharSequence key = name.getLastElement(Form.UNIFORM);
+				String key = name.getLastElement(Form.UNIFORM);
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}
@@ -114,7 +114,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	private void assertNoUnboundChildren(
-			MultiValueMap<CharSequence, ConfigurationProperty> children) {
+			MultiValueMap<String, ConfigurationProperty> children) {
 		if (!children.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(
 					children.values().stream().flatMap(List::stream)

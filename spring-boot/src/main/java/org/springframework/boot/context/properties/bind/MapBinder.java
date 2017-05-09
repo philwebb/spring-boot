@@ -106,7 +106,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				ConfigurationPropertyName name) {
 			if (this.root.isParentOf(name)
 					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
-				return name.rollUp(this.root);
+				return name.chop(this.root.getNumberOfElements() + 1);
 			}
 			return name;
 		}
@@ -133,14 +133,14 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			return conversionService.canConvert(value, this.valueType);
 		}
 
-		private CharSequence getKeyName(ConfigurationPropertyName name) {
+		private String getKeyName(ConfigurationPropertyName name) {
 			StringBuilder result = new StringBuilder();
 			for (int i = this.root.getNumberOfElements(); i < name
 					.getNumberOfElements(); i++) {
 				result.append(result.length() == 0 ? "" : ".");
 				result.append(name.getElement(i, Form.ORIGINAL));
 			}
-			return result;
+			return result.toString();
 		}
 
 	}

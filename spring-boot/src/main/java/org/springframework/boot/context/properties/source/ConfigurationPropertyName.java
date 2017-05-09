@@ -192,6 +192,17 @@ public final class ConfigurationPropertyName
 		return new ConfigurationPropertyName(elements, uniformElements);
 	}
 
+	public ConfigurationPropertyName chop(int size) {
+		if (size >= getNumberOfElements()) {
+			return this;
+		}
+		CharSequence[] elements = new CharSequence[size];
+		System.arraycopy(this.elements, 0, elements, 0, size);
+		CharSequence[] uniformElements = new CharSequence[size];
+		System.arraycopy(this.uniformElements, 0, uniformElements, 0, size);
+		return new ConfigurationPropertyName(elements, uniformElements);
+	}
+
 	/**
 	 * Returns {@code true} if this element is an immediate parent of the specified name.
 	 * @param name the name to check
@@ -499,7 +510,7 @@ public final class ConfigurationPropertyName
 	}
 
 	@FunctionalInterface
-	private static interface ElementProcessor {
+	private interface ElementProcessor {
 
 		void process(CharSequence elementValue, int start, int end, boolean indexed);
 
