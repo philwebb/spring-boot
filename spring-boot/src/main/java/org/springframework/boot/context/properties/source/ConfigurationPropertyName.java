@@ -131,7 +131,7 @@ public final class ConfigurationPropertyName
 				result = result.subSequence(1, result.length() - 1);
 			}
 			else {
-				result = cleanupCharSequence(result, (c, i) -> c == '-',
+				result = cleanupCharSequence(result, (c, i) -> c == '-' || c == '_',
 						CharProcessor.LOWERCASE);
 			}
 			this.uniformElements[elementIndex] = result;
@@ -277,7 +277,15 @@ public final class ConfigurationPropertyName
 			if (result.length() > 0 && !indexed) {
 				result.append(".");
 			}
-			result.append(indexed ? element : element.toString().toLowerCase());
+			if (indexed) {
+				result.append(element);
+			}
+			else {
+				for (int i = 0; i < element.length(); i++) {
+					char ch = Character.toLowerCase(element.charAt(i));
+					result.append(ch == '_' ? "" : ch);
+				}
+			}
 		}
 		return result.toString();
 	}
@@ -300,10 +308,12 @@ public final class ConfigurationPropertyName
 
 	private int getElementHashCode(CharSequence element) {
 		int hash = 0;
-		int offset = (isIndexed(element) ? 1 : 0);
+		boolean indexed = isIndexed(element);
+		int offset = (indexed ? 1 : 0);
 		for (int i = 0 + offset; i < element.length() - offset; i++) {
-			char ch = element.charAt(i);
-			hash = (ch == '-' ? hash : 31 * hash + Character.hashCode(ch));
+			char ch = (indexed ? element.charAt(i)
+					: Character.toLowerCase(element.charAt(i)));
+			hash = (ch == '-' || ch == '_' ? hash : 31 * hash + Character.hashCode(ch));
 		}
 		return hash;
 	}
@@ -343,10 +353,10 @@ public final class ConfigurationPropertyName
 			}
 			char ch1 = (indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1)));
 			char ch2 = (indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2)));
-			if (ch1 == '-') {
+			if (ch1 == '-' || ch1 == '_') {
 				i1++;
 			}
-			else if (ch2 == '-') {
+			else if (ch2 == '-' || ch2 == '_') {
 				i2++;
 			}
 			else if (ch1 != ch2) {
@@ -358,7 +368,8 @@ public final class ConfigurationPropertyName
 			}
 		}
 		while (i2 < l2 - offset2) {
-			if (e2.charAt(i2++) != '-') {
+			char ch = e2.charAt(i2++);
+			if (ch != '-' && ch != '_') {
 				return false;
 			}
 		}
@@ -436,7 +447,7 @@ public final class ConfigurationPropertyName
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
 				elementValue = cleanupCharSequence(elementValue,
-						(ch, index) -> !ElementValidator
+						(ch, index) -> ch != '_' && !ElementValidator
 								.isValidChar(Character.toLowerCase(ch), index),
 						CharProcessor.NONE);
 			}

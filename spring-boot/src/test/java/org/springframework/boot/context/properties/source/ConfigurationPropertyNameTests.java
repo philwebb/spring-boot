@@ -220,6 +220,7 @@ public class ConfigurationPropertyNameTests {
 		assertThat(name1.hashCode()).isEqualTo(name2.hashCode());
 		assertThat(name1.hashCode()).isEqualTo(name3.hashCode());
 		assertThat(name1.hashCode()).isEqualTo(name4.hashCode());
+		assertThat(name1.hashCode()).isEqualTo(name11.hashCode());
 		assertThat((Object) name1).isEqualTo(name1);
 		assertThat((Object) name1).isEqualTo(name2);
 		assertThat((Object) name1).isEqualTo(name3);
