@@ -16,17 +16,13 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyNameBuilder.ElementValueProcessor;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A configuration property name composed of elements separated by dots. Names may contain
@@ -49,371 +45,291 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.0.0
- * @see #of(String)
- * @see ConfigurationPropertyNameBuilder
+ * @see #of(CharSequence)
  * @see ConfigurationPropertySource
  */
 public final class ConfigurationPropertyName
 		implements Comparable<ConfigurationPropertyName> {
 
-	/**
-	 * An empty {@link ConfigurationPropertyName}.
-	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			null, new Element());
+			"", new String[0]);
 
-	private static final ConfigurationPropertyNameBuilder BUILDER = new ConfigurationPropertyNameBuilder(
-			ElementValueProcessor.identity().withValidName());
+	private final CharSequence name;
 
-	private final ConfigurationPropertyName parent;
+	private final CharSequence[] elements;
 
-	private final Element element;
+	private final CharSequence[] uniformElements;
 
-	private String toString;
+	private int[] elementHashCodes;
 
-	ConfigurationPropertyName(ConfigurationPropertyName parent, Element element) {
-		Assert.notNull(element, "Element must not be null");
-		this.parent = (parent == EMPTY ? null : parent);
-		this.element = element;
+	private ConfigurationPropertyName(CharSequence name, CharSequence[] elements) {
+		this.name = name;
+		this.elements = elements;
+		this.uniformElements = new CharSequence[elements.length];
 	}
 
-	/**
-	 * Return the parent of this configuration property.
-	 * @return the parent or {code null}
-	 */
-	public ConfigurationPropertyName getParent() {
-		return this.parent;
+	public boolean isLastElementIndexed() {
+		int size = getNumberOfElements();
+		return (size > 0 && isIndexed(this.elements[size - 1]));
 	}
 
-	public boolean getElementisIndexed() {
-		return getElement().isIndexed();
+	boolean isIndexed(int elementIndex) {
+		return isIndexed(this.elements[elementIndex]);
 	}
 
-	public String getLastElementInUniformForm() {
-		return getElement().getValue(Form.UNIFORM);
+	public CharSequence getLastElement(Form form) {
+		int size = getNumberOfElements();
+		return (size == 0 ? "" : getElement(size - 1, form));
 	}
 
-	public Stream<String> streamUniform() {
-		return stream().map((e) -> e.getValue(Form.UNIFORM));
-	}
-
-	public String getKeyName(ConfigurationPropertyName root) {
-		return stream(root).map((e) -> e.getValue(Form.ORIGINAL))
-				.collect(Collectors.joining("."));
-	}
-
-	/**
-	 * Return the element part of this configuration property name.
-	 * @return the element (never {@code null})
-	 */
-	private Element getElement() {
-		return this.element;
-	}
-
-	private Iterator<Element> iterator() {
-		return stream().iterator();
-	}
-
-	/**
-	 * Return a stream of the {@link Element Elements} that make up this name.
-	 * @return a stream of {@link Element} items
-	 */
-	private Stream<Element> stream() {
-		if (this.parent == null) {
-			return Stream.of(this.element);
+	public String getElement(int elementIndex, Form form) {
+		if (form == Form.ORIGINAL) {
+			CharSequence result = this.elements[elementIndex];
+			if (isIndexed(result)) {
+				result = result.subSequence(1, result.length() - 1);
+			}
+			return result.toString();
 		}
-		return Stream.concat(this.parent.stream(), Stream.of(this.element));
-	}
-
-	/**
-	 * Return a stream of the {@link Element Elements} that make up this name starting
-	 * from the given root.
-	 * @param root the root of the name or {@code null} to stream all elements
-	 * @return a stream of {@link Element} items
-	 */
-	private Stream<Element> stream(ConfigurationPropertyName root) {
-		if (this.parent == null || this.parent.equals(root)) {
-			return Stream.of(this.element);
+		CharSequence result = this.uniformElements[elementIndex];
+		if (result == null) {
+			result = this.elements[elementIndex];
+			if (isIndexed(result)) {
+				result = result.subSequence(1, result.length() - 1);
+			}
+			else {
+				result = stripDashes(result);
+			}
+			this.uniformElements[elementIndex] = result;
 		}
-		return Stream.concat(this.parent.stream(root), Stream.of(this.element));
-	}
-
-	@Override
-	public String toString() {
-		if (this.toString == null) {
-			this.toString = buildToString();
-		}
-		return this.toString;
-	}
-
-	private String buildToString() {
-		StringBuilder result = new StringBuilder();
-		result.append(this.parent != null ? this.parent.toString() : "");
-		result.append(result.length() > 0 && !this.element.isIndexed() ? "." : "");
-		result.append(this.element);
 		return result.toString();
 	}
 
-	/**
-	 * Returns {@code true} if this element is an ancestor (immediate or nested parent) or
-	 * the specified name.
-	 * @param name the name to check
-	 * @return {@code true} if this name is an ancestor
-	 */
-	public boolean isAncestorOf(ConfigurationPropertyName name) {
-		if (this.equals(EMPTY)) {
-			return true;
-		}
-		ConfigurationPropertyName candidate = (name == null ? null : name.getParent());
-		while (candidate != null) {
-			if (candidate.equals(this)) {
-				return true;
-			}
-			candidate = candidate.getParent();
-		}
-		return false;
-	}
-
-	@Override
-	public int compareTo(ConfigurationPropertyName other) {
-		Iterator<Element> elements = iterator();
-		Iterator<Element> otherElements = other.iterator();
-		while (elements.hasNext() || otherElements.hasNext()) {
-			int result = compare(elements.hasNext() ? elements.next() : null,
-					otherElements.hasNext() ? otherElements.next() : null);
-			if (result != 0) {
+	private CharSequence stripDashes(CharSequence name) {
+		for (int i = 0; i < name.length(); i++) {
+			if (name.charAt(i) == '-') {
+				// We save memory by only creating the new result if necessary
+				StringBuilder result = new StringBuilder(name.length());
+				result.append(name.subSequence(0, i));
+				for (int j = i + 1; j < name.length(); j++) {
+					char ch = name.charAt(j);
+					if (ch != '-') {
+						result.append(ch);
+					}
+				}
 				return result;
 			}
 		}
-		return 0;
+		return name;
 	}
 
-	private int compare(Element element, Element other) {
-		if (element == null) {
-			return -1;
-		}
-		if (other == null) {
-			return 1;
-		}
-		return element.compareTo(other);
+	public int getNumberOfElements() {
+		return this.elements.length;
 	}
 
-	@Override
-	public int hashCode() {
-		int result = 1;
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.parent);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.element);
-		return result;
+	public ConfigurationPropertyName append(String propertyName) {
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
+	public int compareTo(ConfigurationPropertyName o) {
+		throw new RuntimeException();
+	}
+
+	public boolean isParentOf(ConfigurationPropertyName name) {
+		Assert.notNull(name, "Name must not be null");
+		if (this.getNumberOfElements() != name.getNumberOfElements() - 1) {
 			return false;
 		}
-		ConfigurationPropertyName other = (ConfigurationPropertyName) obj;
-		boolean result = true;
-		result = result && ObjectUtils.nullSafeEquals(this.parent, other.parent);
-		result = result && ObjectUtils.nullSafeEquals(this.element, other.element);
-		return result;
+		return isAncestorOf(name);
 	}
 
-	/**
-	 * Create a new {@link ConfigurationPropertyName} by appending the given index.
-	 * @param index the index to append
-	 * @return a new {@link ConfigurationPropertyName}
-	 */
-	public ConfigurationPropertyName appendIndex(int index) {
-		return BUILDER.from(this, index);
-	}
-
-	/**
-	 * Create a new {@link ConfigurationPropertyName} by appending the given element.
-	 * @param element the element to append
-	 * @return a new {@link ConfigurationPropertyName}
-	 */
-	public ConfigurationPropertyName append(String element) {
-		if (StringUtils.hasLength(element)) {
-			return BUILDER.from(this, element);
-		}
-		return this;
-	}
-
-	/**
-	 * Returns if the given name is valid. If this method returns {@code true} then the
-	 * name may be used with {@link #of(String)} without throwing an exception.
-	 * @param name the name to test
-	 * @return {@code true} if the name is valid
-	 */
-	public static boolean isValid(String name) {
-		if (name == null) {
+	public boolean isAncestorOf(ConfigurationPropertyName name) {
+		Assert.notNull(name, "Name must not be null");
+		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
-		boolean indexed = false;
-		int charIndex = 0;
-		for (int i = 0; i < name.length(); i++) {
-			char ch = name.charAt(i);
-			if (!indexed) {
-				if (ch == '[') {
-					indexed = true;
-					charIndex = 1;
-				}
-				else if (ch == '.') {
-					charIndex = 0;
-				}
-				else {
-					if (!Element.isValid(charIndex, ch)) {
-						return false;
-					}
-					charIndex++;
-				}
-			}
-			else {
-				if (ch == ']') {
-					indexed = false;
-					charIndex = 0;
-				}
+		for (int i = 0; i < this.elements.length; i++) {
+			if (!elementEquals(this.elements[i], name.elements[i])) {
+				return false;
 			}
 		}
 		return true;
 	}
 
-	/**
-	 * Return a {@link ConfigurationPropertyName} for the specified string.
-	 * @param name the source name
-	 * @return a {@link ConfigurationPropertyName} instance
-	 * @throws IllegalArgumentException if the name is not valid
-	 */
-	public static ConfigurationPropertyName of(String name)
-			throws IllegalArgumentException {
-		Assert.notNull(name, "Name must not be null");
-		Assert.isTrue(!name.startsWith("."), "Name must not start with '.'");
-		Assert.isTrue(!name.endsWith("."), "Name must not end with '.'");
-		if (StringUtils.isEmpty(name)) {
-			return EMPTY;
+	@Override
+	public String toString() {
+		return this.name.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		if (this.elementHashCodes == null) {
+			this.elementHashCodes = getElementHashCodes();
 		}
-		return BUILDER.from(name, '.');
+		return ObjectUtils.nullSafeHashCode(this.elementHashCodes);
+	}
+
+	private int[] getElementHashCodes() {
+		int[] hashCodes = new int[this.elements.length];
+		for (int i = 0; i < this.elements.length; i++) {
+			hashCodes[i] = getElementHashCode(this.elements[i]);
+		}
+		return hashCodes;
+	}
+
+	private int getElementHashCode(CharSequence element) {
+		int hash = 0;
+		int offset = (isIndexed(element) ? 1 : 0);
+		for (int i = 0 + offset; i < element.length() - offset; i++) {
+			char ch = element.charAt(i);
+			hash = (ch == '-' ? hash : 31 * hash + Character.hashCode(ch));
+		}
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (obj == null || !obj.getClass().equals(getClass())) {
+			return false;
+		}
+		ConfigurationPropertyName other = (ConfigurationPropertyName) obj;
+		if (getNumberOfElements() != other.getNumberOfElements()) {
+			return false;
+		}
+		for (int i = 0; i < this.elements.length; i++) {
+			if (!elementEquals(this.elements[i], other.elements[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean elementEquals(CharSequence e1, CharSequence e2) {
+		int l1 = e1.length();
+		int l2 = e2.length();
+		int offset1 = (isIndexed(e1) ? 1 : 0);
+		int offset2 = (isIndexed(e2) ? 1 : 0);
+		int i1 = offset1;
+		int i2 = offset2;
+		while (i1 < l1 - offset1) {
+			if (i2 >= l2 - offset2) {
+				return false;
+			}
+			char ch1 = e1.charAt(i1);
+			char ch2 = e2.charAt(i2);
+			if (ch1 == '-') {
+				i1++;
+			}
+			else if (ch2 == '-') {
+				i2++;
+			}
+			else if (ch1 != ch2) {
+				return false;
+			}
+			else {
+				i1++;
+				i2++;
+			}
+		}
+		while (i2 < l2 - offset2) {
+			if (e2.charAt(i2++) != '-') {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isIndexed(CharSequence element) {
+		int length = element.length();
+		return length > 2 && element.charAt(0) == '['
+				&& element.charAt(length - 1) == ']';
 	}
 
 	/**
-	 * An individual element of the {@link ConfigurationPropertyName}.
+	 * Roll up the given name to the first element below the root. For example a name of
+	 * {@code foo.bar.baz} rolled up to the root {@code foo} would be {@code foo.bar}.
+	 * @param root the root name
+	 * @return the rolled up name or {@code null}
 	 */
-	static final class Element implements Comparable<Element> {
+	public final ConfigurationPropertyName rollUp(ConfigurationPropertyName root) {
+		// FIXME very odd API
+		throw new RuntimeException();
+	}
 
-		private static final Pattern VALUE_PATTERN = Pattern.compile("[\\w\\-]+");
+	public static boolean isValid(CharSequence name) {
+		return process(name, '.', ElementProcessor.NONE);
+	}
 
-		private final boolean indexed;
-
-		private final String[] value;
-
-		private Element() {
-			this.indexed = false;
-			this.value = Form.expand("", false);
+	public static ConfigurationPropertyName of(CharSequence name) {
+		Assert.notNull(name, "Name must not be null");
+		if (name.length() == 0) {
+			return EMPTY;
 		}
-
-		Element(String value) {
-			Assert.notNull(value, "Value must not be null");
-			this.indexed = isIndexed(value);
-			value = (this.indexed ? value.substring(1, value.length() - 1) : value);
-			if (!this.indexed) {
-				validate(value);
+		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		boolean valid = process(name, '.', (start, end, indexed) -> {
+			if (end > start) {
+				elements.add(name.subSequence(start, end));
 			}
-			this.value = Form.expand(value, this.indexed);
-		}
+		});
+		Assert.isTrue(valid, name + " is not valid");
+		return new ConfigurationPropertyName(name,
+				elements.toArray(new CharSequence[elements.size()]));
+	}
 
-		private void validate(String value) {
-			Assert.isTrue(VALUE_PATTERN.matcher(value).matches(),
-					"Element value '" + value + "' is not valid");
-		}
+	public static ConfigurationPropertyName parse(CharSequence name, char separator) {
+		throw new RuntimeException();
+	}
 
-		@Override
-		public int compareTo(Element other) {
-			int result = Boolean.compare(other.indexed, this.indexed);
-			if (result != 0) {
-				return result;
+	private static boolean process(CharSequence name, char separator,
+			ElementProcessor elementProcessor) {
+		int start = 0;
+		boolean indexed = false;
+		int length = name.length();
+		for (int i = 0; i < length; i++) {
+			char ch = name.charAt(i);
+			if (indexed && ch == ']') {
+				elementProcessor.process(start, i + 1, indexed);
+				start = i + 1;
+				indexed = false;
 			}
-			if (this.indexed && other.indexed) {
-				try {
-					long value = Long.parseLong(getValue(Form.UNIFORM));
-					long otherValue = Long.parseLong(other.getValue(Form.UNIFORM));
-					return Long.compare(value, otherValue);
+			else if (!indexed && ch == '[') {
+				elementProcessor.process(start, i, indexed);
+				start = i;
+				indexed = true;
+			}
+			else if (!indexed && ch == '.') {
+				if (i == 0 || i == length - 1) {
+					return false;
 				}
-				catch (NumberFormatException ex) {
-					// Fallback to string comparison
-				}
+				elementProcessor.process(start, i, indexed);
+				start = i + 1;
 			}
-			return getValue(Form.UNIFORM).compareTo(other.getValue(Form.UNIFORM));
-		}
-
-		@Override
-		public int hashCode() {
-			return getValue(Form.UNIFORM).hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
+			else if (!indexed && !isValid(ch, i)) {
 				return false;
 			}
-			return ObjectUtils.nullSafeEquals(getValue(Form.UNIFORM),
-					((Element) obj).getValue(Form.UNIFORM));
 		}
-
-		@Override
-		public String toString() {
-			String string = getValue(Form.CONFIGURATION);
-			return (this.indexed ? "[" + string + "]" : string);
+		if (indexed) {
+			return false;
 		}
-
-		/**
-		 * Return if the element is indexed (i.e. should be displayed in angle brackets).
-		 * @return if the element is indexed
-		 */
-		public boolean isIndexed() {
-			return this.indexed;
-		}
-
-		/**
-		 * Return the element value in the specified form. Indexed values (the part within
-		 * square brackets) are always returned unchanged.
-		 * @param form the form the value should take
-		 * @return the value
-		 */
-		public String getValue(Form form) {
-			form = (form != null ? form : Form.ORIGINAL);
-			return this.value[form.ordinal()];
-		}
-
-		static boolean isValid(String value) {
-			if (!isIndexed(value)) {
-				for (int i = 0; i < value.length(); i++) {
-					if (!isValid(i, value.charAt(i))) {
-						return false;
-					}
-				}
+		for (int i = start; i < length; i++) {
+			if (!isValid(name.charAt(i), i - start)) {
+				return false;
 			}
-			return true;
 		}
+		elementProcessor.process(start, length, false);
+		return true;
+	}
 
-		static boolean isValid(int index, char ch) {
-			boolean isAlpha = ch >= 'a' && ch <= 'z';
-			boolean isNumeric = ch >= '0' && ch <= '9';
-			if (index == 0) {
-				return isAlpha;
-			}
-			return isAlpha || isNumeric || ch == '-';
+	static boolean isValid(char ch, int index) {
+		boolean isAlpha = ch >= 'a' && ch <= 'z';
+		boolean isNumeric = ch >= '0' && ch <= '9';
+		if (index == 0) {
+			return isAlpha;
 		}
-
-		private static boolean isIndexed(String value) {
-			return value.startsWith("[") && value.endsWith("]");
-		}
-
+		return isAlpha || isNumeric || ch == '-';
 	}
 
 	/**
@@ -430,33 +346,7 @@ public final class ConfigurationPropertyName
 		 * <li>"{@code [Foo.bar]}" = "{@code Foo.bar}"</li>
 		 * </ul>
 		 */
-		ORIGINAL {
-
-			@Override
-			protected String convert(String value) {
-				return value;
-			}
-
-		},
-
-		/**
-		 * The canonical configuration form (lower-case with only alphanumeric and
-		 * "{@code -}" characters).
-		 * <ul>
-		 * <li>"{@code foo-bar}" = "{@code foo-bar}"</li>
-		 * <li>"{@code fooBar}" = "{@code foobar}"</li>
-		 * <li>"{@code foo_bar}" = "{@code foobar}"</li>
-		 * <li>"{@code [Foo.bar]}" = "{@code Foo.bar}"</li>
-		 * </ul>
-		 */
-		CONFIGURATION {
-
-			@Override
-			protected boolean isIncluded(char ch) {
-				return Character.isAlphabetic(ch) || Character.isDigit(ch) || (ch == '-');
-			}
-
-		},
+		ORIGINAL,
 
 		/**
 		 * The uniform configuration form (used for equals/hashcode; lower-case with only
@@ -468,78 +358,18 @@ public final class ConfigurationPropertyName
 		 * <li>"{@code [Foo.bar]}" = "{@code Foo.bar}"</li>
 		 * </ul>
 		 */
-		UNIFORM {
+		UNIFORM
 
-			@Override
-			protected boolean isIncluded(char ch) {
-				return Character.isAlphabetic(ch) || Character.isDigit(ch);
-			}
+	}
 
+	@FunctionalInterface
+	private static interface ElementProcessor {
+
+		ElementProcessor NONE = (start, end, indexed) -> {
 		};
 
-		/**
-		 * Called to convert an original value into the instance form.
-		 * @param value the value to convert
-		 * @return the converted value
-		 */
-		protected String convert(String value) {
-			StringBuilder result = new StringBuilder(value.length());
-			for (int i = 0; i < value.length(); i++) {
-				char ch = value.charAt(i);
-				if (isIncluded(ch)) {
-					result.append(Character.toLowerCase(ch));
-				}
-			}
-			return result.toString();
-		}
+		void process(int start, int end, boolean indexed);
 
-		/**
-		 * Called to determine of the specified character is valid for the form.
-		 * @param ch the character to test
-		 * @return if the character is value
-		 */
-		protected boolean isIncluded(char ch) {
-			return true;
-		}
-
-		/**
-		 * Expand the given value to all an array containing the value in each
-		 * {@link Form}.
-		 * @param value the source value
-		 * @param indexed if the value is indexed
-		 * @return an array of all forms (in the same order as {@link Form#values()}.
-		 */
-		protected static String[] expand(String value, boolean indexed) {
-			String[] result = new String[values().length];
-			for (Form form : values()) {
-				result[form.ordinal()] = (indexed ? value : form.convert(value));
-			}
-			return result;
-		}
-
-	}
-
-	public boolean isMultiElement(ConfigurationPropertyName root) {
-		return getParent() != null && !root.equals(getParent());
-	}
-
-	/**
-	 * Roll up the given name to the first element below the root. For example a name of
-	 * {@code foo.bar.baz} rolled up to the root {@code foo} would be {@code foo.bar}.
-	 * @param root the root name
-	 * @return the rolled up name or {@code null}
-	 */
-	public final ConfigurationPropertyName rollUp(ConfigurationPropertyName root) {
-		ConfigurationPropertyName name = this;
-		while (name != null && (name.getParent() != null)
-				&& (!root.equals(name.getParent()))) {
-			name = name.getParent();
-		}
-		return name;
-	}
-
-	public boolean getParentIsNotNull() {
-		return getParent() != null;
 	}
 
 }

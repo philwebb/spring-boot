@@ -40,8 +40,6 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	private LastMapping<String> lastMappedPropertyName;
 
-	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder();
-
 	private DefaultPropertyMapper() {
 	}
 
@@ -76,8 +74,8 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	private List<PropertyMapping> tryMap(String propertySourceName) {
 		try {
-			ConfigurationPropertyName convertedName = this.nameBuilder
-					.from(propertySourceName, '.');
+			ConfigurationPropertyName convertedName = ConfigurationPropertyName
+					.parse(propertySourceName, '.');
 			PropertyMapping o = new PropertyMapping(propertySourceName, convertedName);
 			return Collections.singletonList(o);
 		}

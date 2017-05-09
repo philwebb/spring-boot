@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
@@ -95,7 +96,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
-			if (name.isMultiElement(this.root) && isValueTreatedAsNestedMap()) {
+			if (this.root.isParentOf(name) && isValueTreatedAsNestedMap()) {
 				return Bindable.of(this.mapType);
 			}
 			return Bindable.of(this.valueType);
@@ -103,7 +104,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			if (name.isMultiElement(this.root)
+			if (this.root.isParentOf(name)
 					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
 				return name.rollUp(this.root);
 			}
@@ -132,8 +133,14 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			return conversionService.canConvert(value, this.valueType);
 		}
 
-		private String getKeyName(ConfigurationPropertyName name) {
-			return name.getKeyName(this.root);
+		private CharSequence getKeyName(ConfigurationPropertyName name) {
+			StringBuilder result = new StringBuilder();
+			for (int i = this.root.getNumberOfElements(); i < name
+					.getNumberOfElements(); i++) {
+				result.append(result.length() == 0 ? "" : ".");
+				result.append(name.getElement(i, Form.ORIGINAL));
+			}
+			return result;
 		}
 
 	}

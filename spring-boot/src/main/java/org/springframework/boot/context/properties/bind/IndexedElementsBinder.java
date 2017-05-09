@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
@@ -40,6 +41,8 @@ import org.springframework.util.MultiValueMap;
  * @author Madhura Bhave
  */
 abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
+
+	private static final String INDEX_ZERO = "[0]";
 
 	IndexedElementsBinder(BindContext context) {
 		super(context);
@@ -77,31 +80,32 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private void bindIndexed(ConfigurationPropertySource source,
 			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
 			IndexedCollectionSupplier collection, ResolvableType elementType) {
-		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
+		MultiValueMap<CharSequence, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(
 				source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
-			ConfigurationPropertyName name = root.appendIndex(i);
+			ConfigurationPropertyName name = root
+					.append(i == 0 ? INDEX_ZERO : "[" + i + "]");
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
 			if (value == null) {
 				break;
 			}
-			knownIndexedChildren.remove(name.getLastElementInUniformForm());
+			knownIndexedChildren.remove(name.getLastElement(Form.UNIFORM));
 			collection.get().add(value);
 		}
 		assertNoUnboundChildren(knownIndexedChildren);
 	}
 
-	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(
+	private MultiValueMap<CharSequence, ConfigurationProperty> getKnownIndexedChildren(
 			ConfigurationPropertySource source, ConfigurationPropertyName root) {
-		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
+		MultiValueMap<CharSequence, ConfigurationProperty> children = new LinkedMultiValueMap<>();
 		if (!(source instanceof IterableConfigurationPropertySource)) {
 			return children;
 		}
 		for (ConfigurationPropertyName name : (IterableConfigurationPropertySource) source
 				.filter(root::isAncestorOf)) {
 			name = name.rollUp(root);
-			if (name.getElementisIndexed()) {
-				String key = name.getLastElementInUniformForm();
+			if (name.isLastElementIndexed()) {
+				CharSequence key = name.getLastElement(Form.UNIFORM);
 				ConfigurationProperty value = source.getConfigurationProperty(name);
 				children.add(key, value);
 			}
@@ -110,7 +114,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	private void assertNoUnboundChildren(
-			MultiValueMap<String, ConfigurationProperty> children) {
+			MultiValueMap<CharSequence, ConfigurationProperty> children) {
 		if (!children.isEmpty()) {
 			throw new UnboundConfigurationPropertiesException(
 					children.values().stream().flatMap(List::stream)

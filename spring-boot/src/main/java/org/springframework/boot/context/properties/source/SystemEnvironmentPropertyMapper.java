@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -46,9 +46,6 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
-	private final ConfigurationPropertyNameBuilder nameBuilder = new ConfigurationPropertyNameBuilder(
-			this::createElement);
-
 	private SystemEnvironmentPropertyMapper() {
 	}
 
@@ -68,7 +65,8 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
 		try {
-			return this.nameBuilder.from(propertySourceName, '_');
+			// FIXME need to convert stuff
+			return ConfigurationPropertyName.parse(propertySourceName, '_');
 		}
 		catch (Exception ex) {
 			return null;
@@ -105,13 +103,17 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return result;
 	}
 
-	private String convertName(ConfigurationPropertyName configurationPropertyName) {
-		return configurationPropertyName.streamUniform().map(String::toUpperCase)
-				.collect(Collectors.joining("_"));
+	private String convertName(ConfigurationPropertyName name) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < name.getNumberOfElements(); i++) {
+			result.append(result.length() == 0 ? "" : "_");
+			result.append(name.getLastElement(Form.UNIFORM).toString().toUpperCase());
+		}
+		return result.toString();
 	}
 
 	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.getElementisIndexed() && isNumber(name.getLastElementInUniformForm())
+		return (name.isLastElementIndexed() && isNumber(name.getLastElementInUniformForm())
 				&& name.getParentIsNotNull());
 	}
 
