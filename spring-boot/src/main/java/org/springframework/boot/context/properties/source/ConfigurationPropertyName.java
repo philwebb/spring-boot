@@ -80,11 +80,15 @@ public final class ConfigurationPropertyName
 		for (int i = 0; i < elements.length; i++) {
 			CharSequence element = elements[i];
 			if ((!isIndexed(element) && !ElementValidator.isValidElement(element))
-					|| (i > 0 && EMPTY_STRING.equals(element))) {
+					|| (EMPTY_STRING.equals(element))) {
 				throw new IllegalArgumentException("Configuration property name '"
 						+ toString(this.elements) + "' is not valid");
 			}
 		}
+	}
+
+	public boolean isEmpty() {
+		return this.elements.length == 0;
 	}
 
 	/**
@@ -144,21 +148,7 @@ public final class ConfigurationPropertyName
 	}
 
 	private CharSequence stripDashes(CharSequence name) {
-		for (int i = 0; i < name.length(); i++) {
-			if (name.charAt(i) == '-') {
-				// We save memory by only creating the new result if necessary
-				StringBuilder result = new StringBuilder(name.length());
-				result.append(name.subSequence(0, i));
-				for (int j = i + 1; j < name.length(); j++) {
-					char ch = name.charAt(j);
-					if (ch != '-') {
-						result.append(ch);
-					}
-				}
-				return result;
-			}
-		}
-		return name;
+		return cleanupCharSequence(name, (c, i) -> c == '-', CharProcessor.NONE);
 	}
 
 	/**
@@ -382,7 +372,7 @@ public final class ConfigurationPropertyName
 		return true;
 	}
 
-	private boolean isIndexed(CharSequence element) {
+	private static boolean isIndexed(CharSequence element) {
 		int length = element.length();
 		return length > 2 && element.charAt(0) == '['
 				&& element.charAt(length - 1) == ']';
@@ -422,7 +412,17 @@ public final class ConfigurationPropertyName
 			throw new IllegalArgumentException(
 					"Configuration property name '" + name + "' is not valid");
 		}
-		return parse(name, '.');
+		if (name.length() == 0) {
+			return EMPTY;
+		}
+		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		process(name, '.', (elementValue, start, end, indexed) -> {
+			if (elementValue.length() > 0) {
+				elements.add(elementValue);
+			}
+		});
+		return new ConfigurationPropertyName(
+				elements.toArray(new CharSequence[elements.size()]));
 	}
 
 	public static ConfigurationPropertyName parse(CharSequence name, char separator) {
@@ -439,6 +439,11 @@ public final class ConfigurationPropertyName
 		List<CharSequence> elements = new ArrayList<CharSequence>(10);
 		process(name, separator, (elementValue, start, end, indexed) -> {
 			elementValue = elementValueProcessor.apply(elementValue);
+			if (!isIndexed(elementValue)) {
+				elementValue = cleanupCharSequence(elementValue,
+						(ch, index) -> !ElementValidator.isValidChar(ch, index),
+						CharProcessor.LOWERCASE);
+			}
 			if (elementValue.length() > 0) {
 				elements.add(elementValue);
 			}
@@ -479,6 +484,27 @@ public final class ConfigurationPropertyName
 		}
 	}
 
+	private static CharSequence cleanupCharSequence(CharSequence name, CharFilter filter,
+			CharProcessor processor) {
+		for (int i = 0; i < name.length(); i++) {
+			char ch = name.charAt(i);
+			char processed = processor.process(ch, i);
+			if (filter.isExcluded(processed, i) || processed != ch) {
+				// We save memory by only creating the new result if necessary
+				StringBuilder result = new StringBuilder(name.length());
+				result.append(name.subSequence(0, i));
+				for (int j = i; j < name.length(); j++) {
+					processed = processor.process(name.charAt(j), j);
+					if (!filter.isExcluded(processed, j)) {
+						result.append(processed);
+					}
+				}
+				return result;
+			}
+		}
+		return name;
+	}
+
 	/**
 	 * The various forms that a non-indexed element value can take.
 	 */
@@ -516,6 +542,22 @@ public final class ConfigurationPropertyName
 
 	}
 
+	private interface CharFilter {
+
+		boolean isExcluded(char ch, int index);
+
+	}
+
+	private interface CharProcessor {
+
+		CharProcessor NONE = (c, i) -> c;
+
+		CharProcessor LOWERCASE = (c, i) -> Character.toLowerCase(c);
+
+		char process(char c, int index);
+
+	}
+
 	private static class ElementValidator implements ElementProcessor {
 
 		private boolean valid = true;
@@ -532,7 +574,7 @@ public final class ConfigurationPropertyName
 			return this.valid;
 		}
 
-		static boolean isValidElement(CharSequence elementValue) {
+		public static boolean isValidElement(CharSequence elementValue) {
 			for (int i = 0; i < elementValue.length(); i++) {
 				if (!isValidChar(elementValue.charAt(i), i)) {
 					return false;
@@ -541,7 +583,7 @@ public final class ConfigurationPropertyName
 			return true;
 		}
 
-		private static boolean isValidChar(char ch, int index) {
+		public static boolean isValidChar(char ch, int index) {
 			boolean isAlpha = ch >= 'a' && ch <= 'z';
 			boolean isNumeric = ch >= '0' && ch <= '9';
 			if (index == 0) {

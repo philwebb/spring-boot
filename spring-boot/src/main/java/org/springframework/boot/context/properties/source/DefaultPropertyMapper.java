@@ -76,12 +76,15 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		try {
 			ConfigurationPropertyName convertedName = ConfigurationPropertyName
 					.parse(propertySourceName, '.');
-			PropertyMapping o = new PropertyMapping(propertySourceName, convertedName);
-			return Collections.singletonList(o);
+			if (!convertedName.isEmpty()) {
+				PropertyMapping o = new PropertyMapping(propertySourceName,
+						convertedName);
+				return Collections.singletonList(o);
+			}
 		}
 		catch (Exception ex) {
-			return Collections.emptyList();
 		}
+		return Collections.emptyList();
 	}
 
 	private static class LastMapping<T> {

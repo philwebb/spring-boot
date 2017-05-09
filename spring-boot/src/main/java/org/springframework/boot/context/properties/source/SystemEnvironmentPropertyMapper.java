@@ -53,7 +53,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	public List<PropertyMapping> map(PropertySource<?> propertySource,
 			String propertySourceName) {
 		ConfigurationPropertyName name = convertName(propertySourceName);
-		if (name == null) {
+		if (name == null || name.isEmpty()) {
 			return Collections.emptyList();
 		}
 		if (propertySourceName.endsWith("__")) {
