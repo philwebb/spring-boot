@@ -214,6 +214,8 @@ public class ConfigurationPropertyNameTests {
 		ConfigurationPropertyName name8 = ConfigurationPropertyName.EMPTY;
 		ConfigurationPropertyName name9 = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName name10 = ConfigurationPropertyName.of("fo");
+		ConfigurationPropertyName name11 = ConfigurationPropertyName.parse("foo.BaR",
+				'.');
 		assertThat(name1.hashCode()).isEqualTo(name2.hashCode());
 		assertThat(name1.hashCode()).isEqualTo(name2.hashCode());
 		assertThat(name1.hashCode()).isEqualTo(name3.hashCode());
@@ -222,6 +224,8 @@ public class ConfigurationPropertyNameTests {
 		assertThat((Object) name1).isEqualTo(name2);
 		assertThat((Object) name1).isEqualTo(name3);
 		assertThat((Object) name1).isEqualTo(name4);
+		assertThat((Object) name11).isEqualTo(name3);
+		assertThat((Object) name3).isEqualTo(name11);
 		assertThat((Object) name1).isNotEqualTo(name5);
 		assertThat((Object) name1).isNotEqualTo(name6);
 		assertThat((Object) name7).isNotEqualTo(name8);
@@ -378,7 +382,7 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void appendWhenElementNameIsNotValidShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Configuration property name 'foo.1bar' is not valid");
+		this.thrown.expectMessage("Element value '1bar' is not valid");
 		ConfigurationPropertyName.of("foo").append("1bar");
 	}
 

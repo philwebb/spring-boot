@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -77,14 +76,6 @@ public final class ConfigurationPropertyName
 			CharSequence[] uniformElements) {
 		this.elements = elements;
 		this.uniformElements = uniformElements;
-		for (int i = 0; i < elements.length; i++) {
-			CharSequence element = elements[i];
-			if ((!isIndexed(element) && !ElementValidator.isValidElement(element))
-					|| (EMPTY_STRING.equals(element))) {
-				throw new IllegalArgumentException("Configuration property name '"
-						+ toString(this.elements) + "' is not valid");
-			}
-		}
 	}
 
 	public boolean isEmpty() {
@@ -140,15 +131,12 @@ public final class ConfigurationPropertyName
 				result = result.subSequence(1, result.length() - 1);
 			}
 			else {
-				result = stripDashes(result);
+				result = cleanupCharSequence(result, (c, i) -> c == '-',
+						CharProcessor.LOWERCASE);
 			}
 			this.uniformElements[elementIndex] = result;
 		}
 		return result.toString();
-	}
-
-	private CharSequence stripDashes(CharSequence name) {
-		return cleanupCharSequence(name, (c, i) -> c == '-', CharProcessor.NONE);
 	}
 
 	/**
@@ -169,10 +157,12 @@ public final class ConfigurationPropertyName
 		if (elementValue == null) {
 			return this;
 		}
-		Supplier<String> message = () -> "Element value '" + elementValue
-				+ "' must be a single item";
-		process(elementValue, '.',
-				(value, start, end, indexed) -> Assert.isTrue(start == 0, message));
+		process(elementValue, '.', (value, start, end, indexed) -> Assert.isTrue(
+				start == 0,
+				() -> "Element value '" + elementValue + "' must be a single item"));
+		Assert.isTrue(
+				isIndexed(elementValue) || ElementValidator.isValidElement(elementValue),
+				() -> "Element value '" + elementValue + "' is not valid");
 		int length = this.elements.length;
 		CharSequence[] elements = new CharSequence[length + 1];
 		System.arraycopy(this.elements, 0, elements, 0, length);
@@ -283,10 +273,11 @@ public final class ConfigurationPropertyName
 	private String toString(CharSequence[] elements) {
 		StringBuilder result = new StringBuilder();
 		for (CharSequence element : elements) {
-			if (result.length() > 0 && !isIndexed(element)) {
+			boolean indexed = isIndexed(element);
+			if (result.length() > 0 && !indexed) {
 				result.append(".");
 			}
-			result.append(element);
+			result.append(indexed ? element : element.toString().toLowerCase());
 		}
 		return result.toString();
 	}
@@ -340,16 +331,18 @@ public final class ConfigurationPropertyName
 	private boolean elementEquals(CharSequence e1, CharSequence e2) {
 		int l1 = e1.length();
 		int l2 = e2.length();
-		int offset1 = (isIndexed(e1) ? 1 : 0);
-		int offset2 = (isIndexed(e2) ? 1 : 0);
+		boolean indexed1 = isIndexed(e1);
+		int offset1 = (indexed1 ? 1 : 0);
+		boolean indexed2 = isIndexed(e2);
+		int offset2 = (indexed2 ? 1 : 0);
 		int i1 = offset1;
 		int i2 = offset2;
 		while (i1 < l1 - offset1) {
 			if (i2 >= l2 - offset2) {
 				return false;
 			}
-			char ch1 = e1.charAt(i1);
-			char ch2 = e2.charAt(i2);
+			char ch1 = (indexed1 ? e1.charAt(i1) : Character.toLowerCase(e1.charAt(i1)));
+			char ch2 = (indexed2 ? e2.charAt(i2) : Character.toLowerCase(e2.charAt(i2)));
 			if (ch1 == '-') {
 				i1++;
 			}
@@ -418,6 +411,8 @@ public final class ConfigurationPropertyName
 		List<CharSequence> elements = new ArrayList<CharSequence>(10);
 		process(name, '.', (elementValue, start, end, indexed) -> {
 			if (elementValue.length() > 0) {
+				Assert.isTrue(indexed || ElementValidator.isValidElement(elementValue),
+						() -> "Configuration property name '" + name + "' is not valid");
 				elements.add(elementValue);
 			}
 		});
@@ -441,8 +436,9 @@ public final class ConfigurationPropertyName
 			elementValue = elementValueProcessor.apply(elementValue);
 			if (!isIndexed(elementValue)) {
 				elementValue = cleanupCharSequence(elementValue,
-						(ch, index) -> !ElementValidator.isValidChar(ch, index),
-						CharProcessor.LOWERCASE);
+						(ch, index) -> !ElementValidator
+								.isValidChar(Character.toLowerCase(ch), index),
+						CharProcessor.NONE);
 			}
 			if (elementValue.length() > 0) {
 				elements.add(elementValue);
