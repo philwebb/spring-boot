@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -33,11 +34,12 @@ public abstract class AbstractPropertyMapperTests {
 
 	protected abstract PropertyMapper getMapper();
 
-	protected final Iterator<String> namesFromString(String name) {
-		return namesFromString(name, "value");
+	protected final Iterator<String> namesFromString(String name, Form form) {
+		return namesFromString(name, form, "value");
 	}
 
-	protected final Iterator<String> namesFromString(String name, Object value) {
+	protected final Iterator<String> namesFromString(String name, Form form,
+			Object value) {
 		PropertySource<?> propertySource = new MapPropertySource("test",
 				Collections.singletonMap(name, value));
 		return getMapper().map(propertySource, name).stream()

@@ -378,14 +378,14 @@ public class ConfigurationPropertyNameTests {
 	@Test
 	public void appendWhenElementNameIsNotValidShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Element value '1bar' is not valid");
+		this.thrown.expectMessage("Configuration property name 'foo.1bar' is not valid");
 		ConfigurationPropertyName.of("foo").append("1bar");
 	}
 
 	@Test
 	public void appendWhenElementNameMultiDotShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Element value 'bar.baz' is not valid");
+		this.thrown.expectMessage("Element value 'bar.baz' must be a single item");
 		ConfigurationPropertyName.of("foo").append("bar.baz");
 	}
 

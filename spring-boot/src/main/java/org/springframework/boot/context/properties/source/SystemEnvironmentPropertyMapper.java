@@ -65,8 +65,8 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {
 		try {
-			// FIXME need to convert stuff
-			return ConfigurationPropertyName.parse(propertySourceName, '_');
+			return ConfigurationPropertyName.parse(propertySourceName, '_',
+					this::processElementValue);
 		}
 		catch (Exception ex) {
 			return null;
@@ -82,8 +82,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		String[] elements = StringUtils
 				.commaDelimitedListToStringArray(String.valueOf(value));
 		for (int i = 0; i < elements.length; i++) {
-			ConfigurationPropertyName name = ConfigurationPropertyName
-					.of(rootName.toString() + "[" + i + "]");
+			ConfigurationPropertyName name = rootName.append("[" + i + "]");
 			mappings.add(new PropertyMapping(propertySourceName, name,
 					new ElementExtractor(i)));
 		}
@@ -111,7 +110,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < numberOfElements; i++) {
 			result.append(result.length() == 0 ? "" : "_");
-			result.append(name.getLastElement(Form.UNIFORM).toString().toUpperCase());
+			result.append(name.getElement(i, Form.UNIFORM).toString().toUpperCase());
 		}
 		return result.toString();
 	}
@@ -132,9 +131,9 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		return Collections.emptyList();
 	}
 
-	private String createElement(String value) {
-		value = value.toLowerCase();
-		return (isNumber(value) ? "[" + value + "]" : value);
+	private CharSequence processElementValue(CharSequence value) {
+		String result = value.toString().toLowerCase();
+		return (isNumber(result) ? "[" + result + "]" : result);
 	}
 
 	private static boolean isNumber(String string) {

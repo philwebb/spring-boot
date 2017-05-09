@@ -53,11 +53,13 @@ import org.springframework.util.ObjectUtils;
 public final class ConfigurationPropertyName
 		implements Comparable<ConfigurationPropertyName> {
 
+	private static final String EMPTY_STRING = "";
+
 	/**
 	 * An empty {@link ConfigurationPropertyName}.
 	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			() -> "", new String[0]);
+			() -> EMPTY_STRING, new String[0]);
 
 	private final Supplier<CharSequence> name;
 
@@ -77,6 +79,14 @@ public final class ConfigurationPropertyName
 		this.name = name;
 		this.elements = elements;
 		this.uniformElements = uniformElements;
+		for (int i = 0; i < elements.length; i++) {
+			CharSequence element = elements[i];
+			if ((!isIndexed(element) && !ElementValidator.isValidElement(element))
+					|| (i > 0 && EMPTY_STRING.equals(element))) {
+				throw new IllegalArgumentException(
+						"Configuration property name '" + name.get() + "' is not valid");
+			}
+		}
 	}
 
 	/**
@@ -104,7 +114,7 @@ public final class ConfigurationPropertyName
 	 */
 	public String getLastElement(Form form) {
 		int size = getNumberOfElements();
-		return (size == 0 ? "" : getElement(size - 1, form));
+		return (size == 0 ? EMPTY_STRING : getElement(size - 1, form));
 	}
 
 	/**
@@ -172,17 +182,16 @@ public final class ConfigurationPropertyName
 			return this;
 		}
 		Supplier<String> message = () -> "Element value '" + elementValue
-				+ "' is not valid";
-		boolean valid = process(elementValue, '.',
-				(start, end, indexed) -> Assert.isTrue(start == 0, message));
-		Assert.isTrue(valid, message);
+				+ "' must be a single item";
+		process(elementValue, '.',
+				(value, start, end, indexed) -> Assert.isTrue(start == 0, message));
 		int length = this.elements.length;
 		CharSequence[] elements = new CharSequence[length + 1];
 		System.arraycopy(this.elements, 0, elements, 0, length);
 		elements[length] = elementValue;
 		CharSequence[] uniformElements = new CharSequence[length + 1];
 		System.arraycopy(this.uniformElements, 0, uniformElements, 0, length);
-		String separator = (isIndexed(elementValue) || length == 0 ? "" : ".");
+		String separator = (isIndexed(elementValue) || length == 0 ? EMPTY_STRING : ".");
 		Supplier<CharSequence> name = () -> this.name.get() + separator + elementValue;
 		return new ConfigurationPropertyName(name, elements, uniformElements);
 	}
@@ -268,7 +277,6 @@ public final class ConfigurationPropertyName
 
 	@Override
 	public String toString() {
-		return this.name.get().toString();
 	}
 
 	@Override
@@ -368,7 +376,15 @@ public final class ConfigurationPropertyName
 		if (name == null) {
 			return false;
 		}
-		return process(name, '.', ElementProcessor.NONE);
+		if (name.equals(EMPTY_STRING)) {
+			return true;
+		}
+		if (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.') {
+			return false;
+		}
+		ElementValidator validator = new ElementValidator();
+		process(name, '.', validator);
+		return validator.isValid();
 	}
 
 	/**
@@ -379,18 +395,12 @@ public final class ConfigurationPropertyName
 	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
 		Assert.notNull(name, "Name must not be null");
-		if (name.length() == 0) {
-			return EMPTY;
+		if (name.length() >= 1
+				&& (name.charAt(0) == '.' || name.charAt(name.length() - 1) == '.')) {
+			throw new IllegalArgumentException(
+					"Configuration property name '" + name + "' is not valid");
 		}
-		List<CharSequence> elements = new ArrayList<CharSequence>(10);
-		boolean valid = process(name, '.', (start, end, indexed) -> {
-			if (end > start) {
-				elements.add(name.subSequence(start, end));
-			}
-		});
-		Assert.isTrue(valid, () -> "'" + name + "' is not valid");
-		return new ConfigurationPropertyName(() -> name,
-				elements.toArray(new CharSequence[elements.size()]));
+		return parse(name, '.');
 	}
 
 	public static ConfigurationPropertyName parse(CharSequence name, char separator) {
@@ -398,71 +408,57 @@ public final class ConfigurationPropertyName
 	}
 
 	public static ConfigurationPropertyName parse(CharSequence name, char separator,
-			Function<CharSequence, CharSequence> elementProcessor) {
+			Function<CharSequence, CharSequence> elementValueProcessor) {
 		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(elementProcessor, "ElementProcessor must not be null");
-
-		throw new RuntimeException();
+		Assert.notNull(elementValueProcessor, "ElementProcessor must not be null");
+		if (name.length() == 0) {
+			return EMPTY;
+		}
+		List<CharSequence> elements = new ArrayList<CharSequence>(10);
+		process(name, separator, (elementValue, start, end, indexed) -> {
+			elementValue = elementValueProcessor.apply(elementValue);
+			if (elementValue.length() > 0) {
+				elements.add(elementValue);
+			}
+		});
+		return new ConfigurationPropertyName(() -> name,
+				elements.toArray(new CharSequence[elements.size()]));
 	}
 
-	private static boolean process(CharSequence name, char separator,
-			ElementProcessor elementProcessor) {
+	private static void process(CharSequence name, char separator,
+			ElementProcessor processor) {
 		int start = 0;
 		boolean indexed = false;
 		int length = name.length();
 		for (int i = 0; i < length; i++) {
 			char ch = name.charAt(i);
 			if (indexed && ch == ']') {
-				process(elementProcessor, start, i + 1, indexed);
+				processElement(processor, name, start, i + 1, indexed);
 				start = i + 1;
 				indexed = false;
 			}
 			else if (!indexed && ch == '[') {
-				process(elementProcessor, start, i, indexed);
+				processElement(processor, name, start, i, indexed);
 				start = i;
 				indexed = true;
 			}
-			else if (!indexed && ch == '.') {
-				if (i == 0 || i == length - 1) {
-					return false;
-				}
-				process(elementProcessor, start, i, indexed);
+			else if (!indexed && ch == separator) {
+				processElement(processor, name, start, i, indexed);
 				start = i + 1;
 			}
-			else if (!indexed && !isValid(ch, i)) {
-				return false;
-			}
 		}
-		if (indexed) {
-			return false;
-		}
-		for (int i = start; i < length; i++) {
-			if (!isValid(name.charAt(i), i - start)) {
-				return false;
-			}
-		}
-		process(elementProcessor, start, length, false);
-		return true;
+		processElement(processor, name, start, length, false);
 	}
 
-	private static void process(ElementProcessor processor, int start, int end,
-			boolean indexed) {
-		if (end - start > 0) {
-			processor.process(start, end, indexed);
+	private static void processElement(ElementProcessor processor, CharSequence name,
+			int start, int end, boolean indexed) {
+		if ((end - start) >= 1) {
+			processor.process(name.subSequence(start, end), start, end, indexed);
 		}
-	}
-
-	static boolean isValid(char ch, int index) {
-		boolean isAlpha = ch >= 'a' && ch <= 'z';
-		boolean isNumeric = ch >= '0' && ch <= '9';
-		if (index == 0) {
-			return isAlpha;
-		}
-		return isAlpha || isNumeric || ch == '-';
 	}
 
 	/**
-	 * The various forms that a non-indexed {@link Element} {@code value} can take.
+	 * The various forms that a non-indexed element value can take.
 	 */
 	public enum Form {
 
@@ -494,10 +490,43 @@ public final class ConfigurationPropertyName
 	@FunctionalInterface
 	private static interface ElementProcessor {
 
-		ElementProcessor NONE = (start, end, indexed) -> {
-		};
+		void process(CharSequence elementValue, int start, int end, boolean indexed);
 
-		void process(int start, int end, boolean indexed);
+	}
+
+	private static class ElementValidator implements ElementProcessor {
+
+		private boolean valid = true;
+
+		@Override
+		public void process(CharSequence elementValue, int start, int end,
+				boolean indexed) {
+			if (this.valid && !indexed) {
+				this.valid = isValidElement(elementValue);
+			}
+		}
+
+		public boolean isValid() {
+			return this.valid;
+		}
+
+		static boolean isValidElement(CharSequence elementValue) {
+			for (int i = 0; i < elementValue.length(); i++) {
+				if (!isValidChar(elementValue.charAt(i), i)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private static boolean isValidChar(char ch, int index) {
+			boolean isAlpha = ch >= 'a' && ch <= 'z';
+			boolean isNumeric = ch >= '0' && ch <= '9';
+			if (index == 0) {
+				return isAlpha;
+			}
+			return isAlpha || isNumeric || ch == '-';
+		}
 
 	}
 
