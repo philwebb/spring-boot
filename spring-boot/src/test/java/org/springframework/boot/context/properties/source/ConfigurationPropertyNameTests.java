@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -285,65 +284,98 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void isIndexedWhenIndexedShouldReturnTrue() throws Exception {
-		assertThat(ConfigurationPropertyName.of("foo[0]").isLastElementIndexed()).isTrue();
+		assertThat(ConfigurationPropertyName.of("foo[0]").isLastElementIndexed())
+				.isTrue();
 	}
 
 	@Test
 	public void isIndexedWhenNotIndexedShouldReturnFalse() throws Exception {
-		assertThat(ConfigurationPropertyName.of("foo.bar").isLastElementIndexed()).isFalse();
-		assertThat(ConfigurationPropertyName.of("foo[0].bar").isLastElementIndexed()).isFalse();
+		assertThat(ConfigurationPropertyName.of("foo.bar").isLastElementIndexed())
+				.isFalse();
+		assertThat(ConfigurationPropertyName.of("foo[0].bar").isLastElementIndexed())
+				.isFalse();
 	}
 
 	@Test
 	public void isAncestorOfWhenSameShouldReturnFalse() throws Exception {
-		ConfigurationPropertyName parent = ConfigurationPropertyName.of("foo");
-		assertThat(parent.isAncestorOf(parent)).isFalse();
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		assertThat(name.isAncestorOf(name)).isFalse();
 	}
 
 	@Test
-	public void isAncestorOfWhenParentShouldReturnFalse() throws Exception {
-		ConfigurationPropertyName parent = ConfigurationPropertyName.of("foo");
+	public void isAncestorOfWhenParentShouldReturnTrue() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo.bar");
-		assertThat(parent.isAncestorOf(child)).isTrue();
-		assertThat(child.isAncestorOf(parent)).isFalse();
+		assertThat(name.isAncestorOf(child)).isTrue();
+		assertThat(child.isAncestorOf(name)).isFalse();
 	}
 
 	@Test
-	public void isAncestorOfWhenGrandparentShouldReturnFalse() throws Exception {
-		ConfigurationPropertyName parent = ConfigurationPropertyName.of("foo");
+	public void isAncestorOfWhenGrandparentShouldReturnTrue() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName
 				.of("foo.bar.baz");
-		assertThat(parent.isAncestorOf(grandchild)).isTrue();
-		assertThat(grandchild.isAncestorOf(parent)).isFalse();
+		assertThat(name.isAncestorOf(grandchild)).isTrue();
+		assertThat(grandchild.isAncestorOf(name)).isFalse();
 	}
 
 	@Test
-	public void isAncestorOfWhenRootReturnTrue() throws Exception {
-		ConfigurationPropertyName parent = ConfigurationPropertyName.of("");
+	public void isAncestorOfWhenRootShouldReturnTrue() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
 		ConfigurationPropertyName grandchild = ConfigurationPropertyName
 				.of("foo.bar.baz");
-		assertThat(parent.isAncestorOf(grandchild)).isTrue();
-		assertThat(grandchild.isAncestorOf(parent)).isFalse();
+		assertThat(name.isAncestorOf(grandchild)).isTrue();
+		assertThat(grandchild.isAncestorOf(name)).isFalse();
 	}
 
 	@Test
-	@Ignore
+	public void isParentOfWhenSameShouldReturnFalse() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		assertThat(name.isParentOf(name)).isFalse();
+	}
+
+	@Test
+	public void isParentOfWhenParentShouldReturnTrue() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo.bar");
+		assertThat(name.isParentOf(child)).isTrue();
+		assertThat(child.isParentOf(name)).isFalse();
+	}
+
+	@Test
+	public void isParentOfWhenGrandparentShouldReturnFalse() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName
+				.of("foo.bar.baz");
+		assertThat(name.isParentOf(grandchild)).isFalse();
+		assertThat(grandchild.isParentOf(name)).isFalse();
+	}
+
+	@Test
+	public void isParentOfWhenRootReturnTrue() throws Exception {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
+		ConfigurationPropertyName child = ConfigurationPropertyName.of("foo");
+		ConfigurationPropertyName grandchild = ConfigurationPropertyName.of("foo.bar");
+		assertThat(name.isParentOf(child)).isTrue();
+		assertThat(name.isParentOf(grandchild)).isFalse();
+		assertThat(child.isAncestorOf(name)).isFalse();
+	}
+
+	@Test
 	public void appendWhenNotIndexedShouldAppendWithDot() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat(name.append("bar").toString()).isEqualTo("foo.bar");
 	}
 
 	@Test
-	@Ignore
 	public void appendWhenIndexedShouldAppendWithBrackets() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo")
 				.append("[bar]");
-		assertThat(name.getElement().isLastElementIndexed()).isTrue();
+		assertThat(name.isLastElementIndexed()).isTrue();
 		assertThat(name.toString()).isEqualTo("foo[bar]");
 	}
 
 	@Test
-	@Ignore
 	public void appendWhenElementNameIsNotValidShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Element value '1bar' is not valid");
@@ -351,14 +383,19 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	@Ignore
+	public void appendWhenElementNameMultiDotShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Element value 'bar.baz' is not valid");
+		ConfigurationPropertyName.of("foo").append("bar.baz");
+	}
+
+	@Test
 	public void appendWhenElementNameIsNullShouldReturnName() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
 		assertThat((Object) name.append((String) null)).isSameAs(name);
 	}
 
 	@Test
-	@Ignore
 	public void compareShouldSortNames() throws Exception {
 		List<ConfigurationPropertyName> names = new ArrayList<>();
 		names.add(ConfigurationPropertyName.of("foo[10]"));
@@ -374,7 +411,6 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	@Ignore
 	public void ofNameCanBeEmpty() throws Exception {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("");
 		assertThat(name.toString()).isEqualTo("");
@@ -382,7 +418,6 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	@Ignore
 	public void isValidWhenValidShouldReturnTrue() throws Exception {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
@@ -395,7 +430,6 @@ public class ConfigurationPropertyNameTests {
 	}
 
 	@Test
-	@Ignore
 	public void isValidWhenNotValidShouldReturnFalse() throws Exception {
 		assertThat(ConfigurationPropertyName.isValid(null)).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("1foo")).isFalse();

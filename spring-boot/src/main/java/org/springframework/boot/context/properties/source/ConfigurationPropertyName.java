@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -51,10 +53,13 @@ import org.springframework.util.ObjectUtils;
 public final class ConfigurationPropertyName
 		implements Comparable<ConfigurationPropertyName> {
 
+	/**
+	 * An empty {@link ConfigurationPropertyName}.
+	 */
 	public static final ConfigurationPropertyName EMPTY = new ConfigurationPropertyName(
-			"", new String[0]);
+			() -> "", new String[0]);
 
-	private final CharSequence name;
+	private final Supplier<CharSequence> name;
 
 	private final CharSequence[] elements;
 
@@ -62,26 +67,52 @@ public final class ConfigurationPropertyName
 
 	private int[] elementHashCodes;
 
-	private ConfigurationPropertyName(CharSequence name, CharSequence[] elements) {
-		this.name = name;
-		this.elements = elements;
-		this.uniformElements = new CharSequence[elements.length];
+	private ConfigurationPropertyName(Supplier<CharSequence> name,
+			CharSequence[] elements) {
+		this(name, elements, new CharSequence[elements.length]);
 	}
 
+	private ConfigurationPropertyName(Supplier<CharSequence> name,
+			CharSequence[] elements, CharSequence[] uniformElements) {
+		this.name = name;
+		this.elements = elements;
+		this.uniformElements = uniformElements;
+	}
+
+	/**
+	 * Return if the last element in the name is indexed.
+	 * @return {@code true} if the last element is indexed
+	 */
 	public boolean isLastElementIndexed() {
 		int size = getNumberOfElements();
 		return (size > 0 && isIndexed(this.elements[size - 1]));
 	}
 
+	/**
+	 * Return if the an element in the name is indexed.
+	 * @param elementIndex the index of the element
+	 * @return {@code true} if the last element is indexed
+	 */
 	boolean isIndexed(int elementIndex) {
 		return isIndexed(this.elements[elementIndex]);
 	}
 
-	public CharSequence getLastElement(Form form) {
+	/**
+	 * Return the last element in the name in the given form.
+	 * @param form the form to return
+	 * @return the last element
+	 */
+	public String getLastElement(Form form) {
 		int size = getNumberOfElements();
 		return (size == 0 ? "" : getElement(size - 1, form));
 	}
 
+	/**
+	 * Return an element in the name in the given form.
+	 * @param elementIndex the element index
+	 * @param form the form to return
+	 * @return the last element
+	 */
 	public String getElement(int elementIndex, Form form) {
 		if (form == Form.ORIGINAL) {
 			CharSequence result = this.elements[elementIndex];
@@ -122,19 +153,45 @@ public final class ConfigurationPropertyName
 		return name;
 	}
 
+	/**
+	 * Return the total number of elements in the name.
+	 * @return the number of elements
+	 */
 	public int getNumberOfElements() {
 		return this.elements.length;
 	}
 
-	public ConfigurationPropertyName append(String propertyName) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	/**
+	 * Create a new {@link ConfigurationPropertyName} by appending the given element
+	 * value.
+	 * @param elementValue the single element value to append
+	 * @return a new {@link ConfigurationPropertyName}
+	 */
+	public ConfigurationPropertyName append(String elementValue) {
+		if (elementValue == null) {
+			return this;
+		}
+		Supplier<String> message = () -> "Element value '" + elementValue
+				+ "' is not valid";
+		boolean valid = process(elementValue, '.',
+				(start, end, indexed) -> Assert.isTrue(start == 0, message));
+		Assert.isTrue(valid, message);
+		int length = this.elements.length;
+		CharSequence[] elements = new CharSequence[length + 1];
+		System.arraycopy(this.elements, 0, elements, 0, length);
+		elements[length] = elementValue;
+		CharSequence[] uniformElements = new CharSequence[length + 1];
+		System.arraycopy(this.uniformElements, 0, uniformElements, 0, length);
+		String separator = (isIndexed(elementValue) || length == 0 ? "" : ".");
+		Supplier<CharSequence> name = () -> this.name.get() + separator + elementValue;
+		return new ConfigurationPropertyName(name, elements, uniformElements);
 	}
 
-	@Override
-	public int compareTo(ConfigurationPropertyName o) {
-		throw new RuntimeException();
-	}
-
+	/**
+	 * Returns {@code true} if this element is an immediate parent of the specified name.
+	 * @param name the name to check
+	 * @return {@code true} if this name is an ancestor
+	 */
 	public boolean isParentOf(ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
 		if (this.getNumberOfElements() != name.getNumberOfElements() - 1) {
@@ -143,6 +200,12 @@ public final class ConfigurationPropertyName
 		return isAncestorOf(name);
 	}
 
+	/**
+	 * Returns {@code true} if this element is an ancestor (immediate or nested parent) of
+	 * the specified name.
+	 * @param name the name to check
+	 * @return {@code true} if this name is an ancestor
+	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
 		Assert.notNull(name, "Name must not be null");
 		if (this.getNumberOfElements() >= name.getNumberOfElements()) {
@@ -157,8 +220,55 @@ public final class ConfigurationPropertyName
 	}
 
 	@Override
+	public int compareTo(ConfigurationPropertyName other) {
+		return compare(this, other);
+	}
+
+	private int compare(ConfigurationPropertyName n1, ConfigurationPropertyName n2) {
+		int l1 = n1.getNumberOfElements();
+		int l2 = n2.getNumberOfElements();
+		int i1 = 0;
+		int i2 = 0;
+		while (i1 < l1 || i2 < l2) {
+			boolean indexed1 = (i1 < l1 ? n1.isIndexed(i2) : false);
+			boolean indexed2 = (i2 < l2 ? n2.isIndexed(i2) : false);
+			String e1 = (i1 < l1 ? n1.getElement(i1++, Form.UNIFORM) : null);
+			String e2 = (i2 < l2 ? n2.getElement(i2++, Form.UNIFORM) : null);
+			int result = compare(e1, indexed1, e2, indexed2);
+			if (result != 0) {
+				return result;
+			}
+		}
+		return 0;
+	}
+
+	private int compare(String e1, boolean indexed1, String e2, boolean indexed2) {
+		if (e1 == null) {
+			return -1;
+		}
+		if (e2 == null) {
+			return 1;
+		}
+		int result = Boolean.compare(indexed2, indexed1);
+		if (result != 0) {
+			return result;
+		}
+		if (indexed1 && indexed2) {
+			try {
+				long v1 = Long.parseLong(e1.toString());
+				long v2 = Long.parseLong(e2.toString());
+				return Long.compare(v1, v2);
+			}
+			catch (NumberFormatException ex) {
+				// Fallback to string comparison
+			}
+		}
+		return e1.compareTo(e2);
+	}
+
+	@Override
 	public String toString() {
-		return this.name.toString();
+		return this.name.get().toString();
 	}
 
 	@Override
@@ -249,20 +359,24 @@ public final class ConfigurationPropertyName
 	}
 
 	/**
-	 * Roll up the given name to the first element below the root. For example a name of
-	 * {@code foo.bar.baz} rolled up to the root {@code foo} would be {@code foo.bar}.
-	 * @param root the root name
-	 * @return the rolled up name or {@code null}
+	 * Returns if the given name is valid. If this method returns {@code true} then the
+	 * name may be used with {@link #of(CharSequence)} without throwing an exception.
+	 * @param name the name to test
+	 * @return {@code true} if the name is valid
 	 */
-	public final ConfigurationPropertyName rollUp(ConfigurationPropertyName root) {
-		// FIXME very odd API
-		throw new RuntimeException();
-	}
-
 	public static boolean isValid(CharSequence name) {
+		if (name == null) {
+			return false;
+		}
 		return process(name, '.', ElementProcessor.NONE);
 	}
 
+	/**
+	 * Return a {@link ConfigurationPropertyName} for the specified string.
+	 * @param name the source name
+	 * @return a {@link ConfigurationPropertyName} instance
+	 * @throws IllegalArgumentException if the name is not valid
+	 */
 	public static ConfigurationPropertyName of(CharSequence name) {
 		Assert.notNull(name, "Name must not be null");
 		if (name.length() == 0) {
@@ -274,12 +388,20 @@ public final class ConfigurationPropertyName
 				elements.add(name.subSequence(start, end));
 			}
 		});
-		Assert.isTrue(valid, name + " is not valid");
-		return new ConfigurationPropertyName(name,
+		Assert.isTrue(valid, () -> "'" + name + "' is not valid");
+		return new ConfigurationPropertyName(() -> name,
 				elements.toArray(new CharSequence[elements.size()]));
 	}
 
 	public static ConfigurationPropertyName parse(CharSequence name, char separator) {
+		return parse(name, separator, Function.identity());
+	}
+
+	public static ConfigurationPropertyName parse(CharSequence name, char separator,
+			Function<CharSequence, CharSequence> elementProcessor) {
+		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(elementProcessor, "ElementProcessor must not be null");
+
 		throw new RuntimeException();
 	}
 
@@ -291,12 +413,12 @@ public final class ConfigurationPropertyName
 		for (int i = 0; i < length; i++) {
 			char ch = name.charAt(i);
 			if (indexed && ch == ']') {
-				elementProcessor.process(start, i + 1, indexed);
+				process(elementProcessor, start, i + 1, indexed);
 				start = i + 1;
 				indexed = false;
 			}
 			else if (!indexed && ch == '[') {
-				elementProcessor.process(start, i, indexed);
+				process(elementProcessor, start, i, indexed);
 				start = i;
 				indexed = true;
 			}
@@ -304,7 +426,7 @@ public final class ConfigurationPropertyName
 				if (i == 0 || i == length - 1) {
 					return false;
 				}
-				elementProcessor.process(start, i, indexed);
+				process(elementProcessor, start, i, indexed);
 				start = i + 1;
 			}
 			else if (!indexed && !isValid(ch, i)) {
@@ -319,8 +441,15 @@ public final class ConfigurationPropertyName
 				return false;
 			}
 		}
-		elementProcessor.process(start, length, false);
+		process(elementProcessor, start, length, false);
 		return true;
+	}
+
+	private static void process(ElementProcessor processor, int start, int end,
+			boolean indexed) {
+		if (end - start > 0) {
+			processor.process(start, end, indexed);
+		}
 	}
 
 	static boolean isValid(char ch, int index) {

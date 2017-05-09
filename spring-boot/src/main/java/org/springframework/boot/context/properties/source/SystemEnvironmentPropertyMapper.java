@@ -104,8 +104,12 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private String convertName(ConfigurationPropertyName name) {
+		return convertName(name, name.getNumberOfElements());
+	}
+
+	private String convertName(ConfigurationPropertyName name, int numberOfElements) {
 		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < name.getNumberOfElements(); i++) {
+		for (int i = 0; i < numberOfElements; i++) {
 			result.append(result.length() == 0 ? "" : "_");
 			result.append(name.getLastElement(Form.UNIFORM).toString().toUpperCase());
 		}
@@ -113,18 +117,17 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	}
 
 	private boolean isListShortcutPossible(ConfigurationPropertyName name) {
-		return (name.isLastElementIndexed() && isNumber(name.getLastElementInUniformForm())
-				&& name.getParentIsNotNull());
+		return (name.isLastElementIndexed() && isNumber(name.getLastElement(Form.UNIFORM))
+				&& name.getNumberOfElements() >= 1);
 	}
 
 	private List<PropertyMapping> mapListShortcut(PropertySource<?> propertySource,
-			ConfigurationPropertyName configurationPropertyName) {
-		String propertyName = convertName(configurationPropertyName.getParent()) + "__";
-		if (propertySource.containsProperty(propertyName)) {
-			int index = Integer
-					.parseInt(configurationPropertyName.getLastElementInUniformForm());
-			return Collections.singletonList(new PropertyMapping(propertyName,
-					configurationPropertyName, new ElementExtractor(index)));
+			ConfigurationPropertyName name) {
+		String result = convertName(name, name.getNumberOfElements() - 1) + "__";
+		if (propertySource.containsProperty(result)) {
+			int index = Integer.parseInt(name.getLastElement(Form.UNIFORM));
+			return Collections.singletonList(
+					new PropertyMapping(result, name, new ElementExtractor(index)));
 		}
 		return Collections.emptyList();
 	}
