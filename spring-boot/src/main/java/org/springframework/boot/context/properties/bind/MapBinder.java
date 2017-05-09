@@ -96,7 +96,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		}
 
 		private Bindable<?> getValueBindable(ConfigurationPropertyName name) {
-			if (this.root.isParentOf(name) && isValueTreatedAsNestedMap()) {
+			if (!this.root.isParentOf(name) && isValueTreatedAsNestedMap()) {
 				return Bindable.of(this.mapType);
 			}
 			return Bindable.of(this.valueType);
@@ -104,7 +104,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
 		private ConfigurationPropertyName getEntryName(ConfigurationPropertySource source,
 				ConfigurationPropertyName name) {
-			if (this.root.isParentOf(name)
+			if (!this.root.isParentOf(name)
 					&& (isValueTreatedAsNestedMap() || !isScalarValue(source, name))) {
 				return name.chop(this.root.getNumberOfElements() + 1);
 			}
