@@ -75,7 +75,7 @@ final class DefaultPropertyMapper implements PropertyMapper {
 	private List<PropertyMapping> tryMap(String propertySourceName) {
 		try {
 			ConfigurationPropertyName convertedName = ConfigurationPropertyName
-					.parse(propertySourceName, '.');
+					.adapt(propertySourceName, '.');
 			if (!convertedName.isEmpty()) {
 				PropertyMapping o = new PropertyMapping(propertySourceName,
 						convertedName);

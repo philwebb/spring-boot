@@ -26,10 +26,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * A configuration property name composed of elements separated by dots. Names may contain
- * the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they must be lower-case
- * and must start with a letter. The "{@code -}" is used purely for formatting, i.e.
- * "{@code foo-bar}" and "{@code foobar}" are considered equivalent.
+ * A configuration property name composed of elements separated by dots. User created
+ * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
+ * must be lower-case and must start with a letter. The "{@code -}" is used purely for
+ * formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
  * index(i.e. a {@link Map} key or a {@link Collection} index. Indexes names are not
@@ -41,7 +41,6 @@ import org.springframework.util.ObjectUtils;
  * <li>{@code server.hosts[0].name}</li>
  * <li>{@code log[org.springboot].level}</li>
  * </ul>
- * <p>
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -78,6 +77,10 @@ public final class ConfigurationPropertyName
 		this.uniformElements = uniformElements;
 	}
 
+	/**
+	 * Returns {@code true} if this {@link ConfigurationPropertyName} is empty.
+	 * @return {@code true} if the name is empty
+	 */
 	public boolean isEmpty() {
 		return this.elements.length == 0;
 	}
@@ -172,6 +175,13 @@ public final class ConfigurationPropertyName
 		return new ConfigurationPropertyName(elements, uniformElements);
 	}
 
+	/**
+	 * Return a new {@link ConfigurationPropertyName} by chopping this name to the given
+	 * {@code size}. For example, {@code chop(1)} on the name {@code foo.bar} will return
+	 * {@code foo}.
+	 * @param size the size to chop
+	 * @return the chopped name
+	 */
 	public ConfigurationPropertyName chop(int size) {
 		if (size >= getNumberOfElements()) {
 			return this;
@@ -431,14 +441,34 @@ public final class ConfigurationPropertyName
 				elements.toArray(new CharSequence[elements.size()]));
 	}
 
-	public static ConfigurationPropertyName parse(CharSequence name, char separator) {
-		return parse(name, separator, Function.identity());
+	/**
+	 * Create a {@link ConfigurationPropertyName} by adapting the given source. See
+	 * {@link #adapt(CharSequence, char, Function)} for details.
+	 * @param name the name to parse
+	 * @param separator the separator used to split the name
+	 * @return a {@link ConfigurationPropertyName}
+	 */
+	static ConfigurationPropertyName adapt(CharSequence name, char separator) {
+		return adapt(name, separator, Function.identity());
 	}
 
-	public static ConfigurationPropertyName parse(CharSequence name, char separator,
+	/**
+	 * Create a {@link ConfigurationPropertyName} by adapting the given source. The name
+	 * is split into elements around the given {@code separator}. This method is more
+	 * lenient than {@link #of} in that it allows mixed case names and '{@code _}'
+	 * characters. Other invalid characters are stripped out during parsing.
+	 * <p>
+	 * The {@code elementValueProcessor} function may be used if additional processing is
+	 * required on the extracted element values.
+	 * @param name the name to parse
+	 * @param separator the separator used to split the name
+	 * @param elementValueProcessor a function to process element values
+	 * @return a {@link ConfigurationPropertyName}
+	 */
+	static ConfigurationPropertyName adapt(CharSequence name, char separator,
 			Function<CharSequence, CharSequence> elementValueProcessor) {
 		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(elementValueProcessor, "ElementProcessor must not be null");
+		Assert.notNull(elementValueProcessor, "ElementValueProcessor must not be null");
 		if (name.length() == 0) {
 			return EMPTY;
 		}
@@ -518,7 +548,8 @@ public final class ConfigurationPropertyName
 	public enum Form {
 
 		/**
-		 * The original form as specified when the name was created. For example:
+		 * The original form as specified when the name was created or parsed. For
+		 * example:
 		 * <ul>
 		 * <li>"{@code foo-bar}" = "{@code foo-bar}"</li>
 		 * <li>"{@code fooBar}" = "{@code fooBar}"</li>
@@ -542,6 +573,9 @@ public final class ConfigurationPropertyName
 
 	}
 
+	/**
+	 * Internal functional interface used when processing names.
+	 */
 	@FunctionalInterface
 	private interface ElementProcessor {
 
@@ -549,12 +583,18 @@ public final class ConfigurationPropertyName
 
 	}
 
+	/**
+	 * Internal filter used to strip out characters.
+	 */
 	private interface CharFilter {
 
 		boolean isExcluded(char ch, int index);
 
 	}
 
+	/**
+	 * Internal processor used to change characters
+	 */
 	private interface CharProcessor {
 
 		CharProcessor NONE = (c, i) -> c;
@@ -565,6 +605,9 @@ public final class ConfigurationPropertyName
 
 	}
 
+	/**
+	 * {@link ElementProcessor} that checks if a name is valid.
+	 */
 	private static class ElementValidator implements ElementProcessor {
 
 		private boolean valid = true;
