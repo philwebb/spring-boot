@@ -548,14 +548,14 @@
 									<property>main.basedir</property>
 								</requireProperty>
 								<requireProperty>
-									<property>project.organization.name</property>
-								</requireProperty>
-								<requireProperty>
 									<property>project.name</property>
 								</requireProperty>
 								<requireProperty>
 									<property>project.description</property>
 								</requireProperty>
+								<requireReleaseDeps>
+									<onlyWhenRelease>true</onlyWhenRelease>
+								</requireReleaseDeps>
 							</rules>
 							<fail>true</fail>
 						</configuration>
@@ -634,29 +634,6 @@
 						<goals>
 							<goal>check</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>enforce-milestone-rules</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<requireJavaVersion>
-									<version>(1.8,1.9)</version>
-								</requireJavaVersion>
-								<requireReleaseDeps>
-									<onlyWhenRelease>true</onlyWhenRelease>
-								</requireReleaseDeps>
-							</rules>
-							<fail>true</fail>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
