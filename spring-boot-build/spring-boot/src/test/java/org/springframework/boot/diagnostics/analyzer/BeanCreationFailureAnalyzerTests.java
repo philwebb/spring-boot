@@ -55,14 +55,20 @@ public class BeanCreationFailureAnalyzerTests {
 	}
 
 	private Exception createFailure(Class<?> configuration) {
-		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-				configuration)) {
-			fail("Expected failure did not occur");
-			return null;
+		ConfigurableApplicationContext context = null;
+		try {
+			context = new AnnotationConfigApplicationContext(configuration);
 		}
 		catch (Exception ex) {
 			return ex;
 		}
+		finally {
+			if (context != null) {
+				context.close();
+			}
+		}
+		fail("Expected failure did not occur");
+		return null;
 	}
 
 	@Configuration
