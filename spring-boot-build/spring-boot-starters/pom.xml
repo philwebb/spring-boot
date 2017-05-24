@@ -148,6 +148,9 @@
 						</goals>
 						<configuration>
 							<failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
+							<ignoredResourcePatterns>
+								<ignoredResourcePattern>changelog.txt</ignoredResourcePattern>
+							</ignoredResourcePatterns>
 						</configuration>
 					</execution>
 				</executions>
