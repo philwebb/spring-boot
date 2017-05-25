@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -28,15 +29,31 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-help-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>prepare-package</phase>
+						<id>copy-compile-dependencies</id>
+						<phase>generate-resources</phase>
 						<goals>
-							<goal>effective-pom</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
+						<inherited>false</inherited>
 						<configuration>
-							<output>${project.build.directory}/effective-pom.xml</output>
+							<includeScope>compile</includeScope>
+							<outputDirectory>${project.build.directory}/dependencies/compile</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-test-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<includeScope>test</includeScope>
+							<outputDirectory>${project.build.directory}/dependencies/test</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -164,12 +181,17 @@
 										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
 										<var name="version-type" value="${project.version}" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+										<propertyregex property="github-tag" override="true"
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>
@@ -181,12 +203,18 @@
 								</goals>
 								<configuration>
 									<target>
-										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
-											<zipfileset src="build/libs/${project.artifactId}-${project.version}-javadoc.jar" prefix="api" />
-											<zipfileset dir="${project.build.directory}/generated-docs" includes="index.html" prefix="reference/html" />
+										<zip
+											destfile="${project.build.directory}/${project.artifactId}-${project.version}-docs.zip">
+											<zipfileset
+												src="build/libs/${project.artifactId}-${project.version}-javadoc.jar"
+												prefix="api" />
+											<zipfileset dir="${project.build.directory}/generated-docs"
+												includes="index.html" prefix="reference/html" />
 											<mappedresources>
-												<fileset dir="${project.build.directory}/generated-docs" includes="index.pdf" />
-												<globmapper from="index.pdf" to="reference/pdf/spring-boot-gradle-plugin-reference.pdf"/>
+												<fileset dir="${project.build.directory}/generated-docs"
+													includes="index.pdf" />
+												<globmapper from="index.pdf"
+													to="reference/pdf/spring-boot-gradle-plugin-reference.pdf" />
 											</mappedresources>
 										</zip>
 									</target>
