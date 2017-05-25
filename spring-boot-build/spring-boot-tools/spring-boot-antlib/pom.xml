@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -48,6 +49,7 @@
 					<minimizeJar>true</minimizeJar>
 					<shadedArtifactAttached>false</shadedArtifactAttached>
 					<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
 				</configuration>
 				<executions>
 					<execution>
@@ -73,17 +75,21 @@
 									<fileset dir="${project.basedir}/src/it" />
 								</copy>
 								<path id="taskpath">
-									<fileset dir="${project.build.directory}" includes="${project.build.finalName}.${project.packaging}" />
+									<fileset dir="${project.build.directory}"
+										includes="${project.build.finalName}.${project.packaging}" />
 								</path>
 								<pathconvert refid="taskpath" />
-								<typedef resource="org/springframework/boot/ant/antlib.xml" classpathref="taskpath" uri="antlib:org.springframework.boot.ant" />
-								<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+								<typedef resource="org/springframework/boot/ant/antlib.xml"
+									classpathref="taskpath" uri="antlib:org.springframework.boot.ant" />
+								<property name="build.compiler"
+									value="org.eclipse.jdt.core.JDTCompilerAdapter" />
 								<antunit xmlns="antlib:org.apache.ant.antunit">
 									<propertyset>
 										<propertyref name="build.compiler" />
 									</propertyset>
 									<plainlistener />
-									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it" includes="**/build.xml" />
+									<fileset xmlns="antlib:org.apache.tools.ant" dir="${project.build.directory}/it"
+										includes="**/build.xml" />
 								</antunit>
 							</target>
 							<skip>${skipTests}</skip>
