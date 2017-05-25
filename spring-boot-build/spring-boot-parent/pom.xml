@@ -499,6 +499,7 @@
 							<pomElements>
 								<parent>expand</parent>
 								<distributionManagement>remove</distributionManagement>
+								<repositories>remove</repositories>
 							</pomElements>
 						</configuration>
 					</execution>
