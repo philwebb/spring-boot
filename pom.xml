@@ -12,21 +12,23 @@
 		<revision>2.0.0.BUILD-SNAPSHOT</revision>
 		<main.basedir>${basedir}</main.basedir>
 	</properties>
-	<modules>
-		<module>spring-boot-build</module>
-	</modules>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<profiles>
+		<!-- Keep everything in a profile so it's stripped out during maven-flatten -->
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>spring-boot-build</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>full</id>
+		</profile>
+		<profile>
+			<id>fast</id>
+		</profile>
 		<profile>
 			<id>m2e</id>
 			<activation>

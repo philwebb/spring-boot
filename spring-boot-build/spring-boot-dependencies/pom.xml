@@ -2,9 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.springframework.boot</groupId>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-project</artifactId>
+		<version>${revision}</version>
+		<relativePath>../..</relativePath>
+	</parent>
 	<artifactId>spring-boot-dependencies</artifactId>
-	<version>${revision}</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Dependencies</name>
 	<description>Spring Boot Dependencies</description>
@@ -19,8 +23,6 @@
 		<url>https://github.com/spring-projects/spring-boot</url>
 	</scm>
 	<properties>
-		<!-- Spring Boot version -->
-		<revision>2.0.0.BUILD-SNAPSHOT</revision>
 		<!-- Dependency versions -->
 		<activemq.version>5.14.5</activemq.version>
 		<antlr2.version>2.7.7</antlr2.version>
@@ -2731,11 +2733,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<!-- FIXME Just for testing -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>spring-repository</id>
-			<url>file://${user.home}/tmp/repo</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
