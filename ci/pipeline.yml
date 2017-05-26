@@ -1,0 +1,14 @@
+resources:
+  - name: spring-boot
+    type: git
+    source:
+       uri: https://github.com/mbhave/spring-boot.git
+       branch: maven-restruct
+
+jobs: 
+  - name: spring-boot-build
+  plan:
+    - get: spring-boot
+    - trigger: true
+  - task: spring-boot-build
+    file: spring-boot/ci/tasks/spring-boot-build.yml      

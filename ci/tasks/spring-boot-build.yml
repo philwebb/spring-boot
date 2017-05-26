@@ -1,0 +1,11 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: springboot/build
+inputs:
+  - name: spring-boot
+run:
+  path: spring-boot/ci/scripts/spring-boot-build.yml
+
