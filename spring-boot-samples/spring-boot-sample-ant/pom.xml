@@ -26,6 +26,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-antlib</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>

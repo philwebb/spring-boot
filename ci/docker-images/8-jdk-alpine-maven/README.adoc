@@ -1,0 +1,3 @@
+# OpenJDK Java 8 with Maven
+
+Docker image containing OpenJDK 8 with Apache Maven

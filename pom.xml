@@ -79,6 +79,10 @@
 					<name>m2e.version</name>
 				</property>
 			</activation>
+			<modules>
+				<module>spring-boot-build</module>
+				<module>spring-boot-samples</module>
+			</modules>
 		</profile>
 	</profiles>
 	<repositories>

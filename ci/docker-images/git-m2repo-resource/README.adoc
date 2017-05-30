@@ -1,0 +1,3 @@
+# Git + Maven 2 Repository Resource
+
+Tracks commits in a http://git-scm.com[git] repository and additionally refreshes a Maven 2 repository.
