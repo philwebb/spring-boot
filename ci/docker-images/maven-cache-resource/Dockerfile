@@ -8,3 +8,6 @@ RUN ./install-git-lfs.sh
 
 ADD scripts/install-git-resource.sh install-git-resource.sh
 RUN ./install-git-resource.sh
+
+ADD assets/ /opt/resource/
+RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out

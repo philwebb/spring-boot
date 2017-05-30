@@ -1,0 +1,13 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: springboot/build
+inputs:
+  - name: git
+    path: /src
+  - name: maven-repo-cache
+    path: /cache
+run:
+  path: spring-boot/ci/scripts/run-build.sh

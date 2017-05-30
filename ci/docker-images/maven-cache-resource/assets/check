@@ -1,0 +1,5 @@
+#! /bin/bash -eu
+[ "$TRACE" == "true" ] && set -x
+set -e
+set -o pipefail
+/opt/resource/git/check
