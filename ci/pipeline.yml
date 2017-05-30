@@ -13,7 +13,7 @@ resources:
     source:
       <<: *repo-source
       paths:
-        - '**/pom.xml'
+        - '"**/pom.xml"'
 jobs:
   - name: cache
     plan:
