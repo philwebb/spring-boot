@@ -1,4 +1,4 @@
-#! /bin/bash -eu
+#!/usr/bin/env bash
 [ "$TRACE" == "true" ] && set -x
 set -e
 set -o pipefail
@@ -9,4 +9,4 @@ GIT_DEST_DIR="$(mktemp -d -t git-resource-destination.XXXXXX)"
 
 PAYLOAD=$(echo /tmp/git-resource-request.*)
 
-ECHO "foo" >> "${DEST_DIR}/foo"
+echo "foo" >> "${DEST_DIR}/foo"

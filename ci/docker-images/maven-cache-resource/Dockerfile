@@ -1,7 +1,7 @@
 FROM springboot/8-jdk-alpine-maven
 
 RUN ln -s /usr/bin/gpg2 /usr/bin/gpg
-RUN apk add --no-cache git
+RUN apk add --no-cache git jq
 
 ADD scripts/install-git-lfs.sh install-git-lfs.sh
 RUN ./install-git-lfs.sh
