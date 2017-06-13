@@ -39,6 +39,10 @@
 								<url>${cargo.container.url}</url>
 								<downloadDir>${cargo.container.download-dir}</downloadDir>
 							</zipUrlInstaller>
+							<systemProperties>
+								<java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+								<java.net.preferIPv4Addresses>true</java.net.preferIPv4Addresses>
+							</systemProperties>
 						</container>
 						<deployables>
 							<deployable>

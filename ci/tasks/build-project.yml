@@ -1,0 +1,16 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: openjdk
+    tag: 8u131-jdk
+inputs:
+- name: spring-boot
+outputs:
+- name: distribution-repository
+caches:
+- path: m2
+- path: gradle
+run:
+  path: spring-boot/ci/scripts/build-project.sh

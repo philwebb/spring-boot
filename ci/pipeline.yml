@@ -1,0 +1,21 @@
+resources:
+- name: spring-boot
+  type: git
+  source:
+    uri: https://github.com/philwebb/spring-boot.git
+    branch: maven-restruct
+
+jobs:
+- name: build
+  plan:
+  - get: spring-boot
+    trigger: true
+  - task: build-project
+    file: spring-boot/ci/tasks/build-project.yml
+  - aggregate:
+    - task: build-samples
+      file: spring-boot/ci/tasks/build-samples.yml
+    - task: build-integration-tests
+      file: spring-boot/ci/tasks/build-integration-tests.yml
+    - task: build-deployment-tests
+      file: spring-boot/ci/tasks/build-deployment-tests.yml
