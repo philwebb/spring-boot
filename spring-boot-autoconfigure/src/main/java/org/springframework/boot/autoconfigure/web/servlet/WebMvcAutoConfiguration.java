@@ -497,7 +497,7 @@ public class WebMvcAutoConfiguration {
 
 	}
 
-	private static class ResourceChainResourceHandlerRegistrationCustomizer
+	static class ResourceChainResourceHandlerRegistrationCustomizer
 			implements ResourceHandlerRegistrationCustomizer {
 
 		@Autowired

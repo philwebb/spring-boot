@@ -145,7 +145,7 @@ public class SpringBootWebSecurityConfiguration {
 
 	// Get the ignored paths in early
 	@Order(SecurityProperties.IGNORED_ORDER)
-	private static class IgnoredPathsWebSecurityConfigurerAdapter
+	static class IgnoredPathsWebSecurityConfigurerAdapter
 			implements WebSecurityConfigurer<WebSecurity> {
 
 		private final List<IgnoredRequestCustomizer> customizers;

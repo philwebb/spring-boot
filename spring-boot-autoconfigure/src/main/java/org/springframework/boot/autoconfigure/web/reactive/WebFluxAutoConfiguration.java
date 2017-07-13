@@ -239,7 +239,7 @@ public class WebFluxAutoConfiguration {
 
 	}
 
-	private static class ResourceChainResourceHandlerRegistrationCustomizer
+	static class ResourceChainResourceHandlerRegistrationCustomizer
 			implements ResourceHandlerRegistrationCustomizer {
 
 		@Autowired

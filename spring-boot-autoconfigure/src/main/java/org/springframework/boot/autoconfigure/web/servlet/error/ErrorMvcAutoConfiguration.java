@@ -301,11 +301,11 @@ public class ErrorMvcAutoConfiguration {
 	/**
 	 * {@link ServletWebServerFactoryCustomizer} that configures the server's error pages.
 	 */
-	private static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
+	static class ErrorPageCustomizer implements ErrorPageRegistrar, Ordered {
 
 		private final ServerProperties properties;
 
-		protected ErrorPageCustomizer(ServerProperties properties) {
+		ErrorPageCustomizer(ServerProperties properties) {
 			this.properties = properties;
 		}
 
