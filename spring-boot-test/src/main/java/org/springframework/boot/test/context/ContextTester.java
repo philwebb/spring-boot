@@ -94,7 +94,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public abstract class ContextTester<C extends ConfigurableApplicationContext, T extends ContextTester<C, T>> {
+public abstract class ContextTester<C extends AssertableApplicationContext, T extends ContextTester<C, T>> {
 
 	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 

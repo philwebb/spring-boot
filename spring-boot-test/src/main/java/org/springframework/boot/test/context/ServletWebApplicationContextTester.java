@@ -19,7 +19,6 @@ package org.springframework.boot.test.context;
 import java.util.function.Supplier;
 
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
@@ -31,18 +30,18 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @since 2.0.0
  */
 public final class ServletWebApplicationContextTester extends
-		ContextTester<ConfigurableWebApplicationContext, ServletWebApplicationContextTester> {
+		ContextTester<AssertableWebApplicationContext, ServletWebApplicationContextTester> {
 
 	public ServletWebApplicationContextTester() {
-		this(() -> {
+		this(AssertableWebApplicationContext.from(() -> {
 			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 			context.setServletContext(new MockServletContext());
 			return context;
-		});
+		}));
 	}
 
 	public ServletWebApplicationContextTester(
-			Supplier<ConfigurableWebApplicationContext> contextSupplier) {
+			Supplier<AssertableWebApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 

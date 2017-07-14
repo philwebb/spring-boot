@@ -15,28 +15,9 @@
  */
 
 package org.springframework.boot.test.context;
-
-import java.util.function.Supplier;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 /**
- * A {@link ContextLoader} that simulates a standard, non web environment.
- *
- * @author Stephane Nicoll
- * @author Andy Wilkinson
- * @since 2.0.0
+ * @author pwebb
  */
-public class StandardApplicationContextTester extends
-		ContextTester<AssertableApplicationContext, StandardApplicationContextTester> {
-
-	public StandardApplicationContextTester() {
-		this(AssertableApplicationContext.from(AnnotationConfigApplicationContext::new));
-	}
-
-	public StandardApplicationContextTester(
-			Supplier<AssertableApplicationContext> contextSupplier) {
-		super(contextSupplier);
-	}
+public interface ApplicationContextAssert {
 
 }

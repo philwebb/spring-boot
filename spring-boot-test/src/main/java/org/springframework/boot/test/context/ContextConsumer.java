@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -27,7 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface ContextConsumer<C extends ConfigurableApplicationContext> {
+public interface ContextConsumer<C extends ApplicationContext> {
 
 	/**
 	 * Performs this operation on the supplied {@code context}.

@@ -61,7 +61,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ContextConsumer;
 import org.springframework.boot.test.context.StandardApplicationContextTester;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -390,7 +390,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
-	private <C extends ConfigurableApplicationContext> ContextConsumer<C> hasSingleHealthIndicator(
+	private <C extends ApplicationContext> ContextConsumer<C> hasSingleHealthIndicator(
 			Class<? extends HealthIndicator> type) {
 		return context -> {
 			Map<String, HealthIndicator> beans = context

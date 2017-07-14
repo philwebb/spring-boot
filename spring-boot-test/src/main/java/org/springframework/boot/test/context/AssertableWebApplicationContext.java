@@ -18,25 +18,22 @@ package org.springframework.boot.test.context;
 
 import java.util.function.Supplier;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
- * A {@link ContextLoader} that simulates a standard, non web environment.
- *
- * @author Stephane Nicoll
- * @author Andy Wilkinson
- * @since 2.0.0
+ * @author pwebb
  */
-public class StandardApplicationContextTester extends
-		ContextTester<AssertableApplicationContext, StandardApplicationContextTester> {
+public interface AssertableWebApplicationContext
+		extends AssertableApplicationContext, ConfigurableWebApplicationContext {
 
-	public StandardApplicationContextTester() {
-		this(AssertableApplicationContext.from(AnnotationConfigApplicationContext::new));
-	}
-
-	public StandardApplicationContextTester(
-			Supplier<AssertableApplicationContext> contextSupplier) {
-		super(contextSupplier);
+	/**
+	 * @param object
+	 * @return
+	 */
+	static Supplier<AssertableWebApplicationContext> from(
+			Supplier<ConfigurableWebApplicationContext> supplier) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

@@ -73,7 +73,7 @@ import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -782,7 +782,7 @@ public class CacheAutoConfigurationTests {
 				.load(this::validateCaffeineCacheWithStats);
 	}
 
-	private void validateCaffeineCacheWithStats(ConfigurableApplicationContext context) {
+	private void validateCaffeineCacheWithStats(ApplicationContext context) {
 		CaffeineCacheManager cacheManager = validateCacheManager(context,
 				CaffeineCacheManager.class);
 		assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
@@ -792,8 +792,8 @@ public class CacheAutoConfigurationTests {
 				.isEqualTo(1L);
 	}
 
-	private <T extends CacheManager> T validateCacheManager(
-			ConfigurableApplicationContext context, Class<T> type) {
+	private <T extends CacheManager> T validateCacheManager(ApplicationContext context,
+			Class<T> type) {
 		CacheManager cacheManager = context.getBean(CacheManager.class);
 		assertThat(cacheManager).as("Wrong cache manager type").isInstanceOf(type);
 		return type.cast(cacheManager);
