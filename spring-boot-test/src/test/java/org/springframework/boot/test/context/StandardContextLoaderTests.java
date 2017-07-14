@@ -61,7 +61,7 @@ public class StandardContextLoaderTests {
 	public void systemPropertyIsRemovedIfContextFailed() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		this.contextLoader.systemProperty(key, "value").config(ConfigC.class)
+		this.contextLoader.systemProperty(key, "value").register(ConfigC.class)
 				.loadAndFail(e -> {
 				});
 		assertThat(System.getProperties().containsKey(key)).isFalse();
@@ -118,19 +118,19 @@ public class StandardContextLoaderTests {
 
 	@Test
 	public void configurationIsProcessedInOrder() {
-		this.contextLoader.config(ConfigA.class, AutoConfigA.class).load(
+		this.contextLoader.register(ConfigA.class, AutoConfigA.class).load(
 				context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	}
 
 	// @Test
 	// public void configurationIsProcessedBeforeAutoConfiguration() {
-	// this.contextLoader.autoConfig(AutoConfigA.class).config(ConfigA.class).load(
+	// this.contextLoader.autoConfig(AutoConfigA.class).register(ConfigA.class).load(
 	// context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	// }
 
 	@Test
 	public void configurationIsAdditive() {
-		this.contextLoader.config(AutoConfigA.class).config(AutoConfigB.class)
+		this.contextLoader.register(AutoConfigA.class).register(AutoConfigB.class)
 				.load(context -> {
 					assertThat(context.containsBean("a")).isTrue();
 					assertThat(context.containsBean("b")).isTrue();
@@ -163,8 +163,8 @@ public class StandardContextLoaderTests {
 
 	@Test
 	public void loadAndFailWithExpectedException() {
-		this.contextLoader.config(ConfigC.class).loadAndFail(BeanCreationException.class,
-				ex -> assertThat(ex.getMessage())
+		this.contextLoader.register(ConfigC.class).loadAndFail(
+				BeanCreationException.class, ex -> assertThat(ex.getMessage())
 						.contains("Error creating bean with name 'c'"));
 	}
 
@@ -172,7 +172,7 @@ public class StandardContextLoaderTests {
 	public void loadAndFailWithWrongException() {
 		this.thrown.expect(AssertionError.class);
 		this.thrown.expectMessage("Wrong application context failure exception");
-		this.contextLoader.config(ConfigC.class)
+		this.contextLoader.register(ConfigC.class)
 				.loadAndFail(IllegalArgumentException.class, ex -> {
 				});
 	}

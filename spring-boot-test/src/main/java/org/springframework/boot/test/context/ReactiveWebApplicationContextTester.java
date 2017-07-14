@@ -18,6 +18,7 @@ package org.springframework.boot.test.context;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 
 /**
@@ -29,14 +30,14 @@ import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicati
  * @since 2.0.0
  */
 public final class ReactiveWebApplicationContextTester extends
-		ContextTester<GenericReactiveWebApplicationContext, ReactiveWebApplicationContextTester> {
+		ContextTester<ConfigurableReactiveWebApplicationContext, ReactiveWebApplicationContextTester> {
 
 	public ReactiveWebApplicationContextTester() {
 		this(GenericReactiveWebApplicationContext::new);
 	}
 
 	public ReactiveWebApplicationContextTester(
-			Supplier<GenericReactiveWebApplicationContext> contextSupplier) {
+			Supplier<ConfigurableReactiveWebApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 

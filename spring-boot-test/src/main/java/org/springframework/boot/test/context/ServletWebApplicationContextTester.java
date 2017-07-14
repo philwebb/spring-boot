@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.util.function.Supplier;
 
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
@@ -30,7 +31,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @since 2.0.0
  */
 public final class ServletWebApplicationContextTester extends
-		ContextTester<AnnotationConfigWebApplicationContext, ServletWebApplicationContextTester> {
+		ContextTester<ConfigurableWebApplicationContext, ServletWebApplicationContextTester> {
 
 	public ServletWebApplicationContextTester() {
 		this(() -> {
@@ -41,7 +42,7 @@ public final class ServletWebApplicationContextTester extends
 	}
 
 	public ServletWebApplicationContextTester(
-			Supplier<AnnotationConfigWebApplicationContext> contextSupplier) {
+			Supplier<ConfigurableWebApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
 	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
-			.config(ExistingDataSourceConfiguration.class)
+			.register(ExistingDataSourceConfiguration.class)
 			.register(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test

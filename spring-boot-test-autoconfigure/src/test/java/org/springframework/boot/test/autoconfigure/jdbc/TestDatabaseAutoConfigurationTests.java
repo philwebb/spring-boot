@@ -50,17 +50,20 @@ public class TestDatabaseAutoConfigurationTests {
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		this.contextLoader.config(ExistingDataSourceConfiguration.class).load(context -> {
-			DataSource datasource = context.getBean(DataSource.class);
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
-			jdbcTemplate.execute("create table example (id int, name varchar);");
-			this.contextLoader.load(anotherContext -> {
-				DataSource anotherDatasource = anotherContext.getBean(DataSource.class);
-				JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(anotherDatasource);
-				anotherJdbcTemplate
-						.execute("create table example (id int, name varchar);");
-			});
-		});
+		this.contextLoader.register(ExistingDataSourceConfiguration.class)
+				.load(context -> {
+					DataSource datasource = context.getBean(DataSource.class);
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
+					jdbcTemplate.execute("create table example (id int, name varchar);");
+					this.contextLoader.load(anotherContext -> {
+						DataSource anotherDatasource = anotherContext
+								.getBean(DataSource.class);
+						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(
+								anotherDatasource);
+						anotherJdbcTemplate
+								.execute("create table example (id int, name varchar);");
+					});
+				});
 	}
 
 	@Configuration

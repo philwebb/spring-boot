@@ -18,6 +18,7 @@ package org.springframework.boot.test.context;
 
 import java.util.function.Supplier;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -28,14 +29,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @since 2.0.0
  */
 public class StandardApplicationContextTester extends
-		ContextTester<AnnotationConfigApplicationContext, StandardApplicationContextTester> {
+		ContextTester<ConfigurableApplicationContext, StandardApplicationContextTester> {
 
 	public StandardApplicationContextTester() {
 		this(AnnotationConfigApplicationContext::new);
 	}
 
 	public StandardApplicationContextTester(
-			Supplier<AnnotationConfigApplicationContext> contextSupplier) {
+			Supplier<ConfigurableApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 
