@@ -41,8 +41,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.StandardApplicationContextTester;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,8 +66,9 @@ public class ArtemisAutoConfigurationTests {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class);
+	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+			.register(AutoConfigurations.of(ArtemisAutoConfiguration.class,
+					JmsAutoConfiguration.class));
 
 	@Test
 	public void nativeConnectionFactory() {

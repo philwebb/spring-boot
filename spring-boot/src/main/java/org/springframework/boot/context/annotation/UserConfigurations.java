@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.PriorityOrdered;
 
 /**
  * {@link Configurations} representing user-defined {@code @Configuration} classes (i.e.
@@ -30,11 +30,15 @@ import org.springframework.core.annotation.Order;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class UserConfigurations extends Configurations {
+public class UserConfigurations extends Configurations implements PriorityOrdered {
 
 	protected UserConfigurations(Collection<Class<?>> classes) {
 		super(classes);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	@Override

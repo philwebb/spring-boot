@@ -30,6 +30,7 @@ import javax.validation.ValidatorFactory;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -37,8 +38,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
-import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.ServletWebContextLoader;
+import org.springframework.boot.test.context.ServletWebApplicationContextTester;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -114,10 +114,10 @@ public class WebMvcAutoConfigurationTests {
 
 	private static final MockServletWebServerFactory webServerFactory = new MockServletWebServerFactory();
 
-	private final ServletWebContextLoader contextLoader = ContextLoader.servletWeb()
-			.autoConfig(WebMvcAutoConfiguration.class,
+	private final ServletWebApplicationContextTester contextLoader = new ServletWebApplicationContextTester()
+			.register(AutoConfigurations.of(WebMvcAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
-					PropertyPlaceholderAutoConfiguration.class)
+					PropertyPlaceholderAutoConfiguration.class))
 			.config(Config.class);
 
 	@Test
@@ -573,7 +573,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/no-welcome-page/");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvcBuilders.webAppContextSetup(context).build()
@@ -598,7 +598,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -613,7 +613,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -626,7 +626,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -640,7 +640,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -654,7 +654,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page");
-		this.contextLoader.loadWeb(context -> {
+		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -677,7 +677,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWhenNoCustomizationShouldUseAutoConfigured() {
-		this.contextLoader.autoConfigFirst(ValidationAutoConfiguration.class);
+		this.contextLoader
+				.register(AutoConfigurations.of(ValidationAutoConfiguration.class));
 		this.contextLoader.load(context -> {
 			String[] jsrValidatorBeans = context
 					.getBeanNamesForType(javax.validation.Validator.class);
@@ -725,7 +726,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerTakesPrecedence() {
-		this.contextLoader.autoConfigFirst(ValidationAutoConfiguration.class)
+		this.contextLoader
+				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.config(MvcValidator.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
@@ -746,7 +748,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithCustomSpringValidatorIgnored() {
-		this.contextLoader.autoConfigFirst(ValidationAutoConfiguration.class)
+		this.contextLoader
+				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.config(CustomSpringValidator.class);
 		this.contextLoader.load(context -> {
 			String[] jsrValidatorBeans = context
@@ -768,7 +771,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithCustomJsr303ValidatorExposedAsSpringValidator() {
-		this.contextLoader.autoConfigFirst(ValidationAutoConfiguration.class)
+		this.contextLoader
+				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.config(CustomJsr303Validator.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();

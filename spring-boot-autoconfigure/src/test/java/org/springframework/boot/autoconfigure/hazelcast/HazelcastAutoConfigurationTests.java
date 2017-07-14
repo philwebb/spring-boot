@@ -21,7 +21,8 @@ import java.io.IOException;
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
 
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.StandardApplicationContextTester;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,8 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HazelcastAutoConfigurationTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HazelcastAutoConfiguration.class);
+	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+			.register(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {

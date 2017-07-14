@@ -21,14 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.annotation.Configurations;
+import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,32 +39,77 @@ import org.springframework.util.ObjectUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Base implementation of {@link ContextLoader}.
+ * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as a
+ * field of a test class, describing the shared configuration required for the test:
  *
- * @param <T> the type of the context to be loaded
- * @param <L> the type of the loader
+ * <pre class="code">
+ * public class FooAutoConfigurationTests {
+ *
+ *     private final ContextLoader contextLoader = ContextLoader.standard()
+ *             .autoConfig(FooAutoConfiguration.class).env("spring.foo=bar");
+ *
+ * }</pre>
+ *
+ * <p>
+ * The initialization above makes sure to register {@code FooAutoConfiguration} for all
+ * tests and set the {@code spring.foo} property to {@code bar} unless specified
+ * otherwise.
+ *
+ * <p>
+ * Based on the configuration above, a specific test can simulate what would happen if the
+ * user customizes a property and/or provides its own configuration:
+ *
+ * <pre class="code">
+ * public class FooAutoConfigurationTests {
+ *
+ *     &#064;Test
+ *     public someTest() {
+ *         this.contextLoader.config(UserConfig.class).env("spring.foo=biz")
+ *                 .load(context -&gt; {
+ *            			// assertions using the context
+ *         });
+ *     }
+ *
+ * }</pre>
+ *
+ * <p>
+ * The test above includes an extra {@code UserConfig} class that is guaranteed to be
+ * processed <strong>before</strong> any auto-configuration. Also, {@code spring.foo} has
+ * been overwritten to {@code biz}. The {@link #load(ContextConsumer) load} method takes a
+ * consumer that can use the context to assert its state. Upon completion, the context is
+ * automatically closed.
+ *
+ * <p>
+ * Web environment can easily be simulated using the {@link #servletWeb()} and
+ * {@link #reactiveWeb()} factory methods.
+ *
+ * <p>
+ * If a failure scenario has to be tested, {@link #loadAndFail(Consumer)} can be used
+ * instead: it expects the startup of the context to fail and call the {@link Consumer}
+ * with the exception for further assertions.
+ *
+ * @param <C> the type of the context to be loaded
+ * @param <T> the type of the loader
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends AbstractContextLoader<T, ?>>
-		implements ContextLoader {
+public abstract class ContextTester<C extends ConfigurableApplicationContext, T extends ContextTester<C, T>> {
 
 	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
-	private final List<String> env = new ArrayList<>();
+	private final List<String> environmentProperties = new ArrayList<>();
 
-	private final Set<Class<?>> userConfigurations = new LinkedHashSet<>();
+	private final List<Configurations> configurations = new ArrayList<>();
 
-	private final LinkedList<Class<?>> autoConfigurations = new LinkedList<>();
-
-	private final Supplier<T> contextSupplier;
+	private final Supplier<C> contextFactory;
 
 	private ClassLoader classLoader;
 
 	private ApplicationContext parent;
 
-	protected AbstractContextLoader(Supplier<T> contextSupplier) {
-		this.contextSupplier = contextSupplier;
+	protected ContextTester(Supplier<C> contextFactory) {
+		this.contextFactory = contextFactory;
 	}
 
 	/**
@@ -76,8 +120,7 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	 * @param value the value (can be null to remove any existing customization)
 	 * @return this instance
 	 */
-	@Override
-	public L systemProperty(String key, String value) {
+	public T systemProperty(String key, String value) {
 		Assert.notNull(key, "Key must not be null");
 		if (value != null) {
 			this.systemProperties.put(key, value);
@@ -96,57 +139,34 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	 * environment
 	 * @return this instance
 	 */
-	@Override
-	public L env(String... pairs) {
+	public T env(String... pairs) {
 		if (!ObjectUtils.isEmpty(pairs)) {
-			this.env.addAll(Arrays.asList(pairs));
+			this.environmentProperties.addAll(Arrays.asList(pairs));
 		}
 		return self();
 	}
 
-	/**
-	 * Add the specified user configuration classes.
-	 * @param configs the user configuration classes to add
-	 * @return this instance
-	 */
-	@Override
-	public L config(Class<?>... configs) {
-		if (!ObjectUtils.isEmpty(configs)) {
-			this.userConfigurations.addAll(Arrays.asList(configs));
-		}
-		return self();
-	}
-
-	@Override
-	public L parent(ApplicationContext parent) {
-		this.parent = parent;
-		return self();
+	public T config(Class<?>... configurationClasses) {
+		return register(configurationClasses);
 	}
 
 	/**
-	 * Add the specified auto-configuration classes.
-	 * @param autoConfigurations the auto-configuration classes to add
+	 * Register the specified user configuration classes.
+	 * @param configurationClasses the user configuration classes to add
 	 * @return this instance
 	 */
-	@Override
-	public L autoConfig(Class<?>... autoConfigurations) {
-		if (!ObjectUtils.isEmpty(autoConfigurations)) {
-			this.autoConfigurations.addAll(Arrays.asList(autoConfigurations));
-		}
-		return self();
+	public T register(Class<?>... configurationClasses) {
+		return register(UserConfigurations.of(configurationClasses));
 	}
 
 	/**
-	 * Add the specified auto-configurations at the beginning (in that order) so that it
-	 * is applied before any other existing auto-configurations, but after any user
-	 * configuration. If {@code A} and {@code B} are specified, {@code A} will be
-	 * processed, then {@code B} and finally the rest of the existing auto-configuration.
-	 * @param autoConfigurations the auto-configuration to add
+	 * Register the specified configurations.
+	 * @param configurations the configurations to add
 	 * @return this instance
 	 */
-	@Override
-	public L autoConfigFirst(Class<?>... autoConfigurations) {
-		this.autoConfigurations.addAll(0, Arrays.asList(autoConfigurations));
+	public T register(Configurations configurations) {
+		Assert.notNull(configurations, "Configurations must not be null");
+		this.configurations.add(configurations);
 		return self();
 	}
 
@@ -158,32 +178,43 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	 * @return this instance
 	 * @see HidePackagesClassLoader
 	 */
-	@Override
-	public L classLoader(ClassLoader classLoader) {
+	public T classLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		return self();
 	}
 
+	/**
+	 * Configure the
+	 * {@link org.springframework.context.ConfigurableApplicationContext#setParent(ApplicationContext)
+	 * parent} of the {@link ApplicationContext}.
+	 *
+	 * @param parent the parent
+	 * @return this instance
+	 */
+	public T parent(ApplicationContext parent) {
+		this.parent = parent;
+		return self();
+	}
+
 	@SuppressWarnings("unchecked")
-	protected final L self() {
-		return (L) this;
+	protected final T self() {
+		return (T) this;
 	}
 
 	/**
 	 * Create and refresh a new {@link ApplicationContext} based on the current state of
-	 * this loader. The context is consumed by the specified {@link ContextConsumer} and
-	 * closed upon completion.
+	 * this loader. The context is consumed by the specified {@code consumer} and closed
+	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	@Override
-	public void load(ContextConsumer consumer) {
+	public void load(ContextConsumer<C> consumer) {
 		doLoad(consumer::accept);
 	}
 
-	protected void doLoad(ContextHandler<T> contextHandler) {
+	protected void doLoad(ContextHandler<C> contextHandler) {
 		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
 			try {
-				T ctx = handler.load();
+				C ctx = handler.load();
 				contextHandler.handle(ctx);
 			}
 			catch (RuntimeException ex) {
@@ -203,7 +234,6 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	 * specified {@link Consumer} with no expectation on the type of the exception.
 	 * @param consumer the consumer of the failure
 	 */
-	@Override
 	public void loadAndFail(Consumer<Throwable> consumer) {
 		loadAndFail(Throwable.class, consumer);
 	}
@@ -218,7 +248,6 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 	 * @param consumer the consumer of the failure
 	 * @param <E> the expected type of the failure
 	 */
-	@Override
 	public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
 			Consumer<E> consumer) {
 		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
@@ -232,8 +261,8 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 		}
 	}
 
-	private T configureApplicationContext() {
-		T context = AbstractContextLoader.this.contextSupplier.get();
+	private C configureApplicationContext() {
+		C context = ContextTester.this.contextFactory.get();
 		if (this.parent != null) {
 			context.setParent(this.parent);
 		}
@@ -241,19 +270,15 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 			Assert.isInstanceOf(DefaultResourceLoader.class, context);
 			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
 		}
-		if (!ObjectUtils.isEmpty(this.env)) {
-			TestPropertyValues.of(this.env.toArray(new String[this.env.size()]))
+		if (!ObjectUtils.isEmpty(this.environmentProperties)) {
+			TestPropertyValues
+					.of(this.environmentProperties
+							.toArray(new String[this.environmentProperties.size()]))
 					.applyTo(context);
 		}
-		if (!ObjectUtils.isEmpty(this.userConfigurations)) {
-			((AnnotationConfigRegistry) context).register(this.userConfigurations
-					.toArray(new Class<?>[this.userConfigurations.size()]));
-		}
-		if (!ObjectUtils.isEmpty(this.autoConfigurations)) {
-			LinkedHashSet<Class<?>> linkedHashSet = new LinkedHashSet<>(
-					this.autoConfigurations);
-			((AnnotationConfigRegistry) context).register(
-					linkedHashSet.toArray(new Class<?>[this.autoConfigurations.size()]));
+		Class<?>[] configurationClasses = Configurations.getClasses(this.configurations);
+		if (!ObjectUtils.isEmpty(configurationClasses)) {
+			((AnnotationConfigRegistry) context).register(configurationClasses);
 		}
 		return context;
 	}
@@ -282,12 +307,12 @@ class AbstractContextLoader<T extends ConfigurableApplicationContext, L extends 
 
 		ApplicationContextLifecycleHandler() {
 			this.customSystemProperties = new HashMap<>(
-					AbstractContextLoader.this.systemProperties);
+					ContextTester.this.systemProperties);
 		}
 
-		public T load() {
+		public C load() {
 			setCustomSystemProperties();
-			T context = configureApplicationContext();
+			C context = configureApplicationContext();
 			context.refresh();
 			this.context = context;
 			return context;

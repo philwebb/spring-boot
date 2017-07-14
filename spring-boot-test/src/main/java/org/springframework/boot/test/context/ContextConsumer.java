@@ -27,13 +27,13 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface ContextConsumer {
+public interface ContextConsumer<C extends ConfigurableApplicationContext> {
 
 	/**
 	 * Performs this operation on the supplied {@code context}.
 	 * @param context the application context to consume
 	 * @throws Throwable any exception that might occur in assertions
 	 */
-	void accept(ConfigurableApplicationContext context) throws Throwable;
+	void accept(C context) throws Throwable;
 
 }

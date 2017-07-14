@@ -27,10 +27,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class StandardContextLoader extends
-		AbstractContextLoader<AnnotationConfigApplicationContext, StandardContextLoader> {
+public class StandardApplicationContextTester extends
+		ContextTester<AnnotationConfigApplicationContext, StandardApplicationContextTester> {
 
-	public StandardContextLoader(
+	public StandardApplicationContextTester() {
+		this(AnnotationConfigApplicationContext::new);
+	}
+
+	public StandardApplicationContextTester(
 			Supplier<AnnotationConfigApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}

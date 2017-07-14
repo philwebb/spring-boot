@@ -28,7 +28,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.StandardApplicationContextTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -59,8 +60,8 @@ public class HazelcastAutoConfigurationClientTests {
 		}
 	}
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HazelcastAutoConfiguration.class);
+	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+			.register(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void systemProperty() throws IOException {
@@ -112,7 +113,7 @@ public class HazelcastAutoConfigurationClientTests {
 
 	@Test
 	public void clientConfigTakesPrecedence() {
-		this.contextLoader.config(HazelcastServerAndClientConfig.class)
+		this.contextLoader.register(HazelcastServerAndClientConfig.class)
 				.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);

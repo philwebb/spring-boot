@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.junit.Test;
 
-import org.springframework.boot.test.context.ContextLoader;
-import org.springframework.boot.test.context.ReactiveWebContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.ReactiveWebApplicationContextTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -39,8 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpHandlerAutoConfigurationTests {
 
-	private final ReactiveWebContextLoader contextLoader = ContextLoader.reactiveWeb()
-			.autoConfig(HttpHandlerAutoConfiguration.class);
+	private final ReactiveWebApplicationContextTester contextLoader = new ReactiveWebApplicationContextTester()
+			.register(AutoConfigurations.of(HttpHandlerAutoConfiguration.class));
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
@@ -53,9 +53,11 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		this.contextLoader.autoConfig(WebFluxAutoConfiguration.class).load(context -> {
-			assertThat(context.getBeansOfType(HttpHandler.class).size()).isEqualTo(1);
-		});
+		this.contextLoader.register(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.load(context -> {
+					assertThat(context.getBeansOfType(HttpHandler.class).size())
+							.isEqualTo(1);
+				});
 	}
 
 	@Configuration

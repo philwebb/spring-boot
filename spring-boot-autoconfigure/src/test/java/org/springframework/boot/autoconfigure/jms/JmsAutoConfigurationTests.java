@@ -26,8 +26,9 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.test.context.StandardApplicationContextTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -61,8 +62,9 @@ public class JmsAutoConfigurationTests {
 
 	private static final String ACTIVEMQ_NETWORK_URL = "tcp://localhost:61616";
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
+	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+			.register(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
+					JmsAutoConfiguration.class));
 
 	@Test
 	public void testDefaultJmsConfiguration() {

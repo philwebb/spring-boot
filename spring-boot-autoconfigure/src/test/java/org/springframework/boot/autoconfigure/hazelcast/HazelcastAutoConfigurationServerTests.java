@@ -27,7 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.test.context.ContextLoader;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.StandardApplicationContextTester;
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 import org.springframework.context.annotation.Bean;
@@ -45,8 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathExclusions("hazelcast-client-*.jar")
 public class HazelcastAutoConfigurationServerTests {
 
-	private final ContextLoader contextLoader = ContextLoader.standard()
-			.autoConfig(HazelcastAutoConfiguration.class);
+	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+			.register(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {
@@ -65,7 +66,6 @@ public class HazelcastAutoConfigurationServerTests {
 				.systemProperty(HazelcastServerConfiguration.CONFIG_SYSTEM_PROPERTY,
 						"classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
 				.load(context -> {
-
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					Map<String, QueueConfig> queueConfigs = hazelcastInstance.getConfig()

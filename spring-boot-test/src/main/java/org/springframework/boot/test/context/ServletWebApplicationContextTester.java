@@ -18,7 +18,7 @@ package org.springframework.boot.test.context;
 
 import java.util.function.Supplier;
 
-import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
@@ -29,23 +29,20 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public final class ServletWebContextLoader extends
-		AbstractContextLoader<AnnotationConfigWebApplicationContext, ServletWebContextLoader> {
+public final class ServletWebApplicationContextTester extends
+		ContextTester<AnnotationConfigWebApplicationContext, ServletWebApplicationContextTester> {
 
-	ServletWebContextLoader(
-			Supplier<AnnotationConfigWebApplicationContext> contextSupplier) {
-		super(contextSupplier);
+	public ServletWebApplicationContextTester() {
+		this(() -> {
+			AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+			context.setServletContext(new MockServletContext());
+			return context;
+		});
 	}
 
-	/**
-	 * Create and refresh a new {@link ConfigurableWebApplicationContext} based on the
-	 * current state of this loader. The context is consumed by the specified
-	 * {@link WebMvcContextConsumer consumer} and closed upon completion.
-	 * @param consumer the consumer of the created
-	 * {@link ConfigurableWebApplicationContext}
-	 */
-	public void loadWeb(WebMvcContextConsumer consumer) {
-		doLoad(consumer::accept);
+	public ServletWebApplicationContextTester(
+			Supplier<AnnotationConfigWebApplicationContext> contextSupplier) {
+		super(contextSupplier);
 	}
 
 }
