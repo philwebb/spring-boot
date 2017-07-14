@@ -16,14 +16,30 @@
 
 package org.springframework.boot.test.context;
 
-import org.springframework.context.ApplicationContext;
+import java.util.function.Supplier;
+
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
+ * A {@link AbstractApplicationContextTester ApplicationContext tester} for a standard,
+ * non-web environment {@link ConfigurableApplicationContext}.
+ *
+ * @author Stephane Nicoll
+ * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
-public interface AssertableApplicationContext extends ApplicationContext,
-		ApplicationContextAssertProvider<ConfigurableApplicationContext> {
+public class ApplicationContextTester extends
+		AbstractApplicationContextTester<ApplicationContextTester, ConfigurableApplicationContext, AssertableApplicationContext> {
+
+	public ApplicationContextTester() {
+		this(AnnotationConfigApplicationContext::new);
+	}
+
+	public ApplicationContextTester(
+			Supplier<ConfigurableApplicationContext> contextSupplier) {
+		super(contextSupplier);
+	}
 
 }

@@ -38,7 +38,7 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.WelcomePageHandlerMapping;
-import org.springframework.boot.test.context.ServletWebApplicationContextTester;
+import org.springframework.boot.test.context.WebApplicationContextTester;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.filter.OrderedHttpPutFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -114,7 +114,7 @@ public class WebMvcAutoConfigurationTests {
 
 	private static final MockServletWebServerFactory webServerFactory = new MockServletWebServerFactory();
 
-	private final ServletWebApplicationContextTester contextLoader = new ServletWebApplicationContextTester()
+	private final WebApplicationContextTester contextLoader = new WebApplicationContextTester()
 			.register(AutoConfigurations.of(WebMvcAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class))

@@ -22,7 +22,7 @@ import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.StandardApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HazelcastAutoConfigurationTests {
 
-	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
 			.register(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test

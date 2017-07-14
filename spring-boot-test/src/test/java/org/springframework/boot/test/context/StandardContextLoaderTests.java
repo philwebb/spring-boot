@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link StandardApplicationContextTester}.
+ * Tests for {@link ApplicationContextTester}.
  *
  * @author Stephane Nicoll
  */
@@ -43,7 +43,7 @@ public class StandardContextLoaderTests {
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester(
+	private final ApplicationContextTester contextLoader = new ApplicationContextTester(
 			AnnotationConfigApplicationContext::new);
 
 	@Test

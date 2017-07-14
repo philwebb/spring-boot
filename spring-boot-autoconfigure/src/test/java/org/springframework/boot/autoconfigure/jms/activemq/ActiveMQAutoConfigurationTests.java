@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.context.StandardApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mockingDetails;
  */
 public class ActiveMQAutoConfigurationTests {
 
-	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
 			.register(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
 					JmsAutoConfiguration.class));
 
@@ -102,7 +102,7 @@ public class ActiveMQAutoConfigurationTests {
 							.getBean(ConnectionFactory.class);
 					assertThat(connectionFactory)
 							.isInstanceOf(PooledConnectionFactory.class);
-					context.close();
+					context.getSourceApplicationContext().close();
 					assertThat(connectionFactory.createConnection()).isNull();
 				});
 	}

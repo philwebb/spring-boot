@@ -60,7 +60,7 @@ import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ContextConsumer;
-import org.springframework.boot.test.context.StandardApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,7 +83,7 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	public final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+	public final ApplicationContextTester contextLoader = new ApplicationContextTester()
 			.register(AutoConfigurations.of(HealthIndicatorAutoConfiguration.class,
 					ManagementServerProperties.class));
 

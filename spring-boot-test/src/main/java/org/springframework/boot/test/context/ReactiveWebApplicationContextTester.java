@@ -18,26 +18,27 @@ package org.springframework.boot.test.context;
 
 import java.util.function.Supplier;
 
+import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 
 /**
- * A {@link ContextLoader} that simulates a {@link GenericReactiveWebApplicationContext}
- * which can be useful to test components that require a reactive web application.
+ * A {@link AbstractApplicationContextTester ApplicationContext tester} for a
+ * {@link ConfigurableReactiveWebApplicationContext}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public final class ReactiveWebApplicationContextTester extends
-		ContextTester<AssertableReactiveWebApplicationContext, ReactiveWebApplicationContextTester> {
+		AbstractApplicationContextTester<ReactiveWebApplicationContextTester, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
 	public ReactiveWebApplicationContextTester() {
-		this(AssertableReactiveWebApplicationContext
-				.from(GenericReactiveWebApplicationContext::new));
+		this(GenericReactiveWebApplicationContext::new);
 	}
 
 	public ReactiveWebApplicationContextTester(
-			Supplier<AssertableReactiveWebApplicationContext> contextSupplier) {
+			Supplier<ConfigurableReactiveWebApplicationContext> contextSupplier) {
 		super(contextSupplier);
 	}
 

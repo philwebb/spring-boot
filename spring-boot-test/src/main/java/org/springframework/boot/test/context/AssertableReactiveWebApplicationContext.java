@@ -16,24 +16,14 @@
 
 package org.springframework.boot.test.context;
 
-import java.util.function.Supplier;
-
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 
 /**
- * @author pwebb
+ * @author Phillip Webb
  */
-public interface AssertableReactiveWebApplicationContext
-		extends AssertableApplicationContext, ConfigurableReactiveWebApplicationContext {
-
-	/**
-	 * @param object
-	 * @return
-	 */
-	static Supplier<AssertableReactiveWebApplicationContext> from(
-			Supplier<ConfigurableReactiveWebApplicationContext> supplier) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
+public interface AssertableReactiveWebApplicationContext extends
+		ApplicationContextAssertProvider<ConfigurableReactiveWebApplicationContext>,
+		ReactiveWebApplicationContext {
 
 }

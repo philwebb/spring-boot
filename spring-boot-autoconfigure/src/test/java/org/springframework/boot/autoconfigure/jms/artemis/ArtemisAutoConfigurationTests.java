@@ -43,7 +43,7 @@ import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.test.context.StandardApplicationContextTester;
+import org.springframework.boot.test.context.ApplicationContextTester;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -66,7 +66,7 @@ public class ArtemisAutoConfigurationTests {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final StandardApplicationContextTester contextLoader = new StandardApplicationContextTester()
+	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
 			.register(AutoConfigurations.of(ArtemisAutoConfiguration.class,
 					JmsAutoConfiguration.class));
 

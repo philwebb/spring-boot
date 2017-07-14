@@ -16,24 +16,13 @@
 
 package org.springframework.boot.test.context;
 
-import java.util.function.Supplier;
-
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * @author pwebb
  */
-public interface AssertableWebApplicationContext
-		extends AssertableApplicationContext, ConfigurableWebApplicationContext {
-
-	/**
-	 * @param object
-	 * @return
-	 */
-	static Supplier<AssertableWebApplicationContext> from(
-			Supplier<ConfigurableWebApplicationContext> supplier) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
+public interface AssertableServletWebApplicationContext
+		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>,
+		ConfigurableWebApplicationContext {
 
 }

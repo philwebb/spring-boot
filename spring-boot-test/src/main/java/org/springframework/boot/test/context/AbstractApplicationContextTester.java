@@ -28,11 +28,8 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigRegistry;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -88,13 +85,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * instead: it expects the startup of the context to fail and call the {@link Consumer}
  * with the exception for further assertions.
  *
- * @param <C> the type of the context to be loaded
- * @param <T> the type of the loader
+ * @param <SELF> The "self" type for this tester
+ * @param <C> The context type
+ * @param <A> The application context assertion provider
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public abstract class ContextTester<C extends AssertableApplicationContext, T extends ContextTester<C, T>> {
+public abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
@@ -108,7 +106,8 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 
 	private ApplicationContext parent;
 
-	protected ContextTester(Supplier<C> contextFactory) {
+	protected AbstractApplicationContextTester(Supplier<C> contextFactory) {
+		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		this.contextFactory = contextFactory;
 	}
 
@@ -120,7 +119,7 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * @param value the value (can be null to remove any existing customization)
 	 * @return this instance
 	 */
-	public T systemProperty(String key, String value) {
+	public SELF systemProperty(String key, String value) {
 		Assert.notNull(key, "Key must not be null");
 		if (value != null) {
 			this.systemProperties.put(key, value);
@@ -139,7 +138,7 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * environment
 	 * @return this instance
 	 */
-	public T env(String... pairs) {
+	public SELF env(String... pairs) {
 		if (!ObjectUtils.isEmpty(pairs)) {
 			this.environmentProperties.addAll(Arrays.asList(pairs));
 		}
@@ -151,7 +150,7 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * @param configurationClasses the user configuration classes to add
 	 * @return this instance
 	 */
-	public T register(Class<?>... configurationClasses) {
+	public SELF register(Class<?>... configurationClasses) {
 		return register(UserConfigurations.of(configurationClasses));
 	}
 
@@ -160,7 +159,7 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * @param configurations the configurations to add
 	 * @return this instance
 	 */
-	public T register(Configurations configurations) {
+	public SELF register(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
 		this.configurations.add(configurations);
 		return self();
@@ -174,7 +173,7 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * @return this instance
 	 * @see HidePackagesClassLoader
 	 */
-	public T classLoader(ClassLoader classLoader) {
+	public SELF classLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		return self();
 	}
@@ -187,14 +186,14 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * @param parent the parent
 	 * @return this instance
 	 */
-	public T parent(ApplicationContext parent) {
+	public SELF parent(ApplicationContext parent) {
 		this.parent = parent;
 		return self();
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final T self() {
-		return (T) this;
+	protected final SELF self() {
+		return (SELF) this;
 	}
 
 	/**
@@ -203,14 +202,14 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	public void load(ContextConsumer<C> consumer) {
+	public void load(ContextConsumer<A> consumer) {
 		doLoad(consumer::accept);
 	}
 
-	protected void doLoad(ContextHandler<C> contextHandler) {
+	protected void doLoad(ContextHandler<A> contextHandler) {
 		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
 			try {
-				C ctx = handler.load();
+				A ctx = handler.load();
 				contextHandler.handle(ctx);
 			}
 			catch (RuntimeException ex) {
@@ -257,26 +256,28 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 		}
 	}
 
-	private C configureApplicationContext() {
-		C context = ContextTester.this.contextFactory.get();
-		if (this.parent != null) {
-			context.setParent(this.parent);
-		}
-		if (this.classLoader != null) {
-			Assert.isInstanceOf(DefaultResourceLoader.class, context);
-			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
-		}
-		if (!ObjectUtils.isEmpty(this.environmentProperties)) {
-			TestPropertyValues
-					.of(this.environmentProperties
-							.toArray(new String[this.environmentProperties.size()]))
-					.applyTo(context);
-		}
-		Class<?>[] configurationClasses = Configurations.getClasses(this.configurations);
-		if (!ObjectUtils.isEmpty(configurationClasses)) {
-			((AnnotationConfigRegistry) context).register(configurationClasses);
-		}
-		return context;
+	private A configureApplicationContext() {
+		throw new IllegalStateException();
+		// C context = ContextTester.this.contextFactory.get();
+		// if (this.parent != null) {
+		// context.setParent(this.parent);
+		// }
+		// if (this.classLoader != null) {
+		// Assert.isInstanceOf(DefaultResourceLoader.class, context);
+		// ((DefaultResourceLoader) context).setClassLoader(this.classLoader);
+		// }
+		// if (!ObjectUtils.isEmpty(this.environmentProperties)) {
+		// TestPropertyValues
+		// .of(this.environmentProperties
+		// .toArray(new String[this.environmentProperties.size()]))
+		// .applyTo(context);
+		// }
+		// Class<?>[] configurationClasses =
+		// Configurations.getClasses(this.configurations);
+		// if (!ObjectUtils.isEmpty(configurationClasses)) {
+		// ((AnnotationConfigRegistry) context).register(configurationClasses);
+		// }
+		// return context;
 	}
 
 	/**
@@ -303,15 +304,16 @@ public abstract class ContextTester<C extends AssertableApplicationContext, T ex
 
 		ApplicationContextLifecycleHandler() {
 			this.customSystemProperties = new HashMap<>(
-					ContextTester.this.systemProperties);
+					AbstractApplicationContextTester.this.systemProperties);
 		}
 
-		public C load() {
-			setCustomSystemProperties();
-			C context = configureApplicationContext();
-			context.refresh();
-			this.context = context;
-			return context;
+		public A load() {
+			throw new IllegalStateException();
+			// setCustomSystemProperties();
+			// C context = configureApplicationContext();
+			// context.refresh();
+			// this.context = context;
+			// return context;
 		}
 
 		@Override

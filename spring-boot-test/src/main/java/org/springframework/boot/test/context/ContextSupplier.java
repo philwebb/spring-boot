@@ -16,14 +16,11 @@
 
 package org.springframework.boot.test.context;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * @author Phillip Webb
- * @since 2.0.0
+ * @author pwebb
  */
-public interface AssertableApplicationContext extends ApplicationContext,
-		ApplicationContextAssertProvider<ConfigurableApplicationContext> {
+public interface ContextSupplier<C extends ConfigurableApplicationContext> {
 
 }

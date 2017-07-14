@@ -15,9 +15,20 @@
  */
 
 package org.springframework.boot.test.context;
+
+import org.assertj.core.api.AbstractAssert;
+
+import org.springframework.context.ApplicationContext;
+
 /**
- * @author pwebb
+ * @author Phillip Webb
+ * @since 2.0.0
  */
-public interface ApplicationContextAssert {
+public class ApplicationContextAssert<C extends ApplicationContext>
+		extends AbstractAssert<ApplicationContextAssert<C>, C> {
+
+	public ApplicationContextAssert(C actual, Class<?> selfType) {
+		super(actual, selfType);
+	}
 
 }
