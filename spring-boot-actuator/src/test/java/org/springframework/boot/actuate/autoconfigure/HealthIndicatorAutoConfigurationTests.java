@@ -90,19 +90,19 @@ public class HealthIndicatorAutoConfigurationTests {
 	@Test
 	public void defaultHealthIndicator() {
 		this.contextLoader.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabled() {
 		this.contextLoader.env("management.health.defaults.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
 		this.contextLoader.register(CustomHealthIndicator.class)
-				.env("management.health.defaults.enabled:false").load(context -> {
+				.env("management.health.defaults.enabled:false").run(context -> {
 					Map<String, HealthIndicator> beans = context
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
@@ -116,14 +116,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader
 				.env("management.health.defaults.enabled:false",
 						"management.health.diskspace.enabled:true")
-				.load(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
+				.run(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
 	public void redisHealthIndicator() {
 		this.contextLoader.register(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(RedisHealthIndicator.class));
+				.run(hasSingleHealthIndicator(RedisHealthIndicator.class));
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.env("management.health.redis.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.register(AutoConfigurations.of(MongoAutoConfiguration.class,
 						MongoDataAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(MongoHealthIndicator.class));
+				.run(hasSingleHealthIndicator(MongoHealthIndicator.class));
 	}
 
 	@Test
@@ -150,14 +150,14 @@ public class HealthIndicatorAutoConfigurationTests {
 						MongoDataAutoConfiguration.class))
 				.env("management.health.mongo.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void combinedHealthIndicator() {
 		this.contextLoader.register(AutoConfigurations.of(MongoAutoConfiguration.class,
 				RedisAutoConfiguration.class, MongoDataAutoConfiguration.class,
-				SolrAutoConfiguration.class)).load(context -> {
+				SolrAutoConfiguration.class)).run(context -> {
 					Map<String, HealthIndicator> beans = context
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(4);
@@ -169,14 +169,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader
 				.register(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
+				.run(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
 	}
 
 	@Test
 	public void dataSourceHealthIndicatorWithSeveralDataSources() {
 		this.contextLoader
 				.register(EmbeddedDataSourceConfiguration.class, DataSourceConfig.class)
-				.env("management.health.diskspace.enabled:false").load(context -> {
+				.env("management.health.diskspace.enabled:false").run(context -> {
 					Map<String, HealthIndicator> beans = context
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
@@ -193,7 +193,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.register(EmbeddedDataSourceConfiguration.class,
 						RoutingDatasourceConfig.class)
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
+				.run(hasSingleHealthIndicator(DataSourceHealthIndicator.class));
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class HealthIndicatorAutoConfigurationTests {
 						HealthIndicatorAutoConfiguration.class)
 				.env("spring.datasource.test.validation-query:SELECT from FOOBAR",
 						"management.health.diskspace.enabled:false")
-				.load(context -> {
+				.run(context -> {
 					Map<String, HealthIndicator> beans = context
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
@@ -222,14 +222,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(EmbeddedDataSourceConfiguration.class)
 				.env("management.health.db.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void rabbitHealthIndicator() {
 		this.contextLoader.register(AutoConfigurations.of(RabbitAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(RabbitHealthIndicator.class));
+				.run(hasSingleHealthIndicator(RabbitHealthIndicator.class));
 	}
 
 	@Test
@@ -237,14 +237,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(RabbitAutoConfiguration.class))
 				.env("management.health.rabbit.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void solrHealthIndicator() {
 		this.contextLoader.register(AutoConfigurations.of(SolrAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(SolrHealthIndicator.class));
+				.run(hasSingleHealthIndicator(SolrHealthIndicator.class));
 	}
 
 	@Test
@@ -252,12 +252,12 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(SolrAutoConfiguration.class))
 				.env("management.health.solr.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void diskSpaceHealthIndicator() {
-		this.contextLoader.load(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
+		this.contextLoader.run(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
@@ -266,7 +266,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.register(AutoConfigurations.of(MailSenderAutoConfiguration.class))
 				.env("spring.mail.host:smtp.acme.org",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(MailHealthIndicator.class));
+				.run(hasSingleHealthIndicator(MailHealthIndicator.class));
 	}
 
 	@Test
@@ -276,7 +276,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.env("spring.mail.host:smtp.acme.org",
 						"management.health.mail.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
@@ -284,7 +284,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader
 				.register(AutoConfigurations.of(ActiveMQAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(JmsHealthIndicator.class));
+				.run(hasSingleHealthIndicator(JmsHealthIndicator.class));
 	}
 
 	@Test
@@ -293,7 +293,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.register(AutoConfigurations.of(ActiveMQAutoConfiguration.class))
 				.env("management.health.jms.enabled:false",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
@@ -305,7 +305,7 @@ public class HealthIndicatorAutoConfigurationTests {
 				.env("spring.data.elasticsearch.cluster-nodes:localhost:0",
 						"management.health.diskspace.enabled:false")
 				.systemProperty("es.set.netty.runtime.available.processors", "false")
-				.load(hasSingleHealthIndicator(ElasticsearchHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ElasticsearchHealthIndicator.class));
 	}
 
 	@Test
@@ -315,7 +315,7 @@ public class HealthIndicatorAutoConfigurationTests {
 						JestAutoConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
 				.systemProperty("es.set.netty.runtime.available.processors", "false")
-				.load(hasSingleHealthIndicator(ElasticsearchJestHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ElasticsearchJestHealthIndicator.class));
 	}
 
 	@Test
@@ -327,14 +327,14 @@ public class HealthIndicatorAutoConfigurationTests {
 				.env("management.health.elasticsearch.enabled:false",
 						"spring.data.elasticsearch.properties.path.home:target",
 						"management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void cassandraHealthIndicator() throws Exception {
 		this.contextLoader.register(AutoConfigurations.of(CassandraConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(CassandraHealthIndicator.class));
+				.run(hasSingleHealthIndicator(CassandraHealthIndicator.class));
 	}
 
 	@Test
@@ -342,14 +342,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(CassandraConfiguration.class))
 				.env("management.health.diskspace.enabled:false",
 						"management.health.cassandra.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void couchbaseHealthIndicator() throws Exception {
 		this.contextLoader.register(AutoConfigurations.of(CouchbaseConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(CouchbaseHealthIndicator.class));
+				.run(hasSingleHealthIndicator(CouchbaseHealthIndicator.class));
 	}
 
 	@Test
@@ -357,14 +357,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(CouchbaseConfiguration.class))
 				.env("management.health.diskspace.enabled:false",
 						"management.health.couchbase.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void ldapHealthIndicator() throws Exception {
 		this.contextLoader.register(AutoConfigurations.of(LdapConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(LdapHealthIndicator.class));
+				.run(hasSingleHealthIndicator(LdapHealthIndicator.class));
 	}
 
 	@Test
@@ -372,14 +372,14 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(LdapConfiguration.class))
 				.env("management.health.diskspace.enabled:false",
 						"management.health.ldap.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void neo4jHealthIndicator() throws Exception {
 		this.contextLoader.register(AutoConfigurations.of(Neo4jConfiguration.class))
 				.env("management.health.diskspace.enabled:false")
-				.load(hasSingleHealthIndicator(Neo4jHealthIndicator.class));
+				.run(hasSingleHealthIndicator(Neo4jHealthIndicator.class));
 	}
 
 	@Test
@@ -387,7 +387,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.contextLoader.register(AutoConfigurations.of(Neo4jConfiguration.class))
 				.env("management.health.diskspace.enabled:false",
 						"management.health.neo4j.enabled:false")
-				.load(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
+				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	private <C extends ApplicationContext> ContextConsumer<C> hasSingleHealthIndicator(

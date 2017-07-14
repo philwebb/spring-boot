@@ -122,7 +122,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handlerAdaptersCreated() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeanNamesForType(HandlerAdapter.class).length)
 					.isEqualTo(3);
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class)
@@ -133,7 +133,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handlerMappingsCreated() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeanNamesForType(HandlerMapping.class).length)
 					.isEqualTo(7);
 		});
@@ -141,7 +141,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMapping() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.get("/**")).hasSize(5);
@@ -158,7 +158,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void customResourceHandlerMapping() {
 		this.contextLoader.env("spring.mvc.static-path-pattern:/static/**")
-				.load(context -> {
+				.run(context -> {
 					Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 							context);
 					assertThat(mappingLocations.get("/static/**")).hasSize(5);
@@ -168,7 +168,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingOverrideWebjars() throws Exception {
-		this.contextLoader.register(WebJars.class).load(context -> {
+		this.contextLoader.register(WebJars.class).run(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.get("/webjars/**")).hasSize(1);
@@ -179,7 +179,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingOverrideAll() throws Exception {
-		this.contextLoader.register(AllResources.class).load(context -> {
+		this.contextLoader.register(AllResources.class).run(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.get("/**")).hasSize(1);
@@ -190,7 +190,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingDisabled() throws Exception {
-		this.contextLoader.env("spring.resources.add-mappings:false").load(context -> {
+		this.contextLoader.env("spring.resources.add-mappings:false").run(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.size()).isEqualTo(0);
@@ -199,7 +199,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerChainEnabled() throws Exception {
-		this.contextLoader.env("spring.resources.chain.enabled:true").load(context -> {
+		this.contextLoader.env("spring.resources.chain.enabled:true").run(context -> {
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(2);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);
 			assertThat(getResourceResolvers(context, "/**"))
@@ -217,7 +217,7 @@ public class WebMvcAutoConfigurationTests {
 				.env("spring.resources.chain.strategy.fixed.enabled:true",
 						"spring.resources.chain.strategy.fixed.version:test",
 						"spring.resources.chain.strategy.fixed.paths:/**/*.js")
-				.load(context -> {
+				.run(context -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**"))
 							.hasSize(2);
@@ -242,7 +242,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader
 				.env("spring.resources.chain.strategy.content.enabled:true",
 						"spring.resources.chain.strategy.content.paths:/**,/*.png")
-				.load(context -> {
+				.run(context -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**"))
 							.hasSize(2);
@@ -273,7 +273,7 @@ public class WebMvcAutoConfigurationTests {
 				"spring.resources.chain.strategy.fixed.paths:/**/*.js",
 				"spring.resources.chain.html-application-cache:true",
 				"spring.resources.chain.gzipped:true");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 			assertThat(getResourceResolvers(context, "/**"))
@@ -296,7 +296,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noLocaleResolver() throws Exception {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(LocaleResolver.class)).isEmpty();
 		});
 	}
@@ -305,7 +305,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideLocale() throws Exception {
 		this.contextLoader.env("spring.mvc.locale:en_UK",
 				"spring.mvc.locale-resolver=fixed");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -320,7 +320,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void useAcceptHeaderLocale() {
-		this.contextLoader.env("spring.mvc.locale:en_UK").load(context -> {
+		this.contextLoader.env("spring.mvc.locale:en_UK").run(context -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -335,7 +335,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void useDefaultLocaleIfAcceptHeaderNoSet() {
-		this.contextLoader.env("spring.mvc.locale:en_UK").load(context -> {
+		this.contextLoader.env("spring.mvc.locale:en_UK").run(context -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			LocaleResolver localeResolver = context.getBean(LocaleResolver.class);
@@ -348,7 +348,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noDateFormat() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			FormattingConversionService conversionService = context
 					.getBean(FormattingConversionService.class);
 			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -360,7 +360,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void overrideDateFormat() {
-		this.contextLoader.env("spring.mvc.date-format:dd*MM*yyyy").load(context -> {
+		this.contextLoader.env("spring.mvc.date-format:dd*MM*yyyy").run(context -> {
 			FormattingConversionService conversionService = context
 					.getBean(FormattingConversionService.class);
 			Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
@@ -371,7 +371,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void noMessageCodesResolver() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
 					.getMessageCodesResolver()).isNull();
 		});
@@ -381,7 +381,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideMessageCodesFormat() {
 		this.contextLoader
 				.env("spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBean(WebMvcAutoConfigurationAdapter.class)
 					.getMessageCodesResolver()).isNotNull();
 		});
@@ -389,7 +389,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void ignoreDefaultModelOnRedirectIsTrue() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			RequestMappingHandlerAdapter adapter = context
 					.getBean(RequestMappingHandlerAdapter.class);
 			assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
@@ -400,7 +400,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void overrideIgnoreDefaultModelOnRedirect() {
 		this.contextLoader.env("spring.mvc.ignore-default-model-on-redirect:false");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			RequestMappingHandlerAdapter adapter = context
 					.getBean(RequestMappingHandlerAdapter.class);
 			assertThat(adapter).extracting("ignoreDefaultModelOnRedirect")
@@ -410,7 +410,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customViewResolver() {
-		this.contextLoader.register(CustomViewResolver.class).load(context -> {
+		this.contextLoader.register(CustomViewResolver.class).run(context -> {
 			assertThat(context.getBean("viewResolver"))
 					.isInstanceOf(MyViewResolver.class);
 		});
@@ -419,7 +419,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void customContentNegotiatingViewResolver() throws Exception {
 		this.contextLoader.register(CustomContentNegotiatingViewResolver.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			Map<String, ContentNegotiatingViewResolver> beans = context
 					.getBeansOfType(ContentNegotiatingViewResolver.class);
 			assertThat(beans.size()).isEqualTo(1);
@@ -429,7 +429,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void faviconMapping() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(ResourceHttpRequestHandler.class)
 					.get("faviconRequestHandler")).isNotNull();
 			assertThat(context.getBeansOfType(SimpleUrlHandlerMapping.class)
@@ -443,7 +443,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void faviconMappingUsesStaticLocations() {
 		this.contextLoader.env("spring.resources.static-locations=classpath:/static");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(getFaviconMappingLocations(context).get("/**/favicon.ico"))
 					.hasSize(2);
 		});
@@ -451,7 +451,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void faviconMappingDisabled() throws IllegalAccessException {
-		this.contextLoader.env("spring.mvc.favicon.enabled:false").load(context -> {
+		this.contextLoader.env("spring.mvc.favicon.enabled:false").run(context -> {
 			assertThat(context.getBeansOfType(ResourceHttpRequestHandler.class)
 					.get("faviconRequestHandler")).isNull();
 			assertThat(context.getBeansOfType(SimpleUrlHandlerMapping.class)
@@ -461,7 +461,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void defaultAsyncRequestTimeout() throws Exception {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			RequestMappingHandlerAdapter adapter = context
 					.getBean(RequestMappingHandlerAdapter.class);
 			assertThat(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"))
@@ -471,7 +471,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customAsyncRequestTimeout() throws Exception {
-		this.contextLoader.env("spring.mvc.async.request-timeout:12345").load(context -> {
+		this.contextLoader.env("spring.mvc.async.request-timeout:12345").run(context -> {
 			RequestMappingHandlerAdapter adapter = context
 					.getBean(RequestMappingHandlerAdapter.class);
 			assertThat(ReflectionTestUtils.getField(adapter, "asyncRequestTimeout"))
@@ -481,7 +481,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customMediaTypes() throws Exception {
-		this.contextLoader.env("spring.mvc.mediaTypes.yaml:text/yaml").load(context -> {
+		this.contextLoader.env("spring.mvc.mediaTypes.yaml:text/yaml").run(context -> {
 			RequestMappingHandlerAdapter adapter = context
 					.getBean(RequestMappingHandlerAdapter.class);
 			ContentNegotiationManager contentNegotiationManager = (ContentNegotiationManager) ReflectionTestUtils
@@ -492,7 +492,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void httpPutFormContentFilterIsAutoConfigured() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
 					.hasSize(1);
 		});
@@ -501,7 +501,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpPutFormContentFilterCanBeOverridden() {
 		this.contextLoader.register(CustomHttpPutFormContentFilter.class)
-				.load(context -> {
+				.run(context -> {
 					assertThat(
 							context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
 									.hasSize(0);
@@ -513,7 +513,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpPutFormContentFilterCanBeDisabled() throws Exception {
 		this.contextLoader.env("spring.mvc.formcontent.putfilter.enabled=false");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(HttpPutFormContentFilter.class)).isEmpty();
 		});
 	}
@@ -521,7 +521,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void customConfigurableWebBindingInitializer() {
 		this.contextLoader.register(CustomConfigurableWebBindingInitializer.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class)
 					.getWebBindingInitializer())
 							.isInstanceOf(CustomWebBindingInitializer.class);
@@ -531,7 +531,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void customRequestMappingHandlerMapping() {
 		this.contextLoader.register(CustomRequestMappingHandlerMapping.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
 					.isInstanceOf(MyRequestMappingHandlerMapping.class);
 		});
@@ -540,7 +540,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void customRequestMappingHandlerAdapter() {
 		this.contextLoader.register(CustomRequestMappingHandlerAdapter.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
 					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
 		});
@@ -548,7 +548,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void multipleWebMvcRegistrations() {
-		this.contextLoader.register(MultipleWebMvcRegistrations.class).load(context -> {
+		this.contextLoader.register(MultipleWebMvcRegistrations.class).run(context -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
 					.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
@@ -558,7 +558,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void defaultLogResolvedException() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertExceptionResolverWarnLoggers(context,
 					warnLogger -> assertThat(warnLogger).isNull());
 		});
@@ -566,7 +566,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customLogResolvedException() {
-		this.contextLoader.env("spring.mvc.log-resolved-exception:true").load(context -> {
+		this.contextLoader.env("spring.mvc.log-resolved-exception:true").run(context -> {
 			assertExceptionResolverWarnLoggers(context,
 					warnLogger -> assertThat(warnLogger).isNotNull());
 		});
@@ -576,7 +576,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingProducesNotFoundResponseWhenThereIsNoWelcomePage() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/no-welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvcBuilders.webAppContextSetup(context).build()
@@ -590,7 +590,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader.env(
 				"spring.resources.static-locations:classpath:/welcome-page/",
 				"spring.mvc.static-path-pattern:/foo/**");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			WelcomePageHandlerMapping welcomePageHandlerMapping = context
 					.getBean(WelcomePageHandlerMapping.class);
 			assertThat(welcomePageHandlerMapping.getRootHandler()).isNull();
@@ -601,7 +601,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsThatAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -616,7 +616,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingDoesNotHandleRequestsThatDoNotAcceptTextHtml() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -629,7 +629,7 @@ public class WebMvcAutoConfigurationTests {
 	public void welcomePageMappingHandlesRequestsWithNoAcceptHeader() {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -643,7 +643,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page/");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -657,7 +657,7 @@ public class WebMvcAutoConfigurationTests {
 			throws Exception {
 		this.contextLoader
 				.env("spring.resources.static-locations:classpath:/welcome-page");
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(WelcomePageHandlerMapping.class))
 					.hasSize(1);
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -669,7 +669,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWhenNoValidatorShouldUseDefault() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.isEmpty();
@@ -682,7 +682,7 @@ public class WebMvcAutoConfigurationTests {
 	public void validatorWhenNoCustomizationShouldUseAutoConfigured() {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class));
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			String[] jsrValidatorBeans = context
 					.getBeanNamesForType(javax.validation.Validator.class);
 			String[] springValidatorBeans = context.getBeanNamesForType(Validator.class);
@@ -701,7 +701,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerShouldUseSpringValidator() {
-		this.contextLoader.register(MvcValidator.class).load(context -> {
+		this.contextLoader.register(MvcValidator.class).run(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.isEmpty();
@@ -714,7 +714,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerDoesNotExposeJsr303() {
-		this.contextLoader.register(MvcJsr303Validator.class).load(context -> {
+		this.contextLoader.register(MvcJsr303Validator.class).run(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.isEmpty();
@@ -732,7 +732,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.register(MvcValidator.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.hasSize(1);
@@ -754,7 +754,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.register(CustomSpringValidator.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			String[] jsrValidatorBeans = context
 					.getBeanNamesForType(javax.validation.Validator.class);
 			String[] springValidatorBeans = context.getBeanNamesForType(Validator.class);
@@ -777,7 +777,7 @@ public class WebMvcAutoConfigurationTests {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.register(CustomJsr303Validator.class);
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			String[] jsrValidatorBeans = context
 					.getBeanNamesForType(javax.validation.Validator.class);
@@ -795,7 +795,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpMessageConverterThatUsesConversionServiceDoesNotCreateACycle() {
 		// TODO load(ContextConsumer...) or load()
-		this.contextLoader.register(CustomHttpMessageConverter.class).load(context -> {
+		this.contextLoader.register(CustomHttpMessageConverter.class).run(context -> {
 		});
 	}
 

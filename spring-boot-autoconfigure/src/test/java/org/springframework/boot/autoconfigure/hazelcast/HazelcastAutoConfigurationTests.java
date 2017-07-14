@@ -40,7 +40,7 @@ public class HazelcastAutoConfigurationTests {
 	@Test
 	public void defaultConfigFile() throws IOException {
 		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			HazelcastInstance hazelcastInstance = context
 					.getBean(HazelcastInstance.class);
 			assertThat(hazelcastInstance.getConfig().getConfigurationUrl())

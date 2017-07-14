@@ -44,7 +44,7 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		this.contextLoader.register(CustomHttpHandler.class).load(context -> {
+		this.contextLoader.register(CustomHttpHandler.class).run(context -> {
 			assertThat(context.getBeansOfType(HttpHandler.class)).hasSize(1);
 			assertThat(context.getBean(HttpHandler.class))
 					.isSameAs(context.getBean("customHttpHandler"));
@@ -54,7 +54,7 @@ public class HttpHandlerAutoConfigurationTests {
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
 		this.contextLoader.register(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.load(context -> {
+				.run(context -> {
 					assertThat(context.getBeansOfType(HttpHandler.class).size())
 							.isEqualTo(1);
 				});

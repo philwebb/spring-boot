@@ -45,7 +45,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(ServletRegistrationBean.class)).hasSize(1);
 		});
 	}
@@ -62,7 +62,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customPath() {
-		this.contextLoader.env("spring.webservices.path=/valid").load(context -> {
+		this.contextLoader.env("spring.webservices.path=/valid").run(context -> {
 			ServletRegistrationBean<?> servletRegistrationBean = context
 					.getBean(ServletRegistrationBean.class);
 			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
@@ -71,7 +71,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		this.contextLoader.env("spring.webservices.path=/valid/").load(context -> {
+		this.contextLoader.env("spring.webservices.path=/valid/").run(context -> {
 			ServletRegistrationBean<?> servletRegistrationBean = context
 					.getBean(ServletRegistrationBean.class);
 			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
@@ -81,7 +81,7 @@ public class WebServicesAutoConfigurationTests {
 	@Test
 	public void customLoadOnStartup() {
 		this.contextLoader.env("spring.webservices.servlet.load-on-startup=1")
-				.load(context -> {
+				.run(context -> {
 					ServletRegistrationBean<?> registrationBean = context
 							.getBean(ServletRegistrationBean.class);
 					assertThat(ReflectionTestUtils.getField(registrationBean,
@@ -92,7 +92,7 @@ public class WebServicesAutoConfigurationTests {
 	@Test
 	public void customInitParameters() {
 		this.contextLoader.env("spring.webservices.servlet.init.key1=value1",
-				"spring.webservices.servlet.init.key2=value2").load(context -> {
+				"spring.webservices.servlet.init.key2=value2").run(context -> {
 					ServletRegistrationBean<?> registrationBean = context
 							.getBean(ServletRegistrationBean.class);
 					assertThat(registrationBean.getInitParameters()).containsEntry("key1",

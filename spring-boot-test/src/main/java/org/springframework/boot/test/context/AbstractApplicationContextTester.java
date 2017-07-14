@@ -72,7 +72,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>
  * The test above includes an extra {@code UserConfig} class that is guaranteed to be
  * processed <strong>before</strong> any auto-configuration. Also, {@code spring.foo} has
- * been overwritten to {@code biz}. The {@link #load(ContextConsumer) load} method takes a
+ * been overwritten to {@code biz}. The {@link #run(ContextConsumer) load} method takes a
  * consumer that can use the context to assert its state. Upon completion, the context is
  * automatically closed.
  *
@@ -91,16 +91,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+
+	private final Supplier<C> contextFactory;
 
 	private final Map<String, String> systemProperties = new LinkedHashMap<>();
 
 	private final List<String> environmentProperties = new ArrayList<>();
 
 	private final List<Configurations> configurations = new ArrayList<>();
-
-	private final Supplier<C> contextFactory;
 
 	private ClassLoader classLoader;
 
@@ -202,7 +203,7 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	public void load(ContextConsumer<A> consumer) {
+	public void run(ContextConsumer<A> consumer) {
 		doLoad(consumer::accept);
 	}
 

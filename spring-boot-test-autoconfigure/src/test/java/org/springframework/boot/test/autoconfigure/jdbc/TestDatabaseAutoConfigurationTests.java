@@ -43,7 +43,7 @@ public class TestDatabaseAutoConfigurationTests {
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		this.contextLoader.load(context -> {
+		this.contextLoader.run(context -> {
 			assertThat(context.getBeansOfType(DataSource.class)).isEmpty();
 		});
 	}
@@ -51,11 +51,11 @@ public class TestDatabaseAutoConfigurationTests {
 	@Test
 	public void replaceWithUniqueDatabase() {
 		this.contextLoader.register(ExistingDataSourceConfiguration.class)
-				.load(context -> {
+				.run(context -> {
 					DataSource datasource = context.getBean(DataSource.class);
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 					jdbcTemplate.execute("create table example (id int, name varchar);");
-					this.contextLoader.load(anotherContext -> {
+					this.contextLoader.run(anotherContext -> {
 						DataSource anotherDatasource = anotherContext
 								.getBean(DataSource.class);
 						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(

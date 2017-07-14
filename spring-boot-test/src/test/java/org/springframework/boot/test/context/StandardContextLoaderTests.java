@@ -50,7 +50,7 @@ public class StandardContextLoaderTests {
 	public void systemPropertyIsSetAndRemoved() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		this.contextLoader.systemProperty(key, "value").load(context -> {
+		this.contextLoader.systemProperty(key, "value").run(context -> {
 			assertThat(System.getProperties().containsKey(key)).isTrue();
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		});
@@ -73,7 +73,7 @@ public class StandardContextLoaderTests {
 		System.setProperty(key, "value");
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-			this.contextLoader.systemProperty(key, "newValue").load(context -> {
+			this.contextLoader.systemProperty(key, "newValue").run(context -> {
 				assertThat(System.getProperties().getProperty(key)).isEqualTo("newValue");
 			});
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
@@ -88,7 +88,7 @@ public class StandardContextLoaderTests {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
 		this.contextLoader.systemProperty(key, "value").systemProperty(key, null)
-				.load(context -> {
+				.run(context -> {
 					assertThat(System.getProperties().containsKey(key)).isFalse();
 				});
 	}
@@ -101,7 +101,7 @@ public class StandardContextLoaderTests {
 
 	@Test
 	public void envIsAdditive() {
-		this.contextLoader.env("test.foo=1").env("test.bar=2").load(context -> {
+		this.contextLoader.env("test.foo=1").env("test.bar=2").run(context -> {
 			ConfigurableEnvironment environment = context
 					.getBean(ConfigurableEnvironment.class);
 			assertThat(environment.getProperty("test.foo", Integer.class)).isEqualTo(1);
@@ -112,13 +112,13 @@ public class StandardContextLoaderTests {
 	@Test
 	public void envOverridesExistingKey() {
 		this.contextLoader.env("test.foo=1").env("test.foo=2")
-				.load(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
+				.run(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
 						.getProperty("test.foo", Integer.class)).isEqualTo(2));
 	}
 
 	@Test
 	public void configurationIsProcessedInOrder() {
-		this.contextLoader.register(ConfigA.class, AutoConfigA.class).load(
+		this.contextLoader.register(ConfigA.class, AutoConfigA.class).run(
 				context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	}
 
@@ -131,7 +131,7 @@ public class StandardContextLoaderTests {
 	@Test
 	public void configurationIsAdditive() {
 		this.contextLoader.register(AutoConfigA.class).register(AutoConfigB.class)
-				.load(context -> {
+				.run(context -> {
 					assertThat(context.containsBean("a")).isTrue();
 					assertThat(context.containsBean("b")).isTrue();
 				});
@@ -182,7 +182,7 @@ public class StandardContextLoaderTests {
 		this.contextLoader
 				.classLoader(
 						new HidePackagesClassLoader(Gson.class.getPackage().getName()))
-				.load(context -> {
+				.run(context -> {
 					try {
 						ClassUtils.forName(Gson.class.getName(),
 								context.getClassLoader());

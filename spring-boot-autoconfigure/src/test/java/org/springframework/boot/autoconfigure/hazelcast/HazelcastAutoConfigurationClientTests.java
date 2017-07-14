@@ -69,7 +69,7 @@ public class HazelcastAutoConfigurationClientTests {
 				.systemProperty(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY,
 						"classpath:org/springframework/boot/autoconfigure/hazelcast/"
 								+ "hazelcast-client-specific.xml")
-				.load(context -> {
+				.run(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					assertThat(hazelcastInstance)
@@ -83,7 +83,7 @@ public class HazelcastAutoConfigurationClientTests {
 		this.contextLoader
 				.env("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
 						+ "hazelcast/hazelcast-client-specific.xml")
-				.load(context -> {
+				.run(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					assertThat(hazelcastInstance)
@@ -95,7 +95,7 @@ public class HazelcastAutoConfigurationClientTests {
 	@Test
 	public void explicitConfigUrl() throws IOException {
 		this.contextLoader.env("spring.hazelcast.config=hazelcast-client-default.xml")
-				.load(context -> {
+				.run(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					assertThat(hazelcastInstance)
@@ -114,7 +114,7 @@ public class HazelcastAutoConfigurationClientTests {
 	@Test
 	public void clientConfigTakesPrecedence() {
 		this.contextLoader.register(HazelcastServerAndClientConfig.class)
-				.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
+				.env("spring.hazelcast.config=this-is-ignored.xml").run(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);
 					assertThat(hazelcastInstance)
