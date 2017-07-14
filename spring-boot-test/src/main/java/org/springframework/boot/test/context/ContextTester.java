@@ -146,10 +146,6 @@ public abstract class ContextTester<C extends ConfigurableApplicationContext, T 
 		return self();
 	}
 
-	public T config(Class<?>... configurationClasses) {
-		return register(configurationClasses);
-	}
-
 	/**
 	 * Register the specified user configuration classes.
 	 * @param configurationClasses the user configuration classes to add
