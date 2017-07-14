@@ -118,7 +118,7 @@ public class WebMvcAutoConfigurationTests {
 			.register(AutoConfigurations.of(WebMvcAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class,
 					PropertyPlaceholderAutoConfiguration.class))
-			.config(Config.class);
+			.register(Config.class);
 
 	@Test
 	public void handlerAdaptersCreated() {
@@ -168,7 +168,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingOverrideWebjars() throws Exception {
-		this.contextLoader.config(WebJars.class).load(context -> {
+		this.contextLoader.register(WebJars.class).load(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.get("/webjars/**")).hasSize(1);
@@ -179,7 +179,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void resourceHandlerMappingOverrideAll() throws Exception {
-		this.contextLoader.config(AllResources.class).load(context -> {
+		this.contextLoader.register(AllResources.class).load(context -> {
 			Map<String, List<Resource>> mappingLocations = getResourceMappingLocations(
 					context);
 			assertThat(mappingLocations.get("/**")).hasSize(1);
@@ -410,7 +410,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customViewResolver() {
-		this.contextLoader.config(CustomViewResolver.class).load(context -> {
+		this.contextLoader.register(CustomViewResolver.class).load(context -> {
 			assertThat(context.getBean("viewResolver"))
 					.isInstanceOf(MyViewResolver.class);
 		});
@@ -418,7 +418,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customContentNegotiatingViewResolver() throws Exception {
-		this.contextLoader.config(CustomContentNegotiatingViewResolver.class);
+		this.contextLoader.register(CustomContentNegotiatingViewResolver.class);
 		this.contextLoader.load(context -> {
 			Map<String, ContentNegotiatingViewResolver> beans = context
 					.getBeansOfType(ContentNegotiatingViewResolver.class);
@@ -500,11 +500,14 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void httpPutFormContentFilterCanBeOverridden() {
-		this.contextLoader.config(CustomHttpPutFormContentFilter.class).load(context -> {
-			assertThat(context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
-					.hasSize(0);
-			assertThat(context.getBeansOfType(HttpPutFormContentFilter.class)).hasSize(1);
-		});
+		this.contextLoader.register(CustomHttpPutFormContentFilter.class)
+				.load(context -> {
+					assertThat(
+							context.getBeansOfType(OrderedHttpPutFormContentFilter.class))
+									.hasSize(0);
+					assertThat(context.getBeansOfType(HttpPutFormContentFilter.class))
+							.hasSize(1);
+				});
 	}
 
 	@Test
@@ -517,7 +520,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customConfigurableWebBindingInitializer() {
-		this.contextLoader.config(CustomConfigurableWebBindingInitializer.class);
+		this.contextLoader.register(CustomConfigurableWebBindingInitializer.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class)
 					.getWebBindingInitializer())
@@ -527,7 +530,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customRequestMappingHandlerMapping() {
-		this.contextLoader.config(CustomRequestMappingHandlerMapping.class);
+		this.contextLoader.register(CustomRequestMappingHandlerMapping.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
 					.isInstanceOf(MyRequestMappingHandlerMapping.class);
@@ -536,7 +539,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customRequestMappingHandlerAdapter() {
-		this.contextLoader.config(CustomRequestMappingHandlerAdapter.class);
+		this.contextLoader.register(CustomRequestMappingHandlerAdapter.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
 					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
@@ -545,7 +548,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void multipleWebMvcRegistrations() {
-		this.contextLoader.config(MultipleWebMvcRegistrations.class).load(context -> {
+		this.contextLoader.register(MultipleWebMvcRegistrations.class).load(context -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
 					.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
@@ -698,7 +701,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerShouldUseSpringValidator() {
-		this.contextLoader.config(MvcValidator.class).load(context -> {
+		this.contextLoader.register(MvcValidator.class).load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.isEmpty();
@@ -711,7 +714,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerDoesNotExposeJsr303() {
-		this.contextLoader.config(MvcJsr303Validator.class).load(context -> {
+		this.contextLoader.register(MvcJsr303Validator.class).load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
 					.isEmpty();
@@ -728,7 +731,7 @@ public class WebMvcAutoConfigurationTests {
 	public void validatorWithConfigurerTakesPrecedence() {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.config(MvcValidator.class);
+				.register(MvcValidator.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).hasSize(1);
 			assertThat(context.getBeansOfType(javax.validation.Validator.class))
@@ -750,7 +753,7 @@ public class WebMvcAutoConfigurationTests {
 	public void validatorWithCustomSpringValidatorIgnored() {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.config(CustomSpringValidator.class);
+				.register(CustomSpringValidator.class);
 		this.contextLoader.load(context -> {
 			String[] jsrValidatorBeans = context
 					.getBeanNamesForType(javax.validation.Validator.class);
@@ -773,7 +776,7 @@ public class WebMvcAutoConfigurationTests {
 	public void validatorWithCustomJsr303ValidatorExposedAsSpringValidator() {
 		this.contextLoader
 				.register(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.config(CustomJsr303Validator.class);
+				.register(CustomJsr303Validator.class);
 		this.contextLoader.load(context -> {
 			assertThat(context.getBeansOfType(ValidatorFactory.class)).isEmpty();
 			String[] jsrValidatorBeans = context
@@ -792,7 +795,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpMessageConverterThatUsesConversionServiceDoesNotCreateACycle() {
 		// TODO load(ContextConsumer...) or load()
-		this.contextLoader.config(CustomHttpMessageConverter.class).load(context -> {
+		this.contextLoader.register(CustomHttpMessageConverter.class).load(context -> {
 		});
 	}
 

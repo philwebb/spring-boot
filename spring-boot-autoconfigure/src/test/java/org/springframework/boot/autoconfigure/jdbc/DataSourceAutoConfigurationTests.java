@@ -209,7 +209,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDefaultDataSourceCanBeOverridden() throws Exception {
-		this.contextLoader.config(TestDataSourceConfiguration.class).load(context -> {
+		this.contextLoader.register(TestDataSourceConfiguration.class).load(context -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(dataSource).isInstanceOf(BasicDataSource.class);
 		});
@@ -217,7 +217,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceIsInitializedEarly() {
-		this.contextLoader.config(TestInitializedDataSourceConfiguration.class)
+		this.contextLoader.register(TestInitializedDataSourceConfiguration.class)
 				.env("spring.datasource.initialize=true")
 				.load(context -> assertThat(context
 						.getBean(TestInitializedDataSourceConfiguration.class).called)

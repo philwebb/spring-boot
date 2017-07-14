@@ -114,7 +114,7 @@ public class HazelcastAutoConfigurationServerTests {
 		HazelcastInstance existingHazelcastInstance = Hazelcast
 				.newHazelcastInstance(config);
 		try {
-			this.contextLoader.config(HazelcastConfigWithName.class)
+			this.contextLoader.register(HazelcastConfigWithName.class)
 					.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
 						HazelcastInstance hazelcastInstance = context
 								.getBean(HazelcastInstance.class);
@@ -132,7 +132,7 @@ public class HazelcastAutoConfigurationServerTests {
 
 	@Test
 	public void configInstanceWithoutName() {
-		this.contextLoader.config(HazelcastConfigNoName.class)
+		this.contextLoader.register(HazelcastConfigNoName.class)
 				.env("spring.hazelcast.config=this-is-ignored.xml").load(context -> {
 					HazelcastInstance hazelcastInstance = context
 							.getBean(HazelcastInstance.class);

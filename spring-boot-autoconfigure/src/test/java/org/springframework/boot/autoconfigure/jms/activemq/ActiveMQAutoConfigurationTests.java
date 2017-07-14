@@ -48,7 +48,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void brokerIsEmbeddedByDefault() {
-		this.contextLoader.config(EmptyConfiguration.class).load(context -> {
+		this.contextLoader.register(EmptyConfiguration.class).load(context -> {
 			ConnectionFactory connectionFactory = context
 					.getBean(ConnectionFactory.class);
 			assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
@@ -60,7 +60,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
-		this.contextLoader.config(CustomConnectionFactoryConfiguration.class)
+		this.contextLoader.register(CustomConnectionFactoryConfiguration.class)
 				.load(context -> assertThat(
 						mockingDetails(context.getBean(ConnectionFactory.class)).isMock())
 								.isTrue());
@@ -68,7 +68,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void customPooledConnectionFactoryConfiguration() {
-		this.contextLoader.config(EmptyConfiguration.class)
+		this.contextLoader.register(EmptyConfiguration.class)
 				.env("spring.activemq.pool.enabled:true",
 						"spring.activemq.pool.maxConnections:256",
 						"spring.activemq.pool.idleTimeout:512",
@@ -96,7 +96,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
-		this.contextLoader.config(EmptyConfiguration.class)
+		this.contextLoader.register(EmptyConfiguration.class)
 				.env("spring.activemq.pool.enabled:true").load(context -> {
 					ConnectionFactory connectionFactory = context
 							.getBean(ConnectionFactory.class);

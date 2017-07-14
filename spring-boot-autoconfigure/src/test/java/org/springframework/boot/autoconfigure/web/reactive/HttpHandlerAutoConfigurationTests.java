@@ -44,7 +44,7 @@ public class HttpHandlerAutoConfigurationTests {
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		this.contextLoader.config(CustomHttpHandler.class).load(context -> {
+		this.contextLoader.register(CustomHttpHandler.class).load(context -> {
 			assertThat(context.getBeansOfType(HttpHandler.class)).hasSize(1);
 			assertThat(context.getBean(HttpHandler.class))
 					.isSameAs(context.getBean("customHttpHandler"));
