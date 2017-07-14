@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TestDatabaseAutoConfigurationTests {
 
 	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
-			.register(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
@@ -50,7 +50,7 @@ public class TestDatabaseAutoConfigurationTests {
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		this.contextLoader.register(ExistingDataSourceConfiguration.class)
+		this.contextLoader.withUserConfiguration(ExistingDataSourceConfiguration.class)
 				.run(context -> {
 					DataSource datasource = context.getBean(DataSource.class);
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);

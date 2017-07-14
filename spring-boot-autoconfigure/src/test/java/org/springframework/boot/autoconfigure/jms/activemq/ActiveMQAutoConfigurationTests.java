@@ -43,12 +43,12 @@ import static org.mockito.Mockito.mockingDetails;
 public class ActiveMQAutoConfigurationTests {
 
 	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
-			.register(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class,
 					JmsAutoConfiguration.class));
 
 	@Test
 	public void brokerIsEmbeddedByDefault() {
-		this.contextLoader.register(EmptyConfiguration.class).run(context -> {
+		this.contextLoader.withUserConfiguration(EmptyConfiguration.class).run(context -> {
 			ConnectionFactory connectionFactory = context
 					.getBean(ConnectionFactory.class);
 			assertThat(connectionFactory).isInstanceOf(ActiveMQConnectionFactory.class);
@@ -60,7 +60,7 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void configurationBacksOffWhenCustomConnectionFactoryExists() {
-		this.contextLoader.register(CustomConnectionFactoryConfiguration.class)
+		this.contextLoader.withUserConfiguration(CustomConnectionFactoryConfiguration.class)
 				.run(context -> assertThat(
 						mockingDetails(context.getBean(ConnectionFactory.class)).isMock())
 								.isTrue());
@@ -68,8 +68,8 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void customPooledConnectionFactoryConfiguration() {
-		this.contextLoader.register(EmptyConfiguration.class)
-				.env("spring.activemq.pool.enabled:true",
+		this.contextLoader.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.activemq.pool.enabled:true",
 						"spring.activemq.pool.maxConnections:256",
 						"spring.activemq.pool.idleTimeout:512",
 						"spring.activemq.pool.expiryTimeout:4096",
@@ -96,8 +96,8 @@ public class ActiveMQAutoConfigurationTests {
 
 	@Test
 	public void pooledConnectionFactoryConfiguration() throws JMSException {
-		this.contextLoader.register(EmptyConfiguration.class)
-				.env("spring.activemq.pool.enabled:true").run(context -> {
+		this.contextLoader.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.activemq.pool.enabled:true").run(context -> {
 					ConnectionFactory connectionFactory = context
 							.getBean(ConnectionFactory.class);
 					assertThat(connectionFactory)

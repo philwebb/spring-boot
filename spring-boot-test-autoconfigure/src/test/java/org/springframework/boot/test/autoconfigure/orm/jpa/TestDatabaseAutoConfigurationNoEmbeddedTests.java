@@ -45,8 +45,8 @@ import static org.mockito.Mockito.mock;
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
 	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
-			.register(ExistingDataSourceConfiguration.class)
-			.register(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
+			.withUserConfiguration(ExistingDataSourceConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void applyAnyReplace() {
@@ -64,7 +64,7 @@ public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
 	@Test
 	public void applyNoReplace() {
-		this.contextLoader.env("spring.test.database.replace=NONE").run(context -> {
+		this.contextLoader.withPropertyValues("spring.test.database.replace=NONE").run(context -> {
 			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
 			assertThat(context.getBean(DataSource.class))
 					.isSameAs(context.getBean("myCustomDataSource"));

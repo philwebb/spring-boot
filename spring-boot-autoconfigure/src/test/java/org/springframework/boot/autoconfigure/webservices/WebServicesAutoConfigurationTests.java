@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WebServicesAutoConfigurationTests {
 
 	private final WebApplicationContextTester contextLoader = new WebApplicationContextTester()
-			.register(AutoConfigurations.of(WebServicesAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -52,7 +52,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customPathMustBeginWithASlash() {
-		this.contextLoader.env("spring.webservices.path=invalid")
+		this.contextLoader.withPropertyValues("spring.webservices.path=invalid")
 				.loadAndFail(BeanCreationException.class, (ex) -> {
 					System.out.println(ex.getMessage());
 					assertThat(ex.getMessage()).contains(
@@ -62,7 +62,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customPath() {
-		this.contextLoader.env("spring.webservices.path=/valid").run(context -> {
+		this.contextLoader.withPropertyValues("spring.webservices.path=/valid").run(context -> {
 			ServletRegistrationBean<?> servletRegistrationBean = context
 					.getBean(ServletRegistrationBean.class);
 			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
@@ -71,7 +71,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customPathWithTrailingSlash() {
-		this.contextLoader.env("spring.webservices.path=/valid/").run(context -> {
+		this.contextLoader.withPropertyValues("spring.webservices.path=/valid/").run(context -> {
 			ServletRegistrationBean<?> servletRegistrationBean = context
 					.getBean(ServletRegistrationBean.class);
 			assertThat(servletRegistrationBean.getUrlMappings()).contains("/valid/*");
@@ -80,7 +80,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customLoadOnStartup() {
-		this.contextLoader.env("spring.webservices.servlet.load-on-startup=1")
+		this.contextLoader.withPropertyValues("spring.webservices.servlet.load-on-startup=1")
 				.run(context -> {
 					ServletRegistrationBean<?> registrationBean = context
 							.getBean(ServletRegistrationBean.class);
@@ -91,7 +91,7 @@ public class WebServicesAutoConfigurationTests {
 
 	@Test
 	public void customInitParameters() {
-		this.contextLoader.env("spring.webservices.servlet.init.key1=value1",
+		this.contextLoader.withPropertyValues("spring.webservices.servlet.init.key1=value1",
 				"spring.webservices.servlet.init.key2=value2").run(context -> {
 					ServletRegistrationBean<?> registrationBean = context
 							.getBean(ServletRegistrationBean.class);

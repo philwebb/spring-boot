@@ -20,7 +20,6 @@ import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -28,10 +27,11 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,72 +97,52 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 
 	private final Supplier<C> contextFactory;
 
-	private final Map<String, String> systemProperties = new LinkedHashMap<>();
+	private final List<String> propertyValues = new ArrayList<>();
 
-	private final List<String> environmentProperties = new ArrayList<>();
-
-	private final List<Configurations> configurations = new ArrayList<>();
+	private final List<String> systemProperties = new ArrayList<>();
 
 	private ClassLoader classLoader;
 
 	private ApplicationContext parent;
 
+	private final List<Configurations> configurations = new ArrayList<>();
+
+	/**
+	 * Create a new {@link AbstractApplicationContextTester} instance.
+	 * @param contextFactory the factory used to create the actual context
+	 */
 	protected AbstractApplicationContextTester(Supplier<C> contextFactory) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		this.contextFactory = contextFactory;
 	}
 
 	/**
-	 * Set the specified system property prior to loading the context and restore its
-	 * previous value once the consumer has been invoked and the context closed. If the
-	 * {@code value} is {@code null} this removes any prior customization for that key.
-	 * @param key the system property
-	 * @param value the value (can be null to remove any existing customization)
-	 * @return this instance
-	 */
-	public SELF systemProperty(String key, String value) {
-		Assert.notNull(key, "Key must not be null");
-		if (value != null) {
-			this.systemProperties.put(key, value);
-		}
-		else {
-			this.systemProperties.remove(key);
-		}
-		return self();
-	}
-
-	/**
-	 * Add the specified property pairs. Key-value pairs can be specified with colon (":")
-	 * or equals ("=") separators. Override matching keys that might have been specified
-	 * previously.
+	 * Add the specified {@link Environment} property pairs. Key-value pairs can be
+	 * specified with colon (":") or equals ("=") separators. Override matching keys that
+	 * might have been specified previously.
 	 * @param pairs the key-value pairs for properties that need to be added to the
 	 * environment
 	 * @return this instance
+	 * @see TestPropertyValues
+	 * @see #withSystemProperties(String...)
 	 */
-	public SELF env(String... pairs) {
-		if (!ObjectUtils.isEmpty(pairs)) {
-			this.environmentProperties.addAll(Arrays.asList(pairs));
-		}
+	public SELF withPropertyValues(String... pairs) {
+		this.propertyValues.addAll(Arrays.asList(pairs));
 		return self();
 	}
 
 	/**
-	 * Register the specified user configuration classes.
-	 * @param configurationClasses the user configuration classes to add
+	 * Add the specified {@link System} property pairs. Key-value pairs can be specified
+	 * with colon (":") or equals ("=") separators. System properties are added before the
+	 * context is {@link #run(ContextConsumer) run} and restored when the context is
+	 * closed.
+	 * @param pairs the key-value pairs for properties that need to be added to the system
 	 * @return this instance
+	 * @see TestPropertyValues
+	 * @see #withSystemProperties(String...)
 	 */
-	public SELF register(Class<?>... configurationClasses) {
-		return register(UserConfigurations.of(configurationClasses));
-	}
-
-	/**
-	 * Register the specified configurations.
-	 * @param configurations the configurations to add
-	 * @return this instance
-	 */
-	public SELF register(Configurations configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
-		this.configurations.add(configurations);
+	public SELF withSystemProperties(String... pairs) {
+		this.systemProperties.addAll(Arrays.asList(pairs));
 		return self();
 	}
 
@@ -174,21 +154,40 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 	 * @return this instance
 	 * @see HidePackagesClassLoader
 	 */
-	public SELF classLoader(ClassLoader classLoader) {
+	public SELF withClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		return self();
 	}
 
 	/**
-	 * Configure the
-	 * {@link org.springframework.context.ConfigurableApplicationContext#setParent(ApplicationContext)
+	 * Configure the {@link ConfigurableApplicationContext#setParent(ApplicationContext)
 	 * parent} of the {@link ApplicationContext}.
-	 *
 	 * @param parent the parent
 	 * @return this instance
 	 */
-	public SELF parent(ApplicationContext parent) {
+	public SELF withParent(ApplicationContext parent) {
 		this.parent = parent;
+		return self();
+	}
+
+	/**
+	 * Register the specified user configuration classes with the
+	 * {@link ApplicationContext}.
+	 * @param configurationClasses the user configuration classes to add
+	 * @return this instance
+	 */
+	public SELF withUserConfiguration(Class<?>... configurationClasses) {
+		return withConfiguration(UserConfigurations.of(configurationClasses));
+	}
+
+	/**
+	 * Register the specified configuration classes with the {@link ApplicationContext}.
+	 * @param configurations the configurations to add
+	 * @return this instance
+	 */
+	public SELF withConfiguration(Configurations configurations) {
+		Assert.notNull(configurations, "Configurations must not be null");
+		this.configurations.add(configurations);
 		return self();
 	}
 
@@ -304,8 +303,8 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 		private ConfigurableApplicationContext context;
 
 		ApplicationContextLifecycleHandler() {
-			this.customSystemProperties = new HashMap<>(
-					AbstractApplicationContextTester.this.systemProperties);
+			this.customSystemProperties = new HashMap<>();
+			// AbstractApplicationContextTester.this.systemProperties);
 		}
 
 		public A load() {
