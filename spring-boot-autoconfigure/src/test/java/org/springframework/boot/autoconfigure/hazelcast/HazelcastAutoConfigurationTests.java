@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
 
+import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.Test;
 
@@ -34,16 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HazelcastAutoConfigurationTests {
 
-	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
+	private final ApplicationContextTester context = new ApplicationContextTester()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void defaultConfigFile() throws IOException {
 		// no hazelcast-client.xml and hazelcast.xml is present in root classpath
-		this.contextLoader.run(context -> {
-			HazelcastInstance hazelcastInstance = context
-					.getBean(HazelcastInstance.class);
-			assertThat(hazelcastInstance.getConfig().getConfigurationUrl())
+		this.context.run((loaded) -> {
+			Config config = loaded.getBean(HazelcastInstance.class).getConfig();
+			assertThat(config.getConfigurationUrl())
 					.isEqualTo(new ClassPathResource("hazelcast.xml").getURL());
 		});
 	}

@@ -39,24 +39,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class HttpHandlerAutoConfigurationTests {
 
-	private final ReactiveWebApplicationContextTester contextLoader = new ReactiveWebApplicationContextTester()
+	private final ReactiveWebApplicationContextTester context = new ReactiveWebApplicationContextTester()
 			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class));
 
 	@Test
 	public void shouldNotProcessIfExistingHttpHandler() {
-		this.contextLoader.withUserConfiguration(CustomHttpHandler.class).run(context -> {
-			assertThat(context.getBeansOfType(HttpHandler.class)).hasSize(1);
-			assertThat(context.getBean(HttpHandler.class))
-					.isSameAs(context.getBean("customHttpHandler"));
+		this.context.withUserConfiguration(CustomHttpHandler.class).run((loaded) -> {
+			assertThat(loaded).hasSingleBean(HttpHandler.class);
+			assertThat(loaded).getBean(HttpHandler.class)
+					.isSameAs(loaded.getBean("customHttpHandler"));
 		});
 	}
 
 	@Test
 	public void shouldConfigureHttpHandlerAnnotation() {
-		this.contextLoader.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.run(context -> {
-					assertThat(context.getBeansOfType(HttpHandler.class).size())
-							.isEqualTo(1);
+		this.context
+				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
+				.run((loaded) -> {
+					assertThat(loaded).hasSingleBean(HttpHandler.class);
 				});
 	}
 

@@ -21,7 +21,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 /**
  * @author pwebb
  */
-public interface AssertableServletWebApplicationContext
+public interface AssertableWebApplicationContext
 		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>,
 		ConfigurableWebApplicationContext {
 

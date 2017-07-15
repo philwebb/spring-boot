@@ -32,7 +32,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * @since 2.0.0
  */
 public final class WebApplicationContextTester extends
-		AbstractApplicationContextTester<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableServletWebApplicationContext> {
+		AbstractApplicationContextTester<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
 	public WebApplicationContextTester() {
 		this(withMockServletContext(AnnotationConfigWebApplicationContext::new));
@@ -51,4 +51,5 @@ public final class WebApplicationContextTester extends
 			return context;
 		};
 	}
+
 }

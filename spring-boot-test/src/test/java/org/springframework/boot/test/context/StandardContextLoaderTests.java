@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -162,22 +161,22 @@ public class StandardContextLoaderTests {
 	// assertThat(context.containsBean("b")).isTrue();
 	// });
 	// }
-
-	@Test
-	public void loadAndFailWithExpectedException() {
-		this.contextLoader.withUserConfiguration(ConfigC.class).loadAndFail(
-				BeanCreationException.class, ex -> assertThat(ex.getMessage())
-						.contains("Error creating bean with name 'c'"));
-	}
-
-	@Test
-	public void loadAndFailWithWrongException() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("Wrong application context failure exception");
-		this.contextLoader.withUserConfiguration(ConfigC.class)
-				.loadAndFail(IllegalArgumentException.class, ex -> {
-				});
-	}
+	//
+	// @Test
+	// public void loadAndFailWithExpectedException() {
+	// this.contextLoader.withUserConfiguration(ConfigC.class).loadAndFail(
+	// BeanCreationException.class, ex -> assertThat(ex.getMessage())
+	// .contains("Error creating bean with name 'c'"));
+	// }
+	//
+	// @Test
+	// public void loadAndFailWithWrongException() {
+	// this.thrown.expect(AssertionError.class);
+	// this.thrown.expectMessage("Wrong application context failure exception");
+	// this.contextLoader.withUserConfiguration(ConfigC.class)
+	// .loadAndFail(IllegalArgumentException.class, ex -> {
+	// });
+	// }
 
 	@Test
 	public void classLoaderIsUsed() {

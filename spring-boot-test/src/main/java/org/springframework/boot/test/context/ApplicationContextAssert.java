@@ -17,8 +17,15 @@
 package org.springframework.boot.test.context;
 
 import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.AbstractObjectArrayAssert;
+import org.assertj.core.api.AbstractObjectAssert;
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.MapAssert;
 
 import org.springframework.context.ApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Phillip Webb
@@ -29,6 +36,47 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 
 	public ApplicationContextAssert(C actual, Class<?> selfType) {
 		super(actual, selfType);
+	}
+
+	public ApplicationContextAssert<C> hasBean(String name) {
+		return this;
+	}
+
+	public ApplicationContextAssert<C> hasSingleBean(Class<?> requiredType) {
+		assertThat(getBean(requiredType)).isNotNull();
+		return this;
+	}
+
+	public ApplicationContextAssert<C> doesNotHaveBean(Class<?> class1) {
+		return this;
+	}
+
+	public ApplicationContextAssert<C> doesNotHaveBean(String class1) {
+		return this;
+	}
+
+	public <T> AbstractObjectAssert<?, T> getBean(Class<T> requiredType) {
+		return Assertions.assertThat(this.actual.getBean(requiredType));
+	}
+
+	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> requiredType) {
+		return Assertions.assertThat(this.actual.getBean(name, requiredType));
+	}
+
+	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
+		return Assertions.assertThat(this.actual.getBeanNamesForType(type));
+	}
+
+	public <T> MapAssert<String, T> getBeansOfType(Class<T> type) {
+		return Assertions.assertThat(this.actual.getBeansOfType(type));
+	}
+
+	public ApplicationContextAssert<C> wasStarted() {
+		return this;
+	}
+
+	public AbstractThrowableAssert<?, ? extends Throwable> getFailure() {
+		return assertThat(new Exception());
 	}
 
 }

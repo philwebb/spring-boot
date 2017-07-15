@@ -23,6 +23,7 @@ import com.hazelcast.client.impl.HazelcastClientProxy;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import org.assertj.core.api.Condition;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -60,72 +61,70 @@ public class HazelcastAutoConfigurationClientTests {
 		}
 	}
 
-	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
+	private final ApplicationContextTester context = new ApplicationContextTester()
 			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	public void systemProperty() throws IOException {
-		this.contextLoader
+		this.context
 				.withSystemProperties(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/"
 						+ "hazelcast-client-specific.xml")
-				.run(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance)
-							.isInstanceOf(HazelcastClientProxy.class);
-					assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
+				.run((loaded) -> {
+					assertThat(loaded).getBean(HazelcastInstance.class)
+							.isInstanceOf(HazelcastInstance.class)
+							.has(nameStartingWith("hz.client_"));
 				});
 	}
 
 	@Test
 	public void explicitConfigFile() throws IOException {
-		this.contextLoader
+		this.context
 				.withPropertyValues(
 						"spring.hazelcast.config=org/springframework/boot/autoconfigure/"
 								+ "hazelcast/hazelcast-client-specific.xml")
-				.run(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance)
-							.isInstanceOf(HazelcastClientProxy.class);
-					assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
+				.run((loaded) -> {
+					assertThat(loaded).getBean(HazelcastInstance.class)
+							.isInstanceOf(HazelcastClientProxy.class)
+							.has(nameStartingWith("hz.client_"));
 				});
 	}
 
 	@Test
 	public void explicitConfigUrl() throws IOException {
-		this.contextLoader
+		this.context
 				.withPropertyValues(
 						"spring.hazelcast.config=hazelcast-client-default.xml")
-				.run(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance)
-							.isInstanceOf(HazelcastClientProxy.class);
-					assertThat(hazelcastInstance.getName()).startsWith("hz.client_");
+				.run((loaded) -> {
+					assertThat(loaded).getBean(HazelcastInstance.class)
+							.isInstanceOf(HazelcastClientProxy.class)
+							.has(nameStartingWith("hz.client_"));
 				});
 	}
 
 	@Test
 	public void unknownConfigFile() {
-		this.contextLoader
-				.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
-				.loadAndFail(BeanCreationException.class,
-						ex -> assertThat(ex.getMessage())
-								.contains("foo/bar/unknown.xml"));
+		this.context.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
+				.run((loaded) -> {
+					assertThat(loaded).getFailure()
+							.isInstanceOf(BeanCreationException.class)
+							.hasMessageContaining("foo/bar/unknown.xml");
+				});
 	}
 
 	@Test
 	public void clientConfigTakesPrecedence() {
-		this.contextLoader.withUserConfiguration(HazelcastServerAndClientConfig.class)
+		this.context.withUserConfiguration(HazelcastServerAndClientConfig.class)
 				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
-				.run(context -> {
-					HazelcastInstance hazelcastInstance = context
-							.getBean(HazelcastInstance.class);
-					assertThat(hazelcastInstance)
+				.run((loaded) -> {
+					assertThat(loaded).getBean(HazelcastInstance.class)
 							.isInstanceOf(HazelcastClientProxy.class);
 				});
+	}
+
+	private Condition<HazelcastInstance> nameStartingWith(String prefix) {
+		return new Condition<HazelcastInstance>((o) -> o.getName().startsWith(prefix),
+				"Name starts with " + prefix);
 	}
 
 	@Configuration

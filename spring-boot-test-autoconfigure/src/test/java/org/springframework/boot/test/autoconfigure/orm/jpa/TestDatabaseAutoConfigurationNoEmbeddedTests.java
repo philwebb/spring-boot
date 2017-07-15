@@ -44,31 +44,32 @@ import static org.mockito.Mockito.mock;
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar", "derby-*.jar" })
 public class TestDatabaseAutoConfigurationNoEmbeddedTests {
 
-	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
+	private final ApplicationContextTester context = new ApplicationContextTester()
 			.withUserConfiguration(ExistingDataSourceConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
+			.withConfiguration(
+					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void applyAnyReplace() {
-		this.contextLoader.loadAndFail(BeanCreationException.class, ex -> {
-			String message = ex.getMessage();
-			assertThat(message).contains(
-					"Failed to replace DataSource with an embedded database for tests.");
-			assertThat(message).contains(
-					"If you want an embedded database please put a supported one on the "
-							+ "classpath");
-			assertThat(message).contains(
-					"or tune the replace attribute of @AutoconfigureTestDatabase.");
+		this.context.run((loaded) -> {
+			assertThat(loaded).getFailure().isInstanceOf(BeanCreationException.class)
+					.hasMessageContaining(
+							"Failed to replace DataSource with an embedded database for tests.")
+					.hasMessageContaining(
+							"If you want an embedded database please put a supported one on the classpath")
+					.hasMessageContaining(
+							"or tune the replace attribute of @AutoconfigureTestDatabase.");
 		});
 	}
 
 	@Test
 	public void applyNoReplace() {
-		this.contextLoader.withPropertyValues("spring.test.database.replace=NONE").run(context -> {
-			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
-			assertThat(context.getBean(DataSource.class))
-					.isSameAs(context.getBean("myCustomDataSource"));
-		});
+		this.context.withPropertyValues("spring.test.database.replace=NONE")
+				.run((loaded) -> {
+					assertThat(loaded).hasSingleBean(DataSource.class);
+					assertThat(loaded).getBean(DataSource.class)
+							.isSameAs(loaded.getBean("myCustomDataSource"));
+				});
 	}
 
 	@Configuration

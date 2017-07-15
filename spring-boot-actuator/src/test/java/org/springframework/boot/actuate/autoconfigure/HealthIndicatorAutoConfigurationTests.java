@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import io.searchbox.client.JestClient;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.neo4j.ogm.session.SessionFactory;
 
@@ -60,8 +61,8 @@ import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.ApplicationContextTester;
+import org.springframework.boot.test.context.AssertableApplicationContext;
 import org.springframework.boot.test.context.ContextConsumer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.CassandraOperations;
@@ -83,26 +84,26 @@ import static org.mockito.Mockito.mock;
  */
 public class HealthIndicatorAutoConfigurationTests {
 
-	public final ApplicationContextTester contextLoader = new ApplicationContextTester()
+	public final ApplicationContextTester context = new ApplicationContextTester()
 			.withConfiguration(
 					AutoConfigurations.of(HealthIndicatorAutoConfiguration.class,
 							ManagementServerProperties.class));
 
 	@Test
 	public void defaultHealthIndicator() {
-		this.contextLoader.withPropertyValues("management.health.diskspace.enabled:false")
+		this.context.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabled() {
-		this.contextLoader.withPropertyValues("management.health.defaults.enabled:false")
+		this.context.withPropertyValues("management.health.defaults.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
 	@Test
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
-		this.contextLoader.withUserConfiguration(CustomHealthIndicator.class)
+		this.context.withUserConfiguration(CustomHealthIndicator.class)
 				.withPropertyValues("management.health.defaults.enabled:false")
 				.run(context -> {
 					Map<String, HealthIndicator> beans = context
@@ -115,7 +116,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void defaultHealthIndicatorsDisabledButOne() {
-		this.contextLoader
+		this.context
 				.withPropertyValues("management.health.defaults.enabled:false",
 						"management.health.diskspace.enabled:true")
 				.run(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
@@ -123,7 +124,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void redisHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(RedisHealthIndicator.class));
@@ -131,7 +132,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notRedisHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("management.health.redis.enabled:false",
 						"management.health.diskspace.enabled:false")
@@ -140,7 +141,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void mongoHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 						MongoDataAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
@@ -149,7 +150,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notMongoHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 						MongoDataAutoConfiguration.class))
 				.withPropertyValues("management.health.mongo.enabled:false",
@@ -159,11 +160,9 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void combinedHealthIndicator() {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
-						RedisAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						SolrAutoConfiguration.class))
-				.run(context -> {
+		this.context.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
+				RedisAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				SolrAutoConfiguration.class)).run(context -> {
 					Map<String, HealthIndicator> beans = context
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(4);
@@ -172,7 +171,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void dataSourceHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
@@ -181,7 +180,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void dataSourceHealthIndicatorWithSeveralDataSources() {
-		this.contextLoader
+		this.context
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 						DataSourceConfig.class)
 				.withPropertyValues("management.health.diskspace.enabled:false")
@@ -198,7 +197,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void dataSourceHealthIndicatorWithAbstractRoutingDataSource() {
-		this.contextLoader
+		this.context
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 						RoutingDatasourceConfig.class)
 				.withPropertyValues("management.health.diskspace.enabled:false")
@@ -207,7 +206,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void dataSourceHealthIndicatorWithCustomValidationQuery() {
-		this.contextLoader
+		this.context
 				.withUserConfiguration(DataSourceConfig.class,
 						DataSourcePoolMetadataProvidersConfiguration.class,
 						HealthIndicatorAutoConfiguration.class)
@@ -229,7 +228,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notDataSourceHealthIndicator() {
-		this.contextLoader.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+		this.context.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("management.health.db.enabled:false",
 						"management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
@@ -237,7 +236,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void rabbitHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(RabbitHealthIndicator.class));
@@ -245,7 +244,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notRabbitHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class))
 				.withPropertyValues("management.health.rabbit.enabled:false",
 						"management.health.diskspace.enabled:false")
@@ -254,16 +253,14 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void solrHealthIndicator() {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(SolrHealthIndicator.class));
 	}
 
 	@Test
 	public void notSolrHealthIndicator() {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class))
 				.withPropertyValues("management.health.solr.enabled:false",
 						"management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
@@ -271,12 +268,12 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void diskSpaceHealthIndicator() {
-		this.contextLoader.run(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
+		this.context.run(hasSingleHealthIndicator(DiskSpaceHealthIndicator.class));
 	}
 
 	@Test
 	public void mailHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(
 						AutoConfigurations.of(MailSenderAutoConfiguration.class))
 				.withPropertyValues("spring.mail.host:smtp.acme.org",
@@ -286,7 +283,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notMailHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(
 						AutoConfigurations.of(MailSenderAutoConfiguration.class))
 				.withPropertyValues("spring.mail.host:smtp.acme.org",
@@ -297,7 +294,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void jmsHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(JmsHealthIndicator.class));
@@ -305,7 +302,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notJmsHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(ActiveMQAutoConfiguration.class))
 				.withPropertyValues("management.health.jms.enabled:false",
 						"management.health.diskspace.enabled:false")
@@ -314,7 +311,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void elasticsearchHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(JestClientConfiguration.class,
 						JestAutoConfiguration.class,
 						ElasticsearchAutoConfiguration.class))
@@ -326,7 +323,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void elasticsearchJestHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(JestClientConfiguration.class,
 						JestAutoConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
@@ -336,7 +333,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notElasticsearchHealthIndicator() {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(JestClientConfiguration.class,
 						JestAutoConfiguration.class,
 						ElasticsearchAutoConfiguration.class))
@@ -348,7 +345,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void cassandraHealthIndicator() throws Exception {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(CassandraConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(CassandraHealthIndicator.class));
@@ -356,7 +353,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notCassandraHealthIndicator() throws Exception {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(CassandraConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false",
 						"management.health.cassandra.enabled:false")
@@ -365,7 +362,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void couchbaseHealthIndicator() throws Exception {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(CouchbaseConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(CouchbaseHealthIndicator.class));
@@ -373,7 +370,7 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void notCouchbaseHealthIndicator() throws Exception {
-		this.contextLoader
+		this.context
 				.withConfiguration(AutoConfigurations.of(CouchbaseConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false",
 						"management.health.couchbase.enabled:false")
@@ -382,16 +379,14 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void ldapHealthIndicator() throws Exception {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(LdapConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(LdapConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(LdapHealthIndicator.class));
 	}
 
 	@Test
 	public void notLdapHealthIndicator() throws Exception {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(LdapConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(LdapConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false",
 						"management.health.ldap.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
@@ -399,28 +394,26 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@Test
 	public void neo4jHealthIndicator() throws Exception {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(Neo4jConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(Neo4jConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false")
 				.run(hasSingleHealthIndicator(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	public void notNeo4jHealthIndicator() throws Exception {
-		this.contextLoader
-				.withConfiguration(AutoConfigurations.of(Neo4jConfiguration.class))
+		this.context.withConfiguration(AutoConfigurations.of(Neo4jConfiguration.class))
 				.withPropertyValues("management.health.diskspace.enabled:false",
 						"management.health.neo4j.enabled:false")
 				.run(hasSingleHealthIndicator(ApplicationHealthIndicator.class));
 	}
 
-	private <C extends ApplicationContext> ContextConsumer<C> hasSingleHealthIndicator(
+	private ContextConsumer<AssertableApplicationContext> hasSingleHealthIndicator(
 			Class<? extends HealthIndicator> type) {
-		return context -> {
-			Map<String, HealthIndicator> beans = context
-					.getBeansOfType(HealthIndicator.class);
-			assertThat(beans).hasSize(1);
-			assertThat(beans.values().iterator().next().getClass()).isEqualTo(type);
+		return (loaded) -> {
+			assertThat(loaded).getBeansOfType(HealthIndicator.class).hasSize(1)
+					.hasValueSatisfying(new Condition<>(
+							(indicator) -> indicator.getClass().equals(type),
+							"Wrong indicator type"));
 		};
 	}
 

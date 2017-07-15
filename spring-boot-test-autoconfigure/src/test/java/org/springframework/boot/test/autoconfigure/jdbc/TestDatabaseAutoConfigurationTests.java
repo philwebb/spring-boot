@@ -38,25 +38,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TestDatabaseAutoConfigurationTests {
 
-	private final ApplicationContextTester contextLoader = new ApplicationContextTester()
-			.withConfiguration(AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
+	private final ApplicationContextTester context = new ApplicationContextTester()
+			.withConfiguration(
+					AutoConfigurations.of(TestDatabaseAutoConfiguration.class));
 
 	@Test
 	public void replaceWithNoDataSourceAvailable() {
-		this.contextLoader.run(context -> {
-			assertThat(context.getBeansOfType(DataSource.class)).isEmpty();
-		});
+		this.context
+				.run((loaded) -> assertThat(loaded).doesNotHaveBean(DataSource.class));
 	}
 
 	@Test
 	public void replaceWithUniqueDatabase() {
-		this.contextLoader.withUserConfiguration(ExistingDataSourceConfiguration.class)
-				.run(context -> {
-					DataSource datasource = context.getBean(DataSource.class);
+		this.context.withUserConfiguration(ExistingDataSourceConfiguration.class)
+				.run((loaded) -> {
+					DataSource datasource = loaded.getBean(DataSource.class);
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
 					jdbcTemplate.execute("create table example (id int, name varchar);");
-					this.contextLoader.run(anotherContext -> {
-						DataSource anotherDatasource = anotherContext
+					this.context.run((secondContext) -> {
+						DataSource anotherDatasource = secondContext
 								.getBean(DataSource.class);
 						JdbcTemplate anotherJdbcTemplate = new JdbcTemplate(
 								anotherDatasource);

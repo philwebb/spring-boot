@@ -33,8 +33,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as a
  * field of a test class, describing the shared configuration required for the test:
@@ -202,7 +200,7 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	public void run(ContextConsumer<A> consumer) {
+	public void run(ContextConsumer<? super A> consumer) {
 		doLoad(consumer::accept);
 	}
 
@@ -221,40 +219,41 @@ public abstract class AbstractApplicationContextTester<SELF extends AbstractAppl
 			}
 		}
 	}
-
-	/**
-	 * Create and refresh a new {@link ApplicationContext} based on the current state of
-	 * this loader that this expected to fail. If the context does not fail, an
-	 * {@link AssertionError} is thrown. Otherwise the exception is consumed by the
-	 * specified {@link Consumer} with no expectation on the type of the exception.
-	 * @param consumer the consumer of the failure
-	 */
-	public void loadAndFail(Consumer<Throwable> consumer) {
-		loadAndFail(Throwable.class, consumer);
-	}
-
-	/**
-	 * Create and refresh a new {@link ApplicationContext} based on the current state of
-	 * this loader that this expected to fail. If the context does not fail, an
-	 * {@link AssertionError} is thrown. If the exception does not match the specified
-	 * {@code exceptionType}, an {@link AssertionError} is thrown as well. If the
-	 * exception type matches, it is consumed by the specified {@link Consumer}.
-	 * @param exceptionType the expected type of the failure
-	 * @param consumer the consumer of the failure
-	 * @param <E> the expected type of the failure
-	 */
-	public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
-			Consumer<E> consumer) {
-		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
-			handler.load();
-			throw new AssertionError("ApplicationContext should have failed");
-		}
-		catch (Throwable ex) {
-			assertThat(ex).as("Wrong application context failure exception")
-					.isInstanceOf(exceptionType);
-			consumer.accept(exceptionType.cast(ex));
-		}
-	}
+	//
+	// /**
+	// * Create and refresh a new {@link ApplicationContext} based on the current state of
+	// * this loader that this expected to fail. If the context does not fail, an
+	// * {@link AssertionError} is thrown. Otherwise the exception is consumed by the
+	// * specified {@link Consumer} with no expectation on the type of the exception.
+	// * @param consumer the consumer of the failure
+	// */
+	// public void loadAndFail(Consumer<Throwable> consumer) {
+	// loadAndFail(Throwable.class, consumer);
+	// }
+	//
+	// /**
+	// * Create and refresh a new {@link ApplicationContext} based on the current state of
+	// * this loader that this expected to fail. If the context does not fail, an
+	// * {@link AssertionError} is thrown. If the exception does not match the specified
+	// * {@code exceptionType}, an {@link AssertionError} is thrown as well. If the
+	// * exception type matches, it is consumed by the specified {@link Consumer}.
+	// * @param exceptionType the expected type of the failure
+	// * @param consumer the consumer of the failure
+	// * @param <E> the expected type of the failure
+	// */
+	// public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
+	// Consumer<E> consumer) {
+	// try (ApplicationContextLifecycleHandler handler = new
+	// ApplicationContextLifecycleHandler()) {
+	// handler.load();
+	// throw new AssertionError("ApplicationContext should have failed");
+	// }
+	// catch (Throwable ex) {
+	// assertThat(ex).as("Wrong application context failure exception")
+	// .isInstanceOf(exceptionType);
+	// consumer.accept(exceptionType.cast(ex));
+	// }
+	// }
 
 	private A configureApplicationContext() {
 		throw new IllegalStateException();
