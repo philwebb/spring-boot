@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
@@ -34,54 +33,51 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
- * Manage the lifecycle of an {@link ApplicationContext}. Such helper is best used as a
- * field of a test class, describing the shared configuration required for the test:
+ * Tester utility design to manage the lifecycle of an {@link ApplicationContext} and
+ * provide AssertJ style assertions. The test is best used as a field of a test class,
+ * describing the shared configuration required for the test:
  *
  * <pre class="code">
- * public class FooAutoConfigurationTests {
- *
- *     private final ContextLoader contextLoader = ContextLoader.standard()
- *             .autoConfig(FooAutoConfiguration.class).env("spring.foo=bar");
- *
+ * public class MyContextTests {
+ *     private final ApplicationContextTester context = new ApplicationContextTester()
+ *             .withPropertyValues("spring.foo=bar")
+ *             .withUserConfiguration(MyConfiguration.class);
  * }</pre>
  *
  * <p>
- * The initialization above makes sure to register {@code FooAutoConfiguration} for all
- * tests and set the {@code spring.foo} property to {@code bar} unless specified
- * otherwise.
- *
+ * The initialization above makes sure to register {@code MyConfiguration} for all tests
+ * and set the {@code spring.foo} property to {@code bar} unless specified otherwise.
  * <p>
- * Based on the configuration above, a specific test can simulate what would happen if the
- * user customizes a property and/or provides its own configuration:
+ * Based on the configuration above, a specific test can simulate what will happen when
+ * the context runs, perhaps with overridden property values:
  *
  * <pre class="code">
- * public class FooAutoConfigurationTests {
- *
- *     &#064;Test
- *     public someTest() {
- *         this.contextLoader.config(UserConfig.class).env("spring.foo=biz")
- *                 .load(context -&gt; {
- *            			// assertions using the context
- *         });
- *     }
- *
+ * &#064;Test
+ * public someTest() {
+ *     this.contex.withPropertyValues("spring.foo=biz").run((loaded) -&gt; {
+ *         assertThat(loaded).containsSingleBean(MyBean.class);
+ *         // other assertions
+ *     });
  * }</pre>
- *
  * <p>
- * The test above includes an extra {@code UserConfig} class that is guaranteed to be
- * processed <strong>before</strong> any auto-configuration. Also, {@code spring.foo} has
- * been overwritten to {@code biz}. The {@link #run(ContextConsumer) load} method takes a
- * consumer that can use the context to assert its state. Upon completion, the context is
- * automatically closed.
- *
+ * The test above has changed the {@code spring.foo} property to {@code biz} and is
+ * asserting that the context contains a single {@code MyBean} bean. The
+ * {@link #run(ContextConsumer) run} method takes a {@link ContextConsumer} that can apply
+ * assertions to the context. Upon completion, the context is automatically closed.
  * <p>
- * Web environment can easily be simulated using the {@link #servletWeb()} and
- * {@link #reactiveWeb()} factory methods.
- *
+ * If the application context fails to start the {@code #run(ContextConsumer)} method is
+ * called with a "failed" application context. Calls to the context will throw an
+ * {@link IllegalStateException} and assertions that expect a running context will fail.
+ * The {@link ApplicationContextAssert#getFailure() getFailure()} assertion can be used if
+ * further checks are required on the cause of the failure: <pre class="code">
+ * &#064;Test
+ * public someTest() {
+ *     this.contex.withPropertyValues("spring.foo=fails").run((loaded) -&gt; {
+ *         assertThat(loaded).getFailure().hasCauseInstanceOf(BadPropertyExcepton.class);
+ *         // other assertions
+ *     });
+ * }</pre>
  * <p>
- * If a failure scenario has to be tested, {@link #loadAndFail(Consumer)} can be used
- * instead: it expects the startup of the context to fail and call the {@link Consumer}
- * with the exception for further assertions.
  *
  * @param <SELF> The "self" type for this tester
  * @param <C> The context type
@@ -89,9 +85,12 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
+ * @see ApplicationContextTester
+ * @see WebApplicationContextTester
+ * @see ReactiveWebApplicationContextTester
+ * @see ApplicationContextAssert
  */
-public abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
+abstract class AbstractApplicationContextTester<SELF extends AbstractApplicationContextTester<SELF, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
 
 	private final Supplier<C> contextFactory;
 

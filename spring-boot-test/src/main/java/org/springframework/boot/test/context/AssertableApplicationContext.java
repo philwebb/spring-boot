@@ -16,14 +16,30 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.function.Supplier;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
+ * An {@link ApplicationContext} that additionally supports AssertJ style assertions. Can
+ * be used to decorate and existing application context or an application context that
+ * failed to start.
+ * <p>
+ * See {@link AssertProviderApplicationContext} for more details.
+ *
  * @author Phillip Webb
  * @since 2.0.0
+ * @see ApplicationContextTester
+ * @see ApplicationContext
  */
 public interface AssertableApplicationContext extends ApplicationContext,
-		ApplicationContextAssertProvider<ConfigurableApplicationContext> {
+		AssertProviderApplicationContext<ConfigurableApplicationContext> {
+
+	public static AssertableApplicationContext get(
+			Supplier<? extends ConfigurableApplicationContext> contextSupplier) {
+		return AssertProviderApplicationContext.get(AssertableApplicationContext.class,
+				ConfigurableApplicationContext.class, contextSupplier);
+	}
 
 }

@@ -66,7 +66,7 @@ public class HazelcastAutoConfigurationServerTests {
 						+ "=classpath:org/springframework/boot/autoconfigure/hazelcast/hazelcast-specific.xml")
 				.run((loaded) -> {
 					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getQueueConfigs()).hasSize(1).containsKey("foobar");
+					assertThat(config.getQueueConfigs().keySet()).containsOnly("foobar");
 				});
 	}
 
@@ -132,7 +132,7 @@ public class HazelcastAutoConfigurationServerTests {
 				.run((loaded) -> {
 					Config config = loaded.getBean(HazelcastInstance.class).getConfig();
 					Map<String, QueueConfig> queueConfigs = config.getQueueConfigs();
-					assertThat(queueConfigs).hasSize(1).containsKey("another-queue");
+					assertThat(queueConfigs.keySet()).containsOnly("another-queue");
 				});
 	}
 

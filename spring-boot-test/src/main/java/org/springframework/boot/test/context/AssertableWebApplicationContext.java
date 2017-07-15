@@ -16,13 +16,31 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.function.Supplier;
+
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
- * @author pwebb
+ * A {@link WebApplicationContext} that additionally supports AssertJ style assertions.
+ * Can be used to decorate and existing servlet web application context or an application
+ * context that failed to start.
+ * <p>
+ * See {@link AssertProviderApplicationContext} for more details.
+ *
+ * @author Phillip Webb
+ * @since 2.0.0
+ * @see WebApplicationContextTester
+ * @see WebApplicationContext
  */
 public interface AssertableWebApplicationContext
-		extends ApplicationContextAssertProvider<ConfigurableWebApplicationContext>,
-		ConfigurableWebApplicationContext {
+		extends AssertProviderApplicationContext<ConfigurableWebApplicationContext>,
+		WebApplicationContext {
+
+	public static AssertableWebApplicationContext get(
+			Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
+		return AssertProviderApplicationContext.get(AssertableWebApplicationContext.class,
+				ConfigurableWebApplicationContext.class, contextSupplier);
+	}
 
 }

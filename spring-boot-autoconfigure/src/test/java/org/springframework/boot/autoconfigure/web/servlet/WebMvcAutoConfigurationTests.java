@@ -125,7 +125,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerAdaptersCreated() {
 		this.context.run((loaded) -> {
-			assertThat(loaded).getBeansOfType(HandlerAdapter.class).hasSize(3);
+			assertThat(loaded).getBeans(HandlerAdapter.class).hasSize(3);
 			assertThat(loaded.getBean(RequestMappingHandlerAdapter.class)
 					.getMessageConverters()).isNotEmpty().isEqualTo(
 							loaded.getBean(HttpMessageConverters.class).getConverters());
@@ -135,7 +135,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void handlerMappingsCreated() {
 		this.context.run((loaded) -> assertThat(loaded)
-				.getBeansOfType(HandlerMapping.class).hasSize(7));
+				.getBeans(HandlerMapping.class).hasSize(7));
 	}
 
 	@Test
@@ -423,7 +423,7 @@ public class WebMvcAutoConfigurationTests {
 		this.context.run((loaded) -> {
 			assertThat(loaded).getBeanNames(ResourceHttpRequestHandler.class)
 					.contains("faviconRequestHandler");
-			assertThat(loaded).getBeansOfType(SimpleUrlHandlerMapping.class)
+			assertThat(loaded).getBeans(SimpleUrlHandlerMapping.class)
 					.containsKey("faviconHandlerMapping");
 			assertThat(getFaviconMappingLocations(loaded).get("/**/favicon.ico"))
 					.hasSize(6);
@@ -443,9 +443,9 @@ public class WebMvcAutoConfigurationTests {
 	public void faviconMappingDisabled() throws IllegalAccessException {
 		this.context.withPropertyValues("spring.mvc.favicon.enabled:false")
 				.run((loaded) -> {
-					assertThat(loaded).getBeansOfType(ResourceHttpRequestHandler.class)
+					assertThat(loaded).getBeans(ResourceHttpRequestHandler.class)
 							.doesNotContainKey("faviconRequestHandler");
-					assertThat(loaded).getBeansOfType(SimpleUrlHandlerMapping.class)
+					assertThat(loaded).getBeans(SimpleUrlHandlerMapping.class)
 							.doesNotContainKey("faviconHandlerMapping");
 				});
 	}

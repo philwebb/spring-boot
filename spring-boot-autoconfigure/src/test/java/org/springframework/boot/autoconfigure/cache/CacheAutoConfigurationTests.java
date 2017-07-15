@@ -145,7 +145,7 @@ public class CacheAutoConfigurationTests {
 		this.context.withUserConfiguration(SpecificCacheResolverConfiguration.class)
 				.withPropertyValues("spring.cache.type=simple").run((loaded) -> {
 					getCacheManager(loaded, ConcurrentMapCacheManager.class);
-					assertThat(loaded).getBeansOfType(CacheResolver.class).hasSize(1);
+					assertThat(loaded).getBeans(CacheResolver.class).hasSize(1);
 				});
 	}
 

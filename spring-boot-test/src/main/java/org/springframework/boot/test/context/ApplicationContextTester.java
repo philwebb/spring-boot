@@ -24,6 +24,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 /**
  * A {@link AbstractApplicationContextTester ApplicationContext tester} for a standard,
  * non-web environment {@link ConfigurableApplicationContext}.
+ * <p>
+ * See {@link AbstractApplicationContextTester} for details.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
@@ -33,13 +35,22 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class ApplicationContextTester extends
 		AbstractApplicationContextTester<ApplicationContextTester, ConfigurableApplicationContext, AssertableApplicationContext> {
 
+	/**
+	 * Create a new {@link ApplicationContextTester} instance using an
+	 * {@link AnnotationConfigApplicationContext} as the underlying source.
+	 */
 	public ApplicationContextTester() {
 		this(AnnotationConfigApplicationContext::new);
 	}
 
+	/**
+	 * Create a new {@link ApplicationContextTester} instance using the specified
+	 * {@code contextFactory} as the underlying source.
+	 * @param contextFactory a supplier that returns a new instance on each call
+	 */
 	public ApplicationContextTester(
-			Supplier<ConfigurableApplicationContext> contextSupplier) {
-		super(contextSupplier);
+			Supplier<ConfigurableApplicationContext> contextFactory) {
+		super(contextFactory);
 	}
 
 }

@@ -28,14 +28,17 @@ import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * @param <C> The application context type
  * @author Phillip Webb
  * @since 2.0.0
+ * @see ApplicationContextTester
+ * @see AssertableApplicationContext
  */
 public class ApplicationContextAssert<C extends ApplicationContext>
 		extends AbstractAssert<ApplicationContextAssert<C>, C> {
 
-	public ApplicationContextAssert(C actual, Class<?> selfType) {
-		super(actual, selfType);
+	ApplicationContextAssert(C applicationContext, Throwable failureCause) {
+		super(applicationContext, ApplicationContextAssert.class);
 	}
 
 	public ApplicationContextAssert<C> hasBean(String name) {
@@ -55,23 +58,31 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return this;
 	}
 
-	public <T> AbstractObjectAssert<?, T> getBean(Class<T> requiredType) {
-		return Assertions.assertThat(this.actual.getBean(requiredType));
-	}
-
-	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> requiredType) {
-		return Assertions.assertThat(this.actual.getBean(name, requiredType));
-	}
-
 	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
 		return Assertions.assertThat(this.actual.getBeanNamesForType(type));
 	}
 
-	public <T> MapAssert<String, T> getBeansOfType(Class<T> type) {
+	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type) {
+		return Assertions.assertThat(this.actual.getBean(type));
+	}
+
+	public AbstractObjectAssert<?, Object> getBean(String name) {
+		return Assertions.assertThat(this.actual.getBean(name));
+	}
+
+	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
+		return Assertions.assertThat(this.actual.getBean(name, type));
+	}
+
+	public <T> MapAssert<String, T> getBeans(Class<T> type) {
 		return Assertions.assertThat(this.actual.getBeansOfType(type));
 	}
 
 	public ApplicationContextAssert<C> wasStarted() {
+		return this;
+	}
+
+	public ApplicationContextAssert<C> wasNotStarted() {
 		return this;
 	}
 

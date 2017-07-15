@@ -20,11 +20,14 @@ import java.util.function.Supplier;
 
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * A {@link AbstractApplicationContextTester ApplicationContext tester} for a Servlet
  * based {@link ConfigurableWebApplicationContext}.
+ * <p>
+ * See {@link AbstractApplicationContextTester} for details.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
@@ -34,22 +37,39 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 public final class WebApplicationContextTester extends
 		AbstractApplicationContextTester<WebApplicationContextTester, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 
+	/**
+	 * Create a new {@link WebApplicationContextTester} instance using an
+	 * {@link AnnotationConfigWebApplicationContext} with a {@link MockServletContext} as
+	 * the underlying source.
+	 * @see #withMockServletContext(Supplier)
+	 */
 	public WebApplicationContextTester() {
 		this(withMockServletContext(AnnotationConfigWebApplicationContext::new));
 	}
 
+	/**
+	 * Create a new {@link WebApplicationContextTester} instance using the specified
+	 * {@code contextFactory} as the underlying source.
+	 * @param contextFactory a supplier that returns a new instance on each call
+	 */
 	public WebApplicationContextTester(
-			Supplier<ConfigurableWebApplicationContext> contextSupplier) {
-		super(contextSupplier);
+			Supplier<ConfigurableWebApplicationContext> contextFactory) {
+		super(contextFactory);
 	}
 
+	/**
+	 * Decorate the specified {@code contextFactory} to set a {@link MockServletContext}
+	 * on each newly created {@link WebApplicationContext}.
+	 * @param contextFactory the context factory to decorate
+	 * @return an updated supplier that will set the {@link MockServletContext}
+	 */
 	public static Supplier<ConfigurableWebApplicationContext> withMockServletContext(
 			Supplier<ConfigurableWebApplicationContext> contextFactory) {
-		return () -> {
+		return (contextFactory == null ? null : () -> {
 			ConfigurableWebApplicationContext context = contextFactory.get();
 			context.setServletContext(new MockServletContext());
 			return context;
-		};
+		});
 	}
 
 }

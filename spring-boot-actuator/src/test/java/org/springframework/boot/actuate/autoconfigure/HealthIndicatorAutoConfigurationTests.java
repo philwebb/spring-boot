@@ -410,7 +410,7 @@ public class HealthIndicatorAutoConfigurationTests {
 	private ContextConsumer<AssertableApplicationContext> hasSingleHealthIndicator(
 			Class<? extends HealthIndicator> type) {
 		return (loaded) -> {
-			assertThat(loaded).getBeansOfType(HealthIndicator.class).hasSize(1)
+			assertThat(loaded).getBeans(HealthIndicator.class).hasSize(1)
 					.hasValueSatisfying(new Condition<>(
 							(indicator) -> indicator.getClass().equals(type),
 							"Wrong indicator type"));
