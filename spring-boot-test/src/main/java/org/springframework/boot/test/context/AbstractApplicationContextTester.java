@@ -85,6 +85,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @since 2.0.0
  * @see ApplicationContextTester
  * @see WebApplicationContextTester
  * @see ReactiveWebApplicationContextTester

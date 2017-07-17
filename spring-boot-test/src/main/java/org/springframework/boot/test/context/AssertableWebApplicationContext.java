@@ -37,6 +37,13 @@ public interface AssertableWebApplicationContext
 		extends AssertProviderApplicationContext<ConfigurableWebApplicationContext>,
 		WebApplicationContext {
 
+	/**
+	 * Factory method to create a new {@link AssertableWebApplicationContext} instance.
+	 * @param contextSupplier a supplier that will either return a fully configured
+	 * {@link ConfigurableWebApplicationContext} or throw an exception if the context
+	 * fails to start.
+	 * @return a {@link AssertableWebApplicationContext} instance
+	 */
 	public static AssertableWebApplicationContext get(
 			Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
 		return AssertProviderApplicationContext.get(AssertableWebApplicationContext.class,

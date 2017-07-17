@@ -134,8 +134,8 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void handlerMappingsCreated() {
-		this.context.run((loaded) -> assertThat(loaded)
-				.getBeans(HandlerMapping.class).hasSize(7));
+		this.context.run(
+				(loaded) -> assertThat(loaded).getBeans(HandlerMapping.class).hasSize(7));
 	}
 
 	@Test
@@ -411,8 +411,7 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void customContentNegotiatingViewResolver() throws Exception {
-		this.context
-				.withUserConfiguration(CustomContentNegotiatingViewResolver.class)
+		this.context.withUserConfiguration(CustomContentNegotiatingViewResolver.class)
 				.run((loaded) -> assertThat(loaded)
 						.getBeanNames(ContentNegotiatingViewResolver.class)
 						.containsOnly("myViewResolver"));
@@ -496,16 +495,14 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void httpPutFormContentFilterCanBeDisabled() throws Exception {
-		this.context
-				.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
+		this.context.withPropertyValues("spring.mvc.formcontent.putfilter.enabled=false")
 				.run((loaded) -> assertThat(loaded)
 						.doesNotHaveBean(HttpPutFormContentFilter.class));
 	}
 
 	@Test
 	public void customConfigurableWebBindingInitializer() {
-		this.context
-				.withUserConfiguration(CustomConfigurableWebBindingInitializer.class)
+		this.context.withUserConfiguration(CustomConfigurableWebBindingInitializer.class)
 				.run((loaded) -> assertThat(
 						loaded.getBean(RequestMappingHandlerAdapter.class)
 								.getWebBindingInitializer())
@@ -708,17 +705,15 @@ public class WebMvcAutoConfigurationTests {
 
 	@Test
 	public void validatorWithConfigurerDoesNotExposeJsr303() {
-		this.context.withUserConfiguration(MvcJsr303Validator.class)
-				.run((loaded) -> {
-					assertThat(loaded).doesNotHaveBean(ValidatorFactory.class);
-					assertThat(loaded).doesNotHaveBean(javax.validation.Validator.class);
-					assertThat(loaded).getBeanNames(Validator.class)
-							.containsOnly("mvcValidator");
-					Validator validator = loaded.getBean("mvcValidator", Validator.class);
-					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
-					assertThat(((ValidatorAdapter) validator).getTarget())
-							.isSameAs(loaded.getBean(MvcJsr303Validator.class).validator);
-				});
+		this.context.withUserConfiguration(MvcJsr303Validator.class).run((loaded) -> {
+			assertThat(loaded).doesNotHaveBean(ValidatorFactory.class);
+			assertThat(loaded).doesNotHaveBean(javax.validation.Validator.class);
+			assertThat(loaded).getBeanNames(Validator.class).containsOnly("mvcValidator");
+			Validator validator = loaded.getBean("mvcValidator", Validator.class);
+			assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+			assertThat(((ValidatorAdapter) validator).getTarget())
+					.isSameAs(loaded.getBean(MvcJsr303Validator.class).validator);
+		});
 	}
 
 	@Test
@@ -783,7 +778,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpMessageConverterThatUsesConversionServiceDoesNotCreateACycle() {
 		this.context.withUserConfiguration(CustomHttpMessageConverter.class)
-				.run(context -> assertThat(context).wasStarted());
+				.run(context -> assertThat(context).hasFailed());
 	}
 
 	protected Map<String, List<Resource>> getFaviconMappingLocations(
@@ -840,6 +835,7 @@ public class WebMvcAutoConfigurationTests {
 								throws Exception {
 					response.getOutputStream().write("Hello World".getBytes());
 				}
+
 			};
 		}
 
