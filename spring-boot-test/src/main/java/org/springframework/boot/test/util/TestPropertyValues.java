@@ -55,7 +55,7 @@ public final class TestPropertyValues {
 			int index = getSeparatorIndex(pair);
 			String key = pair.substring(0, index > 0 ? index : pair.length());
 			String value = index > 0 ? pair.substring(index + 1) : "";
-			this.properties.put(key.trim(), value.trim());
+			and(key.trim(), value.trim());
 		}
 	}
 
@@ -73,12 +73,13 @@ public final class TestPropertyValues {
 
 	/**
 	 * Builder method to append another property to the underlying map of properties.
-	 * @param key The property key
+	 * @param name The property name
 	 * @param value The property value
 	 * @return the existing instance of {@link TestPropertyValues}
 	 */
-	public TestPropertyValues and(String key, String value) {
-		this.properties.put(key, value);
+	public TestPropertyValues and(String name, String value) {
+		Assert.hasLength(name, "Name must not be empty");
+		this.properties.put(name, value);
 		return this;
 	}
 
@@ -162,6 +163,18 @@ public final class TestPropertyValues {
 
 	/**
 	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given property pair.
+	 * @param name the property name
+	 * @param value the property value
+	 * @return the new instance
+	 */
+
+	public static TestPropertyValues ofPair(String name, String value) {
+		return of().and(name, value);
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
 	 * given property pairs. Name-value pairs can be specified with colon (":") or equals
 	 * ("=") separators.
 	 * @param pairs The key value pairs for properties that need to be added to the
@@ -230,23 +243,22 @@ public final class TestPropertyValues {
 
 		private Map<String, String> apply(Map<String, ?> properties) {
 			Map<String, String> previous = new LinkedHashMap<>();
-			properties.forEach((key, value) -> previous.put(key,
-					System.setProperty(key, (String) value)));
+			properties.forEach((name, value) -> previous.put(name,
+					setOrClear(name, (String) value)));
 			return previous;
 		}
 
 		@Override
 		public void close() {
-			this.previous.forEach(this::restore);
+			this.previous.forEach(this::setOrClear);
 		};
 
-		private void restore(String key, String value) {
+		private String setOrClear(String name, String value) {
+			Assert.notNull(name, "Name must not be null");
 			if (value == null) {
-				System.clearProperty(key);
+				return (String) System.getProperties().remove(name);
 			}
-			else {
-				System.setProperty(key, value);
-			}
+			return (String) System.getProperties().setProperty(name, value);
 		}
 
 	}

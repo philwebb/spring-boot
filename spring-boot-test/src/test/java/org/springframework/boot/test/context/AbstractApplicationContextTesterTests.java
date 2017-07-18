@@ -16,26 +16,30 @@
 
 package org.springframework.boot.test.context;
 
+import java.util.UUID;
+
 import com.google.gson.Gson;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
- * Tests for {@link ApplicationContextTester}.
+ * Abstract tests for {@link AbstractApplicationContextTester} implementations.
  *
+ * @param <T> The tester type
+ * @param <C> the context type
+ * @param <A> the assertable context type
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-public class StandardContextLoaderTests {
+public abstract class AbstractApplicationContextTesterTests<T extends AbstractApplicationContextTester<T, C, A>, C extends ConfigurableApplicationContext, A extends AssertProviderApplicationContext<C>> {
 
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
@@ -43,17 +47,22 @@ public class StandardContextLoaderTests {
 	private final ApplicationContextTester contextLoader = new ApplicationContextTester(
 			AnnotationConfigApplicationContext::new);
 
-	// @Test
-	// public void systemPropertyIsSetAndRemoved() {
-	// String key = "test." + UUID.randomUUID().toString();
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
-	// this.contextLoader.withSystemProperty(key, "value").run(context -> {
-	// assertThat(System.getProperties().containsKey(key)).isTrue();
-	// assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-	// });
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
-	// }
-	//
+	@Test
+	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
+		String key = "test." + UUID.randomUUID().toString();
+		assertThat(System.getProperties().containsKey(key)).isFalse();
+		this.contextLoader.withSystemProperties(key + "=value").run(context -> {
+			assertThat(System.getProperties()).containsEntry(key, "value");
+		});
+		assertThat(System.getProperties().containsKey(key)).isFalse();
+	}
+
+	@Test
+	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties()
+			throws Exception {
+
+	}
+
 	// @Test
 	// public void systemPropertyIsRemovedIfContextFailed() {
 	// String key = "test." + UUID.randomUUID().toString();
@@ -64,6 +73,13 @@ public class StandardContextLoaderTests {
 	// assertThat(System.getProperties().containsKey(key)).isFalse();
 	// }
 	//
+
+	@Test
+	public void runWithSystemPropertiesShouldRestoreOriginalProperties()
+			throws Exception {
+
+	}
+
 	// @Test
 	// public void systemPropertyIsRestoredToItsOriginalValue() {
 	// String key = "test." + UUID.randomUUID().toString();
@@ -79,64 +95,79 @@ public class StandardContextLoaderTests {
 	// System.clearProperty(key);
 	// }
 	// }
-	//
+
+	@Test
+	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty()
+			throws Exception {
+
+	}
+
+	@Test
+	public void runWithMultiplePropertyValuesShouldAllAllValues() throws Exception {
+
+	}
+
 	// @Test
-	// public void systemPropertyCanBeSetToNullValue() {
-	// String key = "test." + UUID.randomUUID().toString();
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
-	// this.contextLoader.withSystemProperty(key, "value").withSystemProperty(key, null)
-	// .run(context -> {
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
+	// public void envIsAdditive() {
+	// this.contextLoader.withPropertyValues("test.foo=1")
+	// .withPropertyValues("test.bar=2").run(context -> {
+	// ConfigurableEnvironment environment = context
+	// .getBean(ConfigurableEnvironment.class);
+	// assertThat(environment.getProperty("test.foo", Integer.class))
+	// .isEqualTo(1);
+	// assertThat(environment.getProperty("test.bar", Integer.class))
+	// .isEqualTo(2);
 	// });
 	// }
+	//
+
+	@Test
+	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue()
+			throws Exception {
+
+	}
 
 	// @Test
-	// public void systemPropertyNeedNonNullKey() {
-	// this.thrown.expect(IllegalArgumentException.class);
-	// this.contextLoader.withSystemProperty(null, "value");
+	// public void envOverridesExistingKey() {
+	// this.contextLoader.withPropertyValues("test.foo=1")
+	// .withPropertyValues("test.foo=2")
+	// .run(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
+	// .getProperty("test.foo", Integer.class)).isEqualTo(2));
 	// }
+	//
 
 	@Test
-	public void envIsAdditive() {
-		this.contextLoader.withPropertyValues("test.foo=1")
-				.withPropertyValues("test.bar=2").run(context -> {
-					ConfigurableEnvironment environment = context
-							.getBean(ConfigurableEnvironment.class);
-					assertThat(environment.getProperty("test.foo", Integer.class))
-							.isEqualTo(1);
-					assertThat(environment.getProperty("test.bar", Integer.class))
-							.isEqualTo(2);
-				});
+	public void runWithConfigurationsShouldRegisterConfigurations() throws Exception {
+
 	}
 
-	@Test
-	public void envOverridesExistingKey() {
-		this.contextLoader.withPropertyValues("test.foo=1")
-				.withPropertyValues("test.foo=2")
-				.run(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
-						.getProperty("test.foo", Integer.class)).isEqualTo(2));
-	}
-
-	@Test
-	public void configurationIsProcessedInOrder() {
-		this.contextLoader.withUserConfiguration(ConfigA.class, AutoConfigA.class).run(
-				context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
-	}
+	// @Test
+	// public void configurationIsProcessedInOrder() {
+	// this.contextLoader.withUserConfiguration(ConfigA.class, AutoConfigA.class).run(
+	// context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
+	// }
 
 	// @Test
 	// public void configurationIsProcessedBeforeAutoConfiguration() {
 	// this.contextLoader.autoConfig(AutoConfigA.class).register(ConfigA.class).load(
 	// context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
 	// }
+	//
 
 	@Test
-	public void configurationIsAdditive() {
-		this.contextLoader.withUserConfiguration(AutoConfigA.class)
-				.withUserConfiguration(AutoConfigB.class).run(context -> {
-					assertThat(context.containsBean("a")).isTrue();
-					assertThat(context.containsBean("b")).isTrue();
-				});
+	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations()
+			throws Exception {
+
 	}
+
+	// @Test
+	// public void configurationIsAdditive() {
+	// this.contextLoader.withUserConfiguration(AutoConfigA.class)
+	// .withUserConfiguration(AutoConfigB.class).run(context -> {
+	// assertThat(context.containsBean("a")).isTrue();
+	// assertThat(context.containsBean("b")).isTrue();
+	// });
+	// }
 
 	// @Test
 	// public void autoConfigureFirstIsAppliedProperly() {
@@ -179,14 +210,12 @@ public class StandardContextLoaderTests {
 	// }
 
 	@Test
-	public void classLoaderIsUsed() {
-		this.contextLoader
-				.withClassLoader(
-						new HidePackagesClassLoader(Gson.class.getPackage().getName()))
-				.run(context -> {
+	public void runWithClassLoaderShouldSetClassLoader() throws Exception {
+		get().withClassLoader(
+				new HidePackagesClassLoader(Gson.class.getPackage().getName()))
+				.run((loaded) -> {
 					try {
-						ClassUtils.forName(Gson.class.getName(),
-								context.getClassLoader());
+						ClassUtils.forName(Gson.class.getName(), loaded.getClassLoader());
 						fail("Should have thrown a ClassNotFoundException");
 					}
 					catch (ClassNotFoundException e) {
@@ -195,53 +224,6 @@ public class StandardContextLoaderTests {
 				});
 	}
 
-	@Configuration
-	static class ConfigA {
-
-		@Bean
-		public String a() {
-			return "a";
-		}
-
-	}
-
-	@Configuration
-	static class ConfigB {
-
-		@Bean
-		public Integer b() {
-			return 1;
-		}
-
-	}
-
-	@Configuration
-	static class AutoConfigA {
-
-		@Bean
-		public String a() {
-			return "autoconfig-a";
-		}
-
-	}
-
-	@Configuration
-	static class AutoConfigB {
-
-		@Bean
-		public Integer b() {
-			return 42;
-		}
-
-	}
-
-	@Configuration
-	static class ConfigC {
-
-		@Bean
-		public String c(Integer value) {
-			return String.valueOf(value);
-		}
-	}
+	protected abstract AbstractApplicationContextTester<T, C, A> get();
 
 }

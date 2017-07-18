@@ -202,21 +202,23 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
-	@SuppressWarnings("unchecked")
 	public void run(ContextConsumer<? super A> consumer) {
+		TestPropertyValues.of(this.systemProperties).applyToSystemProperties(() -> {
+			try (A context = createAssertableContext()) {
+				accept(consumer, context);
+			}
+			return null;
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private A createAssertableContext() {
 		ResolvableType resolvableType = ResolvableType
 				.forClass(AbstractApplicationContextTester.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		try (A assertableContext = AssertProviderApplicationContext.get(assertType,
-				contextType, this::createAndLoadContext)) {
-			try {
-				consumer.accept(assertableContext);
-			}
-			catch (Throwable ex) {
-				ReflectionUtils.rethrowRuntimeException(ex);
-			}
-		}
+		return AssertProviderApplicationContext.get(assertType, contextType,
+				this::createAndLoadContext);
 	}
 
 	private C createAndLoadContext() {
@@ -245,6 +247,15 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 		Class<?>[] classes = Configurations.getClasses(this.configurations);
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
+		}
+	}
+
+	private void accept(ContextConsumer<? super A> consumer, A context) {
+		try {
+			consumer.accept(context);
+		}
+		catch (Throwable ex) {
+			ReflectionUtils.rethrowRuntimeException(ex);
 		}
 	}
 
