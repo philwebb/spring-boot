@@ -52,11 +52,21 @@ public final class TestPropertyValues {
 
 	private void addProperties(String[] pairs) {
 		for (String pair : pairs) {
-			int index = getSeparatorIndex(pair);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
-			and(key.trim(), value.trim());
+			and(pair);
 		}
+	}
+
+	/**
+	 * Builder method to append another property pair the underlying map of properties.
+	 * @param pair The property pair to add
+	 * @return the existing instance of {@link TestPropertyValues}
+	 */
+	public TestPropertyValues and(String pair) {
+		int index = getSeparatorIndex(pair);
+		String key = pair.substring(0, index > 0 ? index : pair.length());
+		String value = index > 0 ? pair.substring(index + 1) : "";
+		and(key.trim(), value.trim());
+		return this;
 	}
 
 	private int getSeparatorIndex(String pair) {
@@ -159,6 +169,14 @@ public final class TestPropertyValues {
 				? new MapPropertySource(name, this.properties)
 				: new SystemEnvironmentPropertySource(name, this.properties));
 		sources.addFirst(source);
+	}
+
+	/**
+	 * Return a new empty {@link TestPropertyValues} instance.
+	 * @return an empty instance
+	 */
+	public static TestPropertyValues empty() {
+		return of();
 	}
 
 	/**

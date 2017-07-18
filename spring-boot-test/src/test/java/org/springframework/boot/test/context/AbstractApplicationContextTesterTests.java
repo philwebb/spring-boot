@@ -23,8 +23,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +47,11 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
 
-	private final ApplicationContextTester contextLoader = new ApplicationContextTester(
-			AnnotationConfigApplicationContext::new);
-
 	@Test
 	public void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID().toString();
 		assertThat(System.getProperties().containsKey(key)).isFalse();
-		this.contextLoader.withSystemProperties(key + "=value").run(context -> {
+		get().withSystemProperties(key + "=value").run(loaded -> {
 			assertThat(System.getProperties()).containsEntry(key, "value");
 		});
 		assertThat(System.getProperties().containsKey(key)).isFalse();
@@ -60,154 +60,89 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 	@Test
 	public void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties()
 			throws Exception {
-
+		String key = "test." + UUID.randomUUID().toString();
+		assertThat(System.getProperties().containsKey(key)).isFalse();
+		get().withSystemProperties(key + "=value")
+				.withUserConfiguration(FailingConfig.class).run(loaded -> {
+					assertThat(loaded).hasFailed();
+				});
+		assertThat(System.getProperties().containsKey(key)).isFalse();
 	}
-
-	// @Test
-	// public void systemPropertyIsRemovedIfContextFailed() {
-	// String key = "test." + UUID.randomUUID().toString();
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
-	// this.contextLoader.withSystemProperty(key, "value")
-	// .withConfiguration(ConfigC.class).loadAndFail(e -> {
-	// });
-	// assertThat(System.getProperties().containsKey(key)).isFalse();
-	// }
-	//
 
 	@Test
 	public void runWithSystemPropertiesShouldRestoreOriginalProperties()
 			throws Exception {
-
+		String key = "test." + UUID.randomUUID().toString();
+		System.setProperty(key, "value");
+		try {
+			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
+			get().withSystemProperties(key + "=newValue").run(loaded -> {
+				assertThat(System.getProperties()).containsEntry(key, "newValue");
+			});
+			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
+		}
+		finally {
+			System.clearProperty(key);
+		}
 	}
-
-	// @Test
-	// public void systemPropertyIsRestoredToItsOriginalValue() {
-	// String key = "test." + UUID.randomUUID().toString();
-	// System.setProperty(key, "value");
-	// try {
-	// assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-	// this.contextLoader.withSystemProperty(key, "newValue").run(context -> {
-	// assertThat(System.getProperties().getProperty(key)).isEqualTo("newValue");
-	// });
-	// assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
-	// }
-	// finally {
-	// System.clearProperty(key);
-	// }
-	// }
 
 	@Test
 	public void runWithSystemPropertiesWhenValueIsNullShouldRemoveProperty()
 			throws Exception {
-
+		String key = "test." + UUID.randomUUID().toString();
+		System.setProperty(key, "value");
+		try {
+			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
+			get().withSystemProperty(key, null).run(loaded -> {
+				assertThat(System.getProperties()).doesNotContainKey(key);
+			});
+			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
+		}
+		finally {
+			System.clearProperty(key);
+		}
 	}
 
 	@Test
 	public void runWithMultiplePropertyValuesShouldAllAllValues() throws Exception {
-
+		get().withPropertyValues("test.foo=1").withPropertyValues("test.bar=2")
+				.run(loaded -> {
+					Environment environment = loaded.getEnvironment();
+					assertThat(environment.getProperty("test.foo")).isEqualTo("1");
+					assertThat(environment.getProperty("test.bar")).isEqualTo("2");
+				});
 	}
-
-	// @Test
-	// public void envIsAdditive() {
-	// this.contextLoader.withPropertyValues("test.foo=1")
-	// .withPropertyValues("test.bar=2").run(context -> {
-	// ConfigurableEnvironment environment = context
-	// .getBean(ConfigurableEnvironment.class);
-	// assertThat(environment.getProperty("test.foo", Integer.class))
-	// .isEqualTo(1);
-	// assertThat(environment.getProperty("test.bar", Integer.class))
-	// .isEqualTo(2);
-	// });
-	// }
-	//
 
 	@Test
 	public void runWithPropertyValuesWhenHasExistingShouldReplaceValue()
 			throws Exception {
-
+		get().withPropertyValues("test.foo=1").withPropertyValues("test.foo=2")
+				.run(loaded -> {
+					Environment environment = loaded.getEnvironment();
+					assertThat(environment.getProperty("test.foo")).isEqualTo("2");
+				});
 	}
-
-	// @Test
-	// public void envOverridesExistingKey() {
-	// this.contextLoader.withPropertyValues("test.foo=1")
-	// .withPropertyValues("test.foo=2")
-	// .run(context -> assertThat(context.getBean(ConfigurableEnvironment.class)
-	// .getProperty("test.foo", Integer.class)).isEqualTo(2));
-	// }
-	//
 
 	@Test
 	public void runWithConfigurationsShouldRegisterConfigurations() throws Exception {
-
+		get().withUserConfiguration(FooConfig.class)
+				.run((loaded) -> assertThat(loaded).hasBean("foo"));
 	}
-
-	// @Test
-	// public void configurationIsProcessedInOrder() {
-	// this.contextLoader.withUserConfiguration(ConfigA.class, AutoConfigA.class).run(
-	// context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
-	// }
-
-	// @Test
-	// public void configurationIsProcessedBeforeAutoConfiguration() {
-	// this.contextLoader.autoConfig(AutoConfigA.class).register(ConfigA.class).load(
-	// context -> assertThat(context.getBean("a")).isEqualTo("autoconfig-a"));
-	// }
-	//
 
 	@Test
 	public void runWithMultipleConfigurationsShouldRegisterAllConfigurations()
 			throws Exception {
-
+		get().withUserConfiguration(FooConfig.class)
+				.withConfiguration(UserConfigurations.of(BarConfig.class))
+				.run((loaded) -> assertThat(loaded).hasBean("foo").hasBean("bar"));
 	}
 
-	// @Test
-	// public void configurationIsAdditive() {
-	// this.contextLoader.withUserConfiguration(AutoConfigA.class)
-	// .withUserConfiguration(AutoConfigB.class).run(context -> {
-	// assertThat(context.containsBean("a")).isTrue();
-	// assertThat(context.containsBean("b")).isTrue();
-	// });
-	// }
-
-	// @Test
-	// public void autoConfigureFirstIsAppliedProperly() {
-	// this.contextLoader.autoConfig(ConfigA.class).autoConfigFirst(AutoConfigA.class)
-	// .load(context -> assertThat(context.getBean("a")).isEqualTo("a"));
-	// }
-	//
-	// @Test
-	// public void autoConfigureFirstWithSeveralConfigsIsAppliedProperly() {
-	// this.contextLoader.autoConfig(ConfigA.class, ConfigB.class)
-	// .autoConfigFirst(AutoConfigA.class, AutoConfigB.class).load(context -> {
-	// assertThat(context.getBean("a")).isEqualTo("a");
-	// assertThat(context.getBean("b")).isEqualTo(1);
-	// });
-	// }
-	//
-	// @Test
-	// public void autoConfigurationIsAdditive() {
-	// this.contextLoader.autoConfig(AutoConfigA.class).autoConfig(AutoConfigB.class)
-	// .load(context -> {
-	// assertThat(context.containsBean("a")).isTrue();
-	// assertThat(context.containsBean("b")).isTrue();
-	// });
-	// }
-	//
-	// @Test
-	// public void loadAndFailWithExpectedException() {
-	// this.contextLoader.withUserConfiguration(ConfigC.class).loadAndFail(
-	// BeanCreationException.class, ex -> assertThat(ex.getMessage())
-	// .contains("Error creating bean with name 'c'"));
-	// }
-	//
-	// @Test
-	// public void loadAndFailWithWrongException() {
-	// this.thrown.expect(AssertionError.class);
-	// this.thrown.expectMessage("Wrong application context failure exception");
-	// this.contextLoader.withUserConfiguration(ConfigC.class)
-	// .loadAndFail(IllegalArgumentException.class, ex -> {
-	// });
-	// }
+	@Test
+	public void runWithFailedContextShouldReturnFailedAssertableContext()
+			throws Exception {
+		get().withUserConfiguration(FailingConfig.class)
+				.run((loaded) -> assertThat(loaded).hasFailed());
+	}
 
 	@Test
 	public void runWithClassLoaderShouldSetClassLoader() throws Exception {
@@ -224,6 +159,36 @@ public abstract class AbstractApplicationContextTesterTests<T extends AbstractAp
 				});
 	}
 
-	protected abstract AbstractApplicationContextTester<T, C, A> get();
+	protected abstract T get();
+
+	@Configuration
+	static class FailingConfig {
+
+		@Bean
+		public String foo() {
+			throw new IllegalStateException("Failed");
+		}
+
+	}
+
+	@Configuration
+	static class FooConfig {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	static class BarConfig {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+
+	}
 
 }

@@ -31,7 +31,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -97,9 +96,9 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 
 	private final Supplier<C> contextFactory;
 
-	private final List<String> propertyValues = new ArrayList<>();
+	private final TestPropertyValues environmentProperties;
 
-	private final List<String> systemProperties = new ArrayList<>();
+	private final TestPropertyValues systemProperties;
 
 	private ClassLoader classLoader;
 
@@ -114,6 +113,8 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	protected AbstractApplicationContextTester(Supplier<C> contextFactory) {
 		Assert.notNull(contextFactory, "ContextFactory must not be null");
 		this.contextFactory = contextFactory;
+		this.environmentProperties = TestPropertyValues.empty();
+		this.systemProperties = TestPropertyValues.empty();
 	}
 
 	/**
@@ -127,7 +128,20 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		this.propertyValues.addAll(Arrays.asList(pairs));
+		Arrays.stream(pairs).forEach(this.environmentProperties::and);
+		return self();
+	}
+
+	/**
+	 * Add the specified {@link Environment} property.
+	 * @param name the name of the property
+	 * @param value the value of the property
+	 * @return this instance
+	 * @see TestPropertyValues
+	 * @see #withSystemProperties(String...)
+	 */
+	public SELF withPropertyValue(String name, String value) {
+		this.environmentProperties.and(name, value);
 		return self();
 	}
 
@@ -142,7 +156,22 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		this.systemProperties.addAll(Arrays.asList(pairs));
+		Arrays.stream(pairs).forEach(this.systemProperties::and);
+		return self();
+	}
+
+	/**
+	 * Add the specified {@link System} property. System properties are added before the
+	 * context is {@link #run(ContextConsumer) run} and restored when the context is
+	 * closed.
+	 * @param name the property name
+	 * @param value the property value
+	 * @return this instance
+	 * @see TestPropertyValues
+	 * @see #withSystemProperties(String...)
+	 */
+	public SELF withSystemProperty(String name, String value) {
+		this.systemProperties.and(name, value);
 		return self();
 	}
 
@@ -203,7 +232,7 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
 	public void run(ContextConsumer<? super A> consumer) {
-		TestPropertyValues.of(this.systemProperties).applyToSystemProperties(() -> {
+		this.systemProperties.applyToSystemProperties(() -> {
 			try (A context = createAssertableContext()) {
 				accept(consumer, context);
 			}
@@ -241,13 +270,12 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 			Assert.isInstanceOf(DefaultResourceLoader.class, context);
 			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
 		}
-		if (!ObjectUtils.isEmpty(this.propertyValues)) {
-			TestPropertyValues.of(this.propertyValues).applyTo(context);
-		}
+		this.environmentProperties.applyTo(context);
 		Class<?>[] classes = Configurations.getClasses(this.configurations);
 		if (classes.length > 0) {
 			((AnnotationConfigRegistry) context).register(classes);
 		}
+		context.refresh();
 	}
 
 	private void accept(ContextConsumer<? super A> consumer, A context) {
