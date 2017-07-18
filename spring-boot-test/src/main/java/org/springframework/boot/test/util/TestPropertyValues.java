@@ -140,6 +140,7 @@ public final class TestPropertyValues {
 	/**
 	 * Add the properties to the {@link System#getProperties() system properties} for the
 	 * duration of the {@code call}, restoring previous values then the call completes.
+	 * @param <T> the result type
 	 * @param call the call to make
 	 * @return the result of the call
 	 */
@@ -254,7 +255,7 @@ public final class TestPropertyValues {
 
 		private final Map<String, String> previous;
 
-		public SystemPropertiesHandler() {
+		SystemPropertiesHandler() {
 			this.properties = new LinkedHashMap<>(TestPropertyValues.this.properties);
 			this.previous = apply(this.properties);
 		}

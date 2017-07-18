@@ -44,8 +44,8 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 
 	private final RuntimeException startupFailure;
 
-	public AssertProviderApplicationContextInvocationHandler(
-			Class<?> applicationContextType, Supplier<?> contextSupplier) {
+	AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType,
+			Supplier<?> contextSupplier) {
 		this.applicationContextType = applicationContextType;
 		Object contextOrStartupFailure = getContextOrStartupFailure(contextSupplier);
 		if (contextOrStartupFailure instanceof RuntimeException) {

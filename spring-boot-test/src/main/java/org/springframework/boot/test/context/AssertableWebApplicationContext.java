@@ -44,7 +44,7 @@ public interface AssertableWebApplicationContext
 	 * fails to start.
 	 * @return a {@link AssertableWebApplicationContext} instance
 	 */
-	public static AssertableWebApplicationContext get(
+	static AssertableWebApplicationContext get(
 			Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
 		return AssertProviderApplicationContext.get(AssertableWebApplicationContext.class,
 				ConfigurableWebApplicationContext.class, contextSupplier);

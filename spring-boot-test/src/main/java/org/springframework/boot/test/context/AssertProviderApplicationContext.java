@@ -52,6 +52,8 @@ interface AssertProviderApplicationContext<C extends ApplicationContext> extends
 		ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
 
 	/**
+	 * Return an assert for AspectJ.
+	 * @return an AspectJ assert
 	 * @deprecated use standard AssertJ {@code assertThat(context)...} calls instead.
 	 */
 	@Deprecated
@@ -68,6 +70,7 @@ interface AssertProviderApplicationContext<C extends ApplicationContext> extends
 	/**
 	 * Return the original source {@link ApplicationContext}, casting it to the requested
 	 * type.
+	 * @param <T> the context type
 	 * @param requiredType the required context type
 	 * @return the source application context
 	 * @throws IllegalStateException if the source context failed to start
@@ -86,6 +89,8 @@ interface AssertProviderApplicationContext<C extends ApplicationContext> extends
 
 	/**
 	 * Factory method to create a new {@link AssertProviderApplicationContext} instance.
+	 * @param <T> the assert provider type
+	 * @param <C> the context type
 	 * @param type the type of {@link AssertProviderApplicationContext} required (must be
 	 * an interface)
 	 * @param contextType the type of {@link ApplicationContext} being managed (must be an

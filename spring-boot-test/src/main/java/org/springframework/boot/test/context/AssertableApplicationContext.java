@@ -43,7 +43,7 @@ public interface AssertableApplicationContext
 	 * to start.
 	 * @return an {@link AssertableApplicationContext} instance
 	 */
-	public static AssertableApplicationContext get(
+	static AssertableApplicationContext get(
 			Supplier<? extends ConfigurableApplicationContext> contextSupplier) {
 		return AssertProviderApplicationContext.get(AssertableApplicationContext.class,
 				ConfigurableApplicationContext.class, contextSupplier);

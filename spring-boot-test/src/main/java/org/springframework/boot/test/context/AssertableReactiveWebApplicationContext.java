@@ -45,7 +45,7 @@ public interface AssertableReactiveWebApplicationContext extends
 	 * context fails to start.
 	 * @return a {@link AssertableReactiveWebApplicationContext} instance
 	 */
-	public static AssertableReactiveWebApplicationContext get(
+	static AssertableReactiveWebApplicationContext get(
 			Supplier<? extends ConfigurableReactiveWebApplicationContext> contextSupplier) {
 		return AssertProviderApplicationContext.get(
 				AssertableReactiveWebApplicationContext.class,

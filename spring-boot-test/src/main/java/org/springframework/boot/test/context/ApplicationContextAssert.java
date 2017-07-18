@@ -86,7 +86,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).hasSingleBean(Foo.class); </pre>
-	 * @param type the type of the bean
+	 * @param type the bean type
 	 * @return {@code this} assertion object.
 	 * @throws AssertionError if the application context did not start
 	 * @throws AssertionError if the application context does no beans of the given type
@@ -118,7 +118,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).doesNotHaveBean(Foo.class); </pre>
-	 * @param type the type of the bean
+	 * @param type the bean type
 	 * @return {@code this} assertion object.
 	 * @throws AssertionError if the application context did not start
 	 * @throws AssertionError if the application context contains any beans of the given
@@ -140,7 +140,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	}
 
 	/**
-	 * Verifies that the application context does not contain a beans of the given name
+	 * Verifies that the application context does not contain a beans of the given name.
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).doesNotHaveBean("fooBean"); </pre>
@@ -173,7 +173,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).getBeanNames(Foo.class).containsOnly("fooBean"); </pre>
-	 * @param type the type of the bean
+	 * @param <T> the bean type
+	 * @param type the bean type
 	 * @return array assertions for the bean names
 	 * @throws AssertionError if the application context did not start
 	 */
@@ -195,7 +196,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Example: <pre class="code">
 	 * assertThat(context).getBean(Foo.class).isInstanceOf(DefaultFoo.class);
 	 * assertThat(context).getBean(Bar.class).isNull();</pre>
-	 * @param type the type of the bean
+	 * @param <T> the bean type
+	 * @param type the bean type
 	 * @return bean assertions for the bean, or an assert on {@code null} if the no bean
 	 * is found
 	 * @throws AssertionError if the application context did not start
@@ -252,6 +254,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Example: <pre class="code">
 	 * assertThat(context).getBean("foo", Foo.class).isInstanceOf(DefaultFoo.class);
 	 * assertThat(context).getBean("foo", Foo.class).isNull();</pre>
+	 * @param <T> the bean type
 	 * @param name the name of the bean
 	 * @param type the bean type
 	 * @return bean assertions for the bean, or an assert on {@code null} if the no bean
@@ -294,6 +297,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).getBeans(Foo.class).containsKey("foo");
+	 * </pre>
+	 * @param <T> the bean type
 	 * @param type the bean type
 	 * @return bean assertions for the beans, or an assert on an empty {@code map} if the
 	 * no beans are found
@@ -315,6 +320,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * <p>
 	 * Example: <pre class="code">
 	 * assertThat(context).getFailure().containsMessage("missing bean");
+	 * </pre>
 	 * @return assertions on the cause of the failure
 	 * @throws AssertionError if the application context started without a failure
 	 */
@@ -327,6 +333,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Verifies that the application has failed to start.
 	 * <p>
 	 * Example: <pre class="code"> assertThat(context).hasFailed();
+	 * </pre>
 	 * @return {@code this} assertion object.
 	 * @throws AssertionError if the application context started without a failure
 	 */
@@ -343,6 +350,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 * Verifies that the application has not failed to start.
 	 * <p>
 	 * Example: <pre class="code"> assertThat(context).hasNotFailed();
+	 * </pre>
 	 * @return {@code this} assertion object.
 	 * @throws AssertionError if the application context failed to start
 	 */

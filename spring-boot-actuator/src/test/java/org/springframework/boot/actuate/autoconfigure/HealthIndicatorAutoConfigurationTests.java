@@ -105,11 +105,11 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void defaultHealthIndicatorsDisabledWithCustomOne() {
 		this.context.withUserConfiguration(CustomHealthIndicator.class)
 				.withPropertyValues("management.health.defaults.enabled:false")
-				.run(context -> {
-					Map<String, HealthIndicator> beans = context
+				.run((loaded) -> {
+					Map<String, HealthIndicator> beans = loaded
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
-					assertThat(context.getBean("customHealthIndicator"))
+					assertThat(loaded.getBean("customHealthIndicator"))
 							.isSameAs(beans.values().iterator().next());
 				});
 	}
@@ -162,8 +162,8 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void combinedHealthIndicator() {
 		this.context.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class,
 				RedisAutoConfiguration.class, MongoDataAutoConfiguration.class,
-				SolrAutoConfiguration.class)).run(context -> {
-					Map<String, HealthIndicator> beans = context
+				SolrAutoConfiguration.class)).run((loaded) -> {
+					Map<String, HealthIndicator> beans = loaded
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(4);
 				});
@@ -184,8 +184,8 @@ public class HealthIndicatorAutoConfigurationTests {
 				.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
 						DataSourceConfig.class)
 				.withPropertyValues("management.health.diskspace.enabled:false")
-				.run(context -> {
-					Map<String, HealthIndicator> beans = context
+				.run((loaded) -> {
+					Map<String, HealthIndicator> beans = loaded
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
 					HealthIndicator bean = beans.values().iterator().next();
@@ -213,8 +213,8 @@ public class HealthIndicatorAutoConfigurationTests {
 				.withPropertyValues(
 						"spring.datasource.test.validation-query:SELECT from FOOBAR",
 						"management.health.diskspace.enabled:false")
-				.run(context -> {
-					Map<String, HealthIndicator> beans = context
+				.run((loaded) -> {
+					Map<String, HealthIndicator> beans = loaded
 							.getBeansOfType(HealthIndicator.class);
 					assertThat(beans).hasSize(1);
 					HealthIndicator healthIndicator = beans.values().iterator().next();

@@ -778,7 +778,7 @@ public class WebMvcAutoConfigurationTests {
 	@Test
 	public void httpMessageConverterThatUsesConversionServiceDoesNotCreateACycle() {
 		this.context.withUserConfiguration(CustomHttpMessageConverter.class)
-				.run(context -> assertThat(context).hasFailed());
+				.run((loaded) -> assertThat(loaded).hasFailed());
 	}
 
 	protected Map<String, List<Resource>> getFaviconMappingLocations(

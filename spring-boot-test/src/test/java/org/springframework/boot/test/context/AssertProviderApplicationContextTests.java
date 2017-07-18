@@ -232,7 +232,7 @@ public class AssertProviderApplicationContextTests {
 				contextSupplier);
 	}
 
-	private static interface TestAssertProviderApplicationContext
+	private interface TestAssertProviderApplicationContext
 			extends AssertProviderApplicationContext<ApplicationContext> {
 
 	}
