@@ -16,13 +16,18 @@
 
 package org.springframework.boot.test.util;
 
-import java.util.HashMap;
+import java.io.Closeable;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+
+import com.google.common.collect.Streams;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -30,15 +35,16 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 
 /**
- * Test utilities for adding properties to the environment. The type of
- * {@link PropertySource} to be added can be specified by {@link Type}.
+ * Test utilities for adding properties. Properties can be applied to a Spring
+ * {@link Environment} or to the {@link System#getProperties() system environment}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public final class TestPropertyValues {
 
-	private final Map<String, Object> properties = new HashMap<>();
+	private final Map<String, Object> properties = new LinkedHashMap<>();
 
 	private TestPropertyValues(String[] pairs) {
 		addProperties(pairs);
@@ -120,6 +126,24 @@ public final class TestPropertyValues {
 		ConfigurationPropertySources.attach(environment);
 	}
 
+	/**
+	 * Add the properties to the {@link System#getProperties() system properties} for the
+	 * duration of the {@code call}, restoring previous values then the call completes.
+	 * @param call the call to make
+	 * @return the result of the call
+	 */
+	public <T> T applyToSystemProperties(Callable<T> call) {
+		try (SystemPropertiesHandler handler = new SystemPropertiesHandler()) {
+			return call.call();
+		}
+		catch (RuntimeException ex) {
+			throw ex;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private void addToSources(MutablePropertySources sources, Type type, String name) {
 		if (sources.contains(name)) {
@@ -134,6 +158,21 @@ public final class TestPropertyValues {
 				? new MapPropertySource(name, this.properties)
 				: new SystemEnvironmentPropertySource(name, this.properties));
 		sources.addFirst(source);
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given property pairs. Name-value pairs can be specified with colon (":") or equals
+	 * ("=") separators.
+	 * @param pairs The key value pairs for properties that need to be added to the
+	 * environment
+	 * @return the new instance
+	 */
+	public static TestPropertyValues of(Iterable<String> pairs) {
+		if (pairs == null) {
+			return of();
+		}
+		return of(Streams.stream(pairs).toArray(String[]::new));
 	}
 
 	/**
@@ -171,6 +210,43 @@ public final class TestPropertyValues {
 
 		public Class<? extends MapPropertySource> getSourceClass() {
 			return this.sourceClass;
+		}
+
+	}
+
+	/**
+	 * Handler to apply and restore system properties.
+	 */
+	private class SystemPropertiesHandler implements Closeable {
+
+		private final Map<String, Object> properties;
+
+		private final Map<String, String> previous;
+
+		public SystemPropertiesHandler() {
+			this.properties = new LinkedHashMap<>(TestPropertyValues.this.properties);
+			this.previous = apply(this.properties);
+		}
+
+		private Map<String, String> apply(Map<String, ?> properties) {
+			Map<String, String> previous = new LinkedHashMap<>();
+			properties.forEach((key, value) -> previous.put(key,
+					System.setProperty(key, (String) value)));
+			return previous;
+		}
+
+		@Override
+		public void close() {
+			this.previous.forEach(this::restore);
+		};
+
+		private void restore(String key, String value) {
+			if (value == null) {
+				System.clearProperty(key);
+			}
+			else {
+				System.setProperty(key, value);
+			}
 		}
 
 	}

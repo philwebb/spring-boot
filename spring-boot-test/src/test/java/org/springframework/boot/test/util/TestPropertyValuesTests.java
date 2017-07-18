@@ -95,4 +95,30 @@ public class TestPropertyValuesTests {
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
 	}
 
+	@Test
+	public void applyToSystemPropertiesShouldSetSystemProperties() throws Exception {
+		TestPropertyValues.of("foo=bar").applyToSystemProperties(() -> {
+			assertThat(System.getProperty("foo")).isEqualTo("bar");
+			return null;
+		});
+	}
+
+	@Test
+	public void applyToSystemPropertiesShouldRestoreSystemProperties() throws Exception {
+		System.setProperty("foo", "bar1");
+		System.clearProperty("baz");
+		try {
+			TestPropertyValues.of("foo=bar2", "baz=bing").applyToSystemProperties(() -> {
+				assertThat(System.getProperty("foo")).isEqualTo("bar2");
+				assertThat(System.getProperty("baz")).isEqualTo("bing");
+				return null;
+			});
+			assertThat(System.getProperty("foo")).isEqualTo("bar1");
+			assertThat(System.getProperties()).doesNotContainKey("baz");
+		}
+		finally {
+			System.clearProperty("foo");
+		}
+	}
+
 }

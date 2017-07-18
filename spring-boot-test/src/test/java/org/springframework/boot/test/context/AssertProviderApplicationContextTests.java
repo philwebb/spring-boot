@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +45,7 @@ public class AssertProviderApplicationContextTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Mock
-	private ApplicationContext mockContext;
+	private ConfigurableApplicationContext mockContext;
 
 	private RuntimeException startupFailure;
 
@@ -196,7 +197,7 @@ public class AssertProviderApplicationContextTests {
 				this.mockContextSupplier);
 		assertThat(context.toString())
 				.startsWith(
-						"Started application org.springframework.context.ApplicationContext$MockitoMock")
+						"Started application org.springframework.context.ConfigurableApplicationContext$MockitoMock")
 				.endsWith("[id=<null>,applicationName=<null>,beanDefinitionCount=0]");
 	}
 
@@ -208,6 +209,14 @@ public class AssertProviderApplicationContextTests {
 		assertThat(context.toString()).isEqualTo("Unstarted application context "
 				+ "org.springframework.context.ApplicationContext"
 				+ "[startupFailure=java.lang.RuntimeException]");
+	}
+
+	@Test
+	public void closeShouldCloseContext() throws Exception {
+		AssertProviderApplicationContext<ApplicationContext> context = get(
+				this.mockContextSupplier);
+		context.close();
+		verify(this.mockContext).close();
 	}
 
 	private void expectStartupFailure() {

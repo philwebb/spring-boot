@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import java.io.Closeable;
 import java.lang.reflect.Proxy;
 import java.util.function.Supplier;
 
@@ -47,8 +48,8 @@ import org.springframework.util.Assert;
  * @see AssertableReactiveWebApplicationContext
  * @see ApplicationContextAssert
  */
-interface AssertProviderApplicationContext<C extends ApplicationContext>
-		extends ApplicationContext, AssertProvider<ApplicationContextAssert<C>> {
+interface AssertProviderApplicationContext<C extends ApplicationContext> extends
+		ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
 
 	/**
 	 * @deprecated use standard AssertJ {@code assertThat(context)...} calls instead.
@@ -79,6 +80,9 @@ interface AssertProviderApplicationContext<C extends ApplicationContext>
 	 * @return the startup failure or {@code null}
 	 */
 	Throwable getStartupFailure();
+
+	@Override
+	void close();
 
 	/**
 	 * Factory method to create a new {@link AssertProviderApplicationContext} instance.

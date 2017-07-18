@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.context;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -79,6 +81,9 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 		if (isAssertThat(method)) {
 			return getAssertThat(proxy);
 		}
+		if (isCloseMethod(method)) {
+			return invokeClose();
+		}
 		return invokeApplicationContextMethod(method, args);
 	}
 
@@ -131,6 +136,17 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	private Object getAssertThat(Object proxy) {
 		return new ApplicationContextAssert<ApplicationContext>(
 				(ApplicationContext) proxy, this.startupFailure);
+	}
+
+	private boolean isCloseMethod(Method method) {
+		return ("close".equals(method.getName()) && method.getParameterCount() == 0);
+	}
+
+	private Object invokeClose() throws IOException {
+		if (this.applicationContext instanceof Closeable) {
+			((Closeable) this.applicationContext).close();
+		}
+		return null;
 	}
 
 	private Object invokeApplicationContextMethod(Method method, Object[] args)

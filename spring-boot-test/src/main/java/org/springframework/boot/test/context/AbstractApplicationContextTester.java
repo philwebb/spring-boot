@@ -16,12 +16,9 @@
 
 package org.springframework.boot.test.context;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.annotation.Configurations;
@@ -29,8 +26,13 @@ import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Tester utility design to manage the lifecycle of an {@link ApplicationContext} and
@@ -200,151 +202,50 @@ abstract class AbstractApplicationContextTester<SELF extends AbstractApplication
 	 * upon completion.
 	 * @param consumer the consumer of the created {@link ApplicationContext}
 	 */
+	@SuppressWarnings("unchecked")
 	public void run(ContextConsumer<? super A> consumer) {
-		doLoad(consumer::accept);
-	}
-
-	protected void doLoad(ContextHandler<A> contextHandler) {
-		try (ApplicationContextLifecycleHandler handler = new ApplicationContextLifecycleHandler()) {
+		ResolvableType resolvableType = ResolvableType
+				.forClass(AbstractApplicationContextTester.class, getClass());
+		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
+		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
+		try (A assertableContext = AssertProviderApplicationContext.get(assertType,
+				contextType, this::createAndLoadContext)) {
 			try {
-				A ctx = handler.load();
-				contextHandler.handle(ctx);
-			}
-			catch (RuntimeException ex) {
-				throw ex;
+				consumer.accept(assertableContext);
 			}
 			catch (Throwable ex) {
-				throw new IllegalStateException(
-						"An unexpected error occurred: " + ex.getMessage(), ex);
+				ReflectionUtils.rethrowRuntimeException(ex);
 			}
 		}
 	}
-	//
-	// /**
-	// * Create and refresh a new {@link ApplicationContext} based on the current state of
-	// * this loader that this expected to fail. If the context does not fail, an
-	// * {@link AssertionError} is thrown. Otherwise the exception is consumed by the
-	// * specified {@link Consumer} with no expectation on the type of the exception.
-	// * @param consumer the consumer of the failure
-	// */
-	// public void loadAndFail(Consumer<Throwable> consumer) {
-	// loadAndFail(Throwable.class, consumer);
-	// }
-	//
-	// /**
-	// * Create and refresh a new {@link ApplicationContext} based on the current state of
-	// * this loader that this expected to fail. If the context does not fail, an
-	// * {@link AssertionError} is thrown. If the exception does not match the specified
-	// * {@code exceptionType}, an {@link AssertionError} is thrown as well. If the
-	// * exception type matches, it is consumed by the specified {@link Consumer}.
-	// * @param exceptionType the expected type of the failure
-	// * @param consumer the consumer of the failure
-	// * @param <E> the expected type of the failure
-	// */
-	// public <E extends Throwable> void loadAndFail(Class<E> exceptionType,
-	// Consumer<E> consumer) {
-	// try (ApplicationContextLifecycleHandler handler = new
-	// ApplicationContextLifecycleHandler()) {
-	// handler.load();
-	// throw new AssertionError("ApplicationContext should have failed");
-	// }
-	// catch (Throwable ex) {
-	// assertThat(ex).as("Wrong application context failure exception")
-	// .isInstanceOf(exceptionType);
-	// consumer.accept(exceptionType.cast(ex));
-	// }
-	// }
 
-	private A configureApplicationContext() {
-		throw new IllegalStateException();
-		// C context = ContextTester.this.contextFactory.get();
-		// if (this.parent != null) {
-		// context.setParent(this.parent);
-		// }
-		// if (this.classLoader != null) {
-		// Assert.isInstanceOf(DefaultResourceLoader.class, context);
-		// ((DefaultResourceLoader) context).setClassLoader(this.classLoader);
-		// }
-		// if (!ObjectUtils.isEmpty(this.environmentProperties)) {
-		// TestPropertyValues
-		// .of(this.environmentProperties
-		// .toArray(new String[this.environmentProperties.size()]))
-		// .applyTo(context);
-		// }
-		// Class<?>[] configurationClasses =
-		// Configurations.getClasses(this.configurations);
-		// if (!ObjectUtils.isEmpty(configurationClasses)) {
-		// ((AnnotationConfigRegistry) context).register(configurationClasses);
-		// }
-		// return context;
+	private C createAndLoadContext() {
+		C context = this.contextFactory.get();
+		try {
+			configureContext(context);
+			return context;
+		}
+		catch (RuntimeException ex) {
+			context.close();
+			throw ex;
+		}
 	}
 
-	/**
-	 * An internal callback interface that handles a concrete {@link ApplicationContext}
-	 * type.
-	 * @param <T> the type of the application context
-	 */
-	protected interface ContextHandler<T> {
-
-		void handle(T context) throws Throwable;
-
-	}
-
-	/**
-	 * Handles the lifecycle of the {@link ApplicationContext}.
-	 */
-	private class ApplicationContextLifecycleHandler implements Closeable {
-
-		private final Map<String, String> customSystemProperties;
-
-		private final Map<String, String> previousSystemProperties = new HashMap<>();
-
-		private ConfigurableApplicationContext context;
-
-		ApplicationContextLifecycleHandler() {
-			this.customSystemProperties = new HashMap<>();
-			// AbstractApplicationContextTester.this.systemProperties);
+	private void configureContext(C context) {
+		if (this.parent != null) {
+			context.setParent(this.parent);
 		}
-
-		public A load() {
-			throw new IllegalStateException();
-			// setCustomSystemProperties();
-			// C context = configureApplicationContext();
-			// context.refresh();
-			// this.context = context;
-			// return context;
+		if (this.classLoader != null) {
+			Assert.isInstanceOf(DefaultResourceLoader.class, context);
+			((DefaultResourceLoader) context).setClassLoader(this.classLoader);
 		}
-
-		@Override
-		public void close() {
-			try {
-				if (this.context != null) {
-					this.context.close();
-				}
-			}
-			finally {
-				unsetCustomSystemProperties();
-			}
+		if (!ObjectUtils.isEmpty(this.propertyValues)) {
+			TestPropertyValues.of(this.propertyValues).applyTo(context);
 		}
-
-		private void setCustomSystemProperties() {
-			this.customSystemProperties.forEach((key, value) -> {
-				String previous = System.setProperty(key, value);
-				this.previousSystemProperties.put(key, previous);
-			});
+		Class<?>[] classes = Configurations.getClasses(this.configurations);
+		if (classes.length > 0) {
+			((AnnotationConfigRegistry) context).register(classes);
 		}
-
-		private void unsetCustomSystemProperties() {
-			this.previousSystemProperties.forEach((key, value) -> {
-				if (value != null) {
-					System.setProperty(key, value);
-				}
-				else {
-					System.clearProperty(key);
-				}
-			});
-		}
-
 	}
 
 }
