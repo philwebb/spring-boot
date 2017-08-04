@@ -35,6 +35,8 @@
 			<modules>
 				<module>spring-boot-project</module>
 				<module>spring-boot-samples</module>
+				<module>spring-boot-integration-tests</module>
+				<module>spring-boot-deployment-tests</module>
 			</modules>
 		</profile>
 		<profile>
