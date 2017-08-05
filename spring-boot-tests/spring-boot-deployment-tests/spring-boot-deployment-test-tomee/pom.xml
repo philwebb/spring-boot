@@ -11,7 +11,7 @@
 	<name>Spring Boot TomEE Deployment Test</name>
 	<description>Spring Boot TomEE Deployment Test</description>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<tomee.version>7.0.2</tomee.version>
 		<cargo.container.id>tomee1x</cargo.container.id>
 		<cargo.container.url>

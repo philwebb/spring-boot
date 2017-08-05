@@ -10,7 +10,7 @@
 	<name>Spring Boot DevTools Tests</name>
 	<description>${project.name}</description>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 	</properties>
 	<dependencies>
 		<dependency>

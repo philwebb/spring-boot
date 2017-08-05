@@ -11,7 +11,7 @@
 	<name>Spring Boot Glassfish Deployment Test</name>
 	<description>Spring Boot Glassfish Deployment Test</description>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<glassfish.version>4.1.1</glassfish.version>
 		<cargo.container.id>glassfish4x</cargo.container.id>
 		<cargo.container.url>http://download.oracle.com/glassfish/${glassfish.version}/release/glassfish-${glassfish.version}.zip</cargo.container.url>

@@ -11,7 +11,7 @@
 	<name>Spring Boot Tomcat Deployment Test</name>
 	<description>Spring Boot Tomcat Deployment Test</description>
 	<properties>
-		<main.basedir>${basedir}/../..</main.basedir>
+		<main.basedir>${basedir}/../../..</main.basedir>
 		<cargo.container.id>tomcat8x</cargo.container.id>
 		<cargo.container.url>
 			http://central.maven.org/maven2/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip
