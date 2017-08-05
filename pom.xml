@@ -12,7 +12,7 @@
 		<revision>2.0.0.BUILD-SNAPSHOT</revision>
 		<main.basedir>${basedir}</main.basedir>
 	</properties>
-	<!-- Keep most elements in profiles so they are stripped out during maven-flatten -->
+	<!-- Most elementss are in profiles so they are stripped out during maven-flatten -->
 	<profiles>
 		<!-- Default profile for command line build -->
 		<profile>
@@ -22,43 +22,8 @@
 			</activation>
 			<modules>
 				<module>spring-boot-project</module>
+				<module>spring-boot-tests</module>
 			</modules>
-			<build>
-				<plugins>
-					<plugin>
-						<!-- We use invoker so that the spring-boot-maven-plugin can be used -->
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-invoker-plugin</artifactId>
-						<inherited>false</inherited>
-						<configuration>
-							<projectsDirectory>spring-boot-samples/</projectsDirectory>
-							<skipInvocation>${skipTests}</skipInvocation>
-							<streamLogs>true</streamLogs>
-							<pomIncludes>
-								<pomInclude>pom.xml</pomInclude>
-							</pomIncludes>
-						</configuration>
-						<executions>
-							<execution>
-								<id>integration-test</id>
-								<phase>install</phase>
-								<goals>
-									<goal>integration-test</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-antrun-plugin</artifactId>
-						<inherited>false</inherited> <executions> <execution> <id>clean-samples</id>
-						<phase>clean</phase> <goals> <goal>run</goal> </goals> <configuration> <target>
-						<delete includeemptydirs="true"> <fileset dir="${main.basedir}/spring-boot-samples"
-						includes="**/target/" /> </delete> </target> </configuration> </execution>
-						</executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-clean-plugin</artifactId> <inherited>false</inherited>
-						<executions> <execution> <id>clean-samples</id> <phase>clean</phase> <goals>
-						<goal>clean</goal> </goals> </execution> </executions> </plugin> -->
-				</plugins>
-			</build>
 		</profile>
 		<!-- M2E profile to allow easy import into Eclipse -->
 		<profile>
@@ -70,9 +35,7 @@
 			</activation>
 			<modules>
 				<module>spring-boot-project</module>
-				<module>spring-boot-samples</module>
-				<module>spring-boot-integration-tests</module>
-				<module>spring-boot-deployment-tests</module>
+				<module>spring-boot-tests</module>
 			</modules>
 		</profile>
 		<profile>
