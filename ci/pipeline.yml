@@ -14,7 +14,7 @@ jobs:
     file: spring-boot/ci/tasks/build-project.yml
   - aggregate:
     - task: build-samples
-      file: spring-boot/ci/tasks/build-samples.yml
+      file: spring-boot/ci/tasks/build-sample-tests.yml
     - task: build-integration-tests
       file: spring-boot/ci/tasks/build-integration-tests.yml
     - task: build-deployment-tests

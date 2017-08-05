@@ -8,5 +8,5 @@ setup_symlinks
 cleanup_maven_repo
 
 pushd spring-boot > /dev/null
-run_maven -f spring-boot-samples/pom.xml clean install -U -Dfull -Drepository=file://${repository}
+run_maven -f spring-boot-tests/spring-boot-sample-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository}
 popd > /dev/null
