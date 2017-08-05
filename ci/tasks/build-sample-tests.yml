@@ -12,4 +12,4 @@ caches:
 - path: m2
 - path: gradle
 run:
-  path: spring-boot/ci/scripts/build-samples.sh
+  path: spring-boot/ci/scripts/build-sample-tests.sh
