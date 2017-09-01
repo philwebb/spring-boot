@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
+package org.springframework.boot.actuate.endpoint.infrastructure;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.support.EndpointEnablementProvider;
+import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;
 import org.springframework.boot.endpoint.EndpointDiscoverer;
 import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.endpoint.EndpointInfo;

@@ -17,4 +17,4 @@
 /**
  * Support classes for the Actuator's endpoint auto-configuration.
  */
-package org.springframework.boot.actuate.autoconfigure.endpoint.support;
+package org.springframework.boot.actuate.endpoint.support;

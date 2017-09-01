@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Arrays;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

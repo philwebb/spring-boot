@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.support;
+package org.springframework.boot.actuate.endpoint.support;
 
 /**
  * Determines if an endpoint is enabled or not.

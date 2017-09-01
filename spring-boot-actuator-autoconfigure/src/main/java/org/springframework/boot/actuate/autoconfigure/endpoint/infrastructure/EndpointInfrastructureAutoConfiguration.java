@@ -27,6 +27,7 @@ import javax.management.MBeanServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;

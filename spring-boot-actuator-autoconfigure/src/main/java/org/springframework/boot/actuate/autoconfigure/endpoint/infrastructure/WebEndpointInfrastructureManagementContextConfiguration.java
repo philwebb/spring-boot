@@ -25,6 +25,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

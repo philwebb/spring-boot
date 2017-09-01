@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.jmx.EndpointMBean;
 import org.springframework.boot.endpoint.jmx.EndpointMBeanRegistrar;
