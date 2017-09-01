@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import javax.servlet.http.HttpServletRequest;
 

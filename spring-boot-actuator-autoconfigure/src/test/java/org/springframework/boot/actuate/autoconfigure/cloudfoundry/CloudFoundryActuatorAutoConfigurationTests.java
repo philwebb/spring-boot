@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Arrays;
 
@@ -22,6 +22,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryActuatorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointServletHandlerMapping;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SkipSslVerificationHttpRequestFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.EndpointInfrastructureAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;

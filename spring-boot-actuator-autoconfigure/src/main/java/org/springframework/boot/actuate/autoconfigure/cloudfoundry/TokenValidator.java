@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.cloudfoundry;
+package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -26,7 +26,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.cloudfoundry.CloudFoundryAuthorizationException.Reason;
+import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.util.Base64Utils;
 
 /**
