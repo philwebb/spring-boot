@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.util.ClassUtils;
 
 /**

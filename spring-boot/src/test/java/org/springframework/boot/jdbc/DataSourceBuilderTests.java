@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
 
 import javax.sql.DataSource;
 
@@ -25,8 +28,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.After;
 import org.junit.Test;
-
-import org.springframework.boot.test.context.HidePackagesClassLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,6 +69,26 @@ public class DataSourceBuilderTests {
 						"org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
+	}
+
+	final class HidePackagesClassLoader extends URLClassLoader {
+
+		private final String[] hiddenPackages;
+
+		HidePackagesClassLoader(String... hiddenPackages) {
+			super(new URL[0], HidePackagesClassLoader.class.getClassLoader());
+			this.hiddenPackages = hiddenPackages;
+		}
+
+		@Override
+		protected Class<?> loadClass(String name, boolean resolve)
+				throws ClassNotFoundException {
+			if (Arrays.stream(this.hiddenPackages).anyMatch(name::startsWith)) {
+				throw new ClassNotFoundException();
+			}
+			return super.loadClass(name, resolve);
+		}
+
 	}
 
 }

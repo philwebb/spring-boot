@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc.metadata;
+package org.springframework.boot.jdbc.metadata;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

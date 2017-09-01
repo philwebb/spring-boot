@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc.metadata;
+package org.springframework.boot.jdbc.metadata;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.tomcat.jdbc.pool.ConnectionPool;
+import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
- * {@link DataSourcePoolMetadata} for an Apache Commons DBCP2 {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for a Tomcat DataSource.
  *
  * @author Stephane Nicoll
- * @since 1.3.1
  */
-public class CommonsDbcp2DataSourcePoolMetadata
-		extends AbstractDataSourcePoolMetadata<BasicDataSource> {
+public class TomcatDataSourcePoolMetadata
+		extends AbstractDataSourcePoolMetadata<DataSource> {
 
-	public CommonsDbcp2DataSourcePoolMetadata(BasicDataSource dataSource) {
+	public TomcatDataSourcePoolMetadata(DataSource dataSource) {
 		super(dataSource);
 	}
 
 	@Override
 	public Integer getActive() {
-		return getDataSource().getNumActive();
+		ConnectionPool pool = getDataSource().getPool();
+		return (pool == null ? 0 : pool.getActive());
 	}
 
 	@Override
 	public Integer getMax() {
-		return getDataSource().getMaxTotal();
+		return getDataSource().getMaxActive();
 	}
 
 	@Override
