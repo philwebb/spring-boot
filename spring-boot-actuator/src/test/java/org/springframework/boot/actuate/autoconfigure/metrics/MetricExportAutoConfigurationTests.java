@@ -25,9 +25,9 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.actuate.endpoint.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.MetricsEndpointMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.actuate.metrics.export.MetricExporters;
 import org.springframework.boot.actuate.metrics.statsd.StatsdMetricWriter;

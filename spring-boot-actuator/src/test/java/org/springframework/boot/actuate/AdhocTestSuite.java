@@ -21,7 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import org.springframework.boot.actuate.endpoint.FlywayEndpointTests;
+import org.springframework.boot.actuate.flyway.FlywayEndpointTests;
 import org.springframework.boot.actuate.health.DataSourceHealthIndicatorTests;
 
 /**

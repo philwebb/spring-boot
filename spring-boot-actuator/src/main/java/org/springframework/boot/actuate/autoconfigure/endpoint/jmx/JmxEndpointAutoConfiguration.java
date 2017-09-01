@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
+import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
+import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
-import org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

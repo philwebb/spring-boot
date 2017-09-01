@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.jolokia;
 import org.jolokia.http.AgentServlet;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
-import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
+import org.springframework.boot.actuate.web.servlet.ManagementServletContext;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

@@ -28,18 +28,21 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Nicolas Lejeune
  * @author Stephane Nicoll
+ * @since 2.0.0
  */
-class Sanitizer {
+public class Sanitizer {
+
+	// FIXME rename
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
 	private Pattern[] keysToSanitize;
 
-	Sanitizer() {
+	public Sanitizer() {
 		this("password", "secret", "key", "token", ".*credentials.*", "vcap_services");
 	}
 
-	Sanitizer(String... keysToSanitize) {
+	public Sanitizer(String... keysToSanitize) {
 		setKeysToSanitize(keysToSanitize);
 	}
 

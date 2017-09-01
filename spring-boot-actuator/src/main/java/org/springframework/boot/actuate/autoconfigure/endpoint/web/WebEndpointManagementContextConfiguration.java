@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.endpoint.web.HeapDumpWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.LogFileWebEndpoint;
+import org.springframework.boot.actuate.logger.LogFileWebEndpoint;
+import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

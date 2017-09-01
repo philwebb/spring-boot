@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
-import org.springframework.boot.actuate.endpoint.mvc.ManagementServletContext;
+import org.springframework.boot.actuate.web.servlet.ManagementServletContext;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;

@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import com.codahale.metrics.MetricRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.actuate.metrics.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.dropwizard.DropwizardMetricServices;
 import org.springframework.boot.actuate.metrics.dropwizard.ReservoirFactory;
 import org.springframework.boot.actuate.metrics.reader.MetricRegistryMetricReader;

@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.endpoint.AuditEventsEndpoint;
-import org.springframework.boot.actuate.endpoint.jmx.AuditEventsJmxEndpointExtension;
+import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
+import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

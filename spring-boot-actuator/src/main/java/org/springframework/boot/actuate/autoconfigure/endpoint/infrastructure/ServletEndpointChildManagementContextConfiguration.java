@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
-import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
+import org.springframework.boot.actuate.web.servlet.ManagementErrorEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
