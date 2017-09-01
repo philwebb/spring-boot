@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet.error;
+package org.springframework.boot.web.servlet.error;
 
 import java.util.Map;
 

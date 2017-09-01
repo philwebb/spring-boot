@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet.error;
+package org.springframework.boot.web.servlet.error;
 
 import java.util.Collections;
 import java.util.Date;
@@ -24,6 +24,7 @@ import javax.servlet.ServletException;
 
 import org.junit.Test;
 
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
