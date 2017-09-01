@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.web.servlet;
 
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorController;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
