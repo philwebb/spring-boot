@@ -25,28 +25,20 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-		</dependency>
-		<dependency>
+		<!-- Optional -->
+ 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<!-- Optional -->
-		<dependency>
+
+
+<!-- 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
@@ -72,6 +64,7 @@
 			<artifactId>java-statsd-client</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
@@ -87,31 +80,37 @@
 			<artifactId>lettuce-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>io.searchbox</groupId>
 			<artifactId>jest</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
@@ -128,11 +127,13 @@
 			<artifactId>commons-dbcp2</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-el</artifactId>
@@ -143,6 +144,7 @@
 			<artifactId>tomcat-jdbc</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
@@ -153,6 +155,7 @@
 			<artifactId>flyway-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
@@ -173,6 +176,7 @@
 			<artifactId>jolokia-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-spring4-embedded</artifactId>
@@ -196,6 +200,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webflux</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -243,22 +252,22 @@
 			<artifactId>spring-data-solr</artifactId>
 			<optional>true</optional>
 			<exclusions>
-				<!-- the version of solr here is incompatible with jackson-xml because
-					of an old woodstox -->
+			<!-- the version of solr here is incompatible with jackson-xml because
+					of an old woodstox  -->
 				<exclusion>
 					<artifactId>wstx-asl</artifactId>
 					<groupId>org.codehaus.woodstox</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+ 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
+			<artifactId>spring-security-core</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -266,19 +275,20 @@
 			<artifactId>spring-security-web</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- Annotation processing -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure-processor</artifactId>
+<!-- 		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
 			<optional>true</optional>
 		</dependency>
+		-->
+		<!-- Annotation processing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
-		<dependency>
+ 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
 			<scope>test</scope>
@@ -288,16 +298,19 @@
 			<artifactId>spring-boot-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<scope>test</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>io.projectreactor.ipc</groupId>
 			<artifactId>reactor-netty</artifactId>
@@ -379,5 +392,6 @@
 			<artifactId>jedis</artifactId>
 			<optional>true</optional>
 		</dependency>
+		</dependency> -->
 	</dependencies>
 </project>
