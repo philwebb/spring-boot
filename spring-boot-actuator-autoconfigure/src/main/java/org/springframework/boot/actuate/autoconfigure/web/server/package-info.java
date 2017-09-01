@@ -16,6 +16,5 @@
 
 /**
  * Actuator web server support.
- *
  */
-package org.springframework.boot.actuate.web.server;
+package org.springframework.boot.actuate.autoconfigure.web.server;

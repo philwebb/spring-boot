@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 /**
  * Provides information about the management servlet context for MVC controllers to use.

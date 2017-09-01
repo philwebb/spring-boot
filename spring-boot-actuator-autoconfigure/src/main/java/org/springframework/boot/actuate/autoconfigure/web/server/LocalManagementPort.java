@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.server;
+package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
