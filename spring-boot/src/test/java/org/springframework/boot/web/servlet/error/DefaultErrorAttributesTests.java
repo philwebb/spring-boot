@@ -24,7 +24,6 @@ import javax.servlet.ServletException;
 
 import org.junit.Test;
 
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
