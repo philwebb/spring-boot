@@ -25,10 +25,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 

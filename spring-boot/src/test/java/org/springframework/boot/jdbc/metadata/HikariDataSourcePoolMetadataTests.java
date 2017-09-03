@@ -19,8 +19,6 @@ package org.springframework.boot.jdbc.metadata;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.Before;
 
-import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
