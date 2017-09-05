@@ -26,9 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
-import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
-import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.jmx.JmxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
