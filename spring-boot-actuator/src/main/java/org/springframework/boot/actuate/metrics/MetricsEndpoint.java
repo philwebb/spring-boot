@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.Selector;

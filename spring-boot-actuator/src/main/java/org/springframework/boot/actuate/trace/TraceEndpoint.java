@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.trace;
 
 import java.util.List;
 
-import org.springframework.boot.actuate.trace.Trace;
-import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.util.Assert;

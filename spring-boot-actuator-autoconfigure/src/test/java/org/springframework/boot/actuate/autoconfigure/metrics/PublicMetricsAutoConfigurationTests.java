@@ -33,11 +33,11 @@ import org.springframework.boot.actuate.autoconfigure.cache.CacheStatisticsAutoC
 import org.springframework.boot.actuate.metrics.CachePublicMetrics;
 import org.springframework.boot.actuate.metrics.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.PublicMetrics;
 import org.springframework.boot.actuate.metrics.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.SystemPublicMetrics;
 import org.springframework.boot.actuate.metrics.TomcatPublicMetrics;
+import org.springframework.boot.actuate.metrics.reader.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.rich.RichGauge;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.actuate.servlet.MockServletWebServerFactory;

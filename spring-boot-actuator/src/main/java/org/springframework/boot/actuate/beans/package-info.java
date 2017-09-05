@@ -15,6 +15,6 @@
  */
 
 /**
- * Actuator classes realting to Spring Beans
+ * Actuator classes relating to Spring Beans.
  */
 package org.springframework.boot.actuate.beans;

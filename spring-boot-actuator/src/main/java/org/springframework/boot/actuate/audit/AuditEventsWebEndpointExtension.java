@@ -21,8 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.boot.endpoint.web.WebEndpointExtension;
 

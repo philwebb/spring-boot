@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
 import org.springframework.boot.actuate.metrics.CachePublicMetrics;
 import org.springframework.boot.actuate.metrics.DataSourcePublicMetrics;
-import org.springframework.boot.actuate.metrics.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.PublicMetrics;
 import org.springframework.boot.actuate.metrics.RichGaugeReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.SystemPublicMetrics;
@@ -39,6 +38,7 @@ import org.springframework.boot.actuate.metrics.TomcatPublicMetrics;
 import org.springframework.boot.actuate.metrics.integration.SpringIntegrationMetricReader;
 import org.springframework.boot.actuate.metrics.reader.CompositeMetricReader;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.reader.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

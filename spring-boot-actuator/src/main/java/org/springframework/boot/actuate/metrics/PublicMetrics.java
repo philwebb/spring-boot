@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.metrics;
 
 import java.util.Collection;
 
-import org.springframework.boot.actuate.metrics.Metric;
-
 /**
  * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
  * Implementations should take care that the metrics they provide have unique names in the

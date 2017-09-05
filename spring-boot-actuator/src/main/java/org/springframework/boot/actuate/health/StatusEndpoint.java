@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 

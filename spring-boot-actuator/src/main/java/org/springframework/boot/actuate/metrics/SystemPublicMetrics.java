@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 

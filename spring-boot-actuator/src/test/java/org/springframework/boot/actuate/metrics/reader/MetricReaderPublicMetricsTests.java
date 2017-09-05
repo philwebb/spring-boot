@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.reader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,6 @@ import java.util.List;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.MetricReaderPublicMetrics;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

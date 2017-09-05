@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.reader;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 
 /**
  * {@link MetricReader} that pulls all current values out of the {@link MetricsEndpoint}.

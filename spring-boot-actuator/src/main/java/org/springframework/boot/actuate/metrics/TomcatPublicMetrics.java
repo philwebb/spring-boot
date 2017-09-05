@@ -27,7 +27,6 @@ import org.apache.catalina.Manager;
 import org.apache.catalina.session.ManagerBase;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;

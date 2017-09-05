@@ -22,10 +22,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

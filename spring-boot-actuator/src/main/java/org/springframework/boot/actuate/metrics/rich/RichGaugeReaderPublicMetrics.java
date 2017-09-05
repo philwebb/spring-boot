@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.rich;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.rich.RichGauge;
-import org.springframework.boot.actuate.metrics.rich.RichGaugeReader;
+import org.springframework.boot.actuate.metrics.PublicMetrics;
 import org.springframework.util.Assert;
 
 /**

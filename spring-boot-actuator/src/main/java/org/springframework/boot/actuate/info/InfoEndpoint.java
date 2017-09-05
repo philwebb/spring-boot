@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.info;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.info.Info;
-import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.endpoint.Endpoint;
 import org.springframework.boot.endpoint.ReadOperation;
 import org.springframework.util.Assert;

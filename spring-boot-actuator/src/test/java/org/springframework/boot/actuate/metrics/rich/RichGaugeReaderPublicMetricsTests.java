@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.rich;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -23,8 +23,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.RichGaugeReaderPublicMetrics;
-import org.springframework.boot.actuate.metrics.rich.InMemoryRichGaugeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
