@@ -22,8 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.context.annotation.Conditional;
 
 /**

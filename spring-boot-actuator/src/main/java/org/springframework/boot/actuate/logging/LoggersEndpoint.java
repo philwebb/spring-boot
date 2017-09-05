@@ -24,10 +24,10 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.Selector;
-import org.springframework.boot.endpoint.WriteOperation;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.Selector;
+import org.springframework.boot.actuate.endpoint.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingSystem;

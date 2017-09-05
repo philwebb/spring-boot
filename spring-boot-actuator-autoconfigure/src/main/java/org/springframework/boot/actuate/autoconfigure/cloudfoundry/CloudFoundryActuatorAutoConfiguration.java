@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -29,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.endpoint.web.WebEndpointOperation;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

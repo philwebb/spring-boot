@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.endpoint.infrastructure;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;
-import org.springframework.boot.endpoint.EndpointDiscoverer;
-import org.springframework.boot.endpoint.EndpointExposure;
-import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.Operation;
 import org.springframework.core.env.Environment;
 
 /**

@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementServerProperties;
-import org.springframework.boot.endpoint.EndpointPathResolver;
+import org.springframework.boot.actuate.endpoint.EndpointPathResolver;
 
 /**
  * {@link EndpointPathResolver} implementation for resolving actuator endpoint paths based

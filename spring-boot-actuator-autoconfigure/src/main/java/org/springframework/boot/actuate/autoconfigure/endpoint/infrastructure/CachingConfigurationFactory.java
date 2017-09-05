@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
 
 import java.util.function.Function;
 
-import org.springframework.boot.endpoint.CachingConfiguration;
+import org.springframework.boot.actuate.endpoint.CachingConfiguration;
 import org.springframework.core.env.Environment;
 
 /**

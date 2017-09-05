@@ -21,12 +21,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.endpoint.EndpointInfo;
-import org.springframework.boot.endpoint.OperationType;
-import org.springframework.boot.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.endpoint.web.WebEndpointHttpMethod;
-import org.springframework.boot.endpoint.web.WebEndpointOperation;
-import org.springframework.boot.endpoint.web.mvc.WebEndpointServletHandlerMapping;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.mvc.WebEndpointServletHandlerMapping;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

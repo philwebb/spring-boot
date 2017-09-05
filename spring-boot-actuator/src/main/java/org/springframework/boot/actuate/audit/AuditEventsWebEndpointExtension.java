@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.web.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointExtension;
 
 /**
  * Web-specific extension of the {@link AuditEventsEndpoint}.

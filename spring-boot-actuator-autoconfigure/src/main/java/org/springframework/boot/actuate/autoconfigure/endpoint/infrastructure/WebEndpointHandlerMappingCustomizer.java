@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure;
 
-import org.springframework.boot.endpoint.web.mvc.WebEndpointServletHandlerMapping;
+import org.springframework.boot.actuate.endpoint.web.mvc.WebEndpointServletHandlerMapping;
 
 /**
  * Callback for customizing the {@link WebEndpointServletHandlerMapping} at configuration

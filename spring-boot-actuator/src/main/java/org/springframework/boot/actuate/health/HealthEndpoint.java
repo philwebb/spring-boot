@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
 
 /**
  * {@link Endpoint} to expose application health.

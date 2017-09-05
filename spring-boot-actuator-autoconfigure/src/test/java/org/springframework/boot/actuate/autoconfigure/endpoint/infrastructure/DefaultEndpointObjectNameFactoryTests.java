@@ -24,7 +24,7 @@ import javax.management.ObjectName;
 
 import org.junit.Test;
 
-import org.springframework.boot.endpoint.jmx.EndpointMBean;
+import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ObjectUtils;
 

@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import org.springframework.boot.endpoint.CachingConfiguration;
-import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.OperationParameterMapper;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.Selector;
-import org.springframework.boot.endpoint.WriteOperation;
-import org.springframework.boot.endpoint.web.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.CachingConfiguration;
+import org.springframework.boot.actuate.endpoint.ConversionServiceOperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.Selector;
+import org.springframework.boot.actuate.endpoint.WriteOperation;
+import org.springframework.boot.actuate.endpoint.web.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;

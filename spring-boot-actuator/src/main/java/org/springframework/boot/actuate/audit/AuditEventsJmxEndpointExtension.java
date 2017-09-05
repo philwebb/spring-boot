@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.audit;
 import java.util.Date;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.jmx.JmxEndpointExtension;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExtension;
 
 /**
  * JMX-specific extension of the {@link AuditEventsEndpoint}.

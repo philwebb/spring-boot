@@ -36,11 +36,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.endpoint.Endpoint;
-import org.springframework.boot.endpoint.EndpointExposure;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.web.WebEndpointResponse;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
