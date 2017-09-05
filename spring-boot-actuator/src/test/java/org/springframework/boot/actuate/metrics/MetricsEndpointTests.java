@@ -24,9 +24,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.MetricsEndpoint;
-import org.springframework.boot.actuate.metrics.PublicMetrics;
 import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;

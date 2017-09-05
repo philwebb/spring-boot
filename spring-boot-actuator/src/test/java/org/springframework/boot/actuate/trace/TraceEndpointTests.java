@@ -20,11 +20,6 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
-import org.springframework.boot.actuate.trace.Trace;
-import org.springframework.boot.actuate.trace.TraceEndpoint;
-import org.springframework.boot.actuate.trace.TraceRepository;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

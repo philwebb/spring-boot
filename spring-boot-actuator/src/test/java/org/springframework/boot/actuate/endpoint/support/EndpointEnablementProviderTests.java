@@ -20,8 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.actuate.endpoint.support.EndpointEnablement;
-import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;
 import org.springframework.boot.endpoint.EndpointExposure;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.env.MockEnvironment;

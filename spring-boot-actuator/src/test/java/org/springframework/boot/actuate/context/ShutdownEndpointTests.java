@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationListener;

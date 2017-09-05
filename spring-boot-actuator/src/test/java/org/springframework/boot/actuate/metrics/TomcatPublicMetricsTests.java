@@ -20,8 +20,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.TomcatPublicMetrics;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;

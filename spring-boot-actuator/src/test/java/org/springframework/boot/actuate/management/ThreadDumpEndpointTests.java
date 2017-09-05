@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.management;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.management.ThreadDumpEndpoint;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
