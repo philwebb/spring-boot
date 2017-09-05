@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.autoconfigure.AutoConfigurationReportEndpoint.Report;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;

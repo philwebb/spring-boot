@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 import org.hamcrest.CustomMatcher;
 import org.hamcrest.Matcher;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 
 /**

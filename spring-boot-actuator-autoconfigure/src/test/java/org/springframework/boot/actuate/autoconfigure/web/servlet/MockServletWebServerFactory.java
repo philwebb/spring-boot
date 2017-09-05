@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.servlet;
+package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.util.Arrays;
 

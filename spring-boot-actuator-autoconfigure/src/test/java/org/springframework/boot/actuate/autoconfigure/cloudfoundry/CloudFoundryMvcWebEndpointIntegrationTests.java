@@ -24,12 +24,6 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundrySecurityInterceptor;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundrySecurityService;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointServletHandlerMapping;
-import org.springframework.boot.actuate.autoconfigure.cloudfoundry.TokenValidator;
 import org.springframework.boot.endpoint.CachingConfiguration;
 import org.springframework.boot.endpoint.ConversionServiceOperationParameterMapper;
 import org.springframework.boot.endpoint.Endpoint;
