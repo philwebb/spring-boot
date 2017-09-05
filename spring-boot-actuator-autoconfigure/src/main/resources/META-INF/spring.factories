@@ -19,7 +19,7 @@ org.springframework.boot.actuate.autoconfigure.security.ManagementWebSecurityAut
 org.springframework.boot.actuate.autoconfigure.trace.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.trace.TraceWebFilterAutoConfiguration
 
-org.springframework.boot.actuate.autoconfigure.ManagementContextConfiguration=\
+org.springframework.boot.actuate.autoconfigure.autoconfigure.ManagementContextConfiguration=\
 org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ReactiveEndpointChildManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.ServletEndpointChildManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.infrastructure.WebEndpointInfrastructureManagementContextConfiguration,\
