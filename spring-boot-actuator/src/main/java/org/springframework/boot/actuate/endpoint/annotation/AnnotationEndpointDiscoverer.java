@@ -123,7 +123,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 
 	private Map<Class<?>, EndpointExtensionInfo<T>> discoverExtensions(
 			Map<Class<?>, EndpointInfo<T>> endpoints,
-			Class<? extends Annotation> extensionType, EndpointExposure delivery) {
+			Class<? extends Annotation> extensionType, EndpointExposure exposure) {
 		if (extensionType == null) {
 			return Collections.emptyMap();
 		}
@@ -135,7 +135,7 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 			Class<?> endpointType = getEndpointType(extensionType, beanType);
 			AnnotationAttributes endpointAttributes = AnnotatedElementUtils
 					.getMergedAnnotationAttributes(endpointType, Endpoint.class);
-			Assert.state(isExposedOver(endpointAttributes, delivery),
+			Assert.state(isExposedOver(endpointAttributes, exposure),
 					"Invalid extension " + beanType.getName() + "': endpoint '"
 							+ endpointType.getName()
 							+ "' does not support such extension");
