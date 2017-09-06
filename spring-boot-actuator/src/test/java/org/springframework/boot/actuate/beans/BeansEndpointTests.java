@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.actuate.endpoint.BeansEndpoint.ApplicationContextDescriptor;
-import org.springframework.boot.actuate.endpoint.BeansEndpoint.BeanDescriptor;
+import org.springframework.boot.actuate.beans.BeansEndpoint.ApplicationContextDescriptor;
+import org.springframework.boot.actuate.beans.BeansEndpoint.BeanDescriptor;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;

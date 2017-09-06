@@ -18,13 +18,12 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.endpoint.ReadOperation;
-import org.springframework.boot.endpoint.web.WebEndpointExtension;
-import org.springframework.boot.endpoint.web.WebEndpointResponse;
 
 /**
  * Reactive {@link WebEndpointExtension} for the {@link HealthEndpoint}.

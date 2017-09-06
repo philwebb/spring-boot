@@ -26,8 +26,8 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

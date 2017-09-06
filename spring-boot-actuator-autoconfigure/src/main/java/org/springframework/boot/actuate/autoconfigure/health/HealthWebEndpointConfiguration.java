@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint.web;
+package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorProperties;
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
-import org.springframework.boot.actuate.endpoint.StatusEndpoint;
 import org.springframework.boot.actuate.endpoint.web.HealthReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.StatusReactiveWebEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.StatusWebEndpointExtension;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicatorFactory;
 import org.springframework.boot.actuate.health.HealthAggregator;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
+import org.springframework.boot.actuate.health.HealthWebEndpointExtension;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.StatusEndpoint;
+import org.springframework.boot.actuate.health.StatusWebEndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -43,7 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for web-specific health endpoints .
+ * Configuration for web-specific health endpoints.
  * @author Stephane Nicoll
  * @since 2.0.0
  */

@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Status;
