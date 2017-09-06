@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.cache.CacheStatisticsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.MockServletWebServerFactory;
-import org.springframework.boot.actuate.metrics.CachePublicMetrics;
+import org.springframework.boot.actuate.cache.CachePublicMetrics;
 import org.springframework.boot.actuate.metrics.DataSourcePublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.PublicMetrics;

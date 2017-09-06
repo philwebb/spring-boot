@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.cache;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,9 +25,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.cache.CacheStatisticsProvider;
-import org.springframework.boot.actuate.cache.CaffeineCacheStatisticsProvider;
-import org.springframework.boot.actuate.cache.ConcurrentMapCacheStatisticsProvider;
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
