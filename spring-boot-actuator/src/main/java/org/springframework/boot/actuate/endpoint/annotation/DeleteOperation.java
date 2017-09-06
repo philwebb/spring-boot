@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,34 +23,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies a type as being an endpoint.
+ * Identifies a method on an {@link Endpoint} as being a delete operation.
  *
+ * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @since 2.0.0
- * @see EndpointDiscoverer
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Endpoint {
+public @interface DeleteOperation {
 
 	/**
-	 * The id of the endpoint.
-	 * @return the id
+	 * The media type of the result of the operation.
+	 *
+	 * @return the media type
 	 */
-	String id();
-
-	/**
-	 * Defines the {@link EndpointExposure technologies} over which the endpoint should be
-	 * exposed. By default, all technologies are supported.
-	 * @return the supported endpoint exposure technologies
-	 */
-	EndpointExposure[] exposure() default {};
-
-	/**
-	 * Whether or not the endpoint is enabled by default.
-	 * @return {@code true} if the endpoint is enabled by default, otherwise {@code false}
-	 */
-	boolean enabledByDefault() default true;
+	String[] produces() default {};
 
 }

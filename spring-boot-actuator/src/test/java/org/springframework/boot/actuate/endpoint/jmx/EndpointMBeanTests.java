@@ -43,10 +43,10 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.ConversionServiceOperationParameterMapper;
-import org.springframework.boot.actuate.endpoint.DeleteOperation;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.ReadOperation;
-import org.springframework.boot.actuate.endpoint.WriteOperation;
+import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.convert.support.DefaultConversionService;
 

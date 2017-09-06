@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -29,6 +29,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.boot.actuate.endpoint.CachingConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;

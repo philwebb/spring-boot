@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+
 /**
  * An enumeration of the available {@link Endpoint} exposure technologies.
  *

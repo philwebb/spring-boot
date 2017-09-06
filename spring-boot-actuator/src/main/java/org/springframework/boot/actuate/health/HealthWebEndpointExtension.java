@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
-import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointExtension;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 

@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Auto-configuration for JMX {@link org.springframework.boot.endpoint.Endpoint Endpoints}
+ * Auto-configuration for JMX {@link org.springframework.boot.actuate.endpoint.annotation.endpoint.Endpoint Endpoints}
  * and JMX-specific {@link JmxEndpointExtension endpoint extensions}.
  *
  * @author Andy Wilkinson

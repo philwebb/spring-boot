@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.audit;
 import java.util.Date;
 
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
-import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExtension;
 
 /**

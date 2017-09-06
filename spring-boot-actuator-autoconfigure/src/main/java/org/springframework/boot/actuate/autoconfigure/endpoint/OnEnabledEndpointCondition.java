@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExtension;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablement;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;

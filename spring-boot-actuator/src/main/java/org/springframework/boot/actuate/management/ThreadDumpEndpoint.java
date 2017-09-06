@@ -21,8 +21,8 @@ import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
 /**
  * {@link Endpoint} to expose thread info.
