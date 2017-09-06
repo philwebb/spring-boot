@@ -14,36 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.web.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 
 /**
- * An enumeration of the available {@link Endpoint} exposure technologies.
+ * Identifies a type as being a Web-specific extension of an {@link Endpoint}.
  *
+ * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @see Endpoint
  */
-public enum EndpointExposure {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebEndpointExtension {
 
 	/**
-	 * Expose the endpoint as a JMX MBean.
+	 * The {@link Endpoint endpoint} class to which this Web extension relates.
+	 * @return the endpoint class
 	 */
-	JMX(true),
-
-	/**
-	 * Expose the endpoint as a Web endpoint.
-	 */
-	WEB(false);
-
-	private final boolean enabledByDefault;
-
-	EndpointExposure(boolean enabledByDefault) {
-		this.enabledByDefault = enabledByDefault;
-	}
-
-	public boolean isEnabledByDefault() {
-		return this.enabledByDefault;
-	}
+	Class<?> endpoint();
 
 }

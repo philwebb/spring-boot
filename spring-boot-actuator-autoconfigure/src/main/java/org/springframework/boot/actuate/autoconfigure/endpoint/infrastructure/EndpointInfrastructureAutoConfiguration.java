@@ -28,14 +28,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.ConversionServiceOperationParameterMapper;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.infrastructure.EndpointProvider;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
-import org.springframework.boot.actuate.endpoint.jmx.JmxAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
-import org.springframework.boot.actuate.endpoint.web.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;

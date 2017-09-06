@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+
 /**
  * A {@code WebEndpointResponse} can be returned by an operation on a
  * {@link WebEndpointExtension} to provide additional, web-specific information such as

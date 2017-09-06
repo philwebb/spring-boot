@@ -21,7 +21,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests;
-import org.springframework.boot.actuate.endpoint.web.WebAnnotationEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent;

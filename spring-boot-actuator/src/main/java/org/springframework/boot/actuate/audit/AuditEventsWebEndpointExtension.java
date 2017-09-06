@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
 
 /**
  * Web-specific extension of the {@link AuditEventsEndpoint}.

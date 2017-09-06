@@ -23,7 +23,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 
 /**
  * Identifies a type as being an endpoint.

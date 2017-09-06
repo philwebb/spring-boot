@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.jmx;
+package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.CachingOperationInvoker;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
@@ -37,6 +36,9 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
+import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperationParameterInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;

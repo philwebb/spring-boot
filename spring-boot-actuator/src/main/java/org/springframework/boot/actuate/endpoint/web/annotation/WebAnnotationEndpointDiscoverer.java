@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web;
+package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import org.reactivestreams.Publisher;
 
 import org.springframework.boot.actuate.endpoint.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.CachingOperationInvoker;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationParameterMapper;
@@ -38,7 +37,12 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAttributes;

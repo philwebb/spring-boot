@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExtension;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablement;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;

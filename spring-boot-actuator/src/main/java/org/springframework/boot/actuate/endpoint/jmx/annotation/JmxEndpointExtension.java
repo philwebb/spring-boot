@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web;
+package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,9 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 
 /**
- * Identifies a type as being a Web-specific extension of an {@link Endpoint}.
+ * Identifies a type as being a JMX-specific extension of an {@link Endpoint}.
  *
- * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
  * @see Endpoint
@@ -35,10 +34,10 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface WebEndpointExtension {
+public @interface JmxEndpointExtension {
 
 	/**
-	 * The {@link Endpoint endpoint} class to which this Web extension relates.
+	 * The {@link Endpoint endpoint} class to which this JMX extension relates.
 	 * @return the endpoint class
 	 */
 	Class<?> endpoint();

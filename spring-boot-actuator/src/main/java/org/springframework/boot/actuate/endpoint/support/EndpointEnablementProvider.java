@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.support;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 

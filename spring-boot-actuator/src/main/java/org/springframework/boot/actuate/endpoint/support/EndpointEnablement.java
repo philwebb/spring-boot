@@ -24,6 +24,8 @@ package org.springframework.boot.actuate.endpoint.support;
  */
 public final class EndpointEnablement {
 
+	// FIXME
+
 	private final boolean enabled;
 
 	private final String reason;

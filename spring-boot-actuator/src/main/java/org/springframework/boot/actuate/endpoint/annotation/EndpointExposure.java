@@ -14,32 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.jmx;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+package org.springframework.boot.actuate.endpoint.annotation;
 
 /**
- * Identifies a type as being a JMX-specific extension of an {@link Endpoint}.
+ * An enumeration of the available {@link Endpoint} exposure technologies.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
- * @see Endpoint
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface JmxEndpointExtension {
+public enum EndpointExposure {
 
 	/**
-	 * The {@link Endpoint endpoint} class to which this JMX extension relates.
-	 * @return the endpoint class
+	 * Expose the endpoint as a JMX MBean.
 	 */
-	Class<?> endpoint();
+	JMX(true),
+
+	/**
+	 * Expose the endpoint as a Web endpoint.
+	 */
+	WEB(false);
+
+	private final boolean enabledByDefault;
+
+	EndpointExposure(boolean enabledByDefault) {
+		this.enabledByDefault = enabledByDefault;
+	}
+
+	public boolean isEnabledByDefault() {
+		return this.enabledByDefault;
+	}
 
 }

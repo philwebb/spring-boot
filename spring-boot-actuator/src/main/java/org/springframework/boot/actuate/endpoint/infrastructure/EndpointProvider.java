@@ -20,9 +20,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.support.EndpointEnablementProvider;
 import org.springframework.core.env.Environment;
 
@@ -35,6 +35,8 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 public final class EndpointProvider<T extends Operation> {
+
+	// FIXME change this
 
 	private final EndpointDiscoverer<T> discoverer;
 

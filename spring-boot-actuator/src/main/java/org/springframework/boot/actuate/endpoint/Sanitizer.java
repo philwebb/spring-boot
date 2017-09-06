@@ -21,7 +21,8 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
- * Internal strategy used to sanitize potentially sensitive keys.
+ * Strategy that be be used by endpoint implementations to sanitize potentially sensitive
+ * keys.
  *
  * @author Christian Dupuis
  * @author Toshiaki Maki
@@ -31,8 +32,6 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 public class Sanitizer {
-
-	// FIXME rename
 
 	private static final String[] REGEX_PARTS = { "*", "$", "^", "+" };
 
