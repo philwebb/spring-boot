@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,35 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsConfigurationProperties;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.micrometer.core.instrument.MeterRegistry;
-
 /**
- * Configures instrumentation of Spring Webflux MVC annotation-based programming model request mappings.
+ * Configures instrumentation of Spring Webflux MVC annotation-based programming model
+ * request mappings.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @Configuration
 public class MetricsWebfluxRequestConfiguration {
-    @Bean
-    @ConditionalOnMissingBean(WebfluxTagConfigurer.class)
-    public WebfluxTagConfigurer webfluxTagConfigurer() {
-        return new WebfluxTagConfigurer();
-    }
 
-    @Bean
-    public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-                                           WebfluxTagConfigurer tagConfigurer,
-                                           MetricsConfigurationProperties properties) {
-        return new MetricsWebFilter(registry, tagConfigurer, properties.getWeb().getServerRequestsName());
-    }
+	@Bean
+	@ConditionalOnMissingBean(WebfluxTagConfigurer.class)
+	public WebfluxTagConfigurer webfluxTagConfigurer() {
+		return new WebfluxTagConfigurer();
+	}
+
+	@Bean
+	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
+			WebfluxTagConfigurer tagConfigurer, MetricsProperties properties) {
+		return new MetricsWebFilter(registry, tagConfigurer,
+				properties.getWeb().getServerRequestsName());
+	}
+
 }

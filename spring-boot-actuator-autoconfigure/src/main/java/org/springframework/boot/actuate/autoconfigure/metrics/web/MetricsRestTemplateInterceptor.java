@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,60 +13,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsConfigurationProperties;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.stats.hist.Histogram;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.RestTemplate;
+
 /**
- * Intercepts RestTemplate requests and records metrics about execution time and results.
+ * Intercepts {@link RestTemplate} requests and records metrics about execution time and
+ * results.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
 public class MetricsRestTemplateInterceptor implements ClientHttpRequestInterceptor {
-    private final MeterRegistry meterRegistry;
-    private final RestTemplateTagConfigurer tagProvider;
-    private final MetricsConfigurationProperties properties;
 
-    public MetricsRestTemplateInterceptor(MeterRegistry meterRegistry,
-                                          RestTemplateTagConfigurer tagProvider,
-                                          MetricsConfigurationProperties properties) {
-        this.tagProvider = tagProvider;
-        this.meterRegistry = meterRegistry;
-        this.properties = properties;
-    }
+	private final MeterRegistry meterRegistry;
 
-    @Override
-    public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-										ClientHttpRequestExecution execution) throws IOException {
-        long startTime = System.nanoTime();
+	private final RestTemplateTagConfigurer tagProvider;
 
-        ClientHttpResponse response = null;
-        try {
-            response = execution.execute(request, body);
-            return response;
-        } finally {
-            Timer.Builder builder = Timer.builder(properties.getWeb().getClientRequestsName())
-                .tags(tagProvider.clientHttpRequestTags(request, response))
-                .description("Timer of RestTemplate operation");
+	private final MetricsProperties properties;
 
-            if(properties.getWeb().getClientRequestPercentiles())
-                builder = builder.histogram(Histogram.percentiles());
+	public MetricsRestTemplateInterceptor(MeterRegistry meterRegistry,
+			RestTemplateTagConfigurer tagProvider, MetricsProperties properties) {
+		this.tagProvider = tagProvider;
+		this.meterRegistry = meterRegistry;
+		this.properties = properties;
+	}
 
-            builder
-                .register(meterRegistry)
-                .record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-        }
-    }
+	@Override
+	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+			ClientHttpRequestExecution execution) throws IOException {
+		long startTime = System.nanoTime();
+
+		ClientHttpResponse response = null;
+		try {
+			response = execution.execute(request, body);
+			return response;
+		}
+		finally {
+			Timer.Builder builder = Timer
+					.builder(this.properties.getWeb().getClientRequestsName())
+					.tags(this.tagProvider.clientHttpRequestTags(request, response))
+					.description("Timer of RestTemplate operation");
+
+			if (this.properties.getWeb().getClientRequestPercentiles()) {
+				builder = builder.histogram(Histogram.percentiles());
+			}
+
+			builder.register(this.meterRegistry).record(System.nanoTime() - startTime,
+					TimeUnit.NANOSECONDS);
+		}
+	}
+
 }

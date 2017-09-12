@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsConfigurationProperties;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,44 +27,51 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import io.micrometer.core.instrument.MeterRegistry;
-
 /**
  * Configures instrumentation of Spring Web MVC servlet-based request mappings.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@EnableConfigurationProperties(MetricsConfigurationProperties.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class MetricsServletRequestConfiguration implements WebMvcConfigurer {
-    @Bean
-    @ConditionalOnMissingBean(WebServletTagConfigurer.class)
-    public WebServletTagConfigurer webmvcTagConfigurer() {
-        return new WebServletTagConfigurer();
-    }
 
-    @Bean
+	@Bean
+	@ConditionalOnMissingBean(WebServletTagConfigurer.class)
+	public WebServletTagConfigurer webmvcTagConfigurer() {
+		return new WebServletTagConfigurer();
+	}
+
+	@Bean
 	public ControllerMetrics controllerMetrics(MeterRegistry registry,
-										MetricsConfigurationProperties properties,
-										WebServletTagConfigurer configurer) {
-        return new ControllerMetrics(registry, properties, configurer);
-    }
+			MetricsProperties properties, WebServletTagConfigurer configurer) {
+		return new ControllerMetrics(registry, properties, configurer);
+	}
 
-    @Bean
-	public MetricsHandlerInterceptor webMetricsInterceptor(ControllerMetrics controllerMetrics) {
-        return new MetricsHandlerInterceptor(controllerMetrics);
-    }
+	@Bean
+	public MetricsHandlerInterceptor webMetricsInterceptor(
+			ControllerMetrics controllerMetrics) {
+		return new MetricsHandlerInterceptor(controllerMetrics);
+	}
 
-    @Configuration
-	public class MetricsServletRequestInterceptorConfiguration implements WebMvcConfigurer {
-        @Autowired
-		MetricsHandlerInterceptor handlerInterceptor;
+	@Configuration
+	public class MetricsServletRequestInterceptorConfiguration
+			implements WebMvcConfigurer {
 
-        @Override
-        public void addInterceptors(InterceptorRegistry registry) {
-            registry.addInterceptor(handlerInterceptor);
-        }
-    }
+		private final MetricsHandlerInterceptor handlerInterceptor;
+
+		public MetricsServletRequestInterceptorConfiguration(
+				MetricsHandlerInterceptor handlerInterceptor) {
+			this.handlerInterceptor = handlerInterceptor;
+		}
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			registry.addInterceptor(this.handlerInterceptor);
+		}
+
+	}
+
 }

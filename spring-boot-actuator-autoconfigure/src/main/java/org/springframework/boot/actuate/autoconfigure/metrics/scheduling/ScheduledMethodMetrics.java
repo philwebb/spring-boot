@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.scheduling;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.LongTaskTimer;
@@ -32,89 +26,110 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.stats.quantile.WindowSketchQuantiles;
 import io.micrometer.core.instrument.util.AnnotationUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+
+import org.springframework.scheduling.annotation.Scheduled;
 
 /**
- * @since 2.0.0
+ * {@link Around} advice for recording metrics for {@link Scheduled} methods.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @Aspect
 public class ScheduledMethodMetrics {
-    private static final Log logger = LogFactory.getLog(ScheduledMethodMetrics.class);
 
-    private final MeterRegistry registry;
+	private static final Log logger = LogFactory.getLog(ScheduledMethodMetrics.class);
 
-    public ScheduledMethodMetrics(MeterRegistry registry) {
-        this.registry = registry;
-    }
+	private final MeterRegistry registry;
 
-    @Around("execution (@org.springframework.scheduling.annotation.Scheduled  * *.*(..))")
-    public Object timeScheduledOperation(ProceedingJoinPoint pjp) throws Throwable {
-        Method method = ((MethodSignature) pjp.getSignature()).getMethod();
-        String signature = pjp.getSignature().toShortString();
+	public ScheduledMethodMetrics(MeterRegistry registry) {
+		this.registry = registry;
+	}
 
-        if (method.getDeclaringClass().isInterface()) {
-            try {
-                method = pjp.getTarget().getClass().getDeclaredMethod(pjp.getSignature().getName(),
-                        method.getParameterTypes());
-            } catch (final SecurityException | NoSuchMethodException e) {
-                logger.warn("Unable to perform metrics timing on " + signature, e);
-                return pjp.proceed();
-            }
-        }
+	@Around("execution (@org.springframework.scheduling.annotation.Scheduled  * *.*(..))")
+	public Object timeScheduledOperation(ProceedingJoinPoint pjp) throws Throwable {
+		Method method = ((MethodSignature) pjp.getSignature()).getMethod();
+		String signature = pjp.getSignature().toShortString();
 
-        Timer shortTaskTimer = null;
-        LongTaskTimer longTaskTimer = null;
+		if (method.getDeclaringClass().isInterface()) {
+			try {
+				method = pjp.getTarget().getClass().getDeclaredMethod(
+						pjp.getSignature().getName(), method.getParameterTypes());
+			}
+			catch (final SecurityException | NoSuchMethodException e) {
+				logger.warn("Unable to perform metrics timing on " + signature, e);
+				return pjp.proceed();
+			}
+		}
 
-        for (Timed timed : AnnotationUtils.findTimed(method).toArray(Timed[]::new)) {
-            if(timed.longTask())
-                longTaskTimer = registry.more().longTaskTimer(registry.createId(timed.value(), Tags.zip(timed.extraTags()),
-                    "Timer of @Scheduled long task"));
-            else {
-                Timer.Builder timerBuilder = Timer.builder(timed.value())
-                        .tags(timed.extraTags())
-                        .description("Timer of @Scheduled task");
+		Timer shortTaskTimer = null;
+		LongTaskTimer longTaskTimer = null;
 
-                if(timed.quantiles().length > 0) {
-                    timerBuilder = timerBuilder.quantiles(WindowSketchQuantiles.quantiles(timed.quantiles()).create());
-                }
+		for (Timed timed : AnnotationUtils.findTimed(method).toArray(Timed[]::new)) {
+			if (timed.longTask()) {
+				longTaskTimer = this.registry.more()
+						.longTaskTimer(this.registry.createId(timed.value(),
+								Tags.zip(timed.extraTags()),
+								"Timer of @Scheduled long task"));
+			}
+			else {
+				Timer.Builder timerBuilder = Timer.builder(timed.value())
+						.tags(timed.extraTags()).description("Timer of @Scheduled task");
 
-                shortTaskTimer = timerBuilder.register(registry);
-            }
-        }
+				if (timed.quantiles().length > 0) {
+					timerBuilder = timerBuilder.quantiles(
+							WindowSketchQuantiles.quantiles(timed.quantiles()).create());
+				}
 
-        if(shortTaskTimer != null && longTaskTimer != null) {
-            final Timer finalTimer = shortTaskTimer;
-            return recordThrowable(longTaskTimer, () -> recordThrowable(finalTimer, pjp::proceed));
-        }
-        else if(shortTaskTimer != null) {
-            return recordThrowable(shortTaskTimer, pjp::proceed);
-        }
-        else if(longTaskTimer != null) {
-            return recordThrowable(longTaskTimer, pjp::proceed);
-        }
+				shortTaskTimer = timerBuilder.register(this.registry);
+			}
+		}
 
-        return pjp.proceed();
-    }
+		if (shortTaskTimer != null && longTaskTimer != null) {
+			final Timer finalTimer = shortTaskTimer;
+			return recordThrowable(longTaskTimer,
+					() -> recordThrowable(finalTimer, pjp::proceed));
+		}
+		else if (shortTaskTimer != null) {
+			return recordThrowable(shortTaskTimer, pjp::proceed);
+		}
+		else if (longTaskTimer != null) {
+			return recordThrowable(longTaskTimer, pjp::proceed);
+		}
 
-    private Object recordThrowable(LongTaskTimer timer, ThrowableCallable f) throws Throwable {
-        long id = timer.start();
-        try {
-            return f.call();
-        } finally {
-            timer.stop(id);
-        }
-    }
+		return pjp.proceed();
+	}
 
-    private Object recordThrowable(Timer timer, ThrowableCallable f) throws Throwable {
-        long start = registry.config().clock().monotonicTime();
-        try {
-            return f.call();
-        } finally {
-            timer.record(registry.config().clock().monotonicTime() - start, TimeUnit.NANOSECONDS);
-        }
-    }
+	private Object recordThrowable(LongTaskTimer timer, ThrowableCallable f)
+			throws Throwable {
+		long id = timer.start();
+		try {
+			return f.call();
+		}
+		finally {
+			timer.stop(id);
+		}
+	}
 
-    private interface ThrowableCallable {
-        Object call() throws Throwable;
-    }
+	private Object recordThrowable(Timer timer, ThrowableCallable f) throws Throwable {
+		long start = this.registry.config().clock().monotonicTime();
+		try {
+			return f.call();
+		}
+		finally {
+			timer.record(this.registry.config().clock().monotonicTime() - start,
+					TimeUnit.NANOSECONDS);
+		}
+	}
+
+	private interface ThrowableCallable {
+		Object call() throws Throwable;
+	}
+
 }

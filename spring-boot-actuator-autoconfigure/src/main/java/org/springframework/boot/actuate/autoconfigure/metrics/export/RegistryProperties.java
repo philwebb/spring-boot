@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
 import java.util.Properties;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * @since 2.0.0
+ * Base {@link ConfigurationProperties} class for configuring a metrics registry.
+ *
  * @author Jon Schneider
+ * @author Andy Wilkinson
+ * @since 2.0.0
  */
-public abstract class RegistryConfigurationProperties {
-    private Properties props = new Properties();
+public abstract class RegistryProperties {
 
-    protected abstract String prefix();
+	private Properties props = new Properties();
 
-    public String get(String k) {
-        return props.getProperty(k);
-    }
+	protected abstract String prefix();
 
-    protected void set(String k, Object v) {
-        props.put(prefix() + "." + k, v.toString());
-    }
+	public String get(String k) {
+		return this.props.getProperty(k);
+	}
+
+	protected void set(String k, Object v) {
+		this.props.put(prefix() + "." + k, v.toString());
+	}
+
 }

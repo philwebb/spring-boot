@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.web;
 
 import org.springframework.core.NamedThreadLocal;
@@ -21,22 +22,28 @@ import org.springframework.core.NamedThreadLocal;
  * Holding area for the still-templated URI because currently the
  * ClientHttpRequestInterceptor only gives us the means to retrieve the substituted URI.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
-public class RestTemplateUrlTemplateHolder {
-    private static final ThreadLocal<String> restTemplateUrlTemplateHolder = new NamedThreadLocal<String>(
-            "Rest Template URL Template");
+public final class RestTemplateUrlTemplateHolder {
 
-    public static String getRestTemplateUrlTemplate() {
-        return restTemplateUrlTemplateHolder.get();
-    }
+	private static final ThreadLocal<String> restTemplateUrlTemplateHolder = new NamedThreadLocal<>(
+			"Rest Template URL Template");
 
-    public static void setRestTemplateUrlTemplate(String urlTemplate) {
-        restTemplateUrlTemplateHolder.set(urlTemplate);
-    }
+	private RestTemplateUrlTemplateHolder() {
 
-    public static void clear() {
-        restTemplateUrlTemplateHolder.remove();
-    }
+	}
+
+	public static String getRestTemplateUrlTemplate() {
+		return restTemplateUrlTemplateHolder.get();
+	}
+
+	public static void setRestTemplateUrlTemplate(String urlTemplate) {
+		restTemplateUrlTemplateHolder.set(urlTemplate);
+	}
+
+	public static void clear() {
+		restTemplateUrlTemplateHolder.remove();
+	}
+
 }

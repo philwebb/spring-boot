@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,33 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.datadog.DatadogConfig;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.StepRegistryProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * @since 2.0.0
+ * {@link ConfigurationProperties} for configuring Datadog metrics export.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "metrics.datadog")
-public class DatadogConfigurationProperties extends StepRegistryConfigurationProperties implements DatadogConfig {
-	public DatadogConfigurationProperties() {
+public class DatadogProperties extends StepRegistryProperties implements DatadogConfig {
+
+	public DatadogProperties() {
 		set("apiKey", "dummyKey"); // FIXME otherwise tests fail
 	}
 
-    public void setApiKey(String apiKey) {
-        set("apiKey", apiKey);
-    }
+	public void setApiKey(String apiKey) {
+		set("apiKey", apiKey);
+	}
 
-    public void setHostTag(String hostTag) {
-        set("hostTag", hostTag);
-    }
+	public void setHostTag(String hostTag) {
+		set("hostTag", hostTag);
+	}
 
-    @Override
-    public String prefix() {
-        return "metrics.datadog";
-    }
+	@Override
+	public String prefix() {
+		return "metrics.datadog";
+	}
+
 }

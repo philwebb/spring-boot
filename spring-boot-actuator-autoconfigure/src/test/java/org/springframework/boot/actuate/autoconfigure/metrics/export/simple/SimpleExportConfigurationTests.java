@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,45 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests for {@link SimpleExportConfiguration}.
+ *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource(properties = {
-    "metrics.atlas.enabled=false",
-    "metrics.prometheus.enabled=false",
-    "metrics.datadog.enabled=false",
-    "metrics.ganglia.enabled=false",
-    "metrics.graphite.enabled=false",
-    "metrics.influx.enabled=false",
-    "metrics.jmx.enabled=false"
-})
-public class SimpleExportConfigurationTest {
-    @Autowired
-	CompositeMeterRegistry registry;
+@TestPropertySource(properties = { "metrics.atlas.enabled=false",
+		"metrics.prometheus.enabled=false", "metrics.datadog.enabled=false",
+		"metrics.ganglia.enabled=false", "metrics.graphite.enabled=false",
+		"metrics.influx.enabled=false", "metrics.jmx.enabled=false" })
+public class SimpleExportConfigurationTests {
 
-    @Test
-    public void simpleMeterRegistryIsInTheCompositeWhenNoOtherRegistryIs() {
-        assertThat(registry.getRegistries())
-            .hasAtLeastOneElementOfType(SimpleMeterRegistry.class);
-    }
+	@Autowired
+	private CompositeMeterRegistry registry;
 
-    @SpringBootApplication(scanBasePackages = "isolated")
-    static class MetricsApp {}
+	@Test
+	public void simpleMeterRegistryIsInTheCompositeWhenNoOtherRegistryIs() {
+		assertThat(this.registry.getRegistries())
+				.hasAtLeastOneElementOfType(SimpleMeterRegistry.class);
+	}
+
+	@SpringBootApplication(scanBasePackages = "isolated")
+	static class MetricsApp {
+
+	}
+
 }

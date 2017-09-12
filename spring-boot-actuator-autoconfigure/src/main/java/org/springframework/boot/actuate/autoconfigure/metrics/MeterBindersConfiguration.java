@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,39 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics;
+
+import io.micrometer.core.instrument.binder.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.LogbackMetrics;
+import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.UptimeMetrics;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.micrometer.core.instrument.binder.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.LogbackMetrics;
-import io.micrometer.core.instrument.binder.UptimeMetrics;
-
 /**
- * @since 2.0.0
+ * Configuration for various {@link MeterBinder MeterBinders}.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @Configuration
-class RecommendedMeterBinders {
-    @Bean
-    @ConditionalOnMissingBean(JvmMemoryMetrics.class)
+class MeterBindersConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(JvmMemoryMetrics.class)
 	public JvmMemoryMetrics jvmMemoryMetrics() {
-        return new JvmMemoryMetrics();
-    }
+		return new JvmMemoryMetrics();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(LogbackMetrics.class)
-    @ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
+	@Bean
+	@ConditionalOnMissingBean(LogbackMetrics.class)
+	@ConditionalOnClass(name = "ch.qos.logback.classic.Logger")
 	public LogbackMetrics logbackMetrics() {
-        return new LogbackMetrics();
-    }
+		return new LogbackMetrics();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean(UptimeMetrics.class)
+	@Bean
+	@ConditionalOnMissingBean(UptimeMetrics.class)
 	public UptimeMetrics uptimeMetrics() {
-        return new UptimeMetrics();
-    }
+		return new UptimeMetrics();
+	}
+
 }

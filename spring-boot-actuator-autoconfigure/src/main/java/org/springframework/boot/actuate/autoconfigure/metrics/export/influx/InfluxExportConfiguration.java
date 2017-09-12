@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.DurationConverter;
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.influx.InfluxConfig;
+import io.micrometer.influx.InfluxMeterRegistry;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.StringToDurationConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,28 +30,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.influx.InfluxConfig;
-import io.micrometer.influx.InfluxMeterRegistry;
-
 /**
- * @since 2.0.0
+ * Configuration for exporting metrics to Influx.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @Configuration
 @ConditionalOnClass(name = "io.micrometer.influx.InfluxMeterRegistry")
-@Import(DurationConverter.class)
-@EnableConfigurationProperties(InfluxConfigurationProperties.class)
+@Import(StringToDurationConverter.class)
+@EnableConfigurationProperties(InfluxProperties.class)
 public class InfluxExportConfiguration {
-    @ConditionalOnProperty(value = "metrics.influx.enabled", matchIfMissing = true)
-    @Bean
-    public MetricsExporter influxExporter(InfluxConfig config, Clock clock) {
-        return () -> new InfluxMeterRegistry(config, clock);
-    }
 
-    @ConditionalOnMissingBean
-    @Bean
-    public Clock clock() {
-        return Clock.SYSTEM;
-    }
+	@ConditionalOnProperty(value = "metrics.influx.enabled", matchIfMissing = true)
+	@Bean
+	public MetricsExporter influxExporter(InfluxConfig config, Clock clock) {
+		return () -> new InfluxMeterRegistry(config, clock);
+	}
+
+	@ConditionalOnMissingBean
+	@Bean
+	public Clock clock() {
+		return Clock.SYSTEM;
+	}
+
 }

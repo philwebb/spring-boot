@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
-import java.time.Duration;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
-import org.springframework.core.convert.converter.Converter;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @since 2.0.0
+ * {@link ConfigurationProperties} for configuring metrics export to a
+ * {@link SimpleMeterRegistry}.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
-@ConfigurationPropertiesBinding
-public class DurationConverter implements Converter<String, Duration> {
-    @Override
-    public Duration convert(String source) {
-       return Duration.parse(source);
-    }
+@ConfigurationProperties(prefix = "metrics.simple")
+public class SimpleProperties {
+
+	private boolean enabled = true;
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
+
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,22 +26,29 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-
+/**
+ * Configuration for exporting metrics to a {@link SimpleMeterRegistry}.
+ *
+ * @author Jon Schneider
+ * @since 2.0.0
+ */
 @Configuration
-@EnableConfigurationProperties(SimpleConfigurationProperties.class)
+@EnableConfigurationProperties(SimpleProperties.class)
 public class SimpleExportConfiguration {
-    @ConditionalOnProperty(value = "metrics.simple.enabled", matchIfMissing = true)
-    @ConditionalOnMissingBean(MetricsExporter.class) // steps out of the way the moment any other monitoring system is configured
-    @Bean
-    public MetricsExporter simpleExporter(Clock clock) {
-        return () -> new SimpleMeterRegistry(clock);
-    }
 
-    @ConditionalOnMissingBean
-    @Bean
-    public Clock clock() {
-        return Clock.SYSTEM;
-    }
+	@ConditionalOnProperty(value = "metrics.simple.enabled", matchIfMissing = true)
+	@ConditionalOnMissingBean(MetricsExporter.class) // steps out of the way the moment
+														// any other monitoring system is
+														// configured
+	@Bean
+	public MetricsExporter simpleExporter(Clock clock) {
+		return () -> new SimpleMeterRegistry(clock);
+	}
+
+	@ConditionalOnMissingBean
+	@Bean
+	public Clock clock() {
+		return Clock.SYSTEM;
+	}
+
 }

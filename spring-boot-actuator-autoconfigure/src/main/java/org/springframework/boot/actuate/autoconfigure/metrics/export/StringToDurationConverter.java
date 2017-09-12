@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 
+package org.springframework.boot.actuate.autoconfigure.metrics.export;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.time.Duration;
+
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.core.convert.converter.Converter;
 
 /**
- * Exists solely to aid in autocompletion of simple registry enablement in .properties and .yml.
+ * A {@link Converter} to create a {@link Duration} from a {@link String}.
  *
  * @author Jon Schneider
+ * @author Andy Wilkinson
+ * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "metrics.simple")
-public class SimpleConfigurationProperties {
-    private boolean enabled = true;
+@ConfigurationPropertiesBinding
+public class StringToDurationConverter implements Converter<String, Duration> {
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	@Override
+	public Duration convert(String source) {
+		return Duration.parse(source);
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 }

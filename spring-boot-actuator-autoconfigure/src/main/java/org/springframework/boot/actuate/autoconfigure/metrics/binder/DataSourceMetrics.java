@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.binder;
 
 import java.util.ArrayList;
@@ -20,46 +21,61 @@ import java.util.Collection;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
+
 /**
- * @since 2.0.0
+ * A {@link MeterBinder} for a {@link DataSource}.
+ *
  * @author Jon Schneider
+ * @since 2.0.0
  */
 public class DataSourceMetrics implements MeterBinder {
-    private final String name;
-    private final Iterable<Tag> tags;
-    private final DataSourcePoolMetadata poolMetadata;
 
-    // prevents the poolMetadata that we base the gauges on from being garbage collected
-    private static Collection<DataSourcePoolMetadata> instrumentedPools = new ArrayList<>();
+	private final String name;
 
-    public DataSourceMetrics(DataSource dataSource, Collection<DataSourcePoolMetadataProvider> metadataProviders, String name, Iterable<Tag> tags) {
-        this.name = name;
-        this.tags = tags;
+	private final Iterable<Tag> tags;
 
-        DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(metadataProviders);
-        poolMetadata = provider.getDataSourcePoolMetadata(dataSource);
-        instrumentedPools.add(poolMetadata);
-    }
+	private final DataSourcePoolMetadata poolMetadata;
 
-    @Override
-    public void bindTo(MeterRegistry registry) {
-        if (poolMetadata != null) {
-            if(poolMetadata.getActive() != null)
-                registry.gauge(name  + ".active.connections", tags, poolMetadata, DataSourcePoolMetadata::getActive);
+	// prevents the poolMetadata that we base the gauges on from being garbage collected
+	private static Collection<DataSourcePoolMetadata> instrumentedPools = new ArrayList<>();
 
-            if(poolMetadata.getMax() != null)
-                registry.gauge(name + ".max.connections", tags, poolMetadata, DataSourcePoolMetadata::getMax);
+	public DataSourceMetrics(DataSource dataSource,
+			Collection<DataSourcePoolMetadataProvider> metadataProviders, String name,
+			Iterable<Tag> tags) {
+		this.name = name;
+		this.tags = tags;
 
-            if(poolMetadata.getMin() != null)
-                registry.gauge(name + ".min.connections", tags, poolMetadata, DataSourcePoolMetadata::getMin);
-        }
-    }
+		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(
+				metadataProviders);
+		this.poolMetadata = provider.getDataSourcePoolMetadata(dataSource);
+		instrumentedPools.add(this.poolMetadata);
+	}
+
+	@Override
+	public void bindTo(MeterRegistry registry) {
+		if (this.poolMetadata != null) {
+			if (this.poolMetadata.getActive() != null) {
+				registry.gauge(this.name + ".active.connections", this.tags,
+						this.poolMetadata, DataSourcePoolMetadata::getActive);
+			}
+
+			if (this.poolMetadata.getMax() != null) {
+				registry.gauge(this.name + ".max.connections", this.tags,
+						this.poolMetadata, DataSourcePoolMetadata::getMax);
+			}
+
+			if (this.poolMetadata.getMin() != null) {
+				registry.gauge(this.name + ".min.connections", this.tags,
+						this.poolMetadata, DataSourcePoolMetadata::getMin);
+			}
+		}
+	}
+
 }

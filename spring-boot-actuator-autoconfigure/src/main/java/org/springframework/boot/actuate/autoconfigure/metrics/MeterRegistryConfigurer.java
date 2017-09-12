@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -22,15 +23,23 @@ import io.micrometer.core.instrument.MeterRegistry;
  * {@link MeterRegistry} implementations.
  * <p>
  *
- * Add one or more of these configurers to the application context to customize
- * a registry.
+ * Add one or more of these configurers to the application context to customize a
+ * registry.
  *
- * Configurers are guaranteed to be applied before any {@link io.micrometer.core.instrument.Meter}
- * is registered with the registry.
+ * Configurers are guaranteed to be applied before any
+ * {@link io.micrometer.core.instrument.Meter} is registered with the registry.
  *
  * @since 2.0.0
  * @author Jon Schneider
  */
+@FunctionalInterface
 public interface MeterRegistryConfigurer {
-    void configureRegistry(MeterRegistry registry);
+
+	/**
+	 * Configure the given {@code registry}.
+	 *
+	 * @param registry the registry to configure
+	 */
+	void configureRegistry(MeterRegistry registry);
+
 }

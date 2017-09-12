@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,38 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
-
-
-import org.springframework.boot.actuate.autoconfigure.metrics.export.RegistryConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import io.micrometer.prometheus.PrometheusConfig;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.RegistryProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 /**
- * Exists solely to aid in autocompletion of Prometheus enablement in .properties and .yml.
+ * {@link ConfigurationProperties} for configuring metrics export to Prometheus.
  *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "metrics.prometheus")
-public class PrometheusConfigurationProperties extends RegistryConfigurationProperties implements PrometheusConfig {
-    private boolean enabled = true;
+public class PrometheusProperties extends RegistryProperties implements PrometheusConfig {
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	private boolean enabled = true;
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	public boolean isEnabled() {
+		return this.enabled;
+	}
 
-    public void setDescriptions(Boolean descriptions) {
-        set("descriptions", descriptions);
-    }
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    @Override
-    public String prefix() {
-        return "metrics.prometheus";
-    }
+	public void setDescriptions(Boolean descriptions) {
+		set("descriptions", descriptions);
+	}
+
+	@Override
+	public String prefix() {
+		return "metrics.prometheus";
+	}
+
 }
