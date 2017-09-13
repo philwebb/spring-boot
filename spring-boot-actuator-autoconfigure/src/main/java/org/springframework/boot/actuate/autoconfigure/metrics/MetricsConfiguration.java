@@ -35,10 +35,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.Infl
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleExportConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.MetricsWebfluxRequestConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.scheduling.ScheduledMethodMetrics;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.MetricsServletRequestConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.MetricsWebfluxRequestConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.MetricsRestTemplateConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.MetricsServletRequestConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

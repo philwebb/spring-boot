@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.autoconfigure.metrics.reactive.server;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
+import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -36,14 +38,14 @@ import org.springframework.context.annotation.Configuration;
 public class MetricsWebfluxRequestConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(WebfluxTagConfigurer.class)
-	public WebfluxTagConfigurer webfluxTagConfigurer() {
-		return new WebfluxTagConfigurer();
+	@ConditionalOnMissingBean(DefaultWebFluxTagsProvider.class)
+	public DefaultWebFluxTagsProvider webfluxTagConfigurer() {
+		return new DefaultWebFluxTagsProvider();
 	}
 
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry,
-			WebfluxTagConfigurer tagConfigurer, MetricsProperties properties) {
+			DefaultWebFluxTagsProvider tagConfigurer, MetricsProperties properties) {
 		return new MetricsWebFilter(registry, tagConfigurer,
 				properties.getWeb().getServerRequestsName());
 	}

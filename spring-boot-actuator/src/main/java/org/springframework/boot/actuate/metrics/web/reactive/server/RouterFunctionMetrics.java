@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.reactive.server;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +35,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
  * Support class for WebFlux {@link RouterFunction}-related metrics.
  *
  * @author Jon Schneider
- * @since 2.0
+ * @since 2.0.0
  */
 public class RouterFunctionMetrics {
 

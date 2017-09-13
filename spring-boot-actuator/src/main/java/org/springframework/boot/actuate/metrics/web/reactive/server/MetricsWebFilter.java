@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.reactive.server;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,14 +38,14 @@ public class MetricsWebFilter implements WebFilter {
 
 	private final MeterRegistry registry;
 
-	private final WebfluxTagConfigurer tagConfigurer;
+	private final WebFluxTagsProvider tagsProvider;
 
 	private final String metricName;
 
-	public MetricsWebFilter(MeterRegistry registry, WebfluxTagConfigurer tagConfigurer,
+	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider,
 			String metricName) {
 		this.registry = registry;
-		this.tagConfigurer = tagConfigurer;
+		this.tagsProvider = tagsProvider;
 		this.metricName = metricName;
 	}
 
@@ -61,13 +61,13 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private void success(ServerWebExchange exchange, long start) {
-		Iterable<Tag> tags = this.tagConfigurer.httpRequestTags(exchange, null);
+		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, null);
 		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
 				TimeUnit.NANOSECONDS);
 	}
 
 	private void error(ServerWebExchange exchange, long start, Throwable cause) {
-		Iterable<Tag> tags = this.tagConfigurer.httpRequestTags(exchange, cause);
+		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
 				TimeUnit.NANOSECONDS);
 	}

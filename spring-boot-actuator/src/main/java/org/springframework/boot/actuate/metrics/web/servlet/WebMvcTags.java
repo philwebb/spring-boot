@@ -46,8 +46,8 @@ public class WebMvcTags {
 
 	/**
 	 * Creates a {@code method} tag based on the status of the given {@code response}.
-	 * @param response The HTTP response.
-	 * @return A "status" tag whose value is the numeric status code.
+	 * @param response the HTTP response
+	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
 		return Tag.of("status", ((Integer) response.getStatus()).toString());
@@ -58,7 +58,7 @@ public class WebMvcTags {
 	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
 	 * available, falling back to the request's {@link HttpServletRequest#getPathInfo()
 	 * path info} if necessary.
-	 * @param request the requets
+	 * @param request the request
 	 * @return the uri tag derived from the request
 	 */
 	public static Tag uri(HttpServletRequest request) {
@@ -75,7 +75,7 @@ public class WebMvcTags {
 
 	/**
 	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
-	 * name} if the class of the given {@code exception}.
+	 * name} of the class of the given {@code exception}.
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception
 	 */

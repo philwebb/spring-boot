@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
