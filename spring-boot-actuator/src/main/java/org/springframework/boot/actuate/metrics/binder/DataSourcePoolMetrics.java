@@ -79,8 +79,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String name,
 			Function<DataSourcePoolMetadata, N> function) {
-		bindDataSource(registry, name, (dataSource) -> function
-				.apply(this.metadataProvider.getDataSourcePoolMetadata(dataSource)));
+		bindDataSource(registry, name, this.metadataProvider.getValueFunction(function));
 	}
 
 	private <N extends Number> void bindDataSource(MeterRegistry registry, String name,
@@ -101,6 +100,11 @@ public class DataSourcePoolMetrics implements MeterBinder {
 		CachingDataSourcePoolMetadataProvider(DataSource dataSource,
 				DataSourcePoolMetadataProvider metadataProvider) {
 			this.metadataProvider = metadataProvider;
+		}
+
+		public <N extends Number> Function<DataSource, N> getValueFunction(
+				Function<DataSourcePoolMetadata, N> function) {
+			return (dataSource) -> function.apply(getDataSourcePoolMetadata(dataSource));
 		}
 
 		@Override

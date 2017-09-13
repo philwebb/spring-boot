@@ -40,8 +40,7 @@ import org.springframework.integration.support.management.PollableChannelManagem
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SpringIntegrationMetrics
-		implements MeterBinder, SmartInitializingSingleton {
+public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingSingleton {
 
 	private final Iterable<Tag> tags;
 
@@ -107,7 +106,7 @@ public class SpringIntegrationMetrics
 
 	private void addHandlerMetrics(MeterRegistry registry, String handler) {
 		MessageHandlerMetrics handlerMetrics = this.configurer.getHandlerMetrics(handler);
-		// FIXME could use improvement to dynamically commute the handler name with its
+		// FIXME could use improvement to dynamically compute the handler name with its
 		// ID, which can change after
 		// creation as shown in the SpringIntegrationApplication sample.
 		Iterable<Tag> tags = Tags.concat(this.tags, "handler", handler);
