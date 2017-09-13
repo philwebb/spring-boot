@@ -34,9 +34,10 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
  * A {@link MeterBinder} for a {@link DataSource}.
  *
  * @author Jon Schneider
+ * @author Phillip Webb
  * @since 2.0.0
  */
-public class DataSourceMeterBinder implements MeterBinder {
+public class DataSourceMetrics implements MeterBinder {
 
 	/**
 	 * Instrumented pools kept to prevents the poolMetadata that we base the gauges on
@@ -52,7 +53,7 @@ public class DataSourceMeterBinder implements MeterBinder {
 
 	private final DataSourcePoolMetadata poolMetadata;
 
-	public DataSourceMeterBinder(DataSource dataSource,
+	public DataSourceMetrics(DataSource dataSource,
 			Collection<DataSourcePoolMetadataProvider> metadataProviders, String name,
 			Iterable<Tag> tags) {
 		this.name = name;

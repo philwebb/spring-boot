@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.binder;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
@@ -25,8 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.metrics.SpringMeters;
-import org.springframework.boot.actuate.metrics.binder.DataSourceMeterBinder;
+import org.springframework.boot.actuate.metrics.binder.DataSourceMetrics;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DataSourceMeterBinder}.
+ * Tests for {@link DataSourceMetrics}.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
@@ -75,7 +75,8 @@ public class DataSourceMetricsTests {
 		DataSourceConfig(DataSource dataSource,
 				Collection<DataSourcePoolMetadataProvider> metadataProviders,
 				MeterRegistry registry) {
-			SpringMeters.monitor(registry, dataSource, metadataProviders, "data.source");
+			new DataSourceMetrics(dataSource, metadataProviders, "data.source",
+					Collections.emptyList()).bindTo(registry);
 		}
 
 	}

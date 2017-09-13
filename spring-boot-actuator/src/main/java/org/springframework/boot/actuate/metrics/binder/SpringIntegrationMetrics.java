@@ -40,7 +40,7 @@ import org.springframework.integration.support.management.PollableChannelManagem
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SpringIntegrationMeterBinder
+public class SpringIntegrationMetrics
 		implements MeterBinder, SmartInitializingSingleton {
 
 	private final Iterable<Tag> tags;
@@ -49,11 +49,11 @@ public class SpringIntegrationMeterBinder
 
 	private final IntegrationManagementConfigurer configurer;
 
-	public SpringIntegrationMeterBinder(IntegrationManagementConfigurer configurer) {
+	public SpringIntegrationMetrics(IntegrationManagementConfigurer configurer) {
 		this(configurer, Collections.emptyList());
 	}
 
-	public SpringIntegrationMeterBinder(IntegrationManagementConfigurer configurer,
+	public SpringIntegrationMetrics(IntegrationManagementConfigurer configurer,
 			Iterable<Tag> tags) {
 		this.configurer = configurer;
 		this.tags = tags;
