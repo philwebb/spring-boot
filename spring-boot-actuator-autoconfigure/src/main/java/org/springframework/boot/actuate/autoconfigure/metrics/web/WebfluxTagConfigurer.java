@@ -50,7 +50,6 @@ public class WebfluxTagConfigurer {
 				org.springframework.web.reactive.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
 				null);
 		String rawUri = pathPattern.getPatternString();
-
 		if (!StringUtils.hasText(rawUri)) {
 			rawUri = "/";
 		}

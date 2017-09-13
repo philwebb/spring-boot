@@ -35,7 +35,6 @@ public class RestTemplateTagConfigurer {
 
 	/**
 	 * Supplies default tags to timers monitoring RestTemplate requests.
-	 *
 	 * @param request RestTemplate client HTTP request
 	 * @param response may be null in the event of a client error
 	 * @return a set of tags added to every client HTTP request metric
@@ -55,22 +54,22 @@ public class RestTemplateTagConfigurer {
 		if (urlTemplate == null) {
 			urlTemplate = "none";
 		}
-
 		String strippedUrlTemplate = urlTemplate.replaceAll("^https?://[^/]+/", "");
 		return Tag.of("uri", strippedUrlTemplate);
 	}
 
 	public Tag status(ClientHttpResponse response) {
-		String status;
+		return Tag.of("status", getStatusMessage(response));
+	}
+
+	private String getStatusMessage(ClientHttpResponse response) {
 		try {
-			status = (response == null) ? "CLIENT_ERROR"
+			return (response == null) ? "CLIENT_ERROR"
 					: ((Integer) response.getRawStatusCode()).toString();
 		}
 		catch (IOException e) {
-			status = "IO_ERROR";
+			return "IO_ERROR";
 		}
-
-		return Tag.of("status", status);
 	}
 
 	public Tag clientName(HttpRequest request) {
@@ -78,7 +77,6 @@ public class RestTemplateTagConfigurer {
 		if (host == null) {
 			host = "none";
 		}
-
 		return Tag.of("clientName", host);
 	}
 

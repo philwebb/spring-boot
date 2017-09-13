@@ -31,7 +31,6 @@ public final class RestTemplateUrlTemplateHolder {
 			"Rest Template URL Template");
 
 	private RestTemplateUrlTemplateHolder() {
-
 	}
 
 	public static String getRestTemplateUrlTemplate() {

@@ -52,10 +52,8 @@ public class RouterFunctionMetrics {
 
 	/**
 	 * Configures the default tags.
-	 *
 	 * @param defaultTags Generate a list of tags to apply to the timer.
 	 * {@code ServerResponse} may be null.
-	 *
 	 * @return {@code this} for further configuration
 	 */
 	public RouterFunctionMetrics defaultTags(
