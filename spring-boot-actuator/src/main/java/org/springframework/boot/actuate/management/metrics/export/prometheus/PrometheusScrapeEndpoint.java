@@ -23,8 +23,8 @@ import java.io.Writer;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 
+import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
 /**

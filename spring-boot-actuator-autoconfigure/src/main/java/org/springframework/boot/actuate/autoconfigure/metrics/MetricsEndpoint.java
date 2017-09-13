@@ -20,8 +20,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.util.HierarchicalNameMapper;
@@ -41,39 +44,51 @@ public class MetricsEndpoint {
 
 	private final MeterRegistry registry;
 
-	private final HierarchicalNameMapper nameMapper = HierarchicalNameMapper.DEFAULT;
-
 	public MetricsEndpoint(MeterRegistry registry) {
 		this.registry = registry;
 	}
 
 	@ReadOperation
 	public List<String> listNames() {
-		return this.registry.getMeters().stream().map((m) -> m.getId().getName())
+		return this.registry.getMeters().stream().map(this::getMeterIdName)
 				.collect(Collectors.toList());
+	}
+
+	private String getMeterIdName(Meter meter) {
+		return meter.getId().getName();
 	}
 
 	@ReadOperation
 	public Map<String, Collection<MeasurementSample>> metric(
 			@Selector String requiredMetricName) {
 		return this.registry.find(requiredMetricName).meters().stream()
-				.collect(
-						Collectors.toMap(
-								(meter) -> this.nameMapper
-										.toHierarchicalName(meter.getId()),
-								(meter) -> StreamSupport
-										.stream(meter.measure().spliterator(), false)
-										.map(ms -> new MeasurementSample(
-												ms.getStatistic(), ms.getValue()))
-								.collect(Collectors.toList())));
+				.collect(Collectors.toMap(this::getHierarchicalName, this::getSamples));
+	}
+
+	private List<MeasurementSample> getSamples(Meter meter) {
+		return stream(meter.measure()).map(this::getSample).collect(Collectors.toList());
+	}
+
+	private MeasurementSample getSample(Measurement measurement) {
+		return new MeasurementSample(measurement.getStatistic(), measurement.getValue());
+	}
+
+	private String getHierarchicalName(Meter meter) {
+		return HierarchicalNameMapper.DEFAULT.toHierarchicalName(meter.getId());
+	}
+
+	private <T> Stream<T> stream(Iterable<T> measure) {
+		return StreamSupport.stream(measure.spliterator(), false);
 	}
 
 	static class MeasurementSample {
+
 		private Statistic statistic;
+
 		private Double value;
 
 		MeasurementSample() {
-		} // for jackson in test
+		}
 
 		MeasurementSample(Statistic statistic, Double value) {
 			this.statistic = statistic;
@@ -84,16 +99,16 @@ public class MetricsEndpoint {
 			return this.statistic;
 		}
 
+		public void setStatistic(Statistic statistic) {
+			this.statistic = statistic;
+		}
+
 		public Double getValue() {
 			return this.value;
 		}
 
 		public void setValue(Double value) {
 			this.value = value;
-		}
-
-		public void setStatistic(Statistic statistic) {
-			this.statistic = statistic;
 		}
 
 		@Override

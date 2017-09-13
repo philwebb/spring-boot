@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.binder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -37,44 +38,42 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
  */
 public class DataSourceMetrics implements MeterBinder {
 
+	/**
+	 * Instrumented pools kept to prevents the poolMetadata that we base the gauges on
+	 * from being garbage collected.
+	 */
+	private static Collection<DataSourcePoolMetadata> instrumentedPools = new ArrayList<>();
+
 	private final String name;
 
 	private final Iterable<Tag> tags;
 
 	private final DataSourcePoolMetadata poolMetadata;
 
-	// prevents the poolMetadata that we base the gauges on from being garbage collected
-	private static Collection<DataSourcePoolMetadata> instrumentedPools = new ArrayList<>();
-
 	public DataSourceMetrics(DataSource dataSource,
 			Collection<DataSourcePoolMetadataProvider> metadataProviders, String name,
 			Iterable<Tag> tags) {
 		this.name = name;
 		this.tags = tags;
-
-		DataSourcePoolMetadataProvider provider = new DataSourcePoolMetadataProviders(
-				metadataProviders);
-		this.poolMetadata = provider.getDataSourcePoolMetadata(dataSource);
+		this.poolMetadata = new DataSourcePoolMetadataProviders(metadataProviders)
+				.getDataSourcePoolMetadata(dataSource);
 		instrumentedPools.add(this.poolMetadata);
 	}
 
 	@Override
 	public void bindTo(MeterRegistry registry) {
 		if (this.poolMetadata != null) {
-			if (this.poolMetadata.getActive() != null) {
-				registry.gauge(this.name + ".active.connections", this.tags,
-						this.poolMetadata, DataSourcePoolMetadata::getActive);
-			}
+			bindPoolMetadata(registry, "active", DataSourcePoolMetadata::getActive);
+			bindPoolMetadata(registry, "max", DataSourcePoolMetadata::getMax);
+			bindPoolMetadata(registry, "min", DataSourcePoolMetadata::getMin);
+		}
+	}
 
-			if (this.poolMetadata.getMax() != null) {
-				registry.gauge(this.name + ".max.connections", this.tags,
-						this.poolMetadata, DataSourcePoolMetadata::getMax);
-			}
-
-			if (this.poolMetadata.getMin() != null) {
-				registry.gauge(this.name + ".min.connections", this.tags,
-						this.poolMetadata, DataSourcePoolMetadata::getMin);
-			}
+	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String name,
+			Function<DataSourcePoolMetadata, N> function) {
+		if (function.apply(this.poolMetadata) != null) {
+			registry.gauge(this.name + "." + name + ".connections", this.tags,
+					this.poolMetadata, (m) -> function.apply(m).doubleValue());
 		}
 	}
 

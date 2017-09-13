@@ -21,14 +21,12 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -60,14 +58,20 @@ public class MetricsRestTemplateConfiguration {
 	}
 
 	@Bean
-	public static BeanPostProcessor restTemplateInterceptorPostProcessor() {
-		return new MetricsInterceptorPostProcessor();
+	public static BeanPostProcessor restTemplateInterceptorPostProcessor(
+			ApplicationContext context) {
+		return new MetricsInterceptorPostProcessor(context);
 	}
 
-	private static class MetricsInterceptorPostProcessor
-			implements BeanPostProcessor, ApplicationContextAware {
-		private ApplicationContext context;
+	private static class MetricsInterceptorPostProcessor implements BeanPostProcessor {
+
+		private final ApplicationContext context;
+
 		private MetricsRestTemplateInterceptor interceptor;
+
+		public MetricsInterceptorPostProcessor(ApplicationContext context) {
+			this.context = context;
+		}
 
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -77,26 +81,27 @@ public class MetricsRestTemplateConfiguration {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean instanceof RestTemplate) {
-				if (this.interceptor == null) {
-					this.interceptor = this.context
-							.getBean(MetricsRestTemplateInterceptor.class);
-				}
-				RestTemplate restTemplate = (RestTemplate) bean;
-				// create a new list as the old one may be unmodifiable (ie
-				// Arrays.asList())
-				List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-				interceptors.add(this.interceptor);
-				interceptors.addAll(restTemplate.getInterceptors());
-				restTemplate.setInterceptors(interceptors);
+				postProcessAfterInitialization((RestTemplate) bean);
 			}
 			return bean;
 		}
 
-		@Override
-		public void setApplicationContext(ApplicationContext context)
-				throws BeansException {
-			this.context = context;
+		private void postProcessAfterInitialization(RestTemplate restTemplate) {
+			// Create a new list as the old one may be unmodifiable (ie Arrays.asList())
+			List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+			interceptors.add(getInterceptor());
+			interceptors.addAll(restTemplate.getInterceptors());
+			restTemplate.setInterceptors(interceptors);
 		}
+
+		private MetricsRestTemplateInterceptor getInterceptor() {
+			if (this.interceptor == null) {
+				this.interceptor = this.context
+						.getBean(MetricsRestTemplateInterceptor.class);
+			}
+			return this.interceptor;
+		}
+
 	}
 
 	/**
@@ -107,10 +112,12 @@ public class MetricsRestTemplateConfiguration {
 	@ConditionalOnClass(name = { "org.aspectj.lang.ProceedingJoinPoint" })
 	@ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
 	public static class MetricsRestTemplateAspectConfiguration {
+
 		@Bean
 		public RestTemplateUrlTemplateCaptor restTemplateUrlTemplateCapturingAspect() {
 			return new RestTemplateUrlTemplateCaptor();
 		}
+
 	}
 
 }

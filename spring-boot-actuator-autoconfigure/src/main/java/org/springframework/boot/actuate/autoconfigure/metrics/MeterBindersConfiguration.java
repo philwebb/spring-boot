@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Configuration;
  * Configuration for various {@link MeterBinder MeterBinders}.
  *
  * @author Jon Schneider
- * @since 2.0.0
  */
 @Configuration
 class MeterBindersConfiguration {

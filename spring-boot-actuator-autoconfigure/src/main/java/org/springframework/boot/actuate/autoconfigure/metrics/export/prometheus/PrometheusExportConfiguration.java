@@ -38,36 +38,38 @@ import org.springframework.context.annotation.Configuration;
  * @author Jon Schneider
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.prometheus.PrometheusMeterRegistry")
+@ConditionalOnClass(PrometheusMeterRegistry.class)
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.prometheus.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.prometheus.enabled", matchIfMissing = true)
 	public MetricsExporter prometheusExporter(PrometheusConfig config,
 			CollectorRegistry collectorRegistry, Clock clock) {
 		return () -> new PrometheusMeterRegistry(config, collectorRegistry, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public CollectorRegistry collectorRegistry() {
 		return new CollectorRegistry(true);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}
 
 	@ManagementContextConfiguration
 	public static class PrometheusScrapeEndpointConfiguration {
+
 		@Bean
 		public PrometheusScrapeEndpoint prometheusEndpoint(
 				CollectorRegistry collectorRegistry) {
 			return new PrometheusScrapeEndpoint(collectorRegistry);
 		}
+
 	}
 
 }

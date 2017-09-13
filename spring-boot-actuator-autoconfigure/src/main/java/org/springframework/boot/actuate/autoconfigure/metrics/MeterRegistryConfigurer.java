@@ -16,28 +16,23 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 /**
- * Defines callback methods to customize the Java-based configuration for
- * {@link MeterRegistry} implementations.
+ * Callback interface that can be used to customize {@link MeterRegistry MeterRegistries}.
  * <p>
+ * Configurers are guaranteed to be applied before any {@link Meter} is registered with
+ * the registry.
  *
- * Add one or more of these configurers to the application context to customize a
- * registry.
- *
- * Configurers are guaranteed to be applied before any
- * {@link io.micrometer.core.instrument.Meter} is registered with the registry.
- *
- * @since 2.0.0
  * @author Jon Schneider
+ * @since 2.0.0
  */
 @FunctionalInterface
 public interface MeterRegistryConfigurer {
 
 	/**
 	 * Configure the given {@code registry}.
-	 *
 	 * @param registry the registry to configure
 	 */
 	void configureRegistry(MeterRegistry registry);

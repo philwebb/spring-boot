@@ -34,23 +34,23 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.jmx.JmxMeterRegistry")
+@ConditionalOnClass(JmxMeterRegistry.class)
 public class JmxExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.jmx.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.jmx.enabled", matchIfMissing = true)
 	public MetricsExporter jmxExporter(HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new JmxMeterRegistry(nameMapper, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public HierarchicalNameMapper hierarchicalNameMapper() {
 		return HierarchicalNameMapper.DEFAULT;
 	}

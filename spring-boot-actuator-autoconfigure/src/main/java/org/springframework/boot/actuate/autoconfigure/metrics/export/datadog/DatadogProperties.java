@@ -30,6 +30,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "metrics.datadog")
 public class DatadogProperties extends StepRegistryProperties implements DatadogConfig {
 
+	@Override
+	public String prefix() {
+		return "metrics.datadog";
+	}
+
 	public DatadogProperties() {
 		set("apiKey", "dummyKey"); // FIXME otherwise tests fail
 	}
@@ -40,11 +45,6 @@ public class DatadogProperties extends StepRegistryProperties implements Datadog
 
 	public void setHostTag(String hostTag) {
 		set("hostTag", hostTag);
-	}
-
-	@Override
-	public String prefix() {
-		return "metrics.datadog";
 	}
 
 }

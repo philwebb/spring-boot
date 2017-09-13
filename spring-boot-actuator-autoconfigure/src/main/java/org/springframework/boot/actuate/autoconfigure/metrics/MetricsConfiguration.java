@@ -22,8 +22,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import org.aspectj.lang.ProceedingJoinPoint;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.binder.SpringIntegrationMetrics;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
@@ -49,6 +49,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.support.management.IntegrationManagementConfigurer;
 
 /**
@@ -61,25 +62,18 @@ import org.springframework.integration.support.management.IntegrationManagementC
 @EnableConfigurationProperties(MetricsProperties.class)
 @Import({ MeterBindersConfiguration.class, MetricsServletRequestConfiguration.class,
 		MetricsWebfluxRequestConfiguration.class, MetricsRestTemplateConfiguration.class,
-
-		// supported monitoring systems
 		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
 		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
 		PrometheusExportConfiguration.class, SimpleExportConfiguration.class })
 class MetricsConfiguration {
 
-	@ConditionalOnMissingBean(MeterRegistry.class)
 	@Bean
+	@ConditionalOnMissingBean(MeterRegistry.class)
 	public CompositeMeterRegistry compositeMeterRegistry(
-			ObjectProvider<Collection<MetricsExporter>> exportersProvider) {
+			Collection<MetricsExporter> exporters) {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
-
-		if (exportersProvider.getIfAvailable() != null) {
-			exportersProvider.getIfAvailable()
-					.forEach((exporter) -> composite.add(exporter.registry()));
-		}
-
+		exporters.stream().map(MetricsExporter::registry).forEach(composite::add);
 		return composite;
 	}
 
@@ -92,19 +86,19 @@ class MetricsConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.aspectj.lang.ProceedingJoinPoint")
+	@ConditionalOnClass(ProceedingJoinPoint.class)
 	@ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
 	public ScheduledMethodMetrics scheduledMethodMetrics(MeterRegistry registry) {
 		return new ScheduledMethodMetrics(registry);
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "org.springframework.integration.config.EnableIntegrationManagement")
+	@ConditionalOnClass(EnableIntegrationManagement.class)
 	static class MetricsIntegrationConfiguration {
 
 		@Bean(name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME)
 		@ConditionalOnMissingBean(value = IntegrationManagementConfigurer.class, name = IntegrationManagementConfigurer.MANAGEMENT_CONFIGURER_NAME, search = SearchStrategy.CURRENT)
-		public IntegrationManagementConfigurer managementConfigurer() {
+		public IntegrationManagementConfigurer integrationManagementConfigurer() {
 			IntegrationManagementConfigurer configurer = new IntegrationManagementConfigurer();
 			configurer.setDefaultCountsEnabled(true);
 			configurer.setDefaultStatsEnabled(true);
@@ -123,17 +117,10 @@ class MetricsConfiguration {
 	static class MeterRegistryConfigurationSupport {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
-				MetricsProperties config, ObjectProvider<Collection<MeterBinder>> binders,
-				ObjectProvider<Collection<MeterRegistryConfigurer>> registryConfigurers) {
-			if (registryConfigurers.getIfAvailable() != null) {
-				registryConfigurers.getIfAvailable()
-						.forEach((conf) -> conf.configureRegistry(registry));
-			}
-
-			if (binders.getIfAvailable() != null) {
-				binders.getIfAvailable().forEach((binder) -> binder.bindTo(registry));
-			}
-
+				Collection<MeterRegistryConfigurer> configurers,
+				MetricsProperties config, Collection<MeterBinder> binders) {
+			configurers.forEach((configurer) -> configurer.configureRegistry(registry));
+			binders.forEach((binder) -> binder.bindTo(registry));
 			if (config.getUseGlobalRegistry()) {
 				Metrics.addRegistry(registry);
 			}

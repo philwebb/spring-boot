@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.MeterRegistry;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,11 +30,9 @@ public class MetricsProperties {
 	private Web web = new Web();
 
 	/**
-	 * Determines whether {@link MeterRegistry} implementations configured by Spring
-	 * should be bound to the global static registry on
-	 * {@link io.micrometer.core.instrument.Metrics}. For Spring Boot tests involving
-	 * metrics, set this to {@code false} to maximize test independence. Otherwise, it can
-	 * be left to {@code true}.
+	 * Determines whether MeterRegistry implementations configured by Spring should be
+	 * bound to the global static registry on Metrics. For testing, set this to 'false' to
+	 * maximize test independence.
 	 */
 	private Boolean useGlobalRegistry = true;
 
@@ -55,11 +51,10 @@ public class MetricsProperties {
 	public static class Web {
 
 		/**
-		 * Determines whether every request mapping (WebMVC or Webflux) should be
+		 * Determines whether every request mapping (WebMVC or WebFlux) should be
 		 * automatically timed. If the number of time series emitted from a Spring
 		 * application grows too large on account of request mapping timings, disable this
-		 * and use {@link io.micrometer.core.annotation.Timed} on a per request mapping
-		 * basis as needed.
+		 * and use 'Timed' on a per request mapping basis as needed.
 		 */
 		private Boolean autoTimeServerRequests = true;
 
@@ -67,9 +62,8 @@ public class MetricsProperties {
 
 		/**
 		 * Determines whether instrumented server requests ship percentiles histogram
-		 * buckets by default. The default can be overriden by adding
-		 * {@link io.micrometer.core.annotation.Timed} to a request endpoint and setting
-		 * {@code percentiles} to true.
+		 * buckets by default. The default can be overridden by adding '@Timed' to a
+		 * request endpoint and setting 'percentiles' to true.
 		 */
 		private Boolean serverRequestPercentiles = false;
 

@@ -38,19 +38,19 @@ import org.springframework.context.annotation.Import;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.atlas.AtlasMeterRegistry")
+@ConditionalOnClass(AtlasMeterRegistry.class)
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(AtlasProperties.class)
 public class AtlasExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.atlas.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.atlas.enabled", matchIfMissing = true)
 	public MetricsExporter atlasExporter(AtlasConfig config, Clock clock) {
 		return () -> new AtlasMeterRegistry(config, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}

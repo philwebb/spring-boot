@@ -31,6 +31,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "metrics.influx")
 public class InfluxProperties extends StepRegistryProperties implements InfluxConfig {
 
+	@Override
+	public String prefix() {
+		return "metrics.influx";
+	}
+
 	public void setDb(String db) {
 		set("db", db);
 	}
@@ -57,11 +62,6 @@ public class InfluxProperties extends StepRegistryProperties implements InfluxCo
 
 	public void setCompressed(Boolean compressed) {
 		set("compressed", compressed);
-	}
-
-	@Override
-	public String prefix() {
-		return "metrics.influx";
 	}
 
 }

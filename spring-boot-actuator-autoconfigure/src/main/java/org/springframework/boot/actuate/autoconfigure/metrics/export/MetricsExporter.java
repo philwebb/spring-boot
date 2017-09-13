@@ -31,7 +31,6 @@ public interface MetricsExporter {
 
 	/**
 	 * Returns the {@link MeterRegistry} used to register metrics with the exporter.
-	 *
 	 * @return the meter registry
 	 */
 	MeterRegistry registry();

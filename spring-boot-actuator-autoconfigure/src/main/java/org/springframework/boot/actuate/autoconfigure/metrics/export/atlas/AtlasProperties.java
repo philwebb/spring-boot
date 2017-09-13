@@ -32,6 +32,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "metrics.atlas")
 public class AtlasProperties extends RegistryProperties implements AtlasConfig {
 
+	@Override
+	protected String prefix() {
+		return "atlas";
+	}
+
 	public void setStep(Duration step) {
 		set("step", step);
 	}
@@ -82,11 +87,6 @@ public class AtlasProperties extends RegistryProperties implements AtlasConfig {
 
 	public void setBatchSize(Integer batchSize) {
 		set("batchSize", batchSize);
-	}
-
-	@Override
-	protected String prefix() {
-		return "atlas";
 	}
 
 }

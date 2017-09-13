@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.web.server.ServerWebExchange;
@@ -49,18 +51,25 @@ public class MetricsWebFilter implements WebFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		return chain.filter(exchange).compose((f) -> {
-			long start = System.nanoTime();
-			return f.doOnSuccess(done -> this.registry
-					.timer(this.metricName,
-							this.tagConfigurer.httpRequestTags(exchange, null))
-					.record(System.nanoTime() - start,
-							TimeUnit.NANOSECONDS))
-					.doOnError((t) -> this.registry
-							.timer(this.metricName,
-									this.tagConfigurer.httpRequestTags(exchange, t))
-							.record(System.nanoTime() - start, TimeUnit.NANOSECONDS));
-		});
+		return chain.filter(exchange).compose((call) -> filter(exchange, call));
+	}
+
+	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
+		long start = System.nanoTime();
+		return call.doOnSuccess((done) -> success(exchange, start))
+				.doOnError((cause) -> error(exchange, start, cause));
+	}
+
+	private void success(ServerWebExchange exchange, long start) {
+		Iterable<Tag> tags = this.tagConfigurer.httpRequestTags(exchange, null);
+		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
+				TimeUnit.NANOSECONDS);
+	}
+
+	private void error(ServerWebExchange exchange, long start, Throwable cause) {
+		Iterable<Tag> tags = this.tagConfigurer.httpRequestTags(exchange, cause);
+		this.registry.timer(this.metricName, tags).record(System.nanoTime() - start,
+				TimeUnit.NANOSECONDS);
 	}
 
 }

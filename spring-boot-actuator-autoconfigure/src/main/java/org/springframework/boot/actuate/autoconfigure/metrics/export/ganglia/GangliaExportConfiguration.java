@@ -38,26 +38,26 @@ import org.springframework.context.annotation.Import;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.ganglia.GangliaMeterRegistry")
+@ConditionalOnClass(GangliaMeterRegistry.class)
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(GangliaProperties.class)
 public class GangliaExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.ganglia.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.ganglia.enabled", matchIfMissing = true)
 	public MetricsExporter gangliaExporter(GangliaConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new GangliaMeterRegistry(config, nameMapper, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public HierarchicalNameMapper hierarchicalNameMapper() {
 		return HierarchicalNameMapper.DEFAULT;
 	}

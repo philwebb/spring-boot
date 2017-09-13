@@ -37,19 +37,19 @@ import org.springframework.context.annotation.Import;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.influx.InfluxMeterRegistry")
+@ConditionalOnClass(InfluxMeterRegistry.class)
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(InfluxProperties.class)
 public class InfluxExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.influx.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.influx.enabled", matchIfMissing = true)
 	public MetricsExporter influxExporter(InfluxConfig config, Clock clock) {
 		return () -> new InfluxMeterRegistry(config, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}

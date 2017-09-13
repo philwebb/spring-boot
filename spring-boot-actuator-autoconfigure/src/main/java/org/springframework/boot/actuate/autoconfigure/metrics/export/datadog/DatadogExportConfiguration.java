@@ -37,19 +37,19 @@ import org.springframework.context.annotation.Import;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.datadog.DatadogMeterRegistry")
+@ConditionalOnClass(DatadogMeterRegistry.class)
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(DatadogProperties.class)
 public class DatadogExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.datadog.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.datadog.enabled", matchIfMissing = true)
 	public MetricsExporter datadogExporter(DatadogConfig config, Clock clock) {
 		return () -> new DatadogMeterRegistry(config, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}

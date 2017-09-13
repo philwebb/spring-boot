@@ -39,12 +39,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public final class SpringMeters {
 
 	private SpringMeters() {
-
 	}
 
 	/**
 	 * Record metrics on active connections and connection pool utilization.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param dataSource The data source to instrument.
 	 * @param metadataProviders A list of providers from which the instrumentation can
@@ -63,7 +61,6 @@ public final class SpringMeters {
 
 	/**
 	 * Record metrics on active connections and connection pool utilization.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param dataSource The data source to instrument.
 	 * @param metadataProviders A list of providers from which the instrumentation can
@@ -82,7 +79,6 @@ public final class SpringMeters {
 
 	/**
 	 * Record metrics on the use of a {@link ThreadPoolTaskExecutor}.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param executor The task executor to instrument.
 	 * @param name The name prefix of the metrics.
@@ -98,7 +94,6 @@ public final class SpringMeters {
 
 	/**
 	 * Record metrics on the use of a {@link ThreadPoolTaskExecutor}.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param executor The executor to instrument.
 	 * @param name The name prefix of the metrics.
@@ -114,7 +109,6 @@ public final class SpringMeters {
 
 	/**
 	 * Record metrics on the use of a {@link ThreadPoolTaskExecutor}.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param scheduler The task scheduler to instrument.
 	 * @param name The name prefix of the metrics.
@@ -130,7 +124,6 @@ public final class SpringMeters {
 
 	/**
 	 * Record metrics on the use of a {@link ThreadPoolTaskExecutor}.
-	 *
 	 * @param registry The registry to bind metrics to.
 	 * @param scheduler The scheduler to instrument.
 	 * @param name The name prefix of the metrics.

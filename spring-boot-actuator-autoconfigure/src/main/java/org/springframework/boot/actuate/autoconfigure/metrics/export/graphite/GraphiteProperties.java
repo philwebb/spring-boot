@@ -33,6 +33,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "metrics.graphite")
 public class GraphiteProperties extends RegistryProperties implements GraphiteConfig {
 
+	@Override
+	public String prefix() {
+		return "metrics.graphite";
+	}
+
 	public void setStep(Duration step) {
 		set("step", step);
 	}
@@ -55,11 +60,6 @@ public class GraphiteProperties extends RegistryProperties implements GraphiteCo
 
 	public void setEnabled(Boolean enabled) {
 		set("enabled", enabled);
-	}
-
-	@Override
-	public String prefix() {
-		return "metrics.graphite";
 	}
 
 }

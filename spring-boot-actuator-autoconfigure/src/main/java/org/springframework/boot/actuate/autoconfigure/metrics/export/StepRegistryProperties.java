@@ -21,15 +21,15 @@ import java.time.Duration;
 import io.micrometer.core.instrument.spectator.step.StepRegistryConfig;
 
 /**
- * Specialization of {@link RegistryProperties} for configuring a metrics
- * registry that pushes aggregated metrics on a regular interval.
+ * Specialization of {@link RegistryProperties} for configuring a metrics registry that
+ * pushes aggregated metrics on a regular interval.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public abstract class StepRegistryProperties
-		extends RegistryProperties implements StepRegistryConfig {
+public abstract class StepRegistryProperties extends RegistryProperties
+		implements StepRegistryConfig {
 
 	public void setStep(Duration step) {
 		set("step", step);

@@ -29,16 +29,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 public abstract class RegistryProperties {
 
-	private Properties props = new Properties();
+	private final Properties properties = new Properties();
 
 	protected abstract String prefix();
 
-	public String get(String k) {
-		return this.props.getProperty(k);
+	public String get(String key) {
+		return this.properties.getProperty(key);
 	}
 
-	protected void set(String k, Object v) {
-		this.props.put(prefix() + "." + k, v.toString());
+	protected void set(String key, Object value) {
+		this.properties.put(prefix() + "." + key, value.toString());
 	}
 
 }

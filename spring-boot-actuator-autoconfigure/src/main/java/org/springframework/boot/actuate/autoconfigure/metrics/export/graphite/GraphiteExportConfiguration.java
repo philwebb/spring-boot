@@ -38,26 +38,26 @@ import org.springframework.context.annotation.Import;
  * @since 2.0.0
  */
 @Configuration
-@ConditionalOnClass(name = "io.micrometer.graphite.GraphiteMeterRegistry")
+@ConditionalOnClass(GraphiteMeterRegistry.class)
 @Import(StringToDurationConverter.class)
 @EnableConfigurationProperties(GraphiteProperties.class)
 public class GraphiteExportConfiguration {
 
-	@ConditionalOnProperty(value = "metrics.graphite.enabled", matchIfMissing = true)
 	@Bean
+	@ConditionalOnProperty(value = "metrics.graphite.enabled", matchIfMissing = true)
 	public MetricsExporter graphiteExporter(GraphiteConfig config,
 			HierarchicalNameMapper nameMapper, Clock clock) {
 		return () -> new GraphiteMeterRegistry(config, nameMapper, clock);
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public Clock clock() {
 		return Clock.SYSTEM;
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
+	@ConditionalOnMissingBean
 	public HierarchicalNameMapper hierarchicalNameMapper() {
 		return HierarchicalNameMapper.DEFAULT;
 	}

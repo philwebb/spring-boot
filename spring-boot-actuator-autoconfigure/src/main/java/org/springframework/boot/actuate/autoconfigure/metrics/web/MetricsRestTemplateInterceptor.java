@@ -56,25 +56,27 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 			ClientHttpRequestExecution execution) throws IOException {
 		long startTime = System.nanoTime();
-
 		ClientHttpResponse response = null;
 		try {
 			response = execution.execute(request, body);
 			return response;
 		}
 		finally {
-			Timer.Builder builder = Timer
-					.builder(this.properties.getWeb().getClientRequestsName())
-					.tags(this.tagProvider.clientHttpRequestTags(request, response))
-					.description("Timer of RestTemplate operation");
-
-			if (this.properties.getWeb().getClientRequestPercentiles()) {
-				builder = builder.histogram(Histogram.percentiles());
-			}
-
-			builder.register(this.meterRegistry).record(System.nanoTime() - startTime,
-					TimeUnit.NANOSECONDS);
+			getTimeBuilder(request, response).register(this.meterRegistry)
+					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 		}
+	}
+
+	private Timer.Builder getTimeBuilder(HttpRequest request,
+			ClientHttpResponse response) {
+		Timer.Builder builder = Timer
+				.builder(this.properties.getWeb().getClientRequestsName())
+				.tags(this.tagProvider.clientHttpRequestTags(request, response))
+				.description("Timer of RestTemplate operation");
+		if (this.properties.getWeb().getClientRequestPercentiles()) {
+			builder = builder.histogram(Histogram.percentiles());
+		}
+		return builder;
 	}
 
 }

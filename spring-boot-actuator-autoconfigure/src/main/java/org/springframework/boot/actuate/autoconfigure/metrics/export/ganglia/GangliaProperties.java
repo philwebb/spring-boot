@@ -34,6 +34,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "metrics.ganglia")
 public class GangliaProperties extends RegistryProperties implements GangliaConfig {
 
+	@Override
+	public String prefix() {
+		return "metrics.ganglia";
+	}
+
 	public void setStep(Duration step) {
 		set("step", step);
 	}
@@ -68,11 +73,6 @@ public class GangliaProperties extends RegistryProperties implements GangliaConf
 
 	public void setEnabled(Boolean enabled) {
 		set("enabled", enabled);
-	}
-
-	@Override
-	public String prefix() {
-		return "metrics.ganglia";
 	}
 
 }
