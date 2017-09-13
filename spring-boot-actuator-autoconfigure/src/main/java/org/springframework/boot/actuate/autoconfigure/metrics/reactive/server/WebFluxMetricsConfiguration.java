@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @Configuration
-public class MetricsWebfluxRequestConfiguration {
+public class WebFluxMetricsConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(DefaultWebFluxTagsProvider.class)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.binder;
+package org.springframework.boot.actuate.metrics.binder;
 
 import java.util.ArrayList;
 import java.util.Collection;

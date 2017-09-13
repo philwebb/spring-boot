@@ -37,7 +37,7 @@ public class MeterRegistryConfigurerTests {
 	@Test
 	public void commonTagsAreAppliedToAutoConfiguredBinders() {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.withConfiguration(
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
 				.withPropertyValues("metrics.use-global-registry=false")

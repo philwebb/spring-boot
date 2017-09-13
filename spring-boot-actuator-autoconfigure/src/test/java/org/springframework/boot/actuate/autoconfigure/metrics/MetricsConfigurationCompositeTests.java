@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MetricsConfiguration} creating a {@link CompositeMeterRegistry}.
+ * Tests for {@link MetricsAutoConfiguration} creating a {@link CompositeMeterRegistry}.
  *
  * @author Jon Schneider
  */
@@ -36,7 +36,7 @@ public class MetricsConfigurationCompositeTests {
 	@Test
 	public void compositeContainsImplementationsOnClasspath() {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
 				.withPropertyValues("metrics.use-global-registry=false")
 				.run((context) -> assertThat(
 						context.getBean(CompositeMeterRegistry.class).getRegistries())

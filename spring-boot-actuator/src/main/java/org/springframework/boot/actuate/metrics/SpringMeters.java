@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics;
+package org.springframework.boot.actuate.metrics;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +25,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.ExecutorServiceMetrics;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.binder.DataSourceMetrics;
+import org.springframework.boot.actuate.metrics.binder.DataSourceMetrics;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;

@@ -43,7 +43,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 @ConditionalOnClass(name = "org.springframework.web.client.RestTemplate")
-public class MetricsRestTemplateConfiguration {
+public class RestTemplateMetricsConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(DefaultRestTemplateExchangeTagsProvider.class)

@@ -25,7 +25,6 @@ import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
-import org.springframework.boot.actuate.autoconfigure.metrics.binder.SpringIntegrationMetrics;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogExportConfiguration;
@@ -35,11 +34,12 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.influx.Infl
 import org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusExportConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleExportConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.MetricsWebfluxRequestConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.WebFluxMetricsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.scheduling.ScheduledMethodMetrics;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.client.MetricsRestTemplateConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.MetricsServletRequestConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTemplateMetricsConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
+import org.springframework.boot.actuate.metrics.binder.SpringIntegrationMetrics;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -61,13 +61,13 @@ import org.springframework.integration.support.management.IntegrationManagementC
  */
 @Configuration
 @EnableConfigurationProperties(MetricsProperties.class)
-@Import({ MeterBindersConfiguration.class, MetricsServletRequestConfiguration.class,
-		MetricsWebfluxRequestConfiguration.class, MetricsRestTemplateConfiguration.class,
+@Import({ MeterBindersConfiguration.class, WebMvcMetricsConfiguration.class,
+		WebFluxMetricsConfiguration.class, RestTemplateMetricsConfiguration.class,
 		AtlasExportConfiguration.class, DatadogExportConfiguration.class,
 		GangliaExportConfiguration.class, GraphiteExportConfiguration.class,
 		InfluxExportConfiguration.class, JmxExportConfiguration.class,
 		PrometheusExportConfiguration.class, SimpleExportConfiguration.class })
-class MetricsConfiguration {
+public class MetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)

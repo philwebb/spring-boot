@@ -57,14 +57,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link MetricsConfiguration}.
+ * Tests for {@link MetricsAutoConfiguration}.
  *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = MetricsConfigurationTests.MetricsApp.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = MetricsAutoConfigurationTests.MetricsApp.class)
 @TestPropertySource(properties = "metrics.use-global-registry=false")
-public class MetricsConfigurationTests {
+public class MetricsAutoConfigurationTests {
 
 	@Autowired
 	private ApplicationContext context;
@@ -106,7 +106,7 @@ public class MetricsConfigurationTests {
 				.hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
 	}
 
-	@ImportAutoConfiguration({ MetricsConfiguration.class, JacksonAutoConfiguration.class,
+	@ImportAutoConfiguration({ MetricsAutoConfiguration.class, JacksonAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class,
 			ServletWebServerFactoryAutoConfiguration.class })

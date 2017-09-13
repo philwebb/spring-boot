@@ -39,7 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableConfigurationProperties(MetricsProperties.class)
-public class MetricsServletRequestConfiguration implements WebMvcConfigurer {
+public class WebMvcMetricsConfiguration implements WebMvcConfigurer {
 
 	@Bean
 	@ConditionalOnMissingBean(DefaultWebMvcTagsProvider.class)
