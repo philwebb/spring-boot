@@ -44,9 +44,10 @@ public class MetricsRestTemplateCustomizerTests {
 	public void interceptRestTemplate() {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		RestTemplate restTemplate = new RestTemplate();
-		new MetricsRestTemplateCustomizer(new MetricsRestTemplateInterceptor(registry,
-				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
-				true)).customize(restTemplate);
+		MetricsRestTemplateCustomizer customizer = new MetricsRestTemplateCustomizer(
+				registry, new DefaultRestTemplateExchangeTagsProvider(),
+				"http.client.requests", true);
+		customizer.customize(restTemplate);
 		MockRestServiceServer mockServer = MockRestServiceServer
 				.createServer(restTemplate);
 		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))

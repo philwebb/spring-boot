@@ -89,7 +89,7 @@ public final class WebFluxTags {
 		if (exception != null) {
 			return Tag.of("exception", exception.getClass().getSimpleName());
 		}
-		return Tag.of("exception", "None");
+		return Tag.of("exception", "none");
 	}
 
 }

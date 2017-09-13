@@ -34,8 +34,8 @@ public class DefaultRestTemplateExchangeTagsProvider
 		implements RestTemplateExchangeTagsProvider {
 
 	@Override
-	public Iterable<Tag> getTags(HttpRequest request, ClientHttpResponse response) {
-		String urlTemplate = RestTemplateUrlTemplateHolder.getRestTemplateUrlTemplate();
+	public Iterable<Tag> getTags(String urlTemplate, HttpRequest request,
+			ClientHttpResponse response) {
 		Tag uriTag = StringUtils.hasText(urlTemplate)
 				? RestTemplateExchangeTags.uri(urlTemplate)
 				: RestTemplateExchangeTags.uri(request);

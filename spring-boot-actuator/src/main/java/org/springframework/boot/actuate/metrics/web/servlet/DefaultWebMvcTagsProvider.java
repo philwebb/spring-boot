@@ -26,7 +26,7 @@ import io.micrometer.core.instrument.Tag;
 /**
  * Default implementation of {@link WebMvcTagsProvider}.
  *
- * @author Jon Schneide
+ * @author Jon Schneider
  * @since 2.0.0
  */
 public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
@@ -38,7 +38,6 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	 * @return A set of tags added to every Spring MVC HTTP request
 	 */
 	@Override
-	@SuppressWarnings("unused") // we aren't doing anything with the handler by default
 	public Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler) {
 		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request));
 	}

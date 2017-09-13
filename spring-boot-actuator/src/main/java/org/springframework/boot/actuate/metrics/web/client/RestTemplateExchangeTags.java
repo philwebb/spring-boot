@@ -84,8 +84,10 @@ public final class RestTemplateExchangeTags {
 
 	private static String getStatusMessage(ClientHttpResponse response) {
 		try {
-			return (response == null) ? "CLIENT_ERROR"
-					: ((Integer) response.getRawStatusCode()).toString();
+			if (response == null) {
+				return "CLIENT_ERROR";
+			}
+			return String.valueOf(response.getRawStatusCode());
 		}
 		catch (IOException ex) {
 			return "IO_ERROR";

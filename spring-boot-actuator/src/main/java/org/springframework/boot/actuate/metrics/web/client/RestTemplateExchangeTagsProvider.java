@@ -35,10 +35,12 @@ public interface RestTemplateExchangeTagsProvider {
 	/**
 	 * Provides the tags to be associated with metrics that are recorded for the given
 	 * {@code request} and {@code response} exchange.
+	 * @param urlTemplate the source URl template, if available
 	 * @param request the request
-	 * @param response the response
+	 * @param response the response (may be {@code null} if the exchange failed)
 	 * @return the tags
 	 */
-	Iterable<Tag> getTags(HttpRequest request, ClientHttpResponse response);
+	Iterable<Tag> getTags(String urlTemplate, HttpRequest request,
+			ClientHttpResponse response);
 
 }

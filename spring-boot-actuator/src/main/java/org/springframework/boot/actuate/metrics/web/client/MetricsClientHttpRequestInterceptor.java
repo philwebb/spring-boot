@@ -17,26 +17,31 @@
 package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.stats.hist.Histogram;
 
+import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * Intercepts {@link RestTemplate} requests and records metrics about execution time and
- * results.
+ * {@link ClientHttpRequestInterceptor} applied via a
+ * {@link MetricsRestTemplateCustomizer} to record metrics.
  *
- * @author Jon Schneider
  * @since 2.0.0
  */
-public class MetricsRestTemplateInterceptor implements ClientHttpRequestInterceptor {
+class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+
+	private static final ThreadLocal<String> urlTemplate = new NamedThreadLocal<>(
+			"Rest Template URL Template");
 
 	private final MeterRegistry meterRegistry;
 
@@ -46,16 +51,7 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 
 	private final boolean recordPercentiles;
 
-	/**
-	 * Creates a new {@code MetricsRestTemplateInterceptor} that will record metrics using
-	 * the given {@code meterRegistry} with tags provided by the given
-	 * {@code tagProvider}.
-	 * @param meterRegistry the meter registry
-	 * @param tagProvider the tag provider
-	 * @param metricName the name of the recorded metric
-	 * @param recordPercentiles whether percentile histogram buckets should be recorded
-	 */
-	public MetricsRestTemplateInterceptor(MeterRegistry meterRegistry,
+	public MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName,
 			boolean recordPercentiles) {
 		this.tagProvider = tagProvider;
@@ -76,14 +72,32 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 		finally {
 			getTimeBuilder(request, response).register(this.meterRegistry)
 					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-			RestTemplateUrlTemplateHolder.clear();
+			urlTemplate.remove();
 		}
+	}
+
+	UriTemplateHandler createUriTemplateHandler(UriTemplateHandler delegate) {
+		return new UriTemplateHandler() {
+
+			@Override
+			public URI expand(String url, Map<String, ?> arguments) {
+				urlTemplate.set(url);
+				return delegate.expand(url, arguments);
+			}
+
+			@Override
+			public URI expand(String url, Object... arguments) {
+				urlTemplate.set(url);
+				return delegate.expand(url, arguments);
+			}
+
+		};
 	}
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
 		Timer.Builder builder = Timer.builder(this.metricName)
-				.tags(this.tagProvider.getTags(request, response))
+				.tags(this.tagProvider.getTags(urlTemplate.get(), request, response))
 				.description("Timer of RestTemplate operation");
 		if (this.recordPercentiles) {
 			builder = builder.histogram(Histogram.percentiles());

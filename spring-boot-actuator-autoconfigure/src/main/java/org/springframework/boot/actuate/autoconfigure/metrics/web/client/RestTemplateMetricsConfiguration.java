@@ -16,28 +16,25 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
-import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateInterceptor;
+import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Configuration for {@link RestTemplate}-related metrics.
  *
  * @author Jon Schneider
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @Configuration
@@ -45,41 +42,39 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateMetricsConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(DefaultRestTemplateExchangeTagsProvider.class)
+	@ConditionalOnMissingBean(RestTemplateExchangeTagsProvider.class)
 	public DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer() {
 		return new DefaultRestTemplateExchangeTagsProvider();
 	}
 
 	@Bean
-	public MetricsRestTemplateInterceptor metricsRestTemplateIntercaptor(
+	public MetricsRestTemplateCustomizer metricsRestTemplateCustomizer(
 			MeterRegistry meterRegistry,
-			DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer,
+			RestTemplateExchangeTagsProvider restTemplateTagConfigurer,
 			MetricsProperties properties) {
-		return new MetricsRestTemplateInterceptor(meterRegistry,
-				restTemplateTagConfigurer, properties.getWeb().getClientRequestsName(),
+		return new MetricsRestTemplateCustomizer(meterRegistry, restTemplateTagConfigurer,
+				properties.getWeb().getClientRequestsName(),
 				properties.getWeb().getClientRequestPercentiles());
 	}
 
 	@Bean
 	public static BeanPostProcessor restTemplateInterceptorPostProcessor(
-			ApplicationContext context) {
-		return new MetricsInterceptorPostProcessor(context);
+			ApplicationContext applicationContext) {
+		return new MetricsInterceptorPostProcessor(applicationContext);
 	}
 
-	@Bean
-	public MetricsRestTemplateCustomizer metricsRestTemplateCustomizer(
-			MetricsRestTemplateInterceptor metricsRestTemplateInterceptor) {
-		return new MetricsRestTemplateCustomizer(metricsRestTemplateInterceptor);
-	}
-
+	/**
+	 * {@link BeanPostProcessor} to apply {@link MetricsRestTemplateCustomizer} to any
+	 * directly registered {@link RestTemplate} beans.
+	 */
 	private static class MetricsInterceptorPostProcessor implements BeanPostProcessor {
 
-		private final ApplicationContext context;
+		private final ApplicationContext applicationContext;
 
-		private MetricsRestTemplateInterceptor interceptor;
+		private MetricsRestTemplateCustomizer customizer;
 
-		MetricsInterceptorPostProcessor(ApplicationContext context) {
-			this.context = context;
+		MetricsInterceptorPostProcessor(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
 		}
 
 		@Override
@@ -90,25 +85,17 @@ public class RestTemplateMetricsConfiguration {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean instanceof RestTemplate) {
-				postProcessAfterInitialization((RestTemplate) bean);
+				geCustomizer().customize((RestTemplate) bean);
 			}
 			return bean;
 		}
 
-		private void postProcessAfterInitialization(RestTemplate restTemplate) {
-			// Create a new list as the old one may be unmodifiable (ie Arrays.asList())
-			List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-			interceptors.add(getInterceptor());
-			interceptors.addAll(restTemplate.getInterceptors());
-			restTemplate.setInterceptors(interceptors);
-		}
-
-		private MetricsRestTemplateInterceptor getInterceptor() {
-			if (this.interceptor == null) {
-				this.interceptor = this.context
-						.getBean(MetricsRestTemplateInterceptor.class);
+		private MetricsRestTemplateCustomizer geCustomizer() {
+			if (this.customizer == null) {
+				this.customizer = this.applicationContext
+						.getBean(MetricsRestTemplateCustomizer.class);
 			}
-			return this.interceptor;
+			return this.customizer;
 		}
 
 	}

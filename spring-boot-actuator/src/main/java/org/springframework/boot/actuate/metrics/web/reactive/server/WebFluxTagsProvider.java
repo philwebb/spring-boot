@@ -33,7 +33,7 @@ public interface WebFluxTagsProvider {
 	/**
 	 * Provides tags to be associated with metrics for the given {@code exchange}.
 	 * @param exchange the exchange
-	 * @param ex the current exception, if any
+	 * @param ex the current exception (may be {@code null}
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
 	Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex);
