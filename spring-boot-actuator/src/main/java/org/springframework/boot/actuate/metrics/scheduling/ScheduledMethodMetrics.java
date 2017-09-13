@@ -49,6 +49,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 @Aspect
 public class ScheduledMethodMetrics {
 
+	// FIXME Can we do this without AspectJ
+
 	private static final Log logger = LogFactory.getLog(ScheduledMethodMetrics.class);
 
 	private final MeterRegistry registry;

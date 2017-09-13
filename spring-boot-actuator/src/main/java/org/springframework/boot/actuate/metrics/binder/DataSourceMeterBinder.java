@@ -36,7 +36,7 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class DataSourceMetrics implements MeterBinder {
+public class DataSourceMeterBinder implements MeterBinder {
 
 	/**
 	 * Instrumented pools kept to prevents the poolMetadata that we base the gauges on
@@ -44,13 +44,15 @@ public class DataSourceMetrics implements MeterBinder {
 	 */
 	private static Collection<DataSourcePoolMetadata> instrumentedPools = new ArrayList<>();
 
+	// FIXME is the static needed? Is this actually used?
+
 	private final String name;
 
 	private final Iterable<Tag> tags;
 
 	private final DataSourcePoolMetadata poolMetadata;
 
-	public DataSourceMetrics(DataSource dataSource,
+	public DataSourceMeterBinder(DataSource dataSource,
 			Collection<DataSourcePoolMetadataProvider> metadataProviders, String name,
 			Iterable<Tag> tags) {
 		this.name = name;

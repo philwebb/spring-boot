@@ -25,7 +25,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.ExecutorServiceMetrics;
 
-import org.springframework.boot.actuate.metrics.binder.DataSourceMetrics;
+import org.springframework.boot.actuate.metrics.binder.DataSourceMeterBinder;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -37,6 +37,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * @since 2.0.0
  */
 public final class SpringMeters {
+
+	// FIXME seems like this isn't a Boot thing
 
 	private SpringMeters() {
 	}
@@ -55,7 +57,7 @@ public final class SpringMeters {
 	public static DataSource monitor(MeterRegistry registry, DataSource dataSource,
 			Collection<DataSourcePoolMetadataProvider> metadataProviders, String name,
 			Iterable<Tag> tags) {
-		new DataSourceMetrics(dataSource, metadataProviders, name, tags).bindTo(registry);
+		new DataSourceMeterBinder(dataSource, metadataProviders, name, tags).bindTo(registry);
 		return dataSource;
 	}
 

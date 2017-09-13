@@ -40,7 +40,8 @@ import org.springframework.integration.support.management.PollableChannelManagem
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingSingleton {
+public class SpringIntegrationMeterBinder
+		implements MeterBinder, SmartInitializingSingleton {
 
 	private final Iterable<Tag> tags;
 
@@ -48,11 +49,11 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	private final IntegrationManagementConfigurer configurer;
 
-	public SpringIntegrationMetrics(IntegrationManagementConfigurer configurer) {
+	public SpringIntegrationMeterBinder(IntegrationManagementConfigurer configurer) {
 		this(configurer, Collections.emptyList());
 	}
 
-	public SpringIntegrationMetrics(IntegrationManagementConfigurer configurer,
+	public SpringIntegrationMeterBinder(IntegrationManagementConfigurer configurer,
 			Iterable<Tag> tags) {
 		this.configurer = configurer;
 		this.tags = tags;
@@ -106,7 +107,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	private void addHandlerMetrics(MeterRegistry registry, String handler) {
 		MessageHandlerMetrics handlerMetrics = this.configurer.getHandlerMetrics(handler);
-		// TODO could use improvement to dynamically commute the handler name with its
+		// FIXME could use improvement to dynamically commute the handler name with its
 		// ID, which can change after
 		// creation as shown in the SpringIntegrationApplication sample.
 		Iterable<Tag> tags = Tags.concat(this.tags, "handler", handler);
@@ -189,7 +190,7 @@ public class SpringIntegrationMetrics implements MeterBinder, SmartInitializingS
 
 	@Override
 	public void afterSingletonsInstantiated() {
-		// TODO better would be to use a BeanPostProcessor
+		// FIXME better would be to use a BeanPostProcessor
 		this.configurer.afterSingletonsInstantiated();
 		this.registries.forEach((registry) -> {
 			addChannelMetrics(registry);
