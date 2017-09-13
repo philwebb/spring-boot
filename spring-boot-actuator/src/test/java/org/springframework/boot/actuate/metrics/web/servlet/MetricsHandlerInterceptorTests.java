@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -27,27 +27,31 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -62,20 +66,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = MetricsHandlerInterceptorTests.App.class)
-@WebMvcTest({ MetricsHandlerInterceptorTests.Controller1.class,
-		MetricsHandlerInterceptorTests.Controller2.class })
-@TestPropertySource(properties = { "metrics.useGlobalRegistry=false",
-		"metrics.web.autoTimeServerRequests=false" })
+@WebAppConfiguration
 public class MetricsHandlerInterceptorTests {
 
-	@Autowired
-	private MockMvc mvc;
+	private static final CountDownLatch longRequestCountDown = new CountDownLatch(1);
 
 	@Autowired
 	private MeterRegistry registry;
 
-	private static final CountDownLatch longRequestCountDown = new CountDownLatch(1);
+	@Autowired
+	private WebApplicationContext context;
+
+	private MockMvc mvc;
+
+	@Before
+	public void setupMockMvc() {
+		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+	}
 
 	@Test
 	public void timedMethod() throws Exception {
@@ -170,13 +177,39 @@ public class MetricsHandlerInterceptorTests {
 				.map(Tag::getKey)).contains("bucket");
 	}
 
-	@SpringBootApplication(scanBasePackages = "isolated")
+	@Configuration
+	@EnableWebMvc
 	@Import({ Controller1.class, Controller2.class })
-	static class App {
+	static class TestConfiguration {
+
 		@Bean
-		MeterRegistry registry() {
+		MeterRegistry meterRegistry() {
 			return new SimpleMeterRegistry();
 		}
+
+		@Bean
+		WebMvcMetrics webMvcMetrics(MeterRegistry meterRegistry) {
+			return new WebMvcMetrics(meterRegistry, new DefaultWebMvcTagsProvider(),
+					"http.server.requests", true, true);
+		}
+
+		@Configuration
+		static class HandlerInterceptorConfiguration implements WebMvcConfigurer {
+
+			private final WebMvcMetrics webMvcMetrics;
+
+			HandlerInterceptorConfiguration(WebMvcMetrics webMvcMetrics) {
+				this.webMvcMetrics = webMvcMetrics;
+			}
+
+			@Override
+			public void addInterceptors(InterceptorRegistry registry) {
+				registry.addInterceptor(
+						new MetricsHandlerInterceptor(this.webMvcMetrics));
+			}
+
+		}
+
 	}
 
 	@RestController

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.client;
 
 import java.util.Collections;
 import java.util.stream.StreamSupport;
@@ -25,7 +25,6 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -45,16 +44,11 @@ public class MetricsRestTemplateInterceptorTests {
 	@Test
 	public void interceptRestTemplate() {
 		MeterRegistry registry = new SimpleMeterRegistry();
-
 		RestTemplate restTemplate = new RestTemplate();
-
-		MetricsProperties properties = new MetricsProperties();
-		properties.getWeb().setClientRequestPercentiles(true);
-
 		restTemplate.setInterceptors(
 				Collections.singletonList(new MetricsRestTemplateInterceptor(registry,
-						new RestTemplateTagConfigurer(), properties)));
-
+						new DefaultRestTemplateExchangeTagsProvider(),
+						"http.client.requests", true)));
 		MockRestServiceServer mockServer = MockRestServiceServer
 				.createServer(restTemplate);
 		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
@@ -62,20 +56,17 @@ public class MetricsRestTemplateInterceptorTests {
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
 
-		String s = restTemplate.getForObject("/test/{id}", String.class, 123);
+		String result = restTemplate.getForObject("/test/{id}", String.class, 123);
 
 		// the uri requires AOP to determine
 		assertThat(registry.find("http.client.requests")
 				.tags("method", "GET", "uri", "none", "status", "200")
 				.value(Statistic.Count, 1.0).timer()).isPresent();
-
 		assertThat(registry.find("http.client.requests").meters()
 				.stream().flatMap((m) -> StreamSupport
 						.stream(m.getId().getTags().spliterator(), false))
 				.map(Tag::getKey)).contains("bucket");
-
-		assertThat(s).isEqualTo("OK");
-
+		assertThat(result).isEqualTo("OK");
 		mockServer.verify();
 	}
 

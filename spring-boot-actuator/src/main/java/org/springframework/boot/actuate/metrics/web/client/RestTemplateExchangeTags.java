@@ -14,42 +14,47 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.net.URI;
 
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * Defines the default set of tags added to instrumented web requests. It is only
- * necessary to implement providers for the programming model(s) you are using.
+ * Factory methods for creating {@link Tag Tags} related to a request-response exchange
+ * performed by a {@link RestTemplate}.
  *
+ * @author Andy Wilkinson
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class RestTemplateTagConfigurer {
+public class RestTemplateExchangeTags {
 
-	/**
-	 * Supplies default tags to timers monitoring RestTemplate requests.
-	 * @param request RestTemplate client HTTP request
-	 * @param response may be null in the event of a client error
-	 * @return a set of tags added to every client HTTP request metric
-	 */
-	Iterable<Tag> clientHttpRequestTags(HttpRequest request,
-			ClientHttpResponse response) {
-		return Arrays.asList(method(request), uri(), status(response),
-				clientName(request));
+	private RestTemplateExchangeTags() {
 	}
 
-	public Tag method(HttpRequest request) {
+	/**
+	 * Creates a {@code method} {@code Tag} for the {@link HttpRequest#getMethod() method}
+	 * of the given {@code request}.
+	 * @param request the request
+	 * @return the method tag
+	 */
+	public static Tag method(HttpRequest request) {
 		return Tag.of("method", request.getMethod().name());
 	}
 
-	public Tag uri() {
+	/**
+	 * Creates a {@code uri} {@code Tag} for the, potentially templated, URI of the
+	 * current {@code RestTemplate}-initiated request.
+	 * @see RestTemplateUrlTemplateHolder
+	 * @return the uri tag.
+	 */
+	public static Tag uri() {
 		String urlTemplate = RestTemplateUrlTemplateHolder.getRestTemplateUrlTemplate();
 		if (urlTemplate == null) {
 			urlTemplate = "none";
@@ -58,21 +63,33 @@ public class RestTemplateTagConfigurer {
 		return Tag.of("uri", strippedUrlTemplate);
 	}
 
-	public Tag status(ClientHttpResponse response) {
+	/**
+	 * Creates a {@code status} {@code Tag} derived from the
+	 * {@link ClientHttpResponse#getRawStatusCode() status} of the given {@code response}.
+	 * @param response the response
+	 * @return the status tag
+	 */
+	public static Tag status(ClientHttpResponse response) {
 		return Tag.of("status", getStatusMessage(response));
 	}
 
-	private String getStatusMessage(ClientHttpResponse response) {
+	private static String getStatusMessage(ClientHttpResponse response) {
 		try {
 			return (response == null) ? "CLIENT_ERROR"
 					: ((Integer) response.getRawStatusCode()).toString();
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			return "IO_ERROR";
 		}
 	}
 
-	public Tag clientName(HttpRequest request) {
+	/**
+	 * Create a {@code clientName} {@code Tag} derived from the {@link URI#getHost host}
+	 * of the {@link HttpRequest#getURI() URI} of the given {@code request}.
+	 * @param request the request
+	 * @return the clientName tag
+	 */
+	public static Tag clientName(HttpRequest request) {
 		String host = request.getURI().getHost();
 		if (host == null) {
 			host = "none";

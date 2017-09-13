@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.client;
 
 import java.net.URI;
 
@@ -22,9 +22,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import org.springframework.web.client.RestTemplate;
+
 /**
- * Captures the still-templated URI because currently the ClientHttpRequestInterceptor
- * currently only gives us the means to retrieve the substituted URI.
+ * Captures the still-templated URI for a request initiated by a {@link RestTemplate}.
  *
  * @author Jon Schneider
  * @since 2.0.0

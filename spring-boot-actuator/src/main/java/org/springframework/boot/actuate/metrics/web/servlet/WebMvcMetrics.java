@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -42,18 +42,18 @@ import io.micrometer.core.instrument.util.AnnotationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
 
 /**
- * Support class for Controller-related metrics.
+ * Support class for Spring MVC metrics.
  *
  * @author Jon Schneider
+ * @since 2.0.0
  */
-class ControllerMetrics {
+public class WebMvcMetrics {
 
 	private static final String TIMING_REQUEST_ATTRIBUTE = "micrometer.requestStartTime";
 
@@ -61,22 +61,28 @@ class ControllerMetrics {
 
 	private static final String EXCEPTION_ATTRIBUTE = "micrometer.requestException";
 
-	private static final Log logger = LogFactory.getLog(ControllerMetrics.class);
-
-	private final MeterRegistry registry;
-
-	private final MetricsProperties properties;
-
-	private final WebServletTagConfigurer tagConfigurer;
+	private static final Log logger = LogFactory.getLog(WebMvcMetrics.class);
 
 	private final Map<HttpServletRequest, Long> longTaskTimerIds = Collections
 			.synchronizedMap(new IdentityHashMap<>());
 
-	ControllerMetrics(MeterRegistry registry, MetricsProperties properties,
-			WebServletTagConfigurer tagConfigurer) {
+	private final MeterRegistry registry;
+
+	private final WebMvcTagsProvider tagsProvider;
+
+	private final String metricName;
+
+	private final boolean autoTimeRequests;
+
+	private final boolean recordAsPercentiles;
+
+	public WebMvcMetrics(MeterRegistry registry, WebMvcTagsProvider tagsProvider,
+			String metricName, boolean autoTimeRequests, boolean recordAsPercentiles) {
 		this.registry = registry;
-		this.properties = properties;
-		this.tagConfigurer = tagConfigurer;
+		this.tagsProvider = tagsProvider;
+		this.metricName = metricName;
+		this.autoTimeRequests = autoTimeRequests;
+		this.recordAsPercentiles = recordAsPercentiles;
 	}
 
 	void tagWithException(Throwable exception) {
@@ -121,9 +127,8 @@ class ControllerMetrics {
 	}
 
 	private void completeLongTimerTasks(HttpServletRequest request, Object handler) {
-		longTaskTimed(handler).forEach((config) -> {
-			completeLongTimerTask(request, handler, config);
-		});
+		longTaskTimed(handler)
+				.forEach((config) -> completeLongTimerTask(request, handler, config));
 	}
 
 	private void completeLongTimerTask(HttpServletRequest request, Object handler,
@@ -148,7 +153,7 @@ class ControllerMetrics {
 	private Timer.Builder getTimerBuilder(HttpServletRequest request,
 			HttpServletResponse response, Throwable thrown, TimerConfig config) {
 		Timer.Builder builder = Timer.builder(config.getName())
-				.tags(this.tagConfigurer.httpRequestTags(request, response, thrown))
+				.tags(this.tagsProvider.httpRequestTags(request, response, thrown))
 				.tags(config.getExtraTags()).description("Timer of servlet request");
 		if (config.getQuantiles().length > 0) {
 			WindowSketchQuantiles quantiles = WindowSketchQuantiles
@@ -164,7 +169,7 @@ class ControllerMetrics {
 	private LongTaskTimer longTaskTimer(TimerConfig config, HttpServletRequest request,
 			Object handler) {
 		Iterable<Tag> tags = Tags.concat(
-				this.tagConfigurer.httpLongRequestTags(request, handler),
+				this.tagsProvider.httpLongRequestTags(request, handler),
 				config.getExtraTags());
 		return this.registry.more().longTaskTimer(this.registry.createId(config.getName(),
 				tags, "Timer of long servlet request"));
@@ -196,10 +201,9 @@ class ControllerMetrics {
 		Set<TimerConfig> config = getNonLongTaskAnnotationConfig(handler.getMethod());
 		if (config.isEmpty()) {
 			config = getNonLongTaskAnnotationConfig(handler.getBeanType());
-			if (config.isEmpty()
-					&& this.properties.getWeb().getAutoTimeServerRequests()) {
+			if (config.isEmpty() && this.autoTimeRequests) {
 				return Collections.singleton(new TimerConfig(getServerRequestName(),
-						this.properties.getWeb().getServerRequestPercentiles()));
+						this.recordAsPercentiles));
 			}
 		}
 		return config;
@@ -227,7 +231,7 @@ class ControllerMetrics {
 	}
 
 	private String getServerRequestName() {
-		return this.properties.getWeb().getServerRequestsName();
+		return this.metricName;
 	}
 
 	private static class TimerConfig {

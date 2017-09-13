@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.management.metrics.export.prometheus;
+package org.springframework.boot.actuate.metrics.export.prometheus;
 
 import java.io.IOException;
 import java.io.StringWriter;

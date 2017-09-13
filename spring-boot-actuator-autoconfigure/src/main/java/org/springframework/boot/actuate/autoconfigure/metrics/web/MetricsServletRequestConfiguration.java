@@ -19,6 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
+import org.springframework.boot.actuate.metrics.web.servlet.MetricsHandlerInterceptor;
+import org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetrics;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -39,20 +42,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MetricsServletRequestConfiguration implements WebMvcConfigurer {
 
 	@Bean
-	@ConditionalOnMissingBean(WebServletTagConfigurer.class)
-	public WebServletTagConfigurer webmvcTagConfigurer() {
-		return new WebServletTagConfigurer();
+	@ConditionalOnMissingBean(DefaultWebMvcTagsProvider.class)
+	public DefaultWebMvcTagsProvider webmvcTagConfigurer() {
+		return new DefaultWebMvcTagsProvider();
 	}
 
 	@Bean
-	public ControllerMetrics controllerMetrics(MeterRegistry registry,
-			MetricsProperties properties, WebServletTagConfigurer configurer) {
-		return new ControllerMetrics(registry, properties, configurer);
+	public WebMvcMetrics controllerMetrics(MeterRegistry registry,
+			MetricsProperties properties, DefaultWebMvcTagsProvider configurer) {
+		return new WebMvcMetrics(registry, configurer,
+				properties.getWeb().getServerRequestsName(),
+				properties.getWeb().getAutoTimeServerRequests(),
+				properties.getWeb().getServerRequestPercentiles());
 	}
 
 	@Bean
 	public MetricsHandlerInterceptor webMetricsInterceptor(
-			ControllerMetrics controllerMetrics) {
+			WebMvcMetrics controllerMetrics) {
 		return new MetricsHandlerInterceptor(controllerMetrics);
 	}
 

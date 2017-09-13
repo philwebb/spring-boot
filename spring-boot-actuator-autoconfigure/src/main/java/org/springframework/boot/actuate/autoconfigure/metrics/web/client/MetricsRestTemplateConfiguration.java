@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateInterceptor;
+import org.springframework.boot.actuate.metrics.web.client.RestTemplateUrlTemplateCaptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,18 +46,19 @@ import org.springframework.web.client.RestTemplate;
 public class MetricsRestTemplateConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(RestTemplateTagConfigurer.class)
-	public RestTemplateTagConfigurer restTemplateTagConfigurer() {
-		return new RestTemplateTagConfigurer();
+	@ConditionalOnMissingBean(DefaultRestTemplateExchangeTagsProvider.class)
+	public DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer() {
+		return new DefaultRestTemplateExchangeTagsProvider();
 	}
 
 	@Bean
 	public MetricsRestTemplateInterceptor clientHttpRequestInterceptor(
 			MeterRegistry meterRegistry,
-			RestTemplateTagConfigurer restTemplateTagConfigurer,
+			DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer,
 			MetricsProperties properties) {
 		return new MetricsRestTemplateInterceptor(meterRegistry,
-				restTemplateTagConfigurer, properties);
+				restTemplateTagConfigurer, properties.getWeb().getClientRequestsName(),
+				properties.getWeb().getClientRequestPercentiles());
 	}
 
 	@Bean

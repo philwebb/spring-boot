@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.client;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +23,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.stats.hist.Histogram;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -41,15 +40,28 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 
 	private final MeterRegistry meterRegistry;
 
-	private final RestTemplateTagConfigurer tagProvider;
+	private final RestTemplateExchangeTagsProvider tagProvider;
 
-	private final MetricsProperties properties;
+	private final String metricName;
 
+	private final boolean recordPercentiles;
+
+	/**
+	 * Creates a new {@code MetricsRestTemplateInterceptor} that will record metrics using
+	 * the given {@code meterRegistry} with tags provided by the given
+	 * {@code tagProvider}.
+	 * @param meterRegistry the meter registry
+	 * @param tagProvider the tag provider
+	 * @param metricName the name of the recorded metric
+	 * @param recordPercentiles whether percentile histogram buckets should be recorded
+	 */
 	public MetricsRestTemplateInterceptor(MeterRegistry meterRegistry,
-			RestTemplateTagConfigurer tagProvider, MetricsProperties properties) {
+			RestTemplateExchangeTagsProvider tagProvider, String metricName,
+			boolean recordPercentiles) {
 		this.tagProvider = tagProvider;
 		this.meterRegistry = meterRegistry;
-		this.properties = properties;
+		this.metricName = metricName;
+		this.recordPercentiles = recordPercentiles;
 	}
 
 	@Override
@@ -69,11 +81,10 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 
 	private Timer.Builder getTimeBuilder(HttpRequest request,
 			ClientHttpResponse response) {
-		Timer.Builder builder = Timer
-				.builder(this.properties.getWeb().getClientRequestsName())
-				.tags(this.tagProvider.clientHttpRequestTags(request, response))
+		Timer.Builder builder = Timer.builder(this.metricName)
+				.tags(this.tagProvider.getTags(request, response))
 				.description("Timer of RestTemplate operation");
-		if (this.properties.getWeb().getClientRequestPercentiles()) {
+		if (this.recordPercentiles) {
 			builder = builder.histogram(Histogram.percentiles());
 		}
 		return builder;

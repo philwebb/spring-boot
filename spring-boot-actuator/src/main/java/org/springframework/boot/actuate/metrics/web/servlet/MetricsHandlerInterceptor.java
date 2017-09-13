@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,23 +29,23 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  */
 public class MetricsHandlerInterceptor extends HandlerInterceptorAdapter {
 
-	private final ControllerMetrics controllerMetrics;
+	private final WebMvcMetrics webMvcMetrics;
 
-	public MetricsHandlerInterceptor(ControllerMetrics controllerMetrics) {
-		this.controllerMetrics = controllerMetrics;
+	public MetricsHandlerInterceptor(WebMvcMetrics webMvcMetrics) {
+		this.webMvcMetrics = webMvcMetrics;
 	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) throws Exception {
-		this.controllerMetrics.preHandle(request, handler);
+		this.webMvcMetrics.preHandle(request, handler);
 		return super.preHandle(request, response, handler);
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
 			Object handler, Exception ex) throws Exception {
-		this.controllerMetrics.record(request, response, ex);
+		this.webMvcMetrics.record(request, response, ex);
 		super.afterCompletion(request, response, handler, ex);
 	}
 

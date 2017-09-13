@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web;
+package org.springframework.boot.actuate.metrics.web.client;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link RestTemplateUrlTemplateCaptor}.
  *
- * @author Andy Wilkinson
+ * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
