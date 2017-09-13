@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Jon Schneider
  * @since 2.0.0
  */
-public class RestTemplateExchangeTags {
+public final class RestTemplateExchangeTags {
 
 	private RestTemplateExchangeTags() {
 	}
@@ -51,8 +51,8 @@ public class RestTemplateExchangeTags {
 	/**
 	 * Creates a {@code uri} {@code Tag} for the, potentially templated, URI of the
 	 * current {@code RestTemplate}-initiated request.
-	 * @see RestTemplateUrlTemplateHolder
 	 * @return the uri tag.
+	 * @see RestTemplateUrlTemplateHolder
 	 */
 	public static Tag uri() {
 		String urlTemplate = RestTemplateUrlTemplateHolder.getRestTemplateUrlTemplate();

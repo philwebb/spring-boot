@@ -36,6 +36,6 @@ public interface WebFluxTagsProvider {
 	 * @param ex the current exception, if any
 	 * @return tags to associate with metrics for the request and response exchange
 	 */
-	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex);
+	Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex);
 
 }

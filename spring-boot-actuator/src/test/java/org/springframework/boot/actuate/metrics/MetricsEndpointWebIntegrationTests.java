@@ -37,12 +37,12 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MetricsEndpoint}.
+ * Web integration tests for {@link MetricsEndpoint}.
  *
  * @author Jon Schneider
  */
 @RunWith(WebEndpointRunners.class)
-public class MetricsEndpointTests {
+public class MetricsEndpointWebIntegrationTests {
 
 	private static WebTestClient client;
 
@@ -51,7 +51,7 @@ public class MetricsEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void listNames() throws IOException {
-		String responseBody = MetricsEndpointTests.client.get()
+		String responseBody = MetricsEndpointWebIntegrationTests.client.get()
 				.uri("/application/metrics").exchange().expectStatus().isOk()
 				.expectBody(String.class).returnResult().getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
@@ -60,7 +60,7 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void selectByName() throws IOException {
-		String responseBody = MetricsEndpointTests.client.get()
+		String responseBody = MetricsEndpointWebIntegrationTests.client.get()
 				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
 				.isOk().expectBody(String.class).returnResult().getResponseBody();
 		Map<String, Collection<MetricsEndpoint.MeasurementSample>> measurements = this.mapper

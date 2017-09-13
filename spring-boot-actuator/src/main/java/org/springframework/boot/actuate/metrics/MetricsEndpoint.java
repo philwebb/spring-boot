@@ -82,14 +82,14 @@ public class MetricsEndpoint {
 		return StreamSupport.stream(measure.spliterator(), false);
 	}
 
+	/**
+	 * A measurement sample combining a {@link Statistic statistic} and a value.
+	 */
 	static class MeasurementSample {
 
-		private Statistic statistic;
+		private final Statistic statistic;
 
-		private Double value;
-
-		MeasurementSample() {
-		}
+		private final Double value;
 
 		MeasurementSample(Statistic statistic, Double value) {
 			this.statistic = statistic;
@@ -100,16 +100,8 @@ public class MetricsEndpoint {
 			return this.statistic;
 		}
 
-		public void setStatistic(Statistic statistic) {
-			this.statistic = statistic;
-		}
-
 		public Double getValue() {
 			return this.value;
-		}
-
-		public void setValue(Double value) {
-			this.value = value;
 		}
 
 		@Override

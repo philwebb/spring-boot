@@ -32,7 +32,10 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebMvcTags {
+public final class WebMvcTags {
+
+	private WebMvcTags() {
+	}
 
 	/**
 	 * Creates a {@code method} tag based on the {@link HttpServletRequest#getMethod()

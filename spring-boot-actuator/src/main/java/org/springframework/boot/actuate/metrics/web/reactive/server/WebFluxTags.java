@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.metrics.web.reactive.server;
 import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -33,10 +32,14 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebFluxTags {
+public final class WebFluxTags {
+
+	private WebFluxTags() {
+	}
 
 	/**
-	 * Creates a {@code method} tag based on the {@link ServerHttpRequest#getMethod()
+	 * Creates a {@code method} tag based on the
+	 * {@link org.springframework.http.server.reactive.ServerHttpRequest#getMethod()
 	 * method} of the {@link ServerWebExchange#getRequest()} request of the given
 	 * {@code exchange}.
 	 * @param exchange the exchange
