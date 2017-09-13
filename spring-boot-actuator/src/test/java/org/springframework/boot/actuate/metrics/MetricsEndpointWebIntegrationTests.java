@@ -17,11 +17,9 @@
 package org.springframework.boot.actuate.metrics;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.JvmMemoryMetrics;
@@ -40,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Web integration tests for {@link MetricsEndpoint}.
  *
  * @author Jon Schneider
+ * @author Andy Wilkinson
  */
 @RunWith(WebEndpointRunners.class)
 public class MetricsEndpointWebIntegrationTests {
@@ -60,17 +59,11 @@ public class MetricsEndpointWebIntegrationTests {
 
 	@Test
 	public void selectByName() throws IOException {
-		String responseBody = MetricsEndpointWebIntegrationTests.client.get()
+		MetricsEndpointWebIntegrationTests.client.get()
 				.uri("/application/metrics/jvm.memory.used").exchange().expectStatus()
-				.isOk().expectBody(String.class).returnResult().getResponseBody();
-		Map<String, Collection<MetricsEndpoint.MeasurementSample>> measurements = this.mapper
-				.readValue(responseBody,
-						new TypeReference<Map<String, Collection<MetricsEndpoint.MeasurementSample>>>() {
-						});
-		// one entry per tag combination
-		assertThat(measurements).containsKeys(
-				"jvm_memory_used.area.nonheap.id.Compressed Class Space",
-				"jvm_memory_used.area.heap.id.PS Old Gen");
+				.isOk().expectBody()
+				.jsonPath("['jvm_memory_used.area.nonheap.id.Compressed Class Space']")
+				.exists().jsonPath("['jvm_memory_used.area.heap.id.PS Old Gen']");
 	}
 
 	@Configuration

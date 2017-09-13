@@ -26,12 +26,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -47,8 +45,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@TestPropertySource(properties = "metrics.useGlobalRegistry=false")
 public class RestTemplateUrlTemplateCaptorTests {
 
 	@Autowired
@@ -69,7 +65,6 @@ public class RestTemplateUrlTemplateCaptorTests {
 						MediaType.APPLICATION_JSON));
 
 		this.restTemplate.getForObject("/test/{id}", String.class, "123");
-
 		assertThat(this.registry.find("http.client.requests").tags("uri", "/test/{id}")
 				.value(Statistic.Count, 1.0).timer()).isPresent();
 
@@ -77,14 +72,12 @@ public class RestTemplateUrlTemplateCaptorTests {
 		// URI will be used
 		// as a tag value, potentially causing dimensional explosion
 		this.restTemplate.getForObject(new URI("/test/123"), String.class);
-
-		// issue #98
 		assertThat(this.registry.find("http.client.requests").tags("uri", "/test/123")
 				.value(Statistic.Count, 1.0).timer()).isPresent();
 	}
 
-	@SpringBootApplication(scanBasePackages = "isolated")
-	static class MetricsApp {
+	@Configuration
+	static class TestConfiguration {
 
 		@Bean
 		public MeterRegistry registry() {
@@ -92,8 +85,18 @@ public class RestTemplateUrlTemplateCaptorTests {
 		}
 
 		@Bean
-		public RestTemplate restTemplate() {
-			return new RestTemplate();
+		public RestTemplate restTemplate(MeterRegistry meterRegistry) {
+			RestTemplate restTemplate = new RestTemplate();
+			restTemplate.getInterceptors()
+					.add(new MetricsRestTemplateInterceptor(meterRegistry,
+							new DefaultRestTemplateExchangeTagsProvider(),
+							"http.client.requests", true));
+			return restTemplate;
+		}
+
+		@Bean
+		public static RestTemplateUrlTemplateCaptor restTemplateUrlTemplateCaptor() {
+			return new RestTemplateUrlTemplateCaptor();
 		}
 
 	}

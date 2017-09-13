@@ -76,6 +76,7 @@ public class MetricsRestTemplateInterceptor implements ClientHttpRequestIntercep
 		finally {
 			getTimeBuilder(request, response).register(this.meterRegistry)
 					.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			RestTemplateUrlTemplateHolder.clear();
 		}
 	}
 

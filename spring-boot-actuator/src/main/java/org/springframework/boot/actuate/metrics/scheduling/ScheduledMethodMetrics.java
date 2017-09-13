@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.scheduling;
+package org.springframework.boot.actuate.metrics.scheduling;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -109,13 +109,13 @@ public class ScheduledMethodMetrics {
 		}
 	}
 
-	private static class Timers {
+	private static final class Timers {
 
 		private Timer shortTaskTimer;
 
 		private LongTaskTimer longTaskTimer;
 
-		public Timers(MeterRegistry registry, Method method) {
+		private Timers(MeterRegistry registry, Method method) {
 			for (Timed timed : AnnotationUtils.findTimed(method).toArray(Timed[]::new)) {
 				process(registry, timed);
 			}

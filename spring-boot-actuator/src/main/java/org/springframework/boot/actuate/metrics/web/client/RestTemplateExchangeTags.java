@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -49,18 +50,26 @@ public final class RestTemplateExchangeTags {
 	}
 
 	/**
-	 * Creates a {@code uri} {@code Tag} for the, potentially templated, URI of the
-	 * current {@code RestTemplate}-initiated request.
-	 * @return the uri tag.
-	 * @see RestTemplateUrlTemplateHolder
+	 * Creates a {@code uri} {@code Tag} for the URI of the given {@code request}.
+	 * @param request the request
+	 * @return the uri tag
 	 */
-	public static Tag uri() {
-		String urlTemplate = RestTemplateUrlTemplateHolder.getRestTemplateUrlTemplate();
-		if (urlTemplate == null) {
-			urlTemplate = "none";
-		}
-		String strippedUrlTemplate = urlTemplate.replaceAll("^https?://[^/]+/", "");
-		return Tag.of("uri", strippedUrlTemplate);
+	public static Tag uri(HttpRequest request) {
+		return Tag.of("uri", stripUri(request.getURI().toString()));
+	}
+
+	/**
+	 * Creates a {@code uri} {@code Tag} from the given {@code uriTemplate}.
+	 * @param uriTemplate the template
+	 * @return the uri tag
+	 */
+	public static Tag uri(String uriTemplate) {
+		String uri = StringUtils.hasText(uriTemplate) ? uriTemplate : "none";
+		return Tag.of("uri", stripUri(uri));
+	}
+
+	private static String stripUri(String uri) {
+		return uri.replaceAll("^https?://[^/]+/", "");
 	}
 
 	/**

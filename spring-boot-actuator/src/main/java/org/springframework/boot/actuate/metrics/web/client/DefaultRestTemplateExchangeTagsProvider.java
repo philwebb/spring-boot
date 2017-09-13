@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.Tag;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of {@link RestTemplateExchangeTagsProvider}.
@@ -34,8 +35,12 @@ public class DefaultRestTemplateExchangeTagsProvider
 
 	@Override
 	public Iterable<Tag> getTags(HttpRequest request, ClientHttpResponse response) {
-		return Arrays.asList(RestTemplateExchangeTags.method(request),
-				RestTemplateExchangeTags.uri(), RestTemplateExchangeTags.status(response),
+		String urlTemplate = RestTemplateUrlTemplateHolder.getRestTemplateUrlTemplate();
+		Tag uriTag = StringUtils.hasText(urlTemplate)
+				? RestTemplateExchangeTags.uri(urlTemplate)
+				: RestTemplateExchangeTags.uri(request);
+		return Arrays.asList(RestTemplateExchangeTags.method(request), uriTag,
+				RestTemplateExchangeTags.status(response),
 				RestTemplateExchangeTags.clientName(request));
 	}
 

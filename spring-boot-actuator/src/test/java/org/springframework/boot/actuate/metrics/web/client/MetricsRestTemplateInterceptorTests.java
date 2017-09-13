@@ -58,9 +58,8 @@ public class MetricsRestTemplateInterceptorTests {
 
 		String result = restTemplate.getForObject("/test/{id}", String.class, 123);
 
-		// the uri requires AOP to determine
 		assertThat(registry.find("http.client.requests")
-				.tags("method", "GET", "uri", "none", "status", "200")
+				.tags("method", "GET", "uri", "/test/123", "status", "200")
 				.value(Statistic.Count, 1.0).timer()).isPresent();
 		assertThat(registry.find("http.client.requests").meters()
 				.stream().flatMap((m) -> StreamSupport

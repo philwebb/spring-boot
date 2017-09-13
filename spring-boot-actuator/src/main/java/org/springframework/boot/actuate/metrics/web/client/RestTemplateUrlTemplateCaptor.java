@@ -17,12 +17,14 @@
 package org.springframework.boot.actuate.metrics.web.client;
 
 import java.net.URI;
+import java.util.Map;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplateHandler;
 
 /**
  * Captures the still-templated URI for a request initiated by a {@link RestTemplate}.
@@ -31,31 +33,31 @@ import org.springframework.web.client.RestTemplate;
  * @since 2.0.0
  */
 @Aspect
-public class RestTemplateUrlTemplateCaptor {
+public class RestTemplateUrlTemplateCaptor implements BeanPostProcessor {
 
-	@Around("execution(* org.springframework.web.client.RestOperations+.*(String, ..))")
-	Object captureUrlTemplate(ProceedingJoinPoint joinPoint) throws Throwable {
-		try {
-			String urlTemplate = (String) joinPoint.getArgs()[0];
-			RestTemplateUrlTemplateHolder.setRestTemplateUrlTemplate(urlTemplate);
-			return joinPoint.proceed();
-		}
-		finally {
-			RestTemplateUrlTemplateHolder.clear();
-		}
-	}
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName)
+			throws BeansException {
+		if (bean instanceof RestTemplate) {
+			RestTemplate restTemplate = (RestTemplate) bean;
+			UriTemplateHandler delegate = restTemplate.getUriTemplateHandler();
+			restTemplate.setUriTemplateHandler(new UriTemplateHandler() {
 
-	@Around("execution(* org.springframework.web.client.RestOperations+.*(java.net.URI, ..))")
-	Object captureUrlTemplateFromURI(ProceedingJoinPoint joinPoint) throws Throwable {
-		try {
-			URI urlTemplate = (URI) joinPoint.getArgs()[0];
-			RestTemplateUrlTemplateHolder
-					.setRestTemplateUrlTemplate(urlTemplate.toString());
-			return joinPoint.proceed();
+				@Override
+				public URI expand(String url, Map<String, ?> arguments) {
+					RestTemplateUrlTemplateHolder.setRestTemplateUrlTemplate(url);
+					return delegate.expand(url, arguments);
+				}
+
+				@Override
+				public URI expand(String url, Object... arguments) {
+					RestTemplateUrlTemplateHolder.setRestTemplateUrlTemplate(url);
+					return delegate.expand(url, arguments);
+				}
+
+			});
 		}
-		finally {
-			RestTemplateUrlTemplateHolder.clear();
-		}
+		return bean;
 	}
 
 }
