@@ -29,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests for {@link DataSourcePoolMetadataProviders}.
+ * Tests for {@link CompositeDataSourcePoolMetadataProvider}.
  *
  * @author Stephane Nicoll
  */
-public class DataSourcePoolMetadataProvidersTests {
+public class CompositeDataSourcePoolMetadataProviderTests {
 
 	@Mock
 	private DataSourcePoolMetadataProvider firstProvider;
@@ -67,7 +67,7 @@ public class DataSourcePoolMetadataProvidersTests {
 
 	@Test
 	public void createWithProviders() {
-		DataSourcePoolMetadataProviders provider = new DataSourcePoolMetadataProviders(
+		CompositeDataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
 				Arrays.asList(this.firstProvider, this.secondProvider));
 		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource))
 				.isSameAs(this.first);

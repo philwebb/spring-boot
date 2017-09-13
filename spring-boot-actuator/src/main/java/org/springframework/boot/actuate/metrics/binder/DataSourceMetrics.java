@@ -28,7 +28,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
-import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProviders;
+import org.springframework.boot.jdbc.metadata.CompositeDataSourcePoolMetadataProvider;
 
 /**
  * A {@link MeterBinder} for a {@link DataSource}.
@@ -58,7 +58,7 @@ public class DataSourceMetrics implements MeterBinder {
 			Iterable<Tag> tags) {
 		this.name = name;
 		this.tags = tags;
-		this.poolMetadata = new DataSourcePoolMetadataProviders(metadataProviders)
+		this.poolMetadata = new CompositeDataSourcePoolMetadataProvider(metadataProviders)
 				.getDataSourcePoolMetadata(dataSource);
 		instrumentedPools.add(this.poolMetadata);
 	}

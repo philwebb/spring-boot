@@ -30,20 +30,21 @@ import javax.sql.DataSource;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class DataSourcePoolMetadataProviders implements DataSourcePoolMetadataProvider {
+public class CompositeDataSourcePoolMetadataProvider
+		implements DataSourcePoolMetadataProvider {
 
 	private final List<DataSourcePoolMetadataProvider> providers;
 
 	/**
-	 * Create a {@link DataSourcePoolMetadataProviders} instance with an initial
+	 * Create a {@link CompositeDataSourcePoolMetadataProvider} instance with an initial
 	 * collection of delegates to use.
 	 * @param providers the data source pool metadata providers
 	 */
-	public DataSourcePoolMetadataProviders(
+	public CompositeDataSourcePoolMetadataProvider(
 			Collection<? extends DataSourcePoolMetadataProvider> providers) {
 		this.providers = (providers == null
 				? Collections.<DataSourcePoolMetadataProvider>emptyList()
-				: new ArrayList<>(providers));
+				: Collections.unmodifiableList(new ArrayList<>(providers)));
 	}
 
 	@Override
