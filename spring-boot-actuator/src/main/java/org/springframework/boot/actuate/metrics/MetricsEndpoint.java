@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics;
+package org.springframework.boot.actuate.metrics;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,9 +50,9 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public List<String> listNames() {
-		return this.registry.getMeters().stream().map(this::getMeterIdName)
-				.collect(Collectors.toList());
+	public Map<String, List<String>> listNames() {
+		return Collections.singletonMap("names", this.registry.getMeters().stream()
+				.map(this::getMeterIdName).collect(Collectors.toList()));
 	}
 
 	private String getMeterIdName(Meter meter) {

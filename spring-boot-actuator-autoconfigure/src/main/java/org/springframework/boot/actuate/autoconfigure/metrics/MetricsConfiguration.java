@@ -39,6 +39,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.reactive.server.Me
 import org.springframework.boot.actuate.autoconfigure.metrics.scheduling.ScheduledMethodMetrics;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.client.MetricsRestTemplateConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.MetricsServletRequestConfiguration;
+import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -117,8 +118,8 @@ class MetricsConfiguration {
 	static class MeterRegistryConfigurationSupport {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
-				Collection<MeterRegistryConfigurer> configurers,
-				MetricsProperties config, Collection<MeterBinder> binders) {
+				Collection<MeterRegistryConfigurer> configurers, MetricsProperties config,
+				Collection<MeterBinder> binders) {
 			configurers.forEach((configurer) -> configurer.configureRegistry(registry));
 			binders.forEach((binder) -> binder.bindTo(registry));
 			if (config.getUseGlobalRegistry()) {
