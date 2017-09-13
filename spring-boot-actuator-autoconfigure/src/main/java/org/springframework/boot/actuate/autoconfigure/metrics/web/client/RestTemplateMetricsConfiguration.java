@@ -24,11 +24,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.metrics.web.client.DefaultRestTemplateExchangeTagsProvider;
+import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateCustomizer;
 import org.springframework.boot.actuate.metrics.web.client.MetricsRestTemplateInterceptor;
-import org.springframework.boot.actuate.metrics.web.client.RestTemplateUrlTemplateCaptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +51,7 @@ public class RestTemplateMetricsConfiguration {
 	}
 
 	@Bean
-	public MetricsRestTemplateInterceptor clientHttpRequestInterceptor(
+	public MetricsRestTemplateInterceptor metricsRestTemplateIntercaptor(
 			MeterRegistry meterRegistry,
 			DefaultRestTemplateExchangeTagsProvider restTemplateTagConfigurer,
 			MetricsProperties properties) {
@@ -67,13 +66,19 @@ public class RestTemplateMetricsConfiguration {
 		return new MetricsInterceptorPostProcessor(context);
 	}
 
+	@Bean
+	public MetricsRestTemplateCustomizer metricsRestTemplateCustomizer(
+			MetricsRestTemplateInterceptor metricsRestTemplateInterceptor) {
+		return new MetricsRestTemplateCustomizer(metricsRestTemplateInterceptor);
+	}
+
 	private static class MetricsInterceptorPostProcessor implements BeanPostProcessor {
 
 		private final ApplicationContext context;
 
 		private MetricsRestTemplateInterceptor interceptor;
 
-		public MetricsInterceptorPostProcessor(ApplicationContext context) {
+		MetricsInterceptorPostProcessor(ApplicationContext context) {
 			this.context = context;
 		}
 
@@ -104,22 +109,6 @@ public class RestTemplateMetricsConfiguration {
 						.getBean(MetricsRestTemplateInterceptor.class);
 			}
 			return this.interceptor;
-		}
-
-	}
-
-	/**
-	 * If AOP is not enabled, client request interception will still work, but the URI tag
-	 * will always be evaluated to "none".
-	 */
-	@Configuration
-	@ConditionalOnClass(name = { "org.aspectj.lang.ProceedingJoinPoint" })
-	@ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
-	public static class MetricsRestTemplateAspectConfiguration {
-
-		@Bean
-		public RestTemplateUrlTemplateCaptor restTemplateUrlTemplateCapturingAspect() {
-			return new RestTemplateUrlTemplateCaptor();
 		}
 
 	}

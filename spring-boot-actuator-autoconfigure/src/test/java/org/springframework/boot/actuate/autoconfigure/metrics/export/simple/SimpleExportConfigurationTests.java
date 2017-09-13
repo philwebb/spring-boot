@@ -21,10 +21,9 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,25 +34,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@TestPropertySource(properties = { "metrics.atlas.enabled=false",
-		"metrics.prometheus.enabled=false", "metrics.datadog.enabled=false",
-		"metrics.ganglia.enabled=false", "metrics.graphite.enabled=false",
-		"metrics.influx.enabled=false", "metrics.jmx.enabled=false" })
 public class SimpleExportConfigurationTests {
-
-	@Autowired
-	private CompositeMeterRegistry registry;
 
 	@Test
 	public void simpleMeterRegistryIsInTheCompositeWhenNoOtherRegistryIs() {
-		assertThat(this.registry.getRegistries())
-				.hasAtLeastOneElementOfType(SimpleMeterRegistry.class);
-	}
-
-	@SpringBootApplication(scanBasePackages = "isolated")
-	static class MetricsApp {
-
+		new ApplicationContextRunner()
+				.withPropertyValues("metrics.atlas.enabled=false",
+						"metrics.datadog.enabled=false", "metrics.ganglia.enabled=false",
+						"metrics.graphite.enabled=false", "metrics.influx.enabled=false",
+						"metrics.jmx.enabled=false", "metrics.prometheus.enabled=false")
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+				.run((context) -> {
+					CompositeMeterRegistry meterRegistry = context
+							.getBean(CompositeMeterRegistry.class);
+					assertThat(meterRegistry.getRegistries()).hasSize(1);
+					assertThat(meterRegistry.getRegistries())
+							.hasOnlyElementsOfType(SimpleMeterRegistry.class);
+				});
 	}
 
 }

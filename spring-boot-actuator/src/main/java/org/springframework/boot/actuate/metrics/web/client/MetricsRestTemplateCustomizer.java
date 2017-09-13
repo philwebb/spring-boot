@@ -24,9 +24,20 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * @author awilkinson
+ * {@link RestTemplateCustomizer} that configures the {@link RestTemplate} to record
+ * request metrics.
+ *
+ * @author Andy Wilkinson
+ * @since 2.0.0
+ * @see RestTemplateUrlTemplateHolder
  */
 public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
+
+	private final MetricsRestTemplateInterceptor interceptor;
+
+	public MetricsRestTemplateCustomizer(MetricsRestTemplateInterceptor interceptor) {
+		this.interceptor = interceptor;
+	}
 
 	@Override
 	public void customize(RestTemplate restTemplate) {
@@ -46,7 +57,7 @@ public class MetricsRestTemplateCustomizer implements RestTemplateCustomizer {
 			}
 
 		});
-
+		restTemplate.getInterceptors().add(0, this.interceptor);
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
@@ -24,6 +25,7 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.aspectj.lang.ProceedingJoinPoint;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.MetricsExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasExportConfiguration;
@@ -72,9 +74,10 @@ public class MetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(MeterRegistry.class)
 	public CompositeMeterRegistry compositeMeterRegistry(
-			Collection<MetricsExporter> exporters) {
+			ObjectProvider<Collection<MetricsExporter>> exporters) {
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
-		exporters.stream().map(MetricsExporter::registry).forEach(composite::add);
+		exporters.getIfAvailable(Collections::emptyList).stream()
+				.map(MetricsExporter::registry).forEach(composite::add);
 		return composite;
 	}
 
@@ -118,9 +121,10 @@ public class MetricsAutoConfiguration {
 	static class MeterRegistryConfigurationSupport {
 
 		MeterRegistryConfigurationSupport(MeterRegistry registry,
-				Collection<MeterRegistryConfigurer> configurers, MetricsProperties config,
-				Collection<MeterBinder> binders) {
-			configurers.forEach((configurer) -> configurer.configureRegistry(registry));
+				ObjectProvider<Collection<MeterRegistryConfigurer>> configurers,
+				MetricsProperties config, Collection<MeterBinder> binders) {
+			configurers.getIfAvailable(Collections::emptyList)
+					.forEach((configurer) -> configurer.configureRegistry(registry));
 			binders.forEach((binder) -> binder.bindTo(registry));
 			if (config.getUseGlobalRegistry()) {
 				Metrics.addRegistry(registry);

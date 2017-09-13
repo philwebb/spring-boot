@@ -41,12 +41,9 @@ public class MeterRegistryConfigurerTests {
 				.withConfiguration(
 						UserConfigurations.of(MeterRegistryConfigurerConfiguration.class))
 				.withPropertyValues("metrics.use-global-registry=false")
-				.run((context) -> {
-					assertThat(context.getBean(MeterRegistry.class)
-							.find("jvm.memory.used").tags("region", "us-east-1").gauge())
-									.isPresent();
-					;
-				});
+				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
+						.find("jvm.memory.used").tags("region", "us-east-1").gauge())
+								.isPresent());
 	}
 
 	static class MeterRegistryConfigurerConfiguration {

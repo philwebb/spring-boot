@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.scheduling;
+package org.springframework.boot.actuate.metrics.scheduling;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -26,10 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.metrics.scheduling.ScheduledMethodMetrics;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -44,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
 @TestPropertySource(properties = "metrics.useGlobalRegistry=false")
 public class ScheduledMethodMetricsTests {
 
@@ -85,13 +83,13 @@ public class ScheduledMethodMetricsTests {
 		while (this.scheduler.getActiveCount() > 0) {
 			// Tight loop
 		}
-
 		assertThat(this.registry.find("long.beep").value(Statistic.Count, 0.0)
 				.longTaskTimer()).isPresent();
 	}
 
-	@SpringBootApplication
 	@EnableScheduling
+	@EnableAspectJAutoProxy
+	@Configuration
 	static class MetricsApp {
 
 		@Bean
@@ -105,6 +103,11 @@ public class ScheduledMethodMetricsTests {
 			// this way, executing longBeep doesn't block the short tasks from running
 			scheduler.setPoolSize(6);
 			return scheduler;
+		}
+
+		@Bean
+		ScheduledMethodMetrics ScheduledMethodMetrics(MeterRegistry meterRegistry) {
+			return new ScheduledMethodMetrics(meterRegistry);
 		}
 
 		@Timed(value = "long.beep", longTask = true)

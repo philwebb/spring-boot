@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.metrics.web.client;
 
-import java.util.Collections;
 import java.util.stream.StreamSupport;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -35,31 +34,28 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MetricsRestTemplateInterceptor}.
+ * Tests for {@link MetricsRestTemplateCustomizer}.
  *
  * @author Jon Schneider
  */
-public class MetricsRestTemplateInterceptorTests {
+public class MetricsRestTemplateCustomizerTests {
 
 	@Test
 	public void interceptRestTemplate() {
 		MeterRegistry registry = new SimpleMeterRegistry();
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(
-				Collections.singletonList(new MetricsRestTemplateInterceptor(registry,
-						new DefaultRestTemplateExchangeTagsProvider(),
-						"http.client.requests", true)));
+		new MetricsRestTemplateCustomizer(new MetricsRestTemplateInterceptor(registry,
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests",
+				true)).customize(restTemplate);
 		MockRestServiceServer mockServer = MockRestServiceServer
 				.createServer(restTemplate);
 		mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
 				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
 				.andRespond(MockRestResponseCreators.withSuccess("OK",
 						MediaType.APPLICATION_JSON));
-
 		String result = restTemplate.getForObject("/test/{id}", String.class, 123);
-
 		assertThat(registry.find("http.client.requests")
-				.tags("method", "GET", "uri", "/test/123", "status", "200")
+				.tags("method", "GET", "uri", "/test/{id}", "status", "200")
 				.value(Statistic.Count, 1.0).timer()).isPresent();
 		assertThat(registry.find("http.client.requests").meters()
 				.stream().flatMap((m) -> StreamSupport

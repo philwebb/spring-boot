@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.metrics.reactive.server;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
+import org.springframework.boot.actuate.metrics.web.reactive.server.MetricsWebFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
