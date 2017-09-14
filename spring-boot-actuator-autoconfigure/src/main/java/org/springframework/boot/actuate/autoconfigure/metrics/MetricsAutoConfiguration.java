@@ -23,7 +23,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
-import org.aspectj.lang.ProceedingJoinPoint;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
@@ -41,12 +40,10 @@ import org.springframework.boot.actuate.autoconfigure.metrics.web.client.RestTem
 import org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.actuate.metrics.binder.SpringIntegrationMetrics;
-import org.springframework.boot.actuate.metrics.scheduling.ScheduledMethodMetrics;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -87,13 +84,6 @@ public class MetricsAutoConfiguration {
 	@ConditionalOnEnabledEndpoint
 	public MetricsEndpoint metricsEndpoint(MeterRegistry registry) {
 		return new MetricsEndpoint(registry);
-	}
-
-	@Bean
-	@ConditionalOnClass(ProceedingJoinPoint.class)
-	@ConditionalOnProperty(value = "spring.aop.enabled", havingValue = "true", matchIfMissing = true)
-	public ScheduledMethodMetrics scheduledMethodMetrics(MeterRegistry registry) {
-		return new ScheduledMethodMetrics(registry);
 	}
 
 	@Configuration
