@@ -36,6 +36,8 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link ClientHttpRequestInterceptor} applied via a
  * {@link MetricsRestTemplateCustomizer} to record metrics.
  *
+ * @author Jon Schneider
+ * @author Phillip Webb
  * @since 2.0.0
  */
 class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
@@ -51,7 +53,7 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 
 	private final boolean recordPercentiles;
 
-	public MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
+	MetricsClientHttpRequestInterceptor(MeterRegistry meterRegistry,
 			RestTemplateExchangeTagsProvider tagProvider, String metricName,
 			boolean recordPercentiles) {
 		this.tagProvider = tagProvider;

@@ -125,12 +125,6 @@ public class ScheduledMethodMetricsTests {
 			System.out.println("beep");
 		}
 
-		@Timed // not instrumented because @Timed lacks a metric name
-		@Scheduled(fixedDelay = 100_000)
-		void noMetricName() {
-			System.out.println("beep");
-		}
-
 		@Scheduled(fixedDelay = 100_000) // not instrumented because it isn't @Timed
 		void notTimed() {
 			System.out.println("beep");
