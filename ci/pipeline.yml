@@ -1,3 +1,9 @@
+resource_types:
+- name: artifactory-resource
+  type: docker-image
+  source:
+    repository: springio/artifactory-resource
+    tag: 0.0.1-SNAPSHOT
 resources:
 - name: git-repo
   type: git
@@ -20,6 +26,13 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: master
+- name: artifactory-repo
+  type: artifactory-resource
+  source:
+    uri: http://repo.example.com
+    username: ((artifactory-username))
+    password: ((artifactory-password))
+    build_name: "Spring Boot - 2.0.x"
 jobs:
 - name: build-spring-boot-ci-image
   plan:
@@ -41,6 +54,19 @@ jobs:
       file: git-repo/ci/tasks/build-integration-tests.yml
     - task: build-deployment-tests
       file: git-repo/ci/tasks/build-deployment-tests.yml
+  - put: artifactory
+    params:
+      repo: libs-snapshot-local
+      build_number: "${BUILD_ID}"
+      folder: distribution-repository
+      build_url: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
+      build_number: "${BUILD_NAME}"
+      artifact-set:
+      - include:
+        - "**/spring-boot-docs-*.zip"
+      properties:
+        zip-type: docs
+        zip-deployed: false
 groups:
 - name: "Spring Boot"
   jobs:
