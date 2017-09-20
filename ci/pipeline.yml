@@ -33,14 +33,14 @@ jobs:
   - get: git-repo
     trigger: true
   - task: build-project
-    file: spring-boot/ci/tasks/build-project.yml
+    file: git-repo/ci/tasks/build-project.yml
   - aggregate:
     - task: build-sample-tests
-      file: spring-boot/ci/tasks/build-sample-tests.yml
+      file: git-repo/ci/tasks/build-sample-tests.yml
     - task: build-integration-tests
-      file: spring-boot/ci/tasks/build-integration-tests.yml
+      file: git-repo/ci/tasks/build-integration-tests.yml
     - task: build-deployment-tests
-      file: spring-boot/ci/tasks/build-deployment-tests.yml
+      file: git-repo/ci/tasks/build-deployment-tests.yml
 groups:
 - name: "Spring Boot"
   jobs:
