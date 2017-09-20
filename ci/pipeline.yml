@@ -59,14 +59,14 @@ jobs:
       repo: libs-snapshot-local
       build_number: "${BUILD_ID}"
       folder: distribution-repository
-      build_url: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}"
       build_number: "${BUILD_NAME}"
       artifact-set:
       - include:
         - "**/spring-boot-docs-*.zip"
-      properties:
-        zip-type: docs
-        zip-deployed: false
+        properties:
+          zip-type: docs
+          zip-deployed: false
 groups:
 - name: "Spring Boot"
   jobs:
