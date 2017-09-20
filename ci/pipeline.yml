@@ -29,7 +29,7 @@ resources:
 - name: artifactory-repo
   type: artifactory-resource
   source:
-    uri: http://repo.example.com
+    uri: https://pwebb3.jfrog.io/pwebb3
     username: ((artifactory-username))
     password: ((artifactory-password))
     build_name: "Spring Boot - 2.0.x"
@@ -47,13 +47,13 @@ jobs:
     trigger: true
   - task: build-project
     file: git-repo/ci/tasks/build-project.yml
-  - aggregate:
-    - task: build-sample-tests
-      file: git-repo/ci/tasks/build-sample-tests.yml
-    - task: build-integration-tests
-      file: git-repo/ci/tasks/build-integration-tests.yml
-    - task: build-deployment-tests
-      file: git-repo/ci/tasks/build-deployment-tests.yml
+#  - aggregate:
+#    - task: build-sample-tests
+#      file: git-repo/ci/tasks/build-sample-tests.yml
+#    - task: build-integration-tests
+#      file: git-repo/ci/tasks/build-integration-tests.yml
+#    - task: build-deployment-tests
+#      file: git-repo/ci/tasks/build-deployment-tests.yml
   - put: artifactory-repo
     params:
       repo: libs-snapshot-local
