@@ -12,4 +12,4 @@ caches:
 - path: maven
 - path: gradle
 run:
-  path: spring-boot/ci/scripts/build-integration-tests.sh
+  path: git-repo/ci/scripts/build-integration-tests.sh
