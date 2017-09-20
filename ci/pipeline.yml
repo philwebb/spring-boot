@@ -31,7 +31,7 @@ jobs:
 - name: build
   plan:
   - get: git-repo
-    trigger: false
+    trigger: true
   - task: build-project
     file: spring-boot/ci/tasks/build-project.yml
   - aggregate:

@@ -3,13 +3,13 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: openjdk
-    tag: 8u131-jdk
+    repository: springci/artifactory-resource-ci-image
+    tag: master
 inputs:
-- name: spring-boot
+- name: git-repo
 - name: distribution-repository
 caches:
-- path: m2
+- path: maven
 - path: gradle
 run:
-  path: spring-boot/ci/scripts/build-sample-tests.sh
+  path: spring-boot/ci/scripts/xbuild-sample-tests.sh
