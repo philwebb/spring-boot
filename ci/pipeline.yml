@@ -54,7 +54,7 @@ jobs:
       file: git-repo/ci/tasks/build-integration-tests.yml
     - task: build-deployment-tests
       file: git-repo/ci/tasks/build-deployment-tests.yml
-  - put: artifactory
+  - put: artifactory-repo
     params:
       repo: libs-snapshot-local
       build_number: "${BUILD_ID}"
