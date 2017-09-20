@@ -1,15 +1,37 @@
 resources:
-- name: spring-boot
+- name: git-repo
+  type: git
+  source:
+    uri: https://github.com/philwebb/spring-boot.git
+    username: ((github-username))
+    password: ((github-password))
+    branch: maven-restruct
+    ignore_paths: ["ci/images/*"]
+- name: ci-images-git-repo
   type: git
   source:
     uri: https://github.com/philwebb/spring-boot.git
     branch: maven-restruct
-
+    paths: ["ci/images/*"]
+- name: spring-boot-ci-image
+  type: docker-image
+  source:
+    repository: springci/spring-boot-ci-image
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    tag: master
 jobs:
+- name: build-spring-boot-ci-image
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - put: spring-boot-ci-image
+    params:
+      build: ci-images-git-repo/ci/images/spring-boot-ci-image
 - name: build
   plan:
-  - get: spring-boot
-    trigger: true
+  - get: git-repo
+    trigger: false
   - task: build-project
     file: spring-boot/ci/tasks/build-project.yml
   - aggregate:
@@ -19,3 +41,10 @@ jobs:
       file: spring-boot/ci/tasks/build-integration-tests.yml
     - task: build-deployment-tests
       file: spring-boot/ci/tasks/build-deployment-tests.yml
+groups:
+- name: "Spring Boot"
+  jobs:
+  - build
+- name: "CI Images"
+  jobs:
+  - build-spring-boot-ci-image
