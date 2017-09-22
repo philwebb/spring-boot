@@ -62,6 +62,8 @@ public class OAuth2ClientProperties {
 
 		private String clientAlias;
 
+		private String usernameAttribute;
+
 		public String getProvider() {
 			return this.provider;
 		}
@@ -134,6 +136,14 @@ public class OAuth2ClientProperties {
 
 		public void setClientAlias(String clientAlias) {
 			this.clientAlias = clientAlias;
+		}
+
+		public String getUsernameAttribute() {
+			return this.usernameAttribute;
+		}
+
+		public void setUsernameAttribute(String usernameAttribute) {
+			this.usernameAttribute = usernameAttribute;
 		}
 	}
 
