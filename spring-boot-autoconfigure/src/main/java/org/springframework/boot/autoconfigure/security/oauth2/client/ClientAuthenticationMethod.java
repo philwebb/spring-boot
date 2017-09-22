@@ -17,12 +17,28 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 /**
+ * OAuth 2.0 client authentication methods supported by Spring Boot.
+ *
  * @author Madhura Bhave
+ * @author Phillip Webb
+ * @since 2.0.0
+ * @see org.springframework.security.oauth2.core.ClientAuthenticationMethod
  */
 public enum ClientAuthenticationMethod {
 
-	BASIC,
+	BASIC(org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC),
 
-	POST
+	POST(org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
+
+	private final org.springframework.security.oauth2.core.ClientAuthenticationMethod method;
+
+	private ClientAuthenticationMethod(
+			org.springframework.security.oauth2.core.ClientAuthenticationMethod method) {
+		this.method = method;
+	}
+
+	org.springframework.security.oauth2.core.ClientAuthenticationMethod getMethod() {
+		return this.method;
+	}
 
 }

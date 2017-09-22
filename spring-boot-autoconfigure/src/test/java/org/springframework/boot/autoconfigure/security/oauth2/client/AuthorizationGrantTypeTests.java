@@ -16,26 +16,21 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
+import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * OAuth 2.0 authorization grant types supported by Spring Boot.
+ * Tests for {@link AuthorizationGrantType}.
  *
- * @author Madhura Bhave
  * @author Phillip Webb
  */
-public enum AuthorizationGrantType {
+public class AuthorizationGrantTypeTests {
 
-	AUTHORIZATION_CODE(
-			org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
-
-	private final org.springframework.security.oauth2.core.AuthorizationGrantType type;
-
-	private AuthorizationGrantType(
-			org.springframework.security.oauth2.core.AuthorizationGrantType type) {
-		this.type = type;
-	}
-
-	org.springframework.security.oauth2.core.AuthorizationGrantType getType() {
-		return this.type;
+	@Test
+	public void getTypeShouldGetSpringSecurityVariant() throws Exception {
+		assertThat(AuthorizationGrantType.AUTHORIZATION_CODE.getType()).isEqualTo(
+				org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 	}
 
 }
