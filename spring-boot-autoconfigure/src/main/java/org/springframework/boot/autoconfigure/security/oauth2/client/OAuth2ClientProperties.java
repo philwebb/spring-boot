@@ -42,6 +42,8 @@ public class OAuth2ClientProperties {
 
 	public static class Registration {
 
+		//FIXME validate that client-id is present
+
 		private String provider;
 
 		private String clientId;
