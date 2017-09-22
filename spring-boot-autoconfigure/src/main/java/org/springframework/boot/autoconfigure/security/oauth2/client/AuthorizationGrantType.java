@@ -21,9 +21,13 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.0.0
  */
 public enum AuthorizationGrantType {
 
+	/**
+	 * An {@code "authorization_code"} grant type.
+	 */
 	AUTHORIZATION_CODE(
 			org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE);
 

@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
+import com.google.common.base.Objects;
+
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.util.Assert;
 
 /**
  * Common OAuth2 Providers that can be used to create
@@ -31,9 +34,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
  */
 public enum CommonOAuth2Provider {
 
-	// FIXME move this to Spring Security OAuth
-
-	GOOGLE {
+	GOOGLE("https://www.googleapis.com/oauth2/v3/userinfo", null) {
 
 		@Override
 		public Builder getBuilder(String clientId) {
@@ -42,7 +43,6 @@ public enum CommonOAuth2Provider {
 			builder.scope("openid", "profile", "email", "address", "phone");
 			builder.authorizationUri("https://accounts.google.com/o/oauth2/v2/auth");
 			builder.tokenUri("https://www.googleapis.com/oauth2/v4/token");
-			builder.userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo");
 			builder.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs");
 			builder.clientName("Google");
 			builder.clientAlias("google");
@@ -50,7 +50,8 @@ public enum CommonOAuth2Provider {
 		}
 
 	},
-	GITHUB {
+
+	GITHUB("https://api.github.com/user", "name") {
 
 		@Override
 		public Builder getBuilder(String clientId) {
@@ -59,20 +60,14 @@ public enum CommonOAuth2Provider {
 			builder.scope("user");
 			builder.authorizationUri("https://github.com/login/oauth/authorize");
 			builder.tokenUri("https://github.com/login/oauth/access_token");
-			builder.userInfoUri("https://api.github.com/user");
 			builder.clientName("GitHub");
 			builder.clientAlias("github");
 			return builder;
 		}
 
-		@Override
-		public String getUserNameAttributeName() {
-			return "name";
-		}
-
 	},
 
-	FACEBOOK {
+	FACEBOOK("https://graph.facebook.com/me", "name") {
 
 		@Override
 		public Builder getBuilder(String clientId) {
@@ -81,20 +76,14 @@ public enum CommonOAuth2Provider {
 			builder.scope("public_profile", "email");
 			builder.authorizationUri("https://www.facebook.com/v2.8/dialog/oauth");
 			builder.tokenUri("https://graph.facebook.com/v2.8/oauth/access_token");
-			builder.userInfoUri("https://graph.facebook.com/me");
 			builder.clientName("Facebook");
 			builder.clientAlias("facebook");
 			return builder;
 		}
 
-		@Override
-		public String getUserNameAttributeName() {
-			return "name";
-		}
-
 	},
 
-	OKTA {
+	OKTA(null, null) {
 
 		@Override
 		public Builder getBuilder(String clientId) {
@@ -110,18 +99,61 @@ public enum CommonOAuth2Provider {
 
 	private static final String DEFAULT_REDIRECT_URL = "{scheme}://{serverName}:{serverPort}{contextPath}/oauth2/authorize/code/{clientAlias}";
 
+	private final String userInfoUri;
+
+	private final String userNameAttribute;
+
+	private CommonOAuth2Provider(String userInfoUri, String userNameAttribute) {
+		this.userInfoUri = userInfoUri;
+		this.userNameAttribute = userNameAttribute;
+	}
+
+	protected final String getUserInfoUri() {
+		return this.userInfoUri;
+	}
+
 	protected final ClientRegistration.Builder getBuilder(String clientId,
 			ClientAuthenticationMethod method, String redirectUri) {
 		ClientRegistration.Builder builder = new ClientRegistration.Builder(clientId);
 		builder.clientAuthenticationMethod(method);
 		builder.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
 		builder.redirectUri(redirectUri);
+		if (getUserInfoUri() != null) {
+			builder.userInfoUri(getUserInfoUri());
+		}
 		return builder;
 	}
 
+	/**
+	 * Create a new
+	 * {@link org.springframework.security.oauth2.client.registration.ClientRegistration.Builder
+	 * ClientRegistration.Builder} pre-initialized with the provider settings.
+	 * @param clientId the client-id used with the new builder
+	 * @return a builder instance
+	 */
 	public abstract ClientRegistration.Builder getBuilder(String clientId);
 
-	public String getUserNameAttributeName() {
+	/**
+	 * Return the attribute that can be used to extract the username or {@code null} if
+	 * not attribute is defined.
+	 * @return the username attribute name or {@code null}
+	 */
+	public final String getUserNameAttribute() {
+		return this.userNameAttribute;
+	}
+
+	/**
+	 * Find a {@link CommonOAuth2Provider} that has the given {@code userInfoUri}.
+	 * @param userInfoUri the user info URI
+	 * @return the matching {@link CommonOAuth2Provider} or {@code null}
+	 */
+	public static CommonOAuth2Provider forUserInfoUri(String userInfoUri) {
+		Assert.notNull(userInfoUri, "UserInfoUri must not be null");
+		for (CommonOAuth2Provider candidate : values()) {
+			if (Objects.equal(candidate.getUserInfoUri(), userInfoUri)) {
+				return candidate;
+			}
+		}
 		return null;
 	}
 

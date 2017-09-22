@@ -23,13 +23,22 @@ import java.util.Set;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
+ * OAuth 2.0 client properties.
+ *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class OAuth2ClientProperties {
 
+	/**
+	 * OAuth provider details.
+	 */
 	private Map<String, Provider> provider = new HashMap<>();
 
+	/**
+	 * Client registrations.
+	 */
 	private Map<String, Registration> registration = new HashMap<>();
 
 	public Map<String, Provider> getProvider() {
@@ -40,29 +49,61 @@ public class OAuth2ClientProperties {
 		return this.registration;
 	}
 
+	/**
+	 * A single client registration.
+	 */
 	public static class Registration {
 
-		//FIXME validate that client-id is present
+		// FIXME validate that client-id is present
 
+		/**
+		 * Reference to the OAuth 2.0 provider to use. May reference an element from the
+		 * 'provider' property or used one of the commonly used providers (google, github,
+		 * facebook, okta).
+		 */
 		private String provider;
 
+		/**
+		 * Client ID for the registration.
+		 */
 		private String clientId;
 
+		/**
+		 * Client secret of the registration.
+		 */
 		private String clientSecret;
 
+		/**
+		 * The client authentication method. May be left bank then using a pre-defined
+		 * provider.
+		 */
 		private ClientAuthenticationMethod clientAuthenticationMethod;
 
+		/**
+		 * The authorization grant type. May be left bank then using a pre-defined
+		 * provider.
+		 */
 		private AuthorizationGrantType authorizationGrantType;
 
+		/**
+		 * The redirect URI. May be left bank then using a pre-defined provider.
+		 */
 		private String redirectUri;
 
+		/**
+		 * The authorization scopes. May be left bank then using a pre-defined provider.
+		 */
 		private Set<String> scope;
 
+		/**
+		 * The client name. May be left bank then using a pre-defined provider.
+		 */
 		private String clientName;
 
+		/**
+		 * The client alias. May be left bank then using a pre-defined provider.
+		 */
 		private String clientAlias;
-
-		private String usernameAttribute;
 
 		public String getProvider() {
 			return this.provider;
@@ -138,23 +179,34 @@ public class OAuth2ClientProperties {
 			this.clientAlias = clientAlias;
 		}
 
-		public String getUsernameAttribute() {
-			return this.usernameAttribute;
-		}
-
-		public void setUsernameAttribute(String usernameAttribute) {
-			this.usernameAttribute = usernameAttribute;
-		}
 	}
 
 	public static class Provider {
 
+		/**
+		 * The authorization URI for the provider.
+		 */
 		private String authorizationUri;
 
+		/**
+		 * The token URI for the provider.
+		 */
 		private String tokenUri;
 
+		/**
+		 * The user info URI for the provider.
+		 */
 		private String userInfoUri;
 
+		/**
+		 * The name of the attribute that will be used to extract the username from the
+		 * call to 'userInfoUri'.
+		 */
+		private String userNameAttribute;
+
+		/**
+		 * The JWK set URI for the provider.
+		 */
 		private String jwkSetUri;
 
 		public String getAuthorizationUri() {
@@ -179,6 +231,14 @@ public class OAuth2ClientProperties {
 
 		public void setUserInfoUri(String userInfoUri) {
 			this.userInfoUri = userInfoUri;
+		}
+
+		public String getUserNameAttribute() {
+			return this.userNameAttribute;
+		}
+
+		public void setUserNameAttribute(String userNameAttribute) {
+			this.userNameAttribute = userNameAttribute;
 		}
 
 		public String getJwkSetUri() {

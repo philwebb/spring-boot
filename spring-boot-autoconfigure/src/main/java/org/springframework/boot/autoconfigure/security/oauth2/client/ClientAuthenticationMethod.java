@@ -26,8 +26,14 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
  */
 public enum ClientAuthenticationMethod {
 
+	/**
+	 * HTTP BASIC client authentication.
+	 */
 	BASIC(org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC),
 
+	/**
+	 * HTTP POST client authentication.
+	 */
 	POST(org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST);
 
 	private final org.springframework.security.oauth2.core.ClientAuthenticationMethod method;

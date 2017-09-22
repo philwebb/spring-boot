@@ -1,15 +1,20 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.google.common.base.Objects;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -24,45 +29,85 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 
 /**
- * FIXME Makes a ClientRegistrationRepository from properties.
+ * {@link Configuration} used to map {@link OAuth2ClientProperties} to client
+ * registrations.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 @Configuration
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
+@Conditional(OAuth2ClientRegistrationRepositoryConfiguration.ClientsConfiguredCondition.class)
 class OAuth2ClientRegistrationRepositoryConfiguration {
 
+	private final OAuth2ClientProperties properties;
 
-	@Bean
-	@Conditional(ClientsConfiguredCondition.class)
-	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
-	public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties oauth2ClientProperties) {
-		List<ClientRegistration> clientRegistrations = new ArrayList<>();
-
-		//FIXME adapt the client properties to registrations
-		return new InMemoryClientRegistrationRepository(clientRegistrations);
-
+	public OAuth2ClientRegistrationRepositoryConfiguration(
+			OAuth2ClientProperties properties) {
+		this.properties = properties;
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(ClientRegistrationRepository.class)
+	public InMemoryClientRegistrationRepository clientRegistrationRepository() {
+		List<ClientRegistration> registrations = new ArrayList<>(
+				OAuth2ClientPropertiesRegistrationAdapter
+						.getClientRegistrations(this.properties).values());
+		return new InMemoryClientRegistrationRepository(registrations);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public OAuth2UserNameAttributeNameProvider userNameAttributeNameProvider() {
+		return this::getUserNameAttributeName;
+	}
+
+	private String getUserNameAttributeName(
+			ClientRegistration.ProviderDetails providerDetails) {
+		String uri = providerDetails.getUserInfoUri();
+		Optional<Provider> definedProvider = this.properties.getProvider().values()
+				.stream()
+				.filter((provider) -> Objects.equal(provider.getUserInfoUri(), uri))
+				.findFirst();
+		if (definedProvider.isPresent()) {
+			return definedProvider.get().getUserNameAttribute();
+		}
+		CommonOAuth2Provider commonProvider = CommonOAuth2Provider.forUserInfoUri(uri);
+		return (commonProvider == null ? null : commonProvider.getUserNameAttribute());
+	}
+
+	/**
+	 * Condition that matches if any {@code spring.security.oauth.client.registration}
+	 * properties are defined.
+	 */
 	static class ClientsConfiguredCondition extends SpringBootCondition {
 
+		private static final Bindable<Map<String, Registration>> BINDABLE_REGISTRATION = Bindable
+				.mapOf(String.class, OAuth2ClientProperties.Registration.class);
+
 		@Override
-		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			ConditionMessage.Builder message = ConditionMessage.forCondition("OAuth2 Clients Configured Condition");
-			Map<String, OAuth2ClientProperties.Registration> clients = this.getConfiguredClients(context.getEnvironment());
-			if (!clients.isEmpty()) {
-				return ConditionOutcome.match(message.foundExactly("OAuth2 Client(s) -> "
-						+ clients.values().stream().map(OAuth2ClientProperties.Registration::getClientId).collect(Collectors.joining(", "))));
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			ConditionMessage.Builder message = ConditionMessage
+					.forCondition("OAuth2 Clients Configured Condition");
+			Map<String, Registration> registrations = this
+					.getRegistrations(context.getEnvironment());
+			if (!registrations.isEmpty()) {
+				return ConditionOutcome.match(message.foundExactly(
+						"registered clients " + registrations.values().stream()
+								.map(OAuth2ClientProperties.Registration::getClientId)
+								.collect(Collectors.joining(", "))));
 			}
-			return ConditionOutcome.noMatch(message.notAvailable("OAuth2 Client(s)"));
+			return ConditionOutcome.noMatch(message.notAvailable("registered clients"));
 		}
 
-		private Map<String, OAuth2ClientProperties.Registration> getConfiguredClients(Environment environment) {
+		private Map<String, Registration> getRegistrations(Environment environment) {
 			return Binder.get(environment)
 					.bind("spring.security.oauth.client.registration",
-							Bindable.mapOf(String.class, OAuth2ClientProperties.Registration.class))
-					.orElse(new HashMap<>());
+							BINDABLE_REGISTRATION)
+					.orElse(Collections.emptyMap());
 		}
+
 	}
 
 }

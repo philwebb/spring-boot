@@ -1,71 +1,79 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import java.net.URI;
-import java.util.Map;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
-import org.springframework.security.config.oauth2.client.OAuth2ClientTemplatePropertiesLoader;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.util.StringUtils;
 
 /**
- * Adds a {@link WebSecurityConfigurerAdapter} for OAuth.,
+ * {@link WebSecurityConfigurerAdapter} to add OAuth client support.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
+ * @since 2.0.0
+ * @see OAuth2UserNameAttributeNameProvider
  */
 @Configuration
 @ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
 @ConditionalOnBean(ClientRegistrationRepository.class)
 public class OAuth2WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private static final String USER_NAME_ATTR_NAME_PROPERTY = "user-name-attribute-name";
-
 	private final ClientRegistrationRepository clientRegistrationRepository;
 
-	private final OAuth2ClientProperties oauth2ClientProperties;
+	private final OAuth2UserNameAttributeNameProvider userNameAttributeNameProvider;
 
-	private final Map<String, Object> clientTypesPropertySource;
-
-	protected OAuth2WebSecurityConfiguration(
+	public OAuth2WebSecurityConfiguration(
 			ClientRegistrationRepository clientRegistrationRepository,
-			OAuth2ClientProperties oauth2ClientProperties) {
+			ObjectProvider<OAuth2UserNameAttributeNameProvider> userNameAttributeNameProvider) {
 		this.clientRegistrationRepository = clientRegistrationRepository;
-		this.oauth2ClientProperties = oauth2ClientProperties;
-		this.clientTypesPropertySource = OAuth2ClientTemplatePropertiesLoader.loadClientTemplates();
+		this.userNameAttributeNameProvider = userNameAttributeNameProvider
+				.getIfAvailable();
 	}
 
-		// @formatter:off
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		// @formatter:off
 		http
 			.authorizeRequests()
-				.anyRequest().authenticated()
-				.and()
+				.anyRequest()
+					.authenticated().and()
 			.oauth2Login()
-			.clients(this.clientRegistrationRepository);
-
+				.clients(this.clientRegistrationRepository);
+		// @formatter:on
 		this.registerUserNameAttributeNames(http.oauth2Login());
 	}
-	// @formatter:on
 
-	private void registerUserNameAttributeNames(OAuth2LoginConfigurer<HttpSecurity> oauth2LoginConfigurer) throws Exception {
-		this.oauth2ClientProperties.getProvider().forEach((key, details) -> {
-			String userInfoUriValue = details.getUserInfoUri();
-			String userNameAttributeNameValue = (String) this.clientTypesPropertySource.get(
-					OAuth2ClientTemplatePropertiesLoader.CLIENT_TEMPLATES_PROPERTY_PREFIX + "." +
-							key.toLowerCase() + "." +
-							USER_NAME_ATTR_NAME_PROPERTY);
-			if (userInfoUriValue != null && userNameAttributeNameValue != null) {
-				// @formatter:off
-				oauth2LoginConfigurer
-						.userInfoEndpoint()
-						.userNameAttributeName(userNameAttributeNameValue, URI.create(userInfoUriValue));
-				// @formatter:on
-			}
-		});
+	private void registerUserNameAttributeNames(
+			OAuth2LoginConfigurer<HttpSecurity> configurer) throws Exception {
+		if (this.userNameAttributeNameProvider == null) {
+			return;
+		}
+		this.clientRegistrationRepository.getRegistrations().stream()
+				.map(ClientRegistration::getProviderDetails)
+				.filter((providerDetails) -> StringUtils
+						.hasText(providerDetails.getUserInfoUri()))
+				.forEach((providerDetails) -> lookupUserNameAttributeName(configurer,
+						providerDetails));
 	}
+
+	private void lookupUserNameAttributeName(
+			OAuth2LoginConfigurer<HttpSecurity> configurer,
+			ProviderDetails providerDetails) {
+		String name = this.userNameAttributeNameProvider
+				.getUserNameAttributeName(providerDetails);
+		if (name != null) {
+			configurer.userInfoEndpoint().userNameAttributeName(name,
+					URI.create(providerDetails.getAuthorizationUri()));
+		}
+	}
+
 }
