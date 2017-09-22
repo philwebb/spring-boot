@@ -145,8 +145,6 @@ public class OAuth2ClientProperties {
 
 		private String jwkSetUri;
 
-		private ClientAuthenticationMethod authenticationMethod;
-
 		public String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
@@ -177,15 +175,6 @@ public class OAuth2ClientProperties {
 
 		public void setJwkSetUri(String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
-		}
-
-		public ClientAuthenticationMethod getAuthenticationMethod() {
-			return this.authenticationMethod;
-		}
-
-		public void setAuthenticationMethod(
-				ClientAuthenticationMethod authenticationMethod) {
-			this.authenticationMethod = authenticationMethod;
 		}
 
 	}

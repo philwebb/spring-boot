@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Registration;
 import org.springframework.boot.context.properties.bind.convert.BinderConversionService;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -46,11 +48,10 @@ class OAuth2ClientPropertiesRegistrationAdapter {
 		return clientRegistrations;
 	}
 
-	private static ClientRegistration getClientRegistration(
-			OAuth2ClientProperties.Registration properties,
-			Map<String, OAuth2ClientProperties.Provider> providers) {
-		ClientRegistration.Builder builder = getBuilder(properties.getClientId(),
-				properties.getProvider(), providers);
+	private static ClientRegistration getClientRegistration(Registration properties,
+			Map<String, Provider> providers) {
+		Builder builder = getBuilder(properties.getClientId(), properties.getProvider(),
+				providers);
 		copyIfNotNull(properties::getClientSecret, builder::clientSecret);
 		copyIfNotNull(() -> properties.getClientAuthenticationMethod(),
 				builder::clientAuthenticationMethod,
@@ -65,21 +66,16 @@ class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder.build();
 	}
 
-	private static ClientRegistration.Builder getBuilder(String clientId,
-			String providerId, Map<String, OAuth2ClientProperties.Provider> providers) {
+	private static Builder getBuilder(String clientId, String providerId,
+			Map<String, Provider> providers) {
 		if (providers.containsKey(providerId)) {
 			return getBuilder(clientId, providers.get(providerId));
 		}
-		CommonOAuth2Provider commonProvider = findCommonProvider(providerId);
-		if (commonProvider != null) {
-			return commonProvider.getBuilder(clientId);
-		}
-		return new ClientRegistration.Builder(clientId);
+		return getCommonProvider(providerId).getBuilder(clientId);
 	}
 
-	private static Builder getBuilder(String clientId,
-			OAuth2ClientProperties.Provider provider) {
-		ClientRegistration.Builder builder = new ClientRegistration.Builder(clientId);
+	private static Builder getBuilder(String clientId, Provider provider) {
+		Builder builder = new Builder(clientId);
 		copyIfNotNull(provider::getAuthorizationUri, builder::authorizationUri);
 		copyIfNotNull(provider::getTokenUri, builder::tokenUri);
 		copyIfNotNull(provider::getUserInfoUri, builder::userInfoUri);
@@ -87,13 +83,14 @@ class OAuth2ClientPropertiesRegistrationAdapter {
 		return builder;
 	}
 
-	private static CommonOAuth2Provider findCommonProvider(String providerId) {
+	private static CommonOAuth2Provider getCommonProvider(String providerId) {
 		try {
 			return new BinderConversionService(null).convert(providerId,
 					CommonOAuth2Provider.class);
 		}
 		catch (ConversionException ex) {
-			return null;
+			throw new IllegalStateException("Unknown provider ID '" + providerId + "'",
+					ex);
 		}
 	}
 
