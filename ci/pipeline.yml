@@ -4,6 +4,10 @@ resource_types:
   source:
     repository: springio/artifactory-resource
     tag: 0.0.1-SNAPSHOT
+- name: email
+  type: docker-image
+  source:
+    repository: pcfseceng/email-resource
 resources:
 - name: git-repo
   type: git
@@ -19,6 +23,12 @@ resources:
     uri: https://github.com/philwebb/spring-boot.git
     branch: maven-restruct
     paths: ["ci/images/*"]
+- name: notification-git-repo
+  type: git
+  source:
+    uri: https://github.com/philwebb/spring-boot.git
+    branch: build
+    paths: ["notification/master/*"]
 - name: spring-boot-ci-image
   type: docker-image
   source:
@@ -33,6 +43,16 @@ resources:
     username: ((artifactory-username))
     password: ((artifactory-password))
     build_name: "Spring Boot - 2.0.x"
+- name: email-notification
+  type: email
+  source:
+    smtp:
+      host: smtp.svc.pivotal.io
+      port: "25"
+      anonymous: true
+      skip_ssl_validation: true
+    from: "ci@spring.io"
+    to: [ "pwebb@pivotal.io" ]
 jobs:
 - name: build-spring-boot-ci-image
   plan:
@@ -67,10 +87,16 @@ jobs:
         properties:
           zip-type: "docs"
           zip-deployed: "false"
+- name: notify
+  plan:
+  - get: notification-git-repo
+    trigger: true
+  - put: email-notification
+    params:
+      subject_text: "Build finished: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+      body_text: "Build finished: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
 groups:
 - name: "Spring Boot"
-  jobs:
-  - build
+  jobs: ["build", "notify"]
 - name: "CI Images"
-  jobs:
-  - build-spring-boot-ci-image
+  jobs: ["build-spring-boot-ci-image"]
