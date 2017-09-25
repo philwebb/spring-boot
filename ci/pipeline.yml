@@ -105,6 +105,8 @@ jobs:
       body_text: "Build finished: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
 groups:
 - name: "Spring Boot"
-  jobs: ["build", "notify"]
+  jobs: ["build"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]
+- name: "Notifications"
+  jobs: ["notify"]
