@@ -30,13 +30,13 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: master
-#- name: artifactory-repo
-#  type: artifactory-resource
-#  source:
-#    uri: https://pwebb3.jfrog.io/pwebb3
-#    username: ((artifactory-username))
-#    password: ((artifactory-password))
-#    build_name: "Spring Boot - 2.0.x"
+- name: artifactory-repo
+  type: artifactory-resource
+  source:
+    uri: https://pwebb3.jfrog.io/pwebb3
+    username: ((artifactory-username))
+    password: ((artifactory-password))
+    build_name: "Spring Boot - 2.0.x"
 - name: email-notification
   type: email
   source:
@@ -74,24 +74,21 @@ jobs:
       params:
         subject_text: "Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
         body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
+  - put: artifactory-repo
+    params:
+      repo: libs-snapshot-local
+      build_number: "${BUILD_ID}"
+      folder: distribution-repository
+      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+      build_number: "${BUILD_NAME}"
+      artifact_set:
+      - include:
+        - "/**/spring-boot-docs-*.zip"
+        properties:
+          zip-type: "docs"
+          zip-deployed: "false"
 groups:
 - name: "Spring Boot"
   jobs: ["build"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]
-
-
-
-#  - put: artifactory-repo
-#    params:
-#      repo: libs-snapshot-local
-#      build_number: "${BUILD_ID}"
-#      folder: distribution-repository
-#      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
-#      build_number: "${BUILD_NAME}"
-#      artifact_set:
-#      - include:
-#        - "/**/spring-boot-docs-*.zip"
-#        properties:
-#          zip-type: "docs"
-#          zip-deployed: "false"
