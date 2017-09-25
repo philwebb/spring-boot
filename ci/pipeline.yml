@@ -75,7 +75,7 @@ jobs:
         subject_text: "Build failure ${BUILD_PIPELINE_NAME} / ${BUILD_JOB_NAME} / ${BUILD_NAME}"
         body_text: "Build ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME} has failed!"
   - put: artifactory-repo
-    params:
+    params: &artifactory-params
       repo: libs-snapshot-local
       build_number: "${BUILD_ID}"
       folder: distribution-repository
@@ -87,8 +87,58 @@ jobs:
         properties:
           zip-type: "docs"
           zip-deployed: "false"
+- name: stage-milestone
+  plan:
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: stage
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: M
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-rc
+  plan:
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: stage
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RC
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
+- name: stage-release
+  plan:
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: stage
+    file: git-repo/ci/tasks/stage.yml
+    params:
+      RELEASE_TYPE: RELEASE
+  - put: artifactory-repo
+    params:
+      <<: *artifactory-params
+      repo: libs-staging-local
+  - put: git-repo
+    params:
+      repository: stage-git-repo
 groups:
-- name: "Spring Boot"
+- name: "Build"
   jobs: ["build"]
+- name: "Release"
+  jobs: ["stage-milestone", "stage-rc", "stage-release"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]
