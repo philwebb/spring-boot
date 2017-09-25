@@ -67,24 +67,32 @@ jobs:
     trigger: true
   - get: build-info-git-repo
   - do:
-    - task: build-project
-      file: git-repo/ci/tasks/build-project.yml
-    - aggregate:
-      - task: build-sample-tests
-        file: git-repo/ci/tasks/build-sample-tests.yml
-      - task: build-integration-tests
-        file: git-repo/ci/tasks/build-integration-tests.yml
-      - task: build-deployment-tests
-        file: git-repo/ci/tasks/build-deployment-tests.yml
-    on_success:
-      task: handle-build-success
-      file: git-repo/ci/tasks/handle-build-success.yml
-    on_failure:
-      task: handle-build-failure
-      file: git-repo/ci/tasks/handle-build-failure.yml
-  - put: build-info-git-repo
-    params:
-      repository: updated-build-info-git-repo
+    - do:
+      - task: build-project
+        file: git-repo/ci/tasks/build-project.yml
+      - aggregate:
+        - task: build-sample-tests
+          file: git-repo/ci/tasks/build-sample-tests.yml
+        - task: build-integration-tests
+          file: git-repo/ci/tasks/build-integration-tests.yml
+        - task: build-deployment-tests
+          file: git-repo/ci/tasks/build-deployment-tests.yml
+      on_success:
+        task: handle-build-success
+        file: git-repo/ci/tasks/handle-build-success.yml
+      on_failure:
+        task: handle-build-failure
+        file: git-repo/ci/tasks/handle-build-failure.yml
+      ensure:
+        put: build-info-git-repo
+        params:
+          repository: updated-build-info-git-repo
+    ensure:
+      put: email-notification
+      params:
+        subject_text: "Build finished: ${BUILD_PIPELINE_NAME}/${BUILD_JOB_NAME}/${BUILD_NAME}"
+        body_text: "Build finished: ${ATC_EXTERNAL_URL}/teams/main/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+        to: email-notification/to
 - name: notify
   plan:
   - put: email-notification
