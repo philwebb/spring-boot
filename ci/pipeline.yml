@@ -27,6 +27,8 @@ resources:
   type: git
   source:
     uri: https://github.com/philwebb/spring-boot.git
+    username: ((github-username))
+    password: ((github-password))
     branch: build
 - name: spring-boot-ci-image
   type: docker-image
@@ -35,13 +37,13 @@ resources:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: master
-- name: artifactory-repo
-  type: artifactory-resource
-  source:
-    uri: https://pwebb3.jfrog.io/pwebb3
-    username: ((artifactory-username))
-    password: ((artifactory-password))
-    build_name: "Spring Boot - 2.0.x"
+#- name: artifactory-repo
+#  type: artifactory-resource
+#  source:
+#    uri: https://pwebb3.jfrog.io/pwebb3
+#    username: ((artifactory-username))
+#    password: ((artifactory-password))
+#    build_name: "Spring Boot - 2.0.x"
 - name: email-notification
   type: email
   source:
@@ -64,35 +66,25 @@ jobs:
   - get: git-repo
     trigger: true
   - get: build-info-git-repo
-  - task: build-project
-    file: git-repo/ci/tasks/build-project.yml
-  - aggregate:
-    - task: build-sample-tests
-      file: git-repo/ci/tasks/build-sample-tests.yml
-    - task: build-integration-tests
-      file: git-repo/ci/tasks/build-integration-tests.yml
-    - task: build-deployment-tests
-      file: git-repo/ci/tasks/build-deployment-tests.yml
-  - put: artifactory-repo
-    params:
-      repo: libs-snapshot-local
-      build_number: "${BUILD_ID}"
-      folder: distribution-repository
-      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
-      build_number: "${BUILD_NAME}"
-      artifact_set:
-      - include:
-        - "/**/spring-boot-docs-*.zip"
-        properties:
-          zip-type: "docs"
-          zip-deployed: "false"
+  - do:
+    - task: build-project
+      file: git-repo/ci/tasks/build-project.yml
+    - aggregate:
+      - task: build-sample-tests
+        file: git-repo/ci/tasks/build-sample-tests.yml
+      - task: build-integration-tests
+        file: git-repo/ci/tasks/build-integration-tests.yml
+      - task: build-deployment-tests
+        file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_success:
+      task: handle-build-success
+      file: git-repo/ci/tasks/handle-build-success.yml
+    on_failure:
+      task: handle-build-failure
+      file: git-repo/ci/tasks/handle-build-failure.yml
   - put: build-info-git-repo
-  on_success:
-    task: handle-build-success
-    file: git-repo/ci/tasks/handle-build-success.yml
-  on_failure:
-    task: handle-build-failure
-    file: git-repo/ci/tasks/handle-build-failure.yml
+    params:
+      repository: updated-build-info-git-repo
 - name: notify
   plan:
   - put: email-notification
@@ -106,3 +98,19 @@ groups:
   jobs: ["build-spring-boot-ci-image"]
 - name: "Notify"
   jobs: ["notify"]
+
+
+
+#  - put: artifactory-repo
+#    params:
+#      repo: libs-snapshot-local
+#      build_number: "${BUILD_ID}"
+#      folder: distribution-repository
+#      build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
+#      build_number: "${BUILD_NAME}"
+#      artifact_set:
+#      - include:
+#        - "/**/spring-boot-docs-*.zip"
+#        properties:
+#          zip-type: "docs"
+#          zip-deployed: "false"
