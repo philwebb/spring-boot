@@ -23,12 +23,11 @@ resources:
     uri: https://github.com/philwebb/spring-boot.git
     branch: maven-restruct
     paths: ["ci/images/*"]
-- name: notification-git-repo
+- name: build-info-git-repo
   type: git
   source:
     uri: https://github.com/philwebb/spring-boot.git
     branch: build
-    paths: ["notification/master/*"]
 - name: spring-boot-ci-image
   type: docker-image
   source:
@@ -52,7 +51,6 @@ resources:
       anonymous: true
       skip_ssl_validation: true
     from: "ci@spring.io"
-    to: [ "pwebb@pivotal.io" ]
 jobs:
 - name: build-spring-boot-ci-image
   plan:
@@ -65,7 +63,7 @@ jobs:
   plan:
   - get: git-repo
     trigger: true
-  - get: notification-git-repo
+  - get: build-info-git-repo
   - task: build-project
     file: git-repo/ci/tasks/build-project.yml
   - aggregate:
@@ -76,11 +74,11 @@ jobs:
     - task: build-deployment-tests
       file: git-repo/ci/tasks/build-deployment-tests.yml
     on_success:
-      task: record-build-failure
-      file: git-repo/ci/tasks/record-build-success.yml
+      task: handle-build-success
+      file: git-repo/ci/tasks/handle-build-success.yml
     on_failure:
-      task: record-build-failure
-      file: git-repo/ci/tasks/record-build-failure.yml
+      task: handle-build-failure
+      file: git-repo/ci/tasks/handle-build-failure.yml
   - put: artifactory-repo
     params:
       repo: libs-snapshot-local
@@ -94,7 +92,7 @@ jobs:
         properties:
           zip-type: "docs"
           zip-deployed: "false"
-  - put: notification-git-repo
+  - put: build-info-git-repo
 - name: notify
   plan:
   - get: notification-git-repo
@@ -108,5 +106,5 @@ groups:
   jobs: ["build"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]
-- name: "Notifications"
+- name: "Notify"
   jobs: ["notify"]
