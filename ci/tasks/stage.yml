@@ -1,0 +1,17 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: springci/spring-boot-ci-image
+    tag: master
+inputs:
+- name: git-repo
+outputs:
+- name: stage-git-repo
+- name: distribution-repository
+caches:
+- path: maven
+- path: gradle
+run:
+  path: git-repo/ci/scripts/stage.sh
