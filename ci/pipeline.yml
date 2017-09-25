@@ -65,15 +65,22 @@ jobs:
   plan:
   - get: git-repo
     trigger: true
+  - get: notification-git-repo
   - task: build-project
     file: git-repo/ci/tasks/build-project.yml
-#  - aggregate:
-#    - task: build-sample-tests
-#      file: git-repo/ci/tasks/build-sample-tests.yml
-#    - task: build-integration-tests
-#      file: git-repo/ci/tasks/build-integration-tests.yml
-#    - task: build-deployment-tests
-#      file: git-repo/ci/tasks/build-deployment-tests.yml
+  - aggregate:
+    - task: build-sample-tests
+      file: git-repo/ci/tasks/build-sample-tests.yml
+    - task: build-integration-tests
+      file: git-repo/ci/tasks/build-integration-tests.yml
+    - task: build-deployment-tests
+      file: git-repo/ci/tasks/build-deployment-tests.yml
+    on_success:
+      task: record-build-failure
+      file: git-repo/ci/tasks/record-build-success.yml
+    on_failure:
+      task: record-build-failure
+      file: git-repo/ci/tasks/record-build-failure.yml
   - put: artifactory-repo
     params:
       repo: libs-snapshot-local
@@ -87,6 +94,7 @@ jobs:
         properties:
           zip-type: "docs"
           zip-deployed: "false"
+  - put: notification-git-repo
 - name: notify
   plan:
   - get: notification-git-repo
