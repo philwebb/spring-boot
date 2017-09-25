@@ -9,6 +9,7 @@ inputs:
 - name: git-repo
 - name: build-info-git-repo
 outputs:
+- name: updated-build-info-git-repo
 - name: email-notification
 run:
   path: git-repo/ci/scripts/handle-outcome.sh
