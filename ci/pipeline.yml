@@ -1,3 +1,5 @@
+# fly -t spring set-pipeline -p spring-boot -c ci/pipeline.yml -l ci/parameters.yml -l ci/secrets.yml
+
 resource_types:
 - name: artifactory-resource
   type: docker-image
@@ -12,31 +14,31 @@ resources:
 - name: git-repo
   type: git
   source:
-    uri: https://github.com/philwebb/spring-boot.git
+    uri: ((github-repo))
     username: ((github-username))
     password: ((github-password))
-    branch: maven-restruct
+    branch: ((branch))
     ignore_paths: ["ci/images/*"]
 - name: ci-images-git-repo
   type: git
   source:
-    uri: https://github.com/philwebb/spring-boot.git
-    branch: maven-restruct
+    uri: ((github-repo))
+    branch: ((branch))
     paths: ["ci/images/*"]
 - name: spring-boot-ci-image
   type: docker-image
   source:
-    repository: springci/spring-boot-ci-image
+    repository: ((docker-hub-repo))
     username: ((docker-hub-username))
     password: ((docker-hub-password))
-    tag: master
+    tag: ((branch))
 - name: artifactory-repo
   type: artifactory-resource
   source:
-    uri: https://pwebb3.jfrog.io/pwebb3
+    uri: ((artifactory-server))
     username: ((artifactory-username))
     password: ((artifactory-password))
-    build_name: "Spring Boot - 2.0.x"
+    build_name: ((build-name))
 - name: email-notification
   type: email
   source:
@@ -136,6 +138,7 @@ jobs:
   plan:
   - get: git-repo
     trigger: false
+    passed: [stage-milestone]
   - get: artifactory-repo
     trigger: false
     passed: [stage-milestone]
@@ -143,10 +146,43 @@ jobs:
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: M
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+- name: promote-rc
+  plan:
+  - get: git-repo
+    trigger: false
+    passed: [stage-rc]
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-rc]
+  - task: stage
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RC
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+- name: promote-release
+  plan:
+  - get: git-repo
+    trigger: false
+    passed: [stage-release]
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-release]
+  - task: stage
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: RELEASE
+      ARTIFACTORY_SERVER: ((artifactory-server))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
 groups:
 - name: "Build"
   jobs: ["build"]
 - name: "Release"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]

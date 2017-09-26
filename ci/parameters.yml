@@ -1,0 +1,5 @@
+github-repo: "https://github.com/philwebb/spring-boot.git"
+docker-hub-repo: "springci/spring-boot-ci-image"
+artifactory-server: "https://pwebb3.jfrog.io/pwebb3"
+branch: "maven-restruct"
+build-name: "spring-boot"

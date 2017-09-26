@@ -5,7 +5,7 @@ source $(dirname $0)/common.sh
 repository=$(pwd)/distribution-repository
 
 pushd git-repo > /dev/null
-git fetch --tags --all
+git fetch --tags --all > /dev/null
 popd > /dev/null
 
 git clone git-repo stage-git-repo
