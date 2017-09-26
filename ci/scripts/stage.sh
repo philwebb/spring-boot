@@ -35,10 +35,10 @@ run_maven -f spring-boot-project/spring-boot-dependencies/pom.xml clean deploy -
 # run_maven -f spring-boot-tests/spring-boot-deployment-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository} -DskipTests
 
 echo "Setting next development version (v$nextVersion)"
-git reset --hard HEAD^ > /dev/null
+git reset --hard HEAD^
 set_revision_to_pom "$nextVersion"
-git add pom.xml > /dev/null
-git commit -m"Next development version (v$nextVersion)" > /dev/null
+git add pom.xml
+git commit -m"Next development version (v$nextVersion)"
 
 echo "DONE"
 
