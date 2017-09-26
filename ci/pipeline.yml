@@ -142,6 +142,8 @@ jobs:
   - get: artifactory-repo
     trigger: false
     passed: [stage-milestone]
+    params:
+      save_build_info: true
   - task: stage
     file: git-repo/ci/tasks/promote.yml
     params:
@@ -157,6 +159,8 @@ jobs:
   - get: artifactory-repo
     trigger: false
     passed: [stage-rc]
+    params:
+      save_build_info: true
   - task: stage
     file: git-repo/ci/tasks/promote.yml
     params:
@@ -172,6 +176,8 @@ jobs:
   - get: artifactory-repo
     trigger: false
     passed: [stage-release]
+    params:
+      save_build_info: true
   - task: stage
     file: git-repo/ci/tasks/promote.yml
     params:
