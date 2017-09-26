@@ -80,7 +80,7 @@ jobs:
       build_number: "${BUILD_ID}"
       folder: distribution-repository
       build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
-      build_number: "${BUILD_PIPELINE_NAME} - ${BUILD_JOB_NAME} - ${BUILD_NAME}"
+      build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
       artifact_set:
       - include:
         - "/**/spring-boot-docs-*.zip"
@@ -132,10 +132,21 @@ jobs:
   - put: git-repo
     params:
       repository: stage-git-repo
+- name: promote-milestone
+  plan:
+  - get: git-repo
+    trigger: false
+  - get: artifactory-repo
+    trigger: false
+    passed: [stage-milestone]
+  - task: stage
+    file: git-repo/ci/tasks/promote.yml
+    params:
+      RELEASE_TYPE: M
 groups:
 - name: "Build"
   jobs: ["build"]
 - name: "Release"
-  jobs: ["stage-milestone", "stage-rc", "stage-release"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone"]
 - name: "CI Images"
   jobs: ["build-spring-boot-ci-image"]

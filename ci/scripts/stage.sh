@@ -4,9 +4,14 @@ set -e
 source $(dirname $0)/common.sh
 repository=$(pwd)/distribution-repository
 
+pushd git-repo > /dev/null
+git fetch --tags --all
+popd > /dev/null
+
 git clone git-repo stage-git-repo
 
 pushd stage-git-repo > /dev/null
+
 snapshotVersion=$( get_revision_from_pom )
 if [[ $RELEASE_TYPE = "M" ]]; then
 	stageVersion=$( get_next_milestone_release $snapshotVersion)
