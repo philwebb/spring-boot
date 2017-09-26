@@ -40,4 +40,6 @@ set_revision_to_pom "$nextVersion"
 git add pom.xml > /dev/null
 git commit -m"Next development version (v$nextVersion)" > /dev/null
 
+echo "DONE"
+
 popd > /dev/null
