@@ -8,7 +8,7 @@ pushd git-repo > /dev/null
 git fetch --tags --all > /dev/null
 popd > /dev/null
 
-git clone git-repo stage-git-repo
+git clone git-repo stage-git-repo > /dev/null
 
 pushd stage-git-repo > /dev/null
 
