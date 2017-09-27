@@ -14,6 +14,6 @@ echo "$BUILD_NAME / $BUILD_NUMBER"
 curl \
   -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
   -H"Content-type:application/json" \
-  --data-binary @promote-to-milestone.json \
+  --data-binary @git-repo/promote-to-milestone.json \
   -X \
   POST "http://${ARTIFACTORY_SERVER}/artifactory/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}"
