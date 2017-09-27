@@ -3,6 +3,11 @@ set -e
 
 source $(dirname $0)/common.sh
 
+ls -l artifactory-repo
+cat artifactory-repo/build-info.json
+
+exit 1;
+
 curl \
   -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
   -H"Content-type:application/json" \
