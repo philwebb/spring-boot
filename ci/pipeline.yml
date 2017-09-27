@@ -138,7 +138,6 @@ jobs:
   plan:
   - get: git-repo
     trigger: false
-    passed: [stage-milestone]
   - get: artifactory-repo
     trigger: false
     passed: [stage-milestone]
@@ -155,7 +154,6 @@ jobs:
   plan:
   - get: git-repo
     trigger: false
-    passed: [stage-rc]
   - get: artifactory-repo
     trigger: false
     passed: [stage-rc]
@@ -172,7 +170,6 @@ jobs:
   plan:
   - get: git-repo
     trigger: false
-    passed: [stage-release]
   - get: artifactory-repo
     trigger: false
     passed: [stage-release]
