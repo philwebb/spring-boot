@@ -5,5 +5,8 @@ image_resource:
   source:
     repository: springci/spring-boot-ci-image
     tag: master
+inputs:
+- name: git-repo
+- name: artifactory-repo
 run:
   path: git-repo/ci/scripts/promote.sh
