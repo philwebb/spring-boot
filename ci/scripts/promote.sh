@@ -15,7 +15,8 @@ curl \
   -u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
   -H"Content-type:application/json" \
   --data-binary @git-repo/ci/scripts/promote-to-milestone.json \
+  -f \
   -X \
-  POST "${ARTIFACTORY_SERVER}/artifactory/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
+  POST "${ARTIFACTORY_SERVER}/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
 
-  echo "DONE ${ARTIFACTORY_SERVER}/artifactory/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}"
+  echo "Promoted ${BUILD_NAME}/${BUILD_NUMBER}"
