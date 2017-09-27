@@ -1,5 +1,5 @@
 {
 	"status": "staged",
-	"sourceRepo": "libs-snapshot-local",
+	"sourceRepo": "libs-staging-local",
 	"targetRepo": "libs-release-local"
 }
