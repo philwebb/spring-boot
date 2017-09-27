@@ -59,6 +59,7 @@ jobs:
       build: ci-images-git-repo/ci/images/spring-boot-ci-image
 - name: build
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: true
   - do:
@@ -95,6 +96,7 @@ jobs:
           zip-deployed: "false"
 - name: stage-milestone
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - task: stage
@@ -111,6 +113,7 @@ jobs:
       repository: stage-git-repo
 - name: stage-rc
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - task: stage
@@ -127,6 +130,7 @@ jobs:
       repository: stage-git-repo
 - name: stage-release
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - task: stage
@@ -143,6 +147,7 @@ jobs:
       repository: stage-git-repo
 - name: promote-milestone
   plan:
+  - get: spring-boot-ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
