@@ -6,8 +6,8 @@ source $(dirname $0)/common.sh
 ls -l artifactory-repo
 cat artifactory-repo/build-info.json
 
-BUILD_NAME=$( cat build-info.json | jq -r '.buildInfo.name' )
-BUILD_NUMBER=$( cat build-info.json | jq -r '.buildInfo.number' )
+BUILD_NAME=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.name' )
+BUILD_NUMBER=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.number' )
 
 echo "$BUILD_NAME / $BUILD_NUMBER"
 
