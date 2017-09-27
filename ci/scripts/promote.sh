@@ -17,3 +17,5 @@ curl \
   --data-binary @git-repo/ci/scripts/promote-to-milestone.json \
   -X \
   POST "${ARTIFACTORY_SERVER}/artifactory/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}" > /dev/null || { echo "Failed to promote" >&2; exit 1; }
+
+  echo "DONE ${ARTIFACTORY_SERVER}/artifactory/api/build/promote/${BUILD_NAME}/${BUILD_NUMBER}"
