@@ -29,7 +29,7 @@ public class EndpointInfo<T extends Operation> {
 
 	private final String id;
 
-	private final DefaultEnablement defaultEnablement;
+	private final boolean enableByDefault;
 
 	private final Collection<T> operations;
 
@@ -37,13 +37,12 @@ public class EndpointInfo<T extends Operation> {
 	 * Creates a new {@code EndpointInfo} describing an endpoint with the given {@code id}
 	 * and {@code operations}.
 	 * @param id the id of the endpoint
-	 * @param defaultEnablement the {@link DefaultEnablement} of the endpoint
+	 * @param enableByDefault if the endpoint is enabled by default
 	 * @param operations the operations of the endpoint
 	 */
-	public EndpointInfo(String id, DefaultEnablement defaultEnablement,
-			Collection<T> operations) {
+	public EndpointInfo(String id, boolean enableByDefault, Collection<T> operations) {
 		this.id = id;
-		this.defaultEnablement = defaultEnablement;
+		this.enableByDefault = enableByDefault;
 		this.operations = operations;
 	}
 
@@ -56,11 +55,11 @@ public class EndpointInfo<T extends Operation> {
 	}
 
 	/**
-	 * Return the {@link DefaultEnablement} of the endpoint.
-	 * @return the default enablement
+	 * Returns if the endpoint is enabled by default.
+	 * @return if the endpoint is enabled by defaut
 	 */
-	public DefaultEnablement getDefaultEnablement() {
-		return this.defaultEnablement;
+	public boolean isEnableByDefault() {
+		return this.enableByDefault;
 	}
 
 	/**

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.actuate.endpoint;
 
-public enum DefaultEnablement {
+/**
+ * @author Phillip Webb
+ * @param <T> the type of the endpoint's operations
+ * @since 2.0.0
+ */
+@FunctionalInterface
+public interface EndpointFilter<T extends Operation> {
 
-	ENABLED, DISABLED, NEUTRAL
+	boolean match(EndpointDiscoverer<T> discoverer, EndpointInfo<T> info);
 
 }

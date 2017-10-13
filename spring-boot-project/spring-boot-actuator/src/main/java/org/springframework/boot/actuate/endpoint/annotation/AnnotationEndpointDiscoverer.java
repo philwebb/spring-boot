@@ -29,9 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -53,6 +51,7 @@ import org.springframework.util.ObjectUtils;
  * @param <K> the type of the operation key
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
@@ -79,12 +78,11 @@ public abstract class AnnotationEndpointDiscoverer<T extends Operation, K>
 	/**
 	 * Perform endpoint discovery, including discovery and merging of extensions.
 	 * @param extensionType the annotation type of the extension
-	 * @param exposure the {@link EndpointExposure} that should be considered
 	 * @return the list of {@link EndpointInfo EndpointInfos} that describes the
-	 * discovered endpoints matching the specified {@link EndpointExposure}
+	 * discovered endpoints
 	 */
 	protected Collection<EndpointInfoDescriptor<T, K>> discoverEndpoints(
-			Class<? extends Annotation> extensionType, EndpointExposure exposure) {
+			Class<? extends Annotation> extensionType) {
 		Map<Class<?>, EndpointInfo<T>> endpoints = discoverEndpoints(exposure);
 		Map<Class<?>, EndpointExtensionInfo<T>> extensions = discoverExtensions(endpoints,
 				extensionType, exposure);
