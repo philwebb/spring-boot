@@ -47,13 +47,13 @@
   {
     "name": "spring.aop.proxy-target-class",
     "type": "java.lang.Boolean",
-    "description": "Whether subclass-based (CGLIB) proxies are to be created (true) as opposed to standard Java interface-based proxies (false).",
+    "description": "Whether subclass-based (CGLIB) proxies are to be created (true), as opposed to standard Java interface-based proxies (false).",
     "defaultValue": true
   },
   {
     "name": "spring.application.admin.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable admin features for the application.",
+    "description": "Whether to enable admin features for the application.",
     "defaultValue": false
   },
   {
@@ -210,13 +210,13 @@
   {
     "name": "spring.http.encoding.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable http encoding support.",
+    "description": "Whether to enable http encoding support.",
     "defaultValue": true
   },
   {
     "name": "spring.http.converters.preferred-json-mapper",
     "type": "java.lang.String",
-    "description": "Preferred JSON mapper to use for HTTP message conversion, auto-detected according to the environment by default."
+    "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
   },
   {
     "name": "spring.jersey.type",
@@ -393,13 +393,13 @@
   {
     "name": "spring.mvc.favicon.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable resolution of favicon.ico.",
+    "description": " Whether to enable resolution of favicon.ico.",
     "defaultValue": true
   },
   {
     "name": "spring.mvc.formcontent.putfilter.enabled",
     "type": "java.lang.Boolean",
-    "description": "Enable Spring's HttpPutFormContentFilter.",
+    "description": "Whether to enable Spring's HttpPutFormContentFilter.",
     "defaultValue": true
   },
   {
