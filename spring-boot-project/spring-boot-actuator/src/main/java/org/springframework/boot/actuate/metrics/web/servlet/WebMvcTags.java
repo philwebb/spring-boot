@@ -19,10 +19,11 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.micrometer.core.instrument.Tag;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
+
+import io.micrometer.core.instrument.Tag;
 
 /**
  * Factory methods for {@link Tag Tags} associated with a request-response exchange that
@@ -64,7 +65,19 @@ public final class WebMvcTags {
 	 * @param request the request
 	 * @return the uri tag derived from the request
 	 */
-	public static Tag uri(HttpServletRequest request) {
+	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
+		if(response != null) {
+			HttpStatus status = HttpStatus.valueOf(response.getStatus());
+			if (status.is3xxRedirection()) {
+				return Tag.of("uri", "REDIRECTION");
+			} else if (status.equals(HttpStatus.NOT_FOUND)) {
+				return Tag.of("uri", "NOT_FOUND");
+			}
+		} else {
+			// Long task timers won't be initiated if there is no handler found, as they aren't auto-timed.
+			// If no handler is found, 30
+		}
+
 		String uri = (String) request
 				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (uri == null) {

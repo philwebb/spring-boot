@@ -74,7 +74,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-public class MetricsFilterTests {
+public class WebMvcMetricsFilterTests {
 
 	@Autowired
 	private PrometheusMeterRegistry registry;

@@ -68,10 +68,11 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 					throws ServletException, IOException {
 		HandlerExecutionChain handlerExecutionChain = getHandlerExecutionChain(request);
 		if (handlerExecutionChain == null) {
-			filterChain.doFilter(request, response);
-			return;
+			filterWithMetrics(request, response, filterChain, null);
 		}
-		filterWithMetrics(request, response, filterChain, handlerExecutionChain);
+		else {
+			filterWithMetrics(request, response, filterChain, handlerExecutionChain.getHandler());
+		}
 	}
 
 	private HandlerExecutionChain getHandlerExecutionChain(HttpServletRequest request) {
@@ -91,9 +92,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void filterWithMetrics(HttpServletRequest request,
 			HttpServletResponse response, FilterChain filterChain,
-			HandlerExecutionChain handlerExecutionChain)
+			Object handler)
 					throws IOException, ServletException, NestedServletException {
-		Object handler = handlerExecutionChain.getHandler();
 		this.webMvcMetrics.preHandle(request, handler);
 		try {
 			filterChain.doFilter(request, response);

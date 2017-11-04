@@ -45,6 +45,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 /**
  * Support class for Spring MVC metrics.
@@ -187,6 +188,9 @@ public class WebMvcMetrics {
 	private Set<TimerConfig> timed(Object handler) {
 		if (handler instanceof HandlerMethod) {
 			return timed((HandlerMethod) handler);
+		} else if ((handler == null || handler instanceof ResourceHttpRequestHandler) && this.autoTimeRequests) {
+			return Collections.singleton(new TimerConfig(getServerRequestName(),
+					this.recordAsPercentiles));
 		}
 		return Collections.emptySet();
 	}
