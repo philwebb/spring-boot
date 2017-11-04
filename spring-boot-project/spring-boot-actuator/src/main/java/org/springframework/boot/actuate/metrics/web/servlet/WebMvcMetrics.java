@@ -188,9 +188,11 @@ public class WebMvcMetrics {
 	private Set<TimerConfig> timed(Object handler) {
 		if (handler instanceof HandlerMethod) {
 			return timed((HandlerMethod) handler);
-		} else if ((handler == null || handler instanceof ResourceHttpRequestHandler) && this.autoTimeRequests) {
-			return Collections.singleton(new TimerConfig(getServerRequestName(),
-					this.recordAsPercentiles));
+		}
+		if ((handler == null || handler instanceof ResourceHttpRequestHandler)
+				&& this.autoTimeRequests) {
+			return Collections.singleton(
+					new TimerConfig(getServerRequestName(), this.recordAsPercentiles));
 		}
 		return Collections.emptySet();
 	}

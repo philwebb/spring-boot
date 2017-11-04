@@ -52,8 +52,9 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	@Override
 	public Iterable<Tag> httpRequestTags(HttpServletRequest request,
 			HttpServletResponse response, Throwable ex) {
-		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, response),
-				WebMvcTags.exception(ex), WebMvcTags.status(response));
+		return Arrays.asList(WebMvcTags.method(request),
+				WebMvcTags.uri(request, response), WebMvcTags.exception(ex),
+				WebMvcTags.status(response));
 	}
 
 }

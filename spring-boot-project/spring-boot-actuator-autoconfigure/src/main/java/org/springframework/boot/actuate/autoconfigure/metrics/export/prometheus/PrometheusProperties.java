@@ -32,13 +32,13 @@ public class PrometheusProperties {
 	/**
 	 * Enable publishing to Prometheus.
 	 */
-	private Boolean enabled ;
+	private Boolean enabled;
 
 	/**
 	 * Enable publishing descriptions as part of the scrape payload to Prometheus. Turn
 	 * this off to minimize the amount of data sent on each scrape.
 	 */
-	private Boolean descriptions ;
+	private Boolean descriptions;
 
 	/**
 	 * The step size (reporting frequency) to use.
