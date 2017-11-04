@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +54,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import static io.micrometer.core.instrument.MockClock.clock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.ExpectedCount.once;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -90,6 +93,8 @@ public class MetricsAutoConfigurationIntegrationTests {
 						"{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class))
 				.containsKey("message");
+
+		clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.client.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -97,6 +102,8 @@ public class MetricsAutoConfigurationIntegrationTests {
 	@Test
 	public void requestMappingIsInstrumented() {
 		this.loopback.getForObject("/api/people", Set.class);
+
+		clock(registry).add(SimpleConfig.DEFAULT_STEP);
 		assertThat(this.registry.find("http.server.requests").value(Statistic.Count, 1.0)
 				.timer()).isPresent();
 	}
@@ -118,7 +125,7 @@ public class MetricsAutoConfigurationIntegrationTests {
 
 		@Bean
 		public MeterRegistry registry() {
-			return new SimpleMeterRegistry();
+			return new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 		}
 
 		@Bean
