@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -213,7 +213,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
 		assertThat(endpoints.size()).isEqualTo(1);
 		assertThat(endpoints.get(0).getId()).isEqualTo("test");
@@ -226,7 +226,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
-		List<EndpointInfo<WebEndpointOperation>> endpoints = (List<EndpointInfo<WebEndpointOperation>>) handlerMapping
+		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
 		assertThat(endpoints.size()).isEqualTo(1);
 		assertThat(endpoints.get(0).getOperations()).hasSize(1);

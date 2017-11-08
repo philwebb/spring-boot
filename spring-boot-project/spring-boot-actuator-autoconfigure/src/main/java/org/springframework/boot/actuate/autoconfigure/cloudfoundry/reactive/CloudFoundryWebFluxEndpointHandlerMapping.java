@@ -37,7 +37,7 @@ import org.springframework.boot.actuate.endpoint.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping;
 import org.springframework.boot.endpoint.web.EndpointMapping;
@@ -81,7 +81,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	}
 
 	@Override
-	protected void registerMappingForOperation(WebEndpointOperation operation) {
+	protected void registerMappingForOperation(WebOperation operation) {
 		OperationType operationType = operation.getType();
 		OperationInvoker operationInvoker = operation.getInvoker();
 		if (operation.isBlocking()) {
@@ -135,7 +135,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping
 	 * @param securityInterceptor the Security Interceptor
 	 */
 	CloudFoundryWebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
 			ReactiveCloudFoundrySecurityInterceptor securityInterceptor) {
 		super(endpointMapping, webEndpoints, endpointMediaTypes, corsConfiguration);

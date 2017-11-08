@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -136,7 +136,7 @@ public class RequestMappingEndpointTests {
 		OperationRequestPredicate requestPredicate = new OperationRequestPredicate("test",
 				WebEndpointHttpMethod.GET, Collections.singletonList("application/json"),
 				Collections.singletonList("application/json"));
-		WebEndpointOperation operation = new WebEndpointOperation(OperationType.READ,
+		WebOperation operation = new WebOperation(OperationType.READ,
 				(arguments) -> "Invoked", true, requestPredicate, "test");
 		WebMvcEndpointHandlerMapping mapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping("application"),

@@ -45,10 +45,10 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleReadOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.READ,
+		JmxOperation operation = new JmxOperation(OperationType.READ,
 				new DummyOperationInvoker(), "getAll", Object.class, "Test operation",
 				Collections.emptyList());
-		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("test",
+		EndpointInfo<JmxOperation> endpoint = new EndpointInfo<>("test",
 				DefaultEnablement.ENABLED, Collections.singletonList(operation));
 		EndpointMBeanInfo endpointMBeanInfo = this.mBeanInfoAssembler
 				.createEndpointMBeanInfo(endpoint);
@@ -74,11 +74,11 @@ public class EndpointMBeanInfoAssemblerTests {
 
 	@Test
 	public void exposeSimpleWriteOperation() {
-		JmxEndpointOperation operation = new JmxEndpointOperation(OperationType.WRITE,
+		JmxOperation operation = new JmxOperation(OperationType.WRITE,
 				new DummyOperationInvoker(), "update", Object.class, "Update operation",
 				Collections.singletonList(new JmxEndpointOperationParameterInfo("test",
 						String.class, "Test argument")));
-		EndpointInfo<JmxEndpointOperation> endpoint = new EndpointInfo<>("another",
+		EndpointInfo<JmxOperation> endpoint = new EndpointInfo<>("another",
 				DefaultEnablement.ENABLED, Collections.singletonList(operation));
 		EndpointMBeanInfo endpointMBeanInfo = this.mBeanInfoAssembler
 				.createEndpointMBeanInfo(endpoint);

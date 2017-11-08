@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.annotation;
+package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,37 +22,35 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
-import org.springframework.core.annotation.AliasFor;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
 
 /**
- * Identifies a type as being an endpoint that is only exposed over HTTP.
+ * Annotation that can be used on an {@link Endpoint @Endpoint} to implement implicit
+ * filtering. Often used as a meta-annotation on technology specific endpoint annotations,
+ * for example:<pre class="code">
+ * &#64;Endpoint
+ * &#64;FilteredEndpoint(WebEndpointFilter.class)
+ * public &#64;interface WebEndpoint {
  *
- * @author Andy Wilkinson
+ *     &#64;AliasFor(annotation = Endpoint.class, attribute = "id")
+ *     String id();
+ *
+ *     &#64;AliasFor(annotation = Endpoint.class, attribute = "enableByDefault")
+ *     boolean enableByDefault() default true;
+ *
+ * } </pre>
+ * @author Phillip Webb
  * @since 2.0.0
- * @see AnnotationEndpointDiscoverer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Endpoint
-@FilteredEndpoint(WebEndpointFilter.class)
-public @interface WebEndpoint {
+public @interface FilteredEndpoint {
 
 	/**
-	 * The id of the endpoint.
-	 * @return the id
+	 * The filter class to use.
+	 * @return the filter class
 	 */
-	@AliasFor(annotation = Endpoint.class)
-	String id();
-
-	/**
-	 * If the endpoint should be enabled or disabled by default.
-	 * @return {@code true} if the endpoint is enabled by default
-	 */
-	@AliasFor(annotation = Endpoint.class)
-	boolean enableByDefault() default true;
+	Class<? extends EndpointFilter<?>> value();
 
 }

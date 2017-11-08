@@ -19,16 +19,16 @@ package org.springframework.boot.actuate.env;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
 
 /**
- * {@link WebEndpointExtension} for the {@link EnvironmentEndpoint}.
+ * {@link EndpointWebExtension} for the {@link EnvironmentEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = EnvironmentEndpoint.class)
+@EndpointWebExtension(endpoint = EnvironmentEndpoint.class)
 public class EnvironmentWebEndpointExtension {
 
 	private final EnvironmentEndpoint delegate;

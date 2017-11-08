@@ -18,10 +18,10 @@ package org.springframework.boot.actuate.health;
 
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
- * {@link WebEndpointExtension} for the {@link HealthEndpoint}.
+ * {@link EndpointWebExtension} for the {@link HealthEndpoint}.
  *
  * @author Christian Dupuis
  * @author Dave Syer
@@ -31,7 +31,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExten
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = HealthEndpoint.class)
+@EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthWebEndpointExtension {
 
 	private final HealthEndpoint delegate;

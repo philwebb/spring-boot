@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class JmxEndpointOperation extends Operation {
+public class JmxOperation extends Operation {
 
 	private final String operationName;
 
@@ -50,7 +50,7 @@ public class JmxEndpointOperation extends Operation {
 	 * @param description the description of the operation
 	 * @param parameters the parameters of the operation
 	 */
-	public JmxEndpointOperation(OperationType type, OperationInvoker invoker,
+	public JmxOperation(OperationType type, OperationInvoker invoker,
 			String operationName, Class<?> outputType, String description,
 			List<JmxEndpointOperationParameterInfo> parameters) {
 		super(type, invoker, true);

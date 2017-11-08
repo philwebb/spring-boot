@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.web.annotation;
+package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,31 +22,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
 import org.springframework.core.annotation.AliasFor;
 
-/**
- * Identifies a type as being an endpoint that is only exposed over HTTP.
- *
- * @author Andy Wilkinson
- * @since 2.0.0
- * @see AnnotationEndpointDiscoverer
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Endpoint
-@FilteredEndpoint(WebEndpointFilter.class)
-public @interface WebEndpoint {
+@FilteredEndpoint(JmxEndpointFilter.class)
+public @interface JmxEndpoint {
 
 	/**
 	 * The id of the endpoint.
 	 * @return the id
 	 */
 	@AliasFor(annotation = Endpoint.class)
-	String id();
+	String id() default "";
 
 	/**
 	 * If the endpoint should be enabled or disabled by default.

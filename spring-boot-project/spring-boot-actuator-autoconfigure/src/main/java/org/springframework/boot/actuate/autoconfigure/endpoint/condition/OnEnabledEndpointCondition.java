@@ -21,8 +21,8 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointEnablemen
 import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.EndpointJmxExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -84,13 +84,13 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		if (attributes != null) {
 			return attributes;
 		}
-		JmxEndpointExtension jmxExtension = AnnotationUtils.findAnnotation(type,
-				JmxEndpointExtension.class);
+		EndpointJmxExtension jmxExtension = AnnotationUtils.findAnnotation(type,
+				EndpointJmxExtension.class);
 		if (jmxExtension != null) {
 			return extractEndpointAttributes(jmxExtension.endpoint());
 		}
-		WebEndpointExtension webExtension = AnnotationUtils.findAnnotation(type,
-				WebEndpointExtension.class);
+		EndpointWebExtension webExtension = AnnotationUtils.findAnnotation(type,
+				EndpointWebExtension.class);
 		if (webExtension != null) {
 			return extractEndpointAttributes(webExtension.endpoint());
 		}

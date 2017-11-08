@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBean;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointMBeanFactory;
-import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperationResponseMapper;
 
 /**
@@ -44,7 +44,7 @@ import org.springframework.boot.actuate.endpoint.jmx.JmxOperationResponseMapper;
  */
 class JmxEndpointExporter implements InitializingBean, DisposableBean {
 
-	private final EndpointProvider<JmxEndpointOperation> endpointProvider;
+	private final EndpointProvider<JmxOperation> endpointProvider;
 
 	private final EndpointMBeanRegistrar endpointMBeanRegistrar;
 
@@ -52,7 +52,7 @@ class JmxEndpointExporter implements InitializingBean, DisposableBean {
 
 	private Collection<ObjectName> registeredObjectNames;
 
-	JmxEndpointExporter(EndpointProvider<JmxEndpointOperation> endpointProvider,
+	JmxEndpointExporter(EndpointProvider<JmxOperation> endpointProvider,
 			EndpointMBeanRegistrar endpointMBeanRegistrar, ObjectMapper objectMapper) {
 		this.endpointProvider = endpointProvider;
 		this.endpointMBeanRegistrar = endpointMBeanRegistrar;

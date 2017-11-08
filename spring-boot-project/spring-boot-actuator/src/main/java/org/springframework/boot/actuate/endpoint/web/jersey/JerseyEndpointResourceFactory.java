@@ -45,7 +45,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.util.ClassUtils;
@@ -54,7 +54,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * A factory for creating Jersey {@link Resource Resources} for
- * {@link WebEndpointOperation web endpoint operations}.
+ * {@link WebOperation web endpoint operations}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
@@ -72,7 +72,7 @@ public class JerseyEndpointResourceFactory {
 	 * @return the resources for the operations
 	 */
 	public Collection<Resource> createEndpointResources(EndpointMapping endpointMapping,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		List<Resource> resources = new ArrayList<>();
 		webEndpoints.stream()
@@ -87,7 +87,7 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createResource(EndpointMapping endpointMapping,
-			WebEndpointOperation operation) {
+			WebOperation operation) {
 		OperationRequestPredicate requestPredicate = operation.getRequestPredicate();
 		Builder resourceBuilder = Resource.builder()
 				.path(endpointMapping.createSubPath(requestPredicate.getPath()));
@@ -104,7 +104,7 @@ public class JerseyEndpointResourceFactory {
 	}
 
 	private Resource createEndpointLinksResource(String endpointPath,
-			Collection<EndpointInfo<WebEndpointOperation>> webEndpoints,
+			Collection<EndpointInfo<WebOperation>> webEndpoints,
 			EndpointMediaTypes endpointMediaTypes) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
 		resourceBuilder.addMethod("GET")
@@ -249,12 +249,12 @@ public class JerseyEndpointResourceFactory {
 	private static final class EndpointLinksInflector
 			implements Inflector<ContainerRequestContext, Response> {
 
-		private final Collection<EndpointInfo<WebEndpointOperation>> endpoints;
+		private final Collection<EndpointInfo<WebOperation>> endpoints;
 
 		private final EndpointLinksResolver linksResolver;
 
 		private EndpointLinksInflector(
-				Collection<EndpointInfo<WebEndpointOperation>> endpoints,
+				Collection<EndpointInfo<WebOperation>> endpoints,
 				EndpointLinksResolver linksResolver) {
 			this.endpoints = endpoints;
 			this.linksResolver = linksResolver;

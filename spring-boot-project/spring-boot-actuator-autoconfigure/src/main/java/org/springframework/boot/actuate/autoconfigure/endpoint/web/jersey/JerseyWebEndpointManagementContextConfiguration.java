@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -55,7 +55,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
-			EndpointProvider<WebEndpointOperation> provider,
+			EndpointProvider<WebOperation> provider,
 			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return (resourceConfig) -> resourceConfig.registerResources(
@@ -67,7 +67,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebEndpointOperation> provider,
+			EndpointProvider<WebOperation> provider,
 			WebEndpointProperties webEndpointProperties) {
 		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
 	}

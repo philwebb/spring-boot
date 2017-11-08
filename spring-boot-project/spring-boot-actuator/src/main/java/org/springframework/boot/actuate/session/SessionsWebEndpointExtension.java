@@ -18,16 +18,16 @@ package org.springframework.boot.actuate.session;
 
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.session.SessionsEndpoint.SessionsReport;
 
 /**
- * {@link WebEndpointExtension} for the {@link SessionsEndpoint}.
+ * {@link EndpointWebExtension} for the {@link SessionsEndpoint}.
  *
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = SessionsEndpoint.class)
+@EndpointWebExtension(endpoint = SessionsEndpoint.class)
 public class SessionsWebEndpointExtension {
 
 	private final SessionsEndpoint delegate;

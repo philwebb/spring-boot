@@ -76,7 +76,7 @@ public class EndpointMBean implements DynamicMBean {
 	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature)
 			throws MBeanException, ReflectionException {
-		JmxEndpointOperation operation = this.endpointInfo.getOperations()
+		JmxOperation operation = this.endpointInfo.getOperations()
 				.get(actionName);
 		if (operation != null) {
 			Map<String, Object> arguments = getArguments(params,

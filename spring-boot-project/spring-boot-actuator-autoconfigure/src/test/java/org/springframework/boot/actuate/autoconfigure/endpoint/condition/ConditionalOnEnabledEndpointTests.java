@@ -21,8 +21,8 @@ import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointExtension;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.EndpointJmxExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -330,7 +330,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@JmxEndpointExtension(endpoint = FooEndpoint.class)
+	@EndpointJmxExtension(endpoint = FooEndpoint.class)
 	static class FooJmxEndpointExtension {
 
 	}
@@ -346,7 +346,7 @@ public class ConditionalOnEnabledEndpointTests {
 
 	}
 
-	@WebEndpointExtension(endpoint = FooEndpoint.class)
+	@EndpointWebExtension(endpoint = FooEndpoint.class)
 	static class FooWebEndpointExtension {
 
 	}

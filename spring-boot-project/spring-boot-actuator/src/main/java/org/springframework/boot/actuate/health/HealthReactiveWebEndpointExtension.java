@@ -20,15 +20,15 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
- * Reactive {@link WebEndpointExtension} for the {@link HealthEndpoint}.
+ * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = HealthEndpoint.class)
+@EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthReactiveWebEndpointExtension {
 
 	private final ReactiveHealthIndicator delegate;

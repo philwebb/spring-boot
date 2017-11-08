@@ -16,30 +16,22 @@
 
 package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 
 /**
- * Identifies a type as being a JMX-specific extension of an {@link Endpoint}.
+ * {@link EndpointFilter}
  *
- * @author Stephane Nicoll
- * @since 2.0.0
- * @see Endpoint
+ * @author Phillip Webb
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface JmxEndpointExtension {
+class JmxEndpointFilter implements EndpointFilter<JmxOperation> {
 
-	/**
-	 * The {@link Endpoint endpoint} class to which this JMX extension relates.
-	 * @return the endpoint class
-	 */
-	Class<?> endpoint();
+	@Override
+	public boolean match(EndpointInfo<JmxOperation> info,
+			EndpointDiscoverer<JmxOperation> discoverer) {
+		return (discoverer instanceof JmxAnnotationEndpointDiscoverer);
+	}
 
 }

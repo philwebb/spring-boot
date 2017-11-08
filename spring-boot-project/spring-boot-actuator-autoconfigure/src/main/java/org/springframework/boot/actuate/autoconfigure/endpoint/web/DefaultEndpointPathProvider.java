@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.util.Assert;
 
 /**
@@ -33,11 +33,11 @@ import org.springframework.util.Assert;
  */
 public class DefaultEndpointPathProvider implements EndpointPathProvider {
 
-	private final Collection<EndpointInfo<WebEndpointOperation>> endpoints;
+	private final Collection<EndpointInfo<WebOperation>> endpoints;
 
 	private final String basePath;
 
-	public DefaultEndpointPathProvider(EndpointProvider<WebEndpointOperation> provider,
+	public DefaultEndpointPathProvider(EndpointProvider<WebOperation> provider,
 			WebEndpointProperties webEndpointProperties) {
 		this.endpoints = provider.getEndpoints();
 		this.basePath = webEndpointProperties.getBasePath();
@@ -55,7 +55,7 @@ public class DefaultEndpointPathProvider implements EndpointPathProvider {
 				.findFirst().map(this::getPath).orElse(null);
 	}
 
-	private String getPath(EndpointInfo<WebEndpointOperation> endpointInfo) {
+	private String getPath(EndpointInfo<WebOperation> endpointInfo) {
 		return this.basePath + "/" + endpointInfo.getId();
 	}
 

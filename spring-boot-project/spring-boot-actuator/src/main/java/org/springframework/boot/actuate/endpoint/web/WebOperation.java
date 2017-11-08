@@ -26,7 +26,7 @@ import org.springframework.boot.actuate.endpoint.OperationType;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class WebEndpointOperation extends Operation {
+public class WebOperation extends Operation {
 
 	private final OperationRequestPredicate requestPredicate;
 
@@ -42,7 +42,7 @@ public class WebEndpointOperation extends Operation {
 	 * @param requestPredicate the predicate for requests that can be handled by the
 	 * @param id the id of the operation, unique within its endpoint operation
 	 */
-	public WebEndpointOperation(OperationType type, OperationInvoker operationInvoker,
+	public WebOperation(OperationType type, OperationInvoker operationInvoker,
 			boolean blocking, OperationRequestPredicate requestPredicate, String id) {
 		super(type, operationInvoker, blocking);
 		this.requestPredicate = requestPredicate;

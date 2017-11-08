@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.util.Assert;
 
 /**
  * Information describing an endpoint.
@@ -41,9 +44,11 @@ public class EndpointInfo<T extends Operation> {
 	 * @param operations the operations of the endpoint
 	 */
 	public EndpointInfo(String id, boolean enableByDefault, Collection<T> operations) {
+		Assert.hasText(id, "ID must not be empty");
+		Assert.notNull(operations, "Operations must not be null");
 		this.id = id;
 		this.enableByDefault = enableByDefault;
-		this.operations = operations;
+		this.operations = Collections.unmodifiableCollection(operations);
 	}
 
 	/**
@@ -56,7 +61,7 @@ public class EndpointInfo<T extends Operation> {
 
 	/**
 	 * Returns if the endpoint is enabled by default.
-	 * @return if the endpoint is enabled by defaut
+	 * @return if the endpoint is enabled by default
 	 */
 	public boolean isEnableByDefault() {
 		return this.enableByDefault;

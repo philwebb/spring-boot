@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanRegistrar;
-import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperation;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -69,7 +69,7 @@ public class JmxEndpointAutoConfiguration {
 	public JmxEndpointExporter jmxMBeanExporter(JmxEndpointExporterProperties properties,
 			MBeanServer mBeanServer, JmxAnnotationEndpointDiscoverer endpointDiscoverer,
 			ObjectProvider<ObjectMapper> objectMapper) {
-		EndpointProvider<JmxEndpointOperation> endpointProvider = new EndpointProvider<>(
+		EndpointProvider<JmxOperation> endpointProvider = new EndpointProvider<>(
 				this.applicationContext.getEnvironment(), endpointDiscoverer,
 				EndpointExposure.JMX);
 		EndpointMBeanRegistrar endpointMBeanRegistrar = new EndpointMBeanRegistrar(

@@ -75,8 +75,8 @@ public class EndpointLinksResolverTests {
 				linkWithHref("https://api.example.com/application/alpha/{name}"));
 	}
 
-	private WebEndpointOperation operationWithPath(String path, String id) {
-		return new WebEndpointOperation(OperationType.READ, null, false,
+	private WebOperation operationWithPath(String path, String id) {
+		return new WebOperation(OperationType.READ, null, false,
 				new OperationRequestPredicate(path, WebEndpointHttpMethod.GET,
 						Collections.emptyList(), Collections.emptyList()),
 				id);

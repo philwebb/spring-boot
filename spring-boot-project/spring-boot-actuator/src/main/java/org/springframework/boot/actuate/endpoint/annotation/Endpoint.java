@@ -23,10 +23,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies a type as being an endpoint.
+ * Identifies a type as being an actuator endpoint that provides information about the
+ * running application. Endpoints can be exposed over a variety of technologies including
+ * JMX and HTTP.
+ * <p>
+ * Most {@code @Endpoint} classes will declare one or more
+ * {@link ReadOperation @ReadOperation}, {@link WriteOperation @WriteOperation},
+ * {@link DeleteOperation @DeleteOperation} annotated methods which will be automatically
+ * adapted to the exposing technology (JMX, Spring MVC, Spring WebFlux, Jersey etc.).
+ * <p>
+ * {@code @Endpoint} represents the lowest common denominator for endpoints and
+ * intentionally limits the sorts of operation methods that may be defined in order to
+ * support the broadest possible range of exposure technologies. If you need deeper
+ * support for a specific technology you can either write an endpoint that is
+ * {@link FilteredEndpoint filtered} to a certain technology, or provide
+ * {@link EndpointExtension extension} for the broader endpoint.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
+ * @see EndpointExtension
+ * @see FilteredEndpoint
  * @see AnnotationEndpointDiscoverer
  */
 @Target(ElementType.TYPE)
@@ -38,7 +55,7 @@ public @interface Endpoint {
 	 * The id of the endpoint.
 	 * @return the id
 	 */
-	String id();
+	String id() default "";
 
 	/**
 	 * If the endpoint should be enabled or disabled by default.

@@ -16,55 +16,35 @@
 
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.reactivestreams.Publisher;
-
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
-import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.ParameterMapper;
-import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
-import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationAttributes;
-import org.springframework.core.io.Resource;
-import org.springframework.util.ClassUtils;
 
 /**
  * Discovers the {@link Endpoint endpoints} in an {@link ApplicationContext} with
- * {@link WebEndpointExtension web extensions} applied to them.
+ * {@link EndpointWebExtension web extensions} applied to them.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class WebAnnotationEndpointDiscoverer extends
-		AnnotationEndpointDiscoverer<WebEndpointOperation, OperationRequestPredicate> {
+public class WebAnnotationEndpointDiscoverer
+		extends AnnotationEndpointDiscoverer<OperationRequestPredicate, WebOperation> {
 
 	/**
 	 * Creates a new {@link WebAnnotationEndpointDiscoverer} that will discover
-	 * {@link Endpoint endpoints} and {@link WebEndpointExtension web extensions} using
+	 * {@link Endpoint endpoints} and {@link EndpointWebExtension web extensions} using
 	 * the given {@link ApplicationContext}.
 	 * @param applicationContext the application context
 	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
@@ -83,22 +63,14 @@ public class WebAnnotationEndpointDiscoverer extends
 		super(applicationContext,
 				new WebEndpointOperationFactory(parameterMapper, endpointMediaTypes,
 						endpointPathResolver),
-				WebEndpointOperation::getRequestPredicate, cachingConfigurationFactory);
+				WebOperation::getRequestPredicate, cachingConfigurationFactory);
 	}
 
 	@Override
-	public Collection<EndpointInfo<WebEndpointOperation>> discoverEndpoints() {
-		Collection<EndpointInfoDescriptor<WebEndpointOperation, OperationRequestPredicate>> endpoints = discoverEndpoints(
-				WebEndpointExtension.class, EndpointExposure.WEB);
-		verifyThatOperationsHaveDistinctPredicates(endpoints);
-		return endpoints.stream().map(EndpointInfoDescriptor::getEndpointInfo)
-				.collect(Collectors.toList());
-	}
-
-	private void verifyThatOperationsHaveDistinctPredicates(
-			Collection<EndpointInfoDescriptor<WebEndpointOperation, OperationRequestPredicate>> endpointDescriptors) {
-		List<List<WebEndpointOperation>> clashes = new ArrayList<>();
-		endpointDescriptors.forEach((descriptor) -> clashes
+	protected void verify(
+			Collection<EndpointInfoDescriptor<WebOperation, OperationRequestPredicate>> descriptors) {
+		List<List<WebOperation>> clashes = new ArrayList<>();
+		descriptors.forEach((descriptor) -> clashes
 				.addAll(descriptor.findDuplicateOperations().values()));
 		if (!clashes.isEmpty()) {
 			StringBuilder message = new StringBuilder();
@@ -112,125 +84,6 @@ public class WebAnnotationEndpointDiscoverer extends
 			});
 			throw new IllegalStateException(message.toString());
 		}
-	}
-
-	private static final class WebEndpointOperationFactory
-			implements EndpointOperationFactory<WebEndpointOperation> {
-
-		private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent(
-				"org.reactivestreams.Publisher",
-				WebEndpointOperationFactory.class.getClassLoader());
-
-		private final ParameterMapper parameterMapper;
-
-		private final EndpointMediaTypes endpointMediaTypes;
-
-		private final EndpointPathResolver endpointPathResolver;
-
-		private WebEndpointOperationFactory(ParameterMapper parameterMapper,
-				EndpointMediaTypes endpointMediaTypes,
-				EndpointPathResolver endpointPathResolver) {
-			this.parameterMapper = parameterMapper;
-			this.endpointMediaTypes = endpointMediaTypes;
-			this.endpointPathResolver = endpointPathResolver;
-		}
-
-		@Override
-		public WebEndpointOperation createOperation(String endpointId,
-				AnnotationAttributes operationAttributes, Object target, Method method,
-				OperationType type, long timeToLive) {
-			WebEndpointHttpMethod httpMethod = determineHttpMethod(type);
-			OperationRequestPredicate requestPredicate = new OperationRequestPredicate(
-					determinePath(endpointId, method), httpMethod,
-					determineConsumedMediaTypes(httpMethod, method),
-					determineProducedMediaTypes(
-							operationAttributes.getStringArray("produces"), method));
-			OperationInvoker invoker = new ReflectiveOperationInvoker(target, method,
-					this.parameterMapper);
-			if (timeToLive > 0) {
-				invoker = new CachingOperationInvoker(invoker, timeToLive);
-			}
-			return new WebEndpointOperation(type, invoker, determineBlocking(method),
-					requestPredicate, determineId(endpointId, method));
-		}
-
-		private String determinePath(String endpointId, Method operationMethod) {
-			StringBuilder path = new StringBuilder(
-					this.endpointPathResolver.resolvePath(endpointId));
-			Stream.of(operationMethod.getParameters())
-					.filter((
-							parameter) -> parameter.getAnnotation(Selector.class) != null)
-					.map((parameter) -> "/{" + parameter.getName() + "}")
-					.forEach(path::append);
-			return path.toString();
-		}
-
-		private String determineId(String endpointId, Method operationMethod) {
-			StringBuilder path = new StringBuilder(endpointId);
-			Stream.of(operationMethod.getParameters())
-					.filter((
-							parameter) -> parameter.getAnnotation(Selector.class) != null)
-					.map((parameter) -> "-" + parameter.getName()).forEach(path::append);
-			return path.toString();
-		}
-
-		private Collection<String> determineConsumedMediaTypes(
-				WebEndpointHttpMethod httpMethod, Method method) {
-			if (WebEndpointHttpMethod.POST == httpMethod && consumesRequestBody(method)) {
-				return this.endpointMediaTypes.getConsumed();
-			}
-			return Collections.emptyList();
-		}
-
-		private Collection<String> determineProducedMediaTypes(String[] produces,
-				Method method) {
-			if (produces.length > 0) {
-				return Arrays.asList(produces);
-			}
-			if (Void.class.equals(method.getReturnType())
-					|| void.class.equals(method.getReturnType())) {
-				return Collections.emptyList();
-			}
-			if (producesResourceResponseBody(method)) {
-				return Collections.singletonList("application/octet-stream");
-			}
-			return this.endpointMediaTypes.getProduced();
-		}
-
-		private boolean producesResourceResponseBody(Method method) {
-			if (Resource.class.equals(method.getReturnType())) {
-				return true;
-			}
-			if (WebEndpointResponse.class.isAssignableFrom(method.getReturnType())) {
-				ResolvableType returnType = ResolvableType.forMethodReturnType(method);
-				if (ResolvableType.forClass(Resource.class)
-						.isAssignableFrom(returnType.getGeneric(0))) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private boolean consumesRequestBody(Method method) {
-			return Stream.of(method.getParameters()).anyMatch(
-					(parameter) -> parameter.getAnnotation(Selector.class) == null);
-		}
-
-		private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {
-			if (operationType == OperationType.WRITE) {
-				return WebEndpointHttpMethod.POST;
-			}
-			if (operationType == OperationType.DELETE) {
-				return WebEndpointHttpMethod.DELETE;
-			}
-			return WebEndpointHttpMethod.GET;
-		}
-
-		private boolean determineBlocking(Method method) {
-			return !REACTIVE_STREAMS_PRESENT
-					|| !Publisher.class.isAssignableFrom(method.getReturnType());
-		}
-
 	}
 
 }

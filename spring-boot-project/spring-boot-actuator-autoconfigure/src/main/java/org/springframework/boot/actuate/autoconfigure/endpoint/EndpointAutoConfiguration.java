@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParame
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -85,7 +85,7 @@ public class EndpointAutoConfiguration {
 		}
 
 		@Bean
-		public EndpointProvider<WebEndpointOperation> webEndpointProvider(
+		public EndpointProvider<WebOperation> webEndpointProvider(
 				ParameterMapper parameterMapper,
 				DefaultCachingConfigurationFactory cachingConfigurationFactory,
 				EndpointPathResolver endpointPathResolver) {

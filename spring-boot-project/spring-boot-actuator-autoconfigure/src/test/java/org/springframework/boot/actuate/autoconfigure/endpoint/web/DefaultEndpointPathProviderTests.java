@@ -28,7 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
 import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
-import org.springframework.boot.actuate.endpoint.web.WebEndpointOperation;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -41,7 +41,7 @@ import static org.mockito.BDDMockito.given;
 public class DefaultEndpointPathProviderTests {
 
 	@Mock
-	private EndpointProvider<WebEndpointOperation> endpointProvider;
+	private EndpointProvider<WebOperation> endpointProvider;
 
 	@Before
 	public void setup() {
@@ -81,7 +81,7 @@ public class DefaultEndpointPathProviderTests {
 	}
 
 	private DefaultEndpointPathProvider createProvider(String contextPath) {
-		Collection<EndpointInfo<WebEndpointOperation>> endpoints = new ArrayList<>();
+		Collection<EndpointInfo<WebOperation>> endpoints = new ArrayList<>();
 		endpoints.add(new EndpointInfo<>("foo", DefaultEnablement.ENABLED,
 				Collections.emptyList()));
 		endpoints.add(new EndpointInfo<>("bar", DefaultEnablement.ENABLED,

@@ -21,16 +21,16 @@ import java.util.Date;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.lang.Nullable;
 
 /**
- * {@link WebEndpointExtension} for the {@link AuditEventsEndpoint}.
+ * {@link EndpointWebExtension} for the {@link AuditEventsEndpoint}.
  *
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@WebEndpointExtension(endpoint = AuditEventsEndpoint.class)
+@EndpointWebExtension(endpoint = AuditEventsEndpoint.class)
 public class AuditEventsWebEndpointExtension {
 
 	private final AuditEventsEndpoint delegate;

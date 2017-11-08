@@ -16,13 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint.annotation;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +43,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.ReflectionUtils;
 
@@ -187,6 +193,19 @@ public class AnnotationEndpointDiscovererTests {
 		});
 	}
 
+	// FIXME specialized gets filtered from regular
+	// FIXME Specialized is included with regular
+	// FIXME Extensions work
+
+	@Test
+	public void multipleEndpoints() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
+					new TestAnnotationEndpointDiscoverer(context).discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test", "specialized");
+		});
+	}
+
 	private Map<String, EndpointInfo<TestEndpointOperation>> mapEndpoints(
 			Collection<EndpointInfo<TestEndpointOperation>> endpoints) {
 		Map<String, EndpointInfo<TestEndpointOperation>> endpointById = new LinkedHashMap<>();
@@ -276,6 +295,16 @@ public class AnnotationEndpointDiscovererTests {
 
 	}
 
+	@SpecializedEndpoint(id = "specialized")
+	static class SpecializedTestEndpoint {
+
+		@ReadOperation
+		public Object getAll() {
+			return null;
+		}
+
+	}
+
 	static class TestEndpointSubclass extends TestEndpoint {
 
 		@WriteOperation
@@ -305,6 +334,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	}
 
+	@Import({ TestEndpoint.class, SpecializedTestEndpoint.class })
+	static class TestEndpointsConfiguration {
+
+	}
+
 	@Configuration
 	static class ClashingEndpointConfiguration {
 
@@ -317,6 +351,18 @@ public class AnnotationEndpointDiscovererTests {
 		public TestEndpoint testEndpointOne() {
 			return new TestEndpoint();
 		}
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Endpoint
+	public @interface SpecializedEndpoint {
+
+		@AliasFor(annotation = Endpoint.class)
+		String id();
+
 	}
 
 	private static final class TestEndpointOperation extends Operation {
@@ -336,7 +382,7 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	private static class TestAnnotationEndpointDiscoverer
-			extends AnnotationEndpointDiscoverer<TestEndpointOperation, Method> {
+			extends AnnotationEndpointDiscoverer<Method, TestEndpointOperation> {
 
 		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
 				CachingConfigurationFactory cachingConfigurationFactory) {
@@ -349,37 +395,28 @@ public class AnnotationEndpointDiscovererTests {
 			this(applicationContext, (id) -> null);
 		}
 
-		@Override
-		public Collection<EndpointInfo<TestEndpointOperation>> discoverEndpoints() {
-			return discoverEndpoints(null, null).stream()
-					.map(EndpointInfoDescriptor::getEndpointInfo)
-					.collect(Collectors.toList());
-		}
+	}
 
-		private static EndpointOperationFactory<TestEndpointOperation> endpointOperationFactory() {
-			return new EndpointOperationFactory<TestEndpointOperation>() {
+	private static AnnotatedEndpointOperationFactory<TestEndpointOperation> endpointOperationFactory() {
+		return new AnnotatedEndpointOperationFactory<TestEndpointOperation>() {
 
-				@Override
-				public TestEndpointOperation createOperation(String endpointId,
-						AnnotationAttributes operationAttributes, Object target,
-						Method operationMethod, OperationType operationType,
-						long timeToLive) {
-					return new TestEndpointOperation(operationType,
-							createOperationInvoker(timeToLive), operationMethod);
+			@Override
+			public TestEndpointOperation createOperation(String endpointId,
+					AnnotationAttributes operationAttributes, Object target,
+					Method operationMethod, OperationType operationType,
+					long timeToLive) {
+				return new TestEndpointOperation(operationType,
+						createOperationInvoker(timeToLive), operationMethod);
+			}
+
+			private OperationInvoker createOperationInvoker(long timeToLive) {
+				OperationInvoker invoker = (arguments) -> null;
+				if (timeToLive > 0) {
+					return new CachingOperationInvoker(invoker, timeToLive);
 				}
-
-				private OperationInvoker createOperationInvoker(long timeToLive) {
-					OperationInvoker invoker = (arguments) -> null;
-					if (timeToLive > 0) {
-						return new CachingOperationInvoker(invoker, timeToLive);
-					}
-					else {
-						return invoker;
-					}
-				}
-			};
-		}
-
+				return invoker;
+			}
+		};
 	}
 
 }

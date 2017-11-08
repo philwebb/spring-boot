@@ -14,24 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.web.servlet.annotation;
 
 /**
- * Strategy class that can be used to filter discovered endpoints.
- *
  * @author Phillip Webb
- * @param <T> the type of the endpoint's operations
- * @since 2.0.0
  */
-@FunctionalInterface
-public interface EndpointFilter<T extends Operation> {
-
-	/**
-	 * Return {@code true} if the filter matches.
-	 * @param info the endpoint info
-	 * @param discoverer the endpoint discoverer
-	 * @return {@code true} if the filter matches
-	 */
-	boolean match(EndpointInfo<T> info, EndpointDiscoverer<T> discoverer);
+public @interface WebMvcEndpoint {
 
 }

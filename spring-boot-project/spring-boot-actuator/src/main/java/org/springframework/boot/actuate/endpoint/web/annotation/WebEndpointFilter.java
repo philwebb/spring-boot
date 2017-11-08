@@ -16,31 +16,22 @@
 
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 
 /**
- * Identifies a type as being a Web-specific extension of an {@link Endpoint}.
+ * {@link EndpointFilter}
  *
- * @author Andy Wilkinson
- * @author Stephane Nicoll
- * @since 2.0.0
- * @see Endpoint
+ * @author Phillip Webb
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface WebEndpointExtension {
+class WebEndpointFilter implements EndpointFilter<WebOperation> {
 
-	/**
-	 * The {@link Endpoint endpoint} class to which this Web extension relates.
-	 * @return the endpoint class
-	 */
-	Class<?> endpoint();
+	@Override
+	public boolean match(EndpointInfo<WebOperation> info,
+			EndpointDiscoverer<WebOperation> discoverer) {
+		return (discoverer instanceof WebAnnotationEndpointDiscoverer);
+	}
 
 }
