@@ -16,37 +16,39 @@
 
 package org.springframework.boot.actuate.health;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
- * Reactive {@link EndpointWebExtension} for the {@link HealthEndpoint}.
+ * {@link EndpointWebExtension} for the {@link HealthEndpoint}.
  *
- * @author Stephane Nicoll
+ * @author Christian Dupuis
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @author Eddú Meléndez
+ * @author Madhura Bhave
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
-public class HealthReactiveWebEndpointExtension {
+public class HealthEndpointWebExtension {
 
-	private final ReactiveHealthIndicator delegate;
+	private final HealthEndpoint delegate;
 
 	private final HealthStatusHttpMapper statusHttpMapper;
 
-	public HealthReactiveWebEndpointExtension(ReactiveHealthIndicator delegate,
+	public HealthEndpointWebExtension(HealthEndpoint delegate,
 			HealthStatusHttpMapper statusHttpMapper) {
 		this.delegate = delegate;
 		this.statusHttpMapper = statusHttpMapper;
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health().map((health) -> {
-			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			return new WebEndpointResponse<>(health, status);
-		});
+	public WebEndpointResponse<Health> getHealth() {
+		Health health = this.delegate.health();
+		Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
+		return new WebEndpointResponse<>(health, status);
 	}
 
 }

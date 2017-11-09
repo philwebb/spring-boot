@@ -14,40 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.actuate.audit;
 
-import reactor.core.publisher.Mono;
+import java.util.Date;
 
+import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.lang.Nullable;
 
 /**
- * Reactive {@link EndpointWebExtension} for the {@link StatusEndpoint}.
+ * {@link EndpointWebExtension} for the {@link AuditEventsEndpoint}.
  *
- * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 2.0.0
  */
-@EndpointWebExtension(endpoint = StatusEndpoint.class)
-public class StatusReactiveWebEndpointExtension {
+@EndpointWebExtension(endpoint = AuditEventsEndpoint.class)
+public class AuditEventsEndpointWebExtension {
 
-	private final ReactiveHealthIndicator delegate;
+	private final AuditEventsEndpoint delegate;
 
-	private final HealthStatusHttpMapper statusHttpMapper;
-
-	public StatusReactiveWebEndpointExtension(ReactiveHealthIndicator delegate,
-			HealthStatusHttpMapper statusHttpMapper) {
+	public AuditEventsEndpointWebExtension(AuditEventsEndpoint delegate) {
 		this.delegate = delegate;
-		this.statusHttpMapper = statusHttpMapper;
 	}
 
 	@ReadOperation
-	public Mono<WebEndpointResponse<Health>> health() {
-		return this.delegate.health().map((health) -> {
-			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
-			return new WebEndpointResponse<>(Health.status(health.getStatus()).build(),
-					status);
-		});
+	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
+			@Nullable String principal, Date after, @Nullable String type) {
+		AuditEventsDescriptor auditEvents = this.delegate
+				.eventsWithPrincipalDateAfterAndType(principal, after, type);
+		return new WebEndpointResponse<>(auditEvents);
 	}
 
 }

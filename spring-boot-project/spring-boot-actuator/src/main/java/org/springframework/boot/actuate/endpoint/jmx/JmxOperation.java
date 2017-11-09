@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * An operation on a JMX endpoint.
@@ -90,6 +91,13 @@ public class JmxOperation extends Operation {
 	 */
 	public List<JmxEndpointOperationParameterInfo> getParameters() {
 		return Collections.unmodifiableList(this.parameters);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("operationName", this.operationName)
+				.append("outputType", this.outputType)
+				.append("description", this.description).toString();
 	}
 
 }

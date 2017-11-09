@@ -32,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -44,9 +43,10 @@ import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
+import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests.BaseConfiguration;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -225,8 +225,7 @@ public class WebAnnotationEndpointDiscovererTests {
 			Map<String, EndpointInfo<WebOperation>> endpoints = mapEndpoints(
 					discoverer.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("custommediatypes");
-			EndpointInfo<WebOperation> endpoint = endpoints
-					.get("custommediatypes");
+			EndpointInfo<WebOperation> endpoint = endpoints.get("custommediatypes");
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("custommediatypes").httpMethod(WebEndpointHttpMethod.GET)
 							.consumes().produces("text/plain"),
@@ -287,8 +286,7 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	private List<OperationRequestPredicate> requestPredicates(
 			EndpointInfo<WebOperation> endpoint) {
-		return endpoint.getOperations().stream()
-				.map(WebOperation::getRequestPredicate)
+		return endpoint.getOperations().stream().map(WebOperation::getRequestPredicate)
 				.collect(Collectors.toList());
 	}
 
@@ -415,7 +413,7 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "nonweb", exposure = EndpointExposure.JMX)
+	@JmxEndpoint(id = "nonweb")
 	static class NonWebEndpoint {
 
 		@ReadOperation
@@ -440,7 +438,6 @@ public class WebAnnotationEndpointDiscovererTests {
 
 		@WriteOperation
 		public void write(String foo, String bar) {
-
 		}
 
 	}

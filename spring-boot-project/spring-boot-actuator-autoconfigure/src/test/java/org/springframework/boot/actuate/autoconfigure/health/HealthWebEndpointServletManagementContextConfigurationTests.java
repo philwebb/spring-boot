@@ -21,8 +21,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
-import org.springframework.boot.actuate.health.HealthWebEndpointExtension;
-import org.springframework.boot.actuate.health.StatusWebEndpointExtension;
+import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,8 +46,8 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 	@Test
 	public void runShouldCreateExtensionBeans() throws Exception {
 		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(StatusWebEndpointExtension.class)
-				.hasSingleBean(HealthWebEndpointExtension.class));
+				.hasSingleBean(StatusEndpointWebExtension.class)
+				.hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 			throws Exception {
 		this.contextRunner.withPropertyValues("endpoints.health.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(HealthWebEndpointExtension.class));
+						.doesNotHaveBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 			throws Exception {
 		this.contextRunner.withPropertyValues("endpoints.status.enabled:false")
 				.run((context) -> assertThat(context)
-						.doesNotHaveBean(StatusWebEndpointExtension.class));
+						.doesNotHaveBean(StatusEndpointWebExtension.class));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
-					Object extension = context.getBean(HealthWebEndpointExtension.class);
+					Object extension = context.getBean(HealthEndpointWebExtension.class);
 					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
 							.getField(extension, "statusHttpMapper");
 					Map<String, Integer> statusMappings = mapper.getStatusMapping();
@@ -86,7 +86,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
-					Object extension = context.getBean(StatusWebEndpointExtension.class);
+					Object extension = context.getBean(StatusEndpointWebExtension.class);
 					HealthStatusHttpMapper mapper = (HealthStatusHttpMapper) ReflectionTestUtils
 							.getField(extension, "statusHttpMapper");
 					Map<String, Integer> statusMappings = mapper.getStatusMapping();

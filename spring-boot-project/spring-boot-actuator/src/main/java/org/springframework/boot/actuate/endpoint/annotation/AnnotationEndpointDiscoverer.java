@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.endpoint.annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,8 +39,10 @@ import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFacto
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * A base {@link EndpointDiscoverer} implementation that discovers
@@ -75,18 +77,14 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 
 	@Override
 	public final Collection<EndpointInfo<T>> discoverEndpoints() {
-		Collection<EndpointInfoDescriptor<T, K>> descriptors = getDescriptors();
-		verify(descriptors);
-		return descriptors.stream().map(EndpointInfoDescriptor::getEndpointInfo)
-				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	private Collection<EndpointInfoDescriptor<T, K>> getDescriptors() {
 		Class<T> operationType = getOperationType();
-		Map<Class<?>, EndpointInfo<T>> endpoints = getEndpoints(operationType);
-		Map<Class<?>, EndpointExtensionInfo<T>> extensions = getExtensions(operationType,
+		Map<Class<?>, DiscoveredEndpoint> endpoints = getEndpoints(operationType);
+		Map<Class<?>, DiscoveredExtension> extensions = getExtensions(operationType,
 				endpoints);
-		return getDescriptors(endpoints, extensions);
+		Collection<DiscoveredEndpoint> exposed = mergeExposed(endpoints, extensions);
+		verify(exposed);
+		return exposed.stream().map(DiscoveredEndpoint::getInfo)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	/**
@@ -97,13 +95,13 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 	@SuppressWarnings("unchecked")
 	protected Class<T> getOperationType() {
 		return (Class<T>) ResolvableType
-				.forClass(getClass(), AnnotationEndpointDiscoverer.class)
+				.forClass(AnnotationEndpointDiscoverer.class, getClass())
 				.resolveGeneric(1);
 	}
 
-	private Map<Class<?>, EndpointInfo<T>> getEndpoints(Class<T> operationType) {
-		Map<Class<?>, EndpointInfo<T>> endpoints = new LinkedHashMap<>();
-		Map<String, EndpointInfo<T>> endpointsById = new LinkedHashMap<>();
+	private Map<Class<?>, DiscoveredEndpoint> getEndpoints(Class<T> operationType) {
+		Map<Class<?>, DiscoveredEndpoint> endpoints = new LinkedHashMap<>();
+		Map<String, DiscoveredEndpoint> endpointsById = new LinkedHashMap<>();
 		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, Endpoint.class);
 		for (String beanName : beanNames) {
@@ -112,33 +110,33 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return endpoints;
 	}
 
-	private void addEndpoint(Map<Class<?>, EndpointInfo<T>> endpoints,
-			Map<String, EndpointInfo<T>> endpointsById, String beanName) {
+	private void addEndpoint(Map<Class<?>, DiscoveredEndpoint> endpoints,
+			Map<String, DiscoveredEndpoint> endpointsById, String beanName) {
 		Class<?> endpointType = this.applicationContext.getType(beanName);
 		Object target = this.applicationContext.getBean(beanName);
-		EndpointInfo<T> endpoint = createEndpoint(target, endpointType);
-		String id = endpoint.getId();
-		if (isEndpointExposed(endpointType, endpoint)) {
-			EndpointInfo<T> previous = endpointsById.putIfAbsent(id, endpoint);
-			Assert.state(previous == null, () -> "Found two endpoints with the id '" + id
-					+ "': " + endpoint + " and " + previous);
-			endpoints.put(endpointType, endpoint);
-		}
+		DiscoveredEndpoint endpoint = createEndpoint(target, endpointType);
+		String id = endpoint.getInfo().getId();
+		DiscoveredEndpoint previous = endpointsById.putIfAbsent(id, endpoint);
+		Assert.state(previous == null, () -> "Found two endpoints with the id '" + id
+				+ "': " + endpoint + " and " + previous);
+		endpoints.put(endpointType, endpoint);
 	}
 
-	private EndpointInfo<T> createEndpoint(Object target, Class<?> endpointType) {
+	private DiscoveredEndpoint createEndpoint(Object target, Class<?> endpointType) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.findMergedAnnotationAttributes(endpointType, Endpoint.class, true, true);
 		String id = annotationAttributes.getString("id");
 		boolean enabledByDefault = (Boolean) annotationAttributes.get("enableByDefault");
 		Collection<T> operations = this.operationsFactory
 				.createOperations(id, target, endpointType).values();
-		return new EndpointInfo<>(id, enabledByDefault, operations);
+		EndpointInfo<T> info = new EndpointInfo<>(id, enabledByDefault, operations);
+		boolean exposed = isEndpointExposed(endpointType, info);
+		return new DiscoveredEndpoint(endpointType, info, exposed);
 	}
 
-	private Map<Class<?>, EndpointExtensionInfo<T>> getExtensions(Class<T> operationType,
-			Map<Class<?>, EndpointInfo<T>> endpoints) {
-		Map<Class<?>, EndpointExtensionInfo<T>> extensions = new LinkedHashMap<>();
+	private Map<Class<?>, DiscoveredExtension> getExtensions(Class<T> operationType,
+			Map<Class<?>, DiscoveredEndpoint> endpoints) {
+		Map<Class<?>, DiscoveredExtension> extensions = new LinkedHashMap<>();
 		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(
 				this.applicationContext, EndpointExtension.class);
 		for (String beanName : beanNames) {
@@ -147,21 +145,23 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return extensions;
 	}
 
-	private void addExtension(Map<Class<?>, EndpointInfo<T>> endpoints,
-			Map<Class<?>, EndpointExtensionInfo<T>> extensions, String beanName) {
+	private void addExtension(Map<Class<?>, DiscoveredEndpoint> endpoints,
+			Map<Class<?>, DiscoveredExtension> extensions, String beanName) {
 		Class<?> extensionType = this.applicationContext.getType(beanName);
 		Class<?> endpointType = getEndpointType(extensionType);
-		EndpointInfo<T> endpoint = getEndpoint(endpoints, extensionType, endpointType);
-		Assert.state(isEndpointExposed(endpointType, endpoint),
-				() -> "Invalid extension " + extensionType.getName() + "': endpoint '"
-						+ endpointType.getName() + "' does not support such extension");
-		if (isExtensionExposed(extensionType, endpoint)) {
+		DiscoveredEndpoint endpoint = getExtendingEndpoint(endpoints, extensionType,
+				endpointType);
+		if (isExtensionExposed(extensionType, endpoint.getInfo())) {
+			Assert.state(endpoint.isExposed(),
+					() -> "Invalid extension " + extensionType.getName() + "': endpoint '"
+							+ endpointType.getName()
+							+ "' does not support such extension");
 			Object target = this.applicationContext.getBean(beanName);
 			Map<Method, T> operations = this.operationsFactory
-					.createOperations(endpoint.getId(), target, extensionType);
-			EndpointExtensionInfo<T> extension = new EndpointExtensionInfo<>(
-					extensionType, operations.values());
-			EndpointExtensionInfo<T> previous = extensions.putIfAbsent(endpointType,
+					.createOperations(endpoint.getInfo().getId(), target, extensionType);
+			DiscoveredExtension extension = new DiscoveredExtension(extensionType,
+					operations.values());
+			DiscoveredExtension previous = extensions.putIfAbsent(endpointType,
 					extension);
 			Assert.state(previous == null,
 					() -> "Found two extensions for the same endpoint '"
@@ -180,9 +180,10 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return endpointType;
 	}
 
-	private EndpointInfo<T> getEndpoint(Map<Class<?>, EndpointInfo<T>> endpoints,
-			Class<?> extensionType, Class<?> endpointType) {
-		EndpointInfo<T> endpoint = endpoints.get(endpointType);
+	private DiscoveredEndpoint getExtendingEndpoint(
+			Map<Class<?>, DiscoveredEndpoint> endpoints, Class<?> extensionType,
+			Class<?> endpointType) {
+		DiscoveredEndpoint endpoint = endpoints.get(endpointType);
 		Assert.state(endpoint != null,
 				() -> "Invalid extension '" + extensionType.getName()
 						+ "': no endpoint found with type '" + endpointType.getName()
@@ -190,135 +191,185 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		return endpoint;
 	}
 
-	private boolean isEndpointExposed(Class<?> endpointType, EndpointInfo<T> endpoint) {
+	private boolean isEndpointExposed(Class<?> endpointType, EndpointInfo<T> info) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(endpointType, FilteredEndpoint.class);
 		if (annotationAttributes == null) {
 			return true;
 		}
 		Class<?> filterClass = annotationAttributes.getClass("value");
-		return !isFiltered(filterClass, endpoint);
+		return isFilterMatch(filterClass, info);
 	}
 
-	private boolean isExtensionExposed(Class<?> extensionType, EndpointInfo<T> endpoint) {
+	private boolean isExtensionExposed(Class<?> extensionType, EndpointInfo<T> info) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(extensionType, EndpointExtension.class);
 		Class<?> filterClass = annotationAttributes.getClass("filter");
-		return !isFiltered(filterClass, endpoint);
+		return isFilterMatch(filterClass, info);
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean isFiltered(Class<?> filterClass, EndpointInfo<T> endpoint) {
-		Class<?> generic = ResolvableType.forClass(filterClass, EndpointFilter.class)
+	private boolean isFilterMatch(Class<?> filterClass, EndpointInfo<T> info) {
+		Class<?> generic = ResolvableType.forClass(EndpointFilter.class, filterClass)
 				.resolveGeneric(0);
-		if (!generic.isAssignableFrom(filterClass)) {
-			return true;
+		if (generic == null || generic.isAssignableFrom(getOperationType())) {
+			EndpointFilter<T> filter = (EndpointFilter<T>) BeanUtils
+					.instantiateClass(filterClass);
+			return filter.match(info, this);
 		}
-		EndpointFilter<T> filter = (EndpointFilter<T>) BeanUtils
-				.instantiateClass(filterClass);
-		return filter.match(endpoint, this);
+		return false;
 	}
 
-	private Collection<EndpointInfoDescriptor<T, K>> getDescriptors(
-			Map<Class<?>, EndpointInfo<T>> endpoints,
-			Map<Class<?>, EndpointExtensionInfo<T>> extensions) {
-		List<EndpointInfoDescriptor<T, K>> result = new ArrayList<>();
-		endpoints.forEach((endpointClass, endpointInfo) -> {
-			EndpointExtensionInfo<T> extension = extensions.remove(endpointClass);
-			result.add(createDescriptor(endpointClass, endpointInfo, extension));
+	private Collection<DiscoveredEndpoint> mergeExposed(
+			Map<Class<?>, DiscoveredEndpoint> endpoints,
+			Map<Class<?>, DiscoveredExtension> extensions) {
+		List<DiscoveredEndpoint> result = new ArrayList<>();
+		endpoints.forEach((endpointClass, endpoint) -> {
+			if (endpoint.isExposed()) {
+				DiscoveredExtension extension = extensions.remove(endpointClass);
+				result.add(endpoint.merge(extension));
+			}
 		});
 		return result;
-	}
-
-	private EndpointInfoDescriptor<T, K> createDescriptor(Class<?> type,
-			EndpointInfo<T> endpoint, EndpointExtensionInfo<T> extension) {
-		String endpointId = endpoint.getId();
-		Map<OperationKey<K>, List<T>> operations = indexOperations(endpointId, type,
-				endpoint.getOperations());
-		if (extension != null) {
-			Map<OperationKey<K>, List<T>> extensionOperations = indexOperations(
-					endpointId, extension.getExtensionType(), extension.getOperations());
-			operations.putAll(extensionOperations);
-			return new EndpointInfoDescriptor<>(mergeExtension(endpoint, extension),
-					operations);
-		}
-		return new EndpointInfoDescriptor<>(endpoint, operations);
-	}
-
-	private Map<OperationKey<K>, List<T>> indexOperations(String endpointId,
-			Class<?> target, Collection<T> operations) {
-		LinkedMultiValueMap<OperationKey<K>, T> result = new LinkedMultiValueMap<>();
-		operations.forEach((operation) -> {
-			K key = this.operationKeyFactory.apply(operation);
-			result.add(new OperationKey<>(endpointId, target, key), operation);
-		});
-		return result;
-	}
-
-	private EndpointInfo<T> mergeExtension(EndpointInfo<T> endpoint,
-			EndpointExtensionInfo<T> extension) {
-		Map<K, T> operations = new HashMap<>();
-		Consumer<T> consumer = (operation) -> operations
-				.put(this.operationKeyFactory.apply(operation), operation);
-		endpoint.getOperations().forEach(consumer);
-		extension.getOperations().forEach(consumer);
-		return new EndpointInfo<>(endpoint.getId(), endpoint.isEnableByDefault(),
-				operations.values());
 	}
 
 	/**
 	 * Allows subclasses to verify that the descriptors are correctly configured.
-	 * @param descriptors the descriptors to verify
+	 * @param exposedEndpoints the discovered endpoints to verify before exposing
 	 */
-	protected void verify(Collection<EndpointInfoDescriptor<T, K>> descriptors) {
+	protected void verify(Collection<DiscoveredEndpoint> exposedEndpoints) {
 	}
 
 	/**
-	 * Describes an {@link EndpointInfo endpoint} and whether or not it is valid.
-	 *
-	 * @param <T> the type of the operation
-	 * @param <K> the type of the operation key
+	 * A discovered endpoint (which may not be valid and might not ultimately be exposed).
 	 */
-	protected static final class EndpointInfoDescriptor<T extends Operation, K> {
+	protected final class DiscoveredEndpoint {
 
-		private final EndpointInfo<T> endpointInfo;
+		private final EndpointInfo<T> info;
 
-		private final Map<OperationKey<K>, List<T>> operations;
+		private final boolean exposed;
 
-		protected EndpointInfoDescriptor(EndpointInfo<T> endpointInfo,
-				Map<OperationKey<K>, List<T>> operations) {
-			this.endpointInfo = endpointInfo;
+		private final Map<OperationKey, List<T>> operations;
+
+		private DiscoveredEndpoint(Class<?> endpointType, EndpointInfo<T> info,
+				boolean exposed) {
+			Assert.notNull(info, "Info must not be null");
+			this.info = info;
+			this.exposed = exposed;
+			this.operations = indexEndpointOperations(endpointType, info);
+		}
+
+		private Map<OperationKey, List<T>> indexEndpointOperations(Class<?> endpointType,
+				EndpointInfo<T> info) {
+			return Collections.unmodifiableMap(
+					indexOperations(info.getId(), endpointType, info.getOperations()));
+		}
+
+		private DiscoveredEndpoint(EndpointInfo<T> info, boolean exposed,
+				Map<OperationKey, List<T>> operations) {
+			Assert.notNull(info, "Info must not be null");
+			this.info = info;
+			this.exposed = exposed;
 			this.operations = operations;
 		}
 
-		public EndpointInfo<T> getEndpointInfo() {
-			return this.endpointInfo;
+		/**
+		 * Return the {@link EndpointInfo} for the discovered endpoint.
+		 * @return the endpoint info
+		 */
+		public EndpointInfo<T> getInfo() {
+			return this.info;
 		}
 
-		public Map<OperationKey<K>, List<T>> findDuplicateOperations() {
-			Map<OperationKey<K>, List<T>> duplicateOperations = new HashMap<>();
-			this.operations.forEach((k, list) -> {
-				if (list.size() > 1) {
-					duplicateOperations.put(k, list);
-				}
+		/**
+		 * Return {@code true} if the endpoint is exposed.
+		 * @return if the is exposed
+		 */
+		private final boolean isExposed() {
+			return this.exposed;
+		}
+
+		/**
+		 * Return all operation that were discovered. These might be different to the ones
+		 * that are in {@link #getInfo()}.
+		 * @return the endpoint operations
+		 */
+		public Map<OperationKey, List<T>> getOperations() {
+			return this.operations;
+		}
+
+		/**
+		 * Find any duplicate operations.
+		 * @return any duplicate operations
+		 */
+		public Map<OperationKey, List<T>> findDuplicateOperations() {
+			return this.operations.entrySet().stream()
+					.filter((entry) -> entry.getValue().size() > 1)
+					.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (u, v) -> v,
+							LinkedHashMap::new));
+		}
+
+		private DiscoveredEndpoint merge(DiscoveredExtension extension) {
+			if (extension == null) {
+				return this;
+			}
+			Map<OperationKey, List<T>> operations = mergeOperations(extension);
+			EndpointInfo<T> info = new EndpointInfo<>(this.info.getId(),
+					this.info.isEnableByDefault(), flatten(operations).values());
+			return new DiscoveredEndpoint(info, this.exposed, operations);
+		}
+
+		private Map<OperationKey, List<T>> mergeOperations(
+				DiscoveredExtension extension) {
+			MultiValueMap<OperationKey, T> operations = new LinkedMultiValueMap<>(
+					this.operations);
+			operations.addAll(indexOperations(getInfo().getId(),
+					extension.getExtensionType(), extension.getOperations()));
+			return Collections.unmodifiableMap(operations);
+		}
+
+		private Map<K, T> flatten(Map<OperationKey, List<T>> operations) {
+			Map<K, T> flattened = new LinkedHashMap<>();
+			operations.forEach((operationKey, value) -> flattened
+					.put(operationKey.getKey(), getLastValue(value)));
+			return Collections.unmodifiableMap(flattened);
+		}
+
+		private T getLastValue(List<T> value) {
+			return value.get(value.size() - 1);
+		}
+
+		private MultiValueMap<OperationKey, T> indexOperations(String endpointId,
+				Class<?> target, Collection<T> operations) {
+			LinkedMultiValueMap<OperationKey, T> result = new LinkedMultiValueMap<>();
+			operations.forEach((operation) -> {
+				K key = getOperationKey(operation);
+				result.add(new OperationKey(endpointId, target, key), operation);
 			});
-			return duplicateOperations;
+			return result;
+		}
+
+		private K getOperationKey(T operation) {
+			return AnnotationEndpointDiscoverer.this.operationKeyFactory.apply(operation);
+		}
+
+		@Override
+		public String toString() {
+			return getInfo().toString();
 		}
 
 	}
 
 	/**
-	 * Describes a tech-specific extension of an endpoint.
-	 *
-	 * @param <T> the type of the operation
+	 * A discovered extension.
 	 */
-	protected static final class EndpointExtensionInfo<T extends Operation> {
+	protected final class DiscoveredExtension {
 
 		private final Class<?> extensionType;
 
 		private final Collection<T> operations;
 
-		private EndpointExtensionInfo(Class<?> extensionType, Collection<T> operations) {
+		private DiscoveredExtension(Class<?> extensionType, Collection<T> operations) {
 			this.extensionType = extensionType;
 			this.operations = operations;
 		}
@@ -331,28 +382,36 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 			return this.operations;
 		}
 
+		@Override
+		public String toString() {
+			return this.extensionType.getName();
+		}
+
 	}
 
 	/**
 	 * Define the key of an operation in the context of an operation's implementation.
-	 *
-	 * @param <K> the type of the key
 	 */
-	protected static final class OperationKey<K> {
+	protected final class OperationKey {
 
 		private final String endpointId;
 
-		private final Class<?> endpointType;
+		private final Class<?> target;
 
 		private final K key;
 
-		public OperationKey(String endpointId, Class<?> endpointType, K key) {
+		public OperationKey(String endpointId, Class<?> target, K key) {
 			this.endpointId = endpointId;
-			this.endpointType = endpointType;
+			this.target = target;
 			this.key = key;
 		}
 
+		public K getKey() {
+			return this.key;
+		}
+
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean equals(Object o) {
 			if (o == this) {
 				return true;
@@ -360,10 +419,10 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 			if (o == null || getClass() != o.getClass()) {
 				return false;
 			}
-			OperationKey<?> other = (OperationKey<?>) o;
+			OperationKey other = (OperationKey) o;
 			Boolean result = true;
 			result = result && this.endpointId.equals(other.endpointId);
-			result = result && this.endpointType.equals(other.endpointType);
+			result = result && this.target.equals(other.target);
 			result = result && this.key.equals(other.key);
 			return result;
 		}
@@ -371,9 +430,15 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		@Override
 		public int hashCode() {
 			int result = this.endpointId.hashCode();
-			result = 31 * result + this.endpointType.hashCode();
+			result = 31 * result + this.target.hashCode();
 			result = 31 * result + this.key.hashCode();
 			return result;
+		}
+
+		@Override
+		public String toString() {
+			return new ToStringCreator(this).append("endpointId", this.endpointId)
+					.append("target", this.target).append("key", this.key).toString();
 		}
 
 	}

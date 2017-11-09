@@ -21,24 +21,19 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
- * {@link EndpointWebExtension} for the {@link HealthEndpoint}.
+ * {@link EndpointWebExtension} for the {@link StatusEndpoint}.
  *
- * @author Christian Dupuis
- * @author Dave Syer
- * @author Andy Wilkinson
- * @author Phillip Webb
- * @author Eddú Meléndez
- * @author Madhura Bhave
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
-@EndpointWebExtension(endpoint = HealthEndpoint.class)
-public class HealthWebEndpointExtension {
+@EndpointWebExtension(endpoint = StatusEndpoint.class)
+public class StatusEndpointWebExtension {
 
-	private final HealthEndpoint delegate;
+	private final StatusEndpoint delegate;
 
 	private final HealthStatusHttpMapper statusHttpMapper;
 
-	public HealthWebEndpointExtension(HealthEndpoint delegate,
+	public StatusEndpointWebExtension(StatusEndpoint delegate,
 			HealthStatusHttpMapper statusHttpMapper) {
 		this.delegate = delegate;
 		this.statusHttpMapper = statusHttpMapper;

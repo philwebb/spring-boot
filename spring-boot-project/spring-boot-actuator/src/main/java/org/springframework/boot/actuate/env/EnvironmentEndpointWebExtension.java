@@ -29,11 +29,11 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntry
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = EnvironmentEndpoint.class)
-public class EnvironmentWebEndpointExtension {
+public class EnvironmentEndpointWebExtension {
 
 	private final EnvironmentEndpoint delegate;
 
-	public EnvironmentWebEndpointExtension(EnvironmentEndpoint delegate) {
+	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate) {
 		this.delegate = delegate;
 	}
 

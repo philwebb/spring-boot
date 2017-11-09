@@ -23,7 +23,6 @@ import java.util.Map;
 import org.assertj.core.api.Condition;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.DefaultEnablement;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationType;
 
@@ -60,8 +59,7 @@ public class EndpointLinksResolverTests {
 	public void resolvedLinksContainsALinkForEachEndpointOperation() {
 		Map<String, Link> links = this.linksResolver
 				.resolveLinks(
-						Arrays.asList(new EndpointInfo<>("alpha",
-								DefaultEnablement.ENABLED,
+						Arrays.asList(new EndpointInfo<>("alpha", true,
 								Arrays.asList(operationWithPath("/alpha", "alpha"),
 										operationWithPath("/alpha/{name}",
 												"alpha-name")))),

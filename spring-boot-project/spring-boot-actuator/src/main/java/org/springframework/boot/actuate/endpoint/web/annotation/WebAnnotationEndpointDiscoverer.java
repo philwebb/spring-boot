@@ -67,19 +67,18 @@ public class WebAnnotationEndpointDiscoverer
 	}
 
 	@Override
-	protected void verify(
-			Collection<EndpointInfoDescriptor<WebOperation, OperationRequestPredicate>> descriptors) {
+	protected void verify(Collection<DiscoveredEndpoint> exposedEndpoints) {
 		List<List<WebOperation>> clashes = new ArrayList<>();
-		descriptors.forEach((descriptor) -> clashes
+		exposedEndpoints.forEach((descriptor) -> clashes
 				.addAll(descriptor.findDuplicateOperations().values()));
 		if (!clashes.isEmpty()) {
 			StringBuilder message = new StringBuilder();
 			message.append(String.format(
 					"Found multiple web operations with matching request predicates:%n"));
 			clashes.forEach((clash) -> {
-				message.append("    ").append(clash.get(0).getRequestPredicate())
+				message.append(" ").append(clash.get(0).getRequestPredicate())
 						.append(String.format(":%n"));
-				clash.forEach((operation) -> message.append("        ")
+				clash.forEach((operation) -> message.append(" ")
 						.append(String.format("%s%n", operation)));
 			});
 			throw new IllegalStateException(message.toString());

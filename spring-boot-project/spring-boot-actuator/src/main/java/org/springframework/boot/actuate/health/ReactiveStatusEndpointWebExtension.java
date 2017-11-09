@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.audit;
+package org.springframework.boot.actuate.health;
 
-import java.util.Date;
+import reactor.core.publisher.Mono;
 
-import org.springframework.boot.actuate.audit.AuditEventsEndpoint.AuditEventsDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.lang.Nullable;
 
 /**
- * {@link EndpointWebExtension} for the {@link AuditEventsEndpoint}.
+ * Reactive {@link EndpointWebExtension} for the {@link StatusEndpoint}.
  *
- * @author Vedran Pavic
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
-@EndpointWebExtension(endpoint = AuditEventsEndpoint.class)
-public class AuditEventsWebEndpointExtension {
+@EndpointWebExtension(endpoint = StatusEndpoint.class)
+public class ReactiveStatusEndpointWebExtension {
 
-	private final AuditEventsEndpoint delegate;
+	private final ReactiveHealthIndicator delegate;
 
-	public AuditEventsWebEndpointExtension(AuditEventsEndpoint delegate) {
+	private final HealthStatusHttpMapper statusHttpMapper;
+
+	public ReactiveStatusEndpointWebExtension(ReactiveHealthIndicator delegate,
+			HealthStatusHttpMapper statusHttpMapper) {
 		this.delegate = delegate;
+		this.statusHttpMapper = statusHttpMapper;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<AuditEventsDescriptor> eventsWithPrincipalDateAfterAndType(
-			@Nullable String principal, Date after, @Nullable String type) {
-		AuditEventsDescriptor auditEvents = this.delegate
-				.eventsWithPrincipalDateAfterAndType(principal, after, type);
-		return new WebEndpointResponse<>(auditEvents);
+	public Mono<WebEndpointResponse<Health>> health() {
+		return this.delegate.health().map((health) -> {
+			Integer status = this.statusHttpMapper.mapStatus(health.getStatus());
+			return new WebEndpointResponse<>(Health.status(health.getStatus()).build(),
+					status);
+		});
 	}
 
 }

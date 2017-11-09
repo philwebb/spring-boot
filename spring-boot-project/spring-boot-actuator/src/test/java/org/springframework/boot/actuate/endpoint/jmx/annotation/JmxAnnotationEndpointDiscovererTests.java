@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import org.springframework.boot.actuate.endpoint.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -37,8 +36,9 @@ import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
-import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperationParameterInfo;
+import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,8 +68,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 	@Test
 	public void standardEndpointIsDiscovered() {
 		load(TestEndpoint.class, (discoverer) -> {
-			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
-					discoverer);
+			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<String, JmxOperation> operationByName = mapOperations(
 					endpoints.get("test").getOperations());
@@ -108,8 +107,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 	@Test
 	public void onlyJmxEndpointsAreDiscovered() {
 		load(MultipleEndpointsConfiguration.class, (discoverer) -> {
-			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
-					discoverer);
+			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test", "jmx");
 		});
 	}
@@ -129,8 +127,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 	@Test
 	public void jmxEndpointOverridesStandardEndpoint() {
 		load(OverriddenOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
-					discoverer);
+			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test");
 			assertJmxTestEndpoint(endpoints.get("test"));
 		});
@@ -139,8 +136,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 	@Test
 	public void jmxEndpointAddsExtraOperation() {
 		load(AdditionalOperationJmxEndpointConfiguration.class, (discoverer) -> {
-			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
-					discoverer);
+			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<String, JmxOperation> operationByName = mapOperations(
 					endpoints.get("test").getOperations());
@@ -156,8 +152,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
 		load(TestEndpoint.class, (id) -> new CachingConfiguration(500), (discoverer) -> {
-			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
-					discoverer);
+			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<String, JmxOperation> operationByName = mapOperations(
 					endpoints.get("test").getOperations());
@@ -276,8 +271,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 				"Number of milliseconds");
 	}
 
-	private void hasDefaultParameter(JmxOperation operation, int index,
-			Class<?> type) {
+	private void hasDefaultParameter(JmxOperation operation, int index, Class<?> type) {
 		assertThat(index).isLessThan(operation.getParameters().size());
 		JmxEndpointOperationParameterInfo parameter = operation.getParameters()
 				.get(index);
@@ -285,8 +279,8 @@ public class JmxAnnotationEndpointDiscovererTests {
 		assertThat(parameter.getDescription()).isNull();
 	}
 
-	private void hasDocumentedParameter(JmxOperation operation, int index,
-			String name, Class<?> type, String description) {
+	private void hasDocumentedParameter(JmxOperation operation, int index, String name,
+			Class<?> type, String description) {
 		assertThat(index).isLessThan(operation.getParameters().size());
 		JmxEndpointOperationParameterInfo parameter = operation.getParameters()
 				.get(index);
@@ -303,8 +297,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 		return endpointsById;
 	}
 
-	private Map<String, JmxOperation> mapOperations(
-			Collection<JmxOperation> operations) {
+	private Map<String, JmxOperation> mapOperations(Collection<JmxOperation> operations) {
 		Map<String, JmxOperation> operationByName = new HashMap<>();
 		operations.forEach((operation) -> operationByName
 				.put(operation.getOperationName(), operation));
@@ -353,7 +346,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "jmx", exposure = EndpointExposure.JMX)
+	@JmxEndpoint(id = "jmx")
 	private static class TestJmxEndpoint {
 
 		@ReadOperation
@@ -440,7 +433,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	}
 
-	@Endpoint(id = "nonjmx", exposure = EndpointExposure.WEB)
+	@WebEndpoint(id = "nonjmx")
 	private static class NonJmxEndpoint {
 
 		@ReadOperation
