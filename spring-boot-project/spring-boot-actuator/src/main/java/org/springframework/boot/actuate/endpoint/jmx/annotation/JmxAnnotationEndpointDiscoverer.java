@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 
@@ -49,13 +49,14 @@ public class JmxAnnotationEndpointDiscoverer
 	 * @param applicationContext the application context
 	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
 	 * an operation is invoked
-	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
+	 * @param invokerAdvisor advisor used to add additional invoker advise
+	 * @param filters filters that must match for an endpoint to be exposed.
 	 */
 	public JmxAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterMapper parameterMapper,
-			CachingConfigurationFactory cachingConfigurationFactory) {
-		super(applicationContext, new JmxEndpointOperationFactory(parameterMapper),
-				JmxOperation::getOperationName, cachingConfigurationFactory);
+			ParameterMapper parameterMapper, OperationMethodInvokerAdvisor invokerAdvisor,
+			Collection<? extends EndpointFilter<JmxOperation>> filters) {
+		super(applicationContext, new JmxEndpointOperationFactory(),
+				JmxOperation::getOperationName, parameterMapper, invokerAdvisor, filters);
 	}
 
 	@Override

@@ -24,9 +24,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.ReflectiveOperationInvoker;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.MethodIntrospector.MetadataLookup;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -41,7 +44,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class AnnotatedEndpointOperationsFactory<T extends Operation> {
+class OperationsFactory<T extends Operation> {
 
 	private static final Map<OperationType, Class<? extends Annotation>> OPERATION_TYPES;
 
@@ -53,16 +56,18 @@ class AnnotatedEndpointOperationsFactory<T extends Operation> {
 		OPERATION_TYPES = Collections.unmodifiableMap(operationTypes);
 	}
 
-	private final AnnotatedEndpointOperationFactory<T> operationFactory;
+	private final OperationFactory<T> operationFactory;
 
-	private final CachingConfigurationFactory cachingConfigurationFactory;
+	private final ParameterMapper parameterMapper;
 
-	AnnotatedEndpointOperationsFactory(
-			AnnotatedEndpointOperationFactory<T> operationFactory,
-			CachingConfigurationFactory cachingConfigurationFactory) {
-		super();
+	private final OperationMethodInvokerAdvisor invokerAdvisor;
+
+	OperationsFactory(OperationFactory<T> operationFactory,
+			ParameterMapper parameterMapper,
+			OperationMethodInvokerAdvisor invokerAdvisor) {
 		this.operationFactory = operationFactory;
-		this.cachingConfigurationFactory = cachingConfigurationFactory;
+		this.parameterMapper = parameterMapper;
+		this.invokerAdvisor = invokerAdvisor;
 	}
 
 	public Map<Method, T> createOperations(String id, Object target, Class<?> type) {
@@ -78,27 +83,19 @@ class AnnotatedEndpointOperationsFactory<T extends Operation> {
 	}
 
 	private T createOperation(String endpointId, Object target, Method method,
-			OperationType type, Class<? extends Annotation> annotationType) {
+			OperationType operationType, Class<? extends Annotation> annotationType) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(method, annotationType);
 		if (annotationAttributes == null) {
 			return null;
 		}
-		CachingConfiguration cachingConfiguration = this.cachingConfigurationFactory
-				.getCachingConfiguration(endpointId);
-		long timeToLive = determineTimeToLive(cachingConfiguration, type, method);
-		return this.operationFactory.createOperation(endpointId, annotationAttributes,
-				target, method, type, timeToLive);
-	}
-
-	private long determineTimeToLive(CachingConfiguration cachingConfiguration,
-			OperationType operationType, Method method) {
-		if (cachingConfiguration != null && cachingConfiguration.getTimeToLive() > 0
-				&& operationType == OperationType.READ
-				&& method.getParameters().length == 0) {
-			return cachingConfiguration.getTimeToLive();
-		}
-		return 0;
+		OperationMethodInfo methodInfo = new OperationMethodInfo(method, operationType,
+				annotationAttributes);
+		OperationInvoker invoker = new ReflectiveOperationInvoker(target, methodInfo,
+				this.parameterMapper);
+		invoker = this.invokerAdvisor.apply(endpointId, methodInfo, invoker);
+		return this.operationFactory.createOperation(endpointId, methodInfo, target,
+				invoker);
 	}
 
 }

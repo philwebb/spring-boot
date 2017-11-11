@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.reflect;
 
 /**
  * A {@code ParameterMappingException} is thrown when a failure occurs during

@@ -23,10 +23,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,17 +39,16 @@ import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,11 +136,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsNotCachedWithTtlSetToZero() {
+		Function<String, Long> timeToLive = (endpointId) -> 0L;
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							(endpointId) -> new CachingConfiguration(0))
-									.discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -151,13 +152,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsNotCachedWithNonMatchingId() {
-		CachingConfigurationFactory cachingConfigurationFactory = (
-				endpointId) -> (endpointId.equals("foo") ? new CachingConfiguration(500)
-						: new CachingConfiguration(0));
+		Function<String, Long> timeToLive = (id) -> (id.equals("foo") ? 500L : 0L);
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							cachingConfigurationFactory).discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -169,13 +168,11 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
-		CachingConfigurationFactory cachingConfigurationFactory = (
-				endpointId) -> (endpointId.equals("test") ? new CachingConfiguration(500)
-						: new CachingConfiguration(0));
+		Function<String, Long> timeToLive = (id) -> (id.equals("test") ? 500L : 0L);
 		load(TestEndpointConfiguration.class, (context) -> {
 			Map<String, EndpointInfo<TestEndpointOperation>> endpoints = mapEndpoints(
-					new TestAnnotationEndpointDiscoverer(context,
-							cachingConfigurationFactory).discoverEndpoints());
+					new TestAnnotationEndpointDiscoverer(context, timeToLive)
+							.discoverEndpoints());
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<Method, TestEndpointOperation> operations = mapOperations(
 					endpoints.get("test"));
@@ -216,7 +213,27 @@ public class AnnotationEndpointDiscovererTests {
 
 	@Test
 	public void extensionsAreApplied() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
+					new SpecializedTestAnnotationEndpointDiscoverer(context)
+							.discoverEndpoints());
+			Map<Method, TestEndpointOperation> operations = mapOperations(
+					endpoints.get("specialized"));
+			assertThat(operations).containsKeys(
+					ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
+		});
+	}
 
+	@Test
+	public void filtersAreApplied() throws Exception {
+		load(TestEndpointsConfiguration.class, (context) -> {
+			EndpointFilter<SpecializedTestEndpointOperation> filter = (info,
+					discoverer) -> !(info.getId().equals("specialized"));
+			Map<String, EndpointInfo<SpecializedTestEndpointOperation>> endpoints = mapEndpoints(
+					new SpecializedTestAnnotationEndpointDiscoverer(context,
+							Collections.singleton(filter)).discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test");
+		});
 	}
 
 	private <T extends Operation> Map<String, EndpointInfo<T>> mapEndpoints(
@@ -233,15 +250,14 @@ public class AnnotationEndpointDiscovererTests {
 	}
 
 	private Map<Method, TestEndpointOperation> mapOperations(
-			EndpointInfo<TestEndpointOperation> endpoint) {
+			EndpointInfo<? extends TestEndpointOperation> endpoint) {
 		Map<Method, TestEndpointOperation> operationByMethod = new HashMap<>();
 		endpoint.getOperations().forEach((operation) -> {
-			Operation existing = operationByMethod.put(operation.getOperationMethod(),
-					operation);
+			Method method = operation.getMethodInfo().getMethod();
+			Operation existing = operationByMethod.put(method, operation);
 			if (existing != null) {
 				throw new AssertionError(String.format(
-						"Found endpoint with duplicate operation method '%s'",
-						operation.getOperationMethod()));
+						"Found endpoint with duplicate operation method '%s'", method));
 			}
 		});
 		return operationByMethod;
@@ -404,16 +420,21 @@ public class AnnotationEndpointDiscovererTests {
 			extends AnnotationEndpointDiscoverer<Method, TestEndpointOperation> {
 
 		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext) {
-			this(applicationContext, (id) -> null);
+			this(applicationContext, (id) -> null, null);
 		}
 
 		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-				CachingConfigurationFactory cachingConfigurationFactory) {
-			super(applicationContext,
-					new TestAnnotatedEndpointOperationFactory<TestEndpointOperation>(
-							TestEndpointOperation::new),
-					TestEndpointOperation::getOperationMethod,
-					cachingConfigurationFactory);
+				Function<String, Long> timeToLive) {
+			this(applicationContext, timeToLive, null);
+		}
+
+		TestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Function<String, Long> timeToLive,
+				Collection<? extends EndpointFilter<TestEndpointOperation>> filters) {
+			super(applicationContext, TestEndpointOperation::new,
+					TestEndpointOperation::getMethod,
+					new ConversionServiceParameterMapper(),
+					new CachingOperationInvokerAdvisor(timeToLive), filters);
 		}
 
 	}
@@ -423,78 +444,50 @@ public class AnnotationEndpointDiscovererTests {
 
 		SpecializedTestAnnotationEndpointDiscoverer(
 				ApplicationContext applicationContext) {
-			this(applicationContext, (id) -> null);
+			this(applicationContext, (id) -> null, null);
 		}
 
 		SpecializedTestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-				CachingConfigurationFactory cachingConfigurationFactory) {
-			super(applicationContext,
-					new TestAnnotatedEndpointOperationFactory<SpecializedTestEndpointOperation>(
-							SpecializedTestEndpointOperation::new),
-					TestEndpointOperation::getOperationMethod,
-					cachingConfigurationFactory);
+				Collection<? extends EndpointFilter<SpecializedTestEndpointOperation>> filters) {
+			this(applicationContext, (id) -> null, filters);
 		}
 
-	}
-
-	public static class TestAnnotatedEndpointOperationFactory<T extends TestEndpointOperation>
-			implements AnnotatedEndpointOperationFactory<T> {
-
-		private final OperationFactory<T> operationFactory;
-
-		public TestAnnotatedEndpointOperationFactory(
-				OperationFactory<T> operationFactory) {
-			this.operationFactory = operationFactory;
+		SpecializedTestAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
+				Function<String, Long> timeToLive,
+				Collection<? extends EndpointFilter<SpecializedTestEndpointOperation>> filters) {
+			super(applicationContext, SpecializedTestEndpointOperation::new,
+					SpecializedTestEndpointOperation::getMethod,
+					new ConversionServiceParameterMapper(),
+					new CachingOperationInvokerAdvisor(timeToLive), filters);
 		}
-
-		@Override
-		public T createOperation(String endpointId,
-				AnnotationAttributes operationAttributes, Object target,
-				Method operationMethod, OperationType operationType, long timeToLive) {
-			OperationInvoker invoker = createOperationInvoker(timeToLive);
-			return this.operationFactory.createOperation(operationType, invoker,
-					operationMethod);
-		}
-
-		private OperationInvoker createOperationInvoker(long timeToLive) {
-			OperationInvoker invoker = (arguments) -> null;
-			if (timeToLive > 0) {
-				return new CachingOperationInvoker(invoker, timeToLive);
-			}
-			return invoker;
-		}
-
-	}
-
-	@FunctionalInterface
-	public interface OperationFactory<T extends TestEndpointOperation> {
-
-		T createOperation(OperationType operationType,
-				OperationInvoker createOperationInvoker, Method operationMethod);
 
 	}
 
 	public static class TestEndpointOperation extends Operation {
 
-		private final Method operationMethod;
+		private final OperationMethodInfo methodInfo;
 
-		public TestEndpointOperation(OperationType type,
-				OperationInvoker operationInvoker, Method operationMethod) {
-			super(type, operationInvoker, true);
-			this.operationMethod = operationMethod;
+		public TestEndpointOperation(String endpointId, OperationMethodInfo methodInfo,
+				Object target, OperationInvoker invoker) {
+			super(methodInfo.getOperationType(), invoker, true);
+			this.methodInfo = methodInfo;
 		}
 
-		private Method getOperationMethod() {
-			return this.operationMethod;
+		public Method getMethod() {
+			return this.methodInfo.getMethod();
+		}
+
+		public OperationMethodInfo getMethodInfo() {
+			return this.methodInfo;
 		}
 
 	}
 
 	public static class SpecializedTestEndpointOperation extends TestEndpointOperation {
 
-		public SpecializedTestEndpointOperation(OperationType type,
-				OperationInvoker operationInvoker, Method operationMethod) {
-			super(type, operationInvoker, operationMethod);
+		public SpecializedTestEndpointOperation(String endpointId,
+				OperationMethodInfo methodInfo, Object target, OperationInvoker invoker) {
+			super(endpointId, methodInfo, target, invoker);
 		}
 
 	}

@@ -32,8 +32,8 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityRespo
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterMappingException;
-import org.springframework.boot.actuate.endpoint.ParametersMissingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMappingException;
+import org.springframework.boot.actuate.endpoint.reflect.ParametersMissingException;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.Link;

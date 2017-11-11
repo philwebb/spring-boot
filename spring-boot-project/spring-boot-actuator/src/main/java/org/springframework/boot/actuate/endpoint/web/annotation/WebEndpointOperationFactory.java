@@ -26,11 +26,9 @@ import org.reactivestreams.Publisher;
 
 import org.springframework.boot.actuate.endpoint.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
-import org.springframework.boot.actuate.endpoint.ReflectiveOperationInvoker;
-import org.springframework.boot.actuate.endpoint.annotation.AnnotatedEndpointOperationFactory;
+import org.springframework.boot.actuate.endpoint.annotation.OperationFactory;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
@@ -38,47 +36,36 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointHttpMethod;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
-final class WebEndpointOperationFactory
-		implements AnnotatedEndpointOperationFactory<WebOperation> {
+final class WebEndpointOperationFactory implements OperationFactory<WebOperation> {
 
 	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent(
 			"org.reactivestreams.Publisher",
 			WebEndpointOperationFactory.class.getClassLoader());
 
-	private final ParameterMapper parameterMapper;
-
 	private final EndpointMediaTypes endpointMediaTypes;
 
 	private final EndpointPathResolver endpointPathResolver;
 
-	WebEndpointOperationFactory(ParameterMapper parameterMapper,
-			EndpointMediaTypes endpointMediaTypes,
+	WebEndpointOperationFactory(EndpointMediaTypes endpointMediaTypes,
 			EndpointPathResolver endpointPathResolver) {
-		this.parameterMapper = parameterMapper;
 		this.endpointMediaTypes = endpointMediaTypes;
 		this.endpointPathResolver = endpointPathResolver;
 	}
 
 	@Override
-	public WebOperation createOperation(String endpointId,
-			AnnotationAttributes operationAttributes, Object target, Method method,
-			OperationType type, long timeToLive) {
-		WebEndpointHttpMethod httpMethod = determineHttpMethod(type);
+	public WebOperation createOperation(String endpointId, OperationMethodInfo methodInfo,
+			Object target, OperationInvoker invoker) {
+		Method method = methodInfo.getMethod();
+		OperationType operationType = methodInfo.getOperationType();
+		WebEndpointHttpMethod httpMethod = determineHttpMethod(operationType);
 		OperationRequestPredicate requestPredicate = new OperationRequestPredicate(
 				determinePath(endpointId, method), httpMethod,
 				determineConsumedMediaTypes(httpMethod, method),
-				determineProducedMediaTypes(
-						operationAttributes.getStringArray("produces"), method));
-		OperationInvoker invoker = new ReflectiveOperationInvoker(target, method,
-				this.parameterMapper);
-		if (timeToLive > 0) {
-			invoker = new CachingOperationInvoker(invoker, timeToLive);
-		}
-		return new WebOperation(type, invoker, determineBlocking(method),
+				determineProducedMediaTypes(methodInfo.getProduces(), method));
+		return new WebOperation(operationType, invoker, determineBlocking(method),
 				requestPredicate, determineId(endpointId, method));
 	}
 
@@ -86,8 +73,7 @@ final class WebEndpointOperationFactory
 		StringBuilder path = new StringBuilder(
 				this.endpointPathResolver.resolvePath(endpointId));
 		Stream.of(operationMethod.getParameters())
-				.filter((
-						parameter) -> parameter.getAnnotation(Selector.class) != null)
+				.filter((parameter) -> parameter.getAnnotation(Selector.class) != null)
 				.map((parameter) -> "/{" + parameter.getName() + "}")
 				.forEach(path::append);
 		return path.toString();
@@ -96,8 +82,7 @@ final class WebEndpointOperationFactory
 	private String determineId(String endpointId, Method operationMethod) {
 		StringBuilder path = new StringBuilder(endpointId);
 		Stream.of(operationMethod.getParameters())
-				.filter((
-						parameter) -> parameter.getAnnotation(Selector.class) != null)
+				.filter((parameter) -> parameter.getAnnotation(Selector.class) != null)
 				.map((parameter) -> "-" + parameter.getName()).forEach(path::append);
 		return path.toString();
 	}
@@ -140,8 +125,8 @@ final class WebEndpointOperationFactory
 	}
 
 	private boolean consumesRequestBody(Method method) {
-		return Stream.of(method.getParameters()).anyMatch(
-				(parameter) -> parameter.getAnnotation(Selector.class) == null);
+		return Stream.of(method.getParameters())
+				.anyMatch((parameter) -> parameter.getAnnotation(Selector.class) == null);
 	}
 
 	private WebEndpointHttpMethod determineHttpMethod(OperationType operationType) {

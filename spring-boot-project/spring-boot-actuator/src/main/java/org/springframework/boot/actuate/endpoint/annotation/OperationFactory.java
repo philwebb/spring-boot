@@ -16,11 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.annotation;
 
-import java.lang.reflect.Method;
-
 import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.boot.actuate.endpoint.OperationInvoker;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
 
 /**
  * Factory to creates an {@link Operation} for an annotated method on an
@@ -29,19 +27,17 @@ import org.springframework.core.annotation.AnnotationAttributes;
  * @param <T> the {@link Operation} type
  */
 @FunctionalInterface
-public interface AnnotatedEndpointOperationFactory<T extends Operation> {
+public interface OperationFactory<T extends Operation> {
 
 	/**
-	 * Creates an {@code EndpointOperation} for an operation on an endpoint.
+	 * Creates an {@link Operation} for an operation on an endpoint.
 	 * @param endpointId the id of the endpoint
-	 * @param annotationAttributes the annotation attributes for the operation
 	 * @param target the target that implements the operation
-	 * @param method the method on the bean that implements the operation
-	 * @param operationType the type of the operation
-	 * @param timeToLive the caching period in milliseconds
+	 * @param methodInfo the method on the bean that implements the operation
+	 * @param invoker the invoker that should be used for the operation
 	 * @return the operation info that describes the operation
 	 */
-	T createOperation(String endpointId, AnnotationAttributes annotationAttributes,
-			Object target, Method method, OperationType operationType, long timeToLive);
+	T createOperation(String endpointId, OperationMethodInfo methodInfo, Object target,
+			OperationInvoker invoker);
 
 }

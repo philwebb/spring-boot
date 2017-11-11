@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.cache;
+package org.springframework.boot.actuate.endpoint.reflect;
 
 /**
- * The caching configuration of an endpoint.
+ * Maps parameters to the required type when invoking an endpoint.
  *
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class CachingConfiguration {
-
-	private final long timeToLive;
-
-	/**
-	 * Create a new instance with the given {@code timeToLive}.
-	 * @param timeToLive the time to live of an operation result in milliseconds
-	 */
-	public CachingConfiguration(long timeToLive) {
-		this.timeToLive = timeToLive;
-	}
+@FunctionalInterface
+public interface ParameterMapper {
 
 	/**
-	 * Returns the time to live of a cached operation result.
-	 * @return the time to live of an operation result
+	 * Map the specified {@code input} parameter to the given {@code parameterType}.
+	 * @param value a parameter value
+	 * @param type the required type of the parameter
+	 * @return a value suitable for that parameter
+	 * @param <T> the actual type of the parameter
+	 * @throws ParameterMappingException when a mapping failure occurs
 	 */
-	public long getTimeToLive() {
-		return this.timeToLive;
-	}
+	<T> T mapParameter(Object value, Class<T> type);
 
 }

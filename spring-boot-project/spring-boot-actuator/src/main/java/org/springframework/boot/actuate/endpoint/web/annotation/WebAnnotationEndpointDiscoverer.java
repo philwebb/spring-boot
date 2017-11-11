@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.boot.actuate.endpoint.ParameterMapper;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
+import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInvokerAdvisor;
+import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.OperationRequestPredicate;
@@ -49,21 +49,22 @@ public class WebAnnotationEndpointDiscoverer
 	 * @param applicationContext the application context
 	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
 	 * an operation is invoked
-	 * @param cachingConfigurationFactory the {@link CachingConfiguration} factory to use
 	 * @param endpointMediaTypes the media types produced and consumed by web endpoint
 	 * operations
 	 * @param endpointPathResolver the {@link EndpointPathResolver} used to resolve
 	 * endpoint paths
+	 * @param invokerAdvisor advisor used to add additional invoker advise
+	 * @param filters filters that must match for an endpoint to be exposed.
 	 */
 	public WebAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterMapper parameterMapper,
-			CachingConfigurationFactory cachingConfigurationFactory,
-			EndpointMediaTypes endpointMediaTypes,
-			EndpointPathResolver endpointPathResolver) {
+			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
+			EndpointPathResolver endpointPathResolver,
+			OperationMethodInvokerAdvisor invokerAdvisor,
+			Collection<? extends EndpointFilter<WebOperation>> filters) {
 		super(applicationContext,
-				new WebEndpointOperationFactory(parameterMapper, endpointMediaTypes,
-						endpointPathResolver),
-				WebOperation::getRequestPredicate, cachingConfigurationFactory);
+				new WebEndpointOperationFactory(endpointMediaTypes, endpointPathResolver),
+				WebOperation::getRequestPredicate, parameterMapper, invokerAdvisor,
+				filters);
 	}
 
 	@Override

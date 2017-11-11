@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.cache;
+package org.springframework.boot.actuate.endpoint.reflect;
+
+import org.springframework.boot.actuate.endpoint.OperationInvoker;
 
 /**
- * Factory used to return a {@link CachingConfiguration} for an endpoint ID.
+ * Allows additional functionality to be applied to an {@link OperationInvoker} being used
+ * to invoke a {@link OperationMethodInfo operation method}.
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
 @FunctionalInterface
-public interface CachingConfigurationFactory {
+public interface OperationMethodInvokerAdvisor {
 
 	/**
-	 * Return the {@link CachingConfiguration} for the given endpoint ID.
+	 * Apply additional functionality to the given invoker.
 	 * @param endpointId the endpoint ID
-	 * @return the caching configuration
+	 * @param methodInfo the method information
+	 * @param invoker the invoker to advise
+	 * @return an potentially new operation invoker with support for additional features.
 	 */
-	CachingConfiguration getCachingConfiguration(String endpointId);
+	OperationInvoker apply(String endpointId, OperationMethodInfo methodInfo,
+			OperationInvoker invoker);
 
 }
