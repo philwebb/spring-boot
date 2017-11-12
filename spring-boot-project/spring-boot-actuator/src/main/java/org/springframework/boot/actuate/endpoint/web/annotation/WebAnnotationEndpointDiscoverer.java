@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationContext;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class WebAnnotationEndpointDiscoverer

@@ -22,10 +22,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.endpoint.annotation.AnnotationEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
 import org.springframework.core.annotation.AliasFor;
 
+/**
+ * Identifies a type as being an endpoint that is only exposed over JMX.
+ *
+ * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 2.0.0
+ * @see AnnotationEndpointDiscoverer
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

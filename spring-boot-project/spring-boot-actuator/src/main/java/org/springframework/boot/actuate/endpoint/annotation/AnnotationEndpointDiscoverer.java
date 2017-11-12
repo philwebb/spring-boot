@@ -339,7 +339,7 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		 * Return {@code true} if the endpoint is exposed.
 		 * @return if the is exposed
 		 */
-		private final boolean isExposed() {
+		private boolean isExposed() {
 			return this.exposed;
 		}
 

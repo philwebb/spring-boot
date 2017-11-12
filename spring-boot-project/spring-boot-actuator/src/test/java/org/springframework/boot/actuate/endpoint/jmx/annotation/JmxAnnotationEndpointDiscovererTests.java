@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,9 +32,8 @@ import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointOperationParameterInfo;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
@@ -151,7 +151,7 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
-		load(TestEndpoint.class, (id) -> new CachingConfiguration(500), (discoverer) -> {
+		load(TestEndpoint.class, (id) -> 500L, (discoverer) -> {
 			Map<String, EndpointInfo<JmxOperation>> endpoints = discover(discoverer);
 			assertThat(endpoints).containsOnlyKeys("test");
 			Map<String, JmxOperation> operationByName = mapOperations(
@@ -167,8 +167,8 @@ public class JmxAnnotationEndpointDiscovererTests {
 
 	@Test
 	public void extraReadOperationsAreCached() {
-		load(AdditionalOperationJmxEndpointConfiguration.class,
-				(id) -> new CachingConfiguration(500), (discoverer) -> {
+		load(AdditionalOperationJmxEndpointConfiguration.class, (id) -> 500L,
+				(discoverer) -> {
 					Map<String, EndpointInfo<JmxOperation>> endpoints = discover(
 							discoverer);
 					assertThat(endpoints).containsOnlyKeys("test");
@@ -309,15 +309,16 @@ public class JmxAnnotationEndpointDiscovererTests {
 		load(configuration, (id) -> null, consumer);
 	}
 
-	private void load(Class<?> configuration,
-			CachingConfigurationFactory cachingConfigurationFactory,
+	private void load(Class<?> configuration, Function<String, Long> timeToLive,
 			Consumer<JmxAnnotationEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration)) {
-			consumer.accept(new JmxAnnotationEndpointDiscoverer(context,
-					new ConversionServiceParameterMapper(
-							DefaultConversionService.getSharedInstance()),
-					cachingConfigurationFactory));
+			ConversionServiceParameterMapper parameterMapper = new ConversionServiceParameterMapper(
+					DefaultConversionService.getSharedInstance());
+			JmxAnnotationEndpointDiscoverer discoverer = new JmxAnnotationEndpointDiscoverer(
+					context, parameterMapper,
+					new CachingOperationInvokerAdvisor(timeToLive), null);
+			consumer.accept(discoverer);
 		}
 	}
 

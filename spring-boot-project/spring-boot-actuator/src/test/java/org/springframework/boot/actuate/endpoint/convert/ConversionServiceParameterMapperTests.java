@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
-public class ConversionServiceOperationParameterMapperTests {
+public class ConversionServiceParameterMapperTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

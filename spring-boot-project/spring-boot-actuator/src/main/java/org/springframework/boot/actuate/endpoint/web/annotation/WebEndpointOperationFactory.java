@@ -39,6 +39,13 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
+/**
+ * {@link OperationFactory} for {@link WebOperation web operations}.
+ *
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Phillip Webb
+ */
 final class WebEndpointOperationFactory implements OperationFactory<WebOperation> {
 
 	private static final boolean REACTIVE_STREAMS_PRESENT = ClassUtils.isPresent(

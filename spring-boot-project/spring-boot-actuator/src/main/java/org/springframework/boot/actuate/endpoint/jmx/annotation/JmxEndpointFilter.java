@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 
 /**
- * {@link EndpointFilter}
+ * {@link EndpointFilter} for endpoints discovered by
+ * {@link JmxAnnotationEndpointDiscoverer}.
  *
  * @author Phillip Webb
  */

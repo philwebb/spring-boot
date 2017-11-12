@@ -25,6 +25,9 @@ import org.springframework.boot.actuate.endpoint.reflect.OperationMethodInfo;
  * {@link Endpoint @Endpoint}.
  *
  * @param <T> the {@link Operation} type
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 @FunctionalInterface
 public interface OperationFactory<T extends Operation> {

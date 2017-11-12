@@ -36,13 +36,18 @@ import org.springframework.jmx.export.metadata.ManagedOperation;
 import org.springframework.jmx.export.metadata.ManagedOperationParameter;
 import org.springframework.util.StringUtils;
 
-class JmxEndpointOperationFactory
-		implements OperationFactory<JmxOperation> {
+/**
+ * {@link OperationFactory} for {@link JmxOperation JMX operations}.
+ *
+ * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Phillip Webb
+ */
+class JmxEndpointOperationFactory implements OperationFactory<JmxOperation> {
 
 	@Override
-	public JmxOperation createOperation(String endpointId,
-			OperationMethodInfo methodInfo, Object target,
-			OperationInvoker invoker) {
+	public JmxOperation createOperation(String endpointId, OperationMethodInfo methodInfo,
+			Object target, OperationInvoker invoker) {
 		Method method = methodInfo.getMethod();
 		String name = method.getName();
 		OperationType operationType = methodInfo.getOperationType();
@@ -72,8 +77,7 @@ class JmxEndpointOperationFactory
 		ManagedOperationParameter[] operationParameters = JmxAnnotationEndpointDiscoverer.jmxAttributeSource
 				.getManagedOperationParameters(method);
 		if (operationParameters.length == 0) {
-			return methodInfo.getParameters().entrySet().stream()
-					.map(this::getParameter)
+			return methodInfo.getParameters().entrySet().stream().map(this::getParameter)
 					.collect(Collectors.toCollection(ArrayList::new));
 		}
 		return mergeParameters(method.getParameters(), operationParameters);

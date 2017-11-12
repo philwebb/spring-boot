@@ -48,12 +48,16 @@ public final class OperationMethodInfo {
 
 	public OperationMethodInfo(Method method, OperationType operationType,
 			AnnotationAttributes annotationAttributes) {
+		Assert.notNull(method, "Method must not be null");
+		Assert.notNull(operationType, "Operation Type must not be null");
+		Assert.notNull(annotationAttributes, "Annotation Attributes must not be null");
 		this.method = method;
 		this.operationType = operationType;
 		this.annotationAttributes = annotationAttributes;
 	}
 
 	/**
+	 * Return the source Java method.
 	 * @return the method
 	 */
 	public Method getMethod() {
@@ -61,7 +65,8 @@ public final class OperationMethodInfo {
 	}
 
 	/**
-	 * @return the operationType
+	 * Return the operation type.
+	 * @return the operation type
 	 */
 	public OperationType getOperationType() {
 		return this.operationType;
@@ -75,6 +80,10 @@ public final class OperationMethodInfo {
 		return this.annotationAttributes.getStringArray("produces");
 	}
 
+	/**
+	 * Return a map of method parameters with the key being the discovered parameter name.
+	 * @return the method parameters
+	 */
 	public Map<String, Parameter> getParameters() {
 		Parameter[] parameters = this.method.getParameters();
 		String[] names = this.parameterNameDiscoverer.getParameterNames(this.method);

@@ -31,6 +31,7 @@ import org.springframework.core.annotation.AliasFor;
  * Identifies a type as being an endpoint that is only exposed over HTTP.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.0.0
  * @see AnnotationEndpointDiscoverer
  */

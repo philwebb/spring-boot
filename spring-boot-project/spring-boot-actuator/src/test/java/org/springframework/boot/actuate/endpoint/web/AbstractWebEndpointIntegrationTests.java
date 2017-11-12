@@ -34,7 +34,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.reflect.ParameterMapper;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
@@ -384,8 +383,8 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			ParameterMapper parameterMapper = new ConversionServiceParameterMapper(
 					DefaultConversionService.getSharedInstance());
 			return new WebAnnotationEndpointDiscoverer(applicationContext,
-					parameterMapper, (id) -> new CachingConfiguration(0),
-					endpointMediaTypes(), EndpointPathResolver.useEndpointId());
+					parameterMapper, endpointMediaTypes(),
+					EndpointPathResolver.useEndpointId(), null, null);
 		}
 
 		@Bean

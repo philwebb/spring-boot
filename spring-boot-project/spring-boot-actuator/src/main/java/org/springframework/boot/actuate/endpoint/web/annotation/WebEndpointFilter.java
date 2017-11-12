@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 
 /**
- * {@link EndpointFilter}
+ * {@link EndpointFilter} for endpoints discovered by
+ * {@link WebAnnotationEndpointDiscoverer}.
  *
  * @author Phillip Webb
  */

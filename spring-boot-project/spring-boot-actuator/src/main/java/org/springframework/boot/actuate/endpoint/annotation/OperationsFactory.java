@@ -93,7 +93,9 @@ class OperationsFactory<T extends Operation> {
 				annotationAttributes);
 		OperationInvoker invoker = new ReflectiveOperationInvoker(target, methodInfo,
 				this.parameterMapper);
-		invoker = this.invokerAdvisor.apply(endpointId, methodInfo, invoker);
+		if (this.invokerAdvisor != null) {
+			invoker = this.invokerAdvisor.apply(endpointId, methodInfo, invoker);
+		}
 		return this.operationFactory.createOperation(endpointId, methodInfo, target,
 				invoker);
 	}

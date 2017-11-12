@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,9 +40,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvoker;
+import org.springframework.boot.actuate.endpoint.cache.CachingOperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.convert.ConversionServiceParameterMapper;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
 import org.springframework.boot.actuate.endpoint.web.AbstractWebEndpointIntegrationTests.BaseConfiguration;
@@ -189,21 +189,18 @@ public class WebAnnotationEndpointDiscovererTests {
 
 	@Test
 	public void endpointMainReadOperationIsCachedWithMatchingId() {
-		load((id) -> new CachingConfiguration(500), (id) -> id,
-				TestEndpointConfiguration.class, (discoverer) -> {
-					Map<String, EndpointInfo<WebOperation>> endpoints = mapEndpoints(
-							discoverer.discoverEndpoints());
-					assertThat(endpoints).containsOnlyKeys("test");
-					EndpointInfo<WebOperation> endpoint = endpoints.get("test");
-					assertThat(endpoint.getOperations()).hasSize(1);
-					OperationInvoker operationInvoker = endpoint.getOperations()
-							.iterator().next().getInvoker();
-					assertThat(operationInvoker)
-							.isInstanceOf(CachingOperationInvoker.class);
-					assertThat(
-							((CachingOperationInvoker) operationInvoker).getTimeToLive())
-									.isEqualTo(500);
-				});
+		load((id) -> 500L, (id) -> id, TestEndpointConfiguration.class, (discoverer) -> {
+			Map<String, EndpointInfo<WebOperation>> endpoints = mapEndpoints(
+					discoverer.discoverEndpoints());
+			assertThat(endpoints).containsOnlyKeys("test");
+			EndpointInfo<WebOperation> endpoint = endpoints.get("test");
+			assertThat(endpoint.getOperations()).hasSize(1);
+			OperationInvoker operationInvoker = endpoint.getOperations().iterator().next()
+					.getInvoker();
+			assertThat(operationInvoker).isInstanceOf(CachingOperationInvoker.class);
+			assertThat(((CachingOperationInvoker) operationInvoker).getTimeToLive())
+					.isEqualTo(500);
+		});
 	}
 
 	@Test
@@ -258,19 +255,21 @@ public class WebAnnotationEndpointDiscovererTests {
 		this.load((id) -> null, (id) -> id, configuration, consumer);
 	}
 
-	private void load(CachingConfigurationFactory cachingConfigurationFactory,
+	private void load(Function<String, Long> timeToLive,
 			EndpointPathResolver endpointPathResolver, Class<?> configuration,
 			Consumer<WebAnnotationEndpointDiscoverer> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				configuration);
 		try {
-			consumer.accept(new WebAnnotationEndpointDiscoverer(context,
-					new ConversionServiceParameterMapper(
-							DefaultConversionService.getSharedInstance()),
-					cachingConfigurationFactory,
-					new EndpointMediaTypes(Collections.singletonList("application/json"),
-							Collections.singletonList("application/json")),
-					endpointPathResolver));
+			ConversionServiceParameterMapper parameterMapper = new ConversionServiceParameterMapper(
+					DefaultConversionService.getSharedInstance());
+			EndpointMediaTypes mediaTypes = new EndpointMediaTypes(
+					Collections.singletonList("application/json"),
+					Collections.singletonList("application/json"));
+			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
+					context, parameterMapper, mediaTypes, endpointPathResolver,
+					new CachingOperationInvokerAdvisor(timeToLive), null);
+			consumer.accept(discoverer);
 		}
 		finally {
 			context.close();
