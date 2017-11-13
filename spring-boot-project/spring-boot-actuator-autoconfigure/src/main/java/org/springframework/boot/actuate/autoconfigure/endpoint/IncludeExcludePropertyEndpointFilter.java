@@ -41,14 +41,20 @@ import org.springframework.util.Assert;
 public class IncludeExcludePropertyEndpointFilter<T extends Operation>
 		implements EndpointFilter<T> {
 
+	private final Class<? extends EndpointDiscoverer<T>> discovererType;
+
 	private final Set<String> include;
 
 	private final Set<String> exclude;
 
-	public IncludeExcludePropertyEndpointFilter(Environment environment, String prefix) {
+	public IncludeExcludePropertyEndpointFilter(
+			Class<? extends EndpointDiscoverer<T>> discovererType,
+			Environment environment, String prefix) {
+		Assert.notNull(discovererType, "Discoverer Type must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
+		this.discovererType = discovererType;
 		this.include = bind(binder, prefix + ".include");
 		this.exclude = bind(binder, prefix + ".exclude");
 	}
@@ -61,7 +67,10 @@ public class IncludeExcludePropertyEndpointFilter<T extends Operation>
 
 	@Override
 	public boolean match(EndpointInfo<T> info, EndpointDiscoverer<T> discoverer) {
-		return isIncluded(info) && !isExcluded(info);
+		if (this.discovererType.isInstance(discoverer)) {
+			return isIncluded(info) && !isExcluded(info);
+		}
+		return true;
 	}
 
 	private boolean isIncluded(EndpointInfo<T> info) {

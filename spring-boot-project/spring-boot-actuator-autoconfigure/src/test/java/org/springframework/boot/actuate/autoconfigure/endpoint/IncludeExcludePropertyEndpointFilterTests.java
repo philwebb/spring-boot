@@ -48,7 +48,7 @@ public class IncludeExcludePropertyEndpointFilterTests {
 	private EndpointFilter<Operation> filter;
 
 	@Mock
-	private EndpointDiscoverer<Operation> discoverer;
+	private TestEndpointDiscoverer discoverer;
 
 	@Before
 	public void setup() {
@@ -56,24 +56,34 @@ public class IncludeExcludePropertyEndpointFilterTests {
 	}
 
 	@Test
+	public void createWhenDiscovererTypeIsNullShouldThrowException() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Discoverer Type must not be null");
+		new IncludeExcludePropertyEndpointFilter<>(null, this.environment, "foo");
+	}
+
+	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
-		new IncludeExcludePropertyEndpointFilter<>(null, "foo");
+		new IncludeExcludePropertyEndpointFilter<>(TestEndpointDiscoverer.class, null,
+				"foo");
 	}
 
 	@Test
 	public void createWhenPrefixIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new IncludeExcludePropertyEndpointFilter<Operation>(this.environment, null);
+		new IncludeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
+				this.environment, null);
 	}
 
 	@Test
 	public void createWhenPrefixIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new IncludeExcludePropertyEndpointFilter<Operation>(this.environment, "");
+		new IncludeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
+				this.environment, "");
 	}
 
 	@Test
@@ -115,16 +125,36 @@ public class IncludeExcludePropertyEndpointFilterTests {
 		assertThat(match("bAr")).isTrue();
 	}
 
+	@Test
+	public void whenDicovererDoesNotMatchShouldReturnTrue() throws Exception {
+		this.environment.setProperty("foo.include", "bar");
+		this.environment.setProperty("foo.exclude", "");
+		this.filter = new IncludeExcludePropertyEndpointFilter<>(
+				DifferentTestEndpointDiscoverer.class, this.environment, "foo");
+		assertThat(match("baz")).isTrue();
+	}
+
 	private void setupFilter(String include, String exclude) {
 		this.environment.setProperty("foo.include", include);
 		this.environment.setProperty("foo.exclude", exclude);
-		this.filter = new IncludeExcludePropertyEndpointFilter<>(this.environment, "foo");
+		this.filter = new IncludeExcludePropertyEndpointFilter<>(
+				TestEndpointDiscoverer.class, this.environment, "foo");
 	}
 
 	private boolean match(String id) {
 		EndpointInfo<Operation> info = new EndpointInfo<>(id, true,
 				Collections.emptyList());
 		return this.filter.match(info, this.discoverer);
+	}
+
+	private abstract static class TestEndpointDiscoverer
+			implements EndpointDiscoverer<Operation> {
+
+	}
+
+	private abstract static class DifferentTestEndpointDiscoverer
+			implements EndpointDiscoverer<Operation> {
+
 	}
 
 }
