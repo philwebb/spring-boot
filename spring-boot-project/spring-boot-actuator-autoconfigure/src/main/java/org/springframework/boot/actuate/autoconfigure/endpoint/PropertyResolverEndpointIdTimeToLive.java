@@ -43,7 +43,8 @@ public class PropertyResolverEndpointIdTimeToLive implements Function<String, Lo
 
 	@Override
 	public Long apply(String endpointId) {
-		String key = String.format("endpoints.%s.cache.time-to-live", endpointId);
+		String key = String.format("management.endpoint.%s.cache.time-to-live",
+				endpointId);
 		return this.propertyResolver.getProperty(key, Long.class);
 	}
 }

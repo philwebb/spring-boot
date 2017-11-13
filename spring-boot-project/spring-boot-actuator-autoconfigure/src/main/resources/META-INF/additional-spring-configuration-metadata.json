@@ -1,6 +1,6 @@
 {"properties": [
   {
-    "name": "endpoints.configprops.keys-to-sanitize",
+    "name": "management.endpoint.configprops.keys-to-sanitize",
     "defaultValue": [
       "password",
       "secret",
@@ -11,25 +11,12 @@
     ]
   },
   {
-    "name": "endpoints.default.enabled",
+    "name": "management.endpoints.enabled-by-default",
     "type": "java.lang.Boolean",
-    "description": "Enable all endpoints by default.",
-    "defaultValue": true
+    "description": "Enable or disable all endpoints by default."
   },
   {
-    "name": "endpoints.default.jmx.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable all endpoints as JMX MBeans by default.",
-    "defaultValue": true
-  },
-  {
-    "name": "endpoints.default.web.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable all endpoints as Web endpoints by default.",
-    "defaultValue": false
-  },
-  {
-    "name": "endpoints.env.keys-to-sanitize",
+    "name": "management.endpoint.env.keys-to-sanitize",
     "defaultValue": [
       "password",
       "secret",
@@ -40,7 +27,7 @@
     ]
   },
   {
-    "name": "endpoints.trace.filter.enabled",
+    "name": "management.endpoint.trace.filter.enabled",
     "type": "java.lang.Boolean",
     "description": "Enable the trace servlet filter.",
     "defaultValue": true,

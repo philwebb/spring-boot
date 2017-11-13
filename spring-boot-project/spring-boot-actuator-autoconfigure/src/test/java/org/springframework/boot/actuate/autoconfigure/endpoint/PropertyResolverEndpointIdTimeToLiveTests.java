@@ -45,7 +45,8 @@ public class PropertyResolverEndpointIdTimeToLiveTests {
 
 	@Test
 	public void userConfiguration() {
-		this.environment.setProperty("endpoints.test.cache.time-to-live", "500");
+		this.environment.setProperty("management.endpoint.test.cache.time-to-live",
+				"500");
 		Long result = this.timeToLive.apply("test");
 		assertThat(result).isEqualTo(500L);
 	}

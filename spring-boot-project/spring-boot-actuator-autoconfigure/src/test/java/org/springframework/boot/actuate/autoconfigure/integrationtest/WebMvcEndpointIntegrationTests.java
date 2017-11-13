@@ -90,6 +90,7 @@ public class WebMvcEndpointIntegrationTests {
 				new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
+		// FIXME
 		TestPropertyValues.of("management.endpoints.web.base-path:/management",
 				"endpoints.default.web.enabled=true").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();

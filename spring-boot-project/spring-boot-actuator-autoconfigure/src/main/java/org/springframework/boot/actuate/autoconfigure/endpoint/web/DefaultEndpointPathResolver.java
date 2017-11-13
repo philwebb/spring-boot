@@ -35,6 +35,7 @@ class DefaultEndpointPathResolver implements EndpointPathResolver {
 
 	@Override
 	public String resolvePath(String endpointId) {
+		// FIXME
 		String key = String.format("endpoints.%s.web.path", endpointId);
 		return this.environment.getProperty(key, String.class, endpointId);
 	}

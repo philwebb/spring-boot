@@ -80,6 +80,7 @@ public class WebMvcEndpointExposureIntegrationTests {
 
 	@Test
 	public void webEndpointsCanBeEnabled() {
+		// FIXME
 		WebApplicationContextRunner contextRunner = this.contextRunner
 				.withPropertyValues("endpoints.default.web.enabled=true");
 		contextRunner.run((context) -> {
@@ -100,9 +101,10 @@ public class WebMvcEndpointExposureIntegrationTests {
 
 	@Test
 	public void singleWebEndpointCanBeEnabled() {
+		// FIXME
 		WebApplicationContextRunner contextRunner = this.contextRunner.withPropertyValues(
 				"endpoints.default.web.enabled=false",
-				"endpoints.beans.web.enabled=true");
+				"management.endpoint.beans.web.enabled=true");
 		contextRunner.run((context) -> {
 			MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
 			assertThat(isExposed(mvc, HttpMethod.GET, "autoconfig")).isFalse();

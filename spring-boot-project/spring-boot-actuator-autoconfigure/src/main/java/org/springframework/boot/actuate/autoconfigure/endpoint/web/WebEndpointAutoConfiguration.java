@@ -90,7 +90,7 @@ public class WebEndpointAutoConfiguration {
 	public ExposeExcludePropertyEndpointFilter<WebOperation> webIncludeExcludePropertyEndpointFilter() {
 		return new ExposeExcludePropertyEndpointFilter<>(
 				WebAnnotationEndpointDiscoverer.class,
-				this.applicationContext.getEnvironment(), "endpoints.web");
+				this.applicationContext.getEnvironment(), "management.endpoints.web");
 	}
 
 }

@@ -43,7 +43,8 @@ public class AutoConfigurationReportEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.autoconfig.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.autoconfig.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AutoConfigurationReportEndpoint.class));
 	}

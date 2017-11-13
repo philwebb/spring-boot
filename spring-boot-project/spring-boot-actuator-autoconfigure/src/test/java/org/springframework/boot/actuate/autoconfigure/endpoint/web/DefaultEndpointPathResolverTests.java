@@ -42,6 +42,7 @@ public class DefaultEndpointPathResolverTests {
 
 	@Test
 	public void userConfiguration() {
+		// FIXME
 		this.environment.setProperty("endpoints.test.web.path", "custom");
 		assertThat(this.resolver.resolvePath("test")).isEqualTo("custom");
 	}

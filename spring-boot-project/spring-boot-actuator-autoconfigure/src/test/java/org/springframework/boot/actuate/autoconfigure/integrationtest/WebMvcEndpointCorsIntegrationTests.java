@@ -68,6 +68,7 @@ public class WebMvcEndpointCorsIntegrationTests {
 				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
+		// FIXME
 		TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(this.context);
 	}
 

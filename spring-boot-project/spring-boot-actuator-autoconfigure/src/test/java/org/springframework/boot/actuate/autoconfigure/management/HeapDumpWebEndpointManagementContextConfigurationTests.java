@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HeapDumpWebEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+			// FIXME
 			.withPropertyValues("endpoints.default.web.enabled:true")
 			.withUserConfiguration(
 					HeapDumpWebEndpointManagementContextConfiguration.class);
@@ -43,7 +44,8 @@ public class HeapDumpWebEndpointManagementContextConfigurationTests {
 
 	@Test
 	public void runWhenDisabledShouldNotCreateIndicator() throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.heapdump.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.heapdump.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HeapDumpWebEndpoint.class));
 	}

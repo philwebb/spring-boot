@@ -60,7 +60,8 @@ public class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointOrExtensionBean()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.auditevents.enabled:false")
+		this.contextRunner
+				.withPropertyValues("management.endpoint.auditevents.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(AuditEventsEndpoint.class)
 						.doesNotHaveBean(AuditEventsJmxEndpointExtension.class)
