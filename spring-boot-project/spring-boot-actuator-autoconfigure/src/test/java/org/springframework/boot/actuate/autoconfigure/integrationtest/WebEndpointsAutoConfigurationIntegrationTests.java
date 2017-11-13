@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import org.junit.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveStatusEndpointWebExtension;
 import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

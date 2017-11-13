@@ -18,8 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.audit;
 
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.actuate.audit.AuditEventsEndpointWebExtension;
+import org.springframework.boot.actuate.audit.AuditEventsJmxEndpointExtension;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
 import org.springframework.boot.actuate.logging.LoggersEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
