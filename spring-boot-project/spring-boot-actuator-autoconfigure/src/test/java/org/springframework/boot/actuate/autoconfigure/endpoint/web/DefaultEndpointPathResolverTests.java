@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.mock.env.MockEnvironment;
 

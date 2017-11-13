@@ -20,11 +20,9 @@ import java.util.HashSet;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
@@ -55,21 +53,14 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
 	public ResourceConfigCustomizer webEndpointRegistrar(
-			EndpointProvider<WebOperation> provider,
+			EndpointDiscoverer<WebOperation> endpointDiscoverer,
 			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return (resourceConfig) -> resourceConfig.registerResources(
 				new HashSet<>(new JerseyEndpointResourceFactory().createEndpointResources(
 						new EndpointMapping(webEndpointProperties.getBasePath()),
-						provider.getEndpoints(), endpointMediaTypes)));
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebOperation> provider,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
+						endpointDiscoverer.discoverEndpoints(),
+						endpointMediaTypes)));
 	}
 
 }

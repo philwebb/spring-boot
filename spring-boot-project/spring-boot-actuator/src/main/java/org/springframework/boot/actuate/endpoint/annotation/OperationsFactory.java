@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,14 +62,14 @@ class OperationsFactory<T extends Operation> {
 
 	private final ParameterMapper parameterMapper;
 
-	private final OperationMethodInvokerAdvisor invokerAdvisor;
+	private final Collection<OperationMethodInvokerAdvisor> invokerAdvisors;
 
 	OperationsFactory(OperationFactory<T> operationFactory,
 			ParameterMapper parameterMapper,
-			OperationMethodInvokerAdvisor invokerAdvisor) {
+			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors) {
 		this.operationFactory = operationFactory;
 		this.parameterMapper = parameterMapper;
-		this.invokerAdvisor = invokerAdvisor;
+		this.invokerAdvisors = new ArrayList<>(invokerAdvisors);
 	}
 
 	public Map<Method, T> createOperations(String id, Object target, Class<?> type) {
@@ -93,11 +95,18 @@ class OperationsFactory<T extends Operation> {
 				annotationAttributes);
 		OperationInvoker invoker = new ReflectiveOperationInvoker(target, methodInfo,
 				this.parameterMapper);
-		if (this.invokerAdvisor != null) {
-			invoker = this.invokerAdvisor.apply(endpointId, methodInfo, invoker);
-		}
 		return this.operationFactory.createOperation(endpointId, methodInfo, target,
-				invoker);
+				applyAdvisors(endpointId, methodInfo, invoker));
+	}
+
+	private OperationInvoker applyAdvisors(String endpointId,
+			OperationMethodInfo methodInfo, OperationInvoker invoker) {
+		if (this.invokerAdvisors != null) {
+			for (OperationMethodInvokerAdvisor advisor : this.invokerAdvisors) {
+				invoker = advisor.apply(endpointId, methodInfo, invoker);
+			}
+		}
+		return invoker;
 	}
 
 }

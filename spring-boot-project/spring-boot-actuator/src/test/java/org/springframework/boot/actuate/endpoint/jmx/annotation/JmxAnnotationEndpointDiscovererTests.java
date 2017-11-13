@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.jmx.annotation;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -317,7 +318,8 @@ public class JmxAnnotationEndpointDiscovererTests {
 					DefaultConversionService.getSharedInstance());
 			JmxAnnotationEndpointDiscoverer discoverer = new JmxAnnotationEndpointDiscoverer(
 					context, parameterMapper,
-					new CachingOperationInvokerAdvisor(timeToLive), null);
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					null);
 			consumer.accept(discoverer);
 		}
 	}

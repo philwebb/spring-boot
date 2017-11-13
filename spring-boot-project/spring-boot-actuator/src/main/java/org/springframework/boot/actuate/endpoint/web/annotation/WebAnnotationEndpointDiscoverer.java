@@ -54,17 +54,17 @@ public class WebAnnotationEndpointDiscoverer
 	 * operations
 	 * @param endpointPathResolver the {@link EndpointPathResolver} used to resolve
 	 * endpoint paths
-	 * @param invokerAdvisor advisor used to add additional invoker advise
-	 * @param filters filters that must match for an endpoint to be exposed.
+	 * @param invokerAdvisors advisors used to add additional invoker advise
+	 * @param filters filters that must match for an endpoint to be exposed
 	 */
 	public WebAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
 			ParameterMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			EndpointPathResolver endpointPathResolver,
-			OperationMethodInvokerAdvisor invokerAdvisor,
+			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
 			Collection<? extends EndpointFilter<WebOperation>> filters) {
 		super(applicationContext,
 				new WebEndpointOperationFactory(endpointMediaTypes, endpointPathResolver),
-				WebOperation::getRequestPredicate, parameterMapper, invokerAdvisor,
+				WebOperation::getRequestPredicate, parameterMapper, invokerAdvisors,
 				filters);
 	}
 

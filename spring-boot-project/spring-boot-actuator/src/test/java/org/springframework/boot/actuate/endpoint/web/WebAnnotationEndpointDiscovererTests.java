@@ -268,7 +268,8 @@ public class WebAnnotationEndpointDiscovererTests {
 					Collections.singletonList("application/json"));
 			WebAnnotationEndpointDiscoverer discoverer = new WebAnnotationEndpointDiscoverer(
 					context, parameterMapper, mediaTypes, endpointPathResolver,
-					new CachingOperationInvokerAdvisor(timeToLive), null);
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					null);
 			consumer.accept(discoverer);
 		}
 		finally {

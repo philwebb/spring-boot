@@ -16,11 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
@@ -45,20 +43,12 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping(
-			EndpointProvider<WebOperation> provider,
+			EndpointDiscoverer<WebOperation> endpointDiscoverer,
 			EndpointMediaTypes endpointMediaTypes,
 			WebEndpointProperties webEndpointProperties) {
 		return new WebFluxEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints(), endpointMediaTypes);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebOperation> provider,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
+				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes);
 	}
 
 }

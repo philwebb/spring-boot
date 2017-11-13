@@ -16,12 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.DefaultEndpointPathProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.EndpointPathProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
@@ -45,33 +42,25 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Phillip Webb
  * @since 2.0.0
  */
+
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
-@EnableConfigurationProperties({ CorsEndpointProperties.class,
-		WebEndpointProperties.class, ManagementServerProperties.class })
+@EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(
-			EndpointProvider<WebOperation> provider,
+			EndpointDiscoverer<WebOperation> endpointDiscoverer,
 			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
 			WebEndpointProperties webEndpointProperties) {
 		WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
 				new EndpointMapping(webEndpointProperties.getBasePath()),
-				provider.getEndpoints(), endpointMediaTypes,
+				endpointDiscoverer.discoverEndpoints(), endpointMediaTypes,
 				getCorsConfiguration(corsProperties));
 		return handlerMapping;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointPathProvider endpointPathProvider(
-			EndpointProvider<WebOperation> provider,
-			WebEndpointProperties webEndpointProperties) {
-		return new DefaultEndpointPathProvider(provider, webEndpointProperties);
 	}
 
 	private CorsConfiguration getCorsConfiguration(CorsEndpointProperties properties) {

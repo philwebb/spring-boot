@@ -16,39 +16,38 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
+import java.util.function.Function;
+
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.cache.CachingConfiguration;
-import org.springframework.boot.actuate.endpoint.cache.CachingConfigurationFactory;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link DefaultCachingConfigurationFactory}.
+ * Tests for {@link PropertyResolverEndpointIdTimeToLive}.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-public class DefaultCachingConfigurationFactoryTests {
+public class PropertyResolverEndpointIdTimeToLiveTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final CachingConfigurationFactory factory = new DefaultCachingConfigurationFactory(
+	private final Function<String, Long> timeToLive = new PropertyResolverEndpointIdTimeToLive(
 			this.environment);
 
 	@Test
 	public void defaultConfiguration() {
-		CachingConfiguration configuration = this.factory.getCachingConfiguration("test");
-		assertThat(configuration).isNotNull();
-		assertThat(configuration.getTimeToLive()).isEqualTo(0);
+		Long result = this.timeToLive.apply("test");
+		assertThat(result).isNull();
 	}
 
 	@Test
 	public void userConfiguration() {
 		this.environment.setProperty("endpoints.test.cache.time-to-live", "500");
-		CachingConfiguration configuration = this.factory.getCachingConfiguration("test");
-		assertThat(configuration).isNotNull();
-		assertThat(configuration.getTimeToLive()).isEqualTo(500);
+		Long result = this.timeToLive.apply("test");
+		assertThat(result).isEqualTo(500L);
 	}
 
 }

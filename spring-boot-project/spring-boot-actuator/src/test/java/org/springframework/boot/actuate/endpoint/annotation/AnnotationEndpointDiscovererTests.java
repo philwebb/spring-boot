@@ -434,7 +434,8 @@ public class AnnotationEndpointDiscovererTests {
 			super(applicationContext, TestEndpointOperation::new,
 					TestEndpointOperation::getMethod,
 					new ConversionServiceParameterMapper(),
-					new CachingOperationInvokerAdvisor(timeToLive), filters);
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					filters);
 		}
 
 	}
@@ -458,7 +459,8 @@ public class AnnotationEndpointDiscovererTests {
 			super(applicationContext, SpecializedTestEndpointOperation::new,
 					SpecializedTestEndpointOperation::getMethod,
 					new ConversionServiceParameterMapper(),
-					new CachingOperationInvokerAdvisor(timeToLive), filters);
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)),
+					filters);
 		}
 
 	}

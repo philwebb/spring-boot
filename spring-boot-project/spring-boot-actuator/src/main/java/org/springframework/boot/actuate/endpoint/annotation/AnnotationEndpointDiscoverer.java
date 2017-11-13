@@ -77,17 +77,18 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 	 * @param operationKeyFactory a factory used to create a key for an operation
 	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
 	 * an operation is invoked
-	 * @param invokerAdvisor advisor used to add additional invoker advise
-	 * @param filters filters that must match for an endpoint to be exposed.
+	 * @param invokerAdvisors advisors used to add additional invoker advise
+	 * @param filters filters that must match for an endpoint to be exposed
 	 */
 	protected AnnotationEndpointDiscoverer(ApplicationContext applicationContext,
 			OperationFactory<T> operationFactory, Function<T, K> operationKeyFactory,
-			ParameterMapper parameterMapper, OperationMethodInvokerAdvisor invokerAdvisor,
+			ParameterMapper parameterMapper,
+			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
 			Collection<? extends EndpointFilter<T>> filters) {
 		this.applicationContext = applicationContext;
 		this.operationKeyFactory = operationKeyFactory;
 		this.operationsFactory = new OperationsFactory<>(operationFactory,
-				parameterMapper, invokerAdvisor);
+				parameterMapper, invokerAdvisors);
 		this.filters = (filters == null ? Collections.emptyList()
 				: new ArrayList<>(filters));
 	}

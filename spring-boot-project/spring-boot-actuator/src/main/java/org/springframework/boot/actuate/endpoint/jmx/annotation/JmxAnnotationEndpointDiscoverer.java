@@ -49,14 +49,16 @@ public class JmxAnnotationEndpointDiscoverer
 	 * @param applicationContext the application context
 	 * @param parameterMapper the {@link ParameterMapper} used to convert arguments when
 	 * an operation is invoked
-	 * @param invokerAdvisor advisor used to add additional invoker advise
-	 * @param filters filters that must match for an endpoint to be exposed.
+	 * @param invokerAdvisors advisors used to add additional invoker advise
+	 * @param filters filters that must match for an endpoint to be exposed
 	 */
 	public JmxAnnotationEndpointDiscoverer(ApplicationContext applicationContext,
-			ParameterMapper parameterMapper, OperationMethodInvokerAdvisor invokerAdvisor,
+			ParameterMapper parameterMapper,
+			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
 			Collection<? extends EndpointFilter<JmxOperation>> filters) {
 		super(applicationContext, new JmxEndpointOperationFactory(),
-				JmxOperation::getOperationName, parameterMapper, invokerAdvisor, filters);
+				JmxOperation::getOperationName, parameterMapper, invokerAdvisors,
+				filters);
 	}
 
 	@Override
