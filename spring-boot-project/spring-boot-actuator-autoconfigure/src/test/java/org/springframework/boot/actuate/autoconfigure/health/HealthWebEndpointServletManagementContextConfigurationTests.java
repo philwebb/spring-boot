@@ -20,8 +20,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
+import org.springframework.boot.actuate.health.HealthStatusHttpMapper;
 import org.springframework.boot.actuate.health.StatusEndpointWebExtension;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.test.util.ReflectionTestUtils;
