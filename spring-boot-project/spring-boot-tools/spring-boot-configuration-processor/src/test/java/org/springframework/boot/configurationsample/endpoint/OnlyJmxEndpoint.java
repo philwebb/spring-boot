@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationsample.endpoint;
 
 import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.EndpointExposure;
 
 /**
  * An endpoint that only exposes a JMX MBean.

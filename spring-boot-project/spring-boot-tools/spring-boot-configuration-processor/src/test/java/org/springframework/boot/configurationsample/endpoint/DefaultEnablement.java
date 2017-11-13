@@ -16,14 +16,8 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
+public enum DefaultEnablement {
 
-/**
- * An endpoints that only exposes a web endpoint.
- *
- * @author Stephane Nicoll
- */
-@Endpoint(id = "web", exposure = EndpointExposure.WEB)
-public class OnlyWebEndpoint {
+	ENABLED, DISABLED, NEUTRAL
 
 }

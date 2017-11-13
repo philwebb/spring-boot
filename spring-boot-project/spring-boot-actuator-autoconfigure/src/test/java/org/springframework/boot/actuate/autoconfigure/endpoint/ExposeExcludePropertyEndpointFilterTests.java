@@ -34,11 +34,11 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link IncludeExcludePropertyEndpointFilter}.
+ * Tests for {@link ExposeExcludePropertyEndpointFilter}.
  *
  * @author Phillip Webb
  */
-public class IncludeExcludePropertyEndpointFilterTests {
+public class ExposeExcludePropertyEndpointFilterTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -59,14 +59,14 @@ public class IncludeExcludePropertyEndpointFilterTests {
 	public void createWhenDiscovererTypeIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Discoverer Type must not be null");
-		new IncludeExcludePropertyEndpointFilter<>(null, this.environment, "foo");
+		new ExposeExcludePropertyEndpointFilter<>(null, this.environment, "foo");
 	}
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Environment must not be null");
-		new IncludeExcludePropertyEndpointFilter<>(TestEndpointDiscoverer.class, null,
+		new ExposeExcludePropertyEndpointFilter<>(TestEndpointDiscoverer.class, null,
 				"foo");
 	}
 
@@ -74,7 +74,7 @@ public class IncludeExcludePropertyEndpointFilterTests {
 	public void createWhenPrefixIsNullShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new IncludeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
+		new ExposeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
 				this.environment, null);
 	}
 
@@ -82,63 +82,86 @@ public class IncludeExcludePropertyEndpointFilterTests {
 	public void createWhenPrefixIsEmptyShouldThrowException() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Prefix must not be empty");
-		new IncludeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
+		new ExposeExcludePropertyEndpointFilter<Operation>(TestEndpointDiscoverer.class,
 				this.environment, "");
 	}
 
 	@Test
-	public void matchWhenIncludeIsEmptyAndExcludeIsEmptyShouldMatch() throws Exception {
+	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndInDefaultShouldMatch()
+			throws Exception {
 		setupFilter("", "");
-		assertThat(match("bar")).isTrue();
+		assertThat(match("def")).isTrue();
 	}
 
 	@Test
-	public void matchWhenIncludeMatchesAndExcludeIsEmptyShouldMatch() throws Exception {
+	public void matchWhenExposeIsEmptyAndExcludeIsEmptyAndNotInDefaultShouldNotMatch()
+			throws Exception {
+		setupFilter("", "");
+		assertThat(match("bar")).isFalse();
+	}
+
+	@Test
+	public void matchWhenExposeMatchesAndExcludeIsEmptyShouldMatch() throws Exception {
 		setupFilter("bar", "");
 		assertThat(match("bar")).isTrue();
 	}
 
 	@Test
-	public void matchWhenIncludeDoesNotMatchAndExcludeIsEmptyShouldNotMatch()
+	public void matchWhenExposeDoesNotMatchAndExcludeIsEmptyShouldNotMatch()
 			throws Exception {
 		setupFilter("bar", "");
 		assertThat(match("baz")).isFalse();
 	}
 
 	@Test
-	public void matchWhenIncludeMatchesAndExcludeMatchesShouldNotMatch()
-			throws Exception {
+	public void matchWhenExposeMatchesAndExcludeMatchesShouldNotMatch() throws Exception {
 		setupFilter("bar,baz", "baz");
 		assertThat(match("baz")).isFalse();
 	}
 
 	@Test
-	public void matchWhenIncludeMatchesAndExcludeDoesNotMatchShouldMatch()
+	public void matchWhenExposeMatchesAndExcludeDoesNotMatchShouldMatch()
 			throws Exception {
 		setupFilter("bar,baz", "buz");
 		assertThat(match("baz")).isTrue();
 	}
 
 	@Test
-	public void matchWhenIncludeMatchesWithDifferentCaseShouldMatch() throws Exception {
+	public void matchWhenExposeMatchesWithDifferentCaseShouldMatch() throws Exception {
 		setupFilter("bar", "");
 		assertThat(match("bAr")).isTrue();
 	}
 
 	@Test
-	public void whenDicovererDoesNotMatchShouldReturnTrue() throws Exception {
-		this.environment.setProperty("foo.include", "bar");
+	public void matchWhenDicovererDoesNotMatchShouldMatch() throws Exception {
+		this.environment.setProperty("foo.expose", "bar");
 		this.environment.setProperty("foo.exclude", "");
-		this.filter = new IncludeExcludePropertyEndpointFilter<>(
+		this.filter = new ExposeExcludePropertyEndpointFilter<>(
 				DifferentTestEndpointDiscoverer.class, this.environment, "foo");
 		assertThat(match("baz")).isTrue();
 	}
 
-	private void setupFilter(String include, String exclude) {
-		this.environment.setProperty("foo.include", include);
+	@Test
+	public void matchWhenIncludeIsAsteriskShouldMatchAll() throws Exception {
+		setupFilter("*", "buz");
+		assertThat(match("bar")).isTrue();
+		assertThat(match("baz")).isTrue();
+		assertThat(match("buz")).isFalse();
+	}
+
+	@Test
+	public void matchWhenExcludeIsAsteriskShouldMatchNone() throws Exception {
+		setupFilter("bar,baz,buz", "*");
+		assertThat(match("bar")).isFalse();
+		assertThat(match("baz")).isFalse();
+		assertThat(match("buz")).isFalse();
+	}
+
+	private void setupFilter(String expose, String exclude) {
+		this.environment.setProperty("foo.expose", expose);
 		this.environment.setProperty("foo.exclude", exclude);
-		this.filter = new IncludeExcludePropertyEndpointFilter<>(
-				TestEndpointDiscoverer.class, this.environment, "foo");
+		this.filter = new ExposeExcludePropertyEndpointFilter<>(
+				TestEndpointDiscoverer.class, this.environment, "foo", "def");
 	}
 
 	private boolean match(String id) {

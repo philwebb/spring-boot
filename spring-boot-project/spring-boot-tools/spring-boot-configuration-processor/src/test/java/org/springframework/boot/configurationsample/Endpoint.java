@@ -22,6 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.configurationsample.endpoint.DefaultEnablement;
+import org.springframework.boot.configurationsample.endpoint.EndpointExposure;
+
 /**
  * Alternative to Spring Boot's {@code @Endpoint} for testing (removes the need for a
  * dependency on the real annotation).

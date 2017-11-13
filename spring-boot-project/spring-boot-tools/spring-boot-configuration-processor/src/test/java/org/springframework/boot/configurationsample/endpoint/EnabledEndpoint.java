@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.DefaultEnablement;
 import org.springframework.boot.configurationsample.Endpoint;
 
 /**

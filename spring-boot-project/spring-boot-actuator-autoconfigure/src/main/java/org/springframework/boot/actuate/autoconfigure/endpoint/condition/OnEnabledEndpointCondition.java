@@ -45,7 +45,7 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
 		String id = attributes.getString("id");
 		boolean enabledByDefault = attributes.getBoolean("enableByDefault");
-		String key = "endpoint." + id + ".enabled";
+		String key = "management.endpoint." + id + ".enabled";
 		Boolean enabled = context.getEnvironment().getProperty(key, Boolean.class);
 		if (enabled != null) {
 			return new ConditionOutcome(enabled,

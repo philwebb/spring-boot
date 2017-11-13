@@ -17,7 +17,7 @@
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
 import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.EndpointExposure;
+import org.springframework.boot.configurationsample.endpoint.EndpointExposure;
 
 /**
  * An endpoint that only exposes a JMX MBean.

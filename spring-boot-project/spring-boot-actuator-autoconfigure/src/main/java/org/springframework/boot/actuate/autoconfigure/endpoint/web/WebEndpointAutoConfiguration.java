@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.IncludeExcludePropertyEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.ExposeExcludePropertyEndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
@@ -87,8 +87,8 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public IncludeExcludePropertyEndpointFilter<WebOperation> webIncludeExcludePropertyEndpointFilter() {
-		return new IncludeExcludePropertyEndpointFilter<>(
+	public ExposeExcludePropertyEndpointFilter<WebOperation> webIncludeExcludePropertyEndpointFilter() {
+		return new ExposeExcludePropertyEndpointFilter<>(
 				WebAnnotationEndpointDiscoverer.class,
 				this.applicationContext.getEnvironment(), "endpoints.web");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2017 the xposeoriginal author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,60 +34,81 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
- * {@link EndpointFilter} that will filter endpoints based on {@code include} and
+ * {@link EndpointFilter} that will filter endpoints based on {@code expose} and
  * {@code exclude} properties.
  *
  * @param <T> The operation type
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class IncludeExcludePropertyEndpointFilter<T extends Operation>
+public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 		implements EndpointFilter<T> {
 
 	private final Class<? extends EndpointDiscoverer<T>> discovererType;
 
-	private final Set<String> include;
+	private final Set<String> expose;
 
 	private final Set<String> exclude;
 
-	public IncludeExcludePropertyEndpointFilter(
+	private final Set<String> exposeDefaults;
+
+	public ExposeExcludePropertyEndpointFilter(
 			Class<? extends EndpointDiscoverer<T>> discovererType,
-			Environment environment, String prefix) {
+			Environment environment, String prefix, String... exposeDefaults) {
 		Assert.notNull(discovererType, "Discoverer Type must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.hasText(prefix, "Prefix must not be empty");
 		Binder binder = Binder.get(environment);
 		this.discovererType = discovererType;
-		this.include = bind(binder, prefix + ".include");
+		this.expose = bind(binder, prefix + ".expose");
 		this.exclude = bind(binder, prefix + ".exclude");
+		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
+	}
+
+	public ExposeExcludePropertyEndpointFilter(
+			Class<? extends EndpointDiscoverer<T>> discovererType,
+			Collection<String> expose, Collection<String> exclude,
+			String... exposeDefaults) {
+		Assert.notNull(discovererType, "Discoverer Type must not be null");
+		this.discovererType = discovererType;
+		this.expose = asSet(expose);
+		this.exclude = asSet(exclude);
+		this.exposeDefaults = asSet(Arrays.asList(exposeDefaults));
 	}
 
 	private Set<String> bind(Binder binder, String name) {
-		return binder.bind(name, Bindable.listOf(String.class)).orElseGet(ArrayList::new)
-				.stream().map(String::toLowerCase)
+		return asSet(binder.bind(name, Bindable.listOf(String.class))
+				.orElseGet(ArrayList::new));
+	}
+
+	private Set<String> asSet(Collection<String> items) {
+		if (items == null) {
+			return Collections.emptySet();
+		}
+		return items.stream().map(String::toLowerCase)
 				.collect(Collectors.toCollection(HashSet::new));
 	}
 
 	@Override
 	public boolean match(EndpointInfo<T> info, EndpointDiscoverer<T> discoverer) {
 		if (this.discovererType.isInstance(discoverer)) {
-			return isIncluded(info) && !isExcluded(info);
+			return isExposed(info) && !isExcluded(info);
 		}
 		return true;
 	}
 
-	private boolean isIncluded(EndpointInfo<T> info) {
-		if (this.include.isEmpty()) {
-			return true;
+	private boolean isExposed(EndpointInfo<T> info) {
+		if (this.expose.isEmpty()) {
+			return contains(this.exposeDefaults, info);
 		}
-		return contains(this.include, info);
+		return this.expose.contains("*") || contains(this.expose, info);
 	}
 
 	private boolean isExcluded(EndpointInfo<T> info) {
 		if (this.exclude.isEmpty()) {
 			return false;
 		}
-		return contains(this.exclude, info);
+		return this.exclude.contains("*") || contains(this.exclude, info);
 	}
 
 	private boolean contains(Set<String> items, EndpointInfo<T> info) {

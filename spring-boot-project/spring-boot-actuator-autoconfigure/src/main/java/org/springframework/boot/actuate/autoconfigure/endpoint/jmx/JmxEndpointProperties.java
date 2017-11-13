@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint;
-
-import org.springframework.boot.configurationsample.Endpoint;
+package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 /**
- * An endpoints that only exposes a web endpoint.
- *
- * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 2.0.0
  */
-@Endpoint(id = "web", exposure = EndpointExposure.WEB)
-public class OnlyWebEndpoint {
+public class JmxEndpointProperties {
 
 }
