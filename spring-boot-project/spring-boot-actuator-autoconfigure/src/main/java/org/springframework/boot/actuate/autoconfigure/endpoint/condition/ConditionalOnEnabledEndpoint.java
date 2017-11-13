@@ -28,7 +28,8 @@ import org.springframework.core.env.Environment;
 
 /**
  * {@link Conditional} that checks whether an endpoint is enabled or not. Matches
- * according to an {@link Environment} property, falling back to
+ * according to the endpoints specific {@link Environment} property, falling back to
+ * {@code management.endpoints.enabled-by-default} or failing that
  * {@link Endpoint#enableByDefault()}.
  *
  * @author Stephane Nicoll

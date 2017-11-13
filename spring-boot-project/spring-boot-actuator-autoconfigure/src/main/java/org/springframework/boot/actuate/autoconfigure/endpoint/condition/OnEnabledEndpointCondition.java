@@ -39,20 +39,33 @@ import org.springframework.util.ClassUtils;
  */
 class OnEnabledEndpointCondition extends SpringBootCondition {
 
+	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
+
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes attributes = getEndpointAttributes(context, metadata);
 		String id = attributes.getString("id");
-		boolean enabledByDefault = attributes.getBoolean("enableByDefault");
 		String key = "management.endpoint." + id + ".enabled";
-		Boolean enabled = context.getEnvironment().getProperty(key, Boolean.class);
-		if (enabled != null) {
-			return new ConditionOutcome(enabled,
+		Boolean userDefinedEnabled = context.getEnvironment().getProperty(key,
+				Boolean.class);
+		if (userDefinedEnabled != null) {
+			return new ConditionOutcome(userDefinedEnabled,
 					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
-							.because("found property " + key + " with value " + enabled));
+							.because("found property " + key + " with value "
+									+ userDefinedEnabled));
 		}
-		return new ConditionOutcome(enabledByDefault,
+		Boolean userDefinedDefault = context.getEnvironment()
+				.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class);
+		if (userDefinedDefault != null) {
+			return new ConditionOutcome(userDefinedDefault,
+					ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class)
+							.because("no property " + key
+									+ " found so using user defined default from "
+									+ ENABLED_BY_DEFAULT_KEY));
+		}
+		boolean endpointDefault = attributes.getBoolean("enableByDefault");
+		return new ConditionOutcome(endpointDefault,
 				ConditionMessage.forCondition(ConditionalOnEnabledEndpoint.class).because(
 						"no property " + key + " found so using endpoint default"));
 	}
