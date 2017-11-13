@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -97,9 +98,16 @@ class OnEnabledEndpointCondition extends SpringBootCondition {
 	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.findMergedAnnotationAttributes(type, Endpoint.class, true, true);
+		if (attributes == null) {
+			attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(type,
+					EndpointExtension.class, false, true);
+			if (attributes != null) {
+				return getEndpointAttributes(attributes.getClass("endpoint"));
+			}
+		}
 		Assert.state(attributes != null,
 				"OnEnabledEndpointCondition may only be used on @Bean methods that "
-						+ "return an @Endpoint");
+						+ "return an @Endpoint or and @EndpointExtension");
 		return attributes;
 	}
 

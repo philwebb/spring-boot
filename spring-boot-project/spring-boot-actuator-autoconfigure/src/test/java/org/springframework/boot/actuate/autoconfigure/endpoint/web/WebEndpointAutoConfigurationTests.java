@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint;
+package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -26,16 +27,16 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link EndpointAutoConfiguration}.
+ * Tests for {@link WebEndpointAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public class EndpointAutoConfigurationTests {
+public class WebEndpointAutoConfigurationTests {
 
 	@Test
 	public void webApplicationConfiguresEndpointMediaTypes() {
-		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class))
+		new WebApplicationContextRunner().withConfiguration(AutoConfigurations
+				.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class))
 				.run((context) -> {
 					EndpointMediaTypes endpointMediaTypes = context
 							.getBean(EndpointMediaTypes.class);

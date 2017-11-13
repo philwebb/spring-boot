@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -231,6 +232,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class,
 				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
+				WebEndpointAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfiguration.class);
 	}
 

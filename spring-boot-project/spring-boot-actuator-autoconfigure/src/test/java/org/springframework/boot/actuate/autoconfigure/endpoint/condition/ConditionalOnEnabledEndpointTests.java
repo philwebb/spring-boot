@@ -18,7 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.endpoint.EndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointInfo;
+import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,6 +92,25 @@ public class ConditionalOnEnabledEndpointTests {
 				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
+	@Test
+	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsEnabledByDefaultShouldMatch()
+			throws Exception {
+		this.contextRunner
+				.withUserConfiguration(
+						FooEndpointAndExtensionEnabledByDefaultTrueConfiguration.class)
+				.run((context) -> assertThat(context).hasBean("foo").hasBean("fooExt"));
+	}
+
+	@Test
+	public void outcomeWhenNoPropertiesAndExtensionAnnotationIsNotEnabledByDefaultShouldNotMatch()
+			throws Exception {
+		this.contextRunner
+				.withUserConfiguration(
+						FooEndpointAndExtensionEnabledByDefaultFalseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean("foo")
+						.doesNotHaveBean("fooExt"));
+	}
+
 	@Endpoint(id = "foo", enableByDefault = true)
 	static class FooEndpointEnabledByDefaultTrue {
 
@@ -94,6 +118,26 @@ public class ConditionalOnEnabledEndpointTests {
 
 	@Endpoint(id = "foo", enableByDefault = false)
 	static class FooEndpointEnabledByDefaultFalse {
+
+	}
+
+	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultTrue.class, filter = TestFilter.class)
+	static class FooEndpointExtensionEnabledByDefaultTrue {
+
+	}
+
+	@EndpointExtension(endpoint = FooEndpointEnabledByDefaultFalse.class, filter = TestFilter.class)
+	static class FooEndpointExtensionEnabledByDefaultFalse {
+
+	}
+
+	static class TestFilter implements EndpointFilter<Operation> {
+
+		@Override
+		public boolean match(EndpointInfo<Operation> info,
+				EndpointDiscoverer<Operation> discoverer) {
+			return true;
+		}
 
 	}
 
@@ -115,6 +159,40 @@ public class ConditionalOnEnabledEndpointTests {
 		@ConditionalOnEnabledEndpoint
 		public FooEndpointEnabledByDefaultFalse foo() {
 			return new FooEndpointEnabledByDefaultFalse();
+		}
+
+	}
+
+	@Configuration
+	static class FooEndpointAndExtensionEnabledByDefaultTrueConfiguration {
+
+		@Bean
+		@ConditionalOnEnabledEndpoint
+		public FooEndpointEnabledByDefaultTrue foo() {
+			return new FooEndpointEnabledByDefaultTrue();
+		}
+
+		@Bean
+		@ConditionalOnEnabledEndpoint
+		public FooEndpointExtensionEnabledByDefaultTrue fooExt() {
+			return new FooEndpointExtensionEnabledByDefaultTrue();
+		}
+
+	}
+
+	@Configuration
+	static class FooEndpointAndExtensionEnabledByDefaultFalseConfiguration {
+
+		@Bean
+		@ConditionalOnEnabledEndpoint
+		public FooEndpointEnabledByDefaultFalse foo() {
+			return new FooEndpointEnabledByDefaultFalse();
+		}
+
+		@Bean
+		@ConditionalOnEnabledEndpoint
+		public FooEndpointExtensionEnabledByDefaultFalse fooExt() {
+			return new FooEndpointExtensionEnabledByDefaultFalse();
 		}
 
 	}
