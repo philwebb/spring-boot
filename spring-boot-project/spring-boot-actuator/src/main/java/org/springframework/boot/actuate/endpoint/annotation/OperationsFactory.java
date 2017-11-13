@@ -69,7 +69,8 @@ class OperationsFactory<T extends Operation> {
 			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors) {
 		this.operationFactory = operationFactory;
 		this.parameterMapper = parameterMapper;
-		this.invokerAdvisors = new ArrayList<>(invokerAdvisors);
+		this.invokerAdvisors = (invokerAdvisors == null ? Collections.emptyList()
+				: new ArrayList<>(invokerAdvisors));
 	}
 
 	public Map<Method, T> createOperations(String id, Object target, Class<?> type) {

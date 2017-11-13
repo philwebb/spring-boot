@@ -85,6 +85,10 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 			ParameterMapper parameterMapper,
 			Collection<? extends OperationMethodInvokerAdvisor> invokerAdvisors,
 			Collection<? extends EndpointFilter<T>> filters) {
+		Assert.notNull(applicationContext, "Application Context must not be null");
+		Assert.notNull(operationFactory, "Operation Factory must not be null");
+		Assert.notNull(operationKeyFactory, "Operation Key Factory must not be null");
+		Assert.notNull(parameterMapper, "Parameter Mapper must not be null");
 		this.applicationContext = applicationContext;
 		this.operationKeyFactory = operationKeyFactory;
 		this.operationsFactory = new OperationsFactory<>(operationFactory,
