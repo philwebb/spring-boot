@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -191,7 +192,7 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb()
+	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebInclues()
 			throws Exception {
 		setupContextWithCloudEnabled();
 		this.context.register(TestConfiguration.class);
@@ -199,8 +200,9 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getId()).isEqualTo("test");
+		List<String> endpointIds = endpoints.stream().map(EndpointInfo::getId)
+				.collect(Collectors.toList());
+		assertThat(endpointIds).contains("test");
 	}
 
 	@Test
@@ -211,10 +213,12 @@ public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping();
 		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getOperations()).hasSize(1);
-		assertThat(endpoints.get(0).getOperations().iterator().next()
-				.getRequestPredicate().getPath()).isEqualTo("test");
+		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
+				.get();
+		assertThat(endpoint.getOperations()).hasSize(1);
+		WebOperation operation = endpoint.getOperations().iterator().next();
+		assertThat(operation.getRequestPredicate().getPath()).isEqualTo("test");
 	}
 
 	private void setupContextWithCloudEnabled() {

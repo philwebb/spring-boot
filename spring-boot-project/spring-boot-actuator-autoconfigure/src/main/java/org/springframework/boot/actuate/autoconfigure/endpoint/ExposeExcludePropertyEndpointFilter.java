@@ -99,7 +99,8 @@ public class ExposeExcludePropertyEndpointFilter<T extends Operation>
 
 	private boolean isExposed(EndpointInfo<T> info) {
 		if (this.expose.isEmpty()) {
-			return contains(this.exposeDefaults, info);
+			return this.exposeDefaults.contains("*")
+					|| contains(this.exposeDefaults, info);
 		}
 		return this.expose.contains("*") || contains(this.expose, info);
 	}

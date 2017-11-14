@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
@@ -65,11 +66,11 @@ public class WebMvcEndpointCorsIntegrationTests {
 		this.context.register(JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-				EndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
 				BeansEndpointAutoConfiguration.class);
-		// FIXME
-		TestPropertyValues.of("endpoints.default.web.enabled:true").applyTo(this.context);
+		TestPropertyValues.of("management.endpoints.web.expose:*").applyTo(this.context);
 	}
 
 	@Test

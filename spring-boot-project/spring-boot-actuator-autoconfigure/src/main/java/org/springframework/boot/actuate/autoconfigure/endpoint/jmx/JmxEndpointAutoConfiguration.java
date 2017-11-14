@@ -88,7 +88,8 @@ public class JmxEndpointAutoConfiguration {
 	public ExposeExcludePropertyEndpointFilter<JmxOperation> jmxIncludeExcludePropertyEndpointFilter() {
 		return new ExposeExcludePropertyEndpointFilter<>(
 				JmxAnnotationEndpointDiscoverer.class,
-				this.applicationContext.getEnvironment(), "management.endpoints.jmx");
+				this.applicationContext.getEnvironment(), "management.endpoints.jmx",
+				"*");
 	}
 
 }

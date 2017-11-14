@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EndpointInfo;
@@ -79,7 +80,7 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 				RestTemplateAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				CloudFoundryActuatorAutoConfiguration.class);
 	}
 
