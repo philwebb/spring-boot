@@ -46,6 +46,7 @@ import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * A base {@link EndpointDiscoverer} implementation that discovers
@@ -148,6 +149,8 @@ public abstract class AnnotationEndpointDiscoverer<K, T extends Operation>
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.findMergedAnnotationAttributes(endpointType, Endpoint.class, true, true);
 		String id = annotationAttributes.getString("id");
+		Assert.state(StringUtils.hasText(id),
+				"No @Endpoint id attribute specified for " + endpointType.getName());
 		boolean enabledByDefault = (Boolean) annotationAttributes.get("enableByDefault");
 		Collection<T> operations = this.operationsFactory
 				.createOperations(id, target, endpointType).values();

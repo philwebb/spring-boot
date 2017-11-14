@@ -16,14 +16,15 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.MetaEndpoint;
 
 /**
- * An endpoint that only exposes a JMX MBean.
+ * An meta-annotated endpoint similar to {@code @WebEndpoint} or {@code @JmxEndpoint} in
+ * Boot.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "jmx", exposure = EndpointExposure.JMX)
-public class OnlyJmxEndpoint {
+@MetaEndpoint(id = "specific")
+public class SpecificEndpoint {
 
 }

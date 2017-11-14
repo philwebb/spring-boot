@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint.incremental;
+package org.springframework.boot.configurationsample;
 
-import org.springframework.boot.configurationsample.MetaEndpoint;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * An meta-annotated endpoint similar to {@code @WebEndpoint} or {@code @JmxEndpoint} in
- * Boot.
- *
- * @author Stephane Nicoll
- */
-@MetaEndpoint(id = "incremental")
-public class IncrementalSpecificEndpoint {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Endpoint
+public @interface MetaEndpoint {
+
+	String id();
+
+	boolean enableByDefault() default true;
 
 }

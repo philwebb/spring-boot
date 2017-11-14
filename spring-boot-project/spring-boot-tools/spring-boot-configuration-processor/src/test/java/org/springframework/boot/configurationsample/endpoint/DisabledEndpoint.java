@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.Endpoint;
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "disabled", defaultEnablement = DefaultEnablement.DISABLED)
+@Endpoint(id = "disabled", enableByDefault = false)
 public class DisabledEndpoint {
 
 }
