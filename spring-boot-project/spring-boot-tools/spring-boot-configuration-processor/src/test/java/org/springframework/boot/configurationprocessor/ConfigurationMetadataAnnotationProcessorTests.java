@@ -601,26 +601,25 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
-	// FIXME
-	// @Test
-	// public void incrementalEndpointBuildEnableJmxEndpoint() throws Exception {
-	// TestProject project = new TestProject(this.temporaryFolder,
-	// IncrementalJmxEndpoint.class);
-	// ConfigurationMetadata metadata = project.fullBuild();
-	// assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-	// .fromSource(IncrementalJmxEndpoint.class));
-	// assertThat(metadata).has(enabledFlag("incremental", null));
-	// assertThat(metadata).has(cacheTtl("incremental"));
-	// assertThat(metadata.getItems()).hasSize(4);
-	// project.replaceText(IncrementalJmxEndpoint.class,
-	// ", exposure = EndpointExposure.JMX", "");
-	// metadata = project.incrementalBuild(IncrementalJmxEndpoint.class);
-	// assertThat(metadata).has(Metadata.withGroup("endpoints.incremental")
-	// .fromSource(IncrementalJmxEndpoint.class));
-	// assertThat(metadata).has(enabledFlag("incremental", null));
-	// assertThat(metadata).has(cacheTtl("incremental"));
-	// assertThat(metadata.getItems()).hasSize(6);
-	// }
+	@Test
+	public void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
+		TestProject project = new TestProject(this.temporaryFolder,
+				SpecificEndpoint.class);
+		ConfigurationMetadata metadata = project.fullBuild();
+		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(enabledFlag("specific", true));
+		assertThat(metadata).has(cacheTtl("specific"));
+		assertThat(metadata.getItems()).hasSize(3);
+		project.replaceText(SpecificEndpoint.class, "enableByDefault = true",
+				"enableByDefault = false");
+		metadata = project.incrementalBuild(SpecificEndpoint.class);
+		assertThat(metadata).has(Metadata.withGroup("endpoints.specific")
+				.fromSource(SpecificEndpoint.class));
+		assertThat(metadata).has(enabledFlag("specific", false));
+		assertThat(metadata).has(cacheTtl("specific"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId,
 			Boolean defaultValue) {

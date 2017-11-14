@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -170,34 +172,39 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return false;
 	}
 
-	private Map<Element, String> getElementsAnnotatedOrMetaAnnotatedWith(
+	private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(
 			RoundEnvironment roundEnv, TypeElement annotation) {
 		DeclaredType annotationType = (DeclaredType) annotation.asType();
-		Map<Element, String> result = new LinkedHashMap<>();
-		Set<Element> seen = new HashSet<>();
+		Map<Element, List<Element>> result = new LinkedHashMap<>();
 		for (Element element : roundEnv.getRootElements()) {
-			collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, element, element,
-					seen, result);
+			LinkedList<Element> stack = new LinkedList<>();
+			stack.push(element);
+			collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack);
+			stack.removeFirst();
+			if (!stack.isEmpty()) {
+				result.put(element, Collections.unmodifiableList(stack));
+			}
 		}
 		return result;
 	}
 
-	private void collectElementsAnnotatedOrMetaAnnotatedWith(DeclaredType annotationType,
-			Element element, Element candidate, Set<Element> seen,
-			Map<Element, String> result) {
-		if (seen.contains(candidate)) {
-			return;
-		}
-		seen.add(candidate);
+	private boolean collectElementsAnnotatedOrMetaAnnotatedWith(
+			DeclaredType annotationType, LinkedList<Element> stack) {
+		Element element = stack.peekLast();
 		for (AnnotationMirror annotation : this.processingEnv.getElementUtils()
-				.getAllAnnotationMirrors(candidate)) {
-			if (annotation.getAnnotationType().asElement()
-					.equals(annotationType.asElement())) {
-				result.put(element, this.typeUtils.getQualifiedName(candidate));
+				.getAllAnnotationMirrors(element)) {
+			Element annotationElement = annotation.getAnnotationType().asElement();
+			if (!stack.contains(annotationElement)) {
+				stack.addLast(annotationElement);
+				if (annotationElement.equals(annotationType.asElement())) {
+					return true;
+				}
+				if (!collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, stack)) {
+					stack.removeLast();
+				}
 			}
-			collectElementsAnnotatedOrMetaAnnotatedWith(annotationType, element,
-					annotation.getAnnotationType().asElement(), seen, result);
 		}
+		return false;
 	}
 
 	private void processElement(Element element) {
@@ -388,8 +395,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void processEndpoint(Element element, String annotationName) {
+	private void processEndpoint(Element element, List<Element> annotations) {
 		try {
+			String annotationName = this.typeUtils.getQualifiedName(annotations.get(0));
 			AnnotationMirror annotation = getAnnotation(element, annotationName);
 			if (element instanceof TypeElement) {
 				processEndpoint(annotation, (TypeElement) element);

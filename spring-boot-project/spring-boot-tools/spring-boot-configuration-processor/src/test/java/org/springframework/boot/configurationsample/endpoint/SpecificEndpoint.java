@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.MetaEndpoint;
  *
  * @author Stephane Nicoll
  */
-@MetaEndpoint(id = "specific")
+@MetaEndpoint(id = "specific", enableByDefault = true)
 public class SpecificEndpoint {
 
 }
