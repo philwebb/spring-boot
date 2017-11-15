@@ -31,8 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HeapDumpWebEndpointManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			// FIXME
-			.withPropertyValues("endpoints.default.web.enabled:true")
+			.withPropertyValues("management.endpoints.web.expose:*")
 			.withUserConfiguration(
 					HeapDumpWebEndpointManagementContextConfiguration.class);
 

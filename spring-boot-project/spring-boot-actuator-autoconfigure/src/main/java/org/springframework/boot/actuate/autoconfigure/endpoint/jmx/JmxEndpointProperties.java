@@ -41,7 +41,7 @@ public class JmxEndpointProperties {
 	/**
 	 * The IDs of endpoints that should be exposed or '*' for all.
 	 */
-	private Set<String> expose = new LinkedHashSet<>();;
+	private Set<String> expose = new LinkedHashSet<>();
 
 	/**
 	 * The IDs of endpoints that should be excluded.

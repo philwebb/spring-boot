@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
@@ -209,31 +210,34 @@ public class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	public void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWeb()
+	public void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb()
 			throws Exception {
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
 		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getId()).isEqualTo("test");
+		assertThat(endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst())
+						.isNotEmpty();
 	}
 
 	@Test
 	public void endpointPathCustomizationIsNotApplied() throws Exception {
-		// FIXME
-		TestPropertyValues.of("endpoints.test.web.path=another/custom")
+		TestPropertyValues.of("management.endpoints.web.path-mapping.test=custom")
 				.applyTo(this.context);
 		this.context.register(TestConfiguration.class);
 		this.context.refresh();
 		CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping();
 		List<EndpointInfo<WebOperation>> endpoints = (List<EndpointInfo<WebOperation>>) handlerMapping
 				.getEndpoints();
-		assertThat(endpoints.size()).isEqualTo(1);
-		assertThat(endpoints.get(0).getOperations()).hasSize(1);
-		assertThat(endpoints.get(0).getOperations().iterator().next()
-				.getRequestPredicate().getPath()).isEqualTo("test");
+		EndpointInfo<WebOperation> endpoint = endpoints.stream()
+				.filter((candidate) -> "test".equals(candidate.getId())).findFirst()
+				.get();
+		Collection<WebOperation> operations = endpoint.getOperations();
+		assertThat(operations).hasSize(1);
+		assertThat(operations.iterator().next().getRequestPredicate().getPath())
+				.isEqualTo("test");
 	}
 
 	private CloudFoundryWebEndpointServletHandlerMapping getHandlerMapping() {

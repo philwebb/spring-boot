@@ -70,7 +70,7 @@ public class HealthWebEndpointReactiveManagementContextConfigurationTests {
 	public void runWithCustomHealthMappingShouldMapStatusCode() throws Exception {
 		this.contextRunner
 				.withPropertyValues(
-						"management.endpoint.health.status.http-mapping.CUSTOM=500")
+						"management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
 					Object extension = context
 							.getBean(ReactiveHealthEndpointWebExtension.class);
@@ -87,7 +87,7 @@ public class HealthWebEndpointReactiveManagementContextConfigurationTests {
 	public void runWithCustomStatusMappingShouldMapStatusCode() throws Exception {
 		this.contextRunner
 				.withPropertyValues(
-						"management.endpoint.health.status.http-mapping.CUSTOM=500")
+						"management.health.status.http-mapping.CUSTOM=500")
 				.run((context) -> {
 					Object extension = context
 							.getBean(ReactiveStatusEndpointWebExtension.class);

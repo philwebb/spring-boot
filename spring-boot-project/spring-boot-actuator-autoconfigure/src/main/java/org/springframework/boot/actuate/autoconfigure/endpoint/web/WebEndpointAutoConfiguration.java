@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnWebApplication
 @AutoConfigureAfter(EndpointAutoConfiguration.class)
 @EnableConfigurationProperties(WebEndpointProperties.class)
-@ConditionalOnProperty("management.endpoints.web.enabled")
+@ConditionalOnProperty(name = "management.endpoints.web.enabled", matchIfMissing = true)
 public class WebEndpointAutoConfiguration {
 
 	private static final List<String> MEDIA_TYPES = Arrays

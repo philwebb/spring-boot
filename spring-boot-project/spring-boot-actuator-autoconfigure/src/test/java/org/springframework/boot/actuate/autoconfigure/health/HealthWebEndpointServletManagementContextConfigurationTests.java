@@ -53,7 +53,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 	@Test
 	public void runWhenHealthEndpointIsDisabledShouldNotCreateExtensionBeans()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.health.enabled:false")
+		this.contextRunner.withPropertyValues("management.endpoint.health.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(HealthEndpointWebExtension.class));
 	}
@@ -61,7 +61,7 @@ public class HealthWebEndpointServletManagementContextConfigurationTests {
 	@Test
 	public void runWhenStatusEndpointIsDisabledShouldNotCreateExtensionBeans()
 			throws Exception {
-		this.contextRunner.withPropertyValues("endpoints.status.enabled:false")
+		this.contextRunner.withPropertyValues("management.endpoint.status.enabled:false")
 				.run((context) -> assertThat(context)
 						.doesNotHaveBean(StatusEndpointWebExtension.class));
 	}
