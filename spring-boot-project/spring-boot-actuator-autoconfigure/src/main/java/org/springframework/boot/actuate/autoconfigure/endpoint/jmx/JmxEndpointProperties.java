@@ -16,10 +16,103 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
+import java.util.LinkedHashSet;
+import java.util.Properties;
+import java.util.Set;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
+
 /**
- * @author Phillip Webb
+ * Configuration properties for JMX export of endpoints.
+ *
+ * @author Stephane Nicoll
  * @since 2.0.0
  */
+@ConfigurationProperties("management.endpoints.jmx")
 public class JmxEndpointProperties {
+
+	/**
+	 * Whether JMX endpoints are enabled.
+	 */
+	private boolean enabled;
+
+	/**
+	 * The IDs of endpoints that should be exposed or '*' for all.
+	 */
+	private Set<String> expose = new LinkedHashSet<>();;
+
+	/**
+	 * The IDs of endpoints that should be excluded.
+	 */
+	private Set<String> exclude = new LinkedHashSet<>();
+
+	/**
+	 * Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
+	 */
+	private String domain = "org.springframework.boot";
+
+	/**
+	 * Ensure that ObjectNames are modified in case of conflict.
+	 */
+	private boolean uniqueNames = false;
+
+	/**
+	 * Additional static properties to append to all ObjectNames of MBeans representing
+	 * Endpoints.
+	 */
+	private final Properties staticNames = new Properties();
+
+	public JmxEndpointProperties(Environment environment) {
+		String defaultDomain = environment.getProperty("spring.jmx.default-domain");
+		if (StringUtils.hasText(defaultDomain)) {
+			this.domain = defaultDomain;
+		}
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Set<String> getExpose() {
+		return this.expose;
+	}
+
+	public void setExpose(Set<String> expose) {
+		this.expose = expose;
+	}
+
+	public Set<String> getExclude() {
+		return this.exclude;
+	}
+
+	public void setExclude(Set<String> exclude) {
+		this.exclude = exclude;
+	}
+
+	public String getDomain() {
+		return this.domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	public boolean isUniqueNames() {
+		return this.uniqueNames;
+	}
+
+	public void setUniqueNames(boolean uniqueNames) {
+		this.uniqueNames = uniqueNames;
+	}
+
+	public Properties getStaticNames() {
+		return this.staticNames;
+	}
 
 }

@@ -16,10 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import java.util.Collections;
+
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,21 +31,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultEndpointPathResolverTests {
 
-	private final MockEnvironment environment = new MockEnvironment();
-
-	private final EndpointPathResolver resolver = new DefaultEndpointPathResolver(
-			this.environment);
-
 	@Test
 	public void defaultConfiguration() {
-		assertThat(this.resolver.resolvePath("test")).isEqualTo("test");
+		EndpointPathResolver resolver = new DefaultEndpointPathResolver(
+				Collections.emptyMap());
+		assertThat(resolver.resolvePath("test")).isEqualTo("test");
 	}
 
 	@Test
 	public void userConfiguration() {
-		// FIXME
-		this.environment.setProperty("endpoints.test.web.path", "custom");
-		assertThat(this.resolver.resolvePath("test")).isEqualTo("custom");
+		EndpointPathResolver resolver = new DefaultEndpointPathResolver(
+				Collections.singletonMap("test", "custom"));
+		assertThat(resolver.resolvePath("test")).isEqualTo("custom");
 	}
 
 }

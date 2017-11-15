@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import java.util.Map;
+
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.core.env.Environment;
 
@@ -27,17 +29,15 @@ import org.springframework.core.env.Environment;
  */
 class DefaultEndpointPathResolver implements EndpointPathResolver {
 
-	private final Environment environment;
+	private final Map<String, String> pathMapping;
 
-	DefaultEndpointPathResolver(Environment environment) {
-		this.environment = environment;
+	DefaultEndpointPathResolver(Map<String, String> pathMapping) {
+		this.pathMapping = pathMapping;
 	}
 
 	@Override
 	public String resolvePath(String endpointId) {
-		// FIXME
-		String key = String.format("endpoints.%s.web.path", endpointId);
-		return this.environment.getProperty(key, String.class, endpointId);
+		return this.pathMapping.getOrDefault(endpointId, endpointId);
 	}
 
 }

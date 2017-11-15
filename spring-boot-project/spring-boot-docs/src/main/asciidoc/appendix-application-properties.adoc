@@ -1095,9 +1095,6 @@ content into your application; rather pick only the properties that you need.
 	# HEALTH ENDPOINT ({sc-spring-boot-actuator}/health/HealthEndpoint.{sc-ext}[HealthEndpoint])
 	endpoints.health.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
 	endpoints.health.enabled= # Enable the health endpoint.
-	endpoints.health.jmx.enabled= # Expose the health endpoint as a JMX MBean.
-	endpoints.health.web.enabled= # Expose the health endpoint as a Web endpoint.
-	endpoints.health.web.path=health # Path of the health endpoint.
 
 	# HEAP DUMP ENDPOINT ({sc-spring-boot-actuator}/management/HeapDumpWebEndpoint.{sc-ext}[HeapDumpWebEndpoint])
 	management.endpoint.heapdump.cache.time-to-live=0 # Maximum time in milliseconds that a response can be cached.
@@ -1153,16 +1150,15 @@ content into your application; rather pick only the properties that you need.
 	management.endpoint.trace.enabled= # Enable the trace endpoint.
 
 	# JMX ENDPOINTS
-	management.endpoints.jmx.enabled=
-	management.endpoints.jmx.expose=
-	management.endpoints.jmx.exclude=
+	management.endpoints.jmx.enabled= # Whether JMX endpoints are enabled
+	management.endpoints.jmx.expose= The IDs of endpoints to expose or '*' for all (default is 'info', 'status')
+	management.endpoints.jmx.exclude= The IDs of endpoints to exclude
 
 	# WEB ENDPOINTS
-	management.endpoints.web.enabled=
-	management.endpoints.web.expose=
-	management.endpoints.web.exclude=
-	management.endpoints.web.mapping=
-
+	management.endpoints.web.enabled= # Whether web endpoints are enabled
+	management.endpoints.web.expose= The IDs of endpoints to expose or '*' for all (default is '*')
+	management.endpoints.web.exclude= The IDs of endpoints to exclude
+	management.endpoints.web.path=mapping= Map of endpoint IDs to the path that should expose them
 
 	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator-autoconfigure}/web/server/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
 	management.server.add-application-context-header=false # Add the "X-Application-Context" HTTP header in each response. Requires a custom management.server.port.

@@ -33,17 +33,18 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebAnnotationEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 @Configuration
 @ConditionalOnWebApplication
 @AutoConfigureAfter(EndpointAutoConfiguration.class)
 @EnableConfigurationProperties(WebEndpointProperties.class)
+@ConditionalOnProperty("management.endpoints.web.enabled")
 public class WebEndpointAutoConfiguration {
 
 	private static final List<String> MEDIA_TYPES = Arrays
@@ -51,14 +52,18 @@ public class WebEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	WebEndpointAutoConfiguration(ApplicationContext applicationContext) {
+	private final WebEndpointProperties properties;
+
+	WebEndpointAutoConfiguration(ApplicationContext applicationContext,
+			WebEndpointProperties properties) {
 		this.applicationContext = applicationContext;
+		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EndpointPathResolver endpointPathResolver(Environment environment) {
-		return new DefaultEndpointPathResolver(environment);
+	public EndpointPathResolver endpointPathResolver() {
+		return new DefaultEndpointPathResolver(this.properties.getPathMapping());
 	}
 
 	@Bean
@@ -89,9 +94,8 @@ public class WebEndpointAutoConfiguration {
 	@Bean
 	public ExposeExcludePropertyEndpointFilter<WebOperation> webIncludeExcludePropertyEndpointFilter() {
 		return new ExposeExcludePropertyEndpointFilter<>(
-				WebAnnotationEndpointDiscoverer.class,
-				this.applicationContext.getEnvironment(), "management.endpoints.web",
-				"info", "status");
+				WebAnnotationEndpointDiscoverer.class, this.properties.getExpose(),
+				this.properties.getExclude(), "info", "status");
 	}
 
 }
