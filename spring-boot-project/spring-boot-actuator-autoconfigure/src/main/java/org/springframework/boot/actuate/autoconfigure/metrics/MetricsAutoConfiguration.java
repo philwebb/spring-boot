@@ -78,10 +78,12 @@ import org.springframework.integration.support.management.IntegrationManagementC
 		SimpleExportConfiguration.class, StatsdExportConfiguration.class })
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class MetricsAutoConfiguration {
+
 	@Bean
 	@Order(0)
 	MeterRegistryConfigurer springEnvironmentMeterFilter(Environment environment) {
-		return r -> r.config().meterFilter(new EnvironmentMeterFilter(environment));
+		return (registry) -> registry.config()
+				.meterFilter(new EnvironmentMeterFilter(environment));
 	}
 
 	@Bean
