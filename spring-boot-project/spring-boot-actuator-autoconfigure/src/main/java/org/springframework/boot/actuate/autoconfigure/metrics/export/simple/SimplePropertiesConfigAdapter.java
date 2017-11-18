@@ -56,4 +56,5 @@ public class SimplePropertiesConfigAdapter extends
 	public CountingMode mode() {
 		return get(SimpleProperties::getMode, SimpleConfig::mode);
 	}
+
 }
