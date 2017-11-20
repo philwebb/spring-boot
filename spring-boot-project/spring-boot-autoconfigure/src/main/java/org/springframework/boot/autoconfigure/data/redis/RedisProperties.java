@@ -61,7 +61,7 @@ public class RedisProperties {
 	private int port = 6379;
 
 	/**
-	 * Enable SSL.
+	 * Whether to enable SSL support.
 	 */
 	private boolean ssl;
 
@@ -263,7 +263,7 @@ public class RedisProperties {
 	public static class Sentinel {
 
 		/**
-		 * Name of Redis server.
+		 * Name of the Redis server.
 		 */
 		private String master;
 
