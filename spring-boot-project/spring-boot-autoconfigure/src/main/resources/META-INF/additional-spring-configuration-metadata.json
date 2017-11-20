@@ -417,7 +417,7 @@
   {
     "name": "spring.rabbitmq.dynamic",
     "type": "java.lang.Boolean",
-    "description": "Create an AmqpAdmin bean.",
+    "description": "Whether to create an AmqpAdmin bean.",
     "defaultValue": true
   },
   {

@@ -146,7 +146,7 @@ public class ActiveMQProperties {
 	public static class Pool {
 
 		/**
-		 * Whether a PooledConnectionFactory should be created instead of a regular
+		 * Whether a PooledConnectionFactory should be created, instead of a regular
 		 * ConnectionFactory.
 		 */
 		private boolean enabled;
@@ -200,8 +200,8 @@ public class ActiveMQProperties {
 		private Duration timeBetweenExpirationCheck = Duration.ofMillis(-1);
 
 		/**
-		 * Use only one anonymous "MessageProducer" instance. Set it to false to create
-		 * one "MessageProducer" every time one is required.
+		 * Whether to use only one anonymous "MessageProducer" instance. Set it to false
+		 * to create one "MessageProducer" every time one is required.
 		 */
 		private boolean useAnonymousProducers = true;
 

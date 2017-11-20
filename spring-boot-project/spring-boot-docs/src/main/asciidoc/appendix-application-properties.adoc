@@ -907,7 +907,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.activemq.packages.trusted= # Comma-separated list of specific packages to trust (when not trusting all packages).
 	spring.activemq.pool.block-if-full=true # Whether to block when a connection is requested and the pool is full. Set it to false to throw a "JMSException" instead.
 	spring.activemq.pool.block-if-full-timeout=-1ms # Blocking period before throwing an exception if the pool is still full.
-	spring.activemq.pool.create-connection-on-startup=true # Create a connection on startup. Can be used to warm up the pool on startup.
+	spring.activemq.pool.create-connection-on-startup=true # Whether to create a connection on startup. Can be used to warm up the pool on startup.
 	spring.activemq.pool.enabled=false # Whether a PooledConnectionFactory should be created, instead of a regular ConnectionFactory.
 	spring.activemq.pool.expiry-timeout=0ms # Connection expiration timeout.
 	spring.activemq.pool.idle-timeout=30s # Connection idle timeout.
@@ -963,7 +963,7 @@ content into your application. Rather, pick only the properties that you need.
 	spring.kafka.admin.properties.*= # Additional admin-specific properties used to configure the client.
 	spring.kafka.admin.ssl.key-password= # Password of the private key in the key store file.
 	spring.kafka.admin.ssl.keystore-location= # Location of the key store file.
-	spring.kafka.admin.ssl.keystore-password= # Whether to store password for the key store file.
+	spring.kafka.admin.ssl.keystore-password= # Password of the key store file.
 	spring.kafka.admin.ssl.truststore-location= # Location of the trust store file.
 	spring.kafka.admin.ssl.truststore-password= # Store password for the trust store file.
 	spring.kafka.bootstrap-servers= # Comma-delimited list of host:port pairs to use for establishing the initial connection to the Kafka cluster.
@@ -1108,7 +1108,7 @@ content into your application. Rather, pick only the properties that you need.
 
 	# CLOUDFOUNDRY
 	management.cloudfoundry.enabled=true # Whether to enable extended Cloud Foundry actuator endpoints.
-	management.cloudfoundry.skip-ssl-validation=false # Whrther to skip SSL verification for Cloud Foundry actuator endpoint security calls.
+	management.cloudfoundry.skip-ssl-validation=false # Whether to skip SSL verification for Cloud Foundry actuator endpoint security calls.
 
 	# ENDPOINTS GENERAL CONFIGURATION
 	management.endpoints.enabled-by-default= # Enable or disable all endpoints by default.
