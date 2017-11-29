@@ -13,6 +13,7 @@
 	<description>Spring Boot Tomcat Sample</description>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<!-- <spring.version>5.0.2.RELEASE</spring.version> -->
 	</properties>
 	<dependencies>
 		<!-- Compile -->
