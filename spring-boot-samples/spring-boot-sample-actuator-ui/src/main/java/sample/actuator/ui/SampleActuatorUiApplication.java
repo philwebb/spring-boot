@@ -21,6 +21,9 @@ import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +43,11 @@ public class SampleActuatorUiApplication {
 	@RequestMapping("/foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return NoOpPasswordEncoder.getInstance();
 	}
 
 	public static void main(String[] args) throws Exception {
