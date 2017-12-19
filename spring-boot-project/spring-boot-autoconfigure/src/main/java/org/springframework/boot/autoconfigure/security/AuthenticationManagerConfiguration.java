@@ -32,7 +32,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -57,15 +56,15 @@ public class AuthenticationManagerConfiguration {
 			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
+	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
+			SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) throws Exception {
 		SecurityProperties.User user = properties.getUser();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
+			logger.info(String.format("%n%nUsing generated security password: %s%n",
+					user.getPassword()));
 		}
-		String encodedPassword = passwordEncoder
-				.getIfAvailable(PasswordEncoderFactories::createDelegatingPasswordEncoder)
-				.encode(user.getPassword());
+		String encodedPassword = "{noop}" + user.getPassword();
 		List<String> roles = user.getRoles();
 		return new InMemoryUserDetailsManager(
 				User.withUsername(user.getName()).password(encodedPassword)
