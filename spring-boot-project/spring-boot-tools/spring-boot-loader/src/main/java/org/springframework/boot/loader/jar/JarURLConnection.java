@@ -254,9 +254,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
-		String spec = extractFullSpec(url, jarFile.getPathFromRoot());
+		String spec = url.getFile();
+		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
 		int separator;
-		int index = 0;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
 			String entryName = spec.substring(index, separator);
 			JarEntry jarEntry = jarFile.getJarEntry(entryName);
@@ -264,7 +264,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				return JarURLConnection.notFound(jarFile, JarEntryName.get(entryName));
 			}
 			jarFile = jarFile.getNestedJarFile(jarEntry);
-			index += separator + SEPARATOR.length();
+			index = separator + SEPARATOR.length();
 		}
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
@@ -276,14 +276,12 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return new JarURLConnection(url, jarFile, jarEntryName);
 	}
 
-	private static String extractFullSpec(URL url, String pathFromRoot) {
-		String file = url.getFile();
+	private static int indexOfRootSpec(String file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex < 0) {
-			return "";
+			return -1;
 		}
-		int specIndex = separatorIndex + SEPARATOR.length() + pathFromRoot.length();
-		return file.substring(specIndex);
+		return separatorIndex + SEPARATOR.length() + pathFromRoot.length();
 	}
 
 	private static JarURLConnection notFound() {
