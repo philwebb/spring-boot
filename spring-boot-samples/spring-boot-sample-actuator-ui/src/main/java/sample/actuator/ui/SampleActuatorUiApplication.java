@@ -51,7 +51,7 @@ public class SampleActuatorUiApplication {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorUiApplication.class, args);
+		SpringApplication.run(SampleActuatorUiApplication.class, args).close();
 	}
 
 }

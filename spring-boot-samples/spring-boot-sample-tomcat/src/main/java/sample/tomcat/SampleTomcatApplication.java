@@ -49,7 +49,7 @@ public class SampleTomcatApplication {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleTomcatApplication.class, args);
+		SpringApplication.run(SampleTomcatApplication.class, args).close();
 	}
 
 }
