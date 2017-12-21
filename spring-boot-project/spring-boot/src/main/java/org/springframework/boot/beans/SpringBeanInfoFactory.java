@@ -45,9 +45,14 @@ public class SpringBeanInfoFactory implements BeanInfoFactory {
 	static {
 		Set<String> supportedPackages = new LinkedHashSet<>();
 		supportedPackages.add("org.springframework.boot.");
+		supportedPackages.add("org.springframework.beans.");
 		supportedPackages.add("org.springframework.context.");
+		supportedPackages.add("org.springframework.format.");
 		supportedPackages.add("org.springframework.http.");
 		supportedPackages.add("org.springframework.jmx.");
+		supportedPackages.add("org.springframework.security.");
+		supportedPackages.add("org.springframework.util.");
+		supportedPackages.add("org.springframework.validation.");
 		supportedPackages.add("org.springframework.web.");
 		SUPPORTED_PACKAGES = Collections.unmodifiableSet(supportedPackages);
 	}
@@ -56,9 +61,7 @@ public class SpringBeanInfoFactory implements BeanInfoFactory {
 	public BeanInfo getBeanInfo(Class<?> beanClass) throws IntrospectionException {
 		String name = beanClass.getName();
 		if (name.startsWith(SPRING_PACKAGE) && isSupportedSpringPackage(name)) {
-			if (beanClass.getName().startsWith("org.springframework.boot")) {
-				return new SpringBootBeanInfo(beanClass);
-			}
+			return new SpringBootBeanInfo(beanClass);
 		}
 		return null;
 	}

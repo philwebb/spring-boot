@@ -41,7 +41,7 @@ class SpringBootBeanInfo implements BeanInfo {
 
 	private final PropertyDescriptor[] propertyDescriptors;
 
-	public SpringBootBeanInfo(Class<?> beanClass) throws IntrospectionException {
+	SpringBootBeanInfo(Class<?> beanClass) throws IntrospectionException {
 		this.propertyDescriptors = extractPropertyDescriptors(beanClass);
 	}
 
