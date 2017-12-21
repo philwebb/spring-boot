@@ -68,7 +68,8 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		}
 	}
 
-	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName("");
+	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName(
+			new StringSequence(""));
 
 	private static final String READ_ACTION = "read";
 
@@ -254,11 +255,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
-		String spec = url.getFile();
+		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
 		int separator;
 		while ((separator = spec.indexOf(SEPARATOR, index)) > 0) {
-			String entryName = spec.substring(index, separator);
+			StringSequence entryName = spec.subSequence(index, separator);
 			JarEntry jarEntry = jarFile.getJarEntry(entryName);
 			if (jarEntry == null) {
 				return JarURLConnection.notFound(jarFile, JarEntryName.get(entryName));
@@ -276,7 +277,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return new JarURLConnection(url, jarFile, jarEntryName);
 	}
 
-	private static int indexOfRootSpec(String file, String pathFromRoot) {
+	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
 		int separatorIndex = file.indexOf(SEPARATOR);
 		if (separatorIndex < 0) {
 			return -1;
@@ -306,22 +307,22 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	 */
 	static class JarEntryName {
 
-		private final String name;
+		private final StringSequence name;
 
 		private String contentType;
 
-		JarEntryName(String spec) {
+		JarEntryName(StringSequence spec) {
 			this.name = decode(spec);
 		}
 
-		private String decode(String source) {
+		private StringSequence decode(StringSequence source) {
 			if (source.isEmpty() || (source.indexOf('%') < 0)) {
 				return source;
 			}
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length());
-			write(source, bos);
+			write(source.toString(), bos);
 			// AsciiBytes is what is used to store the JarEntries so make it symmetric
-			return AsciiBytes.toString(bos.toByteArray());
+			return new StringSequence(AsciiBytes.toString(bos.toByteArray()));
 		}
 
 		private void write(String source, ByteArrayOutputStream outputStream) {
@@ -365,7 +366,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 		@Override
 		public String toString() {
-			return this.name;
+			return this.name.toString();
 		}
 
 		public boolean isEmpty() {
@@ -387,15 +388,15 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return type;
 		}
 
-		public static JarEntryName get(String spec) {
+		public static JarEntryName get(StringSequence spec) {
 			return get(spec, 0);
 		}
 
-		public static JarEntryName get(String spec, int beginIndex) {
+		public static JarEntryName get(StringSequence spec, int beginIndex) {
 			if (spec.length() <= beginIndex) {
 				return EMPTY_JAR_ENTRY_NAME;
 			}
-			return new JarEntryName(spec.substring(beginIndex));
+			return new JarEntryName(spec.subSequence(beginIndex));
 		}
 
 	}
