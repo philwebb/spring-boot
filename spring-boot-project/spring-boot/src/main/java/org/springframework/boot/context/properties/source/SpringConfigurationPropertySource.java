@@ -113,7 +113,6 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		if (value == null) {
 			return null;
 		}
-		value = mapping.getValueExtractor().apply(value);
 		ConfigurationPropertyName configurationPropertyName = mapping
 				.getConfigurationPropertyName();
 		Origin origin = PropertySourceOrigin.get(this.propertySource, propertySourceName);
