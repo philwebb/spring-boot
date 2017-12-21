@@ -16,11 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -39,25 +34,24 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  */
 final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
+	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
+
 	@Override
-	public List<PropertyMapping> map(
-			ConfigurationPropertyName configurationPropertyName) {
-		Set<String> names = new LinkedHashSet<>();
-		names.add(convertName(configurationPropertyName));
-		names.add(convertLegacyName(configurationPropertyName));
-		List<PropertyMapping> result = new ArrayList<>();
-		names.forEach((name) -> result
-				.add(new PropertyMapping(name, configurationPropertyName)));
-		return result;
+	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
+		return new PropertyMapping[] {
+				new PropertyMapping(convertName(configurationPropertyName),
+						configurationPropertyName),
+				new PropertyMapping(convertLegacyName(configurationPropertyName),
+						configurationPropertyName), };
 	}
 
 	@Override
-	public List<PropertyMapping> map(String propertySourceName) {
+	public PropertyMapping[] map(String propertySourceName) {
 		ConfigurationPropertyName name = convertName(propertySourceName);
 		if (name == null || name.isEmpty()) {
-			return Collections.emptyList();
+			return NO_MAPPINGS;
 		}
-		return Collections.singletonList(new PropertyMapping(propertySourceName, name));
+		return new PropertyMapping[] { new PropertyMapping(propertySourceName, name) };
 	}
 
 	private ConfigurationPropertyName convertName(String propertySourceName) {

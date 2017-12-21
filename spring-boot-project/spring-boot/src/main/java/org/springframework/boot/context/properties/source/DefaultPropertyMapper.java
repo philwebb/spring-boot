@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Default {@link PropertyMapper} implementation. Names are mapped by removing invalid
  * characters and converting to lower case. For example "{@code my.server_name.PORT}" is
@@ -31,32 +28,32 @@ import java.util.List;
  */
 final class DefaultPropertyMapper implements PropertyMapper {
 
+	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
+
 	@Override
-	public List<PropertyMapping> map(
-			ConfigurationPropertyName configurationPropertyName) {
+	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
 		String convertedName = configurationPropertyName.toString();
-		return Collections.singletonList(
-				new PropertyMapping(convertedName, configurationPropertyName));
+		return new PropertyMapping[] {
+				new PropertyMapping(convertedName, configurationPropertyName) };
 	}
 
 	@Override
-	public List<PropertyMapping> map(String propertySourceName) {
+	public PropertyMapping[] map(String propertySourceName) {
 		return tryMap(propertySourceName);
 	}
 
-	private List<PropertyMapping> tryMap(String propertySourceName) {
+	private PropertyMapping[] tryMap(String propertySourceName) {
 		try {
 			ConfigurationPropertyName convertedName = ConfigurationPropertyName
 					.adapt(propertySourceName, '.');
 			if (!convertedName.isEmpty()) {
-				PropertyMapping o = new PropertyMapping(propertySourceName,
-						convertedName);
-				return Collections.singletonList(o);
+				return new PropertyMapping[] {
+						new PropertyMapping(propertySourceName, convertedName) };
 			}
 		}
 		catch (Exception ex) {
 		}
-		return Collections.emptyList();
+		return NO_MAPPINGS;
 	}
 
 }
