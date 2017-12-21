@@ -34,15 +34,18 @@ class DebugPropertyMapper implements PropertyMapper {
 	@Override
 	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
-		System.err.println(
-				"Map from configurationPropertyName " + configurationPropertyName);
+		println("Map from configurationPropertyName " + configurationPropertyName);
 		return this.delegate.map(configurationPropertyName);
 	}
 
 	@Override
 	public List<PropertyMapping> map(String propertySourceName) {
-		System.err.println("Map from propertySourceName " + propertySourceName);
+		println("Map from propertySourceName " + propertySourceName);
 		return this.delegate.map(propertySourceName);
+	}
+
+	private void println(String string) {
+		System.err.println(string);
 	}
 
 }

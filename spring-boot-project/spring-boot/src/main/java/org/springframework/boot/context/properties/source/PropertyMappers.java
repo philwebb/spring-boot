@@ -23,10 +23,13 @@ package org.springframework.boot.context.properties.source;
  */
 class PropertyMappers {
 
-	public static final PropertyMapper DEFAULT = new DebugPropertyMapper(
-			new DefaultPropertyMapper());
+	public static final PropertyMapper DEFAULT = new DefaultPropertyMapper();
 
-	public static final PropertyMapper SYSTEM_ENVIRONMENT = new DebugPropertyMapper(
-			new SystemEnvironmentPropertyMapper());
+	// new CachingPropertMapper(
+	// new DebugPropertyMapper(new DefaultPropertyMapper()));
+
+	public static final PropertyMapper SYSTEM_ENVIRONMENT = new SystemEnvironmentPropertyMapper();
+	// new CachingPropertMapper(
+	// new DebugPropertyMapper(new SystemEnvironmentPropertyMapper()));
 
 }
