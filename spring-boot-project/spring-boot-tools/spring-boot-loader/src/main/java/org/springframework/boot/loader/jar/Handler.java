@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
@@ -50,8 +49,6 @@ public class Handler extends URLStreamHandler {
 	private static final String SEPARATOR = "!/";
 
 	private static final String CURRENT_DIR = "/./";
-
-	private static final Pattern CURRENT_DIR_PATTERN = Pattern.compile(CURRENT_DIR);
 
 	private static final String PARENT_DIR = "/../";
 
@@ -163,84 +160,98 @@ public class Handler extends URLStreamHandler {
 	@Override
 	protected void parseURL(URL context, String spec, int start, int limit) {
 		if (spec.regionMatches(true, 0, JAR_PROTOCOL, 0, JAR_PROTOCOL.length())) {
-			setFile(context, getFileFromSpec(spec.substring(start, limit)));
+			parseJarProtocolSpec(context, spec.substring(start, limit));
 		}
 		else {
-			setFile(context, getFileFromContext(context, spec.substring(start, limit)));
+			parseNonJarProtocolSpec(context, spec.substring(start, limit));
 		}
 	}
 
-	private String getFileFromSpec(String spec) {
-		int separatorIndex = spec.lastIndexOf("!/");
+	private void parseJarProtocolSpec(URL context, String spec) {
+		assertJarProtocolSpec(spec);
+		if (spec.indexOf(CURRENT_DIR) >= 0 || spec.indexOf(PARENT_DIR) >= 0) {
+			StringBuilder normalized = new StringBuilder(spec);
+			normalize(normalized);
+			spec = normalized.toString();
+		}
+		setURL(context, JAR_PROTOCOL, null, -1, null, null, spec, null, null);
+	}
+
+	private void assertJarProtocolSpec(String spec) {
+		int separatorIndex = spec.lastIndexOf(SEPARATOR);
 		if (separatorIndex == -1) {
-			throw new IllegalArgumentException("No !/ in spec '" + spec + "'");
+			throw new IllegalArgumentException(
+					"No " + SEPARATOR + " in spec '" + spec + "'");
 		}
 		try {
 			new URL(spec.substring(0, separatorIndex));
-			return spec;
 		}
 		catch (MalformedURLException ex) {
 			throw new IllegalArgumentException("Invalid spec URL '" + spec + "'", ex);
 		}
 	}
 
-	private String getFileFromContext(URL context, String spec) {
-		String file = context.getFile();
-		if (spec.startsWith("/")) {
-			return trimToJarRoot(file) + SEPARATOR + spec.substring(1);
+	private void parseNonJarProtocolSpec(URL context, String spec) {
+		StringBuilder file = getFileFromContext(context, spec);
+		if (file.indexOf(CURRENT_DIR) >= 0 || file.indexOf(PARENT_DIR) >= 0) {
+			normalize(file);
 		}
-		if (file.endsWith("/")) {
-			return file + spec;
-		}
-		int lastSlashIndex = file.lastIndexOf('/');
-		if (lastSlashIndex == -1) {
-			throw new IllegalArgumentException(
-					"No / found in context URL's file '" + file + "'");
-		}
-		return file.substring(0, lastSlashIndex + 1) + spec;
+		setURL(context, JAR_PROTOCOL, null, -1, null, null, file.toString(), null, null);
 	}
 
-	private String trimToJarRoot(String file) {
-		int lastSeparatorIndex = file.lastIndexOf(SEPARATOR);
+	private StringBuilder getFileFromContext(URL context, String spec) {
+		String file = context.getFile();
+		StringBuilder result = new StringBuilder(file);
+		if (spec.startsWith("/")) {
+			trimToLastToken(result, SEPARATOR, false);
+			result.append(SEPARATOR);
+			result.append(spec, 1, spec.length());
+			return result;
+		}
+		if (result.length() > 0 && result.charAt(result.length() - 1) == '/') {
+			result.append(spec);
+			return result;
+		}
+		trimToLastToken(result, "/", true);
+		result.append(spec);
+		return result;
+	}
+
+	private void trimToLastToken(StringBuilder result, String token,
+			boolean includeToken) {
+		int lastSeparatorIndex = result.lastIndexOf(token);
 		if (lastSeparatorIndex == -1) {
 			throw new IllegalArgumentException(
-					"No !/ found in context URL's file '" + file + "'");
+					"No " + token + " found in context URL's file '" + result + "'");
 		}
-		return file.substring(0, lastSeparatorIndex);
+		result.setLength(lastSeparatorIndex + (includeToken ? token.length() : 0));
 	}
 
-	private void setFile(URL context, String file) {
-		setURL(context, JAR_PROTOCOL, null, -1, null, null, normalize(file), null, null);
-	}
-
-	private String normalize(String file) {
-		if (!file.contains(CURRENT_DIR) && !file.contains(PARENT_DIR)) {
-			return file;
-		}
+	private void normalize(StringBuilder file) {
 		int afterLastSeparatorIndex = file.lastIndexOf(SEPARATOR) + SEPARATOR.length();
-		String afterSeparator = file.substring(afterLastSeparatorIndex);
-		afterSeparator = replaceParentDir(afterSeparator);
-		afterSeparator = replaceCurrentDir(afterSeparator);
-		return file.substring(0, afterLastSeparatorIndex) + afterSeparator;
+		replaceParentDir(file, afterLastSeparatorIndex);
+		replaceCurrentDir(file, afterLastSeparatorIndex);
 	}
 
-	private String replaceParentDir(String file) {
+	private void replaceParentDir(StringBuilder file, int fromIndex) {
 		int parentDirIndex;
-		while ((parentDirIndex = file.indexOf(PARENT_DIR)) >= 0) {
-			int precedingSlashIndex = file.lastIndexOf('/', parentDirIndex - 1);
+		while ((parentDirIndex = file.indexOf(PARENT_DIR, fromIndex)) >= 0) {
+			int precedingSlashIndex = file.lastIndexOf("/", parentDirIndex - 1);
 			if (precedingSlashIndex >= 0) {
-				file = file.substring(0, precedingSlashIndex)
-						+ file.substring(parentDirIndex + 3);
+				file.delete(precedingSlashIndex, parentDirIndex + 3);
 			}
 			else {
-				file = file.substring(parentDirIndex + 4);
+				file.delete(0, parentDirIndex + 4);
 			}
 		}
-		return file;
+
 	}
 
-	private String replaceCurrentDir(String file) {
-		return CURRENT_DIR_PATTERN.matcher(file).replaceAll("/");
+	private void replaceCurrentDir(StringBuilder file, int fromIndex) {
+		int index;
+		while ((index = file.indexOf(CURRENT_DIR, fromIndex)) >= 0) {
+			file.delete(index, index + CURRENT_DIR.length() - 1);
+		}
 	}
 
 	@Override
