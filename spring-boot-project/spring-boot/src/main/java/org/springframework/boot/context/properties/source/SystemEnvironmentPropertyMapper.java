@@ -31,10 +31,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  * "{@code .}". For example, "{@code SERVER_PORT}" is mapped to "{@code server.port}". In
  * addition, numeric elements are mapped to indexes (e.g. "{@code HOST_0}" is mapped to
  * "{@code host[0]}").
- * <p>
- * List shortcuts (names that end with double underscore) are also supported by this
- * mapper. For example, "{@code MY_LIST__=a,b,c}" is mapped to "{@code my.list[0]=a}",
- * "{@code my.list[1]=b}", "{@code my.list[2]=c}".
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -42,11 +38,6 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
  * @see SpringConfigurationPropertySource
  */
 final class SystemEnvironmentPropertyMapper implements PropertyMapper {
-
-	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
-
-	private SystemEnvironmentPropertyMapper() {
-	}
 
 	@Override
 	public List<PropertyMapping> map(

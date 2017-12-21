@@ -85,7 +85,6 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
-		System.out.println(name);
 		List<PropertyMapping> mappings = getMapper().map(name);
 		return find(mappings, name);
 	}
@@ -153,9 +152,9 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	private static PropertyMapper getPropertyMapper(PropertySource<?> source) {
 		if (source instanceof SystemEnvironmentPropertySource
 				&& hasSystemEnvironmentName(source)) {
-			return SystemEnvironmentPropertyMapper.INSTANCE;
+			return PropertyMappers.SYSTEM_ENVIRONMENT;
 		}
-		return DefaultPropertyMapper.INSTANCE;
+		return PropertyMappers.DEFAULT;
 	}
 
 	private static boolean hasSystemEnvironmentName(PropertySource<?> source) {

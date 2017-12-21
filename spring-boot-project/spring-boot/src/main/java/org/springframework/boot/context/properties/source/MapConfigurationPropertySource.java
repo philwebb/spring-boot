@@ -54,8 +54,7 @@ public class MapConfigurationPropertySource
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
 		this.delegate = new SpringIterableConfigurationPropertySource(
-				new MapPropertySource("source", this.source),
-				DefaultPropertyMapper.INSTANCE);
+				new MapPropertySource("source", this.source), PropertyMappers.DEFAULT);
 		putAll(map);
 	}
 

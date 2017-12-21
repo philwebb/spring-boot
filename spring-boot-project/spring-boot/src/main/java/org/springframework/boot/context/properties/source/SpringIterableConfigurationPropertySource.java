@@ -71,7 +71,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		ConfigurationProperty configurationProperty = super.getConfigurationProperty(
 				name);
 		if (configurationProperty == null) {
-			configurationProperty = find(getPropertyMappings(), name);
+			configurationProperty = find(getPropertyMappings(getCache()), name);
 		}
 		return configurationProperty;
 	}
@@ -98,7 +98,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		if (names != null) {
 			return names;
 		}
-		List<PropertyMapping> mappings = getPropertyMappings();
+		List<PropertyMapping> mappings = getPropertyMappings(cache);
 		names = new ArrayList<>(mappings.size());
 		for (PropertyMapping mapping : mappings) {
 			names.add(mapping.getConfigurationPropertyName());
@@ -110,8 +110,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return names;
 	}
 
-	private List<PropertyMapping> getPropertyMappings() {
-		Cache cache = getCache();
+	private List<PropertyMapping> getPropertyMappings(Cache cache) {
 		List<PropertyMapping> mappings = (cache != null ? cache.getMappings() : null);
 		if (mappings != null) {
 			return mappings;

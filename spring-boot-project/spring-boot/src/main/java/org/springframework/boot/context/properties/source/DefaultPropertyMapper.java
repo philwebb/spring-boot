@@ -31,15 +31,9 @@ import java.util.List;
  */
 final class DefaultPropertyMapper implements PropertyMapper {
 
-	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
-
-	private DefaultPropertyMapper() {
-	}
-
 	@Override
 	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
-		// Use a local copy in case another thread changes things
 		String convertedName = configurationPropertyName.toString();
 		return Collections.singletonList(
 				new PropertyMapping(convertedName, configurationPropertyName));
