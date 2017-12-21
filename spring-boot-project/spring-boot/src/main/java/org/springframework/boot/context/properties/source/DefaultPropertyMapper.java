@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.springframework.util.ObjectUtils;
+
 /**
  * Default {@link PropertyMapper} implementation. Names are mapped by removing invalid
  * characters and converting to lower case. For example "{@code my.server_name.PORT}" is
@@ -30,16 +32,35 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
 
+	private LastMapping<ConfigurationPropertyName> lastMappedConfigurationPropertyName;
+
+	private LastMapping<String> lastMappedPropertyName;
+
 	@Override
 	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
+		// Use a local copy in case another thread changes things
+		LastMapping<ConfigurationPropertyName> last = this.lastMappedConfigurationPropertyName;
+		if (last != null && last.isFrom(configurationPropertyName)) {
+			return last.getMapping();
+		}
 		String convertedName = configurationPropertyName.toString();
-		return new PropertyMapping[] {
+		PropertyMapping[] mapping = new PropertyMapping[] {
 				new PropertyMapping(convertedName, configurationPropertyName) };
+		this.lastMappedConfigurationPropertyName = new LastMapping<>(
+				configurationPropertyName, mapping);
+		return mapping;
 	}
 
 	@Override
 	public PropertyMapping[] map(String propertySourceName) {
-		return tryMap(propertySourceName);
+		// Use a local copy in case another thread changes things
+		LastMapping<String> last = this.lastMappedPropertyName;
+		if (last != null && last.isFrom(propertySourceName)) {
+			return last.getMapping();
+		}
+		PropertyMapping[] mapping = tryMap(propertySourceName);
+		this.lastMappedPropertyName = new LastMapping<>(propertySourceName, mapping);
+		return mapping;
 	}
 
 	private PropertyMapping[] tryMap(String propertySourceName) {
@@ -54,6 +75,27 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		catch (Exception ex) {
 		}
 		return NO_MAPPINGS;
+	}
+
+	private static class LastMapping<T> {
+
+		private final T from;
+
+		private final PropertyMapping[] mapping;
+
+		LastMapping(T from, PropertyMapping[] mapping) {
+			this.from = from;
+			this.mapping = mapping;
+		}
+
+		public boolean isFrom(T from) {
+			return ObjectUtils.nullSafeEquals(from, this.from);
+		}
+
+		public PropertyMapping[] getMapping() {
+			return this.mapping;
+		}
+
 	}
 
 }
