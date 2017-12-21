@@ -19,8 +19,6 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.util.ObjectUtils;
-
 /**
  * Default {@link PropertyMapper} implementation. Names are mapped by removing invalid
  * characters and converting to lower case. For example "{@code my.server_name.PORT}" is
@@ -35,10 +33,6 @@ final class DefaultPropertyMapper implements PropertyMapper {
 
 	public static final PropertyMapper INSTANCE = new DefaultPropertyMapper();
 
-	private LastMapping<ConfigurationPropertyName> lastMappedConfigurationPropertyName;
-
-	private LastMapping<String> lastMappedPropertyName;
-
 	private DefaultPropertyMapper() {
 	}
 
@@ -46,28 +40,14 @@ final class DefaultPropertyMapper implements PropertyMapper {
 	public List<PropertyMapping> map(
 			ConfigurationPropertyName configurationPropertyName) {
 		// Use a local copy in case another thread changes things
-		LastMapping<ConfigurationPropertyName> last = this.lastMappedConfigurationPropertyName;
-		if (last != null && last.isFrom(configurationPropertyName)) {
-			return last.getMapping();
-		}
 		String convertedName = configurationPropertyName.toString();
-		List<PropertyMapping> mapping = Collections.singletonList(
+		return Collections.singletonList(
 				new PropertyMapping(convertedName, configurationPropertyName));
-		this.lastMappedConfigurationPropertyName = new LastMapping<>(
-				configurationPropertyName, mapping);
-		return mapping;
 	}
 
 	@Override
 	public List<PropertyMapping> map(String propertySourceName) {
-		// Use a local copy in case another thread changes things
-		LastMapping<String> last = this.lastMappedPropertyName;
-		if (last != null && last.isFrom(propertySourceName)) {
-			return last.getMapping();
-		}
-		List<PropertyMapping> mapping = tryMap(propertySourceName);
-		this.lastMappedPropertyName = new LastMapping<>(propertySourceName, mapping);
-		return mapping;
+		return tryMap(propertySourceName);
 	}
 
 	private List<PropertyMapping> tryMap(String propertySourceName) {
@@ -83,27 +63,6 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		catch (Exception ex) {
 		}
 		return Collections.emptyList();
-	}
-
-	private static class LastMapping<T> {
-
-		private final T from;
-
-		private final List<PropertyMapping> mapping;
-
-		LastMapping(T from, List<PropertyMapping> mapping) {
-			this.from = from;
-			this.mapping = mapping;
-		}
-
-		public boolean isFrom(T from) {
-			return ObjectUtils.nullSafeEquals(from, this.from);
-		}
-
-		public List<PropertyMapping> getMapping() {
-			return this.mapping;
-		}
-
 	}
 
 }
