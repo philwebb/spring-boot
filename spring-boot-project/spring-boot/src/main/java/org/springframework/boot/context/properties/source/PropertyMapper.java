@@ -38,7 +38,7 @@ import org.springframework.core.env.PropertySource;
  */
 interface PropertyMapper {
 
-	static final PropertyMapping[] NO_MAPPINGS = {};
+	PropertyMapping[] NO_MAPPINGS = {};
 
 	/**
 	 * Provide mappings from a {@link ConfigurationPropertySource}
