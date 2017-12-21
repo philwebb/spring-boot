@@ -85,6 +85,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationProperty getConfigurationProperty(
 			ConfigurationPropertyName name) {
+		System.out.println(name);
 		List<PropertyMapping> mappings = getMapper().map(getPropertySource(), name);
 		return find(mappings, name);
 	}

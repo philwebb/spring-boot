@@ -18,9 +18,12 @@ package sample.actuator.ui;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,7 +54,22 @@ public class SampleActuatorUiApplication {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorUiApplication.class, args).close();
+		ConfigurableApplicationContext context = SpringApplication
+				.run(SampleActuatorUiApplication.class, args);
+		long t = System.nanoTime();
+		for (int i = 0; i < 50000; i++) {
+			// context.getEnvironment().getProperty("foo.bar.baz.bam", Boolean.class);
+		}
+		System.out.println(
+				"50k in " + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t));
+		context.close();
+
+		// printConditionTimes();
+	}
+
+	private static void printConditionTimes() {
+		SpringBootCondition.time.forEach((k, v) -> System.out
+				.println("Time " + k.getName() + " " + TimeUnit.NANOSECONDS.toMillis(v)));
 	}
 
 }

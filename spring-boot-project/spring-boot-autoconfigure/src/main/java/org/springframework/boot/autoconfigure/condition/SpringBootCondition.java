@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,31 +40,40 @@ import org.springframework.util.StringUtils;
  */
 public abstract class SpringBootCondition implements Condition {
 
+	public static Map<Class<?>, Long> time = new LinkedHashMap<>();
+
 	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public final boolean matches(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		String classOrMethodName = getClassOrMethodName(metadata);
+		long start = System.nanoTime();
 		try {
-			ConditionOutcome outcome = getMatchOutcome(context, metadata);
-			logOutcome(classOrMethodName, outcome);
-			recordEvaluation(context, classOrMethodName, outcome);
-			return outcome.isMatch();
+			String classOrMethodName = getClassOrMethodName(metadata);
+			try {
+				ConditionOutcome outcome = getMatchOutcome(context, metadata);
+				logOutcome(classOrMethodName, outcome);
+				recordEvaluation(context, classOrMethodName, outcome);
+				return outcome.isMatch();
+			}
+			catch (NoClassDefFoundError ex) {
+				throw new IllegalStateException(
+						"Could not evaluate condition on " + classOrMethodName
+								+ " due to " + ex.getMessage() + " not "
+								+ "found. Make sure your own configuration does not rely on "
+								+ "that class. This can also happen if you are "
+								+ "@ComponentScanning a springframework package (e.g. if you "
+								+ "put a @ComponentScan in the default package by mistake)",
+						ex);
+			}
+			catch (RuntimeException ex) {
+				throw new IllegalStateException(
+						"Error processing condition on " + getName(metadata), ex);
+			}
 		}
-		catch (NoClassDefFoundError ex) {
-			throw new IllegalStateException(
-					"Could not evaluate condition on " + classOrMethodName + " due to "
-							+ ex.getMessage() + " not "
-							+ "found. Make sure your own configuration does not rely on "
-							+ "that class. This can also happen if you are "
-							+ "@ComponentScanning a springframework package (e.g. if you "
-							+ "put a @ComponentScan in the default package by mistake)",
-					ex);
-		}
-		catch (RuntimeException ex) {
-			throw new IllegalStateException(
-					"Error processing condition on " + getName(metadata), ex);
+		finally {
+			long runtime = (System.nanoTime() - start);
+			time.compute(getClass(), (k, v) -> (v == null ? runtime : v + runtime));
 		}
 	}
 
