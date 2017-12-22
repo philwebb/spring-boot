@@ -44,8 +44,10 @@ public class SpringBeanInfoFactory implements BeanInfoFactory {
 
 	static {
 		Set<String> supportedPackages = new LinkedHashSet<>();
+		supportedPackages.add("org.springframework.aop.");
 		supportedPackages.add("org.springframework.boot.");
 		supportedPackages.add("org.springframework.beans.");
+		supportedPackages.add("org.springframework.core.");
 		supportedPackages.add("org.springframework.context.");
 		supportedPackages.add("org.springframework.format.");
 		supportedPackages.add("org.springframework.http.");
