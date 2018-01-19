@@ -31,9 +31,9 @@ import org.springframework.boot.actuate.endpoint.web.WebOperation;
 class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation>
 		implements ExposableWebEndpoint {
 
-	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, String id,
-			boolean enabledByDefault, Collection<WebOperation> operations) {
-		super(discoverer, id, enabledByDefault, operations);
+	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
+			String id, boolean enabledByDefault, Collection<WebOperation> operations) {
+		super(discoverer, endpointBean, id, enabledByDefault, operations);
 	}
 
 }

@@ -65,9 +65,10 @@ public class WebEndpointDiscoverer
 	}
 
 	@Override
-	protected ExposableWebEndpoint createEndpoint(String id, boolean enabledByDefault,
-			Collection<WebOperation> operations) {
-		return new DiscoveredWebEndpoint(this, id, enabledByDefault, operations);
+	protected ExposableWebEndpoint createEndpoint(Object endpointBean, String id,
+			boolean enabledByDefault, Collection<WebOperation> operations) {
+		return new DiscoveredWebEndpoint(this, endpointBean, id, enabledByDefault,
+				operations);
 	}
 
 	@Override

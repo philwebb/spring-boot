@@ -34,6 +34,9 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.EndpointPathResolver;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -100,6 +103,15 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
+	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(
+			ObjectProvider<Collection<OperationInvokerAdvisor>> invokerAdvisors,
+			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
+		return new ControllerEndpointDiscoverer(this.applicationContext,
+				filters.getIfAvailable(Collections::emptyList));
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public EndpointPathProvider endpointPathProvider(
 			WebEndpointsSupplier webEndpointsSupplier,
@@ -114,6 +126,14 @@ public class WebEndpointAutoConfiguration {
 		Set<String> exclude = this.properties.getExclude();
 		return new ExposeExcludePropertyEndpointFilter<>(ExposableWebEndpoint.class,
 				expose, exclude, "info", "health");
+	}
+
+	@Bean
+	public ExposeExcludePropertyEndpointFilter<ExposableControllerEndpoint> controllerIncludeExcludePropertyEndpointFilter() {
+		Set<String> expose = this.properties.getExpose();
+		Set<String> exclude = this.properties.getExclude();
+		return new ExposeExcludePropertyEndpointFilter<>(
+				ExposableControllerEndpoint.class, expose, exclude);
 	}
 
 }

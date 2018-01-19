@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.jmx.annotation;
+package org.springframework.boot.actuate.endpoint.web.annotation;
 
-import java.util.Collection;
+import java.util.Collections;
 
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
-import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
 
 /**
- * A discovered {@link ExposableJmxEndpoint JMX endpoint}.
+ * A discovered {@link ExposableEndpoint controller endpoint}.
  *
  * @author Phillip Webb
  */
-class DiscoveredJmxEndpoint extends AbstractDiscoveredEndpoint<JmxOperation>
-		implements ExposableJmxEndpoint {
+class DiscoveredControllerEndpoint extends AbstractDiscoveredEndpoint<Operation>
+		implements ExposableControllerEndpoint {
 
-	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
-			String id, boolean enabledByDefault, Collection<JmxOperation> operations) {
-		super(discoverer, endpointBean, id, enabledByDefault, operations);
+	DiscoveredControllerEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean,
+			String id, boolean enabledByDefault) {
+		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
+	}
+
+	@Override
+	public Object getController() {
+		return getEndpointBean();
 	}
 
 }
