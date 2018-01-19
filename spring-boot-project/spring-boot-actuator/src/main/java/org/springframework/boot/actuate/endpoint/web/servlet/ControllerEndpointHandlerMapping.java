@@ -31,7 +31,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEn
 import org.springframework.boot.endpoint.web.EndpointMapping;
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
