@@ -45,4 +45,6 @@ public class WebEndpointAutoConfigurationTests {
 				});
 	}
 
+	// FIXME test the servlet config
+
 }

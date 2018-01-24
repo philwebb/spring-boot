@@ -16,33 +16,70 @@
 
 package org.springframework.boot.actuate.autoconfigure.jolokia;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import org.jolokia.http.AgentServlet;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link JolokiaManagementContextConfiguration}.
+ * Tests for {@link JolokiaEndpointAutoConfiguration}.
  *
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class JolokiaManagementContextConfigurationTests {
+public class JolokiaEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-							ServletManagementContextAutoConfiguration.class,
-							JolokiaManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(
+					ManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class,
+					ServletEndpointManagementContextConfiguration.class,
+					JolokiaEndpointAutoConfiguration.class, TestConfiguration.class));
+
+	@Test
+	public void jolokiaServletShouldBeEnabledByDefault() {
+		this.contextRunner.run((context) -> {
+			Collection<ExposableServletEndpoint> endpoints = context
+					.getBean(ServletEndpointsSupplier.class).getEndpoints();
+			ExposableServletEndpoint endpoint = endpoints.iterator().next();
+			assertThat(endpoint.getRootPath()).isEqualTo("jolokia");
+			Object servlet = ReflectionTestUtils.getField(endpoint.getEndpointServlet(),
+					"servlet");
+			assertThat(servlet).isInstanceOf(AgentServlet.class);
+		});
+	}
+
+	@Test
+	public void jolokiaServletWhenDisabledShouldNotBeDiscovered() {
+
+	}
+
+	@Test
+	public void jolokiaServletWhenHasCustomConfigShouldApplyInitParams() {
+
+	}
 
 	@Test
 	public void jolokiaCanBeEnabled() {
@@ -100,6 +137,18 @@ public class JolokiaManagementContextConfigurationTests {
 					.getBean(ServletRegistrationBean.class);
 			assertThat(registrationBean.getUrlMappings()).containsExactly(path);
 		};
+	}
+
+	@Configuration
+	static class TestConfiguration {
+
+		@Bean
+		public ServletEndpointDiscoverer servletEndpointDiscoverer(
+				ApplicationContext applicationContext) {
+			return new ServletEndpointDiscoverer(applicationContext,
+					PathMapper.useEndpointId(), Collections.emptyList());
+		}
+
 	}
 
 }
