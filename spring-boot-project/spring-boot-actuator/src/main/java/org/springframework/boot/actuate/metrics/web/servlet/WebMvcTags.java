@@ -45,7 +45,8 @@ public final class WebMvcTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(HttpServletRequest request) {
-		return Tag.of("method", request.getMethod());
+		return (request == null ? Tag.of("method", "UNKNOWN")
+				: Tag.of("method", request.getMethod()));
 	}
 
 	/**
@@ -54,7 +55,8 @@ public final class WebMvcTags {
 	 * @return the status tag derived from the status of the response
 	 */
 	public static Tag status(HttpServletResponse response) {
-		return Tag.of("status", ((Integer) response.getStatus()).toString());
+		return (response == null ? Tag.of("status", "UNKNOWN")
+				: Tag.of("status", ((Integer) response.getStatus()).toString()));
 	}
 
 	/**
@@ -68,32 +70,27 @@ public final class WebMvcTags {
 	 */
 	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
 		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null && status.is3xxRedirection()) {
+			HttpStatus status = HttpStatus.valueOf(response.getStatus());
+			if (status.is3xxRedirection()) {
 				return Tag.of("uri", "REDIRECTION");
 			}
-			if (HttpStatus.NOT_FOUND.equals(status)) {
+			if (status.equals(HttpStatus.NOT_FOUND)) {
 				return Tag.of("uri", "NOT_FOUND");
 			}
 		}
-		String uri = (String) request
-				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-		if (uri == null) {
-			uri = request.getPathInfo();
+		if (request == null) {
+			return Tag.of("uri", "UNKNOWN");
 		}
-		if (!StringUtils.hasText(uri)) {
-			uri = "/";
-		}
+		String uri = getUri(request);
+		uri = uri.replaceAll("//+", "/").replaceAll("/$", "");
 		return Tag.of("uri", uri.isEmpty() ? "root" : uri);
 	}
 
-	private static HttpStatus extractStatus(HttpServletResponse response) {
-		try {
-			return HttpStatus.valueOf(response.getStatus());
-		}
-		catch (IllegalArgumentException ex) {
-			return null;
-		}
+	private static String getUri(HttpServletRequest request) {
+		String uri = (String) request
+				.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+		uri = (uri != null ? uri : request.getPathInfo());
+		return (StringUtils.hasText(uri) ? uri : "/");
 	}
 
 	/**
@@ -103,10 +100,7 @@ public final class WebMvcTags {
 	 * @return the exception tag derived from the exception
 	 */
 	public static Tag exception(Throwable exception) {
-		if (exception != null) {
-			return Tag.of("exception", exception.getClass().getSimpleName());
-		}
-		return Tag.of("exception", "None");
+		return (exception == null ? Tag.of("exception", "None")
+				: Tag.of("exception", exception.getClass().getSimpleName()));
 	}
-
 }

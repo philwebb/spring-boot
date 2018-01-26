@@ -20,7 +20,6 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
-import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Before;
@@ -28,11 +27,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,12 +50,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Integration tests for {@link WebMvcMetrics}.
+ * Tests for {@link WebMvcMetricsFilter} in the presence of a custom exception handler.
  *
  * @author Jon Schneider
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
+@TestPropertySource(properties = "security.ignored=/**")
 public class WebMvcMetricsIntegrationTests {
 
 	@Autowired
@@ -65,10 +65,10 @@ public class WebMvcMetricsIntegrationTests {
 	@Autowired
 	private SimpleMeterRegistry registry;
 
-	private MockMvc mvc;
-
 	@Autowired
 	private WebMvcMetricsFilter filter;
+
+	private MockMvc mvc;
 
 	@Before
 	public void setupMockMvc() {
@@ -79,18 +79,18 @@ public class WebMvcMetricsIntegrationTests {
 	@Test
 	public void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception1", "status", "500")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.mustFind("http.server.requests")
+				.tags("exception", "Exception1", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Test
 	public void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatCode(() -> this.mvc.perform(get("/api/rethrownError"))
 				.andExpect(status().is5xxServerError()));
-		assertThat(this.registry.find("http.server.requests")
-				.tags("exception", "Exception2", "status", "500")
-				.value(Statistic.Count, 1.0).timer()).isPresent();
+		assertThat(this.registry.mustFind("http.server.requests")
+				.tags("exception", "Exception2", "status", "500").timer().count())
+						.isEqualTo(1L);
 	}
 
 	@Configuration
@@ -108,14 +108,10 @@ public class WebMvcMetricsIntegrationTests {
 		}
 
 		@Bean
-		public WebMvcMetrics controllerMetrics(MeterRegistry registry) {
-			return new WebMvcMetrics(registry, new DefaultWebMvcTagsProvider(),
-					"http.server.requests", true, false);
-		}
-
-		@Bean
-		public WebMvcMetricsFilter webMetricsFilter(ApplicationContext context) {
-			return new WebMvcMetricsFilter(context);
+		public WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry,
+				WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(ctx, registry,
+					new DefaultWebMvcTagsProvider(), "http.server.requests", true);
 		}
 
 		@RestController
@@ -153,12 +149,9 @@ public class WebMvcMetricsIntegrationTests {
 	@ControllerAdvice
 	static class CustomExceptionHandler {
 
-		@Autowired
-		WebMvcMetrics metrics;
-
 		@ExceptionHandler
 		ResponseEntity<String> handleError(Exception1 ex) {
-			this.metrics.tagWithException(ex);
+			WebMvcMetricsFilter.tagWithException(ex);
 			return new ResponseEntity<>("this is a custom exception body",
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}

@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.lang.NonNull;
+
 /**
  * Default implementation of {@link WebMvcTagsProvider}.
  *
@@ -38,6 +40,7 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	 * @return A set of tags added to every Spring MVC HTTP request
 	 */
 	@Override
+	@NonNull
 	public Iterable<Tag> httpLongRequestTags(HttpServletRequest request, Object handler) {
 		return Arrays.asList(WebMvcTags.method(request), WebMvcTags.uri(request, null));
 	}
@@ -45,14 +48,14 @@ public class DefaultWebMvcTagsProvider implements WebMvcTagsProvider {
 	/**
 	 * Supplies default tags to the Web MVC server programming model.
 	 * @param request The HTTP request.
-	 * @param handler the Spring MVC handler for the request
 	 * @param response The HTTP response.
 	 * @param ex The current exception, if any
 	 * @return A set of tags added to every Spring MVC HTTP request.
 	 */
 	@Override
-	public Iterable<Tag> httpRequestTags(HttpServletRequest request, Object handler,
-			HttpServletResponse response, Throwable ex) {
+	@NonNull
+	public Iterable<Tag> httpRequestTags(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Throwable ex) {
 		return Arrays.asList(WebMvcTags.method(request),
 				WebMvcTags.uri(request, response), WebMvcTags.exception(ex),
 				WebMvcTags.status(response));
