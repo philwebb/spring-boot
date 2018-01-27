@@ -25,12 +25,12 @@ import org.springframework.context.annotation.Bean;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for applying {@link MeterRegistryConfigurer MeterRegistryConfigurers}.
+ * Tests for applying {@link MeterRegistryCustomizerConfiguration}.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  */
-public class MeterRegistryConfigurerTests {
+public class MeterRegistryCustomizerTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.with(MetricsRun.simple());
@@ -38,7 +38,7 @@ public class MeterRegistryConfigurerTests {
 	@Test
 	public void commonTagsAreAppliedToAutoConfiguredBinders() {
 		this.contextRunner
-				.withUserConfiguration(MeterRegistryConfigurerConfiguration.class)
+				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.get("jvm.memory.used").tags("region", "us-east-1").gauge())
 								.isNotNull());
@@ -47,17 +47,17 @@ public class MeterRegistryConfigurerTests {
 	@Test
 	public void commonTagsAreAppliedBeforeRegistryIsInjectableElsewhere() {
 		this.contextRunner
-				.withUserConfiguration(MeterRegistryConfigurerConfiguration.class)
+				.withUserConfiguration(MeterRegistryCustomizerConfiguration.class)
 				.run((context) -> assertThat(context.getBean(MeterRegistry.class)
 						.get("my.thing").tags("region", "us-east-1").gauge())
 								.isNotNull());
 	}
 
-	static class MeterRegistryConfigurerConfiguration {
+	static class MeterRegistryCustomizerConfiguration {
 
 		@Bean
-		public MeterRegistryConfigurer registryConfigurer() {
-			return (registry) -> registry.config().commonTags("region", "us-east-1");
+		public MeterRegistryCustomizer commonTags() {
+			return registry -> registry.config().commonTags("region", "us-east-1");
 		}
 
 		@Bean
