@@ -25,29 +25,34 @@ import io.micrometer.core.instrument.binder.MeterBinder;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 
 /**
- * Applies autowired {@link MeterBinder}s and {@link MeterRegistryCustomizer}s to a configured {@link MeterRegistry}.
+ * Applies autowired {@link MeterBinder}s and {@link MeterRegistryCustomizer}s to a
+ * configured {@link MeterRegistry}.
  *
  * @author Jon Schneider
  * @since 2.0.0
  */
-@Component
 public class MeterRegistryPostProcessor implements BeanPostProcessor {
+
+	// FIXME make the thing generic
+	// FIXME deal with Lambdas
+	// FIXME skip the Composite
+
 	private final MetricsProperties config;
 
 	private final Collection<MeterBinder> binders;
 
 	private final Collection<MeterRegistryCustomizer> customizers;
 
-	@SuppressWarnings("ConstantConditions")
 	MeterRegistryPostProcessor(MetricsProperties config,
 			ObjectProvider<Collection<MeterBinder>> binders,
 			ObjectProvider<Collection<MeterRegistryCustomizer>> customizers) {
 		this.config = config;
-		this.binders = binders.getIfAvailable() != null ? binders.getIfAvailable() : Collections.emptyList();
-		this.customizers = customizers.getIfAvailable() != null ? customizers.getIfAvailable() : Collections.emptyList();
+		this.binders = binders.getIfAvailable() != null ? binders.getIfAvailable()
+				: Collections.emptyList();
+		this.customizers = customizers.getIfAvailable() != null
+				? customizers.getIfAvailable() : Collections.emptyList();
 	}
 
 	@Override
@@ -60,9 +65,10 @@ public class MeterRegistryPostProcessor implements BeanPostProcessor {
 		if (bean instanceof MeterRegistry) {
 			MeterRegistry registry = (MeterRegistry) bean;
 
-			// Customizers must be applied before binders, as they may add custom tags or alter
+			// Customizers must be applied before binders, as they may add custom tags or
+			// alter
 			// timer or summary configuration.
-			this.customizers.forEach(c -> c.configureRegistry(registry));
+			this.customizers.forEach(c -> c.customize(registry));
 
 			this.binders.forEach(b -> b.bindTo(registry));
 

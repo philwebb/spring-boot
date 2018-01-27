@@ -23,7 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
  * Callback interface that can be used to customize auto-configured {@link MeterRegistry
  * MeterRegistries}.
  * <p>
- * Configurers are guaranteed to be applied before any {@link Meter} is registered with
+ * Customizers are guaranteed to be applied before any {@link Meter} is registered with
  * the registry.
  *
  * @author Jon Schneider
@@ -33,9 +33,9 @@ import io.micrometer.core.instrument.MeterRegistry;
 public interface MeterRegistryCustomizer {
 
 	/**
-	 * Configure the given {@code registry}.
-	 * @param registry the registry to configure
+	 * Customize the given {@code registry}.
+	 * @param registry the registry to customize
 	 */
-	void configureRegistry(MeterRegistry registry);
+	void customize(MeterRegistry registry);
 
 }
