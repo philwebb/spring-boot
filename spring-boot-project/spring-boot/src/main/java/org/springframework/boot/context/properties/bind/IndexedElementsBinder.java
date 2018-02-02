@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
@@ -57,7 +58,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
 			ResolvableType aggregateType, ResolvableType elementType) {
 		for (ConfigurationPropertySource source : getContext().getSources()) {
-			bindIndexed(source, name, elementBinder, collection, aggregateType,
+			bindIndexed(source, name, target, elementBinder, collection, aggregateType,
 					elementType);
 			if (collection.wasSupplied() && collection.get() != null) {
 				return;
@@ -66,12 +67,13 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	}
 
 	private void bindIndexed(ConfigurationPropertySource source,
-			ConfigurationPropertyName root, AggregateElementBinder elementBinder,
-			IndexedCollectionSupplier collection, ResolvableType aggregateType,
-			ResolvableType elementType) {
+			ConfigurationPropertyName root, Bindable<?> target,
+			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection,
+			ResolvableType aggregateType, ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
-			Object aggregate = convert(property.getValue(), aggregateType);
+			Object aggregate = convert(property.getValue(), aggregateType,
+					target.getAnnotations());
 			ResolvableType collectionType = ResolvableType
 					.forClassWithGenerics(collection.get().getClass(), elementType);
 			Collection<Object> elements = convert(aggregate, collectionType);
@@ -127,10 +129,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
-	private <C> C convert(Object value, ResolvableType type) {
+	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		BinderConversionService conversionService = getContext().getConversionService();
-		return ResolvableTypeDescriptor.forType(type).convert(conversionService, value);
+		return ResolvableTypeDescriptor.forType(type, annotations)
+				.convert(conversionService, value);
 	}
 
 	/**
