@@ -17,10 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.time.Duration;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Meter.Type;
 
 import org.springframework.boot.context.properties.bind.convert.DurationConverter;
 
@@ -34,53 +34,47 @@ import org.springframework.boot.context.properties.bind.convert.DurationConverte
  */
 public final class ServiceLevelAgreementBoundary {
 
-	private final long value;
-
-	private final Set<Meter.Type> types;
+	private final Object value;
 
 	ServiceLevelAgreementBoundary(long value) {
 		this.value = value;
-		this.types = EnumSet.of(Meter.Type.DISTRIBUTION_SUMMARY, Meter.Type.TIMER);
 	}
 
 	ServiceLevelAgreementBoundary(Duration value) {
-		this.value = value.toNanos();
-		this.types = EnumSet.of(Meter.Type.TIMER);
+		this.value = value;
 	}
 
 	/**
-	 * Return the underlying value of the SLA. If sourced from a {@link Duration} this
-	 * value will be in nanoseconds.
-	 * @return the value
-	 */
-	public long getValue() {
-		return this.value;
-	}
-
-	/**
-	 * Determine if the {@link ServiceLevelAgreementBoundary} is applicable for the given
-	 * meter type.
+	 * Return the underlying value of the SLA in form suitable to apply to the given meter
+	 * type.
 	 * @param meterType the meter type
-	 * @return if the SLA is applicable
+	 * @return the value or {@code null} if the value cannot be applied
 	 */
-	public boolean isApplicable(Meter.Type meterType) {
-		return this.types.contains(meterType);
+	public Long getValue(Meter.Type meterType) {
+		if (meterType == Type.DISTRIBUTION_SUMMARY) {
+			return getDistributionSummaryValue();
+		}
+		if (meterType == Type.TIMER) {
+			return getTimerValue();
+		}
+		return null;
 	}
 
-	@Override
-	public int hashCode() {
-		return Long.hashCode(this.value);
+	private Long getDistributionSummaryValue() {
+		if (this.value instanceof Long) {
+			return (Long) this.value;
+		}
+		return null;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
+	private Long getTimerValue() {
+		if (this.value instanceof Long) {
+			return TimeUnit.MILLISECONDS.toNanos((long) this.value);
 		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
+		if (this.value instanceof Duration) {
+			return ((Duration) this.value).toNanos();
 		}
-		return this.value == ((ServiceLevelAgreementBoundary) obj).value;
+		return null;
 	}
 
 	public static ServiceLevelAgreementBoundary valueOf(String value) {

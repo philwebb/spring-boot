@@ -231,7 +231,7 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring.boot=1,2,3"));
 		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1, 2, 3);
+				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
@@ -239,7 +239,7 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring=1,2,3"));
 		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1, 2, 3);
+				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
@@ -247,7 +247,7 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.sla.spring=1,2,3", "distribution.sla.spring.boot=4,5,6"));
 		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(4, 5, 6);
+				.getSlaBoundaries()).containsExactly(4000000, 5000000, 6000000);
 	}
 
 	@Test
@@ -255,7 +255,7 @@ public class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.all=1,2,3"));
 		assertThat(filter.configure(createMeterId("spring.boot"), HistogramConfig.DEFAULT)
-				.getSlaBoundaries()).containsExactly(1, 2, 3);
+				.getSlaBoundaries()).containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
@@ -281,7 +281,7 @@ public class PropertiesMeterFilterTests {
 		Meter.Id summary = createMeterId("spring.boot", Meter.Type.DISTRIBUTION_SUMMARY);
 		Meter.Id counter = createMeterId("spring.boot", Meter.Type.COUNTER);
 		assertThat(filter.configure(timer, HistogramConfig.DEFAULT).getSlaBoundaries())
-				.containsExactly(1, 2, 3);
+				.containsExactly(1000000, 2000000, 3000000);
 		assertThat(filter.configure(summary, HistogramConfig.DEFAULT).getSlaBoundaries())
 				.containsExactly(1, 2, 3);
 		assertThat(filter.configure(counter, HistogramConfig.DEFAULT).getSlaBoundaries())

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Type;
 import org.junit.Test;
 
@@ -35,50 +34,62 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ServiceLevelAgreementBoundaryTests {
 
 	@Test
-	public void getValueWhenFromLongShouldReturnValue() {
+	public void getValueForDistributionSummaryWhenFromLongShouldReturnLongValue() {
 		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf(123L);
-		assertThat(sla.getValue()).isEqualTo(123);
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
 	}
 
 	@Test
-	public void getValueWhenFromNumberStringShouldReturnValue() {
+	public void getValueForDistributionSummaryWhenFromNumberStringShouldReturnLongValue() {
 		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123");
-		assertThat(sla.getValue()).isEqualTo(123);
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isEqualTo(123);
 	}
 
 	@Test
-	public void getValueWhenFromDurationStringShouldReturnNanosValue() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("10ms");
-		assertThat(sla.getValue()).isEqualTo(10000000);
+	public void getValueForDistributionSummaryWhenFromDurationStringShouldReturnNull() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary
+				.valueOf("123ms");
+		assertThat(sla.getValue(Type.DISTRIBUTION_SUMMARY)).isNull();
 	}
 
 	@Test
-	public void isApplicableWhenFromNumberShouldBeApplicableOnlyToTimerAndDistributation() {
+	public void getValueForTimerWhenFromLongShouldReturnMsToNanosValue() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf(123L);
+		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	public void getValueForTimerWhenFromNumberStringShouldMsToNanosValue() {
 		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123");
-		for (Meter.Type type : Meter.Type.values()) {
-			assertThat(sla.isApplicable(type))
-					.isEqualTo(type == Type.DISTRIBUTION_SUMMARY || type == Type.TIMER);
-		}
+		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
 	}
 
 	@Test
-	public void isApplicableWhenFromDurationShouldBeApplicableOnlyToTimer() {
-		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("1s");
-		for (Meter.Type type : Meter.Type.values()) {
-			assertThat(sla.isApplicable(type)).isEqualTo(type == Type.TIMER);
-		}
+	public void getValueForTimerWhenFromDurationStringShouldReturnDrationNanos() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary
+				.valueOf("123ms");
+		assertThat(sla.getValue(Type.TIMER)).isEqualTo(123000000);
+	}
+
+	@Test
+	public void getValueForOthersShouldReturnNull() {
+		ServiceLevelAgreementBoundary sla = ServiceLevelAgreementBoundary.valueOf("123");
+		assertThat(sla.getValue(Type.COUNTER)).isNull();
+		assertThat(sla.getValue(Type.GAUGE)).isNull();
+		assertThat(sla.getValue(Type.LONG_TASK_TIMER)).isNull();
+		assertThat(sla.getValue(Type.OTHER)).isNull();
 	}
 
 	@Test
 	public void valueOfShouldWorkInBinder() {
 		MockEnvironment environment = new MockEnvironment();
-		TestPropertyValues.of("duration=10ms", "long=10").applyTo(environment);
+		TestPropertyValues.of("duration=10ms", "long=20").applyTo(environment);
 		assertThat(Binder.get(environment)
 				.bind("duration", Bindable.of(ServiceLevelAgreementBoundary.class)).get()
-				.getValue()).isEqualTo(10000000);
+				.getValue(Type.TIMER)).isEqualTo(10000000);
 		assertThat(Binder.get(environment)
 				.bind("long", Bindable.of(ServiceLevelAgreementBoundary.class)).get()
-				.getValue()).isEqualTo(10);
+				.getValue(Type.TIMER)).isEqualTo(20000000);
 	}
 
 }

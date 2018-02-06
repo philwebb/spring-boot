@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
@@ -65,8 +66,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 
 	private long[] convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary[] sla) {
 		long[] converted = Arrays.stream(sla == null ? EMPTY_SLA : sla)
-				.filter((candidate) -> candidate.isApplicable(meterType))
-				.mapToLong(ServiceLevelAgreementBoundary::getValue).toArray();
+				.map((candidate) -> candidate.getValue(meterType))
+				.filter(Objects::nonNull).mapToLong(Long::longValue).toArray();
 		return (converted.length == 0 ? null : converted);
 	}
 
