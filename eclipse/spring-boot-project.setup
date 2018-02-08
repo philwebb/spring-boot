@@ -76,8 +76,6 @@
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
-    <requirement
-        name="org.springframework.ide.eclipse.jdt.formatter.feature.feature.group"/>
     <repository
         url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
     <repository
@@ -86,8 +84,6 @@
         url="http://andrei.gmxhome.de/eclipse/"/>
     <repository
         url="https://dl.bintray.com/philwebb/m2eclipse-maveneclipse"/>
-    <repository
-        url="https://dl.bintray.com/philwebb/spring-eclipse-code-formatter"/>
     <repository
         url="http://download.eclipse.org/egit/github/updates/"/>
     <description>
