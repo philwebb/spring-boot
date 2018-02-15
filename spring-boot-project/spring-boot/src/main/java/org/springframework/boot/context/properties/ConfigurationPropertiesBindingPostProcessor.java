@@ -16,32 +16,23 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
-import org.springframework.core.env.StandardEnvironment;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -54,155 +45,86 @@ import org.springframework.core.env.StandardEnvironment;
  * @author Madhura Bhave
  */
 public class ConfigurationPropertiesBindingPostProcessor
-		implements BeanPostProcessor, BeanFactoryAware, EnvironmentAware,
-		ApplicationContextAware, InitializingBean, PriorityOrdered {
+		implements BeanPostProcessor, PriorityOrdered {
+
+	/**
+	 * The bean name that this post-processor is registered with.
+	 */
+	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
+			.getName();
 
 	/**
 	 * The bean name of the configuration properties validator.
 	 */
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
-	private static final Log logger = LogFactory
-			.getLog(ConfigurationPropertiesBindingPostProcessor.class);
+	private final ApplicationContext applicationContext;
 
-	private ConfigurationBeanFactoryMetadata beans = new ConfigurationBeanFactoryMetadata();
+	private final ConfigurationBeanFactoryMetadata beanFactoryMetadata;
 
-	private BeanFactory beanFactory;
+	private final PropertySources propertySources;
 
-	private Environment environment = new StandardEnvironment();
+	private volatile Binder binder;
 
-	private ApplicationContext applicationContext;
+	public ConfigurationPropertiesBindingPostProcessor(Environment environment,
+			ApplicationContext applicationContext, BeanFactory beanFactory,
+			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
+		this.beanFactoryMetadata = beanFactoryMetadata;
+		this.applicationContext = applicationContext;
+		this.propertySources = new PropertySourcesDeducer(environment, beanFactory)
+				.getPropertySources();
+	}
 
-	private ConfigurationPropertiesBinder configurationPropertiesBinder;
-
-	private PropertySources propertySources;
-
-	/**
-	 * Return the order of the bean.
-	 * @return the order
-	 */
 	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE + 1;
 	}
 
-	/**
-	 * Set the bean meta-data store.
-	 * @param beans the bean meta data store
-	 */
-	public void setBeanMetadataStore(ConfigurationBeanFactoryMetadata beans) {
-		this.beans = beans;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.propertySources = deducePropertySources();
-	}
-
-	private PropertySources deducePropertySources() {
-		MutablePropertySources environmentPropertySources = extractEnvironmentPropertySources();
-		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
-		if (configurer == null) {
-			if (environmentPropertySources != null) {
-				return environmentPropertySources;
-			}
-			throw new IllegalStateException("Unable to obtain PropertySources from "
-					+ "PropertySourcesPlaceholderConfigurer or Environment");
-		}
-		PropertySources appliedPropertySources = configurer.getAppliedPropertySources();
-		if (environmentPropertySources == null) {
-			return appliedPropertySources;
-		}
-		return new CompositePropertySources(new FilteredPropertySources(
-				appliedPropertySources,
-				PropertySourcesPlaceholderConfigurer.ENVIRONMENT_PROPERTIES_PROPERTY_SOURCE_NAME),
-				environmentPropertySources);
-	}
-
-	private MutablePropertySources extractEnvironmentPropertySources() {
-		if (this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
-		}
-		return null;
-	}
-
-	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
-		// Take care not to cause early instantiation of all FactoryBeans
-		if (this.beanFactory instanceof ListableBeanFactory) {
-			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
-			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
-					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
-							false);
-			if (beans.size() == 1) {
-				return beans.values().iterator().next();
-			}
-			if (beans.size() > 1 && logger.isWarnEnabled()) {
-				logger.warn("Multiple PropertySourcesPlaceholderConfigurer "
-						+ "beans registered " + beans.keySet()
-						+ ", falling back to Environment");
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-		ConfigurationProperties annotation = getAnnotation(bean, beanName);
+		ConfigurationProperties annotation = getAnnotation(bean, beanName,
+				ConfigurationProperties.class);
 		if (annotation != null) {
-			try {
-				ResolvableType type = ResolvableType.forClass(bean.getClass());
-				Method factoryMethod = this.beans.findFactoryMethod(beanName);
-				if (factoryMethod != null) {
-					type = ResolvableType.forMethodReturnType(factoryMethod);
-				}
-				getBinder().bind(bean, annotation, type);
-			}
-			catch (ConfigurationPropertiesBindingException ex) {
-				throw new BeanCreationException(beanName, ex.getMessage(), ex.getCause());
-			}
+			bind(bean, beanName, annotation);
 		}
 		return bean;
 	}
 
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
+	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
+		ResolvableType type = getBeanType(bean, beanName);
+		Bindable<?> target = Bindable.of(type).withExistingValue(bean);
+		// FIXME handler
+		getBinder().bind(annotation.prefix(), target);
+		// FIXME exception details
 	}
 
-	private ConfigurationProperties getAnnotation(Object bean, String beanName) {
-		ConfigurationProperties annotation = this.beans.findFactoryAnnotation(beanName,
-				ConfigurationProperties.class);
+	private ResolvableType getBeanType(Object bean, String beanName) {
+		Method factoryMethod = this.beanFactoryMetadata.findFactoryMethod(beanName);
+		if (factoryMethod != null) {
+			return ResolvableType.forMethodReturnType(factoryMethod);
+		}
+		return ResolvableType.forClass(bean.getClass());
+	}
+
+	private <A extends Annotation> A getAnnotation(Object bean, String beanName,
+			Class<A> type) {
+		A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
 		if (annotation == null) {
-			annotation = AnnotationUtils.findAnnotation(bean.getClass(),
-					ConfigurationProperties.class);
+			annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);
 		}
 		return annotation;
 	}
 
-	private ConfigurationPropertiesBinder getBinder() {
-		if (this.configurationPropertiesBinder == null) {
-			this.configurationPropertiesBinder = new ConfigurationPropertiesBinderBuilder(
-					this.applicationContext).withPropertySources(this.propertySources)
-							.build();
+	private Binder getBinder() {
+		if (this.binder == null) {
+			this.binder = new Binder(
+					ConfigurationPropertySources.from(this.propertySources),
+					new PropertySourcesPlaceholdersResolver(this.propertySources),
+					new ConversionServiceDeducer(this.applicationContext)
+							.getConversionService());
 		}
-		return this.configurationPropertiesBinder;
+		return this.binder;
 	}
 
 }

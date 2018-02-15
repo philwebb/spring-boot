@@ -40,6 +40,7 @@ import org.springframework.validation.Validator;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class ConfigurationPropertiesBinder {
 
 	private final Iterable<PropertySource<?>> propertySources;

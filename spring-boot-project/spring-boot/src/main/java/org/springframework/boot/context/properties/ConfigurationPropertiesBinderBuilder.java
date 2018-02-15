@@ -38,12 +38,13 @@ import org.springframework.validation.Validator;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class ConfigurationPropertiesBinderBuilder {
 
 	/**
 	 * The bean name of the configuration properties validator.
 	 */
-	static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME;
+	static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor2.VALIDATOR_BEAN_NAME;
 
 	/**
 	 * The bean name of the configuration properties conversion service.

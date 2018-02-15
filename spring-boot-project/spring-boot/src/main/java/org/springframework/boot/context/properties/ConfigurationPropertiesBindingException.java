@@ -24,6 +24,7 @@ import org.springframework.core.NestedExceptionUtils;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class ConfigurationPropertiesBindingException extends RuntimeException {
 
 	ConfigurationPropertiesBindingException(String message, Throwable cause) {

@@ -30,6 +30,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class Jsr303ConfigurationPropertiesValidator implements Validator {
 
 	private final Delegate delegate;

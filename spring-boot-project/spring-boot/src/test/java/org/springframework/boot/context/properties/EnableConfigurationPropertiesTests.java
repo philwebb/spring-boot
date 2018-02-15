@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
+@Deprecated
 public class EnableConfigurationPropertiesTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -61,61 +62,6 @@ public class EnableConfigurationPropertiesTests {
 		System.clearProperty("name");
 		System.clearProperty("nested.name");
 		System.clearProperty("nested_name");
-	}
-
-	@Test
-	public void testBasicPropertiesBinding() {
-		this.context.register(TestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
-		assertThat(this.context.containsBean(TestProperties.class.getName())).isTrue();
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testSystemPropertiesBinding() {
-		this.context.register(TestConfiguration.class);
-		System.setProperty("name", "foo");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(TestProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testNestedSystemPropertiesBinding() {
-		this.context.register(NestedConfiguration.class);
-		System.setProperty("name", "foo");
-		System.setProperty("nested.name", "bar");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
-		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
-		assertThat(this.context.getBean(NestedProperties.class).nested.name)
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void testStrictPropertiesBinding() {
-		removeSystemProperties();
-		this.context.register(StrictTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"name=foo");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(StrictTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void testPropertiesEmbeddedBinding() {
-		this.context.register(EmbeddedTestConfiguration.class);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"spring.foo.name=foo");
-		this.context.refresh();
-		assertThat(this.context.getBeanNamesForType(EmbeddedTestProperties.class))
-				.hasSize(1);
-		assertThat(this.context.getBean(TestProperties.class).name).isEqualTo("foo");
 	}
 
 	@Test
