@@ -27,11 +27,9 @@ import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BindHandler} to apply {@link Validator Validators} to bound results.
@@ -43,8 +41,6 @@ import org.springframework.validation.annotation.Validated;
 public class ValidationBindHandler extends AbstractBindHandler {
 
 	private final Validator[] validators;
-
-	private boolean validate;
 
 	private final Set<ConfigurationProperty> boundProperties = new LinkedHashSet<>();
 
@@ -60,16 +56,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	@Override
 	public boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context) {
-		if (context.getDepth() == 0) {
-			this.validate = shouldValidate(target);
-		}
 		return super.onStart(name, target, context);
-	}
-
-	private boolean shouldValidate(Bindable<?> target) {
-		Validated annotation = AnnotationUtils
-				.findAnnotation(target.getBoxedType().resolve(), Validated.class);
-		return (annotation != null);
 	}
 
 	@Override
@@ -84,9 +71,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target,
 			BindContext context, Object result) throws Exception {
-		if (this.validate) {
-			validate(name, target, result);
-		}
+		validate(name, target, result);
 		super.onFinish(name, target, context, result);
 	}
 
@@ -111,7 +96,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		if (target != null) {
 			BindingResult errors = new BeanPropertyBindingResult(target, name.toString());
 			Arrays.stream(this.validators).filter((v) -> v.supports(type))
-					.forEach((v) -> v.validate(target, errors));
+					.forEach((validator) -> validator.validate(target, errors));
 			if (errors.hasErrors()) {
 				throwBindValidationException(name, errors);
 			}

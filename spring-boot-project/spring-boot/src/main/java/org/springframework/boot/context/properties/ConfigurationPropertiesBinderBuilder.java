@@ -103,7 +103,7 @@ class ConfigurationPropertiesBinderBuilder {
 			return defaultValidator;
 		}
 		if (isJsr303Present()) {
-			return new Jsr303ConfigurationPropertiesValidator(this.applicationContext);
+			return new ConfigurationPropertiesJsr303Validator(this.applicationContext);
 		}
 		return null;
 	}

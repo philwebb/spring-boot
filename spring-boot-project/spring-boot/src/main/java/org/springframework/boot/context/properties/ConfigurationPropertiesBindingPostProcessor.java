@@ -18,14 +18,21 @@ package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
+import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBindHandler;
+import org.springframework.boot.context.properties.bind.handler.NoUnboundElementsBindHandler;
+import org.springframework.boot.context.properties.bind.validation.ValidationBindHandler;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.UnboundElementsSourceFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -33,6 +40,8 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySources;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -64,6 +73,10 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	private final PropertySources propertySources;
 
+	private final Validator configurationPropertiesValidator;
+
+	private final Validator jsr303Validator;
+
 	private volatile Binder binder;
 
 	public ConfigurationPropertiesBindingPostProcessor(Environment environment,
@@ -73,6 +86,18 @@ public class ConfigurationPropertiesBindingPostProcessor
 		this.applicationContext = applicationContext;
 		this.propertySources = new PropertySourcesDeducer(environment, beanFactory)
 				.getPropertySources();
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(
+				applicationContext);
+		this.jsr303Validator = ConfigurationPropertiesJsr303Validator
+				.getIfJsr303Present(applicationContext);
+	}
+
+	private Validator getConfigurationPropertiesValidator(
+			ApplicationContext applicationContext) {
+		if (applicationContext.containsBean(VALIDATOR_BEAN_NAME)) {
+			return applicationContext.getBean(VALIDATOR_BEAN_NAME, Validator.class);
+		}
+		return null;
 	}
 
 	@Override
@@ -94,8 +119,9 @@ public class ConfigurationPropertiesBindingPostProcessor
 	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
 		ResolvableType type = getBeanType(bean, beanName);
 		Bindable<?> target = Bindable.of(type).withExistingValue(bean);
-		// FIXME handler
-		getBinder().bind(annotation.prefix(), target);
+		List<Validator> validators = getValidators(bean, beanName);
+		BindHandler bindHandler = getBindHandler(annotation, validators);
+		getBinder().bind(annotation.prefix(), target, bindHandler);
 		// FIXME exception details
 	}
 
@@ -106,6 +132,42 @@ public class ConfigurationPropertiesBindingPostProcessor
 		}
 		return ResolvableType.forClass(bean.getClass());
 	}
+
+	private List<Validator> getValidators(Object bean, String beanName) {
+		List<Validator> validators = new ArrayList<>(3);
+		if (this.configurationPropertiesValidator != null) {
+			validators.add(this.configurationPropertiesValidator);
+		}
+		if (this.jsr303Validator != null
+				&& getAnnotation(bean, beanName, Validated.class) != null) {
+			validators.add(this.jsr303Validator);
+		}
+		if (bean instanceof Validator) {
+			validators.add((Validator) bean);
+		}
+		return validators;
+	}
+
+	private BindHandler getBindHandler(ConfigurationProperties annotation,
+			List<Validator> validators) {
+		BindHandler handler = BindHandler.DEFAULT;
+		if (annotation.ignoreInvalidFields()) {
+			handler = new IgnoreErrorsBindHandler(handler);
+		}
+		if (!annotation.ignoreUnknownFields()) {
+			UnboundElementsSourceFilter filter = new UnboundElementsSourceFilter();
+			handler = new NoUnboundElementsBindHandler(handler, filter);
+		}
+		if (!validators.isEmpty()) {
+			handler = new ValidationBindHandler(handler,
+					validators.toArray(new Validator[validators.size()]));
+		}
+		return handler;
+	}
+
+	/*
+	 * VALIDATOR_BEAN_NAME / Jsr303 (if @Valid) / The bean itself
+	 */
 
 	private <A extends Annotation> A getAnnotation(Object bean, String beanName,
 			Class<A> type) {

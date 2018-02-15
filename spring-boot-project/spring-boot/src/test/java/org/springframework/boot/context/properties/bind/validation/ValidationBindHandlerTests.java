@@ -144,11 +144,13 @@ public class ValidationBindHandlerTests {
 	}
 
 	@Test
-	public void bindShouldNotValidateWithoutAnnotation() {
+	public void bindShouldValidateWithoutAnnotation() {
 		ExampleNonValidatedBean existingValue = new ExampleNonValidatedBean();
-		this.binder.bind(ConfigurationPropertyName.of("foo"), Bindable
-				.of(ExampleNonValidatedBean.class).withExistingValue(existingValue),
-				this.handler);
+		bindAndExpectValidationError(
+				() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+						Bindable.of(ExampleNonValidatedBean.class)
+								.withExistingValue(existingValue),
+						this.handler));
 	}
 
 	private BindValidationException bindAndExpectValidationError(Runnable action) {

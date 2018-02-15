@@ -18,7 +18,9 @@ package org.springframework.boot.context.properties;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.hamcrest.Matchers;
@@ -27,18 +29,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link ConfigurationProperties} annotated beans.
+ * Tests for {@link ConfigurationProperties} annotated beans. Covers
+ * {@link EnableConfigurationProperties},
+ * {@link ConfigurationPropertiesBindingPostProcessorRegistrar} and
+ * {@link ConfigurationPropertiesBindingPostProcessor}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -69,6 +78,15 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void loadShouldBindNested() {
+		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
+		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
+		assertThat(this.context.getBean(NestedProperties.class).nested.name)
+				.isEqualTo("bar");
+	}
+
+	@Test
 	public void loadWhenUsingSystemPropertiesShouldBind() {
 		System.setProperty("name", "foo");
 		load(BasicConfiguration.class);
@@ -77,7 +95,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldBindNested() {
+	public void loadWhenUsingSystemPropertiesShouldBindNested() {
 		System.setProperty("name", "foo");
 		System.setProperty("nested.name", "bar");
 		load(NestedConfiguration.class);
@@ -98,7 +116,9 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenHasIgnoreUnknownFieldsFalseAndUnknownFieldsShouldFail() {
-		fail();
+		removeSystemProperties();
+		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
+		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
 	}
 
 	@Test
@@ -109,24 +129,175 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchShouldThrow() {
+	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
 		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedJsr303Configuration.class, "name:foo");
+		load(ValidatedJsr303Configuration.class, "name=foo");
 	}
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchAndNotValidatedAnnotationShouldBind() {
-		load(NonValidatedJsr303Configuration.class, "name:foo");
+		load(NonValidatedJsr303Configuration.class, "name=foo");
 		NonValidatedJsr303Properties bean = this.context
 				.getBean(NonValidatedJsr303Properties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
-	private void load(Class<?> configuration, String... inlinedProperties) {
+	@Test
+	public void loadWhenPropertiesHaveAnnotationOnBaseClassShouldBind() {
+		load(AnnotationOnBaseClassConfiguration.class, "name=foo");
+		AnnotationOnBaseClassProperties bean = this.context
+				.getBean(AnnotationOnBaseClassProperties.class);
+		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenBindingArrayShouldBind() {
+		load(BasicConfiguration.class, "name=foo", "array=1,2,3");
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.array).containsExactly(1, 2, 3);
+	}
+
+	@Test
+	public void loadWhenBindingArrayFromYamlArrayShouldBind() {
+		load(BasicConfiguration.class, "name=foo", "list[0]=1", "list[1]=2", "list[2]=3");
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.list).containsExactly(1, 2, 3);
+	}
+
+	@Test
+	public void loadWhenBindingOver256ElementsShouldBind() {
+		List<String> pairs = new ArrayList<>();
+		pairs.add("name:foo");
+		for (int i = 0; i < 1000; i++) {
+			pairs.add("list[" + i + "]:" + i);
+		}
+		load(BasicConfiguration.class, pairs.toArray(new String[] {}));
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.list).hasSize(1000);
+	}
+
+	@Test
+	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("No ConfigurationProperties annotation found");
+		load(WithoutAndAnnotationConfiguration.class, "name:foo");
+	}
+
+	@Test
+	public void loadWhenBindingWithoutAnnotationValueShouldBind() {
+		load(WithoutAnnotationValueConfiguration.class, "name=foo");
+		WithoutAnnotationValueProperties bean = this.context
+				.getBean(WithoutAnnotationValueProperties.class);
+		assertThat(bean.name).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenBindingWithDefaultsInXmlShouldBind() {
+		load(new Class<?>[] { BasicConfiguration.class,
+				DefaultsInXmlConfiguration.class });
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("bar");
+	}
+
+	@Test
+	public void loadWhenBindingWithDefaultsInJavaConfigurationShouldBind() {
+		load(DefaultsInJavaConfiguration.class);
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("bar");
+	}
+
+	@Test
+	public void loadWhenBindingTwoBeansShouldBind() {
+		load(new Class<?>[] { WithoutAnnotationValueConfiguration.class,
+				BasicConfiguration.class });
+		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
+		assertThat(this.context.getBean(WithoutAnnotationValueProperties.class))
+				.isNotNull();
+	}
+
+	@Test
+	public void loadWhenBindingWithParentContextShouldBind() {
+		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class,
+				"name=parent");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		load(new Class[] { BasicConfiguration.class, BasicPropertiesConsumer.class },
+				"name=child");
+		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
+		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
+		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName())
+				.isEqualTo("parent");
+		parent.close();
+	}
+
+	@Test
+	public void loadWhenBindingOnlyParentContextShouldBind() {
+		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class,
+				"name=foo");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		load(BasicPropertiesConsumer.class);
+		assertThat(this.context.getBeanNamesForType(BasicProperties.class)).isEmpty();
+		assertThat(parent.getBeanNamesForType(BasicProperties.class)).hasSize(1);
+		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName())
+				.isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenPrefixedPropertiesDecalredAsBeanShouldBind() {
+		load(PrefixPropertiesDecalredAsBeanConfiguration.class, "spring.foo.name=foo");
+		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
+		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenPrefixedPropertiesDecalredAsAnnotationValueShouldBind() {
+		load(PrefixPropertiesDecalredAsAnnotationValueConfiguration.class,
+				"spring.foo.name=foo");
+		PrefixProperties bean = this.context.getBean(
+				"spring.foo-" + PrefixProperties.class.getName(), PrefixProperties.class);
+		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenMultiplePrefixedPropertiesDecalredAsAnnotationValueShouldBind() {
+		load(MultiplePrefixPropertiesDecalredAsAnnotationValueConfiguration.class,
+				"spring.foo.name=foo", "spring.bar.name=bar");
+		PrefixProperties bean1 = this.context.getBean(PrefixProperties.class);
+		AnotherPrefixProperties bean2 = this.context
+				.getBean(AnotherPrefixProperties.class);
+		assertThat(((BasicProperties) bean1).name).isEqualTo("foo");
+		assertThat(((BasicProperties) bean2).name).isEqualTo("bar");
+	}
+
+	@Test
+	public void loadWhenBindingToMapKeyWithPeriodShouldBind() {
+		load(MapProperties.class, "mymap.key1.key2:value12", "mymap.key3:value3");
+		MapProperties bean = this.context.getBean(MapProperties.class);
+		assertThat(bean.mymap).containsOnly(entry("key3", "value3"),
+				entry("key1.key2", "value12"));
+	}
+
+	@Test
+	public void loadWhenPrefixedPropertiesAreReplacedOnBeanMethodShouldBind() {
+		load(PrefixedPropertiesReplacedOnBeanMethodConfiguration.class,
+				"external.name=bar", "spam.name=foo");
+		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
+		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
+	}
+
+	private AnnotationConfigApplicationContext load(Class<?> configuration,
+			String... inlinedProperties) {
+		return load(new Class<?>[] { configuration }, inlinedProperties);
+	}
+
+	private AnnotationConfigApplicationContext load(Class<?>[] configuration,
+			String... inlinedProperties) {
 		this.context.register(configuration);
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				inlinedProperties);
 		this.context.refresh();
+		return this.context;
 	}
 
 	/**
@@ -173,6 +344,78 @@ public class ConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(NonValidatedJsr303Properties.class)
 	protected static class NonValidatedJsr303Configuration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(AnnotationOnBaseClassProperties.class)
+	protected static class AnnotationOnBaseClassConfiguration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(WithoutAndAnnotationConfiguration.class)
+	protected static class WithoutAndAnnotationConfiguration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(WithoutAnnotationValueProperties.class)
+	protected static class WithoutAnnotationValueConfiguration {
+
+	}
+
+	@Configuration
+	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
+	protected static class DefaultsInXmlConfiguration {
+
+	}
+
+	@Configuration
+	protected static class DefaultsInJavaConfiguration {
+
+		@Bean
+		public BasicProperties basicProperties() {
+			BasicProperties test = new BasicProperties();
+			test.setName("bar");
+			return test;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class PrefixPropertiesDecalredAsBeanConfiguration {
+
+		@Bean
+		public PrefixProperties prefixProperties() {
+			return new PrefixProperties();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(PrefixProperties.class)
+	public static class PrefixPropertiesDecalredAsAnnotationValueConfiguration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties({ PrefixProperties.class,
+			AnotherPrefixProperties.class })
+	public static class MultiplePrefixPropertiesDecalredAsAnnotationValueConfiguration {
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class PrefixedPropertiesReplacedOnBeanMethodConfiguration {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spam")
+		public PrefixProperties prefixProperties() {
+			return new PrefixProperties();
+		}
 
 	}
 
@@ -246,6 +489,11 @@ public class ConfigurationPropertiesTests {
 
 	}
 
+	@ConfigurationProperties(prefix = "spring.bar")
+	protected static class AnotherPrefixProperties extends BasicProperties {
+
+	}
+
 	protected static class Jsr303Properties extends BasicProperties {
 
 		@NotNull
@@ -269,6 +517,56 @@ public class ConfigurationPropertiesTests {
 
 	@ConfigurationProperties
 	protected static class NonValidatedJsr303Properties extends Jsr303Properties {
+
+	}
+
+	protected static class AnnotationOnBaseClassProperties extends BasicProperties {
+
+	}
+
+	@ConfigurationProperties
+	protected static class WithoutAnnotationValueProperties {
+
+		private String name;
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		// No getter - you should be able to bind to a write-only bean
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties
+	protected static class MapProperties {
+
+		private Map<String, String> mymap;
+
+		public void setMymap(Map<String, String> mymap) {
+			this.mymap = mymap;
+		}
+
+		public Map<String, String> getMymap() {
+			return this.mymap;
+		}
+
+	}
+
+	@Component
+	protected static class BasicPropertiesConsumer {
+
+		@Autowired
+		private BasicProperties properties;
+
+		@PostConstruct
+		public void init() {
+			assertThat(this.properties).isNotNull();
+		}
+
+		public String getName() {
+			return this.properties.name;
+		}
 
 	}
 
