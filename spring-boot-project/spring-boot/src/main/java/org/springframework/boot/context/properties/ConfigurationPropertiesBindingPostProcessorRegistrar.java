@@ -17,14 +17,9 @@
 package org.springframework.boot.context.properties;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
@@ -35,7 +30,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessorRegistrar
-		implements ImportBeanDefinitionRegistrar, EnvironmentAware {
+		implements ImportBeanDefinitionRegistrar {
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -51,11 +46,7 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar
 			BeanDefinitionRegistry registry) {
 		GenericBeanDefinition definition = new GenericBeanDefinition();
 		definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
-		definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
-		ConstructorArgumentValues arguments = new ConstructorArgumentValues();
-		arguments.addIndexedArgumentValue(1,
-				new RuntimeBeanReference(ConfigurationBeanFactoryMetadata.BEAN_NAME));
-		definition.setConstructorArgumentValues(arguments);
+		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(
 				ConfigurationPropertiesBindingPostProcessor.BEAN_NAME, definition);
 
@@ -68,19 +59,6 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(ConfigurationBeanFactoryMetadata.BEAN_NAME,
 				definition);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.context.EnvironmentAware#setEnvironment(org.springframework.
-	 * core.env.Environment)
-	 */
-	@Override
-	public void setEnvironment(Environment environment) {
-		// TODO Auto-generated method stub
-		System.err.println(environment);
 	}
 
 }

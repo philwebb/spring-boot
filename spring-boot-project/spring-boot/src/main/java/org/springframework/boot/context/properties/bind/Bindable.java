@@ -86,6 +86,22 @@ public final class Bindable<T> {
 		return this.annotations;
 	}
 
+	/**
+	 * Return a single associated annotations that could affect binding.
+	 * @param <A> the annotation type
+	 * @param type annotation type
+	 * @return the associated annotation or {@code null}
+	 */
+	@SuppressWarnings("unchecked")
+	public <A extends Annotation> A getAnnotation(Class<A> type) {
+		for (Annotation annotation : this.annotations) {
+			if (type.isInstance(annotation)) {
+				return (A) annotation;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);

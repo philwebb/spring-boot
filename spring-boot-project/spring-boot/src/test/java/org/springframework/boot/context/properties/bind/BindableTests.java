@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
@@ -138,6 +139,20 @@ public class BindableTests {
 		Annotation annotation = mock(Annotation.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotations())
 				.containsExactly(annotation);
+	}
+
+	@Test
+	public void getAnnotationWhenMatchShouldReuturnAnnotation() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Test.class)).isSameAs(annotation);
+	}
+
+	@Test
+	public void getAnnotationWhenNoMatchShouldReturnNull() {
+		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
+		assertThat(Bindable.of(String.class).withAnnotations(annotation)
+				.getAnnotation(Bean.class)).isNull();
 	}
 
 	@Test

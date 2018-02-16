@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +26,6 @@ import org.springframework.boot.context.properties.bind.validation.BindValidatio
 import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.Errors;
@@ -39,7 +34,6 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -56,163 +50,6 @@ import static org.mockito.Mockito.verify;
 public class ConfigurationPropertiesBinderTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
-
-	@Test
-	public void bindSimpleProperties() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"person.name=John Smith", "person.age=42");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PersonProperties target = new PersonProperties();
-		bind(binder, target);
-		assertThat(target.name).isEqualTo("John Smith");
-		assertThat(target.age).isEqualTo(42);
-	}
-
-	@Test
-	public void bindUnknownFieldFailureMessageContainsDetailsOfPropertyOrigin() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"person.does-not-exist=yolo");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PersonProperties target = new PersonProperties();
-		try {
-			bind(binder, target);
-			fail("Expected exception");
-		}
-		catch (ConfigurationPropertiesBindingException ex) {
-			BindException bindException = (BindException) ex.getCause();
-			assertThat(bindException.getMessage())
-					.startsWith("Failed to bind properties under 'person' to "
-							+ PersonProperties.class.getName());
-		}
-	}
-
-	@Test
-	public void bindWithIgnoreInvalidFieldsAnnotation() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"com.example.bar=spam");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithIgnoreInvalidFields target = new PropertyWithIgnoreInvalidFields();
-		bind(binder, target);
-		assertThat(target.getBar()).isEqualTo(0);
-	}
-
-	@Test
-	public void bindToEnum() {
-		bindToEnum("test.theValue=foo");
-	}
-
-	@Test
-	public void bindToEnumRelaxed() {
-		bindToEnum("test.the-value=FoO");
-		bindToEnum("test.THE_VALUE=FoO");
-	}
-
-	private void bindToEnum(String property) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				property);
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithEnum target = new PropertyWithEnum();
-		bind(binder, target);
-		assertThat(target.getTheValue()).isEqualTo(FooEnum.FOO);
-	}
-
-	@Test
-	public void bindSetOfEnumRelaxed() {
-		bindToEnumSet("test.the-values=foo,bar", FooEnum.FOO, FooEnum.BAR);
-		bindToEnumSet("test.the-values=foo", FooEnum.FOO);
-	}
-
-	private void bindToEnumSet(String property, FooEnum... expected) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				property);
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithEnum target = new PropertyWithEnum();
-		bind(binder, target);
-		assertThat(target.getTheValues()).contains(expected);
-	}
-
-	@Test
-	public void bindToCharArray() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"test.chars=word");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithCharArray target = new PropertyWithCharArray();
-		bind(binder, target);
-		assertThat(target.getChars()).isEqualTo("word".toCharArray());
-	}
-
-	@Test
-	public void bindToRelaxedPropertyNamesSame() {
-		testRelaxedPropertyNames("test.FOO_BAR=test1", "test.FOO_BAR=test2",
-				"test.BAR-B-A-Z=testa", "test.BAR-B-A-Z=testb");
-	}
-
-	private void testRelaxedPropertyNames(String... pairs) {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				pairs);
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithRelaxedNames target = new PropertyWithRelaxedNames();
-		bind(binder, target);
-		assertThat(target.getFooBar()).isEqualTo("test2");
-		assertThat(target.getBarBAZ()).isEqualTo("testb");
-	}
-
-	@Test
-	public void bindToNestedProperty() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"test.nested.value=test1");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertyWithNestedValue target = new PropertyWithNestedValue();
-		bind(binder, target);
-		assertThat(target.getNested().getValue()).isEqualTo("test1");
-	}
-
-	@Test
-	public void bindToMap() {
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
-				"test.map.foo=bar");
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				this.environment.getPropertySources(), null, null);
-		PropertiesWithMap target = new PropertiesWithMap();
-		bind(binder, target);
-		assertThat(target.getMap()).containsOnly(entry("foo", "bar"));
-	}
-
-	@Test
-	public void bindToMapWithSystemProperties() {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(new SystemEnvironmentPropertySource(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				propertySources, null, null);
-		PropertiesWithComplexMap target = new PropertiesWithComplexMap();
-		bind(binder, target);
-		assertThat(target.getMap()).containsOnlyKeys("foo");
-		assertThat(target.getMap().get("foo")).containsOnly(entry("bar", "baz"));
-	}
-
-	@Test
-	public void bindWithOverriddenProperties() {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addFirst(new SystemEnvironmentPropertySource("system",
-				Collections.singletonMap("PERSON_NAME", "Jane")));
-		propertySources.addLast(new MapPropertySource("test",
-				Collections.singletonMap("person.name", "John")));
-		ConfigurationPropertiesBinder binder = new ConfigurationPropertiesBinder(
-				propertySources, null, null);
-		PersonProperties target = new PersonProperties();
-		bind(binder, target);
-		assertThat(target.name).isEqualTo("Jane");
-	}
 
 	@Test
 	public void validationWithSetter() {
