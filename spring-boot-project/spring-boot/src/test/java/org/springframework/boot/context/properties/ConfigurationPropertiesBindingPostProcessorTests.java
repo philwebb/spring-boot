@@ -53,7 +53,6 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.lang.Nullable;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +68,7 @@ import static org.hamcrest.Matchers.instanceOf;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
+@Deprecated
 public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Rule
@@ -84,39 +84,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		if (this.context != null) {
 			this.context.close();
 		}
-	}
-
-	@Test
-	public void bindToInterfaceBean() {
-		MockEnvironment env = new MockEnvironment();
-		env.setProperty("test.foo", "bar");
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(TestConfigurationWithValidationAndInterface.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(ValidatedPropertiesImpl.class).getFoo())
-				.isEqualTo("bar");
-	}
-
-	@Test
-	public void initializerSeeBoundProperties() {
-		MockEnvironment env = new MockEnvironment();
-		env.setProperty("bar", "foo");
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.setEnvironment(env);
-		this.context.register(TestConfigurationWithInitializer.class);
-		this.context.refresh();
-	}
-
-	@Test
-	public void bindWithValueDefault() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"default.value=foo");
-		this.context.register(PropertyWithValue.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(PropertyWithValue.class).getValue())
-				.isEqualTo("foo");
 	}
 
 	@Test

@@ -53,13 +53,13 @@ import org.springframework.validation.annotation.Validated;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  */
-public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
+public class ConfigurationPropertiesBindingPostProcessor3 implements BeanPostProcessor,
 		PriorityOrdered, ApplicationContextAware, InitializingBean {
 
 	/**
 	 * The bean name that this post-processor is registered with.
 	 */
-	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
+	public static final String BEAN_NAME = ConfigurationPropertiesBindingPostProcessor3.class
 			.getName();
 
 	/**
@@ -79,7 +79,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private volatile Binder binder;
 
-	public ConfigurationPropertiesBindingPostProcessor(
+	public ConfigurationPropertiesBindingPostProcessor3(
 			ApplicationContext applicationContext,
 			ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
 		this.beanFactoryMetadata = beanFactoryMetadata;

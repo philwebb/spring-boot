@@ -52,6 +52,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 public class ConfigurationPropertiesBinderTests {
 
 	private final MockEnvironment environment = new MockEnvironment();

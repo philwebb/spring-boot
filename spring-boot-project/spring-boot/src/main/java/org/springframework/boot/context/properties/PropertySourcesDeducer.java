@@ -21,8 +21,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -39,13 +38,10 @@ class PropertySourcesDeducer {
 
 	private static final Log logger = LogFactory.getLog(PropertySourcesDeducer.class);
 
-	private final Environment environment;
+	private final ApplicationContext applicationContext;
 
-	private final BeanFactory beanFactory;
-
-	PropertySourcesDeducer(Environment environment, BeanFactory beanFactory) {
-		this.environment = environment;
-		this.beanFactory = beanFactory;
+	PropertySourcesDeducer(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 
 	public PropertySources getPropertySources() {
@@ -66,27 +62,24 @@ class PropertySourcesDeducer {
 	}
 
 	private MutablePropertySources extractEnvironmentPropertySources() {
-		if (this.environment instanceof ConfigurableEnvironment) {
-			return ((ConfigurableEnvironment) this.environment).getPropertySources();
+		Environment environment = this.applicationContext.getEnvironment();
+		if (environment instanceof ConfigurableEnvironment) {
+			return ((ConfigurableEnvironment) environment).getPropertySources();
 		}
 		return null;
 	}
 
 	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
 		// Take care not to cause early instantiation of all FactoryBeans
-		if (this.beanFactory instanceof ListableBeanFactory) {
-			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
-			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
-					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
-							false);
-			if (beans.size() == 1) {
-				return beans.values().iterator().next();
-			}
-			if (beans.size() > 1 && logger.isWarnEnabled()) {
-				logger.warn("Multiple PropertySourcesPlaceholderConfigurer "
-						+ "beans registered " + beans.keySet()
-						+ ", falling back to Environment");
-			}
+		Map<String, PropertySourcesPlaceholderConfigurer> beans = this.applicationContext
+				.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false, false);
+		if (beans.size() == 1) {
+			return beans.values().iterator().next();
+		}
+		if (beans.size() > 1 && logger.isWarnEnabled()) {
+			logger.warn(
+					"Multiple PropertySourcesPlaceholderConfigurer " + "beans registered "
+							+ beans.keySet() + ", falling back to Environment");
 		}
 		return null;
 	}

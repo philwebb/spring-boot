@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,23 +26,33 @@ import javax.validation.constraints.NotNull;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link ConfigurationProperties} annotated beans. Covers
@@ -125,20 +136,6 @@ public class ConfigurationPropertiesTests {
 	public void loadWhenHasPrefixShouldBind() {
 		load(PrefixConfiguration.class, "spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
-		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
-	}
-
-	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedJsr303Configuration.class, "name=foo");
-	}
-
-	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchAndNotValidatedAnnotationShouldBind() {
-		load(NonValidatedJsr303Configuration.class, "name=foo");
-		NonValidatedJsr303Properties bean = this.context
-				.getBean(NonValidatedJsr303Properties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
@@ -286,6 +283,104 @@ public class ConfigurationPropertiesTests {
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
+	@Test
+	public void loadShouldBindToJavaTimeDuration() {
+		load(BasicConfiguration.class, "duration=PT1M");
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.getDuration().getSeconds()).isEqualTo(60);
+	}
+
+	@Test
+	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
+		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
+		load(ValidatedJsr303Configuration.class, "name=foo");
+	}
+
+	@Test
+	public void loadWhenJsr303ConstraintMatchesShouldBind() {
+		load(ValidatedJsr303Configuration.class, "description=foo");
+		ValidatedJsr303Properties bean = this.context
+				.getBean(ValidatedJsr303Properties.class);
+		assertThat(bean.getDescription()).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenJsr303ConstraintDoesNotMatchAndNotValidatedAnnotationShouldBind() {
+		load(NonValidatedJsr303Configuration.class, "name=foo");
+		NonValidatedJsr303Properties bean = this.context
+				.getBean(NonValidatedJsr303Properties.class);
+		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
+	}
+
+	@Test
+	@Ignore
+	public void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
+		fail(); // FIXME
+	}
+
+	@Ignore
+	@Test
+	public void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
+		fail(); // FIXME
+	}
+
+	@Ignore
+	@Test
+	public void loadWhenOutterClassIsValidatedAndNestedClassIsNotShouldValidateNested() {
+		fail(); // FIXME
+	}
+
+	@Test
+	public void loadWhenBindingToValidatedImplementationOfInterfaceShouldBind() {
+		load(ValidatedImplementationConfiguration.class, "test.foo=bar");
+		ValidatedImplementationProperties bean = this.context
+				.getBean(ValidatedImplementationProperties.class);
+		assertThat(bean.getFoo()).isEqualTo("bar");
+	}
+
+	@Test
+	public void bindWithValueDefault() {
+		load(WithPropertyPlaceholderValueConfiguration.class, "default.value=foo");
+		WithPropertyPlaceholderValueProperties bean = this.context
+				.getBean(WithPropertyPlaceholderValueProperties.class);
+		assertThat(bean.getValue()).isEqualTo("foo");
+	}
+
+	@Test
+	public void loadWhenHasPostConstructShouldTriggerPostConstructWithBoundBean() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("bar", "foo");
+		this.context.setEnvironment(environment);
+		this.context.register(WithPostConstructConfiguration.class);
+		this.context.refresh();
+		WithPostConstructConfiguration bean = this.context
+				.getBean(WithPostConstructConfiguration.class);
+		assertThat(bean.initialized).isTrue();
+	}
+
+	@Test
+	public void loadShouldNotInitializeFactoryBeans() {
+		WithFactoryBeanConfiguration.factoryBeanInitialized = false;
+		this.context = new AnnotationConfigApplicationContext() {
+
+			@Override
+			protected void onRefresh() throws BeansException {
+				assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized)
+						.as("Initialized too early").isFalse();
+				super.onRefresh();
+			}
+
+		};
+		this.context.register(WithFactoryBeanConfiguration.class);
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(FactoryBeanTester.class);
+		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+		this.context.registerBeanDefinition("test", beanDefinition);
+		this.context.refresh();
+		assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized)
+				.as("Not Initialized").isTrue();
+	}
+
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
 			String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
@@ -419,6 +514,87 @@ public class ConfigurationPropertiesTests {
 
 	}
 
+	@Configuration
+	@EnableConfigurationProperties
+	public static class ValidatedImplementationConfiguration {
+
+		@Bean
+		public ValidatedImplementationProperties testProperties() {
+			return new ValidatedImplementationProperties();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties
+	public static class WithPostConstructConfiguration {
+
+		private String bar;
+
+		private boolean initialized;
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		public String getBar() {
+			return this.bar;
+		}
+
+		@PostConstruct
+		public void init() {
+			assertThat(this.bar).isNotNull();
+			this.initialized = true;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(WithPropertyPlaceholderValueProperties.class)
+	public static class WithPropertyPlaceholderValueConfiguration {
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class WithFactoryBeanConfiguration {
+
+		public static boolean factoryBeanInitialized;
+
+	}
+
+	// Must be a raw type
+	@SuppressWarnings("rawtypes")
+	static class FactoryBeanTester implements FactoryBean, InitializingBean {
+
+		@Override
+		public Object getObject() {
+			return Object.class;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return null;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+		@Override
+		public void afterPropertiesSet() {
+			WithFactoryBeanConfiguration.factoryBeanInitialized = true;
+		}
+
+	}
+
 	@ConfigurationProperties
 	protected static class BasicProperties {
 
@@ -427,6 +603,8 @@ public class ConfigurationPropertiesTests {
 		private int[] array;
 
 		private List<Integer> list = new ArrayList<>();
+
+		private Duration duration;
 
 		// No getter - you should be able to bind to a write-only bean
 
@@ -448,6 +626,14 @@ public class ConfigurationPropertiesTests {
 
 		public void setList(List<Integer> list) {
 			this.list = list;
+		}
+
+		public Duration getDuration() {
+			return this.duration;
+		}
+
+		public void setDuration(Duration duration) {
+			this.duration = duration;
 		}
 
 	}
@@ -566,6 +752,47 @@ public class ConfigurationPropertiesTests {
 
 		public String getName() {
 			return this.properties.name;
+		}
+
+	}
+
+	public interface InterfaceForValidatedImplementation {
+
+		String getFoo();
+	}
+
+	@ConfigurationProperties("test")
+	@Validated
+	public static class ValidatedImplementationProperties
+			implements InterfaceForValidatedImplementation {
+
+		@NotNull
+		private String foo;
+
+		@Override
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	@Validated
+	public static class WithPropertyPlaceholderValueProperties {
+
+		@Value("${default.value}")
+		private String value;
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return this.value;
 		}
 
 	}
