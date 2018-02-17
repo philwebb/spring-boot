@@ -22,6 +22,8 @@ import java.util.Locale;
 import org.springframework.format.Formatter;
 
 /**
+ * {@link Formatter} for {@code char[]}.
+ *
  * @author Phillip Webb
  */
 final class CharArrayFormatter implements Formatter<char[]> {
