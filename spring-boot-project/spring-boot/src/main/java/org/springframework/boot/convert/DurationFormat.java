@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,10 +22,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 
 /**
- * Annotation that can be used to change the default unit used when converting a
+ * Annotation that can be used to indivate the format to use when converting a
  * {@link Duration}.
  *
  * @author Phillip Webb
@@ -34,12 +33,29 @@ import java.time.temporal.ChronoUnit;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DefaultDurationUnit {
+public @interface DurationFormat {
 
 	/**
-	 * The duration unit to use if one is not specified.
-	 * @return the duration unit
+	 * The duration format style.
+	 * @return the duration format style.
 	 */
-	ChronoUnit value();
+	Style value();
+
+	/**
+	 * Duration format styles.
+	 */
+	enum Style {
+
+		/**
+		 * Simple formatting, for example '1s'.
+		 */
+		SIMPLE,
+
+		/**
+		 * ISO-8601 formatting.
+		 */
+		ISO8601
+
+	}
 
 }

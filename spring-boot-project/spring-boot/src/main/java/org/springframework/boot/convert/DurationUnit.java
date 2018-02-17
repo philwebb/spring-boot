@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 /**
- * Declares a field or method parameter should be converted to collection using the
- * specified delimiter.
+ * Annotation that can be used to change the default unit used when converting a
+ * {@link Duration}.
  *
  * @author Phillip Webb
  * @since 2.0.0
  */
-@Documented
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER,
-		ElementType.ANNOTATION_TYPE })
-public @interface Delimiter {
+@Documented
+public @interface DurationUnit {
 
 	/**
-	 * A delimiter value used to indicate that no delimiter is required and the result
-	 * should be a single element containing the entire string.
+	 * The duration unit to use if one is not specified.
+	 * @return the duration unit
 	 */
-	String NONE = "";
-
-	/**
-	 * The delimiter to use or {@code NONE} if the entire contents should be treated as a
-	 * single element.
-	 * @return the delimiter
-	 */
-	String value();
+	ChronoUnit value();
 
 }

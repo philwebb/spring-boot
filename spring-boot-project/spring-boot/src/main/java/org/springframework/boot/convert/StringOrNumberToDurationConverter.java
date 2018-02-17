@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -33,20 +33,21 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Converter} for {@link String} to {@link Duration}. Support
- * {@link Duration#parse(CharSequence)} as well a more readable {@code 10s} form.
+ * {@link Converter} to convert from a {@link String} or {@link Number} to a
+ * {@link Duration}. Support {@link Duration#parse(CharSequence)} as well a more readable
+ * {@code 10s} form.
  *
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class DurationConverter implements GenericConverter {
+class StringOrNumberToDurationConverter implements GenericConverter {
 
 	private static final Set<ConvertiblePair> TYPES;
 
 	static {
 		Set<ConvertiblePair> types = new LinkedHashSet<>();
 		types.add(new ConvertiblePair(String.class, Duration.class));
-		types.add(new ConvertiblePair(Integer.class, Duration.class));
+		types.add(new ConvertiblePair(Number.class, Duration.class));
 		TYPES = Collections.unmodifiableSet(types);
 	}
 
@@ -79,8 +80,8 @@ public class DurationConverter implements GenericConverter {
 		if (source == null) {
 			return null;
 		}
-		DefaultDurationUnit defaultUnit = targetType
-				.getAnnotation(DefaultDurationUnit.class);
+		DurationUnit defaultUnit = targetType
+				.getAnnotation(DurationUnit.class);
 		return toDuration(source.toString(),
 				(defaultUnit == null ? null : defaultUnit.value()));
 	}

@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.StringOrNumberToDurationConverter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -32,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DurationConverter}.
+ * Tests for {@link StringOrNumberToDurationConverter}.
  *
  * @author Phillip Webb
  */
@@ -41,7 +43,7 @@ public class DurationConverterTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private DurationConverter converter = new DurationConverter();
+	private StringOrNumberToDurationConverter converter = new StringOrNumberToDurationConverter();
 
 	@Test
 	public void convertWhenIso8601ShouldReturnDuration() {
@@ -136,10 +138,10 @@ public class DurationConverterTests {
 
 	private Duration convert(String source, ChronoUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
-		DefaultDurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
-				Collections.singletonMap("value", defaultUnit), DefaultDurationUnit.class,
+		DurationUnit annotation = AnnotationUtils.synthesizeAnnotation(
+				Collections.singletonMap("value", defaultUnit), DurationUnit.class,
 				null);
-		given(targetType.getAnnotation(DefaultDurationUnit.class)).willReturn(annotation);
+		given(targetType.getAnnotation(DurationUnit.class)).willReturn(annotation);
 		return (Duration) this.converter.convert(source, TypeDescriptor.forObject(source),
 				targetType);
 	}

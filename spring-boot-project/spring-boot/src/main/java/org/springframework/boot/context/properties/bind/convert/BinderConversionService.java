@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.convert.CharArrayFormatter;
+import org.springframework.boot.convert.DelimitedStringToCollectionConverter;
+import org.springframework.boot.convert.StringOrNumberToDurationConverter;
+import org.springframework.boot.convert.InetAddressFormatter;
+import org.springframework.boot.convert.StringToEnumIgnoringCaseConverterFactory;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -67,12 +72,11 @@ public class BinderConversionService implements ConversionService {
 	private ConversionService createAdditionalConversionService() {
 		DefaultFormattingConversionService service = new DefaultFormattingConversionService();
 		DefaultConversionService.addCollectionConverters(service);
-		service.addConverterFactory(new StringToEnumConverterFactory());
-		service.addConverter(new StringToCharArrayConverter());
-		service.addConverter(new StringToInetAddressConverter());
-		service.addConverter(new InetAddressToStringConverter());
+		service.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
+		service.addFormatter(new CharArrayFormatter());
+		service.addFormatter(new InetAddressFormatter());
 		service.addConverter(new PropertyEditorConverter());
-		service.addConverter(new DurationConverter());
+		service.addConverter(new StringOrNumberToDurationConverter());
 		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
 		DateFormatter formatter = new DateFormatter();
 		formatter.setIso(DateTimeFormat.ISO.DATE_TIME);

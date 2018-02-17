@@ -26,6 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import org.springframework.boot.convert.DelimitedStringToCollectionConverter;
+import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter.ConvertiblePair;
 import org.springframework.format.support.DefaultFormattingConversionService;

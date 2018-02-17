@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties.bind.convert;
+package org.springframework.boot.convert;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,11 +35,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  */
-class DelimitedStringToCollectionConverter implements ConditionalGenericConverter {
+final class DelimitedStringToCollectionConverter implements ConditionalGenericConverter {
 
 	private final ConversionService conversionService;
 
-	DelimitedStringToCollectionConverter(ConversionService conversionService) {
+	public DelimitedStringToCollectionConverter(ConversionService conversionService) {
 		Assert.notNull(conversionService, "ConversionService must not be null");
 		this.conversionService = conversionService;
 	}

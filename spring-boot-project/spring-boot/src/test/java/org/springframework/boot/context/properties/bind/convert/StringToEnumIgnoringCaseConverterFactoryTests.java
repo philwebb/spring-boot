@@ -18,18 +18,19 @@ package org.springframework.boot.context.properties.bind.convert;
 
 import org.junit.Test;
 
+import org.springframework.boot.convert.StringToEnumIgnoringCaseConverterFactory;
 import org.springframework.core.convert.converter.Converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link StringToEnumConverterFactory}.
+ * Tests for {@link StringToEnumIgnoringCaseConverterFactory}.
  *
  * @author Phillip Webb
  */
-public class StringToEnumConverterFactoryTests {
+public class StringToEnumIgnoringCaseConverterFactoryTests {
 
-	private StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
+	private StringToEnumIgnoringCaseConverterFactory factory = new StringToEnumIgnoringCaseConverterFactory();
 
 	@Test
 	public void getConverterShouldReturnConverter() {
