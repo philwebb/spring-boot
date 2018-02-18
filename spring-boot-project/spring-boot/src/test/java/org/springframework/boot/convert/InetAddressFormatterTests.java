@@ -33,7 +33,7 @@ import org.springframework.core.convert.ConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link CharArrayFormatter}.
+ * Tests for {@link InetAddressFormatter}.
  *
  * @author Phillip Webb
  */

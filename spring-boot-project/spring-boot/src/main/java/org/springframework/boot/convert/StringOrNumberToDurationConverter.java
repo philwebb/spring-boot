@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
  * {@code 10s} form.
  *
  * @author Phillip Webb
- * @since 2.0.0
  */
+@Deprecated
 class StringOrNumberToDurationConverter implements GenericConverter {
 
 	private static final Set<ConvertiblePair> TYPES;
@@ -80,8 +80,7 @@ class StringOrNumberToDurationConverter implements GenericConverter {
 		if (source == null) {
 			return null;
 		}
-		DurationUnit defaultUnit = targetType
-				.getAnnotation(DurationUnit.class);
+		DurationUnit defaultUnit = targetType.getAnnotation(DurationUnit.class);
 		return toDuration(source.toString(),
 				(defaultUnit == null ? null : defaultUnit.value()));
 	}

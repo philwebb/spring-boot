@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Type;
 
-import org.springframework.boot.convert.StringOrNumberToDurationConverter;
+import org.springframework.boot.convert.DurationStyle;
 
 /**
  * A service level agreement boundary for use when configuring micrometer. Can be
@@ -82,7 +82,7 @@ public final class ServiceLevelAgreementBoundary {
 			return new ServiceLevelAgreementBoundary(Long.parseLong(value));
 		}
 		return new ServiceLevelAgreementBoundary(
-				StringOrNumberToDurationConverter.toDuration(value, null));
+				DurationStyle.detectAndParse(value));
 	}
 
 	/**
@@ -97,8 +97,8 @@ public final class ServiceLevelAgreementBoundary {
 
 	/**
 	 * Return a new {@link ServiceLevelAgreementBoundary} instance for the given String
-	 * value. The value may contain a simple number, or a {@link StringOrNumberToDurationConverter
-	 * duration formatted value}
+	 * value. The value may contain a simple number, or a
+	 * {@link StringOrNumberToDurationConverter duration formatted value}
 	 * @param value the source value
 	 * @return a {@link ServiceLevelAgreementBoundary} instance
 	 */

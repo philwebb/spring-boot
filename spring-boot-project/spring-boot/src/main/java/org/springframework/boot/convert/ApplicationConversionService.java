@@ -16,6 +16,7 @@
 
 package org.springframework.boot.convert;
 
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.format.FormatterRegistry;
@@ -45,17 +46,20 @@ public class ApplicationConversionService extends FormattingConversionService {
 		if (embeddedValueResolver != null) {
 			setEmbeddedValueResolver(embeddedValueResolver);
 		}
-		addApplicationConverters(this);
-		addApplicationFormatters(this);
 		DefaultConversionService.addDefaultConverters(this);
 		DefaultFormattingConversionService.addDefaultFormatters(this);
+		addApplicationConverters(this);
+		addApplicationFormatters(this);
 	}
 
 	public void addApplicationConverters(ConverterRegistry registry) {
-		// registry.removeConvertible(Object[].class, String.class);
-		// registry.removeConvertible(String.class, Object[].class);
-		// registry.removeConvertible(String.class, Collection.class);
-		// registry.removeConvertible(Collection.class, String.class);
+		ConversionService service = (ConversionService) registry;
+		registry.addConverter(new ArrayToDelimitedStringConverter(service));
+		registry.addConverter(new CollectionToDelimitedStringConverter(service));
+		registry.addConverter(new DelimitedStringToArrayConverter(service));
+		registry.addConverter(new DelimitedStringToCollectionConverter(service));
+		registry.addConverter(new NumberToDurationConverter());
+		registry.addConverter(new StringToDurationConverter());
 		registry.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 	}
 

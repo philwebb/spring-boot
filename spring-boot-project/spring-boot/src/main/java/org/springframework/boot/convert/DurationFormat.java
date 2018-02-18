@@ -39,23 +39,6 @@ public @interface DurationFormat {
 	 * The duration format style.
 	 * @return the duration format style.
 	 */
-	Style value();
-
-	/**
-	 * Duration format styles.
-	 */
-	enum Style {
-
-		/**
-		 * Simple formatting, for example '1s'.
-		 */
-		SIMPLE,
-
-		/**
-		 * ISO-8601 formatting.
-		 */
-		ISO8601
-
-	}
+	DurationStyle value();
 
 }

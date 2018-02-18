@@ -25,6 +25,8 @@ import java.util.function.Consumer;
 import org.junit.runners.Parameterized.Parameters;
 
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.ConverterFactory;
+import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.support.FormattingConversionService;
 
@@ -39,15 +41,22 @@ public class ConversionServiceParameters implements Iterable<Object[]> {
 	private final List<Object[]> parameters;
 
 	public ConversionServiceParameters(Formatter<?> formatter) {
-		this((conversionService) -> conversionService.addFormatter(formatter));
+		this((Consumer<FormattingConversionService>) (
+				conversionService) -> conversionService.addFormatter(formatter));
 	}
 
-	@Override
-	public Iterator<Object[]> iterator() {
-		return this.parameters.iterator();
+	public ConversionServiceParameters(ConverterFactory<?, ?> converterFactory) {
+		this((Consumer<FormattingConversionService>) (
+				conversionService) -> conversionService
+						.addConverterFactory(converterFactory));
 	}
 
-	private ConversionServiceParameters(
+	public ConversionServiceParameters(GenericConverter converter) {
+		this((Consumer<FormattingConversionService>) (
+				conversionService) -> conversionService.addConverter(converter));
+	}
+
+	public ConversionServiceParameters(
 			Consumer<FormattingConversionService> initializer) {
 		FormattingConversionService withoutDefaults = new FormattingConversionService();
 		initializer.accept(withoutDefaults);
@@ -57,6 +66,11 @@ public class ConversionServiceParameters implements Iterable<Object[]> {
 		parameters.add(new Object[] { "application conversion service",
 				new ApplicationConversionService() });
 		this.parameters = Collections.unmodifiableList(parameters);
+	}
+
+	@Override
+	public Iterator<Object[]> iterator() {
+		return this.parameters.iterator();
 	}
 
 }

@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class StringToEnumIgnoringCaseConverterFactory
+final class StringToEnumIgnoringCaseConverterFactory
 		implements ConverterFactory<String, Enum> {
 
 	@Override

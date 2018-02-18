@@ -51,10 +51,8 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return targetType.hasAnnotation(Delimiter.class)
-				&& (targetType.getElementTypeDescriptor() == null
-						|| this.conversionService.canConvert(sourceType,
-								targetType.getElementTypeDescriptor()));
+		return targetType.getElementTypeDescriptor() == null || this.conversionService
+				.canConvert(sourceType, targetType.getElementTypeDescriptor());
 	}
 
 	@Override
@@ -70,8 +68,8 @@ final class DelimitedStringToCollectionConverter implements ConditionalGenericCo
 	private Object convert(String source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		Delimiter delimiter = targetType.getAnnotation(Delimiter.class);
-		Assert.state(delimiter != null, "Missing @DelimitedStringFormat annotation");
-		String[] elements = getElements(source, delimiter.value());
+		String[] elements = getElements(source,
+				(delimiter == null ? "," : delimiter.value()));
 		TypeDescriptor elementDescriptor = targetType.getElementTypeDescriptor();
 		Collection<Object> target = createCollection(targetType, elementDescriptor,
 				elements.length);

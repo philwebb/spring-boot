@@ -15,9 +15,10 @@
  */
 
 package org.springframework.boot.convert;
+
 /**
  * @author pwebb
  */
-public class DurationToStringConverter {
+final class DurationToStringConverter {
 
 }
