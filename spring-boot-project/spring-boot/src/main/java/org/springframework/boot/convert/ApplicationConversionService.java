@@ -58,8 +58,10 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new CollectionToDelimitedStringConverter(service));
 		registry.addConverter(new DelimitedStringToArrayConverter(service));
 		registry.addConverter(new DelimitedStringToCollectionConverter(service));
-		registry.addConverter(new NumberToDurationConverter());
 		registry.addConverter(new StringToDurationConverter());
+		registry.addConverter(new DurationToStringConverter());
+		registry.addConverter(new NumberToDurationConverter());
+		registry.addConverter(new DurationToNumberConverter());
 		registry.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
 	}
 

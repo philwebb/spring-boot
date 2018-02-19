@@ -18,9 +18,7 @@ package org.springframework.boot.convert;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,33 +43,19 @@ public enum DurationStyle {
 			try {
 				Matcher matcher = matcher(value);
 				Assert.state(matcher.matches(), "Does not match simple duration pattern");
-				long amount = Long.parseLong(matcher.group(1));
-				return Duration.of(amount, getUnit(matcher.group(2), unit));
+				String suffix = matcher.group(2);
+				return (StringUtils.hasLength(suffix) ? Unit.fromSuffix(suffix)
+						: Unit.fromChronoUnit(unit)).parse(matcher.group(1));
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
+				throw new IllegalArgumentException(
 						"'" + value + "' is not a valid simple duration", ex);
 			}
 		}
 
 		@Override
-		public String print(Duration source, ChronoUnit unit) {
-			unit = (unit != null ? unit : ChronoUnit.MILLIS);
-			for (Map.Entry<String, ChronoUnit> entry : UNITS.entrySet()) {
-				if (entry.getValue() == unit) {
-					return source.get(unit) + entry.getKey();
-				}
-			}
-			throw new IllegalStateException("Unsupported chrono unit " + unit);
-		}
-
-		private ChronoUnit getUnit(String value, ChronoUnit defaultUnit) {
-			if (StringUtils.isEmpty(value)) {
-				return (defaultUnit != null ? defaultUnit : ChronoUnit.MILLIS);
-			}
-			ChronoUnit unit = UNITS.get(value.toLowerCase());
-			Assert.state(unit != null, () -> "Unknown unit '" + value + "'");
-			return unit;
+		public String print(Duration value, ChronoUnit unit) {
+			return Unit.fromChronoUnit(unit).print(value);
 		}
 
 	},
@@ -87,30 +71,17 @@ public enum DurationStyle {
 				return Duration.parse(value);
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException(
+				throw new IllegalArgumentException(
 						"'" + value + "' is not a valid ISO-8601 duration", ex);
 			}
 		}
 
 		@Override
-		public String print(Duration source, ChronoUnit unit) {
-			return source.toString();
+		public String print(Duration value, ChronoUnit unit) {
+			return value.toString();
 		}
 
 	};
-
-	protected static final Map<String, ChronoUnit> UNITS;
-
-	static {
-		Map<String, ChronoUnit> units = new LinkedHashMap<>();
-		units.put("ns", ChronoUnit.NANOS);
-		units.put("ms", ChronoUnit.MILLIS);
-		units.put("s", ChronoUnit.SECONDS);
-		units.put("m", ChronoUnit.MINUTES);
-		units.put("h", ChronoUnit.HOURS);
-		units.put("d", ChronoUnit.DAYS);
-		UNITS = Collections.unmodifiableMap(units);
-	}
 
 	private final Pattern pattern;
 
@@ -144,11 +115,22 @@ public enum DurationStyle {
 	 */
 	public abstract Duration parse(String value, ChronoUnit unit);
 
-	public String print(Duration source) {
-		return print(source, null);
+	/**
+	 * Print the specified duration.
+	 * @param value the value to print
+	 * @return the printed result
+	 */
+	public String print(Duration value) {
+		return print(value, null);
 	}
 
-	public abstract String print(Duration source, ChronoUnit unit);
+	/**
+	 * Print the specified duration using the given unit.
+	 * @param value the value to print
+	 * @param unit the value to use for printing
+	 * @return the printed result
+	 */
+	public abstract String print(Duration value, ChronoUnit unit);
 
 	/**
 	 * Detect the style then parse the value to return a duration.
@@ -186,6 +168,89 @@ public enum DurationStyle {
 			}
 		}
 		throw new IllegalArgumentException("'" + value + "' is not a valid duration");
+	}
+
+	/**
+	 * Units that we support.
+	 */
+	enum Unit {
+
+		/**
+		 * Nanoseconds.
+		 */
+		NANOS(ChronoUnit.NANOS, "ns", Duration::toNanos),
+
+		/**
+		 * Milliseconds.
+		 */
+		MILLIS(ChronoUnit.MILLIS, "ms", Duration::toMillis),
+
+		/**
+		 * Seconds.
+		 */
+		SECONDS(ChronoUnit.SECONDS, "s", Duration::getSeconds),
+
+		/**
+		 * Minutes.
+		 */
+		MINUTES(ChronoUnit.MINUTES, "m", Duration::toMinutes),
+
+		/**
+		 * Hours.
+		 */
+		HOURS(ChronoUnit.HOURS, "h", Duration::toHours),
+
+		/**
+		 * Days.
+		 */
+		DAYS(ChronoUnit.DAYS, "d", Duration::toDays);
+
+		private final ChronoUnit chronoUnit;
+
+		private final String suffix;
+
+		private Function<Duration, Long> longValue;
+
+		private Unit(ChronoUnit chronoUnit, String suffix,
+				Function<Duration, Long> toUnit) {
+			this.chronoUnit = chronoUnit;
+			this.suffix = suffix;
+			this.longValue = toUnit;
+		}
+
+		public Duration parse(String value) {
+			return Duration.of(Long.valueOf(value), this.chronoUnit);
+		}
+
+		public String print(Duration value) {
+			return longValue(value) + this.suffix;
+		}
+
+		public long longValue(Duration value) {
+			return this.longValue.apply(value);
+		}
+
+		public static Unit fromChronoUnit(ChronoUnit chronoUnit) {
+			if (chronoUnit == null) {
+				return Unit.MILLIS;
+			}
+			for (Unit candidate : values()) {
+				if (candidate.chronoUnit == chronoUnit) {
+					return candidate;
+				}
+			}
+			throw new IllegalArgumentException("Unknown unit " + chronoUnit);
+		}
+
+		public static Unit fromSuffix(String suffix) {
+			for (Unit candidate : values()) {
+				if (candidate.suffix.equalsIgnoreCase(suffix)) {
+					return candidate;
+				}
+			}
+			throw new IllegalArgumentException("Unknown unit '" + suffix + "'");
+		}
+
 	}
 
 }

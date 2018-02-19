@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DurationStyle}.
@@ -138,6 +139,143 @@ public class DurationStyleTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("'10foo' is not a valid duration");
 		DurationStyle.detectAndParse("10foo");
+	}
+
+	@Test
+	public void detectWhenSimpleShouldReturnSimple() {
+		assertThat(DurationStyle.detect("10")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("+10")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("-10")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10ns")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10ms")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10s")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10m")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10h")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10d")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("-10ms")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("-10ms")).isEqualTo(DurationStyle.SIMPLE);
+		assertThat(DurationStyle.detect("10D")).isEqualTo(DurationStyle.SIMPLE);
+	}
+
+	@Test
+	public void detectWhenIso8601ShouldReturnIso8601() {
+		assertThat(DurationStyle.detect("PT20.345S")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("PT15M")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("+PT15M")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("PT10H")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("P2D")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("P2DT3H4M")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("-PT6H3M")).isEqualTo(DurationStyle.ISO8601);
+		assertThat(DurationStyle.detect("-PT-6H+3M")).isEqualTo(DurationStyle.ISO8601);
+	}
+
+	@Test
+	public void detectWhenUnknownShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("'bad' is not a valid duration");
+		DurationStyle.detect("bad");
+	}
+
+	@Test
+	public void parseIso8601ShouldParse() {
+		assertThat(DurationStyle.ISO8601.parse("PT20.345S"))
+				.isEqualTo(Duration.parse("PT20.345S"));
+		assertThat(DurationStyle.ISO8601.parse("PT15M"))
+				.isEqualTo(Duration.parse("PT15M"));
+		assertThat(DurationStyle.ISO8601.parse("+PT15M"))
+				.isEqualTo(Duration.parse("PT15M"));
+		assertThat(DurationStyle.ISO8601.parse("PT10H"))
+				.isEqualTo(Duration.parse("PT10H"));
+		assertThat(DurationStyle.ISO8601.parse("P2D")).isEqualTo(Duration.parse("P2D"));
+		assertThat(DurationStyle.ISO8601.parse("P2DT3H4M"))
+				.isEqualTo(Duration.parse("P2DT3H4M"));
+		assertThat(DurationStyle.ISO8601.parse("-PT6H3M"))
+				.isEqualTo(Duration.parse("-PT6H3M"));
+		assertThat(DurationStyle.ISO8601.parse("-PT-6H+3M"))
+				.isEqualTo(Duration.parse("-PT-6H+3M"));
+	}
+
+	@Test
+	public void parseIso8601WithUnitShouldIgnoreUnit() {
+		assertThat(DurationStyle.ISO8601.parse("PT20.345S", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("PT20.345S"));
+		assertThat(DurationStyle.ISO8601.parse("PT15M", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("PT15M"));
+		assertThat(DurationStyle.ISO8601.parse("+PT15M", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("PT15M"));
+		assertThat(DurationStyle.ISO8601.parse("PT10H", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("PT10H"));
+		assertThat(DurationStyle.ISO8601.parse("P2D")).isEqualTo(Duration.parse("P2D"));
+		assertThat(DurationStyle.ISO8601.parse("P2DT3H4M", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("P2DT3H4M"));
+		assertThat(DurationStyle.ISO8601.parse("-PT6H3M", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("-PT6H3M"));
+		assertThat(DurationStyle.ISO8601.parse("-PT-6H+3M", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.parse("-PT-6H+3M"));
+	}
+
+	@Test
+	public void parseIso8601WhenSimpleShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("'10d' is not a valid ISO-8601 duration");
+		DurationStyle.ISO8601.parse("10d");
+	}
+
+	@Test
+	public void parseSimpleShouldParse() {
+		assertThat(DurationStyle.SIMPLE.parse("10m")).isEqualTo(Duration.ofMinutes(10));
+	}
+
+	@Test
+	public void parseSimpleWithUnitShouldUseUnitAsFallback() {
+		assertThat(DurationStyle.SIMPLE.parse("10m", ChronoUnit.SECONDS))
+				.isEqualTo(Duration.ofMinutes(10));
+		assertThat(DurationStyle.SIMPLE.parse("10", ChronoUnit.MINUTES))
+				.isEqualTo(Duration.ofMinutes(10));
+	}
+
+	@Test
+	public void parseSimpleWhenUnknownUnitShouldThrowException() {
+		try {
+			DurationStyle.SIMPLE.parse("10mb");
+			fail("Did not throw");
+		}
+		catch (IllegalArgumentException ex) {
+			assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'");
+		}
+	}
+
+	@Test
+	public void parseSimpleWhenIso8601ShouldThrowException() {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("'PT10H' is not a valid simple duration");
+		DurationStyle.SIMPLE.parse("PT10H");
+	}
+
+	@Test
+	public void printIso8601ShouldPrint() {
+		Duration duration = Duration.parse("-PT-6H+3M");
+		assertThat(DurationStyle.ISO8601.print(duration)).isEqualTo("PT5H57M");
+	}
+
+	@Test
+	public void printIso8601ShouldIgnoreUnit() {
+		Duration duration = Duration.parse("-PT-6H+3M");
+		assertThat(DurationStyle.ISO8601.print(duration, ChronoUnit.DAYS))
+				.isEqualTo("PT5H57M");
+	}
+
+	@Test
+	public void printSimpleWithoutUnitShouldPrintInMs() {
+		Duration duration = Duration.ofSeconds(1);
+		assertThat(DurationStyle.SIMPLE.print(duration)).isEqualTo("1000ms");
+	}
+
+	@Test
+	public void printSimpleWithUnitShouldPrintInUnit() {
+		Duration duration = Duration.ofMillis(1000);
+		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.SECONDS))
+				.isEqualTo("1s");
 	}
 
 }

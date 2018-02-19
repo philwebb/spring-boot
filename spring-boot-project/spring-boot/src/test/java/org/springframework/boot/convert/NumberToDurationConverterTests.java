@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link NumberToDurationConverter}.
  *
- * @author pwebb
+ * @author Phillip Webb
  */
 @RunWith(Parameterized.class)
 public class NumberToDurationConverterTests {

@@ -18,7 +18,6 @@ package org.springframework.boot.convert;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,14 +26,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StringToDurationConverter}.
@@ -153,24 +149,10 @@ public class StringToDurationConverterTests {
 		return this.conversionService.convert(source, Duration.class);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Duration convert(String source, ChronoUnit unit, DurationStyle style) {
-		TypeDescriptor targetType = mock(TypeDescriptor.class);
-		if (unit != null) {
-			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", unit), DurationUnit.class, null);
-			given(targetType.getAnnotation(DurationUnit.class))
-					.willReturn(unitAnnotation);
-		}
-		if (style != null) {
-			DurationFormat formatAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", style), DurationFormat.class, null);
-			given(targetType.getAnnotation(DurationFormat.class))
-					.willReturn(formatAnnotation);
-		}
-		given(targetType.getType()).willReturn((Class) Duration.class);
 		return (Duration) this.conversionService.convert(source,
-				TypeDescriptor.forObject(source), targetType);
+				TypeDescriptor.forObject(source),
+				MockDurationTypeDescriptor.get(unit, style));
 	}
 
 	@Parameters(name = "{0}")

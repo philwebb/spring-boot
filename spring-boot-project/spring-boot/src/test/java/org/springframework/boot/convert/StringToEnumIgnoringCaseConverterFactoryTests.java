@@ -47,7 +47,6 @@ public class StringToEnumIgnoringCaseConverterFactoryTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void canConvertFromStringToEnumSubclassShouldReturnTrue() {
 		assertThat(this.conversionService.canConvert(String.class,
 				TestSubclassEnum.ONE.getClass())).isTrue();
