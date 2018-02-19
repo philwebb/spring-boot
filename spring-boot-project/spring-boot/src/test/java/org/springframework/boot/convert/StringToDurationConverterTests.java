@@ -139,7 +139,7 @@ public class StringToDurationConverterTests {
 	}
 
 	@Test
-	public void convertWhenStypeMismatchShouldThrowException() {
+	public void convertWhenStyleMismatchShouldThrowException() {
 		this.thrown.expect(ConversionFailedException.class);
 		convert("10s", null, DurationStyle.ISO8601);
 	}
@@ -154,12 +154,11 @@ public class StringToDurationConverterTests {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Duration convert(String source, ChronoUnit defaultUnit, DurationStyle style) {
+	private Duration convert(String source, ChronoUnit unit, DurationStyle style) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
-		if (defaultUnit != null) {
+		if (unit != null) {
 			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(
-					Collections.singletonMap("value", defaultUnit), DurationUnit.class,
-					null);
+					Collections.singletonMap("value", unit), DurationUnit.class, null);
 			given(targetType.getAnnotation(DurationUnit.class))
 					.willReturn(unitAnnotation);
 		}

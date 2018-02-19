@@ -16,9 +16,43 @@
 
 package org.springframework.boot.convert;
 
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Set;
+
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.util.ReflectionUtils;
+
 /**
- * @author pwebb
+ * {@link Converter} to convert from a {@link Duration} to a {@link Number}.
+ *
+ * @author Phillip Webb
+ * @see DurationFormat
+ * @see DurationUnit
  */
-final class DurationToNumberConverter {
+final class DurationToNumberConverter implements GenericConverter {
+
+	private DurationToStringConverter delegate = new DurationToStringConverter();
+
+	@Override
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return Collections.singleton(new ConvertiblePair(Duration.class, Number.class));
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		try {
+			return targetType.getObjectType().getConstructor(String.class)
+					.newInstance(this.delegate.convert(source, sourceType,
+							TypeDescriptor.valueOf(String.class)));
+		}
+		catch (Exception ex) {
+			ReflectionUtils.rethrowRuntimeException(ex);
+			return null;
+		}
+	}
 
 }

@@ -45,7 +45,7 @@ final class NumberToDurationConverter implements GenericConverter {
 	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		return this.delegate.convert(source == null ? null : source.toString(),
-				sourceType, targetType);
+				TypeDescriptor.valueOf(String.class), targetType);
 	}
 
 }
