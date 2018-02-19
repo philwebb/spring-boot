@@ -16,26 +16,8 @@
 
 package org.springframework.boot.context.properties.bind.convert;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.convert.CharArrayFormatter;
-import org.springframework.boot.convert.DelimitedStringToCollectionConverter;
-import org.springframework.boot.convert.StringOrNumberToDurationConverter;
-import org.springframework.boot.convert.InetAddressFormatter;
-import org.springframework.boot.convert.StringToEnumIgnoringCaseConverterFactory;
-import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.datetime.DateFormatter;
-import org.springframework.format.datetime.DateFormatterRegistrar;
-import org.springframework.format.support.DefaultFormattingConversionService;
 
 /**
  * {@link ConversionService} used by the {@link Binder}.
@@ -44,89 +26,91 @@ import org.springframework.format.support.DefaultFormattingConversionService;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-public class BinderConversionService implements ConversionService {
-
-	private static final ConversionService defaultConversionService = new DefaultFormattingConversionService();
-
-	private final List<ConversionService> conversionServices;
-
-	/**
-	 * Create a new {@link BinderConversionService} instance.
-	 * @param conversionService and option root conversion service
-	 */
-	public BinderConversionService(ConversionService conversionService) {
-		List<ConversionService> conversionServices = new ArrayList<>();
-		conversionServices.add(createOverrideConversionService());
-		conversionServices.add(
-				conversionService != null ? conversionService : defaultConversionService);
-		conversionServices.add(createAdditionalConversionService());
-		this.conversionServices = Collections.unmodifiableList(conversionServices);
-	}
-
-	private ConversionService createOverrideConversionService() {
-		GenericConversionService service = new GenericConversionService();
-		service.addConverter(new DelimitedStringToCollectionConverter(this));
-		return service;
-	}
-
-	private ConversionService createAdditionalConversionService() {
-		DefaultFormattingConversionService service = new DefaultFormattingConversionService();
-		DefaultConversionService.addCollectionConverters(service);
-		service.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
-		service.addFormatter(new CharArrayFormatter());
-		service.addFormatter(new InetAddressFormatter());
-		service.addConverter(new PropertyEditorConverter());
-		service.addConverter(new StringOrNumberToDurationConverter());
-		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
-		DateFormatter formatter = new DateFormatter();
-		formatter.setIso(DateTimeFormat.ISO.DATE_TIME);
-		registrar.setFormatter(formatter);
-		registrar.registerFormatters(service);
-		return service;
-	}
-
-	@Override
-	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		for (ConversionService service : this.conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (ConversionService service : this.conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public <T> T convert(Object source, Class<T> targetType) {
-		return callConversionServices((c) -> c.convert(source, targetType));
-	}
-
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		return callConversionServices((c) -> c.convert(source, sourceType, targetType));
-	}
-
-	private <T> T callConversionServices(Function<ConversionService, T> call) {
-		ConversionException exception = null;
-		for (ConversionService service : this.conversionServices) {
-			try {
-				return call.apply(service);
-			}
-			catch (ConversionException ex) {
-				exception = ex;
-			}
-		}
-		throw exception;
-	}
+class BinderConversionService { // implements ConversionService {
+	//
+	// private static final ConversionService defaultConversionService = new
+	// DefaultFormattingConversionService();
+	//
+	// private final List<ConversionService> conversionServices;
+	//
+	// /**
+	// * Create a new {@link BinderConversionService} instance.
+	// * @param conversionService and option root conversion service
+	// */
+	// public BinderConversionService(ConversionService conversionService) {
+	// List<ConversionService> conversionServices = new ArrayList<>();
+	// conversionServices.add(createOverrideConversionService());
+	// conversionServices.add(
+	// conversionService != null ? conversionService : defaultConversionService);
+	// conversionServices.add(createAdditionalConversionService());
+	// this.conversionServices = Collections.unmodifiableList(conversionServices);
+	// }
+	//
+	// private ConversionService createOverrideConversionService() {
+	// GenericConversionService service = new GenericConversionService();
+	// service.addConverter(new DelimitedStringToCollectionConverter(this));
+	// return service;
+	// }
+	//
+	// private ConversionService createAdditionalConversionService() {
+	// DefaultFormattingConversionService service = new
+	// DefaultFormattingConversionService();
+	// DefaultConversionService.addCollectionConverters(service);
+	// service.addConverterFactory(new StringToEnumIgnoringCaseConverterFactory());
+	// service.addFormatter(new CharArrayFormatter());
+	// service.addFormatter(new InetAddressFormatter());
+	// service.addConverter(new PropertyEditorConverter());
+	// service.addConverter(new StringOrNumberToDurationConverter());
+	// DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+	// DateFormatter formatter = new DateFormatter();
+	// formatter.setIso(DateTimeFormat.ISO.DATE_TIME);
+	// registrar.setFormatter(formatter);
+	// registrar.registerFormatters(service);
+	// return service;
+	// }
+	//
+	// @Override
+	// public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+	// for (ConversionService service : this.conversionServices) {
+	// if (service.canConvert(sourceType, targetType)) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// @Override
+	// public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	// for (ConversionService service : this.conversionServices) {
+	// if (service.canConvert(sourceType, targetType)) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// @Override
+	// public <T> T convert(Object source, Class<T> targetType) {
+	// return callConversionServices((c) -> c.convert(source, targetType));
+	// }
+	//
+	// @Override
+	// public Object convert(Object source, TypeDescriptor sourceType,
+	// TypeDescriptor targetType) {
+	// return callConversionServices((c) -> c.convert(source, sourceType, targetType));
+	// }
+	//
+	// private <T> T callConversionServices(Function<ConversionService, T> call) {
+	// ConversionException exception = null;
+	// for (ConversionService service : this.conversionServices) {
+	// try {
+	// return call.apply(service);
+	// }
+	// catch (ConversionException ex) {
+	// exception = ex;
+	// }
+	// }
+	// throw exception;
+	// }
 
 }
