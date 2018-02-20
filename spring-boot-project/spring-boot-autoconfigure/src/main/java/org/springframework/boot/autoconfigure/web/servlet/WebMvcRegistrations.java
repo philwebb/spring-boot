@@ -30,7 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * to choose from redundant MVC components.
  *
  * @author Brian Clozel
- * @since 1.4.0
+ * @since 2.0.0
  * @see org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration.EnableWebMvcConfiguration
  */
 public interface WebMvcRegistrations {

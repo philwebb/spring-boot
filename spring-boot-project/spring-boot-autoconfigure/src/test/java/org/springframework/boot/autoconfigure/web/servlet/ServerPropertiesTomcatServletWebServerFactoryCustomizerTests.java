@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.autoconfigure.web.servlet;
+
+import org.junit.Test;
+
+import static org.junit.Assert.fail;
+
 /**
- * Support classes for the auto-configuration of embedded Undertow.
+ * Tests for {@link ServerPropertiesTomcatServletWebServerFactoryCustomizer}.
+ *
+ * @author Phillip Webb
  */
-package org.springframework.boot.autoconfigure.web.embedded.undertow;
+public class ServerPropertiesTomcatServletWebServerFactoryCustomizerTests {
+
+	@Test
+	public void test() {
+		fail("Not yet implemented");
+	}
+
+}

@@ -16,16 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletRequest;
 
-import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.UpgradeProtocol;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.Loader;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.xnio.SslClientAuthMode;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -39,16 +33,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -71,60 +59,26 @@ import org.springframework.util.ObjectUtils;
 @ConditionalOnClass(ServletRequest.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(ServerProperties.class)
-@Import(BeanPostProcessorsRegistrar.class)
+@Import({ ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistrar.class,
+		ServletWebServerFactoryConfiguration.EmbeddedTomcat.class,
+		ServletWebServerFactoryConfiguration.EmbeddedJetty.class,
+		ServletWebServerFactoryConfiguration.EmbeddedUndertow.class })
 public class ServletWebServerFactoryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DefaultServletWebServerFactoryCustomizer serverPropertiesWebServerFactoryCustomizer(
+	public ServerPropertiesServletWebServerFactoryCustomizer serverPropertiesServletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
-		return new DefaultServletWebServerFactoryCustomizer(serverProperties);
+		return new ServerPropertiesServletWebServerFactoryCustomizer(serverProperties);
 	}
 
-	/**
-	 * Nested configuration if Tomcat is being used.
-	 */
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
-	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedTomcat {
-
-		@Bean
-		public TomcatServletWebServerFactory tomcatServletWebServerFactory() {
-			return new TomcatServletWebServerFactory();
-		}
-
-	}
-
-	/**
-	 * Nested configuration if Jetty is being used.
-	 */
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class,
-			WebAppContext.class })
-	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedJetty {
-
-		@Bean
-		public JettyServletWebServerFactory JettyServletWebServerFactory() {
-			return new JettyServletWebServerFactory();
-		}
-
-	}
-
-	/**
-	 * Nested configuration if Undertow is being used.
-	 */
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
-	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedUndertow {
-
-		@Bean
-		public UndertowServletWebServerFactory undertowServletWebServerFactory() {
-			return new UndertowServletWebServerFactory();
-		}
-
+	@Bean
+	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
+	@ConditionalOnMissingBean
+	public ServerPropertiesTomcatServletWebServerFactoryCustomizer serverPropertiesTomcatServletWebServerFactoryCustomizer(
+			ServerProperties serverProperties) {
+		return new ServerPropertiesTomcatServletWebServerFactoryCustomizer(
+				serverProperties);
 	}
 
 	/**

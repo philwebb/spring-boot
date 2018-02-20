@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.embedded.jetty;
+package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 
@@ -33,6 +33,8 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 
 /**
@@ -41,30 +43,42 @@ import org.springframework.core.env.Environment;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public final class JettyCustomizer {
+public class JettyWebServerFactoryCustomizer implements
+		WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
-	private JettyCustomizer() {
+	private final Environment environment;
+
+	private final ServerProperties serverProperties;
+
+	public JettyWebServerFactoryCustomizer(Environment environment,
+			ServerProperties serverProperties) {
+		this.environment = environment;
+		this.serverProperties = serverProperties;
 	}
 
-	public static void customizeJetty(ServerProperties serverProperties,
-			Environment environment, ConfigurableJettyWebServerFactory factory) {
-		ServerProperties.Jetty jettyProperties = serverProperties.getJetty();
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
+	@Override
+	public void customize(ConfigurableJettyWebServerFactory factory) {
+		ServerProperties properties = this.serverProperties;
+		ServerProperties.Jetty jettyProperties = properties.getJetty();
 		factory.setUseForwardHeaders(
-				getOrDeduceUseForwardHeaders(serverProperties, environment));
+				getOrDeduceUseForwardHeaders(properties, this.environment));
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(jettyProperties::getAcceptors).whenNonNull()
 				.to(factory::setAcceptors);
 		propertyMapper.from(jettyProperties::getSelectors).whenNonNull()
 				.to(factory::setSelectors);
-		propertyMapper.from(serverProperties::getMaxHttpHeaderSize)
-				.when(JettyCustomizer::isPositive)
+		propertyMapper.from(properties::getMaxHttpHeaderSize).when(this::isPositive)
 				.to((maxHttpHeaderSize) -> customizeMaxHttpHeaderSize(factory,
 						maxHttpHeaderSize));
-		propertyMapper.from(jettyProperties::getMaxHttpPostSize)
-				.when(JettyCustomizer::isPositive)
+		propertyMapper.from(jettyProperties::getMaxHttpPostSize).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory,
 						maxHttpPostSize));
-		propertyMapper.from(serverProperties::getConnectionTimeout).whenNonNull()
+		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory,
 						connectionTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog)
@@ -72,11 +86,11 @@ public final class JettyCustomizer {
 				.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
 
-	private static boolean isPositive(Integer value) {
+	private boolean isPositive(Integer value) {
 		return value > 0;
 	}
 
-	private static boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
+	private boolean getOrDeduceUseForwardHeaders(ServerProperties serverProperties,
 			Environment environment) {
 		if (serverProperties.isUseForwardHeaders() != null) {
 			return serverProperties.isUseForwardHeaders();
@@ -85,8 +99,8 @@ public final class JettyCustomizer {
 		return platform != null && platform.isUsingForwardHeaders();
 	}
 
-	private static void customizeConnectionTimeout(
-			ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeConnectionTimeout(ConfigurableJettyWebServerFactory factory,
+			Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 				if (connector instanceof AbstractConnector) {
@@ -97,8 +111,8 @@ public final class JettyCustomizer {
 		});
 	}
 
-	private static void customizeMaxHttpHeaderSize(
-			ConfigurableJettyWebServerFactory factory, int maxHttpHeaderSize) {
+	private void customizeMaxHttpHeaderSize(ConfigurableJettyWebServerFactory factory,
+			int maxHttpHeaderSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -124,8 +138,8 @@ public final class JettyCustomizer {
 		});
 	}
 
-	private static void customizeMaxHttpPostSize(
-			ConfigurableJettyWebServerFactory factory, int maxHttpPostSize) {
+	private void customizeMaxHttpPostSize(ConfigurableJettyWebServerFactory factory,
+			int maxHttpPostSize) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -153,7 +167,7 @@ public final class JettyCustomizer {
 		});
 	}
 
-	private static void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
+	private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
 			ServerProperties.Jetty.Accesslog properties) {
 		factory.addServerCustomizers((server) -> {
 			NCSARequestLog log = new NCSARequestLog();

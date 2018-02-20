@@ -16,13 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
@@ -31,78 +26,20 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
-import org.eclipse.jetty.server.NCSARequestLog;
-import org.eclipse.jetty.server.RequestLog;
-import org.junit.Before;
 import org.junit.Test;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
-import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
-import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
-import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link DefaultReactiveWebServerFactoryCustomizer}.
- *
- * @author Brian Clozel
- * @author Yunkun Huang
+ * @author pwebb
  */
-public class DefaultReactiveWebServerFactoryCustomizerTests {
-
-	private final ServerProperties properties = new ServerProperties();
-
-	private DefaultReactiveWebServerFactoryCustomizer customizer;
-
-	@Before
-	public void setup() {
-		this.customizer = new DefaultReactiveWebServerFactoryCustomizer(this.properties);
-	}
-
-	@Test
-	public void testCustomizeServerPort() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
-		this.properties.setPort(9000);
-		this.customizer.customize(factory);
-		verify(factory).setPort(9000);
-	}
-
-	@Test
-	public void testCustomizeServerAddress() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
-		InetAddress address = mock(InetAddress.class);
-		this.properties.setAddress(address);
-		this.customizer.customize(factory);
-		verify(factory).setAddress(address);
-	}
-
-	@Test
-	public void testCustomizeServerSsl() {
-		ConfigurableReactiveWebServerFactory factory = mock(
-				ConfigurableReactiveWebServerFactory.class);
-		Ssl ssl = mock(Ssl.class);
-		this.properties.setSsl(ssl);
-		this.customizer.customize(factory);
-		verify(factory).setSsl(ssl);
-	}
+public class TomcatThing {
 
 	@Test
 	public void tomcatAccessLogIsDisabledByDefault() {
@@ -225,26 +162,6 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 	public void deduceUseForwardHeadersTomcat() {
 		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
 		testRemoteIpValveConfigured();
-	}
-
-	private void testRemoteIpValveConfigured() {
-		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
-		this.customizer.customize(factory);
-		assertThat(factory.getEngineValves()).hasSize(1);
-		Valve valve = factory.getEngineValves().iterator().next();
-		assertThat(valve).isInstanceOf(RemoteIpValve.class);
-		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
-		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
-		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
-		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
-				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
-				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
-				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
-		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
 	}
 
 	@Test
@@ -372,6 +289,26 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 		}
 	}
 
+	private void testRemoteIpValveConfigured() {
+		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
+		this.customizer.customize(factory);
+		assertThat(factory.getEngineValves()).hasSize(1);
+		Valve valve = factory.getEngineValves().iterator().next();
+		assertThat(valve).isInstanceOf(RemoteIpValve.class);
+		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
+		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("X-Forwarded-Proto");
+		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("https");
+		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("X-Forwarded-For");
+		String expectedInternalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
+				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
+				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
+				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
+				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
+				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|"
+				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}";
+		assertThat(remoteIpValve.getInternalProxies()).isEqualTo(expectedInternalProxies);
+	}
+
 	@Test
 	public void errorReportValveIsConfiguredToNotReportStackTraces() {
 		TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
@@ -388,151 +325,6 @@ public class DefaultReactiveWebServerFactoryCustomizerTests {
 				assertThat(errorReportValve.isShowServerInfo()).isFalse();
 			}
 		}
-	}
-
-	@Test
-	public void defaultUseForwardHeadersJetty() {
-		JettyReactiveWebServerFactory factory = spy(new JettyReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
-	}
-
-	@Test
-	public void setUseForwardHeadersJetty() {
-		this.properties.setUseForwardHeaders(true);
-		JettyReactiveWebServerFactory factory = spy(new JettyReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
-	public void deduceUseForwardHeadersJetty() {
-		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		JettyReactiveWebServerFactory factory = spy(new JettyReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
-	public void jettyAccessLogCanBeEnabled() {
-		JettyReactiveWebServerFactory factory = new JettyReactiveWebServerFactory(0);
-		Map<String, String> map = new HashMap<>();
-		map.put("server.jetty.accesslog.enabled", "true");
-		bindProperties(map);
-		this.customizer.customize(factory);
-		JettyWebServer webServer = (JettyWebServer) factory
-				.getWebServer(mock(HttpHandler.class));
-		try {
-			NCSARequestLog requestLog = getNCSARequestLog(webServer);
-			assertThat(requestLog.getFilename()).isNull();
-			assertThat(requestLog.isAppend()).isFalse();
-			assertThat(requestLog.isExtended()).isFalse();
-			assertThat(requestLog.getLogCookies()).isFalse();
-			assertThat(requestLog.getLogServer()).isFalse();
-			assertThat(requestLog.getLogLatency()).isFalse();
-		}
-		finally {
-			webServer.stop();
-		}
-	}
-
-	@Test
-	public void jettyAccessLogCanBeCustomized() throws IOException {
-		File logFile = File.createTempFile("jetty_log", ".log");
-		JettyReactiveWebServerFactory factory = new JettyReactiveWebServerFactory(0);
-		Map<String, String> map = new HashMap<>();
-		String timezone = TimeZone.getDefault().getID();
-		map.put("server.jetty.accesslog.enabled", "true");
-		map.put("server.jetty.accesslog.filename", logFile.getAbsolutePath());
-		map.put("server.jetty.accesslog.file-date-format", "yyyy-MM-dd");
-		map.put("server.jetty.accesslog.retention-period", "42");
-		map.put("server.jetty.accesslog.append", "true");
-		map.put("server.jetty.accesslog.extended-format", "true");
-		map.put("server.jetty.accesslog.date-format", "HH:mm:ss");
-		map.put("server.jetty.accesslog.locale", "en_BE");
-		map.put("server.jetty.accesslog.time-zone", timezone);
-		map.put("server.jetty.accesslog.log-cookies", "true");
-		map.put("server.jetty.accesslog.log-server", "true");
-		map.put("server.jetty.accesslog.log-latency", "true");
-		bindProperties(map);
-		this.customizer.customize(factory);
-		JettyWebServer webServer = (JettyWebServer) factory
-				.getWebServer(mock(HttpHandler.class));
-		NCSARequestLog requestLog = getNCSARequestLog(webServer);
-		try {
-			assertThat(requestLog.getFilename()).isEqualTo(logFile.getAbsolutePath());
-			assertThat(requestLog.getFilenameDateFormat()).isEqualTo("yyyy-MM-dd");
-			assertThat(requestLog.getRetainDays()).isEqualTo(42);
-			assertThat(requestLog.isAppend()).isTrue();
-			assertThat(requestLog.isExtended()).isTrue();
-			assertThat(requestLog.getLogDateFormat()).isEqualTo("HH:mm:ss");
-			assertThat(requestLog.getLogLocale()).isEqualTo(new Locale("en", "BE"));
-			assertThat(requestLog.getLogTimeZone()).isEqualTo(timezone);
-			assertThat(requestLog.getLogCookies()).isTrue();
-			assertThat(requestLog.getLogServer()).isTrue();
-			assertThat(requestLog.getLogLatency()).isTrue();
-		}
-		finally {
-			webServer.stop();
-		}
-	}
-
-	@Test
-	public void customizeUndertowAccessLog() {
-		Map<String, String> map = new HashMap<>();
-		map.put("server.undertow.accesslog.enabled", "true");
-		map.put("server.undertow.accesslog.pattern", "foo");
-		map.put("server.undertow.accesslog.prefix", "test_log");
-		map.put("server.undertow.accesslog.suffix", "txt");
-		map.put("server.undertow.accesslog.dir", "test-logs");
-		map.put("server.undertow.accesslog.rotate", "false");
-		bindProperties(map);
-		UndertowReactiveWebServerFactory factory = spy(
-				new UndertowReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setAccessLogEnabled(true);
-		verify(factory).setAccessLogPattern("foo");
-		verify(factory).setAccessLogPrefix("test_log");
-		verify(factory).setAccessLogSuffix("txt");
-		verify(factory).setAccessLogDirectory(new File("test-logs"));
-		verify(factory).setAccessLogRotate(false);
-	}
-
-	@Test
-	public void setUseForwardHeadersUndertow() {
-		this.properties.setUseForwardHeaders(true);
-		UndertowReactiveWebServerFactory factory = spy(
-				new UndertowReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
-	public void deduceUseForwardHeadersUndertow() {
-		this.customizer.setEnvironment(new MockEnvironment().withProperty("DYNO", "-"));
-		UndertowReactiveWebServerFactory factory = spy(
-				new UndertowReactiveWebServerFactory());
-		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
-	}
-
-	@Test
-	public void skipNullElementsForUndertow() {
-		UndertowReactiveWebServerFactory factory = mock(
-				UndertowReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verify(factory, never()).setAccessLogEnabled(anyBoolean());
-	}
-
-	private NCSARequestLog getNCSARequestLog(JettyWebServer webServer) {
-		RequestLog requestLog = webServer.getServer().getRequestLog();
-		assertThat(requestLog).isInstanceOf(NCSARequestLog.class);
-		return (NCSARequestLog) requestLog;
-	}
-
-	private void bindProperties(Map<String, String> map) {
-		ConfigurationPropertySource source = new MapConfigurationPropertySource(map);
-		new Binder(source).bind("server", Bindable.ofInstance(this.properties));
 	}
 
 }

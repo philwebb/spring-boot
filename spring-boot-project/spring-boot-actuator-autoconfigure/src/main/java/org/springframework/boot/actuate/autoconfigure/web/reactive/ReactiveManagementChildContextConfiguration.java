@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.reactive.DefaultReactiveWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.reactive.ServerPropertiesReactiveWebServerFactoryCustomizer;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -58,7 +58,7 @@ public class ReactiveManagementChildContextConfiguration {
 			ManagementServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
 
 		ReactiveManagementServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, DefaultReactiveWebServerFactoryCustomizer.class);
+			super(beanFactory, ServerPropertiesReactiveWebServerFactoryCustomizer.class);
 		}
 
 	}
