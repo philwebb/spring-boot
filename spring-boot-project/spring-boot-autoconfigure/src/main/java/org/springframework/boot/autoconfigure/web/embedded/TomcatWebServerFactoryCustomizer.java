@@ -45,9 +45,8 @@ import org.springframework.util.StringUtils;
  * @author Brian Clozel
  * @author Yulin Qin
  * @author Stephane Nicoll
- * @since 2.0.0
  */
-public final class TomcatWebServerFactoryCustomizer implements
+class TomcatWebServerFactoryCustomizer implements
 		WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
 	private final Environment environment;

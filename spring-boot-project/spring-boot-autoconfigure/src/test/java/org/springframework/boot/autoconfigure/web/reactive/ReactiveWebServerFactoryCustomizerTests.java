@@ -29,20 +29,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ServerPropertiesReactiveWebServerFactoryCustomizer}.
+ * Tests for {@link ReactiveWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Yunkun Huang
  */
-public class ServerPropertiesReactiveWebServerFactoryCustomizerTests {
+public class ReactiveWebServerFactoryCustomizerTests {
 
 	private ServerProperties properties = new ServerProperties();
 
-	private ServerPropertiesReactiveWebServerFactoryCustomizer customizer;
+	private ReactiveWebServerFactoryCustomizer customizer;
 
 	@Before
 	public void setup() {
-		this.customizer = new ServerPropertiesReactiveWebServerFactoryCustomizer(
+		this.customizer = new ReactiveWebServerFactoryCustomizer(
 				this.properties);
 	}
 

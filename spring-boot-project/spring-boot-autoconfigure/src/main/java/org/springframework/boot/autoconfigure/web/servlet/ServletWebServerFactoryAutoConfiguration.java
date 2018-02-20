@@ -30,7 +30,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -66,19 +65,16 @@ import org.springframework.util.ObjectUtils;
 public class ServletWebServerFactoryAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public ServerPropertiesServletWebServerFactoryCustomizer serverPropertiesServletWebServerFactoryCustomizer(
+	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
-		return new ServerPropertiesServletWebServerFactoryCustomizer(serverProperties);
+		return new ServletWebServerFactoryCustomizer(serverProperties);
 	}
 
 	@Bean
 	@ConditionalOnClass({ Tomcat.class, UpgradeProtocol.class })
-	@ConditionalOnMissingBean
-	public ServerPropertiesTomcatServletWebServerFactoryCustomizer serverPropertiesTomcatServletWebServerFactoryCustomizer(
+	public TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
 			ServerProperties serverProperties) {
-		return new ServerPropertiesTomcatServletWebServerFactoryCustomizer(
-				serverProperties);
+		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
 	}
 
 	/**

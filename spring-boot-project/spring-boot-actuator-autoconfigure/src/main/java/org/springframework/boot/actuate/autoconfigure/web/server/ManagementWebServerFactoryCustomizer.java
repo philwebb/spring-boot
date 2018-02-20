@@ -36,14 +36,14 @@ import org.springframework.core.Ordered;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public abstract class ManagementServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
+public abstract class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
 		implements WebServerFactoryCustomizer<T>, Ordered {
 
 	private final ListableBeanFactory beanFactory;
 
 	private final Class<? extends WebServerFactoryCustomizer<T>> customizerClass;
 
-	protected ManagementServerFactoryCustomizer(ListableBeanFactory beanFactory,
+	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<T>> customizerClass) {
 		this.beanFactory = beanFactory;
 		this.customizerClass = customizerClass;

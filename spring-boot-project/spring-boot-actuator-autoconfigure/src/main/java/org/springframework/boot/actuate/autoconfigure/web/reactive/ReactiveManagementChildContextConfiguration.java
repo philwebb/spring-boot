@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.web.reactive;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerFactoryCustomizer;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.reactive.ServerPropertiesReactiveWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryCustomizer;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -44,9 +44,9 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 public class ReactiveManagementChildContextConfiguration {
 
 	@Bean
-	public ReactiveManagementServerFactoryCustomizer reactiveManagementServerFactoryCustomizer(
+	public ReactiveManagementWebServerFactoryCustomizer reactiveManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
-		return new ReactiveManagementServerFactoryCustomizer(beanFactory);
+		return new ReactiveManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
@@ -54,11 +54,13 @@ public class ReactiveManagementChildContextConfiguration {
 		return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
 	}
 
-	class ReactiveManagementServerFactoryCustomizer extends
-			ManagementServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
+	// FIXME
 
-		ReactiveManagementServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, ServerPropertiesReactiveWebServerFactoryCustomizer.class);
+	class ReactiveManagementWebServerFactoryCustomizer extends
+			ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
+
+		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
+			super(beanFactory, ReactiveWebServerFactoryCustomizer.class);
 		}
 
 	}

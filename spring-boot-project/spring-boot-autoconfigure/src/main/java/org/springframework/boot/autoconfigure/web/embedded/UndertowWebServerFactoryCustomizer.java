@@ -36,7 +36,7 @@ import org.springframework.core.env.Environment;
  * @author Yulin Qin
  * @author Stephane Nicoll
  */
-public final class UndertowWebServerFactoryCustomizer implements
+class UndertowWebServerFactoryCustomizer implements
 		WebServerFactoryCustomizer<ConfigurableUndertowWebServerFactory>, Ordered {
 
 	private final Environment environment;

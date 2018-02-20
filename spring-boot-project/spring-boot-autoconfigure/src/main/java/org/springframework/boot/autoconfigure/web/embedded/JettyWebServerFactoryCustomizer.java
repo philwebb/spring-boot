@@ -41,9 +41,8 @@ import org.springframework.core.env.Environment;
  * Customization for Jetty-specific features common for both Servlet and Reactive servers.
  *
  * @author Brian Clozel
- * @since 2.0.0
  */
-public class JettyWebServerFactoryCustomizer implements
+class JettyWebServerFactoryCustomizer implements
 		WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
 	private final Environment environment;

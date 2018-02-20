@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ServerPropertiesServletWebServerFactoryCustomizer}.
+ * Tests for {@link ServletWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Yunkun Huang
@@ -54,7 +54,7 @@ public class ServerPropertiesServletWebServerFactoryCustomizerTests {
 
 	private final ServerProperties properties = new ServerProperties();
 
-	private ServerPropertiesServletWebServerFactoryCustomizer customizer;
+	private ServletWebServerFactoryCustomizer customizer;
 
 	@Captor
 	private ArgumentCaptor<ServletContextInitializer[]> initializersCaptor;
@@ -62,7 +62,7 @@ public class ServerPropertiesServletWebServerFactoryCustomizerTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		this.customizer = new ServerPropertiesServletWebServerFactoryCustomizer(
+		this.customizer = new ServletWebServerFactoryCustomizer(
 				this.properties);
 	}
 
