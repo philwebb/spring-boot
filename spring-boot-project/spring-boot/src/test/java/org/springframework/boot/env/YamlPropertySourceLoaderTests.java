@@ -44,7 +44,8 @@ public class YamlPropertySourceLoaderTests {
 	public void load() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 	}
@@ -59,7 +60,7 @@ public class YamlPropertySourceLoaderTests {
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader
-				.load("resource", resource, null);
+				.load("resource", resource, null, (profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames())
 				.isEqualTo(expected.toArray(new String[] {}));
@@ -72,7 +73,8 @@ public class YamlPropertySourceLoaderTests {
 		yaml.append("---\n");
 		yaml.append("foo:\n  baz: wham\n");
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo.bar")).isEqualTo("spam");
 		assertThat(source.getProperty("foo.baz")).isEqualTo("wham");
@@ -81,7 +83,8 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		assertThat(source).isNotNull();
 		assertThat(source.getProperty("foo")).isEqualTo("2015-01-28");
 	}
@@ -89,7 +92,8 @@ public class YamlPropertySourceLoaderTests {
 	@Test
 	public void loadOriginAware() throws Exception {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		PropertySource<?> source = this.loader.load("resource", resource, null);
+		PropertySource<?> source = this.loader.load("resource", resource, null,
+				(profile) -> true);
 		EnumerablePropertySource<?> enumerableSource = (EnumerablePropertySource<?>) source;
 		for (String name : enumerableSource.getPropertyNames()) {
 			System.out.println(name + " = " + enumerableSource.getProperty(name));

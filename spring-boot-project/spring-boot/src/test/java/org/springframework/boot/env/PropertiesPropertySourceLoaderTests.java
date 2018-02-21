@@ -42,14 +42,16 @@ public class PropertiesPropertySourceLoaderTests {
 	@Test
 	public void loadProperties() throws Exception {
 		PropertySource<?> source = this.loader.load("test.properties",
-				new ClassPathResource("test-properties.properties", getClass()), null);
+				new ClassPathResource("test-properties.properties", getClass()), null,
+				(profile) -> true);
 		assertThat(source.getProperty("test")).isEqualTo("properties");
 	}
 
 	@Test
 	public void loadXml() throws Exception {
 		PropertySource<?> source = this.loader.load("test.xml",
-				new ClassPathResource("test-xml.xml", getClass()), null);
+				new ClassPathResource("test-xml.xml", getClass()), null,
+				(profile) -> true);
 		assertThat(source.getProperty("test")).isEqualTo("xml");
 	}
 

@@ -43,7 +43,7 @@ public class OriginTrackedYamlLoaderTests {
 	@Before
 	public void setUp() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		this.loader = new OriginTrackedYamlLoader(resource, null);
+		this.loader = new OriginTrackedYamlLoader(resource, null, (profile) -> true);
 	}
 
 	@Test
@@ -93,7 +93,8 @@ public class OriginTrackedYamlLoaderTests {
 	@Test
 	public void processWithActiveProfile() {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
-		this.loader = new OriginTrackedYamlLoader(resource, "development");
+		this.loader = new OriginTrackedYamlLoader(resource, "development",
+				(profile) -> true);
 		Map<String, Object> result = this.loader.load();
 		assertThat(result.get("name").toString()).isEqualTo("Test Name");
 	}

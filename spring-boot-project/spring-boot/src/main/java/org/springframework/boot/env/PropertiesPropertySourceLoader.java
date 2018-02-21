@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -40,9 +41,9 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(String name, Resource resource, String profile)
-			throws IOException {
-		if (profile == null) {
+	public PropertySource<?> load(String name, Resource resource, String profileToLoad,
+			Predicate<String[]> acceptsProfiles) throws IOException {
+		if (profileToLoad == null) {
 			Map<String, ?> properties = loadProperties(resource);
 			if (!properties.isEmpty()) {
 				return new OriginTrackedMapPropertySource(name, properties);
