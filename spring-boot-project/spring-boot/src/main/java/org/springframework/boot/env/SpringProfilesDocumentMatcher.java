@@ -33,6 +33,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
  * {@code spring.profiles} property.
  *
  * @author Phillip Webb
+ * @see OriginTrackedYamlLoader
  */
 abstract class SpringProfilesDocumentMatcher implements DocumentMatcher {
 

@@ -21,6 +21,8 @@ import java.util.Arrays;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * {@link SpringProfilesDocumentMatcher} that matches a specific profile to load.
+ *
  * @author Phillip Webb
  */
 class ProfileToLoadDocumentMatcher extends SpringProfilesDocumentMatcher {

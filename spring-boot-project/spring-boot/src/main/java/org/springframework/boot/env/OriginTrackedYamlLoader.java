@@ -43,7 +43,7 @@ import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.Resource;
 
 /**
- * Class to load {@code .yml} files into a map of {@code String} ->
+ * Class to load {@code .yml} files into a map of {@code String} to
  * {@link OriginTrackedValue}.
  *
  * @author Madhura Bhave
