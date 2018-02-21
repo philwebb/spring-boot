@@ -505,6 +505,29 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void yamlNegatedProfiles() {
+		// gh-8011
+		this.initializer.setSearchNames("testnegatedprofiles");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromnototherprofile");
+		property = this.environment.getProperty("my.notother");
+		assertThat(property).isEqualTo("foo");
+	}
+
+	@Test
+	public void yamlNegatedProfilesWithProfile() {
+		// gh-8011
+		this.initializer.setSearchNames("testnegatedprofiles");
+		this.environment.setActiveProfiles("other");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property).isEqualTo("fromotherprofile");
+		property = this.environment.getProperty("my.notother");
+		assertThat(property).isNull();
+	}
+
+	@Test
 	public void yamlSetsProfiles() {
 		this.initializer.setSearchNames("testsetprofiles");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
