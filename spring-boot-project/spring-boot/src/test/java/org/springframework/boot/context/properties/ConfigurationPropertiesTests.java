@@ -38,6 +38,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -726,6 +727,19 @@ public class ConfigurationPropertiesTests {
 		PersonProperties bean = this.context.getBean(PersonProperties.class);
 		assertThat(bean.getPerson().firstName).isEqualTo("spring");
 		assertThat(bean.getPerson().lastName).isEqualTo("boot");
+	}
+
+	@Test
+	public void loadWhenBindingToListOfGenericClassShouldBind() {
+		SimpleTypeConverter simpleTypeConverter = new SimpleTypeConverter();
+		this.context.getBeanFactory().copyRegisteredEditorsTo(simpleTypeConverter);
+		Class<?> converted = simpleTypeConverter
+				.convertIfNecessary("java.lang.RuntimeException", Class.class);
+		assertThat(converted).isEqualTo(RuntimeException.class);
+		load(ListOfGenericClassProperties.class, "test.list=java.lang.RuntimeException");
+		ListOfGenericClassProperties bean = this.context
+				.getBean(ListOfGenericClassProperties.class);
+		assertThat(bean.getList()).containsExactly(RuntimeException.class);
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration,
@@ -1595,6 +1609,22 @@ public class ConfigurationPropertiesTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class ListOfGenericClassProperties {
+
+		private List<Class<? extends Throwable>> list;
+
+		public List<Class<? extends Throwable>> getList() {
+			return this.list;
+		}
+
+		public void setList(List<Class<? extends Throwable>> list) {
+			this.list = list;
 		}
 
 	}
