@@ -36,6 +36,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PropertySourcesPlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -58,6 +59,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
@@ -466,21 +469,51 @@ public class ConfigFileApplicationListener
 				}
 				String name = "applicationConfig: [" + location + "]"
 						+ (loadProfile == null ? "" : "#" + loadProfile);
-				PropertySource<?> loaded = loader.load(name, resource, loadProfile,
-						this.environment::acceptsProfiles);
-				if (loaded == null) {
+				List<PropertySource<?>> loaded = loader.load(name, resource);
+				if (CollectionUtils.isEmpty(loaded)) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
 				}
-				handleProfileProperties(loaded);
-				this.loaded.computeIfAbsent(profile, (k) -> new MutablePropertySources())
-						.addLast(loaded);
+				for (PropertySource<?> candidate : loaded) {
+					if (isProfileMatch(candidate, loadProfile)) {
+						handleProfileProperties(candidate);
+
+						this.loaded
+								.computeIfAbsent(profile,
+										(k) -> new MutablePropertySources())
+								.addLast(candidate);
+					}
+				}
 				this.logger.debug("Loaded config file " + description);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to load property "
 						+ "source from location '" + location + "'", ex);
 			}
+		}
+
+		private boolean isProfileMatch(PropertySource<?> propertySource,
+				String loadProfile) {
+			Binder binder = getBinder(propertySource);
+			String[] profiles = binder
+					.bind("spring.profiles", Bindable.of(String[].class)).orElse(null);
+			String[] positiveProfiles = (profiles == null ? null : Arrays.stream(profiles)
+					.filter(this::isPositiveProfile).toArray(String[]::new));
+			return isLoadProfileMatch(loadProfile, positiveProfiles)
+					&& (ObjectUtils.isEmpty(profiles)
+							|| this.environment.acceptsProfiles(profiles));
+		}
+
+		private boolean isLoadProfileMatch(String loadProfile,
+				String[] positiveProfiles) {
+			if (loadProfile == null) {
+				return ObjectUtils.isEmpty(positiveProfiles);
+			}
+			return ObjectUtils.containsElement(positiveProfiles, loadProfile);
+		}
+
+		private boolean isPositiveProfile(String profile) {
+			return !profile.startsWith("!");
 		}
 
 		private String getDescription(String location, Resource resource) {
@@ -496,12 +529,16 @@ public class ConfigFileApplicationListener
 		}
 
 		private void handleProfileProperties(PropertySource<?> propertySource) {
-			Binder binder = new Binder(ConfigurationPropertySources.from(propertySource),
-					new PropertySourcesPlaceholdersResolver(this.environment));
+			Binder binder = getBinder(propertySource);
 			Set<Profile> active = getProfiles(binder, "spring.profiles.active");
 			Set<Profile> include = getProfiles(binder, "spring.profiles.include");
 			maybeActivateProfiles(active);
 			addProfiles(include);
+		}
+
+		private Binder getBinder(PropertySource<?> propertySource) {
+			return new Binder(ConfigurationPropertySources.from(propertySource),
+					new PropertySourcesPlaceholdersResolver(this.environment));
 		}
 
 		private Set<Profile> getProfiles(Binder binder, String name) {
