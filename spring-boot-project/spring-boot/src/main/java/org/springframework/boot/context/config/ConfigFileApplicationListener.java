@@ -469,22 +469,27 @@ public class ConfigFileApplicationListener
 				}
 				String name = "applicationConfig: [" + location + "]"
 						+ (loadProfile == null ? "" : "#" + loadProfile);
-				List<PropertySource<?>> loaded = loader.load(name, resource);
-				if (CollectionUtils.isEmpty(loaded)) {
+				List<PropertySource<?>> candidateSources = loader.load(name, resource);
+				if (CollectionUtils.isEmpty(candidateSources)) {
 					this.logger.trace("Skipped unloaded config " + description);
 					return;
 				}
-				for (PropertySource<?> candidate : loaded) {
-					if (isProfileMatch(candidate, loadProfile)) {
-						handleProfileProperties(candidate);
-
-						this.loaded
-								.computeIfAbsent(profile,
-										(k) -> new MutablePropertySources())
-								.addLast(candidate);
+				List<PropertySource<?>> loaded = new ArrayList<>();
+				for (PropertySource<?> candidateSource : candidateSources) {
+					if (isProfileMatch(candidateSource, loadProfile)) {
+						handleProfileProperties(candidateSource);
+						loaded.add(candidateSource);
 					}
 				}
-				this.logger.debug("Loaded config file " + description);
+				Collections.reverse(loaded);
+				for (PropertySource<?> propertySource : loaded) {
+					this.loaded
+							.computeIfAbsent(profile, (k) -> new MutablePropertySources())
+							.addLast(propertySource);
+				}
+				if (!loaded.isEmpty()) {
+					this.logger.debug("Loaded config file " + description);
+				}
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to load property "
@@ -497,19 +502,13 @@ public class ConfigFileApplicationListener
 			Binder binder = getBinder(propertySource);
 			String[] profiles = binder
 					.bind("spring.profiles", Bindable.of(String[].class)).orElse(null);
+			if (loadProfile == null) {
+				return ObjectUtils.isEmpty(profiles);
+			}
 			String[] positiveProfiles = (profiles == null ? null : Arrays.stream(profiles)
 					.filter(this::isPositiveProfile).toArray(String[]::new));
-			return isLoadProfileMatch(loadProfile, positiveProfiles)
-					&& (ObjectUtils.isEmpty(profiles)
-							|| this.environment.acceptsProfiles(profiles));
-		}
-
-		private boolean isLoadProfileMatch(String loadProfile,
-				String[] positiveProfiles) {
-			if (loadProfile == null) {
-				return ObjectUtils.isEmpty(positiveProfiles);
-			}
-			return ObjectUtils.containsElement(positiveProfiles, loadProfile);
+			return ObjectUtils.containsElement(positiveProfiles, loadProfile)
+					&& this.environment.acceptsProfiles(profiles);
 		}
 
 		private boolean isPositiveProfile(String profile) {
