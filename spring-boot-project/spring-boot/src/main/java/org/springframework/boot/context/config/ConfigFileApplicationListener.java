@@ -321,21 +321,26 @@ public class ConfigFileApplicationListener
 			initializeProfiles();
 			while (!this.profiles.isEmpty()) {
 				Profile profile = this.profiles.poll();
-				for (String location : getSearchLocations()) {
-					if (!location.endsWith("/")) {
-						// location is a filename already, so don't search for more
-						// filenames
-						load(profile, location, null);
-					}
-					else {
-						for (String name : getSearchNames()) {
-							load(profile, location, name);
-						}
-					}
-				}
+				load(profile, ProfilesProperty.POSITIVE_OR_DEFAULT);
 				this.processedProfiles.add(profile);
 			}
+			load(null, ProfilesProperty.NEGATIVE);
 			addLoadedPropertySources();
+		}
+
+		private void load(Profile profile, ProfilesProperty profilesProperty) {
+			for (String location : getSearchLocations()) {
+				if (!location.endsWith("/")) {
+					// location is a filename already, so don't search for more
+					// filenames
+					load(profile, profilesProperty, location, null);
+				}
+				else {
+					for (String name : getSearchNames()) {
+						load(profile, profilesProperty, location, name);
+					}
+				}
+			}
 		}
 
 		/**
@@ -408,18 +413,20 @@ public class ConfigFileApplicationListener
 		 * @param location the location of the resource
 		 * @param name an optional name to be combined with the location
 		 */
-		private void load(Profile profile, String location, String name) {
+		private void load(Profile profile, ProfilesProperty profilesProperty,
+				String location, String name) {
 			if (!StringUtils.hasText(name)) {
 				for (PropertySourceLoader loader : this.propertySourceLoaders) {
 					if (canLoadFileExtension(loader, location)) {
-						load(loader, profile, location,
+						load(loader, profile, profilesProperty, location,
 								(profile == null ? null : profile.getName()));
 					}
 				}
 			}
 			for (PropertySourceLoader loader : this.propertySourceLoaders) {
 				for (String ext : loader.getFileExtensions()) {
-					loadForFileExtension(loader, profile, location + name, "." + ext);
+					loadForFileExtension(loader, profile, profilesProperty,
+							location + name, "." + ext);
 				}
 			}
 		}
@@ -431,27 +438,30 @@ public class ConfigFileApplicationListener
 		}
 
 		private void loadForFileExtension(PropertySourceLoader loader, Profile profile,
-				String prefix, String ext) {
+				ProfilesProperty profilesProperty, String prefix, String ext) {
 			if (profile != null) {
 				// Try the profile-specific file
-				load(loader, profile, prefix + "-" + profile + ext, null);
+				load(loader, profile, profilesProperty, prefix + "-" + profile + ext,
+						null);
 				// Support profile section in profile file (gh-340)
-				load(loader, profile, prefix + "-" + profile + ext, profile.getName());
+				load(loader, profile, profilesProperty, prefix + "-" + profile + ext,
+						profile.getName());
 				// Try profile specific sections in files we've already processed
 				for (Profile processedProfile : this.processedProfiles) {
 					if (processedProfile != null) {
 						String previouslyLoaded = prefix + "-" + processedProfile + ext;
-						load(loader, profile, previouslyLoaded, profile.getName());
+						load(loader, profile, profilesProperty, previouslyLoaded,
+								profile.getName());
 					}
 				}
 			}
 			// Also try the profile-specific section (if any) of the normal file
-			load(loader, profile, prefix + ext,
+			load(loader, profile, profilesProperty, prefix + ext,
 					(profile == null ? null : profile.getName()));
 		}
 
-		private void load(PropertySourceLoader loader, Profile profile, String location,
-				String loadProfile) {
+		private void load(PropertySourceLoader loader, Profile profile,
+				ProfilesProperty profilesProperty, String location, String loadProfile) {
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				String description = getDescription(location, resource);
@@ -476,16 +486,26 @@ public class ConfigFileApplicationListener
 				}
 				List<PropertySource<?>> loaded = new ArrayList<>();
 				for (PropertySource<?> candidateSource : candidateSources) {
-					if (isProfileMatch(candidateSource, loadProfile)) {
+					Binder binder = getBinder(candidateSource);
+					String[] profiles = binder
+							.bind("spring.profiles", Bindable.of(String[].class))
+							.orElse(null);
+					if (profilesProperty.canLoad(this.environment, profiles,
+							loadProfile)) {
 						handleProfileProperties(candidateSource);
 						loaded.add(candidateSource);
 					}
 				}
 				Collections.reverse(loaded);
 				for (PropertySource<?> propertySource : loaded) {
-					this.loaded
-							.computeIfAbsent(profile, (k) -> new MutablePropertySources())
-							.addLast(propertySource);
+					MutablePropertySources profileSource = this.loaded.computeIfAbsent(
+							profile, (k) -> new MutablePropertySources());
+					if (profilesProperty == ProfilesProperty.POSITIVE_OR_DEFAULT) {
+						profileSource.addLast(propertySource);
+					}
+					else {
+						profileSource.addFirst(propertySource);
+					}
 				}
 				if (!loaded.isEmpty()) {
 					this.logger.debug("Loaded config file " + description);
@@ -495,24 +515,6 @@ public class ConfigFileApplicationListener
 				throw new IllegalStateException("Failed to load property "
 						+ "source from location '" + location + "'", ex);
 			}
-		}
-
-		private boolean isProfileMatch(PropertySource<?> propertySource,
-				String loadProfile) {
-			Binder binder = getBinder(propertySource);
-			String[] profiles = binder
-					.bind("spring.profiles", Bindable.of(String[].class)).orElse(null);
-			if (loadProfile == null) {
-				return ObjectUtils.isEmpty(profiles);
-			}
-			String[] positiveProfiles = (profiles == null ? null : Arrays.stream(profiles)
-					.filter(this::isPositiveProfile).toArray(String[]::new));
-			return ObjectUtils.containsElement(positiveProfiles, loadProfile)
-					&& this.environment.acceptsProfiles(profiles);
-		}
-
-		private boolean isPositiveProfile(String profile) {
-			return !profile.startsWith("!");
 		}
 
 		private String getDescription(String location, Resource resource) {
@@ -718,6 +720,43 @@ public class ConfigFileApplicationListener
 			}
 			return ((Profile) obj).name.equals(this.name);
 		}
+
+	}
+
+	private enum ProfilesProperty {
+
+		POSITIVE_OR_DEFAULT {
+
+			@Override
+			protected boolean canLoadForDefaultProfile(Environment environment,
+					String[] propertyValue) {
+				return ObjectUtils.isEmpty(propertyValue);
+			}
+
+		},
+
+		NEGATIVE {
+
+			@Override
+			protected boolean canLoadForDefaultProfile(Environment environment,
+					String[] propertyValue) {
+				return !ObjectUtils.isEmpty(propertyValue)
+						&& environment.acceptsProfiles(propertyValue);
+			}
+
+		};
+
+		public boolean canLoad(Environment environment, String[] propertyValue,
+				String profile) {
+			if (profile == null) {
+				return canLoadForDefaultProfile(environment, propertyValue);
+			}
+			return ObjectUtils.containsElement(propertyValue, profile)
+					&& environment.acceptsProfiles(propertyValue);
+		}
+
+		protected abstract boolean canLoadForDefaultProfile(Environment environment,
+				String[] propertyValue);
 
 	}
 
