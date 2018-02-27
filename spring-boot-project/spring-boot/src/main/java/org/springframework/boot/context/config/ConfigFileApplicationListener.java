@@ -104,6 +104,8 @@ public class ConfigFileApplicationListener
 
 	private static final String DEFAULT_NAMES = "application";
 
+	private static final Set<String> NO_SEARCH_NAMES = Collections.singleton(null);
+
 	/**
 	 * The "active profiles" property name.
 	 */
@@ -329,18 +331,11 @@ public class ConfigFileApplicationListener
 		}
 
 		private void load(Profile profile, ProfilesProperty profilesProperty) {
-			for (String location : getSearchLocations()) {
-				if (!location.endsWith("/")) {
-					// location is a filename already, so don't search for more
-					// filenames
-					load(profile, profilesProperty, location, null);
-				}
-				else {
-					for (String name : getSearchNames()) {
-						load(profile, profilesProperty, location, name);
-					}
-				}
-			}
+			getSearchLocations().forEach((location) -> {
+				boolean isFolder = location.endsWith("/");
+				Set<String> names = (isFolder ? getSearchNames() : NO_SEARCH_NAMES);
+				names.forEach((name) -> load(profile, profilesProperty, location, name));
+			});
 		}
 
 		/**
@@ -719,18 +714,6 @@ public class ConfigFileApplicationListener
 			}
 			return ((Profile) obj).name.equals(this.name);
 		}
-
-	}
-
-	private static class Document {
-
-	}
-
-	private static interface DocumentFilter {
-
-	}
-
-	private static interface DocumentFilterFactory {
 
 	}
 
