@@ -477,8 +477,7 @@ public class ConfigFileApplicationListener
 					this.logger.trace("Skipped empty config extension " + description);
 					return;
 				}
-				String name = "applicationConfig: [" + location + "]"
-						+ (loadProfile == null ? "" : "#" + loadProfile);
+				String name = "applicationConfig: [" + location + "]";
 				List<PropertySource<?>> candidateSources = loader.load(name, resource);
 				if (CollectionUtils.isEmpty(candidateSources)) {
 					this.logger.trace("Skipped unloaded config " + description);
@@ -720,6 +719,18 @@ public class ConfigFileApplicationListener
 			}
 			return ((Profile) obj).name.equals(this.name);
 		}
+
+	}
+
+	private static class Document {
+
+	}
+
+	private static interface DocumentFilter {
+
+	}
+
+	private static interface DocumentFilterFactory {
 
 	}
 
