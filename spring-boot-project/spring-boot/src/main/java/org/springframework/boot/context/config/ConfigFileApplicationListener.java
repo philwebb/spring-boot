@@ -330,14 +330,6 @@ public class ConfigFileApplicationListener
 			addLoadedPropertySources();
 		}
 
-		private void load(Profile profile, ProfilesProperty profilesProperty) {
-			getSearchLocations().forEach((location) -> {
-				boolean isFolder = location.endsWith("/");
-				Set<String> names = (isFolder ? getSearchNames() : NO_SEARCH_NAMES);
-				names.forEach((name) -> load(profile, profilesProperty, location, name));
-			});
-		}
-
 		/**
 		 * Initialize profile information from both the {@link Environment} active
 		 * profiles and any {@code spring.profiles.active}/{@code spring.profiles.include}
@@ -400,6 +392,14 @@ public class ConfigFileApplicationListener
 			// (last one wins when properties are eventually resolved)
 			Collections.reverse(unprocessedActiveProfiles);
 			return unprocessedActiveProfiles;
+		}
+
+		private void load(Profile profile, ProfilesProperty profilesProperty) {
+			getSearchLocations().forEach((location) -> {
+				boolean isFolder = location.endsWith("/");
+				Set<String> names = (isFolder ? getSearchNames() : NO_SEARCH_NAMES);
+				names.forEach((name) -> load(profile, profilesProperty, location, name));
+			});
 		}
 
 		/**
