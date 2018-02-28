@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
@@ -47,6 +48,8 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 public final class EndpointRequest {
+
+	private static final RequestMatcher EMPTY_PATHS_MATCHER = (request) -> false;
 
 	private EndpointRequest() {
 	}
@@ -131,13 +134,28 @@ public final class EndpointRequest {
 
 		@Override
 		protected void initialized(Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			initialized(getPathMappedEndpoints(pathMappedEndpoints));
+		}
+
+		private PathMappedEndpoints getPathMappedEndpoints(
+				Supplier<PathMappedEndpoints> pathMappedEndpoints) {
+			try {
+				return pathMappedEndpoints.get();
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return new PathMappedEndpoints("/actuator", Collections.emptySet());
+			}
+		}
+
+		private void initialized(PathMappedEndpoints pathMappedEndpoints) {
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
-				paths.addAll(pathMappedEndpoints.get().getAllPaths());
+				paths.addAll(pathMappedEndpoints.getAllPaths());
 			}
-			streamPaths(this.includes, pathMappedEndpoints.get()).forEach(paths::add);
-			streamPaths(this.excludes, pathMappedEndpoints.get()).forEach(paths::remove);
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(paths));
+			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
+			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
+			this.delegate = (paths.isEmpty() ? EMPTY_PATHS_MATCHER
+					: new OrRequestMatcher(getDelegateMatchers(paths)));
 		}
 
 		private Stream<String> streamPaths(List<Object> source,
