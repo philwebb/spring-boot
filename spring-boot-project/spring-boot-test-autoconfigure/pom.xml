@@ -26,6 +26,11 @@
 		</dependency>
 		<!-- Optional -->
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-actuator-autoconfigure</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>javax.json.bind</groupId>
 			<artifactId>javax.json.bind-api</artifactId>
 			<optional>true</optional>

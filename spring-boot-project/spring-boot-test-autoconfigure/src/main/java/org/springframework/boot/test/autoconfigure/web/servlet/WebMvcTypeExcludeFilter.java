@@ -33,6 +33,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -44,6 +45,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author Phillip Webb
  */
 class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
+
+	private static final String[] OPTIONAL_INCLUDES = {
+			"org.springframework.security.config.annotation.SecurityConfigurer" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
@@ -60,6 +64,13 @@ class WebMvcTypeExcludeFilter extends AnnotationCustomizableTypeExcludeFilter {
 		includes.add(ErrorAttributes.class);
 		includes.add(Converter.class);
 		includes.add(GenericConverter.class);
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
+			try {
+				includes.add(ClassUtils.forName(optionalInclude, null));
+			}
+			catch (Exception ex) {
+			}
+		}
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);
 	}
 
