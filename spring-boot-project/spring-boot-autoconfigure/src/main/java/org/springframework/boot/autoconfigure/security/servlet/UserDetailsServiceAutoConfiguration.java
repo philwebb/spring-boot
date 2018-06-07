@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -28,13 +28,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.util.StringUtils;
@@ -57,37 +65,111 @@ import org.springframework.util.StringUtils;
 		UserDetailsService.class })
 public class UserDetailsServiceAutoConfiguration {
 
-	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
-
-	private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern
-			.compile("^\\{.+}.*$");
-
-	private static final Log logger = LogFactory
-			.getLog(UserDetailsServiceAutoConfiguration.class);
-
 	@Bean
 	@ConditionalOnMissingBean(type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(
+	public PropertiesUserDetailsManager propertiesUserDetailsManager(
 			SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
-		SecurityProperties.User user = properties.getUser();
-		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
-				.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-				.roles(StringUtils.toStringArray(roles)).build());
+		return new PropertiesUserDetailsManager(properties.getUser(), passwordEncoder);
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user,
-			PasswordEncoder encoder) {
-		String password = user.getPassword();
-		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n",
-					user.getPassword()));
+	@Bean
+	public PropertiesUserDetailsManagerLoggingInitializer propertiesUserDetailsManagerLoggingInitializer(
+			ApplicationContext applicationContext) {
+		return new PropertiesUserDetailsManagerLoggingInitializer(applicationContext);
+	}
+
+	/**
+	 * {@link SecurityConfigurer} to trigger early logging from the
+	 * {@link PropertiesUserDetailsManager} if the user hasn't configured their own auth.
+	 */
+	@Order(PropertiesUserDetailsManagerLoggingInitializer.ORDER)
+	static class PropertiesUserDetailsManagerLoggingInitializer
+			extends GlobalAuthenticationConfigurerAdapter {
+
+		static final int BEAN_MANAGER_CONFIGURER_ORDER = Ordered.LOWEST_PRECEDENCE - 5000;
+
+		static final int ORDER = BEAN_MANAGER_CONFIGURER_ORDER - 1;
+
+		private final ApplicationContext applicationContext;
+
+		PropertiesUserDetailsManagerLoggingInitializer(
+				ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
 		}
-		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
-			return password;
+
+		@Override
+		public void init(AuthenticationManagerBuilder auth) throws Exception {
+			auth.apply(new Configurer());
 		}
-		return NOOP_PASSWORD_PREFIX + password;
+
+		class Configurer extends GlobalAuthenticationConfigurerAdapter {
+
+			@Override
+			public void configure(AuthenticationManagerBuilder auth) throws Exception {
+				if (!auth.isConfigured()) {
+					PropertiesUserDetailsManagerLoggingInitializer.this.applicationContext
+							.getBeansOfType(PropertiesUserDetailsManager.class).values()
+							.forEach(PropertiesUserDetailsManager::logGeneratedPassword);
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * {@link InMemoryUserDetailsManager} backed by {@link SecurityProperties}.
+	 */
+	static class PropertiesUserDetailsManager extends InMemoryUserDetailsManager {
+
+		private static final String NOOP_PASSWORD_PREFIX = "{noop}";
+
+		private static final Pattern PASSWORD_ALGORITHM_PATTERN = Pattern
+				.compile("^\\{.+}.*$");
+
+		private static final Log logger = LogFactory
+				.getLog(PropertiesUserDetailsManager.class);
+
+		private final SecurityProperties.User userProperties;
+
+		private final AtomicBoolean loggedGeneratedPassword = new AtomicBoolean();
+
+		PropertiesUserDetailsManager(SecurityProperties.User userProperties,
+				ObjectProvider<PasswordEncoder> passwordEncoder) {
+			this.userProperties = userProperties;
+			String name = userProperties.getName();
+			String password = getOrDeducePassword(userProperties,
+					passwordEncoder.getIfAvailable());
+			String[] roles = StringUtils.toStringArray(userProperties.getRoles());
+			createUser(User.withUsername(name).password(password).roles(roles).build());
+		}
+
+		private String getOrDeducePassword(SecurityProperties.User user,
+				PasswordEncoder encoder) {
+			String password = user.getPassword();
+			if (encoder != null
+					|| PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
+				return password;
+			}
+			return NOOP_PASSWORD_PREFIX + password;
+		}
+
+		@Override
+		public UserDetails loadUserByUsername(String username)
+				throws UsernameNotFoundException {
+			logGeneratedPassword();
+			return super.loadUserByUsername(username);
+		}
+
+		public void logGeneratedPassword() {
+			if (logger.isInfoEnabled() && this.userProperties.isPasswordGenerated()
+					&& this.loggedGeneratedPassword.compareAndSet(false, true)) {
+				logger.info(String.format("%n%nUsing generated security password: %s%n",
+						this.userProperties.getPassword()));
+			}
+		}
+
 	}
 
 }
