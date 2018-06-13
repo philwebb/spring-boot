@@ -1,0 +1,21 @@
+default: true
+
+---
+spring.profiles: A & B
+aandb: true
+
+---
+spring.profiles: A | B
+aorb: true
+
+---
+spring.profiles: A & C
+aandc: true
+
+---
+spring.profiles: A | C
+aorc: true
+
+---
+spring.profiles: (A & C) | (A & B)
+aandcoraandb: true

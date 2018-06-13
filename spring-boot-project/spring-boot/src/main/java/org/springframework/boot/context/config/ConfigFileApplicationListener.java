@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -57,6 +59,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -407,17 +410,17 @@ public class ConfigFileApplicationListener
 		private DocumentFilter getPositiveProfileFilter(Profile profile) {
 			return (Document document) -> {
 				if (profile == null) {
-					return ObjectUtils.isEmpty(document.getProfiles());
+					return (document.getProfiles() == null);
 				}
-				return ObjectUtils.containsElement(document.getProfiles(),
-						profile.getName())
+				return document.hasOnlySimplePositiveProfiles()
+						&& document.getProfiles().matches(profile.getName()::equals)
 						&& this.environment.acceptsProfiles(document.getProfiles());
 			};
 		}
 
 		private DocumentFilter getNegativeProfileFilter(Profile profile) {
 			return (Document document) -> (profile == null
-					&& !ObjectUtils.isEmpty(document.getProfiles())
+					&& document.getProfiles() != null
 					&& this.environment.acceptsProfiles(document.getProfiles()));
 		}
 
@@ -777,9 +780,13 @@ public class ConfigFileApplicationListener
 	 */
 	private static class Document {
 
+		private static final Pattern NON_SIMPLE_POSITIVE = Pattern.compile("[&|!]");
+
 		private final PropertySource<?> propertySource;
 
-		private String[] profiles;
+		private final Profiles profiles;
+
+		private final boolean hasOnlySimplePositiveProfiles;
 
 		private final Set<Profile> activeProfiles;
 
@@ -788,16 +795,30 @@ public class ConfigFileApplicationListener
 		Document(PropertySource<?> propertySource, String[] profiles,
 				Set<Profile> activeProfiles, Set<Profile> includeProfiles) {
 			this.propertySource = propertySource;
-			this.profiles = profiles;
+			this.profiles = (!ObjectUtils.isEmpty(profiles) ? Profiles.of(profiles)
+					: null);
+			this.hasOnlySimplePositiveProfiles = hasOnlySimplePositiveProfiles(profiles);
 			this.activeProfiles = activeProfiles;
 			this.includeProfiles = includeProfiles;
+		}
+
+		private boolean hasOnlySimplePositiveProfiles(String[] profiles) {
+			if (ObjectUtils.isEmpty(profiles)) {
+				return false;
+			}
+			return !Arrays.stream(profiles).map(NON_SIMPLE_POSITIVE::matcher)
+					.anyMatch(Matcher::find);
 		}
 
 		public PropertySource<?> getPropertySource() {
 			return this.propertySource;
 		}
 
-		public String[] getProfiles() {
+		public boolean hasOnlySimplePositiveProfiles() {
+			return this.hasOnlySimplePositiveProfiles;
+		}
+
+		public Profiles getProfiles() {
 			return this.profiles;
 		}
 
