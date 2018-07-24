@@ -91,7 +91,7 @@ public class ServletEndpointManagementContextConfigurationTests {
 
 		@Bean
 		public DispatcherServletPath servletPathProvider() {
-			return () -> "/";
+			return DispatcherServletPath.of("/");
 		}
 
 	}

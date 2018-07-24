@@ -33,7 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -136,6 +135,12 @@ public class DispatcherServletAutoConfiguration {
 			this.multipartConfig = multipartConfigProvider.getIfAvailable();
 		}
 
+		@Bean
+		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		public DispatcherServletPath dispatcherServletPath() {
+			return DispatcherServletPath.of(this.serverProperties.getServlet().getPath());
+		}
+
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
@@ -150,14 +155,6 @@ public class DispatcherServletAutoConfiguration {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
 			return registration;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(DispatcherServletPath.class)
-		@ConditionalOnSingleCandidate(DispatcherServlet.class)
-		public DispatcherServletPath dispatcherServletPath() {
-			return () -> DispatcherServletRegistrationConfiguration.this.serverProperties
-					.getServlet().getPath();
 		}
 
 	}

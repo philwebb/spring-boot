@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -84,6 +85,11 @@ public interface DispatcherServletPath {
 			return getPath() + "*";
 		}
 		return getPath() + "/*";
+	}
+
+	static DispatcherServletPath of(String path) {
+		Assert.notNull(path, "Path must not be null");
+		return () -> path;
 	}
 
 }

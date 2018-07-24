@@ -100,10 +100,11 @@ public class ErrorMvcAutoConfiguration {
 	private final List<ErrorViewResolver> errorViewResolvers;
 
 	public ErrorMvcAutoConfiguration(ServerProperties serverProperties,
-			DispatcherServletPath dispatcherServletPath,
+			ObjectProvider<DispatcherServletPath> dispatcherServletPath,
 			ObjectProvider<List<ErrorViewResolver>> errorViewResolversProvider) {
 		this.serverProperties = serverProperties;
-		this.dispatcherServletPath = dispatcherServletPath;
+		this.dispatcherServletPath = dispatcherServletPath.getIfAvailable(
+				() -> DispatcherServletPath.of(serverProperties.getServlet().getPath()));
 		this.errorViewResolvers = errorViewResolversProvider.getIfAvailable();
 	}
 

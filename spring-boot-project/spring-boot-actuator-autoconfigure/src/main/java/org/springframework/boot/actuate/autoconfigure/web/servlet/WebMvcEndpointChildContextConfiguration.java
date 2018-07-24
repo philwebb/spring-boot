@@ -95,7 +95,7 @@ class WebMvcEndpointChildContextConfiguration {
 
 	@Bean
 	public DispatcherServletPath childDispatcherServletPathProvider() {
-		return () -> "";
+		return DispatcherServletPath.of("");
 	}
 
 }
