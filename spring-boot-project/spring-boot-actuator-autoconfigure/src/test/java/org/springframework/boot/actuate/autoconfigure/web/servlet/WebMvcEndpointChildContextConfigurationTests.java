@@ -64,12 +64,12 @@ public class WebMvcEndpointChildContextConfigurationTests {
 	}
 
 	@Test
-	public void contextShouldConfigureDispatcherServletPathWithEmptyPath() {
+	public void contextShouldConfigureDispatcherServletPathWithRootPath() {
 		this.contextRunner
 				.withUserConfiguration(WebMvcEndpointChildContextConfiguration.class)
 				.run((context) -> assertThat(
 						context.getBean(DispatcherServletPath.class).getPath())
-								.isEmpty());
+								.isEqualTo("/"));
 	}
 
 	static class ExistingConfig {

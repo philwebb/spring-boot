@@ -23,7 +23,7 @@ import java.util.Set;
 
 /**
  * Strategy interface used by {@link EndpointRequest} to find the root paths that actuator
- * endpoints are mapped to
+ * endpoints are mapped to.
  *
  * @author Phillip Webb
  * @since 2.0.4
@@ -33,7 +33,7 @@ public interface EndpointRequestPaths {
 	/**
 	 * {@link EndpointRequestPaths} that contains a single root mapping.
 	 */
-	static final EndpointRequestPaths SINGLE_ROOT = of("/");
+	EndpointRequestPaths SINGLE_ROOT = of("/");
 
 	/**
 	 * Return a set of all paths that provide access to actuator endpoints.

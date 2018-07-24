@@ -296,7 +296,7 @@ public final class EndpointRequest {
 		}
 
 		private String getPattern(String prefix, String... parts) {
-			String pattern = prefix;
+			String pattern = (prefix != null ? prefix : "");
 			while (pattern.endsWith("/")) {
 				pattern = pattern.substring(0, prefix.length() - 1);
 			}

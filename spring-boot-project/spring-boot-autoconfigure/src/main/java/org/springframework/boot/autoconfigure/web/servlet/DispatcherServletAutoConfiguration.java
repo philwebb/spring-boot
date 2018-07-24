@@ -135,19 +135,12 @@ public class DispatcherServletAutoConfiguration {
 			this.multipartConfig = multipartConfigProvider.getIfAvailable();
 		}
 
-		@Bean
-		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public DispatcherServletPath dispatcherServletPath() {
-			return DispatcherServletPath.of(this.serverProperties.getServlet().getPath());
-		}
-
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
-				DispatcherServlet dispatcherServlet,
-				DispatcherServletPath dispatcherServletPath) {
-			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
-					dispatcherServlet, dispatcherServletPath.getServletUrlMapping());
+		public DispatcherServletRegistrationBean dispatcherServletRegistration(
+				DispatcherServlet dispatcherServlet) {
+			DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(
+					dispatcherServlet, this.serverProperties.getServlet().getPath());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			registration.setLoadOnStartup(
 					this.webMvcProperties.getServlet().getLoadOnStartup());

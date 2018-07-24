@@ -17,12 +17,11 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Interface that provides the path details of the auto-configured
- * {@link DispatcherServlet} .
+ * Interface that can be used by auto-configurations that need path details for the
+ * {@link DispatcherServlet}.
  *
  * @author Madhura Bhave
  * @author Stephane Nicoll
@@ -85,11 +84,6 @@ public interface DispatcherServletPath {
 			return getPath() + "*";
 		}
 		return getPath() + "/*";
-	}
-
-	static DispatcherServletPath of(String path) {
-		Assert.notNull(path, "Path must not be null");
-		return () -> path;
 	}
 
 }
