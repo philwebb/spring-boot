@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -246,7 +244,7 @@ public class EndpointRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints, String... servletPaths) {
+			PathMappedEndpoints pathMappedEndpoints, String... paths) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
@@ -257,10 +255,9 @@ public class EndpointRequestTests {
 				properties.setBasePath(pathMappedEndpoints.getBasePath());
 			}
 		}
-		if (servletPaths != null) {
-			DispatcherServletPathProvider pathProvider = () -> new LinkedHashSet<>(
-					Arrays.asList(servletPaths));
-			context.registerBean(DispatcherServletPathProvider.class, () -> pathProvider);
+		if (paths != null) {
+			EndpointRequestPaths endpointRequestPaths = EndpointRequestPaths.of(paths);
+			context.registerBean(EndpointRequestPaths.class, () -> endpointRequestPaths);
 		}
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}

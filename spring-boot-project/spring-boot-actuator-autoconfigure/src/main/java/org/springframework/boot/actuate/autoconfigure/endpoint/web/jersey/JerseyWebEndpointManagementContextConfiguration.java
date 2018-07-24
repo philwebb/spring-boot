@@ -25,6 +25,7 @@ import java.util.List;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequestPaths;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -76,6 +77,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 							webEndpoints, endpointMediaTypes,
 							new EndpointLinksResolver(allEndpoints, basePath))));
 		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public EndpointRequestPaths endpointRequestPaths() {
+		return EndpointRequestPaths.SINGLE_ROOT;
 	}
 
 }

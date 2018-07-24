@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.MultipartConfigElement;
@@ -140,10 +139,10 @@ public class DispatcherServletAutoConfiguration {
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public ServletRegistrationBean<DispatcherServlet> dispatcherServletRegistration(
-				DispatcherServlet dispatcherServlet) {
+				DispatcherServlet dispatcherServlet,
+				DispatcherServletPath dispatcherServletPath) {
 			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(
-					dispatcherServlet,
-					this.serverProperties.getServlet().getServletMapping());
+					dispatcherServlet, dispatcherServletPath.getServletUrlMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			registration.setLoadOnStartup(
 					this.webMvcProperties.getServlet().getLoadOnStartup());
@@ -154,12 +153,11 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(DispatcherServletPathProvider.class)
+		@ConditionalOnMissingBean(DispatcherServletPath.class)
 		@ConditionalOnSingleCandidate(DispatcherServlet.class)
-		public DispatcherServletPathProvider dispatcherServletPathProvider() {
-			return () -> Collections.singleton(
-					DispatcherServletRegistrationConfiguration.this.serverProperties
-							.getServlet().getPath());
+		public DispatcherServletPath dispatcherServletPath() {
+			return () -> DispatcherServletRegistrationConfiguration.this.serverProperties
+					.getServlet().getPath();
 		}
 
 	}

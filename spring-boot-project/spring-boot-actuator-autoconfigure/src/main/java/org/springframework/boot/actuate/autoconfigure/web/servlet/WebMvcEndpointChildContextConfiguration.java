@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -27,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPathProvider;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -96,8 +94,8 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean
-	public DispatcherServletPathProvider childDispatcherServletPathProvider() {
-		return () -> Collections.singleton("");
+	public DispatcherServletPath childDispatcherServletPathProvider() {
+		return () -> "";
 	}
 
 }

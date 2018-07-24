@@ -18,10 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequestPaths;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -39,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -90,6 +93,13 @@ public class WebMvcEndpointManagementContextConfiguration {
 		return new ControllerEndpointHandlerMapping(endpointMapping,
 				controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnBean(DispatcherServletPath.class)
+	public EndpointRequestPaths endpointRequestPaths(DispatcherServletPath servletPath) {
+		return () -> Collections.singleton(servletPath.getPrefix());
 	}
 
 }
