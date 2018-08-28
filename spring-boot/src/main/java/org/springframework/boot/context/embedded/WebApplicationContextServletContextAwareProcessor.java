@@ -45,13 +45,13 @@ public class WebApplicationContextServletContextAwareProcessor
 	@Override
 	protected ServletContext getServletContext() {
 		ServletContext servletContext = this.webApplicationContext.getServletContext();
-		return (servletContext != null ? servletContext : super.getServletContext());
+		return (servletContext != null) ? servletContext : super.getServletContext();
 	}
 
 	@Override
 	protected ServletConfig getServletConfig() {
 		ServletConfig servletConfig = this.webApplicationContext.getServletConfig();
-		return (servletConfig != null ? servletConfig : super.getServletConfig());
+		return (servletConfig != null) ? servletConfig : super.getServletConfig();
 	}
 
 }

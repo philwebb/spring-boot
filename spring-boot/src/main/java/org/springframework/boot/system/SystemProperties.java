@@ -30,7 +30,7 @@ final class SystemProperties {
 		for (String property : properties) {
 			try {
 				String override = System.getProperty(property);
-				override = (override != null ? override : System.getenv(property));
+				override = (override != null) ? override : System.getenv(property);
 				if (override != null) {
 					return override;
 				}

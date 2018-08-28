@@ -41,7 +41,7 @@ public final class SpringBootVersion {
 	 */
 	public static String getVersion() {
 		Package pkg = SpringApplication.class.getPackage();
-		return (pkg != null ? pkg.getImplementationVersion() : null);
+		return (pkg != null) ? pkg.getImplementationVersion() : null;
 	}
 
 }

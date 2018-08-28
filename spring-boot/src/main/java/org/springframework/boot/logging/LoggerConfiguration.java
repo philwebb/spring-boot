@@ -73,22 +73,6 @@ public final class LoggerConfiguration {
 	}
 
 	@Override
-	public String toString() {
-		return "LoggerConfiguration [name=" + this.name + ", configuredLevel="
-				+ this.configuredLevel + ", effectiveLevel=" + this.effectiveLevel + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.configuredLevel);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.effectiveLevel);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -107,6 +91,22 @@ public final class LoggerConfiguration {
 			return rtn;
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.configuredLevel);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.effectiveLevel);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "LoggerConfiguration [name=" + this.name + ", configuredLevel="
+				+ this.configuredLevel + ", effectiveLevel=" + this.effectiveLevel + "]";
 	}
 
 }

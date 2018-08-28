@@ -126,7 +126,7 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
-		return (this.name != null ? this.name : Conventions.getVariableName(value));
+		return (this.name != null) ? this.name : Conventions.getVariableName(value);
 	}
 
 	/**

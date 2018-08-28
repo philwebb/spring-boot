@@ -59,7 +59,7 @@ public class EntityManagerFactoryBuilder {
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 */
@@ -72,7 +72,7 @@ public class EntityManagerFactoryBuilder {
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
 	 * @param jpaVendorAdapter a vendor adapter
-	 * @param jpaProperties JPA properties to be passed to the persistence provider.
+	 * @param jpaProperties the JPA properties to be passed to the persistence provider
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
