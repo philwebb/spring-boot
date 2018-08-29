@@ -52,7 +52,7 @@ public class DefaultMetricNamingStrategy implements ObjectNamingStrategy {
 			String[] parts = StringUtils.delimitedListToStringArray(name, ".");
 			table.put("type", parts[0]);
 			if (parts.length > 1) {
-				table.put(parts.length > 2 ? "name" : "value", parts[1]);
+				table.put((parts.length > 2) ? "name" : "value", parts[1]);
 			}
 			if (parts.length > 2) {
 				table.put("value",

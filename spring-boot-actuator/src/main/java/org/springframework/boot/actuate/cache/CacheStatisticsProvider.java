@@ -22,7 +22,7 @@ import org.springframework.cache.CacheManager;
 /**
  * Provide a {@link CacheStatistics} based on a {@link Cache}.
  *
- * @param <C> The {@link Cache} type
+ * @param <C> the {@link Cache} type
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.3.0

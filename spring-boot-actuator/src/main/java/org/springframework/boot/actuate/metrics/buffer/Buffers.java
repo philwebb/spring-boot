@@ -29,7 +29,7 @@ import org.springframework.lang.UsesJava8;
  *
  * @author Dave Syer
  * @author Phillip Webb
- * @param <B> The buffer type
+ * @param <B> the buffer type
  */
 @UsesJava8
 abstract class Buffers<B extends Buffer<?>> {

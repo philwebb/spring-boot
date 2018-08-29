@@ -49,11 +49,6 @@ public class ExampleJsonObjectWithView {
 	}
 
 	@Override
-	public int hashCode() {
-		return 0;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
@@ -61,6 +56,11 @@ public class ExampleJsonObjectWithView {
 		ExampleJsonObjectWithView other = (ExampleJsonObjectWithView) obj;
 		return ObjectUtils.nullSafeEquals(this.value, other.value)
 				&& ObjectUtils.nullSafeEquals(this.id, other.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
 	}
 
 	@Override

@@ -126,7 +126,7 @@ public final class RichGauge {
 	/**
 	 * Return either an exponential weighted moving average or a simple mean,
 	 * respectively, depending on whether the weight 'alpha' has been set for this gauge.
-	 * @return The average over all the accumulated values
+	 * @return the average over all the accumulated values
 	 */
 	public double getAverage() {
 		return this.average;

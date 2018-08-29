@@ -103,16 +103,6 @@ public final class Status {
 	}
 
 	@Override
-	public String toString() {
-		return this.code;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.code.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -121,6 +111,16 @@ public final class Status {
 			return ObjectUtils.nullSafeEquals(this.code, ((Status) obj).code);
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.code.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return this.code;
 	}
 
 }

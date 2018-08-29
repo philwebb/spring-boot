@@ -144,12 +144,12 @@ public class AggregateMetricReader implements MetricReader {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < patterns.length; i++) {
 			if ("k".equals(patterns[i])) {
-				builder.append(builder.length() > 0 ? "." : "");
+				builder.append((builder.length() > 0) ? "." : "");
 				builder.append(keys[i]);
 			}
 		}
 		for (int i = patterns.length; i < keys.length; i++) {
-			builder.append(builder.length() > 0 ? "." : "");
+			builder.append((builder.length() > 0) ? "." : "");
 			builder.append(keys[i]);
 		}
 		return builder.toString();

@@ -376,8 +376,8 @@ public class EndpointWebMvcAutoConfiguration
 			}
 			return ((managementPort == null)
 					|| (serverPort == null && managementPort.equals(8080))
-					|| (managementPort != 0 && managementPort.equals(serverPort)) ? SAME
-							: DIFFERENT);
+					|| (managementPort != 0) && managementPort.equals(serverPort)) ? SAME
+							: DIFFERENT;
 		}
 
 		private static <T> T getTemporaryBean(BeanFactory beanFactory, Class<T> type) {

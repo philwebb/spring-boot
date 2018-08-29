@@ -82,11 +82,6 @@ public final class ChangedFile {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.file.hashCode() * 31 + this.type.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -99,6 +94,11 @@ public final class ChangedFile {
 			return this.file.equals(other.file) && this.type.equals(other.type);
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.file.hashCode() * 31 + this.type.hashCode();
 	}
 
 	@Override

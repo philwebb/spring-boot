@@ -62,11 +62,6 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.files.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
@@ -80,6 +75,11 @@ public final class ChangedFiles implements Iterable<ChangedFile> {
 					&& this.files.equals(other.files);
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.files.hashCode();
 	}
 
 	@Override
