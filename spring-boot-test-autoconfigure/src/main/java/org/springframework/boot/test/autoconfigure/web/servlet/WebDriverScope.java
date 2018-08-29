@@ -145,7 +145,7 @@ class WebDriverScope implements Scope {
 		if (context instanceof ConfigurableApplicationContext) {
 			Scope scope = ((ConfigurableApplicationContext) context).getBeanFactory()
 					.getRegisteredScope(NAME);
-			return (scope instanceof WebDriverScope ? (WebDriverScope) scope : null);
+			return (scope instanceof WebDriverScope) ? (WebDriverScope) scope : null;
 		}
 		return null;
 	}

@@ -119,7 +119,7 @@ public abstract class AbstractViewResolverProperties {
 	}
 
 	public String getCharsetName() {
-		return (this.charset != null ? this.charset.name() : null);
+		return (this.charset != null) ? this.charset.name() : null;
 	}
 
 	public void setCharset(Charset charset) {

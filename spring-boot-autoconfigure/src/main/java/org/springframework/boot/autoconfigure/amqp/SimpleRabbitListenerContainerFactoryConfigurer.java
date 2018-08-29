@@ -113,8 +113,8 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer {
 			builder.maxAttempts(retryConfig.getMaxAttempts());
 			builder.backOffOptions(retryConfig.getInitialInterval(),
 					retryConfig.getMultiplier(), retryConfig.getMaxInterval());
-			MessageRecoverer recoverer = (this.messageRecoverer != null
-					? this.messageRecoverer : new RejectAndDontRequeueRecoverer());
+			MessageRecoverer recoverer = (this.messageRecoverer != null)
+					? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}

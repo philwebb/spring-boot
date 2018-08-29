@@ -72,7 +72,7 @@ public class ValidationAutoConfiguration {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(environment,
 				"spring.aop.");
 		Boolean value = resolver.getProperty("proxyTargetClass", Boolean.class);
-		return (value != null ? value : true);
+		return (value != null) ? value : true;
 	}
 
 }

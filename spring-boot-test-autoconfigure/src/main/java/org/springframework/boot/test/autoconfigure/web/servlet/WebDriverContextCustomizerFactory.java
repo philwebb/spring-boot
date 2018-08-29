@@ -50,11 +50,6 @@ class WebDriverContextCustomizerFactory implements ContextCustomizerFactory {
 		}
 
 		@Override
-		public int hashCode() {
-			return getClass().hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (obj == this) {
 				return true;
@@ -63,6 +58,11 @@ class WebDriverContextCustomizerFactory implements ContextCustomizerFactory {
 				return false;
 			}
 			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return getClass().hashCode();
 		}
 
 	}

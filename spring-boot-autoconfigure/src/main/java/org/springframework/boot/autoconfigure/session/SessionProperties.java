@@ -50,7 +50,7 @@ public class SessionProperties {
 
 	public SessionProperties(ObjectProvider<ServerProperties> serverProperties) {
 		ServerProperties properties = serverProperties.getIfUnique();
-		this.timeout = (properties != null ? properties.getSession().getTimeout() : null);
+		this.timeout = (properties != null) ? properties.getSession().getTimeout() : null;
 	}
 
 	public StoreType getStoreType() {

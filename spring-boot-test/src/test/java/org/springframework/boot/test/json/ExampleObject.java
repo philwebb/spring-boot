@@ -44,11 +44,6 @@ public class ExampleObject {
 	}
 
 	@Override
-	public int hashCode() {
-		return 0;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
@@ -56,6 +51,11 @@ public class ExampleObject {
 		ExampleObject other = (ExampleObject) obj;
 		return ObjectUtils.nullSafeEquals(this.name, other.name)
 				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
 	}
 
 	@Override

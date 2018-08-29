@@ -28,7 +28,7 @@ import org.assertj.core.internal.Objects;
 /**
  * AssertJ {@link Assert} for {@link ObjectContent}.
  *
- * @param <A> The actual type
+ * @param <A> the actual type
  * @author Phillip Webb
  * @since 1.4.0
  */

@@ -23,7 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * {@link PlatformTransactionManager PlatformTransactionManagers} whilst retaining default
  * auto-configuration.
  *
- * @param <T> The transaction manager type
+ * @param <T> the transaction manager type
  * @author Phillip Webb
  * @since 1.5.0
  */

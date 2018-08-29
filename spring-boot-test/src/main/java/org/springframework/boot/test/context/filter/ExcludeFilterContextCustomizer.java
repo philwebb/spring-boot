@@ -37,11 +37,6 @@ class ExcludeFilterContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -50,6 +45,11 @@ class ExcludeFilterContextCustomizer implements ContextCustomizer {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 }

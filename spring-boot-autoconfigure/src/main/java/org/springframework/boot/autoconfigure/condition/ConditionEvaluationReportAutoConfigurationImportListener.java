@@ -46,8 +46,8 @@ class ConditionEvaluationReportAutoConfigurationImportListener
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = (beanFactory instanceof ConfigurableListableBeanFactory
-				? (ConfigurableListableBeanFactory) beanFactory : null);
+		this.beanFactory = (beanFactory instanceof ConfigurableListableBeanFactory)
+				? (ConfigurableListableBeanFactory) beanFactory : null;
 	}
 
 }

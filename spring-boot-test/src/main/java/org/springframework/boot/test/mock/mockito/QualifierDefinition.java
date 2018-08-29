@@ -61,11 +61,6 @@ class QualifierDefinition {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.annotations.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -75,6 +70,11 @@ class QualifierDefinition {
 		}
 		QualifierDefinition other = (QualifierDefinition) obj;
 		return this.annotations.equals(other.annotations);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.annotations.hashCode();
 	}
 
 	public static QualifierDefinition forElement(AnnotatedElement element) {

@@ -49,11 +49,6 @@ public class ExampleObjectWithView {
 	}
 
 	@Override
-	public int hashCode() {
-		return 0;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || obj.getClass() != getClass()) {
 			return false;
@@ -61,6 +56,11 @@ public class ExampleObjectWithView {
 		ExampleObjectWithView other = (ExampleObjectWithView) obj;
 		return ObjectUtils.nullSafeEquals(this.name, other.name)
 				&& ObjectUtils.nullSafeEquals(this.age, other.age);
+	}
+
+	@Override
+	public int hashCode() {
+		return 0;
 	}
 
 	@Override

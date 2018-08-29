@@ -47,11 +47,6 @@ class MockitoContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public int hashCode() {
-		return this.definitions.hashCode();
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -61,6 +56,11 @@ class MockitoContextCustomizer implements ContextCustomizer {
 		}
 		MockitoContextCustomizer other = (MockitoContextCustomizer) obj;
 		return this.definitions.equals(other.definitions);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.definitions.hashCode();
 	}
 
 }

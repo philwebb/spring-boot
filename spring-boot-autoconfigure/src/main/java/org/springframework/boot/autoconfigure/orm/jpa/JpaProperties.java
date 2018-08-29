@@ -210,8 +210,8 @@ public class JpaProperties {
 
 		private String getOrDeduceDdlAuto(Map<String, String> existing,
 				DataSource dataSource) {
-			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
-					: getDefaultDdlAuto(dataSource));
+			String ddlAuto = (this.ddlAuto != null) ? this.ddlAuto
+					: getDefaultDdlAuto(dataSource);
 			if (!existing.containsKey("hibernate." + "hbm2ddl.auto")
 					&& !"none".equals(ddlAuto)) {
 				return ddlAuto;
