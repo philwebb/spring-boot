@@ -215,7 +215,7 @@ public class RestartClassLoaderTests {
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
 		return (enumeration != null) ? Collections.list(enumeration)
-				: Collections.emptyList();
+				: Collections.<T>emptyList();
 	}
 
 }
