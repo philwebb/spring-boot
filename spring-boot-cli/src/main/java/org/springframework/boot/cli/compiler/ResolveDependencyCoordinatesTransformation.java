@@ -77,7 +77,7 @@ public class ResolveDependencyCoordinatesTransformation
 		Expression expression = annotation.getMember("value");
 		if (expression instanceof ConstantExpression) {
 			Object value = ((ConstantExpression) expression).getValue();
-			return (value instanceof String ? (String) value : null);
+			return (value instanceof String) ? (String) value : null;
 		}
 		return null;
 	}

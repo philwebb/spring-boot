@@ -233,8 +233,8 @@ public class ProjectGenerationRequestTests {
 	}
 
 	public void setBuildAndFormat(String build, String format) {
-		this.request.setBuild(build != null ? build : "maven");
-		this.request.setFormat(format != null ? format : "project");
+		this.request.setBuild((build != null) ? build : "maven");
+		this.request.setFormat((format != null) ? format : "project");
 		this.request.setDetectType(true);
 	}
 

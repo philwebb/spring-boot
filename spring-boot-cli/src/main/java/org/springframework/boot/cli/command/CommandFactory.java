@@ -29,7 +29,7 @@ public interface CommandFactory {
 
 	/**
 	 * Returns the CLI {@link Command}s.
-	 * @return The commands
+	 * @return the commands
 	 */
 	Collection<Command> getCommands();
 

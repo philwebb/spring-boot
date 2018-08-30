@@ -46,8 +46,8 @@ class ProjectGenerator {
 	public void generateProject(ProjectGenerationRequest request, boolean force)
 			throws IOException {
 		ProjectGenerationResponse response = this.initializrService.generate(request);
-		String fileName = (request.getOutput() != null ? request.getOutput()
-				: response.getFileName());
+		String fileName = (request.getOutput() != null) ? request.getOutput()
+				: response.getFileName();
 		if (shouldExtract(request, response)) {
 			if (isZipArchive(response)) {
 				extractProject(response, request.getOutput(), force);
@@ -101,8 +101,8 @@ class ProjectGenerator {
 
 	private void extractProject(ProjectGenerationResponse entity, String output,
 			boolean overwrite) throws IOException {
-		File outputFolder = (output != null ? new File(output)
-				: new File(System.getProperty("user.dir")));
+		File outputFolder = (output != null) ? new File(output)
+				: new File(System.getProperty("user.dir"));
 		if (!outputFolder.exists()) {
 			outputFolder.mkdirs();
 		}

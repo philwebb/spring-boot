@@ -40,7 +40,7 @@ public interface DependencyManagement {
 
 	/**
 	 * Finds the managed dependency with the given {@code artifactId}.
-	 * @param artifactId The artifact ID of the dependency to find
+	 * @param artifactId the artifact ID of the dependency to find
 	 * @return the dependency, or {@code null}
 	 */
 	Dependency find(String artifactId);

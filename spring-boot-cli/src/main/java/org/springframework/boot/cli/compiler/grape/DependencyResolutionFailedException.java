@@ -27,7 +27,7 @@ public class DependencyResolutionFailedException extends RuntimeException {
 	/**
 	 * Creates a new {@code DependencyResolutionFailedException} with the given
 	 * {@code cause}.
-	 * @param cause The cause of the resolution failure
+	 * @param cause the cause of the resolution failure
 	 */
 	public DependencyResolutionFailedException(Throwable cause) {
 		super(cause);

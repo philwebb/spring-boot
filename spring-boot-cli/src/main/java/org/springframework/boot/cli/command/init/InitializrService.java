@@ -241,7 +241,7 @@ class InitializrService {
 	private String getContent(HttpEntity entity) throws IOException {
 		ContentType contentType = ContentType.getOrDefault(entity);
 		Charset charset = contentType.getCharset();
-		charset = (charset != null ? charset : UTF_8);
+		charset = (charset != null) ? charset : UTF_8;
 		byte[] content = FileCopyUtils.copyToByteArray(entity.getContent());
 		return new String(content, charset);
 	}

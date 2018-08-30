@@ -99,22 +99,6 @@ public final class Dependency {
 	}
 
 	@Override
-	public String toString() {
-		return this.groupId + ":" + this.artifactId + ":" + this.version;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.groupId.hashCode();
-		result = prime * result + this.artifactId.hashCode();
-		result = prime * result + this.version.hashCode();
-		result = prime * result + this.exclusions.hashCode();
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -132,6 +116,22 @@ public final class Dependency {
 			return result;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.groupId.hashCode();
+		result = prime * result + this.artifactId.hashCode();
+		result = prime * result + this.version.hashCode();
+		result = prime * result + this.exclusions.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return this.groupId + ":" + this.artifactId + ":" + this.version;
 	}
 
 	/**
@@ -167,16 +167,6 @@ public final class Dependency {
 		}
 
 		@Override
-		public String toString() {
-			return this.groupId + ":" + this.artifactId;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.groupId.hashCode() * 31 + this.artifactId.hashCode();
-		}
-
-		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -192,6 +182,16 @@ public final class Dependency {
 				return result;
 			}
 			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.groupId.hashCode() * 31 + this.artifactId.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.groupId + ":" + this.artifactId;
 		}
 
 	}

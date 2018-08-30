@@ -59,7 +59,7 @@ public class InstallCommand extends OptionParsingCommand {
 			}
 			catch (Exception ex) {
 				String message = ex.getMessage();
-				Log.error(message != null ? message : ex.getClass().toString());
+				Log.error((message != null) ? message : ex.getClass().toString());
 			}
 			return ExitStatus.OK;
 		}

@@ -30,7 +30,7 @@ public class HelpExample {
 
 	/**
 	 * Create a new {@link HelpExample} instance.
-	 * @param description The description (in the form "to ....")
+	 * @param description the description (in the form "to ....")
 	 * @param example the example
 	 */
 	public HelpExample(String description, String example) {

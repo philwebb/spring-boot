@@ -51,9 +51,9 @@ public class SpringApplicationLauncher {
 	/**
 	 * Launches the application created using the given {@code sources}. The application
 	 * is launched with the given {@code args}.
-	 * @param sources The sources for the application
-	 * @param args The args for the application
-	 * @return The application's {@code ApplicationContext}
+	 * @param sources the sources for the application
+	 * @param args the args for the application
+	 * @return the application's {@code ApplicationContext}
 	 * @throws Exception if the launch fails
 	 */
 	public Object launch(Object[] sources, String[] args) throws Exception {

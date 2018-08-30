@@ -151,8 +151,9 @@ public class MavenSettings {
 		PrintWriter printer = new PrintWriter(message);
 		printer.println("Failed to determine active profiles:");
 		for (ModelProblemCollectorRequest problem : problemCollector.getProblems()) {
-			printer.println("    " + problem.getMessage() + (problem.getLocation() != null
-					? " at " + problem.getLocation() : ""));
+			String location = (problem.getLocation() != null)
+					? " at " + problem.getLocation() : "";
+			printer.println("    " + problem.getMessage() + location);
 			if (problem.getException() != null) {
 				printer.println(indentStackTrace(problem.getException(), "        "));
 			}
