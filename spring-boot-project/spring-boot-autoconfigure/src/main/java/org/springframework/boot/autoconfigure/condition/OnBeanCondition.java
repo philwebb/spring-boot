@@ -34,6 +34,8 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
+import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -58,13 +60,21 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
-class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
+class OnBeanCondition extends SpringBootCondition
+		implements ConfigurationCondition, AutoConfigurationImportFilter {
 
 	/**
 	 * Bean definition attribute name for factory beans to signal their product type (if
 	 * known and it can't be deduced from the factory bean class).
 	 */
 	public static final String FACTORY_BEAN_OBJECT_TYPE = BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE;
+
+	@Override
+	public boolean[] match(String[] autoConfigurationClasses,
+			AutoConfigurationMetadata autoConfigurationMetadata) {
+		// FIXME
+		return null;
+	}
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
