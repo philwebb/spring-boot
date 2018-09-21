@@ -32,6 +32,8 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 @SupportedAnnotationTypes({
 		"org.springframework.boot.autoconfigureprocessor.TestConfiguration",
 		"org.springframework.boot.autoconfigureprocessor.TestConditionalOnClass",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnBean",
+		"org.springframework.boot.autoconfigure.condition.TestConditionalOnSingleCandidate",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
@@ -48,6 +50,9 @@ public class TestConditionMetadataAnnotationProcessor
 	protected void addAnnotations(Map<String, String> annotations) {
 		put(annotations, "Configuration", TestConfiguration.class);
 		put(annotations, "ConditionalOnClass", TestConditionalOnClass.class);
+		put(annotations, "ConditionalOnBean", TestConditionalOnBean.class);
+		put(annotations, "ConditionalOnSingleCandidate",
+				TestConditionalOnSingleCandidate.class);
 		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
 		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
 		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);
