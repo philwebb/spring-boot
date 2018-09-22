@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,12 +93,10 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		List<String> matches = new ArrayList<>(classNames.size());
 		for (String candidate : classNames) {
 			if (classNameFilter.matches(candidate, classLoader)) {
-				if (matches == null) {
-				}
 				matches.add(candidate);
 			}
 		}
-		return (matches == null) ? Collections.emptyList() : matches;
+		return matches;
 	}
 
 	protected enum ClassNameFilter {
@@ -107,7 +105,7 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 
 			@Override
 			public boolean matches(String className, ClassLoader classLoader) {
-				return isClassPresent(className, classLoader);
+				return isPresent(className, classLoader);
 			}
 
 		},
@@ -116,14 +114,14 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 
 			@Override
 			public boolean matches(String className, ClassLoader classLoader) {
-				return !isClassPresent(className, classLoader);
+				return !isPresent(className, classLoader);
 			}
 
 		};
 
 		public abstract boolean matches(String className, ClassLoader classLoader);
 
-		private static boolean isClassPresent(String className, ClassLoader classLoader) {
+		public static boolean isPresent(String className, ClassLoader classLoader) {
 			if (classLoader == null) {
 				classLoader = ClassUtils.getDefaultClassLoader();
 			}
