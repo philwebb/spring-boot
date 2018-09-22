@@ -222,7 +222,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	}
 
-	private static abstract class AbstractValueExtractor implements ValueExtractor {
+	private abstract static class AbstractValueExtractor implements ValueExtractor {
 
 		@SuppressWarnings("unchecked")
 		protected Stream<Object> extractValues(AnnotationValue annotationValue) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,14 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * @author pwebb
+ * Utilities for dealing with {@link Element} classes.
+ *
+ * @author Phillip Webb
  */
-public class Elements {
+final class Elements {
+
+	private Elements() {
+	}
 
 	static String getQualifiedName(Element element) {
 		if (element != null) {
