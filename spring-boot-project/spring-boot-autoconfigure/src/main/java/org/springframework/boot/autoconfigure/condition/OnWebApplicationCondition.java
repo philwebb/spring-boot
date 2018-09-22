@@ -63,6 +63,9 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 	}
 
 	private ConditionOutcome getOutcome(String type) {
+		if (type == null) {
+			return null;
+		}
 		ConditionMessage.Builder message = ConditionMessage
 				.forCondition(ConditionalOnWebApplication.class);
 		if (ConditionalOnWebApplication.Type.SERVLET.name().equals(type)) {
@@ -73,13 +76,16 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 			}
 		}
 		if (ConditionalOnWebApplication.Type.REACTIVE.name().equals(type)) {
-			if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS,
+			if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS,
 					getBeanClassLoader())) {
 				return ConditionOutcome.noMatch(
 						message.didNotFind("reactive web application classes").atAll());
 			}
 		}
-		if (!ClassUtils.isPresent(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS,
+				getBeanClassLoader())
+				&& !ClassUtils.isPresent(REACTIVE_WEB_APPLICATION_CLASS,
+						getBeanClassLoader())) {
 			return ConditionOutcome.noMatch(message
 					.didNotFind("reactive or servlet web application classes").atAll());
 		}
