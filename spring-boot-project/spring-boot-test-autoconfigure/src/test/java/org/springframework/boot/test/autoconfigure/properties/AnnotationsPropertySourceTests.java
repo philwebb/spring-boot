@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.annotation.AliasFor;
 
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnnotationsPropertySourceTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {

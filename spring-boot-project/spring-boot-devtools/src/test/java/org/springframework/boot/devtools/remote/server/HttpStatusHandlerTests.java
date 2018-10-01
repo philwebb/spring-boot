@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.remote.server;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpStatusHandlerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private MockHttpServletRequest servletRequest;
 

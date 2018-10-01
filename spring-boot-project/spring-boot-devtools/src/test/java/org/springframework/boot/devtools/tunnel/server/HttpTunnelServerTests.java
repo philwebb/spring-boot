@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -67,7 +67,7 @@ public class HttpTunnelServerTests {
 	private static final String SEQ_HEADER = "x-seq";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private HttpTunnelServer server;
 

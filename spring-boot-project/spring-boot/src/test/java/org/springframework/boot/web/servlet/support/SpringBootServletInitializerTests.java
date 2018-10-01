@@ -24,7 +24,7 @@ import javax.servlet.ServletContext;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.SpringApplication;
@@ -57,7 +57,7 @@ import static org.mockito.Mockito.mock;
 public class SpringBootServletInitializerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public OutputCapture output = new OutputCapture();

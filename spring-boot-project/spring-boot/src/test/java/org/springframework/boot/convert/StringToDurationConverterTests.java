@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StringToDurationConverterTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private final ConversionService conversionService;
 

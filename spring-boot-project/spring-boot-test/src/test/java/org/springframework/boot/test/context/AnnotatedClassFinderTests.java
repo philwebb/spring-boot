@@ -18,7 +18,7 @@ package org.springframework.boot.test.context;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.example.ExampleConfig;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AnnotatedClassFinderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
 			SpringBootConfiguration.class);

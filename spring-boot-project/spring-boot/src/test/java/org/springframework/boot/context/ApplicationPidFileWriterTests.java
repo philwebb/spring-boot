@@ -23,7 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.SpringApplication;
@@ -60,7 +60,7 @@ public class ApplicationPidFileWriterTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	public MyExpectedException exception = MyExpectedException.none();
 
 	@Before
 	@After

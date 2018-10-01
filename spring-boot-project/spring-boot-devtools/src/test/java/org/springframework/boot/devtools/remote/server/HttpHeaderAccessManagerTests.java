@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.remote.server;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -40,7 +40,7 @@ public class HttpHeaderAccessManagerTests {
 	private static final String SECRET = "password";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private MockHttpServletRequest request;
 

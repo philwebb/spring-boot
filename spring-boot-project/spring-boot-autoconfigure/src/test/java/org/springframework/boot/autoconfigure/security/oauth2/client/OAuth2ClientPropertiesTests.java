@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.AuthorizationCodeClientRegistration;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.LoginClientRegistration;
@@ -34,7 +34,7 @@ public class OAuth2ClientPropertiesTests {
 	private OAuth2ClientProperties properties = new OAuth2ClientProperties();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void clientIdAbsentForLoginClientsThrowsException() {

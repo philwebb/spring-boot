@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EntityScannerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenContextIsNullShouldThrowException() {

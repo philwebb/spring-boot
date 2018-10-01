@@ -21,7 +21,7 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -46,7 +46,7 @@ public class DiskSpaceHealthIndicatorTests {
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
 	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	public MyExpectedException exception = MyExpectedException.none();
 
 	@Mock
 	private File fileMock;

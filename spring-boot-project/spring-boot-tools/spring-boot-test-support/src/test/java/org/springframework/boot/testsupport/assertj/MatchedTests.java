@@ -18,7 +18,7 @@ package org.springframework.boot.testsupport.assertj;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.startsWith;
 public class MatchedTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void byMatcherMatches() {

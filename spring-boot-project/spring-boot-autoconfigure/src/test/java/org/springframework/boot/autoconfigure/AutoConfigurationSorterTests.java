@@ -26,7 +26,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
@@ -75,7 +75,7 @@ public class AutoConfigurationSorterTests {
 	private static final String W2 = AutoConfigureW2.class.getName();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private AutoConfigurationSorter sorter;
 

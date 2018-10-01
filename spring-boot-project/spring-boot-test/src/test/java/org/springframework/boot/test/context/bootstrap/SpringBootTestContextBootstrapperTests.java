@@ -18,7 +18,7 @@ package org.springframework.boot.test.context.bootstrap;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 public class SpringBootTestContextBootstrapperTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {

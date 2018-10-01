@@ -23,7 +23,7 @@ import javax.persistence.PersistenceUnitUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 public class TestEntityManagerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Mock
 	private EntityManagerFactory entityManagerFactory;

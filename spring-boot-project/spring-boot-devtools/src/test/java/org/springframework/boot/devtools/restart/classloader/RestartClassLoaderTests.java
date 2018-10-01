@@ -32,7 +32,7 @@ import java.util.zip.ZipEntry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -55,7 +55,7 @@ public class RestartClassLoaderTests {
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();

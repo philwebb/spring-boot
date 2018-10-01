@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.test.context.assertj.ApplicationContextAssert.Scope;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationContextAssertTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private StaticApplicationContext parent;
 

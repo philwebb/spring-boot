@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -42,7 +42,7 @@ public class H2ConsoleAutoConfigurationTests {
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Before
 	public void setupContext() {

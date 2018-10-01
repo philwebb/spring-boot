@@ -82,7 +82,7 @@ import org.junit.After;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
@@ -136,7 +136,7 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractServletWebServerFactoryTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();

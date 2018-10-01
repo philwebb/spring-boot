@@ -27,7 +27,7 @@ import javax.validation.constraints.Size;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 public class ValidationAutoConfigurationTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 

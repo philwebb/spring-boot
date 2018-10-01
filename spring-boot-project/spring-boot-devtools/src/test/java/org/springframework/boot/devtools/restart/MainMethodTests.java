@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.util.ReflectionUtils;
 
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MainMethodTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 

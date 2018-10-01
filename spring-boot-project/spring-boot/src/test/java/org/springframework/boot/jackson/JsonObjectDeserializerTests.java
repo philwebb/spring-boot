@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.NullNode;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Deserializer;
 
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 public class JsonObjectDeserializerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 

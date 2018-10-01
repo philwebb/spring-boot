@@ -18,7 +18,7 @@ package org.springframework.boot.test.json;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.ResolvableType;
 
@@ -37,7 +37,7 @@ public class ObjectContentTests {
 			.forClass(ExampleObject.class);
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenObjectIsNullShouldThrowException() {

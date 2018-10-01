@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 public class ClassLoaderFilesTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private ClassLoaderFiles files = new ClassLoaderFiles();
 

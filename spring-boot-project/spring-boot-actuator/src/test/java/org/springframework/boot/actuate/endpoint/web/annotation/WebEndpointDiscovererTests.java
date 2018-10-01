@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import org.assertj.core.api.Condition;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -69,7 +69,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WebEndpointDiscovererTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void getEndpointsWhenNoEndpointBeansShouldReturnEmptyCollection() {

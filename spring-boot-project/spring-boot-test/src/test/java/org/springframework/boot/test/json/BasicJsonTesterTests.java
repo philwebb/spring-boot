@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.core.io.ByteArrayResource;
@@ -41,7 +41,7 @@ public class BasicJsonTesterTests {
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();

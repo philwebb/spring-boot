@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.restart.server;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 public class HttpRestartServerHandlerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void serverMustNotBeNull() {

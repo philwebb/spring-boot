@@ -18,7 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mockito;
 
 import org.springframework.beans.factory.FactoryBean;
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MockitoPostProcessorTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void cannotMockMultipleBeans() {

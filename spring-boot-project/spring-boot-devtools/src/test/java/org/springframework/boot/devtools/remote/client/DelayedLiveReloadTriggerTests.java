@@ -22,7 +22,7 @@ import java.net.URI;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -48,7 +48,7 @@ public class DelayedLiveReloadTriggerTests {
 	private static final String URL = "http://localhost:8080";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Mock
 	private OptionalLiveReloadServer liveReloadServer;

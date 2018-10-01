@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataSourcePropertiesTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void determineDriver() {

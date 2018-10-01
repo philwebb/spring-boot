@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class RestClientTestTwoComponentsIntegrationTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private ExampleRestClient client1;

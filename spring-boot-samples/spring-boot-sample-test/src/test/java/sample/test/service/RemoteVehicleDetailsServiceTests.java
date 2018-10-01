@@ -18,7 +18,7 @@ package sample.test.service;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 
@@ -49,7 +49,7 @@ public class RemoteVehicleDetailsServiceTests {
 	private static final String VIN = "00000000000000000";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private RemoteVehicleDetailsService service;

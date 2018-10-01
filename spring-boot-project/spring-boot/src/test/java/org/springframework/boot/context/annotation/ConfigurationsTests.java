@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ConfigurationsTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {

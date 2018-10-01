@@ -20,7 +20,7 @@ import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.PropertySource;
 
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class InfoPropertiesTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void inputIsImmutable() {

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.verify;
 public class CachesEndpointTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void allCachesWithSingleCacheManager() {

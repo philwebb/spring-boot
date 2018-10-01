@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 public class SpringIterableConfigurationPropertySourceTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {

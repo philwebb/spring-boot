@@ -21,7 +21,7 @@ import java.util.Iterator;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringConfigurationPropertySourcesTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenPropertySourcesIsNullShouldThrowException() {

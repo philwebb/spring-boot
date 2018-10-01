@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
 public class UrlHandlerMapperTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private Handler handler = mock(Handler.class);
 

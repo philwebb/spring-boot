@@ -20,7 +20,7 @@ import java.util.HashMap;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.withSettings;
 public class PropertySourceOriginTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {

@@ -37,7 +37,7 @@ import org.assertj.core.api.Condition;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -81,7 +81,7 @@ public class ConfigFileApplicationListenerTests {
 	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public MyExpectedException expected = MyExpectedException.none();
 
 	@Rule
 	public OutputCapture out = new OutputCapture();

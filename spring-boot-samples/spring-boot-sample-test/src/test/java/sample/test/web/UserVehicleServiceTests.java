@@ -19,7 +19,7 @@ package sample.test.web;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sample.test.domain.User;
@@ -43,7 +43,7 @@ public class UserVehicleServiceTests {
 			"00000000000000000");
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Mock
 	private VehicleDetailsService vehicleDetailsService;

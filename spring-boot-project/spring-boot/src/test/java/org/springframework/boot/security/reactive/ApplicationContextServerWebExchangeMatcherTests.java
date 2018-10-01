@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 public class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenContextClassIsNullShouldThrowException() {

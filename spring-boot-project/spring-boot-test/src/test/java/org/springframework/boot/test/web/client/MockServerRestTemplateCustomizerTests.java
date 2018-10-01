@@ -19,7 +19,7 @@ package org.springframework.boot.test.web.client;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.RequestExpectationManager;
@@ -41,7 +41,7 @@ public class MockServerRestTemplateCustomizerTests {
 	private MockServerRestTemplateCustomizer customizer;
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Before
 	public void setup() {

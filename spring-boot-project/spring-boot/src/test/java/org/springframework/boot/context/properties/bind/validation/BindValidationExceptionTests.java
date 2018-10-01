@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.bind.validation;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 public class BindValidationExceptionTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenValidationErrorsIsNullShouldThrowException() {

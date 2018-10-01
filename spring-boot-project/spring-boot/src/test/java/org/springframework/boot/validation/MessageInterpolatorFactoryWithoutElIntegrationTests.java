@@ -23,7 +23,7 @@ import javax.validation.ValidationException;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MessageInterpolatorFactoryWithoutElIntegrationTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void defaultMessageInterpolatorShouldFail() {

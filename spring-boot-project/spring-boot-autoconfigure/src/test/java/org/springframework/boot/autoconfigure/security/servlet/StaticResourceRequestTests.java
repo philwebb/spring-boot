@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -44,7 +44,7 @@ public class StaticResourceRequestTests {
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void atCommonLocationsShouldMatchCommonLocations() {

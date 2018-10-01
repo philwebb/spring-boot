@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -53,7 +53,7 @@ public class DataRedisTestIntegrationTests {
 	public static RedisContainer redis = new RedisContainer();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private RedisOperations<Object, Object> operations;

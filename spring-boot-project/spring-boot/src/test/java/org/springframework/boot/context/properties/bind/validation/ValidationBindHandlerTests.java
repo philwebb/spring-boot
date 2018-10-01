@@ -27,7 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -54,7 +54,7 @@ import static org.hamcrest.Matchers.instanceOf;
 public class ValidationBindHandlerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 

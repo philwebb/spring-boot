@@ -27,7 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -52,7 +52,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=SpringApplication";
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	private MBeanServer mBeanServer;
 

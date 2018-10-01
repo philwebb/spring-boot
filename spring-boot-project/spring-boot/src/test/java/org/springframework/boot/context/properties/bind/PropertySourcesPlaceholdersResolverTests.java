@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -42,7 +42,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 	private PropertySourcesPlaceholdersResolver resolver;
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {

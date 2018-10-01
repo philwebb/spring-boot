@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +36,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class SpringBootConditionTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void sensibleClassException() {

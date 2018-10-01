@@ -29,7 +29,7 @@ import javax.management.ReflectionException;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.FatalBeanException;
@@ -56,7 +56,7 @@ public class EndpointMBeanTests {
 	private static final String[] NO_SIGNATURE = {};
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
 			new TestJmxOperation());

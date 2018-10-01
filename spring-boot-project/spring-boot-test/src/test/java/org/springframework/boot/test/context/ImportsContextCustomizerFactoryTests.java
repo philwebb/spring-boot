@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 public class ImportsContextCustomizerFactoryTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 

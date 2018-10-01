@@ -26,7 +26,7 @@ import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 public class ReactiveMongoClientFactoryTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private MockEnvironment environment = new MockEnvironment();
 

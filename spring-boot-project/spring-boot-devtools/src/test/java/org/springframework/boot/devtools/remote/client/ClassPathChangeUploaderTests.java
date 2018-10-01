@@ -29,7 +29,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
@@ -56,7 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClassPathChangeUploaderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();

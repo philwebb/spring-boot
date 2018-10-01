@@ -19,7 +19,7 @@ package org.springframework.boot.web.servlet;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -40,7 +40,7 @@ public class ServletComponentScanRegistrarTests {
 	private AnnotationConfigApplicationContext context;
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@After
 	public void after() {

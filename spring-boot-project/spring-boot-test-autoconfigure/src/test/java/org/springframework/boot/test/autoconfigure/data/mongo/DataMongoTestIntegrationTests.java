@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure.data.mongo;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataMongoTestIntegrationTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private MongoTemplate mongoTemplate;

@@ -19,7 +19,7 @@ package org.springframework.boot.cli.compiler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ExtendedGroovyClassLoaderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private ClassLoader contextClassLoader;
 

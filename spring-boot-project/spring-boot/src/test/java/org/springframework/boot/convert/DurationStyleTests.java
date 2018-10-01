@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -34,7 +34,7 @@ import static org.junit.Assert.fail;
 public class DurationStyleTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {

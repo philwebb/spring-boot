@@ -18,7 +18,7 @@ package org.springframework.boot.cli;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ public class ReproIntegrationTests {
 	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void grabAntBuilder() throws Exception {

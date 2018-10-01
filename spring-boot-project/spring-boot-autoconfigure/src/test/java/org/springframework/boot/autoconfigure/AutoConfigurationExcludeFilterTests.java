@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.context.filtersample.ExampleConfiguration;
@@ -44,7 +44,7 @@ public class AutoConfigurationExcludeFilterTests {
 	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ControllerEndpointDiscovererTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 

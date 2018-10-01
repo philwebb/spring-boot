@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AuthorizationExceptionMatcher;
@@ -50,7 +50,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 public class CloudFoundrySecurityServiceTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private static final String CLOUD_CONTROLLER = "http://my-cloud-controller.com";
 

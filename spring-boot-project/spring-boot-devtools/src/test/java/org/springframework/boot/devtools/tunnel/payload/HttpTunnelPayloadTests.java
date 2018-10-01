@@ -27,7 +27,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 public class HttpTunnelPayloadTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void sequenceMustBePositive() {

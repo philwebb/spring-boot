@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -74,7 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BatchAutoConfigurationTests {
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public MyExpectedException expected = MyExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class,

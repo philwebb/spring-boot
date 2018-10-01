@@ -21,7 +21,7 @@ import java.io.FileReader;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.util.FileCopyUtils;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationPidTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();

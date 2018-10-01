@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.fail;
 public class ConfigurationPropertyNameTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void ofNameShouldNotBeNull() {

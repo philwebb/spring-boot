@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClassPathChangedEventTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private Object source = new Object();
 

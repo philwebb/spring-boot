@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Rule;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractConfigurationMetadataTests {
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	protected void assertSource(ConfigurationMetadataSource actual, String groupId,
 			String type, String sourceType) {

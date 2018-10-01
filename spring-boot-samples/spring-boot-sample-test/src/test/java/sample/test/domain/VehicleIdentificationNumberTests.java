@@ -18,7 +18,7 @@ package sample.test.domain;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ public class VehicleIdentificationNumberTests {
 	private static final String SAMPLE_VIN = "41549485710496749";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenVinIsNullShouldThrowException() {

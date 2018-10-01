@@ -18,7 +18,7 @@ package org.springframework.boot.context.config;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DelegatingApplicationContextInitializerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
 

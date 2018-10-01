@@ -40,7 +40,7 @@ import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -70,7 +70,7 @@ public class JooqAutoConfigurationTests {
 			.withPropertyValues("spring.datasource.name:jooqtest");
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void noDataSource() {

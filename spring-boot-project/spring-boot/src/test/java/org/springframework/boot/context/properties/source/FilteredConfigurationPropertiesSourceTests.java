@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.withSettings;
 public class FilteredConfigurationPropertiesSourceTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {

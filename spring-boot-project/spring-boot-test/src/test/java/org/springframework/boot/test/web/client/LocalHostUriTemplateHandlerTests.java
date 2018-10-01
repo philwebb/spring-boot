@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.util.UriTemplateHandler;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 public class LocalHostUriTemplateHandlerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {

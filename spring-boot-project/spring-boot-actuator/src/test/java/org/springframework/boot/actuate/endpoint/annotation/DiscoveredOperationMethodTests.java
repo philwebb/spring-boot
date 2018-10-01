@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DiscoveredOperationMethodTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {

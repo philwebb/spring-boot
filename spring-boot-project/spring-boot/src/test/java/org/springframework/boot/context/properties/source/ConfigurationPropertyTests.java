@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
@@ -38,7 +38,7 @@ public class ConfigurationPropertyTests {
 			.of("foo");
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {

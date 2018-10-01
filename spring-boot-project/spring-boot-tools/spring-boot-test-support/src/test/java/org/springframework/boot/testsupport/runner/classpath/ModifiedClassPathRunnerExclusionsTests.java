@@ -18,7 +18,7 @@ package org.springframework.boot.testsupport.runner.classpath;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +37,7 @@ public class ModifiedClassPathRunnerExclusionsTests {
 			+ "javax.validation.spi.ValidationProvider";
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void entriesAreFilteredFromTestClassClassLoader() {

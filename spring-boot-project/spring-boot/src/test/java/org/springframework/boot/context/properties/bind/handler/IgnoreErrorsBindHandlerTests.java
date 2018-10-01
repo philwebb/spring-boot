@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IgnoreErrorsBindHandlerTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 

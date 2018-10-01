@@ -27,7 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -46,7 +46,7 @@ public class ProjectGenerationRequestTests {
 	public static final Map<String, String> EMPTY_TAGS = Collections.emptyMap();
 
 	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	public final MyExpectedException thrown = MyExpectedException.none();
 
 	private final ProjectGenerationRequest request = new ProjectGenerationRequest();
 

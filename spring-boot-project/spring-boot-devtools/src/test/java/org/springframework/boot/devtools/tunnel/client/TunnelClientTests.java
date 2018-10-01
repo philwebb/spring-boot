@@ -27,7 +27,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verify;
 public class TunnelClientTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 

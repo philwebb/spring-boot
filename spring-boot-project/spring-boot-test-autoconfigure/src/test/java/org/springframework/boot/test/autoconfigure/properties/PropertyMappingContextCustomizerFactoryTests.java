@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class PropertyMappingContextCustomizerFactoryTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 

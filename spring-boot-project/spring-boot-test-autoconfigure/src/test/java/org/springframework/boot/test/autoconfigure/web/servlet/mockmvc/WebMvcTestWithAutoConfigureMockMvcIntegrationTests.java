@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 
@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private ApplicationContext context;

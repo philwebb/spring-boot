@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class TaskSchedulerBuilderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
 

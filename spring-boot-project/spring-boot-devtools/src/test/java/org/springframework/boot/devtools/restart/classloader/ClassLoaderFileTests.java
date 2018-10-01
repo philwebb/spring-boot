@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.restart.classloader;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 
@@ -34,7 +34,7 @@ public class ClassLoaderFileTests {
 	public static final byte[] BYTES = "ABC".getBytes();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void kindMustNotBeNull() {

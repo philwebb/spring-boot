@@ -29,7 +29,7 @@ import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MetricsEndpointTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
 			new MockClock());

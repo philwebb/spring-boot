@@ -25,7 +25,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.BeansException;
@@ -62,7 +62,7 @@ public class AutoConfigurationImportSelectorTests {
 	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public MyExpectedException expected = MyExpectedException.none();
 
 	@Before
 	public void setup() {

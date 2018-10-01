@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 /**
  * Tests for {@link H2ConsoleProperties}.
@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
 public class H2ConsolePropertiesTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private H2ConsoleProperties properties;
 

@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.Session;
 
@@ -50,7 +50,7 @@ public class DataNeo4jTestIntegrationTests {
 	public static Neo4jContainer neo4j = new Neo4jContainer();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Autowired
 	private Session session;

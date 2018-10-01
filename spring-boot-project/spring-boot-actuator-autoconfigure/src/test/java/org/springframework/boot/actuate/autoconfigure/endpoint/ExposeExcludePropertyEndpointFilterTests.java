@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 public class ExposeExcludePropertyEndpointFilterTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private ExposeExcludePropertyEndpointFilter<?> filter;
 

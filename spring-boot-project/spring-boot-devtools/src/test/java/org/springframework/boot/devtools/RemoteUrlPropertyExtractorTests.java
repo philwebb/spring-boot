@@ -20,7 +20,7 @@ import ch.qos.logback.classic.Logger;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RemoteUrlPropertyExtractorTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@After
 	public void preventRunFailuresFromPollutingLoggerContext() {

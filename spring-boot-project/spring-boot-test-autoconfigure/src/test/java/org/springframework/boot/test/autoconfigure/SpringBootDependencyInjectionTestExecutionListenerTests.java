@@ -18,7 +18,7 @@ package org.springframework.boot.test.autoconfigure;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -48,7 +48,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	public OutputCapture out = new OutputCapture();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 

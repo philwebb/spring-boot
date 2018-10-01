@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -50,7 +50,7 @@ import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 public class ConditionalOnPropertyTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private ConfigurableApplicationContext context;
 

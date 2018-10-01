@@ -30,7 +30,7 @@ import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 
@@ -69,7 +69,7 @@ import static org.mockito.Mockito.withSettings;
 public class BinderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 

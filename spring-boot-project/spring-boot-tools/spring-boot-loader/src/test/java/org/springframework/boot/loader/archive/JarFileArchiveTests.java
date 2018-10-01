@@ -31,7 +31,7 @@ import java.util.zip.ZipEntry;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import org.springframework.boot.loader.TestJarCreator;
@@ -53,7 +53,7 @@ public class JarFileArchiveTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private File rootJarFile;
 

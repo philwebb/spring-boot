@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
@@ -35,7 +35,7 @@ import org.springframework.core.io.ByteArrayResource;
 public class NoSnakeYamlPropertySourceLoaderTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 

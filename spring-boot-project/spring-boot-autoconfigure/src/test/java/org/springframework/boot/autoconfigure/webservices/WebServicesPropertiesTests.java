@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.webservices;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.rules.MyExpectedException;
 
 /**
  * Tests for {@link WebServicesProperties}.
@@ -28,7 +28,7 @@ import org.junit.rules.ExpectedException;
 public class WebServicesPropertiesTests {
 
 	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private WebServicesProperties properties;
 
