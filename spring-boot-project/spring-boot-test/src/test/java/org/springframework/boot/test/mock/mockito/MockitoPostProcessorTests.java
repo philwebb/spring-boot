@@ -52,10 +52,10 @@ public class MockitoPostProcessorTests {
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
 		this.thrown.expect(IllegalStateException.class,
+				context::refresh,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
-						+ "but found [example1, example2]",
-				context::refresh);
+						+ "but found [example1, example2]");
 	}
 
 	@Test
@@ -64,10 +64,10 @@ public class MockitoPostProcessorTests {
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
 		this.thrown.expect(IllegalStateException.class,
+				context::refresh,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
-						+ "but found [example1, example3]",
-				context::refresh);
+						+ "but found [example1, example3]");
 	}
 
 	@Test

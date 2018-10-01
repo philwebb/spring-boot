@@ -59,8 +59,8 @@ public class HttpStatusHandlerTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Status must not be null",
-				() -> new HttpStatusHandler(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpStatusHandler(null),
+				"Status must not be null");
 	}
 
 	@Test

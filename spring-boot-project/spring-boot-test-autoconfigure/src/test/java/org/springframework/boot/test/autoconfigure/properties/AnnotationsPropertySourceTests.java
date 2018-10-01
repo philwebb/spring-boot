@@ -41,8 +41,8 @@ public class AnnotationsPropertySourceTests {
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Property source must not be null",
-				() -> new AnnotationsPropertySource(null));
+				() -> new AnnotationsPropertySource(null),
+				"Property source must not be null");
 	}
 
 	@Test

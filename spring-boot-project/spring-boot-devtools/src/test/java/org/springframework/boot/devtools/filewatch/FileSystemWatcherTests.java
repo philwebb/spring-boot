@@ -65,44 +65,44 @@ public class FileSystemWatcherTests {
 	@Test
 	public void pollIntervalMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"PollInterval must be positive", () -> new FileSystemWatcher(true,
-						Duration.ofMillis(0), Duration.ofMillis(1)));
+				() -> new FileSystemWatcher(true,
+						Duration.ofMillis(0), Duration.ofMillis(1)), "PollInterval must be positive");
 	}
 
 	@Test
 	public void quietPeriodMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class, "QuietPeriod must be positive",
-				() -> new FileSystemWatcher(true, Duration.ofMillis(1),
-						Duration.ofMillis(0)));
+		this.thrown.expect(IllegalArgumentException.class, () -> new FileSystemWatcher(true, Duration.ofMillis(1),
+				Duration.ofMillis(0)),
+				"QuietPeriod must be positive");
 	}
 
 	@Test
 	public void pollIntervalMustBeGreaterThanQuietPeriod() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"PollInterval must be greater than QuietPeriod",
 				() -> new FileSystemWatcher(true, Duration.ofMillis(1),
-						Duration.ofMillis(1)));
+						Duration.ofMillis(1)),
+				"PollInterval must be greater than QuietPeriod");
 	}
 
 	@Test
 	public void listenerMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"FileChangeListener must not be null",
-				() -> this.watcher.addListener(null));
+				() -> this.watcher.addListener(null),
+				"FileChangeListener must not be null");
 	}
 
 	@Test
 	public void cannotAddListenerToStartedListener() {
 		this.watcher.start();
 		this.thrown.expect(IllegalStateException.class,
-				"FileSystemWatcher already started",
-				() -> this.watcher.addListener(mock(FileChangeListener.class)));
+				() -> this.watcher.addListener(mock(FileChangeListener.class)),
+				"FileSystemWatcher already started");
 	}
 
 	@Test
 	public void sourceFolderMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Folder must not be null",
-				() -> this.watcher.addSourceFolder(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.watcher.addSourceFolder(null),
+				"Folder must not be null");
 	}
 
 	@Test
@@ -110,16 +110,16 @@ public class FileSystemWatcherTests {
 		File folder = new File("pom.xml");
 		assertThat(folder.isFile()).isTrue();
 		this.thrown.expect(IllegalArgumentException.class,
-				"Folder 'pom.xml' must not be a file",
-				() -> this.watcher.addSourceFolder(new File("pom.xml")));
+				() -> this.watcher.addSourceFolder(new File("pom.xml")),
+				"Folder 'pom.xml' must not be a file");
 	}
 
 	@Test
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.watcher.start();
 		this.thrown.expect(IllegalStateException.class,
-				"FileSystemWatcher already started",
-				() -> this.watcher.addSourceFolder(this.temp.newFolder()));
+				() -> this.watcher.addSourceFolder(this.temp.newFolder()),
+				"FileSystemWatcher already started");
 	}
 
 	@Test

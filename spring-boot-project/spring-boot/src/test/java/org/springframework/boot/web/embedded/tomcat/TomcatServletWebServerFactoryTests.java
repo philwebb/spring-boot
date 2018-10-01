@@ -185,8 +185,8 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, "Connectors must not be null",
-				() -> factory.addAdditionalTomcatConnectors((Connector[]) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> factory.addAdditionalTomcatConnectors((Connector[]) null),
+				"Connectors must not be null");
 	}
 
 	@Test
@@ -223,32 +223,32 @@ public class TomcatServletWebServerFactoryTests
 	public void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatContextCustomizers must not be null",
-				() -> factory.setTomcatContextCustomizers(null));
+				() -> factory.setTomcatContextCustomizers(null),
+				"TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	public void addNullContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatContextCustomizers must not be null",
-				() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null));
+				() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null),
+				"TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	public void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatConnectorCustomizers must not be null",
-				() -> factory.setTomcatConnectorCustomizers(null));
+				() -> factory.setTomcatConnectorCustomizers(null),
+				"TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test
 	public void addNullConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatConnectorCustomizers must not be null", () -> factory
-						.addConnectorCustomizers((TomcatConnectorCustomizer[]) null));
+				() -> factory
+						.addConnectorCustomizers((TomcatConnectorCustomizer[]) null), "TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test

@@ -95,8 +95,8 @@ public class OriginTrackedPropertiesLoaderTests {
 		// gh-12716
 		ClassPathResource resource = new ClassPathResource(
 				"test-properties-malformed-unicode.properties", getClass());
-		this.thrown.expect(IllegalStateException.class, "Malformed \\uxxxx encoding",
-				() -> new OriginTrackedPropertiesLoader(resource).load());
+		this.thrown.expect(IllegalStateException.class, () -> new OriginTrackedPropertiesLoader(resource).load(),
+				"Malformed \\uxxxx encoding");
 	}
 
 	@Test

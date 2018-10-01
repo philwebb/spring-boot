@@ -38,9 +38,9 @@ public class DispatcherServletRegistrationBeanTests {
 
 	@Test
 	public void createWhenPathIsNullThrowsException() {
-		this.thrown.expect(IllegalArgumentException.class, "Path must not be null",
-				() -> new DispatcherServletRegistrationBean(new DispatcherServlet(),
-						null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new DispatcherServletRegistrationBean(new DispatcherServlet(),
+				null),
+				"Path must not be null");
 	}
 
 	@Test

@@ -50,14 +50,14 @@ public class FileSnapshotTests {
 
 	@Test
 	public void fileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "File must not be null",
-				() -> new FileSnapshot(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new FileSnapshot(null),
+				"File must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class, "File must not be a folder",
-				() -> new FileSnapshot(this.temporaryFolder.newFolder()));
+		this.thrown.expect(IllegalArgumentException.class, () -> new FileSnapshot(this.temporaryFolder.newFolder()),
+				"File must not be a folder");
 	}
 
 	@Test

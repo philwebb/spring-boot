@@ -75,9 +75,9 @@ public class SpringBootServletInitializerTests {
 	@Test
 	public void failsWithoutConfigure() {
 		this.thrown.expect(IllegalStateException.class,
-				"No SpringApplication sources have been defined",
 				() -> new MockSpringBootServletInitializer()
-						.createRootApplicationContext(this.servletContext));
+						.createRootApplicationContext(this.servletContext),
+				"No SpringApplication sources have been defined");
 	}
 
 	@Test

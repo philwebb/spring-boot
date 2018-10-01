@@ -56,8 +56,8 @@ public class AutoConfigurationPackagesTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				EmptyConfig.class);
 		this.thrown.expect(IllegalStateException.class,
-				"Unable to retrieve @EnableAutoConfiguration base packages",
-				() -> AutoConfigurationPackages.get(context.getBeanFactory()));
+				() -> AutoConfigurationPackages.get(context.getBeanFactory()),
+				"Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 
 	@Test

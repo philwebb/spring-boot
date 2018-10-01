@@ -79,28 +79,28 @@ public class HttpTunnelConnectionTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty",
-				() -> new HttpTunnelConnection(null, this.requestFactory));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelConnection(null, this.requestFactory),
+				"URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty",
-				() -> new HttpTunnelConnection("", this.requestFactory));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelConnection("", this.requestFactory),
+				"URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Malformed URL 'htttttp:///ttest'",
-				() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory));
+				() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory),
+				"Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"RequestFactory must not be null",
-				() -> new HttpTunnelConnection(this.url, null));
+				() -> new HttpTunnelConnection(this.url, null),
+				"RequestFactory must not be null");
 	}
 
 	@Test

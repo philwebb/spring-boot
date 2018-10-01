@@ -35,8 +35,8 @@ public class ConfigurationPropertyNameAliasesTests {
 
 	@Test
 	public void createWithStringWhenNullNameShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
-				() -> new ConfigurationPropertyNameAliases((String) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationPropertyNameAliases((String) null),
+				"Name must not be null");
 	}
 
 	@Test

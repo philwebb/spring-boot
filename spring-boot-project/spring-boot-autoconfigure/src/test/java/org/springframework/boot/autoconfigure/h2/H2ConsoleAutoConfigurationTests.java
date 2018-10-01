@@ -84,8 +84,8 @@ public class H2ConsoleAutoConfigurationTests {
 				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
 				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class,
-				"Failed to bind properties under 'spring.h2.console'",
-				this.context::refresh);
+				this.context::refresh,
+				"Failed to bind properties under 'spring.h2.console'");
 	}
 
 	@Test

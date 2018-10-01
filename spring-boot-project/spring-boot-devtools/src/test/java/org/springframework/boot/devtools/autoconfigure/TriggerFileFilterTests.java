@@ -40,8 +40,8 @@ public class TriggerFileFilterTests {
 
 	@Test
 	public void nameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
-				() -> new TriggerFileFilter(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new TriggerFileFilter(null),
+				"Name must not be null");
 	}
 
 	@Test

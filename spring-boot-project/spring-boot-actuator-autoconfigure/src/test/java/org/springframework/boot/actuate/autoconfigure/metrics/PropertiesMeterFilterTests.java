@@ -59,8 +59,8 @@ public class PropertiesMeterFilterTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Properties must not be null",
-				() -> new PropertiesMeterFilter(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new PropertiesMeterFilter(null),
+				"Properties must not be null");
 	}
 
 	@Test

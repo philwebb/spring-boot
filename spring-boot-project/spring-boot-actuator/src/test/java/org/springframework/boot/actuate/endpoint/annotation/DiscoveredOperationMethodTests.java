@@ -42,8 +42,8 @@ public class DiscoveredOperationMethodTests {
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		this.thrown.expect(IllegalArgumentException.class,
-				"AnnotationAttributes must not be null",
-				() -> new DiscoveredOperationMethod(method, OperationType.READ, null));
+				() -> new DiscoveredOperationMethod(method, OperationType.READ, null),
+				"AnnotationAttributes must not be null");
 	}
 
 	@Test

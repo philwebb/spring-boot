@@ -104,8 +104,8 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseMockBeanMissingClassToMock() {
-		this.thrown.expect(IllegalStateException.class, "Unable to deduce type to mock",
-				() -> this.parser.parse(MockBeanMissingClassToMock.class));
+		this.thrown.expect(IllegalStateException.class, () -> this.parser.parse(MockBeanMissingClassToMock.class),
+				"Unable to deduce type to mock");
 	}
 
 	@Test
@@ -121,8 +121,8 @@ public class DefinitionsParserTests {
 	@Test
 	public void parseMockBeanMultipleClassesWithName() {
 		this.thrown.expect(IllegalStateException.class,
-				"The name attribute can only be used when mocking a single class",
-				() -> this.parser.parse(MockBeanMultipleClassesWithName.class));
+				() -> this.parser.parse(MockBeanMultipleClassesWithName.class),
+				"The name attribute can only be used when mocking a single class");
 	}
 
 	@Test
@@ -181,8 +181,8 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseSpyBeanMissingClassToMock() {
-		this.thrown.expect(IllegalStateException.class, "Unable to deduce type to spy",
-				() -> this.parser.parse(SpyBeanMissingClassToMock.class));
+		this.thrown.expect(IllegalStateException.class, () -> this.parser.parse(SpyBeanMissingClassToMock.class),
+				"Unable to deduce type to spy");
 	}
 
 	@Test
@@ -198,8 +198,8 @@ public class DefinitionsParserTests {
 	@Test
 	public void parseSpyBeanMultipleClassesWithName() {
 		this.thrown.expect(IllegalStateException.class,
-				"The name attribute can only be used when spying a single class",
-				() -> this.parser.parse(SpyBeanMultipleClassesWithName.class));
+				() -> this.parser.parse(SpyBeanMultipleClassesWithName.class),
+				"The name attribute can only be used when spying a single class");
 	}
 
 	private MockDefinition getMockDefinition(int index) {

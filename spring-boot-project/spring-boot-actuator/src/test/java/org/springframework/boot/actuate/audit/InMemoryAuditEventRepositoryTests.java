@@ -66,8 +66,8 @@ public class InMemoryAuditEventRepositoryTests {
 	@Test
 	public void addNullAuditEvent() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
-		this.thrown.expect(IllegalArgumentException.class, "AuditEvent must not be null",
-				() -> repository.add(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> repository.add(null),
+				"AuditEvent must not be null");
 	}
 
 	@Test

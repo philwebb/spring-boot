@@ -71,32 +71,32 @@ public class EndpointDiscovererTests {
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ApplicationContext must not be null",
 				() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
-						Collections.emptyList(), Collections.emptyList()));
+						Collections.emptyList(), Collections.emptyList()),
+				"ApplicationContext must not be null");
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ParameterValueMapper must not be null",
 				() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
-						Collections.emptyList(), Collections.emptyList()));
+						Collections.emptyList(), Collections.emptyList()),
+				"ParameterValueMapper must not be null");
 	}
 
 	@Test
 	public void createWhenInvokerAdvisorsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"InvokerAdvisors must not be null",
 				() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-						mock(ParameterValueMapper.class), null, Collections.emptyList()));
+						mock(ParameterValueMapper.class), null, Collections.emptyList()),
+				"InvokerAdvisors must not be null");
 	}
 
 	@Test
 	public void createWhenFiltersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Filters must not be null",
-				() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-						mock(ParameterValueMapper.class), Collections.emptyList(), null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+				mock(ParameterValueMapper.class), Collections.emptyList(), null),
+				"Filters must not be null");
 	}
 
 	@Test
@@ -140,8 +140,8 @@ public class EndpointDiscovererTests {
 	public void getEndpointsWhenTwoEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingEndpointConfiguration.class,
 				(context) -> this.thrown.expect(IllegalStateException.class,
-						"Found two endpoints with the id 'test': ",
-						new TestEndpointDiscoverer(context)::getEndpoints));
+						new TestEndpointDiscoverer(context)::getEndpoints,
+						"Found two endpoints with the id 'test': "));
 	}
 
 	@Test

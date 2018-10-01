@@ -68,15 +68,15 @@ public class HttpRestartServerTests {
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"SourceFolderUrlFilter must not be null",
-				() -> new HttpRestartServer((SourceFolderUrlFilter) null));
+				() -> new HttpRestartServer((SourceFolderUrlFilter) null),
+				"SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
 	public void restartServerMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"RestartServer must not be null",
-				() -> new HttpRestartServer((RestartServer) null));
+				() -> new HttpRestartServer((RestartServer) null),
+				"RestartServer must not be null");
 	}
 
 	@Test

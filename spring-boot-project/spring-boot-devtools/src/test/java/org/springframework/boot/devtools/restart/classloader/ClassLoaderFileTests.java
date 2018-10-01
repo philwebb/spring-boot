@@ -38,26 +38,26 @@ public class ClassLoaderFileTests {
 
 	@Test
 	public void kindMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Kind must not be null",
-				() -> new ClassLoaderFile(null, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(null, null),
+				"Kind must not be null");
 	}
 
 	@Test
 	public void addedContentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Contents must not be null",
-				() -> new ClassLoaderFile(Kind.ADDED, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.ADDED, null),
+				"Contents must not be null");
 	}
 
 	@Test
 	public void modifiedContentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Contents must not be null",
-				() -> new ClassLoaderFile(Kind.MODIFIED, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.MODIFIED, null),
+				"Contents must not be null");
 	}
 
 	@Test
 	public void deletedContentsMustBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Contents must be null",
-				() -> new ClassLoaderFile(Kind.DELETED, new byte[10]));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.DELETED, new byte[10]),
+				"Contents must be null");
 	}
 
 	@Test

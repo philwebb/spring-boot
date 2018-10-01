@@ -51,8 +51,8 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");
-		this.thrown.expect(JsonParseException.class, "Cannot parse JSON",
-				() -> this.processor.postProcessEnvironment(this.environment, null));
+		this.thrown.expect(JsonParseException.class, () -> this.processor.postProcessEnvironment(this.environment, null),
+				"Cannot parse JSON");
 	}
 
 	@Test

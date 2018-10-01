@@ -38,8 +38,8 @@ public class HttpTunnelServerHandlerTests {
 
 	@Test
 	public void serverMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Server must not be null",
-				() -> new HttpTunnelServerHandler(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelServerHandler(null),
+				"Server must not be null");
 	}
 
 	@Test

@@ -105,8 +105,8 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void failIfNoSecret() {
 		this.thrown.expect(BeanCreationException.class,
-				"required to secure your connection",
-				() -> configure("http://localhost", false));
+				() -> configure("http://localhost", false),
+				"required to secure your connection");
 	}
 
 	@Test

@@ -48,8 +48,8 @@ public class MainMethodTests {
 
 	@Test
 	public void threadMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Thread must not be null",
-				() -> new MainMethod(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new MainMethod(null),
+				"Thread must not be null");
 	}
 
 	@Test
@@ -62,14 +62,14 @@ public class MainMethodTests {
 
 	@Test
 	public void missingArgsMainMethod() throws Exception {
-		this.thrown.expect(IllegalStateException.class, "Unable to find main method",
-				() -> new TestThread(MissingArgs::main).test());
+		this.thrown.expect(IllegalStateException.class, () -> new TestThread(MissingArgs::main).test(),
+				"Unable to find main method");
 	}
 
 	@Test
 	public void nonStatic() throws Exception {
-		this.thrown.expect(IllegalStateException.class, "Unable to find main method",
-				() -> new TestThread(() -> new NonStaticMain().main()).test());
+		this.thrown.expect(IllegalStateException.class, () -> new TestThread(() -> new NonStaticMain().main()).test(),
+				"Unable to find main method");
 	}
 
 	private static class TestThread extends Thread {

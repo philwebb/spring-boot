@@ -37,8 +37,8 @@ public class BindValidationExceptionTests {
 	@Test
 	public void createWhenValidationErrorsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ValidationErrors must not be null",
-				() -> new BindValidationException(null));
+				() -> new BindValidationException(null),
+				"ValidationErrors must not be null");
 	}
 
 	@Test

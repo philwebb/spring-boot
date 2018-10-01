@@ -142,8 +142,8 @@ public class ControllerEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
 				.run(assertDiscoverer(
 						(discoverer) -> this.thrown.expect(IllegalStateException.class,
-								"ControllerEndpoints must not declare operations",
-								discoverer::getEndpoints)));
+								discoverer::getEndpoints,
+								"ControllerEndpoints must not declare operations")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

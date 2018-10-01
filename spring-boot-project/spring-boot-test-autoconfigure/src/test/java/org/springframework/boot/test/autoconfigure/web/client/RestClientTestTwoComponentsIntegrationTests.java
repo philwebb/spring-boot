@@ -57,9 +57,9 @@ public class RestClientTestTwoComponentsIntegrationTests {
 
 	@Test
 	public void serverShouldNotWork() {
-		this.thrown.expect(IllegalStateException.class, "Unable to use auto-configured",
-				() -> this.server.expect(requestTo("/test"))
-						.andRespond(withSuccess("hello", MediaType.TEXT_HTML)));
+		this.thrown.expect(IllegalStateException.class, () -> this.server.expect(requestTo("/test"))
+				.andRespond(withSuccess("hello", MediaType.TEXT_HTML)),
+				"Unable to use auto-configured");
 	}
 
 	@Test

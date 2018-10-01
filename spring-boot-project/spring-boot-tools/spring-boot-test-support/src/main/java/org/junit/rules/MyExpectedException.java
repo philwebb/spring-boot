@@ -32,8 +32,8 @@ public class MyExpectedException {
 		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable);
 	}
 
-	public void expect(Class<? extends Throwable> exceptionClass, String message,
-			ThrowingCallable throwingCallable) {
+	public void expect(Class<? extends Throwable> exceptionClass, ThrowingCallable throwingCallable,
+			String message) {
 		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable)
 				.withMessageContaining(message);
 	}

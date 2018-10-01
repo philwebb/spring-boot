@@ -53,14 +53,14 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void sequenceMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class, "Sequence must be positive",
-				() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)),
+				"Sequence must be positive");
 	}
 
 	@Test
 	public void dataMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Data must not be null",
-				() -> new HttpTunnelPayload(1, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelPayload(1, null),
+				"Data must not be null");
 	}
 
 	@Test
@@ -100,8 +100,8 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
-		this.thrown.expect(IllegalStateException.class, "Missing sequence header",
-				() -> HttpTunnelPayload.get(request));
+		this.thrown.expect(IllegalStateException.class, () -> HttpTunnelPayload.get(request),
+				"Missing sequence header");
 	}
 
 	@Test

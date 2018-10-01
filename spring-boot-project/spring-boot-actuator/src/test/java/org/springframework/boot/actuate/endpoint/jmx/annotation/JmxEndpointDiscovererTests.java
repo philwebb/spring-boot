@@ -115,8 +115,8 @@ public class JmxEndpointDiscovererTests {
 	public void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
 		load(TestJmxEndpointExtension.class, (discoverer) -> this.thrown.expect(
 				IllegalStateException.class,
-				"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'",
-				discoverer::getEndpoints));
+				discoverer::getEndpoints,
+				"Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
 	}
 
 	@Test
@@ -187,40 +187,40 @@ public class JmxEndpointDiscovererTests {
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> this.thrown.expect(
 				IllegalStateException.class,
-				"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)",
-				discoverer::getEndpoints));
+				discoverer::getEndpoints,
+				"Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						"Found two endpoints with the id 'test': ",
-						discoverer::getEndpoints));
+						discoverer::getEndpoints,
+						"Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpoint.class, (discoverer) -> this.thrown.expect(
 				IllegalStateException.class,
-				"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint",
-				discoverer::getEndpoints));
+				discoverer::getEndpoints,
+				"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(AdditionalClashingOperationsConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)",
-						discoverer::getEndpoints));
+						discoverer::getEndpoints,
+						"Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
 	}
 
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> this.thrown.expect(
 				IllegalStateException.class,
-				"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'",
-				discoverer::getEndpoints));
+				discoverer::getEndpoints,
+				"Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
 	}
 
 	private Object getInvoker(JmxOperation operation) {

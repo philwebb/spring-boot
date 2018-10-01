@@ -46,8 +46,8 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void classToSpyMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "TypeToSpy must not be null",
-				() -> new SpyDefinition(null, null, null, true, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new SpyDefinition(null, null, null, true, null),
+				"TypeToSpy must not be null");
 	}
 
 	@Test
@@ -90,16 +90,16 @@ public class SpyDefinitionTests {
 	public void createSpyWhenNullInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
-		this.thrown.expect(IllegalArgumentException.class, "Instance must not be null",
-				() -> definition.createSpy(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> definition.createSpy(null),
+				"Instance must not be null");
 	}
 
 	@Test
 	public void createSpyWhenWrongInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
-		this.thrown.expect(IllegalArgumentException.class, "must be an instance of",
-				() -> definition.createSpy(new ExampleServiceCaller(null)));
+		this.thrown.expect(IllegalArgumentException.class, () -> definition.createSpy(new ExampleServiceCaller(null)),
+				"must be an instance of");
 	}
 
 	@Test

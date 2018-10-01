@@ -82,9 +82,9 @@ public class WebEndpointDiscovererTests {
 	public void getEndpointsWhenWebExtensionIsMissingEndpointShouldThrowException() {
 		load(TestWebEndpointExtensionConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
+						discoverer::getEndpoints,
 						"Invalid extension 'endpointExtension': no endpoint found with id '"
-								+ "test'",
-						discoverer::getEndpoints));
+								+ "test'"));
 	}
 
 	@Test
@@ -141,36 +141,36 @@ public class WebEndpointDiscovererTests {
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingWebEndpointConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
+						discoverer::getEndpoints,
 						"Found multiple extensions for the endpoint bean "
-								+ "testEndpoint (testExtensionOne, testExtensionTwo)",
-						discoverer::getEndpoints));
+								+ "testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						"Found two endpoints with the id 'test': ",
-						discoverer::getEndpoints));
+						discoverer::getEndpoints,
+						"Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpointConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
+						discoverer::getEndpoints,
 						"Unable to map duplicate endpoint operations: "
 								+ "[web request predicate GET to path 'test' "
-								+ "produces: application/json] to clashingOperationsEndpoint",
-						discoverer::getEndpoints));
+								+ "produces: application/json] to clashingOperationsEndpoint"));
 	}
 
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidWebExtensionConfiguration.class,
 				(discoverer) -> this.thrown.expect(IllegalStateException.class,
+						discoverer::getEndpoints,
 						"Endpoint bean 'nonWebEndpoint' cannot support the "
-								+ "extension bean 'nonWebWebEndpointExtension'",
-						discoverer::getEndpoints));
+								+ "extension bean 'nonWebWebEndpointExtension'"));
 	}
 
 	@Test

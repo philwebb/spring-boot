@@ -74,11 +74,11 @@ public class ServletListenerRegistrationBeanTests {
 	@Test
 	public void cannotRegisterUnsupportedType() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Listener is not of a supported type",
 				() -> new ServletListenerRegistrationBean<EventListener>(
 						new EventListener() {
 
-						}));
+						}),
+				"Listener is not of a supported type");
 	}
 
 }

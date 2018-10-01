@@ -70,9 +70,9 @@ public class JsonObjectDeserializerTests {
 
 	@Test
 	public void nullSafeValueWhenClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Type must not be null",
-				() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class),
-						null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class),
+				null),
+				"Type must not be null");
 	}
 
 	@Test
@@ -152,31 +152,31 @@ public class JsonObjectDeserializerTests {
 	@Test
 	public void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Unsupported value type java.io.InputStream", () -> this.testDeserializer
-						.testNullSafeValue(mock(JsonNode.class), InputStream.class));
+				() -> this.testDeserializer
+						.testNullSafeValue(mock(JsonNode.class), InputStream.class), "Unsupported value type java.io.InputStream");
 
 	}
 
 	@Test
 	public void getRequiredNodeWhenTreeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Tree must not be null",
-				() -> this.testDeserializer.testGetRequiredNode(null, "test"));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.testDeserializer.testGetRequiredNode(null, "test"),
+				"Tree must not be null");
 	}
 
 	@Test
 	public void getRequiredNodeWhenNodeIsNullShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(null);
-		this.thrown.expect(IllegalStateException.class, "Missing JSON field 'test'",
-				() -> this.testDeserializer.testGetRequiredNode(tree, "test"));
+		this.thrown.expect(IllegalStateException.class, () -> this.testDeserializer.testGetRequiredNode(tree, "test"),
+				"Missing JSON field 'test'");
 	}
 
 	@Test
 	public void getRequiredNodeWhenNodeIsNullNodeShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(NullNode.instance);
-		this.thrown.expect(IllegalStateException.class, "Missing JSON field 'test'",
-				() -> this.testDeserializer.testGetRequiredNode(tree, "test"));
+		this.thrown.expect(IllegalStateException.class, () -> this.testDeserializer.testGetRequiredNode(tree, "test"),
+				"Missing JSON field 'test'");
 	}
 
 	@Test

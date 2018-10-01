@@ -42,14 +42,14 @@ public class ConfigurationPropertyTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
-				() -> new ConfigurationProperty(null, "bar", null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationProperty(null, "bar", null),
+				"Name must not be null");
 	}
 
 	@Test
 	public void createWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Value must not be null",
-				() -> new ConfigurationProperty(NAME, null, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationProperty(NAME, null, null),
+				"Value must not be null");
 	}
 
 	@Test

@@ -77,14 +77,14 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
-				() -> this.builder.customizers((TaskExecutorCustomizer[]) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.builder.customizers((TaskExecutorCustomizer[]) null),
+				"Customizers must not be null");
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
-				() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.builder.customizers((Set<TaskExecutorCustomizer>) null),
+				"Customizers must not be null");
 	}
 
 	@Test
@@ -125,16 +125,16 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
-				() -> this.builder
-						.additionalCustomizers((TaskExecutorCustomizer[]) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.builder
+				.additionalCustomizers((TaskExecutorCustomizer[]) null),
+				"Customizers must not be null");
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
-				() -> this.builder
-						.additionalCustomizers((Set<TaskExecutorCustomizer>) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.builder
+				.additionalCustomizers((Set<TaskExecutorCustomizer>) null),
+				"Customizers must not be null");
 	}
 
 	@Test

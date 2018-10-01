@@ -57,9 +57,9 @@ public class ClassPathFileSystemWatcherTests {
 
 	@Test
 	public void urlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Urls must not be null",
-				() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-						mock(ClassPathRestartStrategy.class), (URL[]) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
+				mock(ClassPathRestartStrategy.class), (URL[]) null),
+				"Urls must not be null");
 	}
 
 	@Test

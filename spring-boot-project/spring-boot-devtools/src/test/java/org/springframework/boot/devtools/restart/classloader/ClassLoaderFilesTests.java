@@ -46,14 +46,14 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void addFileNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
-				() -> this.files.addFile(null, mock(ClassLoaderFile.class)));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.files.addFile(null, mock(ClassLoaderFile.class)),
+				"Name must not be null");
 	}
 
 	@Test
 	public void addFileFileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "File must not be null",
-				() -> this.files.addFile("test", null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.files.addFile("test", null),
+				"File must not be null");
 	}
 
 	@Test
@@ -160,7 +160,7 @@ public class ClassLoaderFilesTests {
 	@Test
 	public void classLoaderFilesMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ClassLoaderFiles must not be null", () -> new ClassLoaderFiles(null));
+				() -> new ClassLoaderFiles(null), "ClassLoaderFiles must not be null");
 	}
 
 	@Test

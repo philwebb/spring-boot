@@ -173,8 +173,8 @@ public class ProjectGenerationRequestTests {
 	public void buildNoMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
-		this.thrown.expect(ReportableException.class, "does-not-exist",
-				() -> this.request.generateUrl(metadata));
+		this.thrown.expect(ReportableException.class, () -> this.request.generateUrl(metadata),
+				"does-not-exist");
 	}
 
 	@Test
@@ -213,8 +213,8 @@ public class ProjectGenerationRequestTests {
 
 	@Test
 	public void noTypeAndNoDefault() throws Exception {
-		this.thrown.expect(ReportableException.class, "no default is defined",
-				() -> this.request.generateUrl(readMetadata("types-conflict")));
+		this.thrown.expect(ReportableException.class, () -> this.request.generateUrl(readMetadata("types-conflict")),
+				"no default is defined");
 	}
 
 	private static URI createUrl(String actionAndParam) {

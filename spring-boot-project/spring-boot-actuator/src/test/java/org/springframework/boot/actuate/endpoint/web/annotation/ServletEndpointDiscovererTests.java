@@ -118,8 +118,8 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
 				.run(assertDiscoverer(
 						(discoverer) -> this.thrown.expect(IllegalStateException.class,
-								"ServletEndpoints must not declare operations",
-								discoverer::getEndpoints)));
+								discoverer::getEndpoints,
+								"ServletEndpoints must not declare operations")));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
 				.run(assertDiscoverer(
 						(discoverer) -> this.thrown.expect(IllegalStateException.class,
-								"must be a supplier", discoverer::getEndpoints)));
+								discoverer::getEndpoints, "must be a supplier")));
 	}
 
 	@Test
@@ -135,8 +135,8 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner
 				.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
 				.run(assertDiscoverer((discoverer) -> this.thrown.expect(
-						IllegalStateException.class, "must supply an EndpointServlet",
-						discoverer::getEndpoints)));
+						IllegalStateException.class, discoverer::getEndpoints,
+						"must supply an EndpointServlet")));
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
 				.run(assertDiscoverer(
 						(discoverer) -> this.thrown.expect(IllegalStateException.class,
-								"must not supply null", discoverer::getEndpoints)));
+								discoverer::getEndpoints, "must not supply null")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

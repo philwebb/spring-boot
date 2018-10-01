@@ -104,7 +104,7 @@ public class HttpTunnelServerTests {
 	@Test
 	public void serverConnectionIsRequired() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ServerConnection must not be null", () -> new HttpTunnelServer(null));
+				() -> new HttpTunnelServer(null), "ServerConnection must not be null");
 	}
 
 	@Test
@@ -124,8 +124,8 @@ public class HttpTunnelServerTests {
 	@Test
 	public void longPollTimeoutMustBePositiveValue() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"LongPollTimeout must be a positive value",
-				() -> this.server.setLongPollTimeout(0));
+				() -> this.server.setLongPollTimeout(0),
+				"LongPollTimeout must be a positive value");
 	}
 
 	@Test
@@ -257,8 +257,8 @@ public class HttpTunnelServerTests {
 	@Test
 	public void disconnectTimeoutMustBePositive() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"DisconnectTimeout must be a positive value",
-				() -> this.server.setDisconnectTimeout(0));
+				() -> this.server.setDisconnectTimeout(0),
+				"DisconnectTimeout must be a positive value");
 	}
 
 	@Test

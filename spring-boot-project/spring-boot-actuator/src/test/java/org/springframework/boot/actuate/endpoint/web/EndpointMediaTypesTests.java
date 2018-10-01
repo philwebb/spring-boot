@@ -38,14 +38,14 @@ public class EndpointMediaTypesTests {
 
 	@Test
 	public void createWhenProducedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Produced must not be null",
-				() -> new EndpointMediaTypes(null, Collections.emptyList()));
+		this.thrown.expect(IllegalArgumentException.class, () -> new EndpointMediaTypes(null, Collections.emptyList()),
+				"Produced must not be null");
 	}
 
 	@Test
 	public void createWhenConsumedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Consumed must not be null",
-				() -> new EndpointMediaTypes(Collections.emptyList(), null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new EndpointMediaTypes(Collections.emptyList(), null),
+				"Consumed must not be null");
 	}
 
 	@Test

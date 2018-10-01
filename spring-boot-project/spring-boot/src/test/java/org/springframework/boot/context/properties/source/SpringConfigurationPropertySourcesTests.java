@@ -45,8 +45,8 @@ public class SpringConfigurationPropertySourcesTests {
 
 	@Test
 	public void createWhenPropertySourcesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Sources must not be null",
-				() -> new SpringConfigurationPropertySources(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new SpringConfigurationPropertySources(null),
+				"Sources must not be null");
 	}
 
 	@Test

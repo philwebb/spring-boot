@@ -67,14 +67,14 @@ public class RootUriTemplateHandlerTests {
 
 	@Test
 	public void createWithNullRootUriShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "RootUri must not be null",
-				() -> new RootUriTemplateHandler((String) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new RootUriTemplateHandler((String) null),
+				"RootUri must not be null");
 	}
 
 	@Test
 	public void createWithNullHandlerShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Handler must not be null",
-				() -> new RootUriTemplateHandler("http://example.com", null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new RootUriTemplateHandler("http://example.com", null),
+				"Handler must not be null");
 	}
 
 	@Test

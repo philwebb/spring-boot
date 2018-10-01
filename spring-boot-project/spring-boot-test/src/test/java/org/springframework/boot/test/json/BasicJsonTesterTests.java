@@ -51,7 +51,7 @@ public class BasicJsonTesterTests {
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ResourceLoadClass must not be null", () -> new BasicJsonTester(null));
+				() -> new BasicJsonTester(null), "ResourceLoadClass must not be null");
 	}
 
 	@Test

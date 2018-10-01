@@ -78,14 +78,14 @@ public class DispatcherTests {
 	@Test
 	public void accessManagerMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"AccessManager must not be null",
-				() -> new Dispatcher(null, Collections.emptyList()));
+				() -> new Dispatcher(null, Collections.emptyList()),
+				"AccessManager must not be null");
 	}
 
 	@Test
 	public void mappersMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Mappers must not be null",
-				() -> new Dispatcher(this.accessManager, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new Dispatcher(this.accessManager, null),
+				"Mappers must not be null");
 	}
 
 	@Test

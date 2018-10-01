@@ -82,22 +82,22 @@ public class BinderTests {
 
 	@Test
 	public void createWhenSourcesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Sources must not be null",
-				() -> new Binder((Iterable<ConfigurationPropertySource>) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new Binder((Iterable<ConfigurationPropertySource>) null),
+				"Sources must not be null");
 	}
 
 	@Test
 	public void bindWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
-				() -> this.binder.bind((ConfigurationPropertyName) null,
-						Bindable.of(String.class), BindHandler.DEFAULT));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.binder.bind((ConfigurationPropertyName) null,
+				Bindable.of(String.class), BindHandler.DEFAULT),
+				"Name must not be null");
 	}
 
 	@Test
 	public void bindWhenTargetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Target must not be null",
-				() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
-						BindHandler.DEFAULT));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
+				BindHandler.DEFAULT),
+				"Target must not be null");
 	}
 
 	@Test

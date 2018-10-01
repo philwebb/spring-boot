@@ -41,14 +41,14 @@ public class AnnotatedClassFinderTests {
 
 	@Test
 	public void findFromClassWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Source must not be null",
-				() -> this.finder.findFromClass((Class<?>) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.finder.findFromClass((Class<?>) null),
+				"Source must not be null");
 	}
 
 	@Test
 	public void findFromPackageWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Source must not be null",
-				() -> this.finder.findFromPackage((String) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.finder.findFromPackage((String) null),
+				"Source must not be null");
 	}
 
 	@Test

@@ -65,7 +65,7 @@ public class RabbitHealthIndicatorTests {
 	@Test
 	public void createWhenRabbitTemplateIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"RabbitTemplate must not be null", () -> new RabbitHealthIndicator(null));
+				() -> new RabbitHealthIndicator(null), "RabbitTemplate must not be null");
 	}
 
 	@Test

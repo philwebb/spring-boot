@@ -45,8 +45,8 @@ public class MockDefinitionTests {
 
 	@Test
 	public void classToMockMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "TypeToMock must not be null",
-				() -> new MockDefinition(null, null, null, null, false, null, null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new MockDefinition(null, null, null, null, false, null, null),
+				"TypeToMock must not be null");
 	}
 
 	@Test

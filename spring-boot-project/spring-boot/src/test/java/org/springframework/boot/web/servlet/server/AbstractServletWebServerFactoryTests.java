@@ -280,22 +280,22 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void contextPathMustStartWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ContextPath must start with '/' and not end with '/'",
-				() -> getFactory().setContextPath("missingslash"));
+				() -> getFactory().setContextPath("missingslash"),
+				"ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ContextPath must start with '/' and not end with '/'",
-				() -> getFactory().setContextPath("extraslash/"));
+				() -> getFactory().setContextPath("extraslash/"),
+				"ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextRootPathMustNotBeSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Root ContextPath must be specified using an empty string",
-				() -> getFactory().setContextPath("/"));
+				() -> getFactory().setContextPath("/"),
+				"Root ContextPath must be specified using an empty string");
 	}
 
 	@Test
@@ -770,8 +770,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
-		this.thrown.expect(IllegalStateException.class, "points to a file",
-				() -> factory.getValidSessionStoreDir(false));
+		this.thrown.expect(IllegalStateException.class, () -> factory.getValidSessionStoreDir(false),
+				"points to a file");
 	}
 
 	@Test

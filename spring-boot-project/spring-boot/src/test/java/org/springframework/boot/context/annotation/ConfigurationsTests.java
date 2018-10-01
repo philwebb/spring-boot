@@ -46,8 +46,8 @@ public class ConfigurationsTests {
 
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Classes must not be null",
-				() -> new TestConfigurations(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> new TestConfigurations(null),
+				"Classes must not be null");
 	}
 
 	@Test

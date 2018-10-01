@@ -41,8 +41,8 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void changeSetMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "ChangeSet must not be null",
-				() -> new ClassPathChangedEvent(this.source, null, false));
+		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathChangedEvent(this.source, null, false),
+				"ChangeSet must not be null");
 	}
 
 	@Test

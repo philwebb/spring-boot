@@ -65,14 +65,14 @@ public class PropertyMapperTests {
 
 	@Test
 	public void fromWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Supplier must not be null",
-				() -> this.map.from((Supplier<?>) null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from((Supplier<?>) null),
+				"Supplier must not be null");
 	}
 
 	@Test
 	public void toWhenConsumerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Consumer must not be null",
-				() -> this.map.from(() -> "").to(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from(() -> "").to(null),
+				"Consumer must not be null");
 	}
 
 	@Test
@@ -92,8 +92,8 @@ public class PropertyMapperTests {
 
 	@Test
 	public void asWhenAdapterIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Adapter must not be null",
-				() -> this.map.from(() -> "").as(null));
+		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from(() -> "").as(null),
+				"Adapter must not be null");
 	}
 
 	@Test
