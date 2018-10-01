@@ -39,6 +39,7 @@ import org.springframework.session.hazelcast.HazelcastSessionRepository;
 import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * JDBC specific tests for {@link SessionAutoConfiguration}.
@@ -109,10 +110,9 @@ public class SessionAutoConfigurationJdbcTests
 					assertThat(context.getBean(JdbcSessionProperties.class)
 							.getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-					this.thrown.expect(BadSqlGrammarException.class,
-							() -> context.getBean(JdbcOperations.class)
-									.queryForList("select * from SPRING_SESSION"));
-				});
+			assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> context.getBean(JdbcOperations.class)
+										.queryForList("select * from SPRING_SESSION"));
+		});
 	}
 
 	@Test

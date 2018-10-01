@@ -34,6 +34,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link MetricsEndpoint}.
@@ -118,8 +119,7 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void metricWithInvalidTag() {
-		this.thrown.expect(InvalidEndpointRequestException.class,
-				() -> this.endpoint.metric("counter", Collections.singletonList("key")));
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidEndpointRequestException.class).isThrownBy(() -> this.endpoint.metric("counter", Collections.singletonList("key")));
 	}
 
 	@Test

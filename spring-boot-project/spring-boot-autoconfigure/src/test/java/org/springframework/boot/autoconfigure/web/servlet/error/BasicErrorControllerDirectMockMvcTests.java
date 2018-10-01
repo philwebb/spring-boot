@@ -53,6 +53,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -110,8 +111,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
 						"--server.error.whitelabel.enabled=false"));
-		this.thrown.expect(ServletException.class,
-				() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
+		assertThatExceptionOfType((Class<? extends Throwable>) ServletException.class).isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test

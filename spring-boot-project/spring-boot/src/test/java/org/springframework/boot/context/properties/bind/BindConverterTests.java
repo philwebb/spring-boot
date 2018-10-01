@@ -39,6 +39,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -191,7 +192,7 @@ public class BindConverterTests {
 	public void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter
 				.get(ApplicationConversionService.getSharedInstance(), null);
-		this.thrown.expect(ConverterNotFoundException.class, () -> bindConverter
+		assertThatExceptionOfType((Class<? extends Throwable>) ConverterNotFoundException.class).isThrownBy(() -> bindConverter
 				.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
 

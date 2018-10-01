@@ -62,6 +62,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -176,9 +177,8 @@ public class BatchAutoConfigurationTests {
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-					this.thrown.expect(BadSqlGrammarException.class,
-							() -> new JdbcTemplate(context.getBean(DataSource.class))
-									.queryForList("select * from BATCH_JOB_EXECUTION"));
+					assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
+												.queryForList("select * from BATCH_JOB_EXECUTION"));
 				});
 	}
 

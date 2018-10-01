@@ -61,6 +61,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -361,8 +362,7 @@ public class TomcatServletWebServerFactoryTests
 		// and avoid a leak
 		this.webServer.start();
 		// Lookups should no longer be possible
-		this.thrown.expect(NamingException.class,
-				() -> new InitialContext().lookup("java:comp/env"));
+		assertThatExceptionOfType((Class<? extends Throwable>) NamingException.class).isThrownBy(() -> new InitialContext().lookup("java:comp/env"));
 	}
 
 	@Test

@@ -32,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ApplicationContextRequestMatcher}.
@@ -71,7 +72,7 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
-		this.thrown.expect(NoSuchBeanDefinitionException.class, supplier::get);
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {

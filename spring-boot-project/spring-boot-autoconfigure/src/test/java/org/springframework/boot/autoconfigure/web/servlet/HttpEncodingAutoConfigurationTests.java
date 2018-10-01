@@ -44,6 +44,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpEncodingAutoConfiguration}
@@ -75,8 +76,7 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void disableConfiguration() {
 		load(EmptyConfiguration.class, "spring.http.encoding.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(CharacterEncodingFilter.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test

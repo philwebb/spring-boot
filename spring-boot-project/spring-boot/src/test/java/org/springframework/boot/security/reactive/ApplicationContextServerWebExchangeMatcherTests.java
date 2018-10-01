@@ -36,6 +36,7 @@ import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -82,7 +83,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		ServerWebExchange exchange = createExchange();
 		Supplier<ExistingBean> supplier = new TestApplicationContextServerWebExchangeMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(exchange);
-		this.thrown.expect(NoSuchBeanDefinitionException.class, supplier::get);
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
 	@Test

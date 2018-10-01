@@ -27,11 +27,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class MyExpectedException {
 
-	public void expect(Class<? extends Throwable> exceptionClass,
-			ThrowingCallable throwingCallable) {
-		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable);
-	}
-
 	public void expect(Class<? extends Throwable> exceptionClass, ThrowingCallable throwingCallable,
 			String message) {
 		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable)

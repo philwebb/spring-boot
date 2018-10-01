@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
@@ -61,14 +62,12 @@ public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Test
 	public void shouldNotHaveWebDriver() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(WebDriver.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebDriver.class));
 	}
 
 	@Test
 	public void shouldNotHaveWebClient() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(WebClient.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebClient.class));
 	}
 
 }

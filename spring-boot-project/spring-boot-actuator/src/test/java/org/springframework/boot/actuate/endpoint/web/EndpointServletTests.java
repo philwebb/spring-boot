@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -73,15 +74,13 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> endpointServlet.withInitParameter(null, "value"));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> endpointServlet.withInitParameter(" ", "value"));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(" ", "value"));
 	}
 
 	@Test
@@ -103,14 +102,14 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class, () -> endpointServlet
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet
 				.withInitParameters(Collections.singletonMap(null, "value")));
 	}
 
 	@Test
 	public void withInitParametersEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class, () -> endpointServlet
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet
 				.withInitParameters(Collections.singletonMap(" ", "value")));
 	}
 

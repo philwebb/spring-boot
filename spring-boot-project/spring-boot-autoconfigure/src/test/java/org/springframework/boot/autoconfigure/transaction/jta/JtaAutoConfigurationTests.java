@@ -60,6 +60,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -94,8 +95,7 @@ public class JtaAutoConfigurationTests {
 	public void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(JtaTransactionManager.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test

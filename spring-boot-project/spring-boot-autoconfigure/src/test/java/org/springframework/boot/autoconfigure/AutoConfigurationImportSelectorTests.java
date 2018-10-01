@@ -43,6 +43,7 @@ import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AutoConfigurationImportSelector}
@@ -173,13 +174,12 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class, () -> selectImports(
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(
 				EnableAutoConfigurationWithFaultyClassNameExclude.class));
 	}
 
@@ -188,8 +188,7 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
 						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
-		this.thrown.expect(IllegalStateException.class,
-				() -> selectImports(BasicEnableAutoConfiguration.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test

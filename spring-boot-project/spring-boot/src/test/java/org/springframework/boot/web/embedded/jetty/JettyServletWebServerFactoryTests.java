@@ -50,6 +50,7 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -321,7 +322,7 @@ public class JettyServletWebServerFactoryTests
 
 		});
 		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		this.thrown.expect(WebServerException.class, () -> {
+		assertThatExceptionOfType((Class<? extends Throwable>) WebServerException.class).isThrownBy(() -> {
 			try {
 				jettyWebServer.start();
 			}

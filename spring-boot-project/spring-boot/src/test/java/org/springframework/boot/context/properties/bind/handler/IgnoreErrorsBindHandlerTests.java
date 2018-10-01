@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link IgnoreErrorsBindHandler}.
@@ -57,8 +58,7 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIgnoringErrorsShouldFail() {
-		this.thrown.expect(BindException.class,
-				() -> this.binder.bind("example", Bindable.of(Example.class)));
+		assertThatExceptionOfType((Class<? extends Throwable>) BindException.class).isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test

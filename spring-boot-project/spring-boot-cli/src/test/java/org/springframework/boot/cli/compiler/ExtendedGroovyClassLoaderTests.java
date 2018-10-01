@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ExtendedGroovyClassLoader}.
@@ -54,8 +55,7 @@ public class ExtendedGroovyClassLoaderTests {
 	@Test
 	public void filtersNonGroovy() throws Exception {
 		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
-		this.thrown.expect(ClassNotFoundException.class,
-				() -> this.defaultScopeGroovyClassLoader
+		assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> this.defaultScopeGroovyClassLoader
 						.loadClass("org.springframework.util.StringUtils"));
 	}
 

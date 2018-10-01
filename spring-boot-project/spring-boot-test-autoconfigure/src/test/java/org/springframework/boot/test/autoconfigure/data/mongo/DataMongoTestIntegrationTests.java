@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Sample test for {@link DataMongoTest @DataMongoTest}
@@ -61,8 +62,7 @@ public class DataMongoTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.applicationContext.getBean(ExampleService.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

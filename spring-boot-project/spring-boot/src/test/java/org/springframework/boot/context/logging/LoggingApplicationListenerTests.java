@@ -65,6 +65,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
@@ -167,7 +168,7 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigDoesNotExist() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=doesnotexist.xml");
-		this.thrown.expect(IllegalStateException.class, () -> {
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> {
 			this.outputCapture.expect(containsString(
 					"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
 			this.initializer.initialize(this.context.getEnvironment(),
@@ -203,7 +204,7 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigBroken() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
-		this.thrown.expect(IllegalStateException.class, () -> {
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> {
 			this.outputCapture.expect(containsString(
 					"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
 			this.outputCapture.expect(containsString("ConsolAppender"));

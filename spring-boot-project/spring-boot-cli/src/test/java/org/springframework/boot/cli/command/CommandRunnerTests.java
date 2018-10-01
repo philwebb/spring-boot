@@ -31,6 +31,7 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
@@ -101,7 +102,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		this.thrown.expect(NoArgumentsException.class, this.commandRunner::run);
+		assertThatExceptionOfType((Class<? extends Throwable>) NoArgumentsException.class).isThrownBy(this.commandRunner::run);
 	}
 
 	@Test
@@ -112,8 +113,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void missingCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class,
-				() -> this.commandRunner.run("missing"));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
 	}
 
 	@Test
@@ -187,14 +187,12 @@ public class CommandRunnerTests {
 
 	@Test
 	public void helpNoCommand() throws Exception {
-		this.thrown.expect(NoHelpCommandArgumentsException.class,
-				() -> this.commandRunner.run("help"));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoHelpCommandArgumentsException.class).isThrownBy(() -> this.commandRunner.run("help"));
 	}
 
 	@Test
 	public void helpUnknownCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class,
-				() -> this.commandRunner.run("help", "missing"));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {

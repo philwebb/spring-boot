@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for the configuration of development-time properties
@@ -90,8 +91,7 @@ public class DevToolPropertiesIntegrationTests {
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(MyBean.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test

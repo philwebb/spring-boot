@@ -30,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SpringBootTest} configured with {@link ContextConfiguration}.
@@ -51,8 +52,7 @@ public class SpringBootTestWithContextConfigurationIntegrationTests {
 	@Test
 	public void injectsOnlyConfig() {
 		assertThat(this.context.getBean(Config.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(AdditionalConfig.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(AdditionalConfig.class));
 	}
 
 	@Configuration

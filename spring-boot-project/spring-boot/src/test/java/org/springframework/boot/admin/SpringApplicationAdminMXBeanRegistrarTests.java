@@ -39,6 +39,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -130,8 +131,7 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 		invokeShutdown(objectName);
 		assertThat(this.context.isRunning()).isFalse();
 		// JMX cleanup
-		this.thrown.expect(InstanceNotFoundException.class,
-				() -> this.mBeanServer.getObjectInstance(objectName));
+		assertThatExceptionOfType((Class<? extends Throwable>) InstanceNotFoundException.class).isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
 	}
 
 	private Boolean isApplicationReady(ObjectName objectName) {

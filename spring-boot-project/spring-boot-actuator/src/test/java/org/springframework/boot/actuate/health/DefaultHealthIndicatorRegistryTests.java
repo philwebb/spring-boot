@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -102,7 +103,7 @@ public class DefaultHealthIndicatorRegistryTests {
 	public void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, HealthIndicator> snapshot = this.registry.getAll();
-		this.thrown.expect(UnsupportedOperationException.class, snapshot::clear);
+		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(snapshot::clear);
 	}
 
 }

@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration test for {@link DataNeo4jTest}.
@@ -73,8 +74,7 @@ public class DataNeo4jTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.applicationContext.getBean(ExampleService.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 	static class Initializer

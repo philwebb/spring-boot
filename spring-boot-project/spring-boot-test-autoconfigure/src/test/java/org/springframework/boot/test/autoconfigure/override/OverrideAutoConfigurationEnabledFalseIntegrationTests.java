@@ -33,6 +33,7 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link OverrideAutoConfiguration} when {@code enabled} is
@@ -56,8 +57,7 @@ public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
 	public void disabledAutoConfiguration() {
 		ApplicationContext context = this.context;
 		assertThat(context.getBean(ExampleTestConfig.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> context.getBean(ConfigurationPropertiesBindingPostProcessor.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> context.getBean(ConfigurationPropertiesBindingPostProcessor.class));
 	}
 
 }

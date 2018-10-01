@@ -69,6 +69,7 @@ import org.springframework.web.context.request.SessionScope;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -175,7 +176,7 @@ public class ServletWebServerApplicationContextTests {
 	public void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
-		this.thrown.expect(IllegalStateException.class, () -> this.context.refresh());
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.context.refresh());
 	}
 
 	@Test

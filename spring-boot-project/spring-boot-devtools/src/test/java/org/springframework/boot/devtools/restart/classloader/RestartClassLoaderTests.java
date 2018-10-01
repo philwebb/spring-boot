@@ -40,6 +40,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link RestartClassLoader}.
@@ -184,16 +185,14 @@ public class RestartClassLoaderTests {
 	public void getDeletedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		this.thrown.expect(ClassNotFoundException.class,
-				() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+		assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test
 	public void getUpdatedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
-		this.thrown.expect(ClassFormatError.class,
-				() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+		assertThatExceptionOfType((Class<? extends Throwable>) ClassFormatError.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test

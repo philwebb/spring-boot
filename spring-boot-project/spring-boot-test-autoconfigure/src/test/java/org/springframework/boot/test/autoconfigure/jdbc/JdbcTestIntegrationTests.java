@@ -35,6 +35,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
@@ -79,8 +80,7 @@ public class JdbcTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleRepository() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.applicationContext.getBean(ExampleRepository.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
 	}
 
 	@Test

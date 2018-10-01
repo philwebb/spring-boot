@@ -44,6 +44,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -161,8 +162,7 @@ public class ValidationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
-		this.thrown.expect(ConstraintViolationException.class,
-				() -> service.doSomething("KO"));
+		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -172,8 +172,7 @@ public class ValidationAutoConfigurationTests {
 		DefaultAnotherSampleService service = this.context
 				.getBean(DefaultAnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class,
-				() -> service.doSomething(2));
+		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -185,8 +184,7 @@ public class ValidationAutoConfigurationTests {
 				.isEmpty();
 		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class,
-				() -> service.doSomething(2));
+		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test

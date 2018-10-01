@@ -34,6 +34,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Sample test for {@link DataLdapTest @DataLdapTest}
@@ -72,8 +73,7 @@ public class DataLdapTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.applicationContext.getBean(ExampleService.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

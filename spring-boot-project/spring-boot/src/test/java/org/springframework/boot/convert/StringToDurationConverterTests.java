@@ -31,6 +31,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StringToDurationConverter}.
@@ -143,8 +144,7 @@ public class StringToDurationConverterTests {
 
 	@Test
 	public void convertWhenStyleMismatchShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class,
-				() -> convert("10s", null, DurationStyle.ISO8601));
+		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> convert("10s", null, DurationStyle.ISO8601));
 	}
 
 	@Test

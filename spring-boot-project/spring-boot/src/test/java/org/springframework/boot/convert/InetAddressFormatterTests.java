@@ -31,6 +31,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link InetAddressFormatter}.
@@ -70,8 +71,7 @@ public class InetAddressFormatterTests {
 	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException() {
 		String missingDomain = "ireallydontexist.example.com";
 		assumeResolves(missingDomain, false);
-		this.thrown.expect(ConversionFailedException.class,
-				() -> this.conversionService.convert(missingDomain, InetAddress.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> this.conversionService.convert(missingDomain, InetAddress.class));
 	}
 
 	private void assumeResolves(String host, boolean expectedToResolve) {

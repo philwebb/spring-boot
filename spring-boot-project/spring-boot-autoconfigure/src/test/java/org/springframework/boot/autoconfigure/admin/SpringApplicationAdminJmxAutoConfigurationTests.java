@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 
 /**
@@ -71,8 +72,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 	@Test
 	public void notRegisteredByDefault() {
 		this.contextRunner
-				.run((context) -> this.thrown.expect(InstanceNotFoundException.class,
-						() -> this.server.getObjectInstance(createDefaultObjectName())));
+				.run((context) -> assertThatExceptionOfType((Class<? extends Throwable>) InstanceNotFoundException.class).isThrownBy(() -> this.server.getObjectInstance(createDefaultObjectName())));
 	}
 
 	@Test
@@ -98,9 +98,9 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 					catch (InstanceNotFoundException ex) {
 						fail("Admin MBean should have been exposed with custom name");
 					}
-					this.thrown.expect(InstanceNotFoundException.class, () -> this.server
-							.getObjectInstance(createDefaultObjectName()));
-				});
+			assertThatExceptionOfType((Class<? extends Throwable>) InstanceNotFoundException.class).isThrownBy(() -> this.server
+								.getObjectInstance(createDefaultObjectName()));
+		});
 	}
 
 	@Test
@@ -137,9 +137,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						.run("--" + ENABLE_ADMIN_PROP)) {
 			BeanFactoryUtils.beanOfType(parent.getBeanFactory(),
 					SpringApplicationAdminMXBeanRegistrar.class);
-			this.thrown.expect(NoSuchBeanDefinitionException.class,
-					() -> BeanFactoryUtils.beanOfType(child.getBeanFactory(),
-							SpringApplicationAdminMXBeanRegistrar.class));
+			assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> BeanFactoryUtils.beanOfType(child.getBeanFactory(),
+								SpringApplicationAdminMXBeanRegistrar.class));
 		}
 	}
 

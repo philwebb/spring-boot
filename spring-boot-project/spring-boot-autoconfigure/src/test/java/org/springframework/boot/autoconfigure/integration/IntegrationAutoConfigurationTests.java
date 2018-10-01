@@ -47,6 +47,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -189,8 +190,7 @@ public class IntegrationAutoConfigurationTests {
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					this.thrown.expect(BadSqlGrammarException.class,
-							() -> jdbc.queryForList("select * from INT_MESSAGE"));
+					assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
 				});
 	}
 

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.method.HandlerMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -80,8 +81,7 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
-		this.thrown.expect(HttpRequestMethodNotSupportedException.class,
-				() -> mapping.getHandler(request("POST", "/actuator/first")));
+		assertThatExceptionOfType((Class<? extends Throwable>) HttpRequestMethodNotSupportedException.class).isThrownBy(() -> mapping.getHandler(request("POST", "/actuator/first")));
 	}
 
 	@Test

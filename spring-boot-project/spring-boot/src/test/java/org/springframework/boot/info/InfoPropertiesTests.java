@@ -25,6 +25,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link InfoProperties}.
@@ -64,8 +65,7 @@ public class InfoPropertiesTests {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
-		this.thrown.expect(UnsupportedOperationException.class,
-				infoProperties.iterator()::remove);
+		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(infoProperties.iterator()::remove);
 	}
 
 	@Test

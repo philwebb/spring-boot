@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -36,7 +37,7 @@ public class InfoTests {
 	@Test
 	public void infoIsImmutable() {
 		Info info = new Info.Builder().withDetail("foo", "bar").build();
-		this.thrown.expect(UnsupportedOperationException.class, info.getDetails()::clear);
+		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(info.getDetails()::clear);
 	}
 
 	@Test

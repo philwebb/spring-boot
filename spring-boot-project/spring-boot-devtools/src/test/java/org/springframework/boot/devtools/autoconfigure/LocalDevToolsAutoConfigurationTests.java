@@ -56,6 +56,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -168,8 +169,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(OptionalLiveReloadServer.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
@@ -203,8 +203,7 @@ public class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	@Test

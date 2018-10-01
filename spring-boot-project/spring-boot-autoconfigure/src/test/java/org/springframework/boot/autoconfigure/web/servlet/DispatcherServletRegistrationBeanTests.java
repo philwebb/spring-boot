@@ -25,6 +25,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DispatcherServletRegistrationBean}.
@@ -61,16 +62,14 @@ public class DispatcherServletRegistrationBeanTests {
 	public void setUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class,
-				() -> bean.setUrlMappings(Collections.emptyList()));
+		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(() -> bean.setUrlMappings(Collections.emptyList()));
 	}
 
 	@Test
 	public void addUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class,
-				() -> bean.addUrlMappings("/test"));
+		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(() -> bean.addUrlMappings("/test"));
 	}
 
 }

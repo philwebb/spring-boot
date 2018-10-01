@@ -47,6 +47,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -566,8 +567,7 @@ public class MapBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class,
-				() -> this.binder.bind("foo", STRING_STRING_MAP));
+		assertThatExceptionOfType((Class<? extends Throwable>) BindException.class).isThrownBy(() -> this.binder.bind("foo", STRING_STRING_MAP));
 	}
 
 	@Test

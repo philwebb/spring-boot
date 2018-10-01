@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link TypeExcludeFilter}.
@@ -62,8 +63,7 @@ public class TypeExcludeFilterTests {
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(ExampleFilteredComponent.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(ExampleFilteredComponent.class));
 	}
 
 	@Configuration

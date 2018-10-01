@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SystemEnvironmentOrigin}.
@@ -34,14 +35,12 @@ public class SystemEnvironmentOriginTests {
 
 	@Test
 	public void createWhenPropertyIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new SystemEnvironmentOrigin(null));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(null));
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new SystemEnvironmentOrigin(""));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(""));
 	}
 
 	@Test

@@ -49,6 +49,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -126,15 +127,13 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(OptionalLiveReloadServer.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	public void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {

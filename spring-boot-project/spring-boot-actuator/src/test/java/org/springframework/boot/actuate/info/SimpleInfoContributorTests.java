@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SimpleInfoContributor}.
@@ -34,8 +35,7 @@ public class SimpleInfoContributorTests {
 
 	@Test
 	public void prefixIsMandatory() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new SimpleInfoContributor(null, new Object()));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
 	}
 
 	@Test

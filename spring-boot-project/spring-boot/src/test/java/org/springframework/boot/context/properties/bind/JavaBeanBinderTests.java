@@ -326,7 +326,7 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.foo", "bar");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class, () -> this.binder.bind("foo",
+		assertThatExceptionOfType((Class<? extends Throwable>) BindException.class).isThrownBy(() -> this.binder.bind("foo",
 				Bindable.of(ExampleImmutableNestedBeanWithoutSetter.class)));
 	}
 
@@ -391,8 +391,7 @@ public class JavaBeanBinderTests {
 	@Test
 	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo.int-value", "foo"));
-		this.thrown.expect(BindException.class,
-				() -> this.binder.bind("foo", Bindable.of(ExampleValueBean.class)));
+		assertThatExceptionOfType((Class<? extends Throwable>) BindException.class).isThrownBy(() -> this.binder.bind("foo", Bindable.of(ExampleValueBean.class)));
 	}
 
 	@Test

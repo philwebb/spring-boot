@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AutoConfigurationExcludeFilter}.
@@ -60,8 +61,7 @@ public class AutoConfigurationExcludeFilterTests {
 		this.context = new AnnotationConfigApplicationContext(Config.class);
 		assertThat(this.context.getBeansOfType(String.class)).hasSize(1);
 		assertThat(this.context.getBean(String.class)).isEqualTo("test");
-		this.thrown.expect(NoSuchBeanDefinitionException.class,
-				() -> this.context.getBean(FILTERED));
+		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(FILTERED));
 	}
 
 	@Configuration

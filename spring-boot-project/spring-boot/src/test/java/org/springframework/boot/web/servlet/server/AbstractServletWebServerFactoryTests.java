@@ -116,6 +116,7 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -205,8 +206,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.stop();
-		this.thrown.expect(IOException.class,
-				() -> getResponse(getLocalUrl(port, "/hello")));
+		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
 	}
 
 	@Test
@@ -389,8 +389,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		this.thrown.expect(SSLException.class,
-				() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
+		assertThatExceptionOfType((Class<? extends Throwable>) SSLException.class).isThrownBy(() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
 	}
 
 	@Test
@@ -999,7 +998,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					}
 
 				}));
-		this.thrown.expect(WebServerException.class, factory.getWebServer()::start);
+		assertThatExceptionOfType((Class<? extends Throwable>) WebServerException.class).isThrownBy(factory.getWebServer()::start);
 	}
 
 	@Test

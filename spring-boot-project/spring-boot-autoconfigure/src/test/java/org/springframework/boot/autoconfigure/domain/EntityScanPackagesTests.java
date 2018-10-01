@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EntityScanPackages}.
@@ -126,8 +127,7 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
-		this.thrown.expect(AnnotationConfigurationException.class,
-				() -> this.context = new AnnotationConfigApplicationContext(
+		assertThatExceptionOfType((Class<? extends Throwable>) AnnotationConfigurationException.class).isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
 						EntityScanValueAndBasePackagesConfig.class));
 	}
 

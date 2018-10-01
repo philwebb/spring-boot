@@ -103,6 +103,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.isA;
@@ -1197,8 +1198,7 @@ public class SpringApplicationTests {
 
 	@Test
 	public void beanDefinitionOverridingIsDisabledByDefault() {
-		this.thrown.expect(BeanDefinitionOverrideException.class,
-				() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+		assertThatExceptionOfType((Class<? extends Throwable>) BeanDefinitionOverrideException.class).isThrownBy(() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class)
 						.run());
 	}
 

@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link FilteredClassLoader}.
@@ -37,8 +38,7 @@ public class FilteredClassLoaderTests {
 			throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName())) {
-			this.thrown.expect(ClassNotFoundException.class,
-					() -> classLoader.loadClass(getClass().getName()));
+			assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 
@@ -46,8 +46,7 @@ public class FilteredClassLoaderTests {
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class)) {
-			this.thrown.expect(ClassNotFoundException.class,
-					() -> classLoader.loadClass(getClass().getName()));
+			assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 

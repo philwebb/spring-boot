@@ -32,6 +32,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -96,8 +97,7 @@ public class ReflectiveOperationInvokerTests {
 	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
-		this.thrown.expect(MissingParametersException.class,
-				() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+		assertThatExceptionOfType((Class<? extends Throwable>) MissingParametersException.class).isThrownBy(() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
 						Collections.singletonMap("name", null))));
 	}
 

@@ -29,6 +29,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.format.support.DefaultFormattingConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -90,8 +91,7 @@ public class ConversionServiceParameterValueMapperTests {
 		ConversionService conversionService = new DefaultConversionService();
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
 				conversionService);
-		this.thrown.expect(ParameterMappingException.class,
-				() -> mapper.mapParameterValue(
+		assertThatExceptionOfType((Class<? extends Throwable>) ParameterMappingException.class).isThrownBy(() -> mapper.mapParameterValue(
 						new TestOperationParameter(OffsetDateTime.class),
 						"2011-12-03T10:15:30+01:00"));
 	}

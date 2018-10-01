@@ -30,6 +30,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DelegatingApplicationContextInitializer}.
@@ -73,8 +74,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
-		this.thrown.expect(ApplicationContextException.class,
-				() -> this.initializer.initialize(context));
+		assertThatExceptionOfType((Class<? extends Throwable>) ApplicationContextException.class).isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -82,8 +82,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.initializer.initialize(context));
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test

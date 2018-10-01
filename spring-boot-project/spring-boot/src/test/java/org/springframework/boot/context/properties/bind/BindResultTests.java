@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -180,7 +181,7 @@ public class BindResultTests {
 	@Test
 	public void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
 		BindResult<String> result = BindResult.of(null);
-		this.thrown.expect(IOException.class, () -> result.orElseThrow(IOException::new));
+		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> result.orElseThrow(IOException::new));
 	}
 
 	@Test
