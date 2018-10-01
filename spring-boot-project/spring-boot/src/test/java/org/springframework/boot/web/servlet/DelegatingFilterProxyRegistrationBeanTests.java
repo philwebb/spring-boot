@@ -53,15 +53,15 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	@Test
 	public void targetBeanNameMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"TargetBeanName must not be null or empty");
-		new DelegatingFilterProxyRegistrationBean(null);
+				"TargetBeanName must not be null or empty",
+				() -> new DelegatingFilterProxyRegistrationBean(null));
 	}
 
 	@Test
 	public void targetBeanNameMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"TargetBeanName must not be null or empty");
-		new DelegatingFilterProxyRegistrationBean("");
+				"TargetBeanName must not be null or empty",
+				() -> new DelegatingFilterProxyRegistrationBean(""));
 	}
 
 	@Test
@@ -97,9 +97,9 @@ public class DelegatingFilterProxyRegistrationBeanTests
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ServletRegistrationBeans must not be null");
-		new DelegatingFilterProxyRegistrationBean("mockFilter",
-				(ServletRegistrationBean[]) null);
+				"ServletRegistrationBeans must not be null",
+				() -> new DelegatingFilterProxyRegistrationBean("mockFilter",
+						(ServletRegistrationBean[]) null));
 	}
 
 	@Override

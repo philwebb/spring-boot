@@ -54,8 +54,8 @@ public class ApplicationPidTests {
 	@Test
 	public void throwIllegalStateWritingMissingPid() throws Exception {
 		ApplicationPid pid = new ApplicationPid(null);
-		this.thrown.expect(IllegalStateException.class, "No PID available");
-		pid.write(this.temporaryFolder.newFile());
+		this.thrown.expect(IllegalStateException.class, "No PID available",
+				() -> pid.write(this.temporaryFolder.newFile()));
 	}
 
 	@Test

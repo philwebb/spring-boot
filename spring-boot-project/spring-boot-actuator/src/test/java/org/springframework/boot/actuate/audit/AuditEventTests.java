@@ -64,15 +64,16 @@ public class AuditEventTests {
 
 	@Test
 	public void nullTimestamp() {
-		this.thrown.expect(IllegalArgumentException.class, "Timestamp must not be null");
-		new AuditEvent(null, "phil", "UNKNOWN",
-				Collections.singletonMap("a", (Object) "b"));
+		this.thrown.expect(IllegalArgumentException.class, "Timestamp must not be null",
+				() -> new AuditEvent(null, "phil", "UNKNOWN",
+						Collections.singletonMap("a", (Object) "b")));
 	}
 
 	@Test
 	public void nullType() {
-		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
-		new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b"));
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null",
+				() -> new AuditEvent("phil", null,
+						Collections.singletonMap("a", (Object) "b")));
 	}
 
 	@Test

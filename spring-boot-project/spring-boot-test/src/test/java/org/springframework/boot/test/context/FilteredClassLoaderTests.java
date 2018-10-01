@@ -35,19 +35,19 @@ public class FilteredClassLoaderTests {
 	@Test
 	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound()
 			throws Exception {
-		FilteredClassLoader classLoader = new FilteredClassLoader(
-				FilteredClassLoaderTests.class.getPackage().getName());
-		this.thrown.expect(ClassNotFoundException.class);
-		classLoader.loadClass(getClass().getName());
-		classLoader.close();
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(
+				FilteredClassLoaderTests.class.getPackage().getName())) {
+			this.thrown.expect(ClassNotFoundException.class,
+					() -> classLoader.loadClass(getClass().getName()));
+		}
 	}
 
 	@Test
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class)) {
-			this.thrown.expect(ClassNotFoundException.class);
-			classLoader.loadClass(getClass().getName());
+			this.thrown.expect(ClassNotFoundException.class,
+					() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 

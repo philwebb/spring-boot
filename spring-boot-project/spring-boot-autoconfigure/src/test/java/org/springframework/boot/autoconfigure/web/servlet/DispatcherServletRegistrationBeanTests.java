@@ -38,8 +38,9 @@ public class DispatcherServletRegistrationBeanTests {
 
 	@Test
 	public void createWhenPathIsNullThrowsException() {
-		this.thrown.expect(IllegalArgumentException.class, "Path must not be null");
-		new DispatcherServletRegistrationBean(new DispatcherServlet(), null);
+		this.thrown.expect(IllegalArgumentException.class, "Path must not be null",
+				() -> new DispatcherServletRegistrationBean(new DispatcherServlet(),
+						null));
 	}
 
 	@Test
@@ -60,16 +61,16 @@ public class DispatcherServletRegistrationBeanTests {
 	public void setUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class);
-		bean.setUrlMappings(Collections.emptyList());
+		this.thrown.expect(UnsupportedOperationException.class,
+				() -> bean.setUrlMappings(Collections.emptyList()));
 	}
 
 	@Test
 	public void addUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		this.thrown.expect(UnsupportedOperationException.class);
-		bean.addUrlMappings("/test");
+		this.thrown.expect(UnsupportedOperationException.class,
+				() -> bean.addUrlMappings("/test"));
 	}
 
 }

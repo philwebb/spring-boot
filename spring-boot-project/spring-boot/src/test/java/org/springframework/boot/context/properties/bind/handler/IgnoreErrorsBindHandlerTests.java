@@ -57,8 +57,8 @@ public class IgnoreErrorsBindHandlerTests {
 
 	@Test
 	public void bindWhenNotIgnoringErrorsShouldFail() {
-		this.thrown.expect(BindException.class);
-		this.binder.bind("example", Bindable.of(Example.class));
+		this.thrown.expect(BindException.class,
+				() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test

@@ -43,15 +43,15 @@ public class OperationMethodTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Method must not be null");
-		new OperationMethod(null, OperationType.READ);
+		this.thrown.expect(IllegalArgumentException.class, "Method must not be null",
+				() -> new OperationMethod(null, OperationType.READ));
 	}
 
 	@Test
 	public void createWhenOperationTypeIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"OperationType must not be null");
-		new OperationMethod(this.exampleMethod, null);
+				"OperationType must not be null",
+				() -> new OperationMethod(this.exampleMethod, null));
 	}
 
 	@Test

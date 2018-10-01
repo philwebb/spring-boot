@@ -34,14 +34,14 @@ public class SystemEnvironmentOriginTests {
 
 	@Test
 	public void createWhenPropertyIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		new SystemEnvironmentOrigin(null);
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> new SystemEnvironmentOrigin(null));
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		new SystemEnvironmentOrigin("");
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> new SystemEnvironmentOrigin(""));
 	}
 
 	@Test

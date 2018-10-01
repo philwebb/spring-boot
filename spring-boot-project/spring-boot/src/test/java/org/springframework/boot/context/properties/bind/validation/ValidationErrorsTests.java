@@ -51,21 +51,22 @@ public class ValidationErrorsTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null");
-		new ValidationErrors(null, Collections.emptySet(), Collections.emptyList());
+		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
+				() -> new ValidationErrors(null, Collections.emptySet(),
+						Collections.emptyList()));
 	}
 
 	@Test
 	public void createWhenBoundPropertiesIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"BoundProperties must not be null");
-		new ValidationErrors(NAME, null, Collections.emptyList());
+				"BoundProperties must not be null",
+				() -> new ValidationErrors(NAME, null, Collections.emptyList()));
 	}
 
 	@Test
 	public void createWhenErrorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Errors must not be null");
-		new ValidationErrors(NAME, Collections.emptySet(), null);
+		this.thrown.expect(IllegalArgumentException.class, "Errors must not be null",
+				() -> new ValidationErrors(NAME, Collections.emptySet(), null));
 	}
 
 	@Test

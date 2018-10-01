@@ -185,8 +185,8 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, "Connectors must not be null");
-		factory.addAdditionalTomcatConnectors((Connector[]) null);
+		this.thrown.expect(IllegalArgumentException.class, "Connectors must not be null",
+				() -> factory.addAdditionalTomcatConnectors((Connector[]) null));
 	}
 
 	@Test
@@ -223,32 +223,32 @@ public class TomcatServletWebServerFactoryTests
 	public void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatContextCustomizers must not be null");
-		factory.setTomcatContextCustomizers(null);
+				"TomcatContextCustomizers must not be null",
+				() -> factory.setTomcatContextCustomizers(null));
 	}
 
 	@Test
 	public void addNullContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatContextCustomizers must not be null");
-		factory.addContextCustomizers((TomcatContextCustomizer[]) null);
+				"TomcatContextCustomizers must not be null",
+				() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null));
 	}
 
 	@Test
 	public void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatConnectorCustomizers must not be null");
-		factory.setTomcatConnectorCustomizers(null);
+				"TomcatConnectorCustomizers must not be null",
+				() -> factory.setTomcatConnectorCustomizers(null));
 	}
 
 	@Test
 	public void addNullConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.thrown.expect(IllegalArgumentException.class,
-				"TomcatConnectorCustomizers must not be null");
-		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
+				"TomcatConnectorCustomizers must not be null", () -> factory
+						.addConnectorCustomizers((TomcatConnectorCustomizer[]) null));
 	}
 
 	@Test
@@ -361,8 +361,8 @@ public class TomcatServletWebServerFactoryTests
 		// and avoid a leak
 		this.webServer.start();
 		// Lookups should no longer be possible
-		this.thrown.expect(NamingException.class);
-		new InitialContext().lookup("java:comp/env");
+		this.thrown.expect(NamingException.class,
+				() -> new InitialContext().lookup("java:comp/env"));
 	}
 
 	@Test

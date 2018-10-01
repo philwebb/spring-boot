@@ -73,8 +73,8 @@ public class JooqTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleComponent() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.applicationContext.getBean(ExampleComponent.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test

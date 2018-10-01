@@ -110,38 +110,32 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithNullThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap(null);
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseMap(null));
 	}
 
 	@Test
 	public void listWithNullThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList(null);
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseList(null));
 	}
 
 	@Test
 	public void mapWithEmptyStringThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseMap(""));
 	}
 
 	@Test
 	public void listWithEmptyStringThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseList(""));
 	}
 
 	@Test
 	public void mapWithListThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("[]");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseMap("[]"));
 	}
 
 	@Test
 	public void listWithMapThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("{}");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseList("{}"));
 	}
 
 	@Test
@@ -160,14 +154,12 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithLeadingWhitespaceListThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseMap("\n\t[]");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseMap("\n\t[]"));
 	}
 
 	@Test
 	public void listWithLeadingWhitespaceMapThrowsARuntimeException() {
-		this.thrown.expect(RuntimeException.class);
-		this.parser.parseList("\n\t{}");
+		this.thrown.expect(RuntimeException.class, () -> this.parser.parseList("\n\t{}"));
 	}
 
 	@Test

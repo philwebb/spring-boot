@@ -36,9 +36,7 @@ public class InfoTests {
 	@Test
 	public void infoIsImmutable() {
 		Info info = new Info.Builder().withDetail("foo", "bar").build();
-
-		this.thrown.expect(UnsupportedOperationException.class);
-		info.getDetails().clear();
+		this.thrown.expect(UnsupportedOperationException.class, info.getDetails()::clear);
 	}
 
 	@Test

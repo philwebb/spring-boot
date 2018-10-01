@@ -59,17 +59,15 @@ public class UndertowReactiveWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				"Customizers must not be null");
-		factory.setBuilderCustomizers(null);
+		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
+				() -> factory.setBuilderCustomizers(null));
 	}
 
 	@Test
 	public void addNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				"Customizers must not be null");
-		factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null);
+		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
+				() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null));
 	}
 
 	@Test

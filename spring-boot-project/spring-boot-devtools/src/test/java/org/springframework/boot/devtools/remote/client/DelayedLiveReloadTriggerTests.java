@@ -85,27 +85,29 @@ public class DelayedLiveReloadTriggerTests {
 	@Test
 	public void liveReloadServerMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"LiveReloadServer must not be null");
-		new DelayedLiveReloadTrigger(null, this.requestFactory, URL);
+				"LiveReloadServer must not be null",
+				() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL));
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"RequestFactory must not be null");
-		new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL);
+				"RequestFactory must not be null",
+				() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL));
 	}
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty");
-		new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null);
+		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty",
+				() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+						this.requestFactory, null));
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty");
-		new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, "");
+		this.thrown.expect(IllegalArgumentException.class, "URL must not be empty",
+				() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+						this.requestFactory, ""));
 	}
 
 	@Test

@@ -39,15 +39,17 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void addAllWhenGeneratorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Generators must not be null");
-		List<ExitCodeGenerator> generators = null;
-		new ExitCodeGenerators().addAll(generators);
+		this.thrown.expect(IllegalArgumentException.class, "Generators must not be null",
+				() -> {
+					List<ExitCodeGenerator> generators = null;
+					new ExitCodeGenerators().addAll(generators);
+				});
 	}
 
 	@Test
 	public void addWhenGeneratorIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Generator must not be null");
-		new ExitCodeGenerators().add(null);
+		this.thrown.expect(IllegalArgumentException.class, "Generator must not be null",
+				() -> new ExitCodeGenerators().add(null));
 	}
 
 	@Test

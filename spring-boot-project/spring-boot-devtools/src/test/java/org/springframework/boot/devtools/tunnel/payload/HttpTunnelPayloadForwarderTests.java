@@ -40,8 +40,8 @@ public class HttpTunnelPayloadForwarderTests {
 	@Test
 	public void targetChannelMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"TargetChannel must not be null");
-		new HttpTunnelPayloadForwarder(null);
+				"TargetChannel must not be null",
+				() -> new HttpTunnelPayloadForwarder(null));
 	}
 
 	@Test
@@ -70,10 +70,12 @@ public class HttpTunnelPayloadForwarderTests {
 	public void overflow() throws Exception {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
-		this.thrown.expect(IllegalStateException.class, "Too many messages queued");
-		for (int i = 2; i < 130; i++) {
-			forwarder.forward(payload(i, "data" + i));
-		}
+		this.thrown.expect(IllegalStateException.class, "Too many messages queued",
+				() -> {
+					for (int i = 2; i < 130; i++) {
+						forwarder.forward(payload(i, "data" + i));
+					}
+				});
 	}
 
 	private HttpTunnelPayload payload(long sequence, String data) {

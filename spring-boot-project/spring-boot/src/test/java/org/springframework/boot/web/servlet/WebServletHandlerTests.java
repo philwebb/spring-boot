@@ -126,8 +126,8 @@ public class WebServletHandlerTests {
 	@Test
 	public void urlPatternsDeclaredTwice() throws IOException {
 		this.thrown.expect(IllegalStateException.class,
-				"The urlPatterns and value attributes are mutually exclusive.");
-		getBeanDefinition(UrlPatternsDeclaredTwiceServlet.class);
+				"The urlPatterns and value attributes are mutually exclusive.",
+				() -> getBeanDefinition(UrlPatternsDeclaredTwiceServlet.class));
 	}
 
 	private BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {

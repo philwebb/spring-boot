@@ -16,22 +16,26 @@
 
 package org.junit.rules;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.assertj.core.matcher.AssertionMatcher;
 import org.hamcrest.Matcher;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author pwebb
  */
 public class MyExpectedException {
 
-	public void expect(Class<?> exceptionClass) {
+	public void expect(Class<? extends Throwable> exceptionClass,
+			ThrowingCallable throwingCallable) {
+		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable);
 	}
 
-	public void expect(Class<?> exceptionClass, String message) {
-	}
-
-	public static MyExpectedException none() {
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	public void expect(Class<? extends Throwable> exceptionClass, String message,
+			ThrowingCallable throwingCallable) {
+		assertThatExceptionOfType(exceptionClass).isThrownBy(throwingCallable)
+				.withMessageContaining(message);
 	}
 
 	public void expectMessage(String message) {
@@ -47,6 +51,10 @@ public class MyExpectedException {
 	}
 
 	public void expect(AssertionMatcher<?> assertionMatcher) {
+	}
+
+	public static MyExpectedException none() {
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

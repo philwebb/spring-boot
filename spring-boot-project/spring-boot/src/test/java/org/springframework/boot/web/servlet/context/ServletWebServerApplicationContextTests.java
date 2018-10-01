@@ -175,8 +175,7 @@ public class ServletWebServerApplicationContextTests {
 	public void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
-		this.thrown.expect(IllegalStateException.class);
-		this.context.refresh();
+		this.thrown.expect(IllegalStateException.class, () -> this.context.refresh());
 	}
 
 	@Test
@@ -192,8 +191,8 @@ public class ServletWebServerApplicationContextTests {
 	public void missingServletWebServerFactory() {
 		this.thrown.expect(ApplicationContextException.class,
 				"Unable to start ServletWebServerApplicationContext due to missing "
-						+ "ServletWebServerFactory bean");
-		this.context.refresh();
+						+ "ServletWebServerFactory bean",
+				() -> this.context.refresh());
 	}
 
 	@Test
@@ -203,8 +202,8 @@ public class ServletWebServerApplicationContextTests {
 				new RootBeanDefinition(MockServletWebServerFactory.class));
 		this.thrown.expect(ApplicationContextException.class,
 				"Unable to start ServletWebServerApplicationContext due to "
-						+ "multiple ServletWebServerFactory beans");
-		this.context.refresh();
+						+ "multiple ServletWebServerFactory beans",
+				() -> this.context.refresh());
 
 	}
 
@@ -421,10 +420,12 @@ public class ServletWebServerApplicationContextTests {
 				this.filterCaptor.capture());
 		// Up to this point the filterBean should not have been created, calling
 		// the delegate proxy will trigger creation and an exception
-		this.thrown.expect(BeanCreationException.class, "Create FilterBean Failure");
-		this.filterCaptor.getValue().init(new MockFilterConfig());
-		this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
-				new MockHttpServletResponse(), new MockFilterChain());
+		this.thrown.expect(BeanCreationException.class, "Create FilterBean Failure",
+				() -> {
+					this.filterCaptor.getValue().init(new MockFilterConfig());
+					this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
+							new MockHttpServletResponse(), new MockFilterChain());
+				});
 	}
 
 	@Test

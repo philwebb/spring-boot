@@ -140,11 +140,10 @@ public class ControllerEndpointDiscovererTests {
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class,
-							"ControllerEndpoints must not declare operations");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer(
+						(discoverer) -> this.thrown.expect(IllegalStateException.class,
+								"ControllerEndpoints must not declare operations",
+								discoverer::getEndpoints)));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

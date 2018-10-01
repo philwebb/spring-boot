@@ -161,8 +161,8 @@ public class ValidationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething("KO");
+		this.thrown.expect(ConstraintViolationException.class,
+				() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -172,8 +172,8 @@ public class ValidationAutoConfigurationTests {
 		DefaultAnotherSampleService service = this.context
 				.getBean(DefaultAnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		this.thrown.expect(ConstraintViolationException.class,
+				() -> service.doSomething(2));
 	}
 
 	@Test
@@ -185,8 +185,8 @@ public class ValidationAutoConfigurationTests {
 				.isEmpty();
 		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
-		this.thrown.expect(ConstraintViolationException.class);
-		service.doSomething(2);
+		this.thrown.expect(ConstraintViolationException.class,
+				() -> service.doSomething(2));
 	}
 
 	@Test

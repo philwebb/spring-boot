@@ -68,17 +68,16 @@ public class ConnectionInputStreamTests {
 	public void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class, "End of stream");
-		inputStream.checkedRead();
+		this.thrown.expect(IOException.class, "End of stream", inputStream::checkedRead);
 	}
 
 	@Test
 	public void checkedReadArray() throws Exception {
+		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class, "End of stream");
-		byte[] buffer = new byte[100];
-		inputStream.checkedRead(buffer, 0, buffer.length);
+		this.thrown.expect(IOException.class, "End of stream",
+				() -> inputStream.checkedRead(buffer, 0, buffer.length));
 	}
 
 	private static class LimitedInputStream extends FilterInputStream {

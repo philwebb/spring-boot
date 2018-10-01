@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConditionalOnSingleCandidate}.
@@ -126,20 +126,20 @@ public class ConditionalOnSingleCandidateTests {
 
 	@Test
 	public void invalidAnnotationTwoTypes() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown.expectMessage(
-				OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
-		load(OnBeanSingleCandidateTwoTypesConfiguration.class);
+		assertThatExceptionOfType(IllegalStateException.class)
+				.isThrownBy(() -> load(OnBeanSingleCandidateTwoTypesConfiguration.class))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining(
+						OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 	}
 
 	@Test
 	public void invalidAnnotationNoType() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectCause(isA(IllegalArgumentException.class));
-		this.thrown
-				.expectMessage(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
-		load(OnBeanSingleCandidateNoTypeConfiguration.class);
+		assertThatExceptionOfType(IllegalStateException.class)
+				.isThrownBy(() -> load(OnBeanSingleCandidateNoTypeConfiguration.class))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining(
+						OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 	}
 
 	@Test

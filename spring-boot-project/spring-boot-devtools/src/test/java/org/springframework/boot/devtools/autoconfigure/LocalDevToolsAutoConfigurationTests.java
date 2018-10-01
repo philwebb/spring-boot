@@ -168,8 +168,8 @@ public class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(OptionalLiveReloadServer.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
@@ -203,8 +203,8 @@ public class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = initializeAndRun(Config.class, properties);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ClassPathFileSystemWatcher.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	@Test

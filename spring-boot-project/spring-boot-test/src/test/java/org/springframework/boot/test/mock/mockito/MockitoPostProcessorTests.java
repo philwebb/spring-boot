@@ -54,8 +54,8 @@ public class MockitoPostProcessorTests {
 		this.thrown.expect(IllegalStateException.class,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
-						+ "but found [example1, example2]");
-		context.refresh();
+						+ "but found [example1, example2]",
+				context::refresh);
 	}
 
 	@Test
@@ -66,8 +66,8 @@ public class MockitoPostProcessorTests {
 		this.thrown.expect(IllegalStateException.class,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
-						+ "but found [example1, example3]");
-		context.refresh();
+						+ "but found [example1, example3]",
+				context::refresh);
 	}
 
 	@Test

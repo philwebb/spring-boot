@@ -566,8 +566,8 @@ public class MapBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo", STRING_STRING_MAP);
+		this.thrown.expect(BindException.class,
+				() -> this.binder.bind("foo", STRING_STRING_MAP));
 	}
 
 	@Test

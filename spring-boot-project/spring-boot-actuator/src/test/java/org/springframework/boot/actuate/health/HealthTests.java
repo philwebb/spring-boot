@@ -41,8 +41,8 @@ public class HealthTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Status must not be null");
-		new Health.Builder(null, null);
+		this.thrown.expect(IllegalArgumentException.class, "Status must not be null",
+				() -> new Health.Builder(null, null));
 	}
 
 	@Test

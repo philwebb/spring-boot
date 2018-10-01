@@ -38,8 +38,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Value must not be null");
-		DurationStyle.detectAndParse(null);
+		this.thrown.expect(IllegalArgumentException.class, "Value must not be null",
+				() -> DurationStyle.detectAndParse(null));
 	}
 
 	@Test
@@ -148,8 +148,8 @@ public class DurationStyleTests {
 	@Test
 	public void detectAndParseWhenBadFormatShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"'10foo' is not a valid duration");
-		DurationStyle.detectAndParse("10foo");
+				"'10foo' is not a valid duration",
+				() -> DurationStyle.detectAndParse("10foo"));
 	}
 
 	@Test
@@ -183,8 +183,7 @@ public class DurationStyleTests {
 	@Test
 	public void detectWhenUnknownShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"'bad' is not a valid duration");
-		DurationStyle.detect("bad");
+				"'bad' is not a valid duration", () -> DurationStyle.detect("bad"));
 	}
 
 	@Test
@@ -228,8 +227,8 @@ public class DurationStyleTests {
 	@Test
 	public void parseIso8601WhenSimpleShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"'10d' is not a valid ISO-8601 duration");
-		DurationStyle.ISO8601.parse("10d");
+				"'10d' is not a valid ISO-8601 duration",
+				() -> DurationStyle.ISO8601.parse("10d"));
 	}
 
 	@Test
@@ -259,8 +258,8 @@ public class DurationStyleTests {
 	@Test
 	public void parseSimpleWhenIso8601ShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"'PT10H' is not a valid simple duration");
-		DurationStyle.SIMPLE.parse("PT10H");
+				"'PT10H' is not a valid simple duration",
+				() -> DurationStyle.SIMPLE.parse("PT10H"));
 	}
 
 	@Test

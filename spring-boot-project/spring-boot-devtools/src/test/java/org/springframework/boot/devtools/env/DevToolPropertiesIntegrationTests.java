@@ -90,8 +90,8 @@ public class DevToolPropertiesIntegrationTests {
 				BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(MyBean.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test

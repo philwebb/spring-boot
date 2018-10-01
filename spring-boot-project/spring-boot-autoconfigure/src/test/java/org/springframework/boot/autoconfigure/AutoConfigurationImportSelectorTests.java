@@ -173,14 +173,14 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		selectImports(EnableAutoConfigurationWithFaultyClassExclude.class);
+		this.thrown.expect(IllegalStateException.class,
+				() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class);
+		this.thrown.expect(IllegalStateException.class, () -> selectImports(
+				EnableAutoConfigurationWithFaultyClassNameExclude.class));
 	}
 
 	@Test
@@ -188,8 +188,8 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
 						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
-		this.thrown.expect(IllegalStateException.class);
-		selectImports(BasicEnableAutoConfiguration.class);
+		this.thrown.expect(IllegalStateException.class,
+				() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test

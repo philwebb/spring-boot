@@ -79,8 +79,8 @@ public class JdbcTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleRepository() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.applicationContext.getBean(ExampleRepository.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.applicationContext.getBean(ExampleRepository.class));
 	}
 
 	@Test

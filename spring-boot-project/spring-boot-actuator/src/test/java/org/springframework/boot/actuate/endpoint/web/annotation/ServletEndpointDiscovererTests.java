@@ -116,41 +116,35 @@ public class ServletEndpointDiscovererTests {
 	@Test
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class,
-							"ServletEndpoints must not declare operations");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer(
+						(discoverer) -> this.thrown.expect(IllegalStateException.class,
+								"ServletEndpoints must not declare operations",
+								discoverer::getEndpoints)));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class, "must be a supplier");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer(
+						(discoverer) -> this.thrown.expect(IllegalStateException.class,
+								"must be a supplier", discoverer::getEndpoints)));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
 		this.contextRunner
 				.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class,
-							"must supply an EndpointServlet");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer((discoverer) -> this.thrown.expect(
+						IllegalStateException.class, "must supply an EndpointServlet",
+						discoverer::getEndpoints)));
 	}
 
 	@Test
 	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
-				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class,
-							"must not supply null");
-					discoverer.getEndpoints();
-				}));
+				.run(assertDiscoverer(
+						(discoverer) -> this.thrown.expect(IllegalStateException.class,
+								"must not supply null", discoverer::getEndpoints)));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

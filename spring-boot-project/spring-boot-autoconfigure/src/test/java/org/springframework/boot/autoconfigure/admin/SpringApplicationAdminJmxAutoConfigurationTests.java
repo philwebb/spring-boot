@@ -70,10 +70,9 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	@Test
 	public void notRegisteredByDefault() {
-		this.contextRunner.run((context) -> {
-			this.thrown.expect(InstanceNotFoundException.class);
-			this.server.getObjectInstance(createDefaultObjectName());
-		});
+		this.contextRunner
+				.run((context) -> this.thrown.expect(InstanceNotFoundException.class,
+						() -> this.server.getObjectInstance(createDefaultObjectName())));
 	}
 
 	@Test
@@ -99,9 +98,8 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 					catch (InstanceNotFoundException ex) {
 						fail("Admin MBean should have been exposed with custom name");
 					}
-					this.thrown.expect(InstanceNotFoundException.class); // Should not be
-																			// exposed
-					this.server.getObjectInstance(createDefaultObjectName());
+					this.thrown.expect(InstanceNotFoundException.class, () -> this.server
+							.getObjectInstance(createDefaultObjectName()));
 				});
 	}
 
@@ -139,9 +137,9 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 						.run("--" + ENABLE_ADMIN_PROP)) {
 			BeanFactoryUtils.beanOfType(parent.getBeanFactory(),
 					SpringApplicationAdminMXBeanRegistrar.class);
-			this.thrown.expect(NoSuchBeanDefinitionException.class);
-			BeanFactoryUtils.beanOfType(child.getBeanFactory(),
-					SpringApplicationAdminMXBeanRegistrar.class);
+			this.thrown.expect(NoSuchBeanDefinitionException.class,
+					() -> BeanFactoryUtils.beanOfType(child.getBeanFactory(),
+							SpringApplicationAdminMXBeanRegistrar.class));
 		}
 	}
 

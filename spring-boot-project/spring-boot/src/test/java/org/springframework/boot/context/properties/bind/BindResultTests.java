@@ -68,8 +68,8 @@ public class BindResultTests {
 	@Test
 	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
-		this.thrown.expect(NoSuchElementException.class, "No value bound");
-		result.get();
+		this.thrown.expect(NoSuchElementException.class, "No value bound",
+				() -> result.get());
 	}
 
 	@Test
@@ -87,8 +87,8 @@ public class BindResultTests {
 	@Test
 	public void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class, "Consumer must not be null");
-		result.ifBound(null);
+		this.thrown.expect(IllegalArgumentException.class, "Consumer must not be null",
+				() -> result.ifBound(null));
 	}
 
 	@Test
@@ -108,8 +108,8 @@ public class BindResultTests {
 	@Test
 	public void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class, "Mapper must not be null");
-		result.map(null);
+		this.thrown.expect(IllegalArgumentException.class, "Mapper must not be null",
+				() -> result.map(null));
 	}
 
 	@Test
@@ -155,8 +155,8 @@ public class BindResultTests {
 	@Test
 	public void orElseCreateWhenTypeIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
-		result.orElseCreate(null);
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null",
+				() -> result.orElseCreate(null));
 	}
 
 	@Test
@@ -180,8 +180,7 @@ public class BindResultTests {
 	@Test
 	public void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
 		BindResult<String> result = BindResult.of(null);
-		this.thrown.expect(IOException.class);
-		result.orElseThrow(IOException::new);
+		this.thrown.expect(IOException.class, () -> result.orElseThrow(IOException::new));
 	}
 
 	@Test

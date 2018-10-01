@@ -22,7 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -42,10 +42,10 @@ public class SpringApplicationRunnerTests {
 				SpringApplicationRunnerConfiguration.class);
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);
-		this.thrown.expect(RuntimeException.class);
-		this.thrown.expectMessage(equalTo("No classes found in '[foo, bar]'"));
-		new SpringApplicationRunner(configuration, new String[] { "foo", "bar" })
-				.compileAndRun();
+		assertThatExceptionOfType(RuntimeException.class)
+				.isThrownBy(() -> new SpringApplicationRunner(configuration,
+						new String[] { "foo", "bar" }).compileAndRun())
+				.withMessage("No classes found in '[foo, bar]'");
 	}
 
 }

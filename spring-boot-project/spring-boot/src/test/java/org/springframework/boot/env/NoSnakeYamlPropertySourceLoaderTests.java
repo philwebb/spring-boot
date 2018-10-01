@@ -41,11 +41,11 @@ public class NoSnakeYamlPropertySourceLoaderTests {
 
 	@Test
 	public void load() throws Exception {
-		this.thrown.expect(IllegalStateException.class,
-				"Attempted to load resource but snakeyaml was not found on the classpath");
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		this.loader.load("resource", resource);
+		this.thrown.expect(IllegalStateException.class,
+				"Attempted to load resource but snakeyaml was not found on the classpath",
+				() -> this.loader.load("resource", resource));
 	}
 
 }

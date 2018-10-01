@@ -66,8 +66,8 @@ public class DefaultHealthIndicatorRegistryTests {
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
 		this.thrown.expect(IllegalStateException.class,
-				"HealthIndicator with name 'one' already registered");
-		this.registry.register("one", this.two);
+				"HealthIndicator with name 'one' already registered",
+				() -> this.registry.register("one", this.two));
 	}
 
 	@Test
@@ -102,9 +102,7 @@ public class DefaultHealthIndicatorRegistryTests {
 	public void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, HealthIndicator> snapshot = this.registry.getAll();
-
-		this.thrown.expect(UnsupportedOperationException.class);
-		snapshot.clear();
+		this.thrown.expect(UnsupportedOperationException.class, snapshot::clear);
 	}
 
 }

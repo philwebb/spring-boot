@@ -101,8 +101,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		this.thrown.expect(NoArgumentsException.class);
-		this.commandRunner.run();
+		this.thrown.expect(NoArgumentsException.class, this.commandRunner::run);
 	}
 
 	@Test
@@ -113,8 +112,8 @@ public class CommandRunnerTests {
 
 	@Test
 	public void missingCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class);
-		this.commandRunner.run("missing");
+		this.thrown.expect(NoSuchCommandException.class,
+				() -> this.commandRunner.run("missing"));
 	}
 
 	@Test
@@ -188,14 +187,14 @@ public class CommandRunnerTests {
 
 	@Test
 	public void helpNoCommand() throws Exception {
-		this.thrown.expect(NoHelpCommandArgumentsException.class);
-		this.commandRunner.run("help");
+		this.thrown.expect(NoHelpCommandArgumentsException.class,
+				() -> this.commandRunner.run("help"));
 	}
 
 	@Test
 	public void helpUnknownCommand() throws Exception {
-		this.thrown.expect(NoSuchCommandException.class);
-		this.commandRunner.run("help", "missing");
+		this.thrown.expect(NoSuchCommandException.class,
+				() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {

@@ -157,7 +157,7 @@ public class ConditionEvaluationReportLoggingListenerTests {
 	public void listenerSupportsOnlyInfoAndDebug() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
 				() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
-				.withMessage("LogLevel must be INFO or DEBUG");
+				.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test

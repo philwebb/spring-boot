@@ -41,8 +41,8 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void argumentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Args must not be null");
-		new DefaultApplicationArguments(null);
+		this.thrown.expect(IllegalArgumentException.class, "Args must not be null",
+				() -> new DefaultApplicationArguments(null));
 	}
 
 	@Test

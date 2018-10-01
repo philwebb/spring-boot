@@ -38,14 +38,14 @@ public class FrameTests {
 
 	@Test
 	public void payloadMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Payload must not be null");
-		new Frame((String) null);
+		this.thrown.expect(IllegalArgumentException.class, "Payload must not be null",
+				() -> new Frame((String) null));
 	}
 
 	@Test
 	public void typeMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
-		new Frame((Frame.Type) null);
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null",
+				() -> new Frame((Frame.Type) null));
 	}
 
 	@Test
@@ -91,15 +91,15 @@ public class FrameTests {
 	public void readFragmentedNotSupported() throws Exception {
 		byte[] bytes = new byte[] { 0x0F };
 		this.thrown.expect(IllegalStateException.class,
-				"Fragmented frames are not supported");
-		Frame.read(newConnectionInputStream(bytes));
+				"Fragmented frames are not supported",
+				() -> Frame.read(newConnectionInputStream(bytes)));
 	}
 
 	@Test
 	public void readLargeFramesNotSupported() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
-		this.thrown.expect(IllegalStateException.class, "Large frames are not supported");
-		Frame.read(newConnectionInputStream(bytes));
+		this.thrown.expect(IllegalStateException.class, "Large frames are not supported",
+				() -> Frame.read(newConnectionInputStream(bytes)));
 	}
 
 	@Test

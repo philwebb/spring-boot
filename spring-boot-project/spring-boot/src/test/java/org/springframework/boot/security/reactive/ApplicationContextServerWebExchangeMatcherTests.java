@@ -51,8 +51,8 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 	@Test
 	public void createWhenContextClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Context class must not be null");
-		new TestApplicationContextServerWebExchangeMatcher<>(null);
+				"Context class must not be null",
+				() -> new TestApplicationContextServerWebExchangeMatcher<>(null));
 	}
 
 	@Test
@@ -82,8 +82,7 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		ServerWebExchange exchange = createExchange();
 		Supplier<ExistingBean> supplier = new TestApplicationContextServerWebExchangeMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(exchange);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		supplier.get();
+		this.thrown.expect(NoSuchBeanDefinitionException.class, supplier::get);
 	}
 
 	@Test
@@ -91,9 +90,10 @@ public class ApplicationContextServerWebExchangeMatcherTests {
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/path").build());
 		this.thrown.expect(IllegalStateException.class,
-				"No ApplicationContext found on ServerWebExchange.");
-		new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(exchange);
+				"No ApplicationContext found on ServerWebExchange.",
+				() -> new TestApplicationContextServerWebExchangeMatcher<>(
+						ExistingBean.class)
+								.callMatchesAndReturnProvidedContext(exchange));
 	}
 
 	private ServerWebExchange createExchange() {

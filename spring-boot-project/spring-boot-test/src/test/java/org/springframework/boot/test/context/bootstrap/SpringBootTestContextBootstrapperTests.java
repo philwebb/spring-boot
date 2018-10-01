@@ -46,8 +46,9 @@ public class SpringBootTestContextBootstrapperTests {
 				"@WebAppConfiguration should only be used with "
 						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
 						+ "environment. Please remove @WebAppConfiguration or reconfigure "
-						+ "@SpringBootTest.");
-		buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class);
+						+ "@SpringBootTest.",
+				() -> buildTestContext(
+						SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class));
 	}
 
 	@Test

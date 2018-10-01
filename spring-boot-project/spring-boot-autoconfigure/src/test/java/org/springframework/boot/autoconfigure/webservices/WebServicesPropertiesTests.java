@@ -36,23 +36,23 @@ public class WebServicesPropertiesTests {
 	public void pathMustNotBeEmpty() {
 		this.properties = new WebServicesProperties();
 		this.thrown.expect(IllegalArgumentException.class,
-				"Path must have length greater than 1");
-		this.properties.setPath("");
+				"Path must have length greater than 1",
+				() -> this.properties.setPath(""));
 	}
 
 	@Test
 	public void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new WebServicesProperties();
 		this.thrown.expect(IllegalArgumentException.class,
-				"Path must have length greater than 1");
-		this.properties.setPath("/");
+				"Path must have length greater than 1",
+				() -> this.properties.setPath("/"));
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.properties = new WebServicesProperties();
-		this.thrown.expect(IllegalArgumentException.class, "Path must start with '/'");
-		this.properties.setPath("custom");
+		this.thrown.expect(IllegalArgumentException.class, "Path must start with '/'",
+				() -> this.properties.setPath("custom"));
 	}
 
 }

@@ -34,8 +34,8 @@ public class SimpleInfoContributorTests {
 
 	@Test
 	public void prefixIsMandatory() {
-		this.thrown.expect(IllegalArgumentException.class);
-		new SimpleInfoContributor(null, new Object());
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> new SimpleInfoContributor(null, new Object()));
 	}
 
 	@Test

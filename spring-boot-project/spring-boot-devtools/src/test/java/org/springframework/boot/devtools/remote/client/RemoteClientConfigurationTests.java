@@ -105,8 +105,8 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void failIfNoSecret() {
 		this.thrown.expect(BeanCreationException.class,
-				"required to secure your connection");
-		configure("http://localhost", false);
+				"required to secure your connection",
+				() -> configure("http://localhost", false));
 	}
 
 	@Test
@@ -126,15 +126,15 @@ public class RemoteClientConfigurationTests {
 	@Test
 	public void liveReloadDisabled() {
 		configure("spring.devtools.livereload.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(OptionalLiveReloadServer.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
 
 	@Test
 	public void remoteRestartDisabled() {
 		configure("spring.devtools.remote.restart.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ClassPathFileSystemWatcher.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(ClassPathFileSystemWatcher.class));
 	}
 
 	private void configure(String... pairs) {

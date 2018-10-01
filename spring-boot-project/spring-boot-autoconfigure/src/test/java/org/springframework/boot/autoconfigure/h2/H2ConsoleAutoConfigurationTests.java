@@ -79,13 +79,13 @@ public class H2ConsoleAutoConfigurationTests {
 
 	@Test
 	public void customPathMustBeginWithASlash() {
-		this.thrown.expect(BeanCreationException.class,
-				"Failed to bind properties under 'spring.h2.console'");
 		this.context.register(H2ConsoleAutoConfiguration.class);
 		TestPropertyValues
 				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
 				.applyTo(this.context);
-		this.context.refresh();
+		this.thrown.expect(BeanCreationException.class,
+				"Failed to bind properties under 'spring.h2.console'",
+				this.context::refresh);
 	}
 
 	@Test

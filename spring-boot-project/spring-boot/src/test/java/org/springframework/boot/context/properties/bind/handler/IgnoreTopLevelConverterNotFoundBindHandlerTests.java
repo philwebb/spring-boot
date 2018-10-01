@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.convert.ConverterNotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.instanceOf;
 
 /**
@@ -83,10 +84,10 @@ public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.map", "hello");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(ConverterNotFoundException.class));
-		this.binder.bind("example", Bindable.of(Example.class),
-				new IgnoreTopLevelConverterNotFoundBindHandler());
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class),
+						new IgnoreTopLevelConverterNotFoundBindHandler()))
+				.withCauseInstanceOf(ClassNotFoundException.class);
 	}
 
 	public static class Example {

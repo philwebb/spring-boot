@@ -81,8 +81,8 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -226,8 +226,8 @@ public class ConfigurationPropertiesTests {
 	@Test
 	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"No ConfigurationProperties annotation found");
-		load(WithoutAndAnnotationConfiguration.class, "name:foo");
+				"No ConfigurationProperties annotation found",
+				() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"));
 	}
 
 	@Test
@@ -659,10 +659,10 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		prepareConverterContext(NonQualifiedConverterConfiguration.class,
-				PersonProperties.class);
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> prepareConverterContext(
+						NonQualifiedConverterConfiguration.class, PersonProperties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -676,10 +676,11 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		prepareConverterContext(NonQualifiedGenericConverterConfiguration.class,
-				PersonProperties.class);
+		assertThatExceptionOfType(BeanCreationException.class)
+				.isThrownBy(() -> prepareConverterContext(
+						NonQualifiedGenericConverterConfiguration.class,
+						PersonProperties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -730,9 +731,10 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenSetterThrowsValidationExceptionShouldFail() {
-		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectCause(instanceOf(BindException.class));
-		load(WithSetterThatThrowsValidationExceptionProperties.class, "test.foo=spam");
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> load(WithSetterThatThrowsValidationExceptionProperties.class,
+						"test.foo=spam"))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test

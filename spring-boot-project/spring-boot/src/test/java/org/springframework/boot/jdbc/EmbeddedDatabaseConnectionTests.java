@@ -53,15 +53,15 @@ public class EmbeddedDatabaseConnectionTests {
 	@Test
 	public void getUrlWithNullDatabaseName() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"DatabaseName must not be empty");
-		EmbeddedDatabaseConnection.HSQL.getUrl(null);
+				"DatabaseName must not be empty",
+				() -> EmbeddedDatabaseConnection.HSQL.getUrl(null));
 	}
 
 	@Test
 	public void getUrlWithEmptyDatabaseName() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"DatabaseName must not be empty");
-		EmbeddedDatabaseConnection.HSQL.getUrl("  ");
+				"DatabaseName must not be empty",
+				() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "));
 	}
 
 }

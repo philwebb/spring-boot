@@ -205,10 +205,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.stop();
-		this.thrown.expect(IOException.class);
-		String response = getResponse(getLocalUrl(port, "/hello"));
-		throw new RuntimeException(
-				"Unexpected response on port " + port + " : " + response);
+		this.thrown.expect(IOException.class,
+				() -> getResponse(getLocalUrl(port, "/hello")));
 	}
 
 	@Test
@@ -282,22 +280,22 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	public void contextPathMustStartWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ContextPath must start with '/' and not end with '/'");
-		getFactory().setContextPath("missingslash");
+				"ContextPath must start with '/' and not end with '/'",
+				() -> getFactory().setContextPath("missingslash"));
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ContextPath must start with '/' and not end with '/'");
-		getFactory().setContextPath("extraslash/");
+				"ContextPath must start with '/' and not end with '/'",
+				() -> getFactory().setContextPath("extraslash/"));
 	}
 
 	@Test
 	public void contextRootPathMustNotBeSlash() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Root ContextPath must be specified using an empty string");
-		getFactory().setContextPath("/");
+				"Root ContextPath must be specified using an empty string",
+				() -> getFactory().setContextPath("/"));
 	}
 
 	@Test
@@ -391,8 +389,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		this.thrown.expect(SSLException.class);
-		getResponse(getLocalUrl("https", "/hello"), requestFactory);
+		this.thrown.expect(SSLException.class,
+				() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
 	}
 
 	@Test
@@ -772,8 +770,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
-		this.thrown.expect(IllegalStateException.class, "points to a file");
-		factory.getValidSessionStoreDir(false);
+		this.thrown.expect(IllegalStateException.class, "points to a file",
+				() -> factory.getValidSessionStoreDir(false));
 	}
 
 	@Test
@@ -1001,8 +999,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					}
 
 				}));
-		this.thrown.expect(WebServerException.class);
-		factory.getWebServer().start();
+		this.thrown.expect(WebServerException.class, factory.getWebServer()::start);
 	}
 
 	@Test

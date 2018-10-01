@@ -60,33 +60,30 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"Environment must not be null");
-		new LocalHostWebConnectionHtmlUnitDriver(null);
+		this.thrown.expect(IllegalArgumentException.class, "Environment must not be null",
+				() -> new LocalHostWebConnectionHtmlUnitDriver(null));
 	}
 
 	@Test
 	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"Environment must not be null");
-		new LocalHostWebConnectionHtmlUnitDriver(null, true);
+		this.thrown.expect(IllegalArgumentException.class, "Environment must not be null",
+				() -> new LocalHostWebConnectionHtmlUnitDriver(null, true));
 	}
 
 	@Test
 	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"Environment must not be null");
-		new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME);
+		this.thrown.expect(IllegalArgumentException.class, "Environment must not be null",
+				() -> new LocalHostWebConnectionHtmlUnitDriver(null,
+						BrowserVersion.CHROME));
 	}
 
 	@Test
 	public void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"Environment must not be null");
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getVersion()).willReturn("chrome");
-		new LocalHostWebConnectionHtmlUnitDriver(null, capabilities);
+		this.thrown.expect(IllegalArgumentException.class, "Environment must not be null",
+				() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities));
 	}
 
 	@Test

@@ -45,14 +45,16 @@ public class SpringConfigurationPropertySourceTests {
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"PropertySource must not be null");
-		new SpringConfigurationPropertySource(null, mock(PropertyMapper.class), null);
+				"PropertySource must not be null",
+				() -> new SpringConfigurationPropertySource(null,
+						mock(PropertyMapper.class), null));
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Mapper must not be null");
-		new SpringConfigurationPropertySource(mock(PropertySource.class), null, null);
+		this.thrown.expect(IllegalArgumentException.class, "Mapper must not be null",
+				() -> new SpringConfigurationPropertySource(mock(PropertySource.class),
+						null, null));
 	}
 
 	@Test
@@ -112,8 +114,8 @@ public class SpringConfigurationPropertySourceTests {
 
 	@Test
 	public void fromWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Source must not be null");
-		SpringConfigurationPropertySource.from(null);
+		this.thrown.expect(IllegalArgumentException.class, "Source must not be null",
+				() -> SpringConfigurationPropertySource.from(null));
 	}
 
 	@Test

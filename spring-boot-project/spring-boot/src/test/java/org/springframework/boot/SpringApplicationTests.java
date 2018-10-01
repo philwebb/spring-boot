@@ -175,20 +175,20 @@ public class SpringApplicationTests {
 	@Test
 	public void sourcesMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"PrimarySources must not be null");
-		new SpringApplication((Class<?>[]) null).run();
+				"PrimarySources must not be null",
+				() -> new SpringApplication((Class<?>[]) null).run());
 	}
 
 	@Test
 	public void sourcesMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, "Sources must not be empty");
-		new SpringApplication().run();
+		this.thrown.expect(IllegalArgumentException.class, "Sources must not be empty",
+				() -> new SpringApplication().run());
 	}
 
 	@Test
 	public void sourcesMustBeAccessible() {
-		this.thrown.expect(IllegalStateException.class, "Cannot load configuration");
-		new SpringApplication(InaccessibleConfiguration.class).run();
+		this.thrown.expect(IllegalStateException.class, "Cannot load configuration",
+				() -> new SpringApplication(InaccessibleConfiguration.class).run());
 	}
 
 	@Test
@@ -1197,8 +1197,9 @@ public class SpringApplicationTests {
 
 	@Test
 	public void beanDefinitionOverridingIsDisabledByDefault() {
-		this.thrown.expect(BeanDefinitionOverrideException.class);
-		new SpringApplication(ExampleConfig.class, OverrideConfig.class).run();
+		this.thrown.expect(BeanDefinitionOverrideException.class,
+				() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+						.run());
 	}
 
 	@Test

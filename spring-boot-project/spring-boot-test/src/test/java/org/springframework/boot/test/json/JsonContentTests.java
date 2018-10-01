@@ -42,14 +42,14 @@ public class JsonContentTests {
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ResourceLoadClass must not be null");
-		new JsonContent<ExampleObject>(null, TYPE, JSON);
+				"ResourceLoadClass must not be null",
+				() -> new JsonContent<ExampleObject>(null, TYPE, JSON));
 	}
 
 	@Test
 	public void createWhenJsonIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "JSON must not be null");
-		new JsonContent<ExampleObject>(getClass(), TYPE, null);
+		this.thrown.expect(IllegalArgumentException.class, "JSON must not be null",
+				() -> new JsonContent<ExampleObject>(getClass(), TYPE, null));
 	}
 
 	@Test

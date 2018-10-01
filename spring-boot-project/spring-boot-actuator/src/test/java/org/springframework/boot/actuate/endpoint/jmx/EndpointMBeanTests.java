@@ -38,7 +38,7 @@ import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -66,14 +66,15 @@ public class EndpointMBeanTests {
 	@Test
 	public void createWhenResponseMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ResponseMapper must not be null");
-		new EndpointMBean(null, null, mock(ExposableJmxEndpoint.class));
+				"ResponseMapper must not be null",
+				() -> new EndpointMBean(null, null, mock(ExposableJmxEndpoint.class)));
 	}
 
 	@Test
 	public void createWhenEndpointIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Endpoint must not be null");
-		new EndpointMBean(mock(JmxOperationResponseMapper.class), null, null);
+		this.thrown.expect(IllegalArgumentException.class, "Endpoint must not be null",
+				() -> new EndpointMBean(mock(JmxOperationResponseMapper.class), null,
+						null));
 	}
 
 	@Test
@@ -99,10 +100,11 @@ public class EndpointMBeanTests {
 					throw new FatalBeanException("test failure");
 				}));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
-		this.thrown.expect(MBeanException.class);
-		this.thrown.expectCause(instanceOf(IllegalStateException.class));
-		this.thrown.expectMessage("test failure");
-		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThatExceptionOfType(MBeanException.class)
+				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
+				.withCauseInstanceOf(IllegalStateException.class)
+				.withMessageContaining("test failure");
+
 	}
 
 	@Test
@@ -113,20 +115,21 @@ public class EndpointMBeanTests {
 					throw new UnsupportedOperationException("test failure");
 				}));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
-		this.thrown.expect(MBeanException.class);
-		this.thrown.expectCause(instanceOf(UnsupportedOperationException.class));
-		this.thrown.expectMessage("test failure");
-		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThatExceptionOfType(MBeanException.class)
+				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
+				.withCauseInstanceOf(UnsupportedOperationException.class)
+				.withMessageContaining("test failure");
 	}
 
 	@Test
 	public void invokeWhenActionNameIsNotAnOperationShouldThrowException()
 			throws MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
-		this.thrown.expect(ReflectionException.class);
-		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
-		this.thrown.expectMessage("no operation named missingOperation");
-		bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThatExceptionOfType(MBeanException.class)
+				.isThrownBy(
+						() -> bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("no operation named missingOperation");
 	}
 
 	@Test
@@ -158,10 +161,10 @@ public class EndpointMBeanTests {
 		};
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(operation);
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
-		this.thrown.expect(ReflectionException.class);
-		this.thrown.expectCause(instanceOf(IllegalArgumentException.class));
-		this.thrown.expectMessage("test failure");
-		bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
+		assertThatExceptionOfType(ReflectionException.class)
+				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
+				.withRootCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("test failure");
 	}
 
 	@Test
@@ -189,8 +192,8 @@ public class EndpointMBeanTests {
 			throws AttributeNotFoundException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
 		this.thrown.expect(AttributeNotFoundException.class,
-				"EndpointMBeans do not support attributes");
-		bean.getAttribute("test");
+				"EndpointMBeans do not support attributes",
+				() -> bean.getAttribute("test"));
 	}
 
 	@Test
@@ -198,8 +201,8 @@ public class EndpointMBeanTests {
 			InvalidAttributeValueException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
 		this.thrown.expect(AttributeNotFoundException.class,
-				"EndpointMBeans do not support attributes");
-		bean.setAttribute(new Attribute("test", "test"));
+				"EndpointMBeans do not support attributes",
+				() -> bean.setAttribute(new Attribute("test", "test")));
 	}
 
 	@Test

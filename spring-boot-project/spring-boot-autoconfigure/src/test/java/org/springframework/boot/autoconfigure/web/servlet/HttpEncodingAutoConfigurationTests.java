@@ -75,8 +75,8 @@ public class HttpEncodingAutoConfigurationTests {
 	@Test
 	public void disableConfiguration() {
 		load(EmptyConfiguration.class, "spring.http.encoding.enabled:false");
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(CharacterEncodingFilter.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test

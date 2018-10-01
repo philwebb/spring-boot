@@ -27,6 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ApplicationContextAssert}.
@@ -61,8 +62,8 @@ public class ApplicationContextAssertTests {
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ApplicationContext must not be null");
-		new ApplicationContextAssert<>(null, null);
+				"ApplicationContext must not be null",
+				() -> new ApplicationContextAssert<>(null, null));
 	}
 
 	@Test
@@ -84,15 +85,16 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasBeanWhenHasNoBeanShouldFail() {
-		this.thrown.expect(AssertionError.class, "no such bean");
-		assertThat(getAssert(this.context)).hasBean("foo");
+		this.thrown.expect(AssertionError.class, "no such bean",
+				() -> assertThat(getAssert(this.context)).hasBean("foo"));
 	}
 
 	@Test
 	public void hasBeanWhenNotStartedShouldFail() {
-		this.thrown.expect(AssertionError.class, String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).hasBean("foo");
+		this.thrown.expect(AssertionError.class,
+				String.format(
+						"but context failed to start:%n java.lang.RuntimeException"),
+				() -> assertThat(getAssert(this.failure)).hasBean("foo"));
 	}
 
 	@Test
@@ -103,33 +105,33 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasSingleBeanWhenHasNoBeansShouldFail() {
-		this.thrown.expect(AssertionError.class, "to have a single bean of type");
-		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "to have a single bean of type",
+				() -> assertThat(getAssert(this.context)).hasSingleBean(Foo.class));
 	}
 
 	@Test
 	public void hasSingleBeanWhenHasMultipleShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class, "but found:");
-		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found:",
+				() -> assertThat(getAssert(this.context)).hasSingleBean(Foo.class));
 	}
 
 	@Test
 	public void hasSingleBeanWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to have a single bean of type");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).hasSingleBean(Foo.class);
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(
+				() -> assertThat(getAssert(this.failure)).hasSingleBean(Foo.class))
+				.withMessageContaining("to have a single bean of type")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
 	public void hasSingleBeanWhenInParentShouldFail() {
 		this.parent.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class, "but found:");
-		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found:",
+				() -> assertThat(getAssert(this.context)).hasSingleBean(Foo.class));
 	}
 
 	@Test
@@ -146,25 +148,25 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void doesNotHaveBeanOfTypeWhenHasBeanOfTypeShouldFail() {
-		this.thrown.expect(AssertionError.class, "but found");
 		this.context.registerSingleton("foo", Foo.class);
-		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found",
+				() -> assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class));
 	}
 
 	@Test
 	public void doesNotHaveBeanOfTypeWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("not to have any beans of type");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).doesNotHaveBean(Foo.class);
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(
+				() -> assertThat(getAssert(this.failure)).doesNotHaveBean(Foo.class))
+				.withMessageContaining("not to have any beans of type")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
 	public void doesNotHaveBeanOfTypeWhenInParentShouldFail() {
-		this.thrown.expect(AssertionError.class, "but found");
 		this.parent.registerSingleton("foo", Foo.class);
-		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found",
+				() -> assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class));
 	}
 
 	@Test
@@ -181,17 +183,18 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void doesNotHaveBeanOfNameWhenHasBeanOfTypeShouldFail() {
-		this.thrown.expect(AssertionError.class, "but found");
 		this.context.registerSingleton("foo", Foo.class);
-		assertThat(getAssert(this.context)).doesNotHaveBean("foo");
+		this.thrown.expect(AssertionError.class, "but found",
+				() -> assertThat(getAssert(this.context)).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	public void doesNotHaveBeanOfNameWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("not to have any beans of name");
-		this.thrown.expectMessage("failed to start");
-		assertThat(getAssert(this.failure)).doesNotHaveBean("foo");
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(
+						() -> assertThat(getAssert(this.failure)).doesNotHaveBean("foo"))
+				.withMessageContaining("not to have any beans of name")
+				.withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -209,11 +212,12 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void getBeanNamesWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("not to have any beans of name");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).doesNotHaveBean("foo");
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(
+						() -> assertThat(getAssert(this.failure)).doesNotHaveBean("foo"))
+				.withMessageContaining("not to have any beans of name")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
@@ -231,17 +235,17 @@ public class ApplicationContextAssertTests {
 	public void getBeanOfTypeWhenHasMultipleBeansShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class, "but found");
-		assertThat(getAssert(this.context)).getBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found",
+				() -> assertThat(getAssert(this.context)).getBean(Foo.class));
 	}
 
 	@Test
 	public void getBeanOfTypeWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to contain bean of type");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).getBean(Foo.class);
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBean(Foo.class))
+				.withMessageContaining("to contain bean of type")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
@@ -261,8 +265,8 @@ public class ApplicationContextAssertTests {
 	public void getBeanOfTypeWhenHasMultipleBeansIncludingParentShouldFail() {
 		this.parent.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class, "but found");
-		assertThat(getAssert(this.context)).getBean(Foo.class);
+		this.thrown.expect(AssertionError.class, "but found",
+				() -> assertThat(getAssert(this.context)).getBean(Foo.class));
 	}
 
 	@Test
@@ -286,11 +290,11 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void getBeanOfNameWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to contain a bean of name");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).getBean("foo");
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBean("foo"))
+				.withMessageContaining("to contain a bean of name")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
@@ -307,17 +311,18 @@ public class ApplicationContextAssertTests {
 	@Test
 	public void getBeanOfNameAndTypeWhenHasNoBeanOfNameButDifferentTypeShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
-		this.thrown.expect(AssertionError.class, "of type");
-		assertThat(getAssert(this.context)).getBean("foo", String.class);
+		this.thrown.expect(AssertionError.class, "of type",
+				() -> assertThat(getAssert(this.context)).getBean("foo", String.class));
 	}
 
 	@Test
 	public void getBeanOfNameAndTypeWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to contain a bean of name");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).getBean("foo", Foo.class);
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBean("foo",
+						Foo.class))
+				.withMessageContaining("to contain a bean of name")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
@@ -335,11 +340,11 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void getBeansWhenFailedToStartShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to get beans of type");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).getBeans(Foo.class);
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).getBeans(Foo.class))
+				.withMessageContaining("to get beans of type")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test
@@ -365,8 +370,8 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void getFailureWhenDidNotFailShouldFail() {
-		this.thrown.expect(AssertionError.class, "context started");
-		assertThat(getAssert(this.context)).getFailure();
+		this.thrown.expect(AssertionError.class, "context started",
+				() -> assertThat(getAssert(this.context)).getFailure());
 	}
 
 	@Test
@@ -376,17 +381,17 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasFailedWhenNotFailedShouldFail() {
-		this.thrown.expect(AssertionError.class, "to have failed");
-		assertThat(getAssert(this.context)).hasFailed();
+		this.thrown.expect(AssertionError.class, "to have failed",
+				() -> assertThat(getAssert(this.context)).hasFailed());
 	}
 
 	@Test
 	public void hasNotFailedWhenFailedShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to have not failed");
-		this.thrown.expectMessage(String
-				.format("but context failed to start:%n java.lang.RuntimeException"));
-		assertThat(getAssert(this.failure)).hasNotFailed();
+		assertThatExceptionOfType(AssertionError.class)
+				.isThrownBy(() -> assertThat(getAssert(this.failure)).hasNotFailed())
+				.withMessageContaining("to have not failed")
+				.withMessageContaining(String.format(
+						"but context failed to start:%n java.lang.RuntimeException"));
 	}
 
 	@Test

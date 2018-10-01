@@ -72,8 +72,8 @@ public class ServletEndpointRegistrarTests {
 	@Test
 	public void createWhenServletEndpointsIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ServletEndpoints must not be null");
-		new ServletEndpointRegistrar(null, null);
+				"ServletEndpoints must not be null",
+				() -> new ServletEndpointRegistrar(null, null));
 	}
 
 	@Test

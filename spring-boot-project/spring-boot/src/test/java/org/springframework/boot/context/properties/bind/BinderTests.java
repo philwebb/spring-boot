@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.validation.Validation;
 
-import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +51,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -82,21 +82,22 @@ public class BinderTests {
 
 	@Test
 	public void createWhenSourcesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Sources must not be null");
-		new Binder((Iterable<ConfigurationPropertySource>) null);
+		this.thrown.expect(IllegalArgumentException.class, "Sources must not be null",
+				() -> new Binder((Iterable<ConfigurationPropertySource>) null));
 	}
 
 	@Test
 	public void bindWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Name must not be null");
-		this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
-				BindHandler.DEFAULT);
+		this.thrown.expect(IllegalArgumentException.class, "Name must not be null",
+				() -> this.binder.bind((ConfigurationPropertyName) null,
+						Bindable.of(String.class), BindHandler.DEFAULT));
 	}
 
 	@Test
 	public void bindWhenTargetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Target must not be null");
-		this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT);
+		this.thrown.expect(IllegalArgumentException.class, "Target must not be null",
+				() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
+						BindHandler.DEFAULT));
 	}
 
 	@Test
@@ -249,18 +250,15 @@ public class BinderTests {
 		source.put("foo.items", "bar,baz");
 		this.sources.add(source);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
-		this.thrown.expect(BindException.class);
-		this.thrown.expect(new AssertionMatcher<BindException>() {
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", target))
+				.satisfies(this::noItemsSetterRequirements);
+	}
 
-			@Override
-			public void assertion(BindException ex) throws AssertionError {
-				assertThat(ex.getCause().getMessage())
-						.isEqualTo("No setter found for property: items");
-				assertThat(ex.getProperty()).isNull();
-			}
-
-		});
-		this.binder.bind("foo", target);
+	private void noItemsSetterRequirements(BindException ex) {
+		assertThat(ex.getCause().getMessage())
+				.isEqualTo("No setter found for property: items");
+		assertThat(ex.getProperty()).isNull();
 	}
 
 	@Test

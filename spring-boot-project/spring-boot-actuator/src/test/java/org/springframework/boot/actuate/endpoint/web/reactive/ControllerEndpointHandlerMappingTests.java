@@ -92,8 +92,8 @@ public class ControllerEndpointHandlerMappingTests {
 	public void mappingNarrowedToMethod() throws Exception {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
-		this.thrown.expect(MethodNotAllowedException.class);
-		getHandler(mapping, HttpMethod.POST, "/actuator/first");
+		this.thrown.expect(MethodNotAllowedException.class,
+				() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method,

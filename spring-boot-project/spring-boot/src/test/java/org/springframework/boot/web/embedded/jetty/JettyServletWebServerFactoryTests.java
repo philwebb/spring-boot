@@ -314,23 +314,23 @@ public class JettyServletWebServerFactoryTests
 
 					@Override
 					public void contextDestroyed(ServletContextEvent sce) {
-
 					}
 
 				});
 			}
 
 		});
-		this.thrown.expect(WebServerException.class);
 		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		try {
-			jettyWebServer.start();
-		}
-		finally {
-			QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer.getServer()
-					.getThreadPool();
-			assertThat(threadPool.isRunning()).isFalse();
-		}
+		this.thrown.expect(WebServerException.class, () -> {
+			try {
+				jettyWebServer.start();
+			}
+			finally {
+				QueuedThreadPool threadPool = (QueuedThreadPool) jettyWebServer
+						.getServer().getThreadPool();
+				assertThat(threadPool.isRunning()).isFalse();
+			}
+		});
 	}
 
 	@Override

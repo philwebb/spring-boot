@@ -64,9 +64,8 @@ public class InfoPropertiesTests {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
-
-		this.thrown.expect(UnsupportedOperationException.class);
-		infoProperties.iterator().remove();
+		this.thrown.expect(UnsupportedOperationException.class,
+				infoProperties.iterator()::remove);
 	}
 
 	@Test

@@ -110,8 +110,8 @@ public class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
 						"--server.error.whitelabel.enabled=false"));
-		this.thrown.expect(ServletException.class);
-		this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML));
+		this.thrown.expect(ServletException.class,
+				() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test

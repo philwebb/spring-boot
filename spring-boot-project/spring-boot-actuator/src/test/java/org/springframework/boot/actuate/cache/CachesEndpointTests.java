@@ -34,6 +34,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -94,11 +95,10 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "dupe-cache"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		this.thrown.expect(NonUniqueCacheException.class);
-		this.thrown.expectMessage("dupe-cache");
-		this.thrown.expectMessage("test");
-		this.thrown.expectMessage("another");
-		endpoint.cache("dupe-cache", null);
+		assertThatExceptionOfType(NonUniqueCacheException.class)
+				.isThrownBy(() -> endpoint.cache("dupe-cache", null))
+				.withMessageContaining("dupe-cache").withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test

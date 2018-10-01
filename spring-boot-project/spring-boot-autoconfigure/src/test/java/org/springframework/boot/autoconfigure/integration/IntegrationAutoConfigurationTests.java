@@ -189,8 +189,8 @@ public class IntegrationAutoConfigurationTests {
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					this.thrown.expect(BadSqlGrammarException.class);
-					jdbc.queryForList("select * from INT_MESSAGE");
+					this.thrown.expect(BadSqlGrammarException.class,
+							() -> jdbc.queryForList("select * from INT_MESSAGE"));
 				});
 	}
 

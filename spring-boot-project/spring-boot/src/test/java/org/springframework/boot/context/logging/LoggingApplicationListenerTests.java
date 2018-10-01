@@ -167,11 +167,12 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigDoesNotExist() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=doesnotexist.xml");
-		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture.expect(containsString(
-				"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
+		this.thrown.expect(IllegalStateException.class, () -> {
+			this.outputCapture.expect(containsString(
+					"Logging system failed to initialize using configuration from 'doesnotexist.xml'"));
+			this.initializer.initialize(this.context.getEnvironment(),
+					this.context.getClassLoader());
+		});
 	}
 
 	@Test
@@ -202,12 +203,13 @@ public class LoggingApplicationListenerTests {
 	public void overrideConfigBroken() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"logging.config=classpath:logback-broken.xml");
-		this.thrown.expect(IllegalStateException.class);
-		this.outputCapture.expect(containsString(
-				"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
-		this.outputCapture.expect(containsString("ConsolAppender"));
-		this.initializer.initialize(this.context.getEnvironment(),
-				this.context.getClassLoader());
+		this.thrown.expect(IllegalStateException.class, () -> {
+			this.outputCapture.expect(containsString(
+					"Logging system failed to initialize using configuration from 'classpath:logback-broken.xml'"));
+			this.outputCapture.expect(containsString("ConsolAppender"));
+			this.initializer.initialize(this.context.getEnvironment(),
+					this.context.getClassLoader());
+		});
 	}
 
 	@Test

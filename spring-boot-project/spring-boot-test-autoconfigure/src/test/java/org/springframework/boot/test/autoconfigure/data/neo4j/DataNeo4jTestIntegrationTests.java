@@ -73,8 +73,8 @@ public class DataNeo4jTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.applicationContext.getBean(ExampleService.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 	static class Initializer

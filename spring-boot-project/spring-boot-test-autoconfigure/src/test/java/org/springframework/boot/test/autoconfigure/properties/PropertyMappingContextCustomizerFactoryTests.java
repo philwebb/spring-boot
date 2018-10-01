@@ -108,8 +108,8 @@ public class PropertyMappingContextCustomizerFactoryTests {
 		customizer.customizeContext(context, null);
 		this.thrown.expect(BeanCreationException.class, "The @PropertyMapping annotation "
 				+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
-				+ "cannot be used in combination with the @Component annotation @Configuration");
-		context.refresh();
+				+ "cannot be used in combination with the @Component annotation @Configuration",
+				context::refresh);
 	}
 
 	@NoMappingAnnotation

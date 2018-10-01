@@ -73,8 +73,8 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
-		this.thrown.expect(ApplicationContextException.class);
-		this.initializer.initialize(context);
+		this.thrown.expect(ApplicationContextException.class,
+				() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -82,8 +82,8 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
-		this.thrown.expect(IllegalArgumentException.class);
-		this.initializer.initialize(context);
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -91,8 +91,8 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
-		this.thrown.expect(IllegalArgumentException.class, "generic parameter");
-		this.initializer.initialize(context);
+		this.thrown.expect(IllegalArgumentException.class, "generic parameter",
+				() -> this.initializer.initialize(context));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

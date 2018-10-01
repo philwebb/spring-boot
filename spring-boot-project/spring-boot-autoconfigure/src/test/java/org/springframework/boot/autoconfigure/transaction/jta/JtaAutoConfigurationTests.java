@@ -94,8 +94,8 @@ public class JtaAutoConfigurationTests {
 	public void customPlatformTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(
 				CustomTransactionManagerConfig.class, JtaAutoConfiguration.class);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(JtaTransactionManager.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test

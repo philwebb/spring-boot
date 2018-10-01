@@ -64,8 +64,8 @@ public class BindConverterTests {
 	@Test
 	public void createWhenConversionServiceIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ConversionService must not be null");
-		BindConverter.get(null, null);
+				"ConversionService must not be null",
+				() -> BindConverter.get(null, null));
 	}
 
 	@Test
@@ -191,8 +191,8 @@ public class BindConverterTests {
 	public void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter
 				.get(ApplicationConversionService.getSharedInstance(), null);
-		this.thrown.expect(ConverterNotFoundException.class);
-		bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
+		this.thrown.expect(ConverterNotFoundException.class, () -> bindConverter
+				.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
 
 	@Test

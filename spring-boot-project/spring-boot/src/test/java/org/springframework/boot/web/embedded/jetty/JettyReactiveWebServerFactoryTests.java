@@ -50,17 +50,15 @@ public class JettyReactiveWebServerFactoryTests
 	@Test
 	public void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				"Customizers must not be null");
-		factory.setServerCustomizers(null);
+		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
+				() -> factory.setServerCustomizers(null));
 	}
 
 	@Test
 	public void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				"Customizers must not be null");
-		factory.addServerCustomizers((JettyServerCustomizer[]) null);
+		this.thrown.expect(IllegalArgumentException.class, "Customizers must not be null",
+				() -> factory.addServerCustomizers((JettyServerCustomizer[]) null));
 	}
 
 	@Test

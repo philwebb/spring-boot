@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ProjectGenerationRequest}.
@@ -172,18 +173,18 @@ public class ProjectGenerationRequestTests {
 	public void buildNoMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
-		this.thrown.expect(ReportableException.class, "does-not-exist");
-		this.request.generateUrl(metadata);
+		this.thrown.expect(ReportableException.class, "does-not-exist",
+				() -> this.request.generateUrl(metadata));
 	}
 
 	@Test
 	public void buildMultipleMatch() throws Exception {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("gradle-project");
-		this.thrown.expectMessage("gradle-project-2");
-		this.request.generateUrl(metadata);
+		assertThatExceptionOfType(ReportableException.class)
+				.isThrownBy(() -> this.request.generateUrl(metadata))
+				.withMessageContaining("gradle-project")
+				.withMessageContaining("gradle-project-2");
 	}
 
 	@Test
@@ -206,14 +207,14 @@ public class ProjectGenerationRequestTests {
 	@Test
 	public void invalidType() {
 		this.request.setType("does-not-exist");
-		this.thrown.expect(ReportableException.class);
-		this.request.generateUrl(createDefaultMetadata());
+		this.thrown.expect(ReportableException.class,
+				() -> this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	public void noTypeAndNoDefault() throws Exception {
-		this.thrown.expect(ReportableException.class, "no default is defined");
-		this.request.generateUrl(readMetadata("types-conflict"));
+		this.thrown.expect(ReportableException.class, "no default is defined",
+				() -> this.request.generateUrl(readMetadata("types-conflict")));
 	}
 
 	private static URI createUrl(String actionAndParam) {

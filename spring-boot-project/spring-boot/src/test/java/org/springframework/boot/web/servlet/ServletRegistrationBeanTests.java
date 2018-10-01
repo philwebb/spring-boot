@@ -145,39 +145,36 @@ public class ServletRegistrationBeanTests {
 	@Test
 	public void setServletMustNotBeNull() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
-		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
-		bean.onStartup(this.servletContext);
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null",
+				() -> bean.onStartup(this.servletContext));
 	}
 
 	@Test
 	public void createServletMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
-		new ServletRegistrationBean<MockServlet>(null);
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null",
+				() -> new ServletRegistrationBean<MockServlet>(null));
 	}
 
 	@Test
 	public void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		this.thrown.expect(IllegalArgumentException.class,
-				"UrlMappings must not be null");
-		bean.setUrlMappings(null);
+		this.thrown.expect(IllegalArgumentException.class, "UrlMappings must not be null",
+				() -> bean.setUrlMappings(null));
 	}
 
 	@Test
 	public void createMappingMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"UrlMappings must not be null");
-		new ServletRegistrationBean<>(this.servlet, (String[]) null);
+		this.thrown.expect(IllegalArgumentException.class, "UrlMappings must not be null",
+				() -> new ServletRegistrationBean<>(this.servlet, (String[]) null));
 	}
 
 	@Test
 	public void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		this.thrown.expect(IllegalArgumentException.class,
-				"UrlMappings must not be null");
-		bean.addUrlMappings((String[]) null);
+		this.thrown.expect(IllegalArgumentException.class, "UrlMappings must not be null",
+				() -> bean.addUrlMappings((String[]) null));
 	}
 
 	@Test

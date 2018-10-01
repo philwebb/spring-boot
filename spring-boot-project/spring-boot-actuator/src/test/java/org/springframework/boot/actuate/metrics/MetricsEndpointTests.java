@@ -118,8 +118,8 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void metricWithInvalidTag() {
-		this.thrown.expect(InvalidEndpointRequestException.class);
-		this.endpoint.metric("counter", Collections.singletonList("key"));
+		this.thrown.expect(InvalidEndpointRequestException.class,
+				() -> this.endpoint.metric("counter", Collections.singletonList("key")));
 	}
 
 	@Test

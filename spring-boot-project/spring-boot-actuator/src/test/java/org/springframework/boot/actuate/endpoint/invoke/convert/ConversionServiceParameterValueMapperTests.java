@@ -90,9 +90,10 @@ public class ConversionServiceParameterValueMapperTests {
 		ConversionService conversionService = new DefaultConversionService();
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(
 				conversionService);
-		this.thrown.expect(ParameterMappingException.class);
-		mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
-				"2011-12-03T10:15:30+01:00");
+		this.thrown.expect(ParameterMappingException.class,
+				() -> mapper.mapParameterValue(
+						new TestOperationParameter(OffsetDateTime.class),
+						"2011-12-03T10:15:30+01:00"));
 	}
 
 	private static class TestOperationParameter implements OperationParameter {

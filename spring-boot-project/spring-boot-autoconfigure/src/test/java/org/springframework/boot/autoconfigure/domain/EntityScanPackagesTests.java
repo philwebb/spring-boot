@@ -71,8 +71,8 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null");
-		EntityScanPackages.register(null);
+		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null",
+				() -> EntityScanPackages.register(null));
 
 	}
 
@@ -80,22 +80,22 @@ public class EntityScanPackagesTests {
 	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.thrown.expect(IllegalArgumentException.class,
-				"PackageNames must not be null");
-		EntityScanPackages.register(this.context, (String[]) null);
+				"PackageNames must not be null",
+				() -> EntityScanPackages.register(this.context, (String[]) null));
 	}
 
 	@Test
 	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null");
-		EntityScanPackages.register(null, Collections.emptyList());
+		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null",
+				() -> EntityScanPackages.register(null, Collections.emptyList()));
 	}
 
 	@Test
 	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.thrown.expect(IllegalArgumentException.class,
-				"PackageNames must not be null");
-		EntityScanPackages.register(this.context, (Collection<String>) null);
+				"PackageNames must not be null", () -> EntityScanPackages
+						.register(this.context, (Collection<String>) null));
 	}
 
 	@Test
@@ -126,9 +126,9 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
-		this.thrown.expect(AnnotationConfigurationException.class);
-		this.context = new AnnotationConfigApplicationContext(
-				EntityScanValueAndBasePackagesConfig.class);
+		this.thrown.expect(AnnotationConfigurationException.class,
+				() -> this.context = new AnnotationConfigApplicationContext(
+						EntityScanValueAndBasePackagesConfig.class));
 	}
 
 	@Test

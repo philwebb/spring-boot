@@ -62,23 +62,25 @@ public class ReflectiveOperationInvokerTests {
 
 	@Test
 	public void createWhenTargetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Target must not be null");
-		new ReflectiveOperationInvoker(null, this.operationMethod,
-				this.parameterValueMapper);
+		this.thrown.expect(IllegalArgumentException.class, "Target must not be null",
+				() -> new ReflectiveOperationInvoker(null, this.operationMethod,
+						this.parameterValueMapper));
 	}
 
 	@Test
 	public void createWhenOperationMethodIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"OperationMethod must not be null");
-		new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper);
+				"OperationMethod must not be null",
+				() -> new ReflectiveOperationInvoker(this.target, null,
+						this.parameterValueMapper));
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ParameterValueMapper must not be null");
-		new ReflectiveOperationInvoker(this.target, this.operationMethod, null);
+				"ParameterValueMapper must not be null",
+				() -> new ReflectiveOperationInvoker(this.target, this.operationMethod,
+						null));
 	}
 
 	@Test
@@ -94,9 +96,9 @@ public class ReflectiveOperationInvokerTests {
 	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
-		this.thrown.expect(MissingParametersException.class);
-		invoker.invoke(new InvocationContext(mock(SecurityContext.class),
-				Collections.singletonMap("name", null)));
+		this.thrown.expect(MissingParametersException.class,
+				() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+						Collections.singletonMap("name", null))));
 	}
 
 	@Test

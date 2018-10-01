@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +38,7 @@ import org.springframework.boot.convert.Delimiter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -181,10 +181,10 @@ public class JavaBeanBinderTests {
 		source.put("foo.list[0]", "foo-bar");
 		source.put("foo.list[2]", "bar-baz");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(
-				Matchers.instanceOf(UnboundConfigurationPropertiesException.class));
-		this.binder.bind("foo", Bindable.of(ExampleListBean.class));
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(
+						() -> this.binder.bind("foo", Bindable.of(ExampleListBean.class)))
+				.withCauseInstanceOf(UnboundConfigurationPropertiesException.class);
 	}
 
 	@Test
@@ -326,9 +326,8 @@ public class JavaBeanBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.nested.foo", "bar");
 		this.sources.add(source);
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo",
-				Bindable.of(ExampleImmutableNestedBeanWithoutSetter.class));
+		this.thrown.expect(BindException.class, () -> this.binder.bind("foo",
+				Bindable.of(ExampleImmutableNestedBeanWithoutSetter.class)));
 	}
 
 	@Test
@@ -392,8 +391,8 @@ public class JavaBeanBinderTests {
 	@Test
 	public void bindToClassWhenPropertyCannotBeConvertedShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo.int-value", "foo"));
-		this.thrown.expect(BindException.class);
-		this.binder.bind("foo", Bindable.of(ExampleValueBean.class));
+		this.thrown.expect(BindException.class,
+				() -> this.binder.bind("foo", Bindable.of(ExampleValueBean.class)));
 	}
 
 	@Test

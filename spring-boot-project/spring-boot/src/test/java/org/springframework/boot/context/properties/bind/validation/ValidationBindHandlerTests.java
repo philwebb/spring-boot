@@ -43,7 +43,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ValidationBindHandler}.
@@ -81,18 +81,19 @@ public class ValidationBindHandlerTests {
 	@Test
 	public void bindShouldFailWithHandler() {
 		this.sources.add(new MockConfigurationPropertySource("foo.age", 4));
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind("foo", Bindable.of(ExampleValidatedBean.class), this.handler);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedBean.class), this.handler))
+				.withCauseInstanceOf(BindValidationException.class);
 	}
 
 	@Test
 	public void bindShouldValidateNestedProperties() {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", 4));
-		this.thrown.expect(BindException.class);
-		this.thrown.expectCause(instanceOf(BindValidationException.class));
-		this.binder.bind("foo", Bindable.of(ExampleValidatedWithNestedBean.class),
-				this.handler);
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo",
+						Bindable.of(ExampleValidatedWithNestedBean.class), this.handler))
+				.withCauseInstanceOf(BindValidationException.class);
 	}
 
 	@Test

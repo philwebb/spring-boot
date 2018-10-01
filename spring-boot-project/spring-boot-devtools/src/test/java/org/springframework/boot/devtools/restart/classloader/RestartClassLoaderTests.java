@@ -95,15 +95,15 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void parentMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, "Parent must not be null");
-		new RestartClassLoader(null, new URL[] {});
+		this.thrown.expect(IllegalArgumentException.class, "Parent must not be null",
+				() -> new RestartClassLoader(null, new URL[] {}));
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"UpdatedFiles must not be null");
-		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
+				"UpdatedFiles must not be null",
+				() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null));
 	}
 
 	@Test
@@ -184,16 +184,16 @@ public class RestartClassLoaderTests {
 	public void getDeletedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		this.thrown.expect(ClassNotFoundException.class);
-		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		this.thrown.expect(ClassNotFoundException.class,
+				() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test
 	public void getUpdatedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
-		this.thrown.expect(ClassFormatError.class);
-		this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		this.thrown.expect(ClassFormatError.class,
+				() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test

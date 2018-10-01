@@ -62,8 +62,8 @@ public class TypeExcludeFilterTests {
 		this.context.register(Config.class);
 		this.context.refresh();
 		assertThat(this.context.getBean(ExampleComponent.class)).isNotNull();
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		this.context.getBean(ExampleFilteredComponent.class);
+		this.thrown.expect(NoSuchBeanDefinitionException.class,
+				() -> this.context.getBean(ExampleFilteredComponent.class));
 	}
 
 	@Configuration

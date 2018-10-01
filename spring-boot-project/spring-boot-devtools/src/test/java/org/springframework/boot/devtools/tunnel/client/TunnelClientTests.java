@@ -49,15 +49,14 @@ public class TunnelClientTests {
 	@Test
 	public void listenPortMustNotBeNegative() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ListenPort must be greater than or equal to 0");
-		new TunnelClient(-5, this.tunnelConnection);
+				"ListenPort must be greater than or equal to 0",
+				() -> new TunnelClient(-5, this.tunnelConnection));
 	}
 
 	@Test
 	public void tunnelConnectionMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"TunnelConnection must not be null");
-		new TunnelClient(1, null);
+				"TunnelConnection must not be null", () -> new TunnelClient(1, null));
 	}
 
 	@Test

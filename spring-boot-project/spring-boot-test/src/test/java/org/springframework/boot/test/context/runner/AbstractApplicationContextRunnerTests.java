@@ -178,10 +178,8 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> {
-			this.thrown.expect(IOException.class, "Expected message");
-			throwCheckedException("Expected message");
-		});
+		get().run((context) -> this.thrown.expect(IOException.class, "Expected message",
+				() -> throwCheckedException("Expected message")));
 	}
 
 	protected abstract T get();

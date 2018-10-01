@@ -46,8 +46,8 @@ public class ApplicationContextRequestMatcherTests {
 	@Test
 	public void createWhenContextClassIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"Context class must not be null");
-		new TestApplicationContextRequestMatcher<>(null);
+				"Context class must not be null",
+				() -> new TestApplicationContextRequestMatcher<>(null));
 	}
 
 	@Test
@@ -71,8 +71,7 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
-		this.thrown.expect(NoSuchBeanDefinitionException.class);
-		supplier.get();
+		this.thrown.expect(NoSuchBeanDefinitionException.class, supplier::get);
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {

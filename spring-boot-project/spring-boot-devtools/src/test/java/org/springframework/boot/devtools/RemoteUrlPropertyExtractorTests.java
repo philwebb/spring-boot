@@ -48,21 +48,21 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Test
 	public void missingUrl() {
-		this.thrown.expect(IllegalStateException.class, "No remote URL specified");
-		doTest();
+		this.thrown.expect(IllegalStateException.class, "No remote URL specified",
+				() -> doTest());
 	}
 
 	@Test
 	public void malformedUrl() {
-		this.thrown.expect(IllegalStateException.class, "Malformed URL '::://wibble'");
-		doTest("::://wibble");
+		this.thrown.expect(IllegalStateException.class, "Malformed URL '::://wibble'",
+				() -> doTest("::://wibble"));
 
 	}
 
 	@Test
 	public void multipleUrls() {
-		this.thrown.expect(IllegalStateException.class, "Multiple URLs specified");
-		doTest("http://localhost:8080", "http://localhost:9090");
+		this.thrown.expect(IllegalStateException.class, "Multiple URLs specified",
+				() -> doTest("http://localhost:8080", "http://localhost:9090"));
 	}
 
 	@Test

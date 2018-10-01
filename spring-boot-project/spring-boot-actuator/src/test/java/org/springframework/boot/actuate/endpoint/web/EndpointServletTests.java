@@ -47,14 +47,14 @@ public class EndpointServletTests {
 
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
-		new EndpointServlet((Class<Servlet>) null);
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null",
+				() -> new EndpointServlet((Class<Servlet>) null));
 	}
 
 	@Test
 	public void createWhenServletIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
-		new EndpointServlet((Servlet) null);
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null",
+				() -> new EndpointServlet((Servlet) null));
 	}
 
 	@Test
@@ -73,15 +73,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(null, "value");
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> endpointServlet.withInitParameter(null, "value"));
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameter(" ", "value");
+		this.thrown.expect(IllegalArgumentException.class,
+				() -> endpointServlet.withInitParameter(" ", "value"));
 	}
 
 	@Test
@@ -103,15 +103,15 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(null, "value"));
+		this.thrown.expect(IllegalArgumentException.class, () -> endpointServlet
+				.withInitParameters(Collections.singletonMap(null, "value")));
 	}
 
 	@Test
 	public void withInitParametersEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		this.thrown.expect(IllegalArgumentException.class);
-		endpointServlet.withInitParameters(Collections.singletonMap(" ", "value"));
+		this.thrown.expect(IllegalArgumentException.class, () -> endpointServlet
+				.withInitParameters(Collections.singletonMap(" ", "value")));
 	}
 
 	@Test

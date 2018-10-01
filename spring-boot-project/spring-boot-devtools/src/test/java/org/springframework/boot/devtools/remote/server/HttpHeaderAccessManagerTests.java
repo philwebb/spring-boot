@@ -57,30 +57,28 @@ public class HttpHeaderAccessManagerTests {
 
 	@Test
 	public void headerNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"HeaderName must not be empty");
-		new HttpHeaderAccessManager(null, SECRET);
+		this.thrown.expect(IllegalArgumentException.class, "HeaderName must not be empty",
+				() -> new HttpHeaderAccessManager(null, SECRET));
 	}
 
 	@Test
 	public void headerNameMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class,
-				"HeaderName must not be empty");
-		new HttpHeaderAccessManager("", SECRET);
+		this.thrown.expect(IllegalArgumentException.class, "HeaderName must not be empty",
+				() -> new HttpHeaderAccessManager("", SECRET));
 	}
 
 	@Test
 	public void expectedSecretMustNotBeNull() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ExpectedSecret must not be empty");
-		new HttpHeaderAccessManager(HEADER, null);
+				"ExpectedSecret must not be empty",
+				() -> new HttpHeaderAccessManager(HEADER, null));
 	}
 
 	@Test
 	public void expectedSecretMustNotBeEmpty() {
 		this.thrown.expect(IllegalArgumentException.class,
-				"ExpectedSecret must not be empty");
-		new HttpHeaderAccessManager(HEADER, "");
+				"ExpectedSecret must not be empty",
+				() -> new HttpHeaderAccessManager(HEADER, ""));
 	}
 
 	@Test
