@@ -73,13 +73,13 @@ public class RootUriRequestExpectationManagerTests {
 
 	@Test
 	public void createWhenRootUriIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
 				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	public void createWhenExpectationManagerIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
 				.withMessageContaining("ExpectationManager must not be null");
 	}
 
@@ -120,7 +120,7 @@ public class RootUriRequestExpectationManagerTests {
 		given(this.delegate.validateRequest(any(ClientHttpRequest.class)))
 				.willThrow(new AssertionError(
 						"Request URI expected:</hello> was:<http://example.com/bad>"));
-		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> this.manager.validateRequest(request))
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> this.manager.validateRequest(request))
 				.withMessageContaining("Request URI expected:<http://example.com/hello>");
 	}
 
@@ -180,7 +180,7 @@ public class RootUriRequestExpectationManagerTests {
 		MockRestServiceServer server = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
-		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> restTemplate.getForEntity("http://spring.io/hello", String.class))
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> restTemplate.getForEntity("http://spring.io/hello", String.class))
 				.withMessageContaining("expected:<http://example.com/hello> but was:<http://spring.io/hello>");
 	}
 

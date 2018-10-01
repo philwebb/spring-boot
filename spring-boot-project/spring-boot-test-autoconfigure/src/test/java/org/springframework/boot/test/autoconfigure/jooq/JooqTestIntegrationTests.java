@@ -74,7 +74,7 @@ public class JooqTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleComponent() {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test

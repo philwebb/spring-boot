@@ -48,13 +48,13 @@ public class EndpointServletTests {
 
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))
 				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void createWhenServletIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointServlet((Servlet) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointServlet((Servlet) null))
 				.withMessageContaining("Servlet must not be null");
 	}
 
@@ -74,13 +74,13 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));
 	}
 
 	@Test
 	public void withInitParameterEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(" ", "value"));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> endpointServlet.withInitParameter(" ", "value"));
 	}
 
 	@Test
@@ -102,14 +102,14 @@ public class EndpointServletTests {
 	@Test
 	public void withInitParametersNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> endpointServlet
 				.withInitParameters(Collections.singletonMap(null, "value")));
 	}
 
 	@Test
 	public void withInitParametersEmptyName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> endpointServlet
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> endpointServlet
 				.withInitParameters(Collections.singletonMap(" ", "value")));
 	}
 

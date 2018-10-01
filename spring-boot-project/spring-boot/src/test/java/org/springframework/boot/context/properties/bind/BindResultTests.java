@@ -69,7 +69,7 @@ public class BindResultTests {
 	@Test
 	public void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchElementException.class).isThrownBy(() -> result.get())
+		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> result.get())
 				.withMessageContaining("No value bound");
 	}
 
@@ -88,7 +88,7 @@ public class BindResultTests {
 	@Test
 	public void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> result.ifBound(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> result.ifBound(null))
 				.withMessageContaining("Consumer must not be null");
 	}
 
@@ -109,7 +109,7 @@ public class BindResultTests {
 	@Test
 	public void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> result.map(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> result.map(null))
 				.withMessageContaining("Mapper must not be null");
 	}
 
@@ -156,7 +156,7 @@ public class BindResultTests {
 	@Test
 	public void orElseCreateWhenTypeIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> result.orElseCreate(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> result.orElseCreate(null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -181,7 +181,7 @@ public class BindResultTests {
 	@Test
 	public void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
 		BindResult<String> result = BindResult.of(null);
-		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> result.orElseThrow(IOException::new));
+		assertThatExceptionOfType(IOException.class).isThrownBy(() -> result.orElseThrow(IOException::new));
 	}
 
 	@Test

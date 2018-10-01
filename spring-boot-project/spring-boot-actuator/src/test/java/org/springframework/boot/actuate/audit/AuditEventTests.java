@@ -65,14 +65,14 @@ public class AuditEventTests {
 
 	@Test
 	public void nullTimestamp() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN",
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN",
 				Collections.singletonMap("a", (Object) "b")))
 				.withMessageContaining("Timestamp must not be null");
 	}
 
 	@Test
 	public void nullType() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new AuditEvent("phil", null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new AuditEvent("phil", null,
 				Collections.singletonMap("a", (Object) "b")))
 				.withMessageContaining("Type must not be null");
 	}

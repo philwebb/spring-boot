@@ -35,7 +35,7 @@ public class StaticPortProviderTests {
 
 	@Test
 	public void portMustBePositive() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new StaticPortProvider(0))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new StaticPortProvider(0))
 				.withMessageContaining("Port must be positive");
 	}
 

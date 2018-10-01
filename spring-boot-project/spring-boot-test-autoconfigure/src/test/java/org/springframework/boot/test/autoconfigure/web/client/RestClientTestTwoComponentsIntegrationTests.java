@@ -58,7 +58,7 @@ public class RestClientTestTwoComponentsIntegrationTests {
 
 	@Test
 	public void serverShouldNotWork() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.server.expect(requestTo("/test"))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.server.expect(requestTo("/test"))
 				.andRespond(withSuccess("hello", MediaType.TEXT_HTML)))
 				.withMessageContaining("Unable to use auto-configured");
 	}

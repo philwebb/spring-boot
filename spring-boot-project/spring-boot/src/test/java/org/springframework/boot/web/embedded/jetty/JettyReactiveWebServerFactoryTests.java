@@ -51,14 +51,14 @@ public class JettyReactiveWebServerFactoryTests
 	@Test
 	public void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setServerCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setServerCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 

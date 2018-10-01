@@ -87,7 +87,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	public void disabledIfRemoteSecretIsMissing() {
 		loadContext("a:b");
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	public void disableRestart() {
 		loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false");
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
 	}
 
 	@Test

@@ -60,7 +60,7 @@ public class PropertiesMeterFilterTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertiesMeterFilter(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertiesMeterFilter(null))
 				.withMessageContaining("Properties must not be null");
 	}
 

@@ -68,13 +68,13 @@ public class RootUriTemplateHandlerTests {
 
 	@Test
 	public void createWithNullRootUriShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler((String) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler((String) null))
 				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	public void createWithNullHandlerShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler("http://example.com", null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler("http://example.com", null))
 				.withMessageContaining("Handler must not be null");
 	}
 

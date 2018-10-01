@@ -71,7 +71,7 @@ public class InetAddressFormatterTests {
 	public void convertFromStringToInetAddressWhenHostDoesNotExistShouldThrowException() {
 		String missingDomain = "ireallydontexist.example.com";
 		assumeResolves(missingDomain, false);
-		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> this.conversionService.convert(missingDomain, InetAddress.class));
+		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> this.conversionService.convert(missingDomain, InetAddress.class));
 	}
 
 	private void assumeResolves(String host, boolean expectedToResolve) {

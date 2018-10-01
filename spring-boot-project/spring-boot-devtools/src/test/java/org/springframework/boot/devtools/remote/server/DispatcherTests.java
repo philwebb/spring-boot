@@ -78,13 +78,13 @@ public class DispatcherTests {
 
 	@Test
 	public void accessManagerMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
 				.withMessageContaining("AccessManager must not be null");
 	}
 
 	@Test
 	public void mappersMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(this.accessManager, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(this.accessManager, null))
 				.withMessageContaining("Mappers must not be null");
 	}
 

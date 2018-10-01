@@ -60,7 +60,7 @@ public class HttpStatusHandlerTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpStatusHandler(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpStatusHandler(null))
 				.withMessageContaining("Status must not be null");
 	}
 

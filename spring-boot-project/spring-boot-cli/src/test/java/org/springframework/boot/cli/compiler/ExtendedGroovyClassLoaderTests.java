@@ -55,7 +55,7 @@ public class ExtendedGroovyClassLoaderTests {
 	@Test
 	public void filtersNonGroovy() throws Exception {
 		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
-		assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> this.defaultScopeGroovyClassLoader
+		assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(() -> this.defaultScopeGroovyClassLoader
 						.loadClass("org.springframework.util.StringUtils"));
 	}
 

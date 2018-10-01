@@ -45,7 +45,7 @@ public class NoSnakeYamlPropertySourceLoaderTests {
 	public void load() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource(
 				"foo:\n  bar: spam".getBytes());
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.loader.load("resource", resource))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.loader.load("resource", resource))
 				.withMessageContaining("Attempted to load resource but snakeyaml was not found on the classpath");
 	}
 

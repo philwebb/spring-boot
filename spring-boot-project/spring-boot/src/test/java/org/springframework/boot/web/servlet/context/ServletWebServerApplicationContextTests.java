@@ -176,7 +176,7 @@ public class ServletWebServerApplicationContextTests {
 	public void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.context.refresh());
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.context.refresh());
 	}
 
 	@Test
@@ -190,7 +190,7 @@ public class ServletWebServerApplicationContextTests {
 
 	@Test
 	public void missingServletWebServerFactory() {
-		assertThatExceptionOfType((Class<? extends Throwable>) ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
 				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to missing "
 						+ "ServletWebServerFactory bean");
 	}
@@ -200,7 +200,7 @@ public class ServletWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
-		assertThatExceptionOfType((Class<? extends Throwable>) ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
 				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
 						+ "multiple ServletWebServerFactory beans");
 
@@ -419,7 +419,7 @@ public class ServletWebServerApplicationContextTests {
 				this.filterCaptor.capture());
 		// Up to this point the filterBean should not have been created, calling
 		// the delegate proxy will trigger creation and an exception
-		assertThatExceptionOfType((Class<? extends Throwable>) BeanCreationException.class).isThrownBy(() -> {
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> {
 			this.filterCaptor.getValue().init(new MockFilterConfig());
 			this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(),
 					new MockHttpServletResponse(), new MockFilterChain());

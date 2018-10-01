@@ -65,13 +65,13 @@ public class EndpointMBeanTests {
 
 	@Test
 	public void createWhenResponseMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMBean(null, null, mock(ExposableJmxEndpoint.class)))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointMBean(null, null, mock(ExposableJmxEndpoint.class)))
 				.withMessageContaining("ResponseMapper must not be null");
 	}
 
 	@Test
 	public void createWhenEndpointIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMBean(mock(JmxOperationResponseMapper.class), null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointMBean(mock(JmxOperationResponseMapper.class), null,
 				null))
 				.withMessageContaining("Endpoint must not be null");
 	}
@@ -190,7 +190,7 @@ public class EndpointMBeanTests {
 	public void getAttributeShouldThrowException()
 			throws AttributeNotFoundException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
-		assertThatExceptionOfType((Class<? extends Throwable>) AttributeNotFoundException.class).isThrownBy(() -> bean.getAttribute("test"))
+		assertThatExceptionOfType(AttributeNotFoundException.class).isThrownBy(() -> bean.getAttribute("test"))
 				.withMessageContaining("EndpointMBeans do not support attributes");
 	}
 
@@ -198,7 +198,7 @@ public class EndpointMBeanTests {
 	public void setAttributeShouldThrowException() throws AttributeNotFoundException,
 			InvalidAttributeValueException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
-		assertThatExceptionOfType((Class<? extends Throwable>) AttributeNotFoundException.class).isThrownBy(() -> bean.setAttribute(new Attribute("test", "test")))
+		assertThatExceptionOfType(AttributeNotFoundException.class).isThrownBy(() -> bean.setAttribute(new Attribute("test", "test")))
 				.withMessageContaining("EndpointMBeans do not support attributes");
 	}
 

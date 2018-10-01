@@ -78,25 +78,25 @@ public class HttpHeaderInterceptorTests {
 
 	@Test
 	public void constructorNullHeaderName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
 				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
 				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
 				.withMessageContaining("Value must not be empty");
 	}
 

@@ -206,7 +206,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.stop();
-		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
+		assertThatExceptionOfType(IOException.class).isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
 	}
 
 	@Test
@@ -279,19 +279,19 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void contextPathMustStartWithSlash() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("missingslash"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("missingslash"))
 				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("extraslash/"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("extraslash/"))
 				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextRootPathMustNotBeSlash() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("/"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("/"))
 				.withMessageContaining("Root ContextPath must be specified using an empty string");
 	}
 
@@ -386,7 +386,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		assertThatExceptionOfType((Class<? extends Throwable>) SSLException.class).isThrownBy(() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
+		assertThatExceptionOfType(SSLException.class).isThrownBy(() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
 	}
 
 	@Test
@@ -766,7 +766,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> factory.getValidSessionStoreDir(false))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> factory.getValidSessionStoreDir(false))
 				.withMessageContaining("points to a file");
 	}
 
@@ -995,7 +995,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 					}
 
 				}));
-		assertThatExceptionOfType((Class<? extends Throwable>) WebServerException.class).isThrownBy(factory.getWebServer()::start);
+		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer()::start);
 	}
 
 	@Test

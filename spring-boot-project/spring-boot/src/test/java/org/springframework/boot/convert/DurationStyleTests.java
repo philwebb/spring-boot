@@ -39,7 +39,7 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse(null))
 				.withMessageContaining("Value must not be null");
 	}
 
@@ -148,7 +148,7 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenBadFormatShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
 				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
@@ -182,7 +182,7 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectWhenUnknownShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detect("bad"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detect("bad"))
 				.withMessageContaining("'bad' is not a valid duration");
 	}
 
@@ -226,7 +226,7 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseIso8601WhenSimpleShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
 				.withMessageContaining("'10d' is not a valid ISO-8601 duration");
 	}
 
@@ -256,7 +256,7 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseSimpleWhenIso8601ShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
 				.withMessageContaining("'PT10H' is not a valid simple duration");
 	}
 

@@ -60,7 +60,7 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	@Test
 	public void setBeanFactoryWhenNotListableShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
 				.withMessageContaining("WebServerCustomizerBeanPostProcessor can only "
 						+ "be used with a ListableBeanFactory");
 	}

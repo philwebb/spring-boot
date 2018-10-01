@@ -51,13 +51,13 @@ public class FileSnapshotTests {
 
 	@Test
 	public void fileMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(null))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
 				.withMessageContaining("File must not be a folder");
 	}
 

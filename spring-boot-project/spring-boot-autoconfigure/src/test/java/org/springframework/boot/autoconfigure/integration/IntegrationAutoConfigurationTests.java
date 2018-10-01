@@ -190,7 +190,7 @@ public class IntegrationAutoConfigurationTests {
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
+					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
 				});
 	}
 

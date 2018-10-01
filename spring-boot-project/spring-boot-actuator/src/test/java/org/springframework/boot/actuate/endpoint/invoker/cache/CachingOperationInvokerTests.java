@@ -49,7 +49,7 @@ public class CachingOperationInvokerTests {
 
 	@Test
 	public void createInstanceWithTtlSetToZero() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
 				.withMessageContaining("TimeToLive");
 	}
 

@@ -39,7 +39,7 @@ public class HttpRestartServerHandlerTests {
 
 	@Test
 	public void serverMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServerHandler(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServerHandler(null))
 				.withMessageContaining("Server must not be null");
 	}
 

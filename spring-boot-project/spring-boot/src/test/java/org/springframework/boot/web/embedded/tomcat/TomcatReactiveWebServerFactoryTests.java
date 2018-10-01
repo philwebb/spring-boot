@@ -101,14 +101,14 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory
 				.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}

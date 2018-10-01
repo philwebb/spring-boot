@@ -52,20 +52,20 @@ public class ValidationErrorsTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),
 				Collections.emptyList()))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenBoundPropertiesIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
 				.withMessageContaining("BoundProperties must not be null");
 	}
 
 	@Test
 	public void createWhenErrorsIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
 				.withMessageContaining("Errors must not be null");
 	}
 

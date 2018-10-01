@@ -60,14 +60,14 @@ public class UndertowReactiveWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 

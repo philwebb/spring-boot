@@ -60,7 +60,7 @@ public class LocalHostWebClientTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebClient(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebClient(null))
 				.withMessageContaining("Environment must not be null");
 	}
 

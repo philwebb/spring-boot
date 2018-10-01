@@ -67,7 +67,7 @@ public class DefaultErrorAttributesTests {
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
 				.withMessageContaining("Missing exception attribute in ServerWebExchange");
 	}
 

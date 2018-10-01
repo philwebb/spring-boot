@@ -175,19 +175,19 @@ public class SpringApplicationTests {
 
 	@Test
 	public void sourcesMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
 				.withMessageContaining("PrimarySources must not be null");
 	}
 
 	@Test
 	public void sourcesMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringApplication().run())
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringApplication().run())
 				.withMessageContaining("Sources must not be empty");
 	}
 
 	@Test
 	public void sourcesMustBeAccessible() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new SpringApplication(InaccessibleConfiguration.class).run())
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new SpringApplication(InaccessibleConfiguration.class).run())
 				.withMessageContaining("Cannot load configuration");
 	}
 
@@ -1197,7 +1197,7 @@ public class SpringApplicationTests {
 
 	@Test
 	public void beanDefinitionOverridingIsDisabledByDefault() {
-		assertThatExceptionOfType((Class<? extends Throwable>) BeanDefinitionOverrideException.class).isThrownBy(() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class)
+		assertThatExceptionOfType(BeanDefinitionOverrideException.class).isThrownBy(() -> new SpringApplication(ExampleConfig.class, OverrideConfig.class)
 						.run());
 	}
 

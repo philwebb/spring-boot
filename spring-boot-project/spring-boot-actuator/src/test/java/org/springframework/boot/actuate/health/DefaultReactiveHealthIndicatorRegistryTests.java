@@ -67,7 +67,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	@Test
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.registry.register("one", this.two))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.registry.register("one", this.two))
 				.withMessageContaining("HealthIndicator with name 'one' already registered");
 	}
 
@@ -103,7 +103,7 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	public void getAllIsImmutable() {
 		this.registry.register("one", this.one);
 		Map<String, ReactiveHealthIndicator> snapshot = this.registry.getAll();
-		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(snapshot::clear);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(snapshot::clear);
 	}
 
 }

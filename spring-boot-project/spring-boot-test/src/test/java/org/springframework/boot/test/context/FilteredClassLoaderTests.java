@@ -38,7 +38,7 @@ public class FilteredClassLoaderTests {
 			throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName())) {
-			assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
+			assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 
@@ -46,7 +46,7 @@ public class FilteredClassLoaderTests {
 	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class)) {
-			assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
+			assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(() -> classLoader.loadClass(getClass().getName()));
 		}
 	}
 

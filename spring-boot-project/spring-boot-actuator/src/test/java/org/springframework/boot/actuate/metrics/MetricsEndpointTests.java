@@ -119,7 +119,7 @@ public class MetricsEndpointTests {
 
 	@Test
 	public void metricWithInvalidTag() {
-		assertThatExceptionOfType((Class<? extends Throwable>) InvalidEndpointRequestException.class).isThrownBy(() -> this.endpoint.metric("counter", Collections.singletonList("key")));
+		assertThatExceptionOfType(InvalidEndpointRequestException.class).isThrownBy(() -> this.endpoint.metric("counter", Collections.singletonList("key")));
 	}
 
 	@Test

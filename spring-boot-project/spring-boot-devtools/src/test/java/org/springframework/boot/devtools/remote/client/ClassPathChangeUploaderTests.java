@@ -75,25 +75,25 @@ public class ClassPathChangeUploaderTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest",
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest",
 						this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}

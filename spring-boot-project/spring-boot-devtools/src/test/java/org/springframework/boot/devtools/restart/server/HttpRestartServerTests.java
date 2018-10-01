@@ -68,13 +68,13 @@ public class HttpRestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
 				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
 	public void restartServerMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((RestartServer) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((RestartServer) null))
 				.withMessageContaining("RestartServer must not be null");
 	}
 

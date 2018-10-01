@@ -40,7 +40,7 @@ public class HttpTunnelPayloadForwarderTests {
 
 	@Test
 	public void targetChannelMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
 				.withMessageContaining("TargetChannel must not be null");
 	}
 
@@ -70,7 +70,7 @@ public class HttpTunnelPayloadForwarderTests {
 	public void overflow() throws Exception {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> {
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
 			for (int i = 2; i < 130; i++) {
 				forwarder.forward(payload(i, "data" + i));
 			}

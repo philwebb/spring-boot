@@ -37,13 +37,13 @@ public class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> JsonbTester.initFields(null, JsonbBuilder.create()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> JsonbTester.initFields(null, JsonbBuilder.create()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 

@@ -40,7 +40,7 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void addAllWhenGeneratorsIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
 			List<ExitCodeGenerator> generators = null;
 			new ExitCodeGenerators().addAll(generators);
 		})
@@ -49,7 +49,7 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void addWhenGeneratorIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ExitCodeGenerators().add(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ExitCodeGenerators().add(null))
 				.withMessageContaining("Generator must not be null");
 	}
 

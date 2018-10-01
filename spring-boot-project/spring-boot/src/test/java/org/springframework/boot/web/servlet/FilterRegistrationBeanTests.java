@@ -46,19 +46,19 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 	@Test
 	public void setFilterMustNotBeNull() throws Exception {
 		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.onStartup(this.servletContext))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> bean.onStartup(this.servletContext))
 				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void constructFilterMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(null))
 				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(this.filter,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(this.filter,
 						(ServletRegistrationBean[]) null))
 				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}

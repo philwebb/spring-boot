@@ -53,13 +53,13 @@ public class EmbeddedDatabaseConnectionTests {
 
 	@Test
 	public void getUrlWithNullDatabaseName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
 	public void getUrlWithEmptyDatabaseName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 

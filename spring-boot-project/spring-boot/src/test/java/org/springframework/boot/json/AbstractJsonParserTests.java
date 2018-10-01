@@ -111,32 +111,32 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithNullThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseMap(null));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseMap(null));
 	}
 
 	@Test
 	public void listWithNullThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseList(null));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseList(null));
 	}
 
 	@Test
 	public void mapWithEmptyStringThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseMap(""));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseMap(""));
 	}
 
 	@Test
 	public void listWithEmptyStringThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseList(""));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseList(""));
 	}
 
 	@Test
 	public void mapWithListThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseMap("[]"));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseMap("[]"));
 	}
 
 	@Test
 	public void listWithMapThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseList("{}"));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseList("{}"));
 	}
 
 	@Test
@@ -155,12 +155,12 @@ public abstract class AbstractJsonParserTests {
 
 	@Test
 	public void mapWithLeadingWhitespaceListThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseMap("\n\t[]"));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseMap("\n\t[]"));
 	}
 
 	@Test
 	public void listWithLeadingWhitespaceMapThrowsARuntimeException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) RuntimeException.class).isThrownBy(() -> this.parser.parseList("\n\t{}"));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> this.parser.parseList("\n\t{}"));
 	}
 
 	@Test

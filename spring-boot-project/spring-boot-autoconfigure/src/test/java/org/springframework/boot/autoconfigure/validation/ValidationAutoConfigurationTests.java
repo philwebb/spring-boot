@@ -162,7 +162,7 @@ public class ValidationAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(Validator.class)).hasSize(1);
 		SampleService service = this.context.getBean(SampleService.class);
 		service.doSomething("Valid");
-		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething("KO"));
+		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething("KO"));
 	}
 
 	@Test
@@ -172,7 +172,7 @@ public class ValidationAutoConfigurationTests {
 		DefaultAnotherSampleService service = this.context
 				.getBean(DefaultAnotherSampleService.class);
 		service.doSomething(42);
-		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
+		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class ValidationAutoConfigurationTests {
 				.isEmpty();
 		AnotherSampleService service = this.context.getBean(AnotherSampleService.class);
 		service.doSomething(42);
-		assertThatExceptionOfType((Class<? extends Throwable>) ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
+		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
 	}
 
 	@Test

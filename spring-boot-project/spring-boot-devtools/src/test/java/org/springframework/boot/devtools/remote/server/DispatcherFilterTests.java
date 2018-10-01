@@ -78,7 +78,7 @@ public class DispatcherFilterTests {
 
 	@Test
 	public void dispatcherMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DispatcherFilter(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DispatcherFilter(null))
 				.withMessageContaining("Dispatcher must not be null");
 	}
 

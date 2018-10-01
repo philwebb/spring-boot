@@ -42,13 +42,13 @@ public class SpringBootConditionTests {
 
 	@Test
 	public void sensibleClassException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
 				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
 	public void sensibleMethodException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
 				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName()
 						+ ".myBean");
 	}

@@ -43,19 +43,19 @@ public class ChangedFileTests {
 
 	@Test
 	public void sourceFolderMustNotBeNull() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
 				.withMessageContaining("SourceFolder must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeNull() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
 				.withMessageContaining("Type must not be null");
 	}
 

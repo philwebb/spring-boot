@@ -65,7 +65,7 @@ public class RabbitHealthIndicatorTests {
 
 	@Test
 	public void createWhenRabbitTemplateIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RabbitHealthIndicator(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RabbitHealthIndicator(null))
 				.withMessageContaining("RabbitTemplate must not be null");
 	}
 

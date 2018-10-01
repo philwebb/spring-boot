@@ -74,7 +74,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=missing.madeup.class");
-		assertThatExceptionOfType((Class<? extends Throwable>) ApplicationContextException.class).isThrownBy(() -> this.initializer.initialize(context));
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + Object.class.getName());
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context));
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context))
 				.withMessageContaining("generic parameter");
 	}
 

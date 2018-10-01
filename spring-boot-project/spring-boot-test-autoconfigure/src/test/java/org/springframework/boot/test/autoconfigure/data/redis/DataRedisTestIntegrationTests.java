@@ -81,7 +81,7 @@ public class DataRedisTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 	static class Initializer

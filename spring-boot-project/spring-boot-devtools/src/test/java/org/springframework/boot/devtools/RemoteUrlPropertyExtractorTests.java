@@ -49,20 +49,20 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Test
 	public void missingUrl() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest())
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> doTest())
 				.withMessageContaining("No remote URL specified");
 	}
 
 	@Test
 	public void malformedUrl() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest("::://wibble"))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> doTest("::://wibble"))
 				.withMessageContaining("Malformed URL '::://wibble'");
 
 	}
 
 	@Test
 	public void multipleUrls() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
 				.withMessageContaining("Multiple URLs specified");
 	}
 

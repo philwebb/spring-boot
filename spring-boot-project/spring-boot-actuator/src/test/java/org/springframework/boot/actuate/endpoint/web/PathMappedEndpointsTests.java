@@ -45,13 +45,13 @@ public class PathMappedEndpointsTests {
 
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
 				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null,
 				(Collection<EndpointsSupplier<?>>) null))
 				.withMessageContaining("Suppliers must not be null");
 	}

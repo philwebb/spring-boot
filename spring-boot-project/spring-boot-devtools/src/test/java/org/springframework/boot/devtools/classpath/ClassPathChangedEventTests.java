@@ -42,7 +42,7 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void changeSetMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
 				.withMessageContaining("ChangeSet must not be null");
 	}
 

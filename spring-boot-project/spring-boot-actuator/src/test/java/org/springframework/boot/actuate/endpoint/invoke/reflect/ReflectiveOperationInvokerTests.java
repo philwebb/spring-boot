@@ -63,21 +63,21 @@ public class ReflectiveOperationInvokerTests {
 
 	@Test
 	public void createWhenTargetIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod,
 				this.parameterValueMapper))
 				.withMessageContaining("Target must not be null");
 	}
 
 	@Test
 	public void createWhenOperationMethodIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null,
 						this.parameterValueMapper))
 				.withMessageContaining("OperationMethod must not be null");
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod,
 						null))
 				.withMessageContaining("ParameterValueMapper must not be null");
 	}
@@ -95,7 +95,7 @@ public class ReflectiveOperationInvokerTests {
 	public void invokeWhenMissingNonNullableArgumentShouldThrowException() {
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target,
 				this.operationMethod, this.parameterValueMapper);
-		assertThatExceptionOfType((Class<? extends Throwable>) MissingParametersException.class).isThrownBy(() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
+		assertThatExceptionOfType(MissingParametersException.class).isThrownBy(() -> invoker.invoke(new InvocationContext(mock(SecurityContext.class),
 						Collections.singletonMap("name", null))));
 	}
 

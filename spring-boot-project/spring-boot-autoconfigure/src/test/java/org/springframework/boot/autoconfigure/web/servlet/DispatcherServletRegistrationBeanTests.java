@@ -39,7 +39,7 @@ public class DispatcherServletRegistrationBeanTests {
 
 	@Test
 	public void createWhenPathIsNullThrowsException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DispatcherServletRegistrationBean(new DispatcherServlet(),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DispatcherServletRegistrationBean(new DispatcherServlet(),
 				null))
 				.withMessageContaining("Path must not be null");
 	}
@@ -62,14 +62,14 @@ public class DispatcherServletRegistrationBeanTests {
 	public void setUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(() -> bean.setUrlMappings(Collections.emptyList()));
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> bean.setUrlMappings(Collections.emptyList()));
 	}
 
 	@Test
 	public void addUrlMappingsCannotBeCalled() {
 		DispatcherServletRegistrationBean bean = new DispatcherServletRegistrationBean(
 				new DispatcherServlet(), "/test");
-		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(() -> bean.addUrlMappings("/test"));
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> bean.addUrlMappings("/test"));
 	}
 
 }

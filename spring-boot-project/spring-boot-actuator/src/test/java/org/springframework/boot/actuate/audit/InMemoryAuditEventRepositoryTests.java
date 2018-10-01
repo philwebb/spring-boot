@@ -67,7 +67,7 @@ public class InMemoryAuditEventRepositoryTests {
 	@Test
 	public void addNullAuditEvent() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> repository.add(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> repository.add(null))
 				.withMessageContaining("AuditEvent must not be null");
 	}
 

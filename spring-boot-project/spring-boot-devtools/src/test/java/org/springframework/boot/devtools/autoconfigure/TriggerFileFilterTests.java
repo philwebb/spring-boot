@@ -41,7 +41,7 @@ public class TriggerFileFilterTests {
 
 	@Test
 	public void nameMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TriggerFileFilter(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TriggerFileFilter(null))
 				.withMessageContaining("Name must not be null");
 	}
 

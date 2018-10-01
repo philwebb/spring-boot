@@ -76,7 +76,7 @@ public class RestarterTests {
 	@Test
 	public void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(Restarter::getInstance)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(Restarter::getInstance)
 				.withMessageContaining("Restarter has not been initialized");
 	}
 
@@ -103,7 +103,7 @@ public class RestarterTests {
 
 	@Test
 	public void addUrlsMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addUrls(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addUrls(null))
 				.withMessageContaining("Urls must not be null");
 	}
 
@@ -121,7 +121,7 @@ public class RestarterTests {
 
 	@Test
 	public void addClassLoaderFilesMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
 				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 

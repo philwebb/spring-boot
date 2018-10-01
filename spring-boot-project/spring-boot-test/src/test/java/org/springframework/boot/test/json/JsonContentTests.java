@@ -42,13 +42,13 @@ public class JsonContentTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	public void createWhenJsonIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, null))
 				.withMessageContaining("JSON must not be null");
 	}
 

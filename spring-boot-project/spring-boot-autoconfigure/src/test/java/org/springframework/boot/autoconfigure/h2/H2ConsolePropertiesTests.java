@@ -37,21 +37,21 @@ public class H2ConsolePropertiesTests {
 	@Test
 	public void pathMustNotBeEmpty() {
 		this.properties = new H2ConsoleProperties();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath(""))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath(""))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new H2ConsoleProperties();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("/"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("/"))
 				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.properties = new H2ConsoleProperties();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("custom"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("custom"))
 				.withMessageContaining("Path must start with '/'");
 	}
 

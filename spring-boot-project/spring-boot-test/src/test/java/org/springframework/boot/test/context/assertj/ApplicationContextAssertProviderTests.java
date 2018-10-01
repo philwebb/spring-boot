@@ -65,21 +65,21 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenTypeIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void getWhenTypeIsClassShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void getWhenContextTypeIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
 				TestAssertProviderApplicationContextClass.class,
 				ApplicationContext.class, this.mockContextSupplier))
 				.withMessageContaining("Type must be an interface");
@@ -87,7 +87,7 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenContextTypeIsClassShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
 				TestAssertProviderApplicationContext.class, null,
 				this.mockContextSupplier))
 				.withMessageContaining("ContextType must not be null");
@@ -95,7 +95,7 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenSupplierIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ApplicationContextAssertProvider.get(
 						TestAssertProviderApplicationContext.class,
 						StaticApplicationContext.class, this.mockContextSupplier))
 				.withMessageContaining("ContextType must be an interface");

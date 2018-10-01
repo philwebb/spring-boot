@@ -65,41 +65,41 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void pollIntervalMustBePositive() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true,
 						Duration.ofMillis(0), Duration.ofMillis(1)))
 				.withMessageContaining("PollInterval must be positive");
 	}
 
 	@Test
 	public void quietPeriodMustBePositive() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
 				Duration.ofMillis(0)))
 				.withMessageContaining("QuietPeriod must be positive");
 	}
 
 	@Test
 	public void pollIntervalMustBeGreaterThanQuietPeriod() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
 						Duration.ofMillis(1)))
 				.withMessageContaining("PollInterval must be greater than QuietPeriod");
 	}
 
 	@Test
 	public void listenerMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addListener(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.watcher.addListener(null))
 				.withMessageContaining("FileChangeListener must not be null");
 	}
 
 	@Test
 	public void cannotAddListenerToStartedListener() {
 		this.watcher.start();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.watcher.addListener(mock(FileChangeListener.class)))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.watcher.addListener(mock(FileChangeListener.class)))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
 	public void sourceFolderMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(null))
 				.withMessageContaining("Folder must not be null");
 	}
 
@@ -107,14 +107,14 @@ public class FileSystemWatcherTests {
 	public void sourceFolderMustNotBeAFile() {
 		File folder = new File("pom.xml");
 		assertThat(folder.isFile()).isTrue();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
 				.withMessageContaining("Folder 'pom.xml' must not be a file");
 	}
 
 	@Test
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.watcher.start();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.watcher.addSourceFolder(this.temp.newFolder()))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.watcher.addSourceFolder(this.temp.newFolder()))
 				.withMessageContaining("FileSystemWatcher already started");
 	}
 

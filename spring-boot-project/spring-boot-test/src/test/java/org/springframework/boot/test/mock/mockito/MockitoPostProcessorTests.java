@@ -52,7 +52,7 @@ public class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(context::refresh)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
 						+ "but found [example1, example2]");
@@ -63,7 +63,7 @@ public class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(context::refresh)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(context::refresh)
 				.withMessageContaining("Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
 						+ "but found [example1, example3]");

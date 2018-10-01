@@ -35,7 +35,7 @@ public class LinkTests {
 
 	@Test
 	public void createWhenHrefIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Link(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Link(null))
 				.withMessageContaining("HREF must not be null");
 	}
 

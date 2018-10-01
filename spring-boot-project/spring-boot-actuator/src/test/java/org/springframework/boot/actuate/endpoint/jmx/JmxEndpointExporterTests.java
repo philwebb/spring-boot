@@ -83,28 +83,28 @@ public class JmxEndpointExporterTests {
 
 	@Test
 	public void createWhenMBeanServerIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(null, this.objectNameFactory,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(null, this.objectNameFactory,
 				this.responseMapper, this.endpoints))
 				.withMessageContaining("MBeanServer must not be null");
 	}
 
 	@Test
 	public void createWhenObjectNameFactoryIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper,
 						this.endpoints))
 				.withMessageContaining("ObjectNameFactory must not be null");
 	}
 
 	@Test
 	public void createWhenResponseMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory,
 						null, this.endpoints))
 				.withMessageContaining("ResponseMapper must not be null");
 	}
 
 	@Test
 	public void createWhenEndpointsIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory,
 				this.responseMapper, null))
 				.withMessageContaining("Endpoints must not be null");
 	}
@@ -132,7 +132,7 @@ public class JmxEndpointExporterTests {
 		given(this.objectNameFactory.getObjectName(any(ExposableJmxEndpoint.class)))
 				.willThrow(MalformedObjectNameException.class);
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.exporter::afterPropertiesSet)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.exporter::afterPropertiesSet)
 				.withMessageContaining("Invalid ObjectName for endpoint 'test'");
 	}
 
@@ -141,7 +141,7 @@ public class JmxEndpointExporterTests {
 		given(this.mBeanServer.registerMBean(any(), any(ObjectName.class)))
 				.willThrow(new MBeanRegistrationException(new RuntimeException()));
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
-		assertThatExceptionOfType((Class<? extends Throwable>) MBeanExportException.class).isThrownBy(this.exporter::afterPropertiesSet)
+		assertThatExceptionOfType(MBeanExportException.class).isThrownBy(this.exporter::afterPropertiesSet)
 				.withMessageContaining("Failed to register MBean for endpoint 'test");
 	}
 
@@ -171,7 +171,7 @@ public class JmxEndpointExporterTests {
 		this.exporter.afterPropertiesSet();
 		willThrow(new MBeanRegistrationException(new RuntimeException()))
 				.given(this.mBeanServer).unregisterMBean(any(ObjectName.class));
-		assertThatExceptionOfType((Class<? extends Throwable>) JmxException.class).isThrownBy(() -> this.exporter.destroy())
+		assertThatExceptionOfType(JmxException.class).isThrownBy(() -> this.exporter.destroy())
 				.withMessageContaining("Failed to unregister MBean with ObjectName 'boot");
 	}
 

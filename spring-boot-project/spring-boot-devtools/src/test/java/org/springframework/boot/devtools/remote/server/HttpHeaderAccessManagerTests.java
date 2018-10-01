@@ -58,25 +58,25 @@ public class HttpHeaderAccessManagerTests {
 
 	@Test
 	public void headerNameMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
 				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void headerNameMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
 				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
 				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
 				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 

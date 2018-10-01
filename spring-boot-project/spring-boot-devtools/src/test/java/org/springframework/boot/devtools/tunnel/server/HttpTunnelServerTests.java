@@ -104,7 +104,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void serverConnectionIsRequired() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelServer(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelServer(null))
 				.withMessageContaining("ServerConnection must not be null");
 	}
 
@@ -124,7 +124,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void longPollTimeoutMustBePositiveValue() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.server.setLongPollTimeout(0))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.server.setLongPollTimeout(0))
 				.withMessageContaining("LongPollTimeout must be a positive value");
 	}
 
@@ -256,7 +256,7 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void disconnectTimeoutMustBePositive() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.server.setDisconnectTimeout(0))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.server.setDisconnectTimeout(0))
 				.withMessageContaining("DisconnectTimeout must be a positive value");
 	}
 

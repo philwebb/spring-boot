@@ -65,7 +65,7 @@ public class InfoPropertiesTests {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
-		assertThatExceptionOfType((Class<? extends Throwable>) UnsupportedOperationException.class).isThrownBy(infoProperties.iterator()::remove);
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(infoProperties.iterator()::remove);
 	}
 
 	@Test

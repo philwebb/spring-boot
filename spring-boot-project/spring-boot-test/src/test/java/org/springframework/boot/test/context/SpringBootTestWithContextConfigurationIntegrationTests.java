@@ -52,7 +52,7 @@ public class SpringBootTestWithContextConfigurationIntegrationTests {
 	@Test
 	public void injectsOnlyConfig() {
 		assertThat(this.context.getBean(Config.class)).isNotNull();
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(AdditionalConfig.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(AdditionalConfig.class));
 	}
 
 	@Configuration

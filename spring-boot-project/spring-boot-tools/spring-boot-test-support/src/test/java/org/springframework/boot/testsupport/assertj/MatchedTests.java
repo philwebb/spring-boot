@@ -41,7 +41,7 @@ public class MatchedTests {
 
 	@Test
 	public void byMatcherDoesNotMatch() {
-		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.by(startsWith("23"))))
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.by(startsWith("23"))))
 				.withMessageContaining("a string starting with \"23\"");
 	}
 
@@ -52,7 +52,7 @@ public class MatchedTests {
 
 	@Test
 	public void whenMatcherDoesNotMatch() {
-		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.when(startsWith("23"))))
+		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.when(startsWith("23"))))
 				.withMessageContaining("a string starting with \"23\"");
 	}
 

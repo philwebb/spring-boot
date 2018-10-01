@@ -62,7 +62,7 @@ public class DataMongoTestIntegrationTests {
 
 	@Test
 	public void didNotInjectExampleService() {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

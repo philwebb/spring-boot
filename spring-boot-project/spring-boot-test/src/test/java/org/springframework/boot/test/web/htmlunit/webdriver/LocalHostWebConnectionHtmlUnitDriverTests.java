@@ -61,19 +61,19 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null,
 				BrowserVersion.CHROME))
 				.withMessageContaining("Environment must not be null");
 	}
@@ -83,7 +83,7 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getVersion()).willReturn("chrome");
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
 				.withMessageContaining("Environment must not be null");
 	}
 

@@ -105,7 +105,7 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseMockBeanMissingClassToMock() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.parser.parse(MockBeanMissingClassToMock.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.parser.parse(MockBeanMissingClassToMock.class))
 				.withMessageContaining("Unable to deduce type to mock");
 	}
 
@@ -121,7 +121,7 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseMockBeanMultipleClassesWithName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.parser.parse(MockBeanMultipleClassesWithName.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.parser.parse(MockBeanMultipleClassesWithName.class))
 				.withMessageContaining("The name attribute can only be used when mocking a single class");
 	}
 
@@ -181,7 +181,7 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseSpyBeanMissingClassToMock() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.parser.parse(SpyBeanMissingClassToMock.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.parser.parse(SpyBeanMissingClassToMock.class))
 				.withMessageContaining("Unable to deduce type to spy");
 	}
 
@@ -197,7 +197,7 @@ public class DefinitionsParserTests {
 
 	@Test
 	public void parseSpyBeanMultipleClassesWithName() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.parser.parse(SpyBeanMultipleClassesWithName.class))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.parser.parse(SpyBeanMultipleClassesWithName.class))
 				.withMessageContaining("The name attribute can only be used when spying a single class");
 	}
 

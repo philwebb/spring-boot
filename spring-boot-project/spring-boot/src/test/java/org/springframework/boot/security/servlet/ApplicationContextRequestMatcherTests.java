@@ -46,7 +46,7 @@ public class ApplicationContextRequestMatcherTests {
 
 	@Test
 	public void createWhenContextClassIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
 				.withMessageContaining("Context class must not be null");
 	}
 
@@ -71,7 +71,7 @@ public class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(
 				ExistingBean.class).callMatchesAndReturnProvidedContext(context);
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {

@@ -177,7 +177,7 @@ public class BatchAutoConfigurationTests {
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-					assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
+					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
 												.queryForList("select * from BATCH_JOB_EXECUTION"));
 				});
 	}

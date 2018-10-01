@@ -49,7 +49,7 @@ public class MainMethodTests {
 
 	@Test
 	public void threadMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MainMethod(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new MainMethod(null))
 				.withMessageContaining("Thread must not be null");
 	}
 
@@ -63,13 +63,13 @@ public class MainMethodTests {
 
 	@Test
 	public void missingArgsMainMethod() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new TestThread(MissingArgs::main).test())
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new TestThread(MissingArgs::main).test())
 				.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
 	public void nonStatic() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
 				.withMessageContaining("Unable to find main method");
 	}
 

@@ -110,7 +110,7 @@ public class SessionAutoConfigurationJdbcTests
 					assertThat(context.getBean(JdbcSessionProperties.class)
 							.getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-			assertThatExceptionOfType((Class<? extends Throwable>) BadSqlGrammarException.class).isThrownBy(() -> context.getBean(JdbcOperations.class)
+			assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(() -> context.getBean(JdbcOperations.class)
 										.queryForList("select * from SPRING_SESSION"));
 		});
 	}

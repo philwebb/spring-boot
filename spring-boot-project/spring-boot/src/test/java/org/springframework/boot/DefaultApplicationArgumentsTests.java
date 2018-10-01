@@ -42,7 +42,7 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void argumentsMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DefaultApplicationArguments(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DefaultApplicationArguments(null))
 				.withMessageContaining("Args must not be null");
 	}
 

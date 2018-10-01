@@ -145,7 +145,7 @@ public class AutoConfigurationSorterTests {
 	public void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
 				this.autoConfigurationMetadata);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
 				.withMessageContaining("AutoConfigure cycle detected");
 	}
 
@@ -176,7 +176,7 @@ public class AutoConfigurationSorterTests {
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
 		this.sorter = new AutoConfigurationSorter(readerFactory,
 				this.autoConfigurationMetadata);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
 				.withMessageContaining("AutoConfigure cycle detected");
 	}
 

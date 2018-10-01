@@ -42,7 +42,7 @@ public class ObjectContentTests {
 
 	@Test
 	public void createWhenObjectIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
 				.withMessageContaining("Object must not be null");
 	}
 

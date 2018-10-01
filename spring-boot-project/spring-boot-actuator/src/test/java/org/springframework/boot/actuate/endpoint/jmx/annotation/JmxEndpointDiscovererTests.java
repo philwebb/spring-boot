@@ -114,7 +114,7 @@ public class JmxEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenJmxExtensionIsMissingEndpointShouldThrowException() {
-		load(TestJmxEndpointExtension.class, (discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+		load(TestJmxEndpointExtension.class, (discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("Invalid extension 'jmxEndpointDiscovererTests.TestJmxEndpointExtension': no endpoint found with id 'test'"));
 	}
 
@@ -184,33 +184,33 @@ public class JmxEndpointDiscovererTests {
 
 	@Test
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
-		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+		load(ClashingJmxEndpointConfiguration.class, (discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("Found multiple extensions for the endpoint bean testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
-				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+				(discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 								.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
-		load(ClashingOperationsEndpoint.class, (discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+		load(ClashingOperationsEndpoint.class, (discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("Unable to map duplicate endpoint operations: [MBean call 'getAll'] to jmxEndpointDiscovererTests.ClashingOperationsEndpoint"));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenExtensionHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(AdditionalClashingOperationsConfiguration.class,
-				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+				(discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 								.withMessageContaining("Unable to map duplicate endpoint operations: [MBean call 'getAll'] to testEndpoint (clashingOperationsJmxEndpointExtension)"));
 	}
 
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
-		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+		load(InvalidJmxExtensionConfiguration.class, (discoverer) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
 						.withMessageContaining("Endpoint bean 'nonJmxEndpoint' cannot support the extension bean 'nonJmxJmxEndpointExtension'"));
 	}
 

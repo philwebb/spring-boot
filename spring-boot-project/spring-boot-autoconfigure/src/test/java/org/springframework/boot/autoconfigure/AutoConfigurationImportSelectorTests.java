@@ -174,12 +174,12 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> selectImports(
 				EnableAutoConfigurationWithFaultyClassNameExclude.class));
 	}
 
@@ -188,7 +188,7 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
 						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test

@@ -82,7 +82,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockProjectGenerationError(400, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.getDependencies().add("foo:bar");
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining(jsonMessage);
 	}
 
@@ -90,7 +90,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void generateProjectBadRequestNoExtraMessage() throws Exception {
 		mockProjectGenerationError(400, null);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("unexpected 400 error");
 	}
 
@@ -101,7 +101,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("No content received from server");
 	}
 
@@ -110,7 +110,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		String jsonMessage = "whatever error on the server";
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining(jsonMessage);
 	}
 
@@ -121,7 +121,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 200);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("Invalid content received from server");
 	}
 
@@ -131,7 +131,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		assertThatExceptionOfType((Class<? extends Throwable>) ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
+		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
 				.withMessageContaining("No content received from server");
 	}
 

@@ -58,7 +58,7 @@ public class ClassPathFileSystemWatcherTests {
 
 	@Test
 	public void urlsMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
 				mock(ClassPathRestartStrategy.class), (URL[]) null))
 				.withMessageContaining("Urls must not be null");
 	}

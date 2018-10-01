@@ -52,7 +52,7 @@ public class RestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
 				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 

@@ -47,13 +47,13 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void addFileNameMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void addFileFileMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.files.addFile("test", null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.files.addFile("test", null))
 				.withMessageContaining("File must not be null");
 	}
 
@@ -160,7 +160,7 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void classLoaderFilesMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFiles(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFiles(null))
 				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 

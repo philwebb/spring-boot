@@ -71,28 +71,28 @@ public class EndpointDiscovererTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
 						Collections.emptyList(), Collections.emptyList()))
 				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
 						Collections.emptyList(), Collections.emptyList()))
 				.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
 	public void createWhenInvokerAdvisorsIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 						mock(ParameterValueMapper.class), null, Collections.emptyList()))
 				.withMessageContaining("InvokerAdvisors must not be null");
 	}
 
 	@Test
 	public void createWhenFiltersIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 				mock(ParameterValueMapper.class), Collections.emptyList(), null))
 				.withMessageContaining("Filters must not be null");
 	}
@@ -137,7 +137,7 @@ public class EndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenTwoEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingEndpointConfiguration.class,
-				(context) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(new TestEndpointDiscoverer(context)::getEndpoints)
+				(context) -> assertThatExceptionOfType(IllegalStateException.class).isThrownBy(new TestEndpointDiscoverer(context)::getEndpoints)
 								.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 

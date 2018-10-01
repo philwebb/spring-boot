@@ -39,13 +39,13 @@ public class EndpointMediaTypesTests {
 
 	@Test
 	public void createWhenProducedIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
 				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	public void createWhenConsumedIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
 				.withMessageContaining("Consumed must not be null");
 	}
 

@@ -55,7 +55,7 @@ public class ApplicationPidTests {
 	@Test
 	public void throwIllegalStateWritingMissingPid() throws Exception {
 		ApplicationPid pid = new ApplicationPid(null);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
 				.withMessageContaining("No PID available");
 	}
 

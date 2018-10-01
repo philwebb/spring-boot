@@ -567,7 +567,7 @@ public class MapBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "a,b");
 		this.sources.add(source);
-		assertThatExceptionOfType((Class<? extends Throwable>) BindException.class).isThrownBy(() -> this.binder.bind("foo", STRING_STRING_MAP));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", STRING_STRING_MAP));
 	}
 
 	@Test

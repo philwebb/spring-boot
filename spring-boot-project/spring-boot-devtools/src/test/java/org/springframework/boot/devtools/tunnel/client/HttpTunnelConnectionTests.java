@@ -80,25 +80,25 @@ public class HttpTunnelConnectionTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
 				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(this.url, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(this.url, null))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 

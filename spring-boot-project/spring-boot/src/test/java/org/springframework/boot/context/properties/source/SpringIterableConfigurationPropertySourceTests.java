@@ -47,14 +47,14 @@ public class SpringIterableConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,
 						mock(PropertyMapper.class)))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(
 				mock(EnumerablePropertySource.class), null))
 				.withMessageContaining("Mapper must not be null");
 	}

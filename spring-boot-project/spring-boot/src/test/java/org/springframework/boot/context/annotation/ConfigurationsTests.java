@@ -47,7 +47,7 @@ public class ConfigurationsTests {
 
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestConfigurations(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestConfigurations(null))
 				.withMessageContaining("Classes must not be null");
 	}
 

@@ -46,7 +46,7 @@ public class SpringConfigurationPropertySourcesTests {
 
 	@Test
 	public void createWhenPropertySourcesIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySources(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySources(null))
 				.withMessageContaining("Sources must not be null");
 	}
 

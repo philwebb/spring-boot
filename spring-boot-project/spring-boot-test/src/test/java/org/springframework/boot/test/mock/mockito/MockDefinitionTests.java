@@ -46,7 +46,7 @@ public class MockDefinitionTests {
 
 	@Test
 	public void classToMockMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))
 				.withMessageContaining("TypeToMock must not be null");
 	}
 

@@ -39,25 +39,25 @@ public class ClassLoaderFileTests {
 
 	@Test
 	public void kindMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(null, null))
 				.withMessageContaining("Kind must not be null");
 	}
 
 	@Test
 	public void addedContentsMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void modifiedContentsMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
 				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void deletedContentsMustBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
 				.withMessageContaining("Contents must be null");
 	}
 

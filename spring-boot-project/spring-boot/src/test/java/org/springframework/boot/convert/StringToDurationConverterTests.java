@@ -138,13 +138,13 @@ public class StringToDurationConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> convert("10foo"))
+		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert("10foo"))
 				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
 	public void convertWhenStyleMismatchShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> convert("10s", null, DurationStyle.ISO8601));
+		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert("10s", null, DurationStyle.ISO8601));
 	}
 
 	@Test

@@ -74,7 +74,7 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void cannotRegisterUnsupportedType() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletListenerRegistrationBean<EventListener>(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ServletListenerRegistrationBean<EventListener>(
 						new EventListener() {
 
 						}))

@@ -46,7 +46,7 @@ public class DiscovererEndpointFilterTests {
 
 	@Test
 	public void createWhenDiscovererIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestDiscovererEndpointFilter(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestDiscovererEndpointFilter(null))
 				.withMessageContaining("Discoverer must not be null");
 	}
 

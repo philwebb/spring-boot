@@ -39,13 +39,13 @@ public class FrameTests {
 
 	@Test
 	public void payloadMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Frame((String) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Frame((String) null))
 				.withMessageContaining("Payload must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Frame((Frame.Type) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Frame((Frame.Type) null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -91,14 +91,14 @@ public class FrameTests {
 	@Test
 	public void readFragmentedNotSupported() throws Exception {
 		byte[] bytes = new byte[] { 0x0F };
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Fragmented frames are not supported");
 	}
 
 	@Test
 	public void readLargeFramesNotSupported() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Large frames are not supported");
 	}
 

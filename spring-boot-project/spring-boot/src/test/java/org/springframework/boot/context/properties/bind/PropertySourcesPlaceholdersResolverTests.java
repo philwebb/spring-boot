@@ -47,7 +47,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
 				.withMessageContaining("Environment must not be null");
 	}
 

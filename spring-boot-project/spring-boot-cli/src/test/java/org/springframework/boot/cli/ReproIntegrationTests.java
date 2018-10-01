@@ -58,7 +58,7 @@ public class ReproIntegrationTests {
 
 	@Test
 	public void jarFileExtensionNeeded() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.cli.jar("secure.groovy", "data-jpa.groovy"))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> this.cli.jar("secure.groovy", "data-jpa.groovy"))
 				.withMessageContaining("is not a JAR file");
 	}
 

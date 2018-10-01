@@ -45,13 +45,13 @@ public class BindableTests {
 
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of((Class<?>) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Bindable.of((Class<?>) null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void ofTypeWhenTypeIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of((ResolvableType) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Bindable.of((ResolvableType) null))
 				.withMessageContaining("Type must not be null");
 	}
 
@@ -89,7 +89,7 @@ public class BindableTests {
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class))
 						.withExistingValue(123))
 				.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
 	}

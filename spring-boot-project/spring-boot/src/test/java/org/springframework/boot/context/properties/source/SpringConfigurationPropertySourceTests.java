@@ -45,14 +45,14 @@ public class SpringConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySource(null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySource(null,
 						mock(PropertyMapper.class), null))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySource(mock(PropertySource.class),
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySource(mock(PropertySource.class),
 				null, null))
 				.withMessageContaining("Mapper must not be null");
 	}
@@ -114,7 +114,7 @@ public class SpringConfigurationPropertySourceTests {
 
 	@Test
 	public void fromWhenPropertySourceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> SpringConfigurationPropertySource.from(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> SpringConfigurationPropertySource.from(null))
 				.withMessageContaining("Source must not be null");
 	}
 

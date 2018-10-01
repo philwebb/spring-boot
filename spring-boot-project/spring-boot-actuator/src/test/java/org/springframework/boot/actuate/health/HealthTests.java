@@ -42,7 +42,7 @@ public class HealthTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Health.Builder(null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Health.Builder(null, null))
 				.withMessageContaining("Status must not be null");
 	}
 

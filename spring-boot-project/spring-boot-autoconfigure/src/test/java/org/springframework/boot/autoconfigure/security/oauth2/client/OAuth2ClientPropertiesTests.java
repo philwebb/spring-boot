@@ -44,7 +44,7 @@ public class OAuth2ClientPropertiesTests {
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
 		this.properties.getRegistration().getLogin().put("foo", registration);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.properties::validate)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.properties::validate)
 				.withMessageContaining("Client id must not be empty.");
 	}
 
@@ -63,7 +63,7 @@ public class OAuth2ClientPropertiesTests {
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
 		this.properties.getRegistration().getAuthorizationCode().put("foo", registration);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.properties::validate)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.properties::validate)
 				.withMessageContaining("Client id must not be empty.");
 	}
 

@@ -322,7 +322,7 @@ public class JettyServletWebServerFactoryTests
 
 		});
 		JettyWebServer jettyWebServer = (JettyWebServer) factory.getWebServer();
-		assertThatExceptionOfType((Class<? extends Throwable>) WebServerException.class).isThrownBy(() -> {
+		assertThatExceptionOfType(WebServerException.class).isThrownBy(() -> {
 			try {
 				jettyWebServer.start();
 			}

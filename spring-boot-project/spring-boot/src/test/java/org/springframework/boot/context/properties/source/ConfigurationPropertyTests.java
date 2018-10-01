@@ -43,13 +43,13 @@ public class ConfigurationPropertyTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenValueIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
 				.withMessageContaining("Value must not be null");
 	}
 

@@ -51,7 +51,7 @@ public class BasicJsonTesterTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new BasicJsonTester(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new BasicJsonTester(null))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 

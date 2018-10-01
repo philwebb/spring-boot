@@ -70,7 +70,7 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders((ApplicationContext) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders((ApplicationContext) null))
 				.withMessageContaining("ClassLoader must not be null");
 	}
 
@@ -86,7 +86,7 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenClassLoaderIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders((ClassLoader) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders((ClassLoader) null))
 				.withMessageContaining("ClassLoader must not be null");
 	}
 
@@ -99,7 +99,7 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenProvidersIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TemplateAvailabilityProviders(
 				(Collection<TemplateAvailabilityProvider>) null))
 				.withMessageContaining("Providers must not be null");
 	}
@@ -113,34 +113,34 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void getProviderWhenApplicationContextIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, null))
 				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	public void getProviderWhenViewIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(null, this.environment, this.classLoader,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(null, this.environment, this.classLoader,
 				this.resourceLoader))
 				.withMessageContaining("View must not be null");
 	}
 
 	@Test
 	public void getProviderWhenEnvironmentIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, null, this.classLoader,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, null, this.classLoader,
 				this.resourceLoader))
 				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void getProviderWhenClassLoaderIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, this.environment, null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, this.environment, null,
 				this.resourceLoader))
 				.withMessageContaining("ClassLoader must not be null");
 	}
 
 	@Test
 	public void getProviderWhenResourceLoaderIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, this.environment,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.providers.getProvider(this.view, this.environment,
 						this.classLoader, null))
 				.withMessageContaining("ResourceLoader must not be null");
 	}

@@ -57,7 +57,7 @@ public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
 	public void disabledAutoConfiguration() {
 		ApplicationContext context = this.context;
 		assertThat(context.getBean(ExampleTestConfig.class)).isNotNull();
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> context.getBean(ConfigurationPropertiesBindingPostProcessor.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> context.getBean(ConfigurationPropertiesBindingPostProcessor.class));
 	}
 
 }

@@ -42,13 +42,13 @@ public class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
 				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void createWhenFilterIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(
 				new MockConfigurationPropertySource(), null))
 				.withMessageContaining("Filter must not be null");
 	}

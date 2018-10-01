@@ -69,7 +69,7 @@ public class ConnectionInputStreamTests {
 	public void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(inputStream::checkedRead)
+		assertThatExceptionOfType(IOException.class).isThrownBy(inputStream::checkedRead)
 				.withMessageContaining("End of stream");
 	}
 
@@ -78,7 +78,7 @@ public class ConnectionInputStreamTests {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
+		assertThatExceptionOfType(IOException.class).isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
 				.withMessageContaining("End of stream");
 	}
 

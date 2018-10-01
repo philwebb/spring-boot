@@ -103,7 +103,7 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> convert("10WB"))
+		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert("10WB"))
 				.withMessageContaining("'10WB' is not a valid data size");
 	}
 

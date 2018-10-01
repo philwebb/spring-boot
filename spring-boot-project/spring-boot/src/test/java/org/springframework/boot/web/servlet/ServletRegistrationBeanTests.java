@@ -146,13 +146,13 @@ public class ServletRegistrationBeanTests {
 	@Test
 	public void setServletMustNotBeNull() throws Exception {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.onStartup(this.servletContext))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> bean.onStartup(this.servletContext))
 				.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	public void createServletMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
 				.withMessageContaining("Servlet must not be null");
 	}
 
@@ -160,13 +160,13 @@ public class ServletRegistrationBeanTests {
 	public void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.setUrlMappings(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> bean.setUrlMappings(null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	public void createMappingMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 
@@ -174,7 +174,7 @@ public class ServletRegistrationBeanTests {
 	public void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(
 				this.servlet);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.addUrlMappings((String[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> bean.addUrlMappings((String[]) null))
 				.withMessageContaining("UrlMappings must not be null");
 	}
 

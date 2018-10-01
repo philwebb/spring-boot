@@ -96,13 +96,13 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void parentMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
 				.withMessageContaining("Parent must not be null");
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
 				.withMessageContaining("UpdatedFiles must not be null");
 	}
 
@@ -184,14 +184,14 @@ public class RestartClassLoaderTests {
 	public void getDeletedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
-		assertThatExceptionOfType((Class<? extends Throwable>) ClassNotFoundException.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+		assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test
 	public void getUpdatedClass() throws Exception {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
-		assertThatExceptionOfType((Class<? extends Throwable>) ClassFormatError.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+		assertThatExceptionOfType(ClassFormatError.class).isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
 	}
 
 	@Test

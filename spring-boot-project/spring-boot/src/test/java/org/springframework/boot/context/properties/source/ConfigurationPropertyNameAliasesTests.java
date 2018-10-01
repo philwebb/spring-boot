@@ -36,7 +36,7 @@ public class ConfigurationPropertyNameAliasesTests {
 
 	@Test
 	public void createWithStringWhenNullNameShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
 				.withMessageContaining("Name must not be null");
 	}
 

@@ -56,14 +56,14 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(null))
 				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(file))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(file))
 				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
@@ -105,13 +105,13 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void getChangedFilesSnapshotMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
 				.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(
 						new FolderSnapshot(createTestFolderStructure()), null))
 				.withMessageContaining("Snapshot source folder must be '" + this.folder + "'");
 	}

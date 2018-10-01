@@ -84,7 +84,7 @@ public class H2ConsoleAutoConfigurationTests {
 		TestPropertyValues
 				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
 				.applyTo(this.context);
-		assertThatExceptionOfType((Class<? extends Throwable>) BeanCreationException.class).isThrownBy(this.context::refresh)
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
 				.withMessageContaining("Failed to bind properties under 'spring.h2.console'");
 	}
 

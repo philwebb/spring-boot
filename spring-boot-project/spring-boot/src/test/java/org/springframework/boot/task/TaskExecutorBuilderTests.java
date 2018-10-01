@@ -78,13 +78,13 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void customizersWhenCustomizersAreNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
@@ -126,14 +126,14 @@ public class TaskExecutorBuilderTests {
 
 	@Test
 	public void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.builder
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.builder
 				.additionalCustomizers((TaskExecutorCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.builder
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.builder
 				.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
 				.withMessageContaining("Customizers must not be null");
 	}

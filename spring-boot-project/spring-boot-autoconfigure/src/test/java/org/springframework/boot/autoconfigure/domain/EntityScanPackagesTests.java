@@ -72,7 +72,7 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null))
 				.withMessageContaining("Registry must not be null");
 
 	}
@@ -80,20 +80,20 @@ public class EntityScanPackagesTests {
 	@Test
 	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(this.context, (String[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(this.context, (String[]) null))
 				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null, Collections.emptyList()))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null, Collections.emptyList()))
 				.withMessageContaining("Registry must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages
 						.register(this.context, (Collection<String>) null))
 				.withMessageContaining("PackageNames must not be null");
 	}
@@ -126,7 +126,7 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void entityScanAnnotationWhenHasValueAndBasePackagesAttributeShouldThrow() {
-		assertThatExceptionOfType((Class<? extends Throwable>) AnnotationConfigurationException.class).isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
+		assertThatExceptionOfType(AnnotationConfigurationException.class).isThrownBy(() -> this.context = new AnnotationConfigApplicationContext(
 						EntityScanValueAndBasePackagesConfig.class));
 	}
 

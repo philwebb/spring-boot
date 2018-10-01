@@ -72,7 +72,7 @@ public class ServletEndpointRegistrarTests {
 
 	@Test
 	public void createWhenServletEndpointsIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletEndpointRegistrar(null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ServletEndpointRegistrar(null, null))
 				.withMessageContaining("ServletEndpoints must not be null");
 	}
 

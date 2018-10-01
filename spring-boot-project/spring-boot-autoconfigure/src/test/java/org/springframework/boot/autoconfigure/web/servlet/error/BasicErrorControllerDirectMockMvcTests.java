@@ -111,7 +111,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(
 				WebMvcIncludedConfiguration.class).run("--server.port=0",
 						"--server.error.whitelabel.enabled=false"));
-		assertThatExceptionOfType((Class<? extends Throwable>) ServletException.class).isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
+		assertThatExceptionOfType(ServletException.class).isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test

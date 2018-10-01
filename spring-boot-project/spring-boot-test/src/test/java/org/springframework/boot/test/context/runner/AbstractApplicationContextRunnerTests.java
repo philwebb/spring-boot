@@ -179,7 +179,7 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> throwCheckedException("Expected message"))
+		get().run((context) -> assertThatExceptionOfType(IOException.class).isThrownBy(() -> throwCheckedException("Expected message"))
 						.withMessageContaining("Expected message"));
 	}
 

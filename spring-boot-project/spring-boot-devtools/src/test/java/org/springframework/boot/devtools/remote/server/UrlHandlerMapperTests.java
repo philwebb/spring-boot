@@ -45,19 +45,19 @@ public class UrlHandlerMapperTests {
 
 	@Test
 	public void requestUriMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestUriMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("", this.handler))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("", this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestUrlMustStartWithSlash() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
 				.withMessageContaining("URL must start with '/'");
 	}
 

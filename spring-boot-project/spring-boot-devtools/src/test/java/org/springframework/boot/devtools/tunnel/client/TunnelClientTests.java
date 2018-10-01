@@ -49,13 +49,13 @@ public class TunnelClientTests {
 
 	@Test
 	public void listenPortMustNotBeNegative() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
 				.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
 	public void tunnelConnectionMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(1, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(1, null))
 				.withMessageContaining("TunnelConnection must not be null");
 	}
 

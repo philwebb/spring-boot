@@ -64,7 +64,7 @@ public class BindConverterTests {
 
 	@Test
 	public void createWhenConversionServiceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> BindConverter.get(null, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> BindConverter.get(null, null))
 				.withMessageContaining("ConversionService must not be null");
 	}
 
@@ -191,7 +191,7 @@ public class BindConverterTests {
 	public void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter
 				.get(ApplicationConversionService.getSharedInstance(), null);
-		assertThatExceptionOfType((Class<? extends Throwable>) ConverterNotFoundException.class).isThrownBy(() -> bindConverter
+		assertThatExceptionOfType(ConverterNotFoundException.class).isThrownBy(() -> bindConverter
 				.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
 

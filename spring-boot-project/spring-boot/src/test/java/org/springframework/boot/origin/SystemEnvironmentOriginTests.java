@@ -35,12 +35,12 @@ public class SystemEnvironmentOriginTests {
 
 	@Test
 	public void createWhenPropertyIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(null));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(null));
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(""));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SystemEnvironmentOrigin(""));
 	}
 
 	@Test

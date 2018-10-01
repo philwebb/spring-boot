@@ -56,20 +56,20 @@ public class OperationMethodParametersTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(null,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(null,
 				mock(ParameterNameDiscoverer.class)))
 				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
 				.withMessageContaining("ParameterNameDiscoverer must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod,
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod,
 						mock(ParameterNameDiscoverer.class)))
 				.withMessageContaining("Failed to extract parameter names");
 	}

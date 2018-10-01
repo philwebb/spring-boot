@@ -49,7 +49,7 @@ public class EntityScannerTests {
 
 	@Test
 	public void createWhenContextIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EntityScanner(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EntityScanner(null))
 				.withMessageContaining("Context must not be null");
 	}
 

@@ -107,7 +107,7 @@ public class PropertyMappingContextCustomizerFactoryTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
-		assertThatExceptionOfType((Class<? extends Throwable>) BeanCreationException.class).isThrownBy(context::refresh)
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(context::refresh)
 				.withMessageContaining("The @PropertyMapping annotation "
 						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
 						+ "cannot be used in combination with the @Component annotation @Configuration");

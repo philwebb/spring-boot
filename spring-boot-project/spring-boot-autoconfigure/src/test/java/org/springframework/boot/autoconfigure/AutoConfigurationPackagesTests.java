@@ -56,7 +56,7 @@ public class AutoConfigurationPackagesTests {
 	public void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				EmptyConfig.class);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
 				.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 

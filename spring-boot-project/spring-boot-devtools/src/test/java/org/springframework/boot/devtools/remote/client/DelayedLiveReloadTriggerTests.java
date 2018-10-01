@@ -85,26 +85,26 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void liveReloadServerMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
 				.withMessageContaining("LiveReloadServer must not be null");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
 				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
 				this.requestFactory, null))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
 				this.requestFactory, ""))
 				.withMessageContaining("URL must not be empty");
 	}

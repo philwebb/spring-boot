@@ -35,7 +35,7 @@ public class SimpleInfoContributorTests {
 
 	@Test
 	public void prefixIsMandatory() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
 	}
 
 	@Test

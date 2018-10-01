@@ -66,13 +66,13 @@ public class PropertyMapperTests {
 
 	@Test
 	public void fromWhenSupplierIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from((Supplier<?>) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.map.from((Supplier<?>) null))
 				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void toWhenConsumerIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").to(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").to(null))
 				.withMessageContaining("Consumer must not be null");
 	}
 
@@ -93,7 +93,7 @@ public class PropertyMapperTests {
 
 	@Test
 	public void asWhenAdapterIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").as(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").as(null))
 				.withMessageContaining("Adapter must not be null");
 	}
 

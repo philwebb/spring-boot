@@ -59,7 +59,7 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
 				.withMessageContaining("ExpectationManager must not be null");
 	}
 
@@ -102,7 +102,7 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void getServerWhenNoServersAreBoundShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.customizer::getServer)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.customizer::getServer)
 				.withMessageContaining("Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
@@ -111,7 +111,7 @@ public class MockServerRestTemplateCustomizerTests {
 	public void getServerWhenMultipleServersAreBoundShouldThrowException() {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.customizer::getServer)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.customizer::getServer)
 				.withMessageContaining("Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 	}

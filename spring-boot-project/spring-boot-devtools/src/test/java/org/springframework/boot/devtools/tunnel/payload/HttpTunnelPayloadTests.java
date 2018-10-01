@@ -54,13 +54,13 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void sequenceMustBePositive() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
 				.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
 	public void dataMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(1, null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(1, null))
 				.withMessageContaining("Data must not be null");
 	}
 
@@ -101,7 +101,7 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> HttpTunnelPayload.get(request))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> HttpTunnelPayload.get(request))
 				.withMessageContaining("Missing sequence header");
 	}
 

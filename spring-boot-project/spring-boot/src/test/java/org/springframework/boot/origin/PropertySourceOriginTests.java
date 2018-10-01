@@ -43,19 +43,19 @@ public class PropertySourceOriginTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(null, "name"))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(null, "name"))
 				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
 				.withMessageContaining("PropertyName must not be empty");
 	}
 

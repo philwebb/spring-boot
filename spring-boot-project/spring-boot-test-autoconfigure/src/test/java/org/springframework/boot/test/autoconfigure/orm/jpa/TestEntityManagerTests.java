@@ -66,7 +66,7 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void createWhenEntityManagerIsNullShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEntityManager(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestEntityManager(null))
 				.withMessageContaining("EntityManagerFactory must not be null");
 	}
 
@@ -213,7 +213,7 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void getEntityManagerWhenNotSetShouldThrowException() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.testEntityManager::getEntityManager)
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(this.testEntityManager::getEntityManager)
 				.withMessageContaining("No transactional EntityManager found");
 	}
 

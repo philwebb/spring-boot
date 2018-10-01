@@ -62,12 +62,12 @@ public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Test
 	public void shouldNotHaveWebDriver() {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebDriver.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebDriver.class));
 	}
 
 	@Test
 	public void shouldNotHaveWebClient() {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebClient.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> this.context.getBean(WebClient.class));
 	}
 
 }

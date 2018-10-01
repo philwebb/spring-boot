@@ -196,7 +196,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		login.setProvider("missing");
 		properties.getRegistration().getLogin().put("registration", login);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
 				.getClientRegistrations(properties))
 				.withMessageContaining("Unknown provider ID 'missing'");
 	}
@@ -277,7 +277,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		properties.getRegistration().getLogin().put("missing", login);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
 						.getClientRegistrations(properties))
 				.withMessageContaining("Provider ID must be specified for client registration 'missing'");
 	}

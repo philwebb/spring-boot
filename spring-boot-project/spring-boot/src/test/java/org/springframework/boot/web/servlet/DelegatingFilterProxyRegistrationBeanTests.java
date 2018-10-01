@@ -53,13 +53,13 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void targetBeanNameMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
 				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
 	public void targetBeanNameMustNotBeEmpty() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
 				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
@@ -95,7 +95,7 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean("mockFilter",
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean("mockFilter",
 						(ServletRegistrationBean[]) null))
 				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}

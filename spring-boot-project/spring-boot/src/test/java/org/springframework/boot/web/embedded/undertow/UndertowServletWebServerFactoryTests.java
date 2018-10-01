@@ -86,14 +86,14 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
@@ -114,14 +114,14 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addDeploymentInfoCustomizers(
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addDeploymentInfoCustomizers(
 				(UndertowDeploymentInfoCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}

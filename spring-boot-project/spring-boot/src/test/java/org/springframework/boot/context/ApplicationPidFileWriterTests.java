@@ -151,7 +151,7 @@ public class ApplicationPidFileWriterTests {
 		file.setReadOnly();
 		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(EVENT))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(EVENT))
 				.withMessageContaining("Cannot create pid file");
 	}
 
@@ -162,7 +162,7 @@ public class ApplicationPidFileWriterTests {
 		SpringApplicationEvent event = createPreparedEvent(
 				"spring.pid.fail-on-write-error", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(event))
+		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(event))
 				.withMessageContaining("Cannot create pid file");
 	}
 

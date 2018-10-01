@@ -102,7 +102,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoArgumentsException.class).isThrownBy(this.commandRunner::run);
+		assertThatExceptionOfType(NoArgumentsException.class).isThrownBy(this.commandRunner::run);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class CommandRunnerTests {
 
 	@Test
 	public void missingCommand() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
+		assertThatExceptionOfType(NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("missing"));
 	}
 
 	@Test
@@ -187,12 +187,12 @@ public class CommandRunnerTests {
 
 	@Test
 	public void helpNoCommand() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoHelpCommandArgumentsException.class).isThrownBy(() -> this.commandRunner.run("help"));
+		assertThatExceptionOfType(NoHelpCommandArgumentsException.class).isThrownBy(() -> this.commandRunner.run("help"));
 	}
 
 	@Test
 	public void helpUnknownCommand() throws Exception {
-		assertThatExceptionOfType((Class<? extends Throwable>) NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("help", "missing"));
+		assertThatExceptionOfType(NoSuchCommandException.class).isThrownBy(() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {
