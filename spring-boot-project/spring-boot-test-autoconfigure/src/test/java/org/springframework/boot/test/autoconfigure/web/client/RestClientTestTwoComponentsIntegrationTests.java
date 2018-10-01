@@ -28,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -57,9 +58,9 @@ public class RestClientTestTwoComponentsIntegrationTests {
 
 	@Test
 	public void serverShouldNotWork() {
-		this.thrown.expect(IllegalStateException.class, () -> this.server.expect(requestTo("/test"))
-				.andRespond(withSuccess("hello", MediaType.TEXT_HTML)),
-				"Unable to use auto-configured");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.server.expect(requestTo("/test"))
+				.andRespond(withSuccess("hello", MediaType.TEXT_HTML)))
+				.withMessageContaining("Unable to use auto-configured");
 	}
 
 	@Test

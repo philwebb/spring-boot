@@ -41,6 +41,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
@@ -66,9 +67,8 @@ public class DefaultErrorAttributesTests {
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
-		this.thrown.expect(IllegalStateException.class,
-				() -> this.errorAttributes.getErrorAttributes(request, false),
-				"Missing exception attribute in ServerWebExchange");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
+				.withMessageContaining("Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test

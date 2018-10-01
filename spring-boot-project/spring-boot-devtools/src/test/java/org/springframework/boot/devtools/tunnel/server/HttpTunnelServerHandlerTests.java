@@ -23,6 +23,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -38,8 +39,8 @@ public class HttpTunnelServerHandlerTests {
 
 	@Test
 	public void serverMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelServerHandler(null),
-				"Server must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelServerHandler(null))
+				.withMessageContaining("Server must not be null");
 	}
 
 	@Test

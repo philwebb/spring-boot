@@ -30,6 +30,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kin
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,14 +47,14 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void addFileNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.files.addFile(null, mock(ClassLoaderFile.class)),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void addFileFileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.files.addFile("test", null),
-				"File must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.files.addFile("test", null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
@@ -159,8 +160,8 @@ public class ClassLoaderFilesTests {
 
 	@Test
 	public void classLoaderFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ClassLoaderFiles(null), "ClassLoaderFiles must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFiles(null))
+				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

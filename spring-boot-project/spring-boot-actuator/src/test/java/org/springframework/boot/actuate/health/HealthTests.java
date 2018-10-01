@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
@@ -41,8 +42,8 @@ public class HealthTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Health.Builder(null, null),
-				"Status must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Health.Builder(null, null))
+				.withMessageContaining("Status must not be null");
 	}
 
 	@Test

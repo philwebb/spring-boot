@@ -30,6 +30,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,17 +47,16 @@ public class SpringIterableConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new SpringIterableConfigurationPropertySource(null,
-						mock(PropertyMapper.class)),
-				"PropertySource must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,
+						mock(PropertyMapper.class)))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new SpringIterableConfigurationPropertySource(
-				mock(EnumerablePropertySource.class), null),
-				"Mapper must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(
+				mock(EnumerablePropertySource.class), null))
+				.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test

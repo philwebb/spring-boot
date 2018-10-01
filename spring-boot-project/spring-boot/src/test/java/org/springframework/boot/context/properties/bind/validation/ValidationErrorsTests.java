@@ -34,6 +34,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ValidationErrors}.
@@ -51,22 +52,21 @@ public class ValidationErrorsTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ValidationErrors(null, Collections.emptySet(),
-				Collections.emptyList()),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),
+				Collections.emptyList()))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenBoundPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ValidationErrors(NAME, null, Collections.emptyList()),
-				"BoundProperties must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
+				.withMessageContaining("BoundProperties must not be null");
 	}
 
 	@Test
 	public void createWhenErrorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ValidationErrors(NAME, Collections.emptySet(), null),
-				"Errors must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+				.withMessageContaining("Errors must not be null");
 	}
 
 	@Test

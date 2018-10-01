@@ -24,6 +24,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -42,14 +43,14 @@ public class ConfigurationPropertyTests {
 
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationProperty(null, "bar", null),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(null, "bar", null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void createWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationProperty(NAME, null, null),
-				"Value must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(NAME, null, null))
+				.withMessageContaining("Value must not be null");
 	}
 
 	@Test

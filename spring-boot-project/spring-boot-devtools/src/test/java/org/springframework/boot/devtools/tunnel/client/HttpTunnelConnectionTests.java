@@ -38,6 +38,7 @@ import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -79,28 +80,26 @@ public class HttpTunnelConnectionTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelConnection(null, this.requestFactory),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelConnection("", this.requestFactory),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory),
-				"Malformed URL 'htttttp:///ttest'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
+				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpTunnelConnection(this.url, null),
-				"RequestFactory must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelConnection(this.url, null))
+				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
@@ -57,8 +58,8 @@ public class ReproIntegrationTests {
 
 	@Test
 	public void jarFileExtensionNeeded() throws Exception {
-		this.thrown.expect(IllegalStateException.class, () -> this.cli.jar("secure.groovy", "data-jpa.groovy"),
-				"is not a JAR file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.cli.jar("secure.groovy", "data-jpa.groovy"))
+				.withMessageContaining("is not a JAR file");
 	}
 
 }

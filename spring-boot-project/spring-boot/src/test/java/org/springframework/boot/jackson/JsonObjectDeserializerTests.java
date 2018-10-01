@@ -34,6 +34,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Deserializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -70,9 +71,9 @@ public class JsonObjectDeserializerTests {
 
 	@Test
 	public void nullSafeValueWhenClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class),
-				null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class),
+				null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -151,32 +152,32 @@ public class JsonObjectDeserializerTests {
 
 	@Test
 	public void nullSafeValueWhenClassIsUnknownShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.testDeserializer
-						.testNullSafeValue(mock(JsonNode.class), InputStream.class), "Unsupported value type java.io.InputStream");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.testDeserializer
+						.testNullSafeValue(mock(JsonNode.class), InputStream.class))
+				.withMessageContaining("Unsupported value type java.io.InputStream");
 
 	}
 
 	@Test
 	public void getRequiredNodeWhenTreeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.testDeserializer.testGetRequiredNode(null, "test"),
-				"Tree must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
+				.withMessageContaining("Tree must not be null");
 	}
 
 	@Test
 	public void getRequiredNodeWhenNodeIsNullShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(null);
-		this.thrown.expect(IllegalStateException.class, () -> this.testDeserializer.testGetRequiredNode(tree, "test"),
-				"Missing JSON field 'test'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
+				.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test
 	public void getRequiredNodeWhenNodeIsNullNodeShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(NullNode.instance);
-		this.thrown.expect(IllegalStateException.class, () -> this.testDeserializer.testGetRequiredNode(tree, "test"),
-				"Missing JSON field 'test'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
+				.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EmbeddedDatabaseConnection}.
@@ -52,16 +53,14 @@ public class EmbeddedDatabaseConnectionTests {
 
 	@Test
 	public void getUrlWithNullDatabaseName() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> EmbeddedDatabaseConnection.HSQL.getUrl(null),
-				"DatabaseName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
+				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
 	public void getUrlWithEmptyDatabaseName() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "),
-				"DatabaseName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 }

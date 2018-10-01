@@ -30,6 +30,7 @@ import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions
 import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Integration tests for {@link MessageInterpolatorFactory} without EL.
@@ -46,9 +47,9 @@ public class MessageInterpolatorFactoryWithoutElIntegrationTests {
 	@Test
 	public void defaultMessageInterpolatorShouldFail() {
 		// Sanity test
-		this.thrown.expect(ValidationException.class, Validation.byDefaultProvider()
-				.configure()::getDefaultMessageInterpolator,
-				"javax.el.ExpressionFactory");
+		assertThatExceptionOfType((Class<? extends Throwable>) ValidationException.class).isThrownBy(Validation.byDefaultProvider()
+				.configure()::getDefaultMessageInterpolator)
+				.withMessageContaining("javax.el.ExpressionFactory");
 	}
 
 	@Test

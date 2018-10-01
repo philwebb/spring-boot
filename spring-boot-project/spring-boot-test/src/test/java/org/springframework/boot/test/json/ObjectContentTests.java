@@ -23,6 +23,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ObjectContent}.
@@ -41,8 +42,8 @@ public class ObjectContentTests {
 
 	@Test
 	public void createWhenObjectIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ObjectContent<ExampleObject>(TYPE, null),
-				"Object must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
+				.withMessageContaining("Object must not be null");
 	}
 
 	@Test

@@ -45,6 +45,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -74,10 +75,9 @@ public class SpringBootServletInitializerTests {
 
 	@Test
 	public void failsWithoutConfigure() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> new MockSpringBootServletInitializer()
-						.createRootApplicationContext(this.servletContext),
-				"No SpringApplication sources have been defined");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new MockSpringBootServletInitializer()
+						.createRootApplicationContext(this.servletContext))
+				.withMessageContaining("No SpringApplication sources have been defined");
 	}
 
 	@Test

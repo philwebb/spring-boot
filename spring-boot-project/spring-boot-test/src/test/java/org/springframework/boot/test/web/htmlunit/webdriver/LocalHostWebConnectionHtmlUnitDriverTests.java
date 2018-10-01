@@ -34,6 +34,7 @@ import org.openqa.selenium.Capabilities;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
@@ -60,21 +61,21 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostWebConnectionHtmlUnitDriver(null),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostWebConnectionHtmlUnitDriver(null, true),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostWebConnectionHtmlUnitDriver(null,
-				BrowserVersion.CHROME),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null,
+				BrowserVersion.CHROME))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
@@ -82,8 +83,8 @@ public class LocalHostWebConnectionHtmlUnitDriverTests {
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getVersion()).willReturn("chrome");
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test

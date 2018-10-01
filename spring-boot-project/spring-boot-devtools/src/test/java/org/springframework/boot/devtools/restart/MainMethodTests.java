@@ -26,6 +26,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link MainMethod}.
@@ -48,8 +49,8 @@ public class MainMethodTests {
 
 	@Test
 	public void threadMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new MainMethod(null),
-				"Thread must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MainMethod(null))
+				.withMessageContaining("Thread must not be null");
 	}
 
 	@Test
@@ -62,14 +63,14 @@ public class MainMethodTests {
 
 	@Test
 	public void missingArgsMainMethod() throws Exception {
-		this.thrown.expect(IllegalStateException.class, () -> new TestThread(MissingArgs::main).test(),
-				"Unable to find main method");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new TestThread(MissingArgs::main).test())
+				.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
 	public void nonStatic() throws Exception {
-		this.thrown.expect(IllegalStateException.class, () -> new TestThread(() -> new NonStaticMain().main()).test(),
-				"Unable to find main method");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
+				.withMessageContaining("Unable to find main method");
 	}
 
 	private static class TestThread extends Thread {

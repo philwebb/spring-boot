@@ -46,6 +46,7 @@ import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ClassPathChangeUploader}.
@@ -74,29 +75,27 @@ public class ClassPathChangeUploaderTests {
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathChangeUploader(null, this.requestFactory),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathChangeUploader("", this.requestFactory),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ClassPathChangeUploader("http://localhost:8080", null),
-				"RequestFactory must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
+				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeMalformed() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ClassPathChangeUploader("htttttp:///ttest",
-						this.requestFactory),
-				"Malformed URL 'htttttp:///ttest'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest",
+						this.requestFactory))
+				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test

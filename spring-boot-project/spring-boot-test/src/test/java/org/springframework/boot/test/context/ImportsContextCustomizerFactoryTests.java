@@ -31,6 +31,7 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -86,10 +87,9 @@ public class ImportsContextCustomizerFactoryTests {
 
 	@Test
 	public void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> this.factory.createContextCustomizer(
-						TestWithImportAndBeanMethod.class, null),
-				"Test classes cannot include @Bean methods");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.factory.createContextCustomizer(
+						TestWithImportAndBeanMethod.class, null))
+				.withMessageContaining("Test classes cannot include @Bean methods");
 	}
 
 	@Test

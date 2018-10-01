@@ -33,6 +33,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Configurations}.
@@ -46,8 +47,8 @@ public class ConfigurationsTests {
 
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new TestConfigurations(null),
-				"Classes must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestConfigurations(null))
+				.withMessageContaining("Classes must not be null");
 	}
 
 	@Test

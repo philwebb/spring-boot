@@ -51,6 +51,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,15 +86,15 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.setBuilderCustomizers(null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -113,16 +114,16 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.setDeploymentInfoCustomizers(null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.addDeploymentInfoCustomizers(
-				(UndertowDeploymentInfoCustomizer[]) null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addDeploymentInfoCustomizers(
+				(UndertowDeploymentInfoCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

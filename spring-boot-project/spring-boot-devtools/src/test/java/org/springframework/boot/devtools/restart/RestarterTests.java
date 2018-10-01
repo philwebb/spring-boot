@@ -43,6 +43,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -75,8 +76,8 @@ public class RestarterTests {
 	@Test
 	public void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
-		this.thrown.expect(IllegalStateException.class,
-				Restarter::getInstance, "Restarter has not been initialized");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(Restarter::getInstance)
+				.withMessageContaining("Restarter has not been initialized");
 	}
 
 	@Test
@@ -102,8 +103,8 @@ public class RestarterTests {
 
 	@Test
 	public void addUrlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> Restarter.getInstance().addUrls(null),
-				"Urls must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addUrls(null))
+				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
@@ -120,9 +121,8 @@ public class RestarterTests {
 
 	@Test
 	public void addClassLoaderFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> Restarter.getInstance().addClassLoaderFiles(null),
-				"ClassLoaderFiles must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
+				.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

@@ -35,6 +35,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link RestartServer}.
@@ -51,9 +52,8 @@ public class RestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new RestartServer((SourceFolderUrlFilter) null),
-				"SourceFolderUrlFilter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
+				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test

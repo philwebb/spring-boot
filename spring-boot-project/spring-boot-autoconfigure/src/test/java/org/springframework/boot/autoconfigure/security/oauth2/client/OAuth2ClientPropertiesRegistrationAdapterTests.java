@@ -40,6 +40,7 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
@@ -195,9 +196,9 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		login.setProvider("missing");
 		properties.getRegistration().getLogin().put("registration", login);
-		this.thrown.expect(IllegalStateException.class, () -> OAuth2ClientPropertiesRegistrationAdapter
-				.getClientRegistrations(properties),
-				"Unknown provider ID 'missing'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+				.getClientRegistrations(properties))
+				.withMessageContaining("Unknown provider ID 'missing'");
 	}
 
 	@Test
@@ -276,10 +277,9 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		properties.getRegistration().getLogin().put("missing", login);
-		this.thrown.expect(IllegalStateException.class,
-				() -> OAuth2ClientPropertiesRegistrationAdapter
-						.getClientRegistrations(properties),
-				"Provider ID must be specified for client registration 'missing'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter
+						.getClientRegistrations(properties))
+				.withMessageContaining("Provider ID must be specified for client registration 'missing'");
 	}
 
 	@Test

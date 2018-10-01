@@ -26,6 +26,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ClassPathChangedEvent}.
@@ -41,8 +42,8 @@ public class ClassPathChangedEventTests {
 
 	@Test
 	public void changeSetMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathChangedEvent(this.source, null, false),
-				"ChangeSet must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathChangedEvent(this.source, null, false))
+				.withMessageContaining("ChangeSet must not be null");
 	}
 
 	@Test

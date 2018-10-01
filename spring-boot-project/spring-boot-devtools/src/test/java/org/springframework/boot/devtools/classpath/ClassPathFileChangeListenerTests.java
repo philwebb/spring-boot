@@ -37,6 +37,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -70,18 +71,16 @@ public class ClassPathFileChangeListenerTests {
 
 	@Test
 	public void eventPublisherMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ClassPathFileChangeListener(null, this.restartStrategy,
-						this.fileSystemWatcher),
-				"EventPublisher must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy,
+						this.fileSystemWatcher))
+				.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
 	public void restartStrategyMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ClassPathFileChangeListener(this.eventPublisher, null,
-						this.fileSystemWatcher),
-				"RestartStrategy must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null,
+						this.fileSystemWatcher))
+				.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test

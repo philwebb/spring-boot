@@ -35,6 +35,7 @@ import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -130,17 +131,15 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Test
 	public void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> bean.setServletRegistrationBeans(null),
-				"ServletRegistrationBeans must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.setServletRegistrationBeans(null))
+				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Test
 	public void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null),
-				"ServletRegistrationBeans must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
+				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Test
@@ -166,30 +165,29 @@ public abstract class AbstractFilterRegistrationBeanTests {
 	@Test
 	public void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class, () -> bean.setUrlPatterns(null),
-				"UrlPatterns must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.setUrlPatterns(null))
+				.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
 	public void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class, () -> bean.addUrlPatterns((String[]) null),
-				"UrlPatterns must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.addUrlPatterns((String[]) null))
+				.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
 	public void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> bean.setServletNames(null), "ServletNames must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.setServletNames(null))
+				.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test
 	public void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> bean.addServletNames((String[]) null),
-				"ServletNames must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.addServletNames((String[]) null))
+				.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test

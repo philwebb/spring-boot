@@ -27,6 +27,7 @@ import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -42,10 +43,9 @@ public class SpringBootTestContextBootstrapperTests {
 
 	@Test
 	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> buildTestContext(
-						SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class),
-				"@WebAppConfiguration should only be used with "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> buildTestContext(
+						SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class))
+				.withMessageContaining("@WebAppConfiguration should only be used with "
 						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
 						+ "environment. Please remove @WebAppConfiguration or reconfigure "
 						+ "@SpringBootTest.");

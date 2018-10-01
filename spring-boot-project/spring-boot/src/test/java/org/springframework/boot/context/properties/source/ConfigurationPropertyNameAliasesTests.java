@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConfigurationPropertyNameAliases}.
@@ -35,8 +36,8 @@ public class ConfigurationPropertyNameAliasesTests {
 
 	@Test
 	public void createWithStringWhenNullNameShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ConfigurationPropertyNameAliases((String) null),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test

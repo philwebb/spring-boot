@@ -29,6 +29,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link H2ConsoleAutoConfiguration}
@@ -83,9 +84,8 @@ public class H2ConsoleAutoConfigurationTests {
 		TestPropertyValues
 				.of("spring.h2.console.enabled:true", "spring.h2.console.path:custom")
 				.applyTo(this.context);
-		this.thrown.expect(BeanCreationException.class,
-				this.context::refresh,
-				"Failed to bind properties under 'spring.h2.console'");
+		assertThatExceptionOfType((Class<? extends Throwable>) BeanCreationException.class).isThrownBy(this.context::refresh)
+				.withMessageContaining("Failed to bind properties under 'spring.h2.console'");
 	}
 
 	@Test

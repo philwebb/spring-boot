@@ -44,6 +44,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -87,16 +88,14 @@ public class DefaultErrorViewResolverTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DefaultErrorViewResolver(null, new ResourceProperties()),
-				"ApplicationContext must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DefaultErrorViewResolver(null, new ResourceProperties()))
+				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	public void createWhenResourcePropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null),
-				"ResourceProperties must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null))
+				.withMessageContaining("ResourceProperties must not be null");
 	}
 
 	@Test

@@ -175,21 +175,20 @@ public class SpringApplicationTests {
 
 	@Test
 	public void sourcesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new SpringApplication((Class<?>[]) null).run(),
-				"PrimarySources must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
+				.withMessageContaining("PrimarySources must not be null");
 	}
 
 	@Test
 	public void sourcesMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new SpringApplication().run(),
-				"Sources must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringApplication().run())
+				.withMessageContaining("Sources must not be empty");
 	}
 
 	@Test
 	public void sourcesMustBeAccessible() {
-		this.thrown.expect(IllegalStateException.class, () -> new SpringApplication(InaccessibleConfiguration.class).run(),
-				"Cannot load configuration");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new SpringApplication(InaccessibleConfiguration.class).run())
+				.withMessageContaining("Cannot load configuration");
 	}
 
 	@Test

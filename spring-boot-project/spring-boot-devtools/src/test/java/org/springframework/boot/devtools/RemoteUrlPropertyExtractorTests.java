@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link RemoteUrlPropertyExtractor}.
@@ -48,21 +49,21 @@ public class RemoteUrlPropertyExtractorTests {
 
 	@Test
 	public void missingUrl() {
-		this.thrown.expect(IllegalStateException.class, () -> doTest(),
-				"No remote URL specified");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest())
+				.withMessageContaining("No remote URL specified");
 	}
 
 	@Test
 	public void malformedUrl() {
-		this.thrown.expect(IllegalStateException.class, () -> doTest("::://wibble"),
-				"Malformed URL '::://wibble'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest("::://wibble"))
+				.withMessageContaining("Malformed URL '::://wibble'");
 
 	}
 
 	@Test
 	public void multipleUrls() {
-		this.thrown.expect(IllegalStateException.class, () -> doTest("http://localhost:8080", "http://localhost:9090"),
-				"Multiple URLs specified");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
+				.withMessageContaining("Multiple URLs specified");
 	}
 
 	@Test

@@ -82,22 +82,22 @@ public class BinderTests {
 
 	@Test
 	public void createWhenSourcesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Binder((Iterable<ConfigurationPropertySource>) null),
-				"Sources must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
+				.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
 	public void bindWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.binder.bind((ConfigurationPropertyName) null,
-				Bindable.of(String.class), BindHandler.DEFAULT),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null,
+				Bindable.of(String.class), BindHandler.DEFAULT))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void bindWhenTargetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
-				BindHandler.DEFAULT),
-				"Target must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
+				BindHandler.DEFAULT))
+				.withMessageContaining("Target must not be null");
 	}
 
 	@Test

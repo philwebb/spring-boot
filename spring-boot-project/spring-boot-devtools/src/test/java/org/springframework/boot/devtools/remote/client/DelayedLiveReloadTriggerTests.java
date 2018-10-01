@@ -34,6 +34,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -84,30 +85,28 @@ public class DelayedLiveReloadTriggerTests {
 
 	@Test
 	public void liveReloadServerMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL),
-				"LiveReloadServer must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
+				.withMessageContaining("LiveReloadServer must not be null");
 	}
 
 	@Test
 	public void requestFactoryMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL),
-				"RequestFactory must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
+				.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	public void urlMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new DelayedLiveReloadTrigger(this.liveReloadServer,
-				this.requestFactory, null),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+				this.requestFactory, null))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void urlMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new DelayedLiveReloadTrigger(this.liveReloadServer,
-				this.requestFactory, ""),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer,
+				this.requestFactory, ""))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test

@@ -40,6 +40,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,9 +58,9 @@ public class ClassPathFileSystemWatcherTests {
 
 	@Test
 	public void urlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-				mock(ClassPathRestartStrategy.class), (URL[]) null),
-				"Urls must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
+				mock(ClassPathRestartStrategy.class), (URL[]) null))
+				.withMessageContaining("Urls must not be null");
 	}
 
 	@Test

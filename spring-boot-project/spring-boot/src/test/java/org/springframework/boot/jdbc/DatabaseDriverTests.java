@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DatabaseDriver}.
@@ -56,8 +57,8 @@ public class DatabaseDriverTests {
 
 	@Test
 	public void failureOnMalformedJdbcUrl() {
-		this.thrown.expect(IllegalArgumentException.class, () -> DatabaseDriver.fromJdbcUrl("malformed:url"),
-				"URL must start with");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DatabaseDriver.fromJdbcUrl("malformed:url"))
+				.withMessageContaining("URL must start with");
 	}
 
 	@Test

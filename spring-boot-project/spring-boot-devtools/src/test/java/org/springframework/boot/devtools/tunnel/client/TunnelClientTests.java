@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -48,15 +49,14 @@ public class TunnelClientTests {
 
 	@Test
 	public void listenPortMustNotBeNegative() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TunnelClient(-5, this.tunnelConnection),
-				"ListenPort must be greater than or equal to 0");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
+				.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
 	public void tunnelConnectionMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TunnelClient(1, null), "TunnelConnection must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TunnelClient(1, null))
+				.withMessageContaining("TunnelConnection must not be null");
 	}
 
 	@Test

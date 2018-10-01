@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -36,9 +37,8 @@ public class BindValidationExceptionTests {
 
 	@Test
 	public void createWhenValidationErrorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new BindValidationException(null),
-				"ValidationErrors must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new BindValidationException(null))
+				.withMessageContaining("ValidationErrors must not be null");
 	}
 
 	@Test

@@ -30,6 +30,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpStatusHandler}.
@@ -59,8 +60,8 @@ public class HttpStatusHandlerTests {
 
 	@Test
 	public void statusMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpStatusHandler(null),
-				"Status must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpStatusHandler(null))
+				.withMessageContaining("Status must not be null");
 	}
 
 	@Test

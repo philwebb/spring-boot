@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -53,14 +54,14 @@ public class HttpTunnelPayloadTests {
 
 	@Test
 	public void sequenceMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)),
-				"Sequence must be positive");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
+				.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
 	public void dataMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpTunnelPayload(1, null),
-				"Data must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(1, null))
+				.withMessageContaining("Data must not be null");
 	}
 
 	@Test
@@ -100,8 +101,8 @@ public class HttpTunnelPayloadTests {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
-		this.thrown.expect(IllegalStateException.class, () -> HttpTunnelPayload.get(request),
-				"Missing sequence header");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> HttpTunnelPayload.get(request))
+				.withMessageContaining("Missing sequence header");
 	}
 
 	@Test

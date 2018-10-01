@@ -54,6 +54,7 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -70,33 +71,30 @@ public class EndpointDiscovererTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
-						Collections.emptyList(), Collections.emptyList()),
-				"ApplicationContext must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
+						Collections.emptyList(), Collections.emptyList()))
+				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
-						Collections.emptyList(), Collections.emptyList()),
-				"ParameterValueMapper must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
+						Collections.emptyList(), Collections.emptyList()))
+				.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
 	public void createWhenInvokerAdvisorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-						mock(ParameterValueMapper.class), null, Collections.emptyList()),
-				"InvokerAdvisors must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+						mock(ParameterValueMapper.class), null, Collections.emptyList()))
+				.withMessageContaining("InvokerAdvisors must not be null");
 	}
 
 	@Test
 	public void createWhenFiltersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-				mock(ParameterValueMapper.class), Collections.emptyList(), null),
-				"Filters must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+				mock(ParameterValueMapper.class), Collections.emptyList(), null))
+				.withMessageContaining("Filters must not be null");
 	}
 
 	@Test
@@ -139,9 +137,8 @@ public class EndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenTwoEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingEndpointConfiguration.class,
-				(context) -> this.thrown.expect(IllegalStateException.class,
-						new TestEndpointDiscoverer(context)::getEndpoints,
-						"Found two endpoints with the id 'test': "));
+				(context) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(new TestEndpointDiscoverer(context)::getEndpoints)
+								.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test

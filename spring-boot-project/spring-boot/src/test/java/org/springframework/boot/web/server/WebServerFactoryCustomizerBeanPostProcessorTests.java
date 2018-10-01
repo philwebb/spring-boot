@@ -33,6 +33,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -59,9 +60,8 @@ public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	@Test
 	public void setBeanFactoryWhenNotListableShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.processor.setBeanFactory(mock(BeanFactory.class)),
-				"WebServerCustomizerBeanPostProcessor can only "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
+				.withMessageContaining("WebServerCustomizerBeanPostProcessor can only "
 						+ "be used with a ListableBeanFactory");
 	}
 

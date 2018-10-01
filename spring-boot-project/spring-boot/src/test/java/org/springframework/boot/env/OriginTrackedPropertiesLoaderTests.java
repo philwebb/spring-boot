@@ -30,6 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OriginTrackedPropertiesLoader}.
@@ -95,8 +96,8 @@ public class OriginTrackedPropertiesLoaderTests {
 		// gh-12716
 		ClassPathResource resource = new ClassPathResource(
 				"test-properties-malformed-unicode.properties", getClass());
-		this.thrown.expect(IllegalStateException.class, () -> new OriginTrackedPropertiesLoader(resource).load(),
-				"Malformed \\uxxxx encoding");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())
+				.withMessageContaining("Malformed \\uxxxx encoding");
 	}
 
 	@Test

@@ -90,8 +90,8 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
-		this.thrown.expect(IllegalArgumentException.class, () -> this.initializer.initialize(context),
-				"generic parameter");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initializer.initialize(context))
+				.withMessageContaining("generic parameter");
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

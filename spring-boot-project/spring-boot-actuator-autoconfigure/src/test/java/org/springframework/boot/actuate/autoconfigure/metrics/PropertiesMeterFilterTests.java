@@ -37,6 +37,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PropertiesMeterFilter}.
@@ -59,8 +60,8 @@ public class PropertiesMeterFilterTests {
 
 	@Test
 	public void createWhenPropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new PropertiesMeterFilter(null),
-				"Properties must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertiesMeterFilter(null))
+				.withMessageContaining("Properties must not be null");
 	}
 
 	@Test

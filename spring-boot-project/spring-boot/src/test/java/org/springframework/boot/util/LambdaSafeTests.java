@@ -30,6 +30,7 @@ import org.springframework.boot.util.LambdaSafe.Filter;
 import org.springframework.boot.util.LambdaSafe.InvocationResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
@@ -50,16 +51,14 @@ public class LambdaSafeTests {
 
 	@Test
 	public void callbackWhenCallbackTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> LambdaSafe.callback(null, new Object(), null),
-				"CallbackType must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))
+				.withMessageContaining("CallbackType must not be null");
 	}
 
 	@Test
 	public void callbackWhenCallbackInstanceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> LambdaSafe.callback(Object.class, null, null),
-				"CallbackInstance must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> LambdaSafe.callback(Object.class, null, null))
+				.withMessageContaining("CallbackInstance must not be null");
 	}
 
 	@Test

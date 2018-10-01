@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConnectionInputStream}.
@@ -68,7 +69,8 @@ public class ConnectionInputStreamTests {
 	public void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class, inputStream::checkedRead, "End of stream");
+		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(inputStream::checkedRead)
+				.withMessageContaining("End of stream");
 	}
 
 	@Test
@@ -76,8 +78,8 @@ public class ConnectionInputStreamTests {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class, () -> inputStream.checkedRead(buffer, 0, buffer.length),
-				"End of stream");
+		assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
+				.withMessageContaining("End of stream");
 	}
 
 	private static class LimitedInputStream extends FilterInputStream {

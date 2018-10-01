@@ -30,6 +30,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BasicJsonTester}.
@@ -50,8 +51,8 @@ public class BasicJsonTesterTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new BasicJsonTester(null), "ResourceLoadClass must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new BasicJsonTester(null))
+				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test

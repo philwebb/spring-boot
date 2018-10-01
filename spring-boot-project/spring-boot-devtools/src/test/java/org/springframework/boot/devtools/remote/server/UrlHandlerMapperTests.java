@@ -27,6 +27,7 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -44,20 +45,20 @@ public class UrlHandlerMapperTests {
 
 	@Test
 	public void requestUriMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new UrlHandlerMapper(null, this.handler),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestUriMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new UrlHandlerMapper("", this.handler),
-				"URL must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("", this.handler))
+				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	public void requestUrlMustStartWithSlash() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new UrlHandlerMapper("tunnel", this.handler),
-				"URL must start with '/'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
+				.withMessageContaining("URL must start with '/'");
 	}
 
 	@Test

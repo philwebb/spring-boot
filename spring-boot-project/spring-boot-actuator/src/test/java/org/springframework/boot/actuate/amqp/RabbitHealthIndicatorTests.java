@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -64,8 +65,8 @@ public class RabbitHealthIndicatorTests {
 
 	@Test
 	public void createWhenRabbitTemplateIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new RabbitHealthIndicator(null), "RabbitTemplate must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RabbitHealthIndicator(null))
+				.withMessageContaining("RabbitTemplate must not be null");
 	}
 
 	@Test

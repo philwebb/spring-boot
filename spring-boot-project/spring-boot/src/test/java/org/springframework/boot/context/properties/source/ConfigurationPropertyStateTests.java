@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConfigurationPropertyState}.
@@ -38,14 +39,14 @@ public class ConfigurationPropertyStateTests {
 
 	@Test
 	public void searchWhenIterableIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> ConfigurationPropertyState.search(null, (e) -> true),
-				"Source must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void searchWhenPredicateIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> ConfigurationPropertyState.search(Collections.emptyList(), null),
-				"Predicate must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyState.search(Collections.emptyList(), null))
+				.withMessageContaining("Predicate must not be null");
 	}
 
 	@Test

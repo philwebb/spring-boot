@@ -32,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -126,9 +127,8 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setUsername("user");
 		properties.setPassword("secret".toCharArray());
-		this.thrown.expect(IllegalStateException.class,
-				() -> createMongoClient(properties),
-				"Invalid mongo configuration, "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
 						+ "either uri or host/port/credentials must be specified");
 	}
 
@@ -138,9 +138,8 @@ public class ReactiveMongoClientFactoryTests {
 		properties.setUri("mongodb://127.0.0.1:1234/mydb");
 		properties.setHost("localhost");
 		properties.setPort(4567);
-		this.thrown.expect(IllegalStateException.class,
-				() -> createMongoClient(properties),
-				"Invalid mongo configuration, "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> createMongoClient(properties))
+				.withMessageContaining("Invalid mongo configuration, "
 						+ "either uri or host/port/credentials must be specified");
 	}
 

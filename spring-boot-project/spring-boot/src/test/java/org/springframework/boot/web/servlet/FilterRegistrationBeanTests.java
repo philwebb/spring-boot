@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import org.springframework.boot.web.servlet.mock.MockFilter;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -45,22 +46,21 @@ public class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanT
 	@Test
 	public void setFilterMustNotBeNull() throws Exception {
 		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>();
-		this.thrown.expect(IllegalArgumentException.class, () -> bean.onStartup(this.servletContext),
-				"Filter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> bean.onStartup(this.servletContext))
+				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void constructFilterMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FilterRegistrationBean<>(null),
-				"Filter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(null))
+				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new FilterRegistrationBean<>(this.filter,
-						(ServletRegistrationBean[]) null),
-				"ServletRegistrationBeans must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilterRegistrationBean<>(this.filter,
+						(ServletRegistrationBean[]) null))
+				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Override

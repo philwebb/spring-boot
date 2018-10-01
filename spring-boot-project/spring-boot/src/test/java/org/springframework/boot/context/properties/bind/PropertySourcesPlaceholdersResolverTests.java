@@ -30,6 +30,7 @@ import org.springframework.core.env.PropertySources;
 import org.springframework.util.PropertyPlaceholderHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PropertySourcesPlaceholdersResolver}.
@@ -46,8 +47,8 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new PropertySourcesPlaceholdersResolver((Environment) null),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test

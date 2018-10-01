@@ -31,6 +31,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SpringConfigurationPropertySources}.
@@ -45,8 +46,8 @@ public class SpringConfigurationPropertySourcesTests {
 
 	@Test
 	public void createWhenPropertySourcesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new SpringConfigurationPropertySources(null),
-				"Sources must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySources(null))
+				.withMessageContaining("Sources must not be null");
 	}
 
 	@Test

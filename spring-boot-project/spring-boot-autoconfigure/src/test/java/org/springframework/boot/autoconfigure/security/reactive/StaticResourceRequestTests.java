@@ -35,6 +35,7 @@ import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -78,14 +79,14 @@ public class StaticResourceRequestTests {
 
 	@Test
 	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.resourceRequest.at(null),
-				"Locations must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.resourceRequest.at(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
 	public void excludeFromSetWhenSetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.resourceRequest.atCommonLocations().excluding(null),
-				"Locations must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
+				.withMessageContaining("Locations must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {

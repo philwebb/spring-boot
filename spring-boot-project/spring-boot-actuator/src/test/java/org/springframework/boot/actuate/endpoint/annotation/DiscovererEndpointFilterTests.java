@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -45,8 +46,8 @@ public class DiscovererEndpointFilterTests {
 
 	@Test
 	public void createWhenDiscovererIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new TestDiscovererEndpointFilter(null),
-				"Discoverer must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestDiscovererEndpointFilter(null))
+				.withMessageContaining("Discoverer must not be null");
 	}
 
 	@Test

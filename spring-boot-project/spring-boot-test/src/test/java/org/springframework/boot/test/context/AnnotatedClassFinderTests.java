@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.example.ExampleConfig;
 import org.springframework.boot.test.context.example.scan.Example;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AnnotatedClassFinder}.
@@ -41,14 +42,14 @@ public class AnnotatedClassFinderTests {
 
 	@Test
 	public void findFromClassWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.finder.findFromClass((Class<?>) null),
-				"Source must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.finder.findFromClass((Class<?>) null))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void findFromPackageWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.finder.findFromPackage((String) null),
-				"Source must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.finder.findFromPackage((String) null))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test

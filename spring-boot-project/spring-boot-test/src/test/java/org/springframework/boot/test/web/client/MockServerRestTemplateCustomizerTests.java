@@ -28,6 +28,7 @@ import org.springframework.test.web.client.UnorderedRequestExpectationManager;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -58,9 +59,8 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new MockServerRestTemplateCustomizer(null),
-				"ExpectationManager must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
+				.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
@@ -102,9 +102,8 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void getServerWhenNoServersAreBoundShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class,
-				this.customizer::getServer,
-				"Unable to return a single MockRestServiceServer since "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.customizer::getServer)
+				.withMessageContaining("Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
 
@@ -112,9 +111,8 @@ public class MockServerRestTemplateCustomizerTests {
 	public void getServerWhenMultipleServersAreBoundShouldThrowException() {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
-		this.thrown.expect(IllegalStateException.class,
-				this.customizer::getServer,
-				"Unable to return a single MockRestServiceServer since "
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.customizer::getServer)
+				.withMessageContaining("Unable to return a single MockRestServiceServer since "
 						+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 	}
 

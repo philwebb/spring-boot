@@ -46,6 +46,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -103,8 +104,8 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void serverConnectionIsRequired() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpTunnelServer(null), "ServerConnection must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelServer(null))
+				.withMessageContaining("ServerConnection must not be null");
 	}
 
 	@Test
@@ -123,9 +124,8 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void longPollTimeoutMustBePositiveValue() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.server.setLongPollTimeout(0),
-				"LongPollTimeout must be a positive value");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.server.setLongPollTimeout(0))
+				.withMessageContaining("LongPollTimeout must be a positive value");
 	}
 
 	@Test
@@ -256,9 +256,8 @@ public class HttpTunnelServerTests {
 
 	@Test
 	public void disconnectTimeoutMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.server.setDisconnectTimeout(0),
-				"DisconnectTimeout must be a positive value");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.server.setDisconnectTimeout(0))
+				.withMessageContaining("DisconnectTimeout must be a positive value");
 	}
 
 	@Test

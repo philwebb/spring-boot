@@ -24,6 +24,7 @@ import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -41,15 +42,15 @@ public class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull),
-				"Source must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
+				.withMessageContaining("Source must not be null");
 	}
 
 	@Test
 	public void createWhenFilterIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FilteredConfigurationPropertiesSource(
-				new MockConfigurationPropertySource(), null),
-				"Filter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(
+				new MockConfigurationPropertySource(), null))
+				.withMessageContaining("Filter must not be null");
 	}
 
 	@Test

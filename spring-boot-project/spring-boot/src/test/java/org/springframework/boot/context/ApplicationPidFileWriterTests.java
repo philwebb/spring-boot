@@ -39,6 +39,7 @@ import org.springframework.mock.env.MockPropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -150,8 +151,8 @@ public class ApplicationPidFileWriterTests {
 		file.setReadOnly();
 		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		this.thrown.expect(IllegalStateException.class, () -> listener.onApplicationEvent(EVENT),
-				"Cannot create pid file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(EVENT))
+				.withMessageContaining("Cannot create pid file");
 	}
 
 	@Test
@@ -161,8 +162,8 @@ public class ApplicationPidFileWriterTests {
 		SpringApplicationEvent event = createPreparedEvent(
 				"spring.pid.fail-on-write-error", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		this.thrown.expect(IllegalStateException.class, () -> listener.onApplicationEvent(event),
-				"Cannot create pid file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> listener.onApplicationEvent(event))
+				.withMessageContaining("Cannot create pid file");
 	}
 
 	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName,

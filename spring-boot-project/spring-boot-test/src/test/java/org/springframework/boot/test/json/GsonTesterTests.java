@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link GsonTester}.
@@ -35,15 +36,14 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void initFieldsWhenTestIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> GsonTester.initFields(null, new GsonBuilder().create()),
-				"TestInstance must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
+				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null),
-				"Marshaller must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
+				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test

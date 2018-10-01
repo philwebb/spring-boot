@@ -23,6 +23,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ClassLoaderFile}.
@@ -38,26 +39,26 @@ public class ClassLoaderFileTests {
 
 	@Test
 	public void kindMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(null, null),
-				"Kind must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(null, null))
+				.withMessageContaining("Kind must not be null");
 	}
 
 	@Test
 	public void addedContentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.ADDED, null),
-				"Contents must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
+				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void modifiedContentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.MODIFIED, null),
-				"Contents must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
+				.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	public void deletedContentsMustBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ClassLoaderFile(Kind.DELETED, new byte[10]),
-				"Contents must be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
+				.withMessageContaining("Contents must be null");
 	}
 
 	@Test

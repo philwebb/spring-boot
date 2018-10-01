@@ -24,6 +24,7 @@ import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link TriggerFileFilter}.
@@ -40,8 +41,8 @@ public class TriggerFileFilterTests {
 
 	@Test
 	public void nameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new TriggerFileFilter(null),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TriggerFileFilter(null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test

@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -71,9 +72,8 @@ public class ServletEndpointRegistrarTests {
 
 	@Test
 	public void createWhenServletEndpointsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ServletEndpointRegistrar(null, null),
-				"ServletEndpoints must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletEndpointRegistrar(null, null))
+				.withMessageContaining("ServletEndpoints must not be null");
 	}
 
 	@Test

@@ -30,6 +30,7 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StringToDataSizeConverter}.
@@ -102,8 +103,8 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class,
-				() -> convert("10WB"), "'10WB' is not a valid data size");
+		assertThatExceptionOfType((Class<? extends Throwable>) ConversionFailedException.class).isThrownBy(() -> convert("10WB"))
+				.withMessageContaining("'10WB' is not a valid data size");
 	}
 
 	@Test

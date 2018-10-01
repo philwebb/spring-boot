@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EndpointMediaTypes}.
@@ -38,14 +39,14 @@ public class EndpointMediaTypesTests {
 
 	@Test
 	public void createWhenProducedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new EndpointMediaTypes(null, Collections.emptyList()),
-				"Produced must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
+				.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	public void createWhenConsumedIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new EndpointMediaTypes(Collections.emptyList(), null),
-				"Consumed must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
+				.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test

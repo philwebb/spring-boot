@@ -26,6 +26,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AnnotationsPropertySource}.
@@ -40,9 +41,8 @@ public class AnnotationsPropertySourceTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new AnnotationsPropertySource(null),
-				"Property source must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new AnnotationsPropertySource(null))
+				.withMessageContaining("Property source must not be null");
 	}
 
 	@Test

@@ -41,6 +41,7 @@ import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WebFilterHandler}
@@ -147,9 +148,8 @@ public class WebFilterHandlerTests {
 
 	@Test
 	public void urlPatternsDeclaredTwice() throws IOException {
-		this.thrown.expect(IllegalStateException.class,
-				() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class),
-				"The urlPatterns and value attributes are mutually exclusive.");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class))
+				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DefaultApplicationArguments}.
@@ -41,8 +42,8 @@ public class DefaultApplicationArgumentsTests {
 
 	@Test
 	public void argumentsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new DefaultApplicationArguments(null),
-				"Args must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DefaultApplicationArguments(null))
+				.withMessageContaining("Args must not be null");
 	}
 
 	@Test

@@ -29,6 +29,7 @@ import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link FolderSnapshot}.
@@ -55,16 +56,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FolderSnapshot(null),
-				"Folder must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(null))
+				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new FolderSnapshot(file),
-				"Folder '" + file + "' must not be a file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FolderSnapshot(file))
+				.withMessageContaining("Folder '" + file + "' must not be a file");
 	}
 
 	@Test
@@ -105,16 +105,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void getChangedFilesSnapshotMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.initialSnapshot.getChangedFiles(null, null),
-				"Snapshot must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
+				.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.initialSnapshot.getChangedFiles(
-						new FolderSnapshot(createTestFolderStructure()), null),
-				"Snapshot source folder must be '" + this.folder + "'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.initialSnapshot.getChangedFiles(
+						new FolderSnapshot(createTestFolderStructure()), null))
+				.withMessageContaining("Snapshot source folder must be '" + this.folder + "'");
 	}
 
 	@Test

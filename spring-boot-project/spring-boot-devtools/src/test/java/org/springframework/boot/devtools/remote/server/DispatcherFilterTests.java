@@ -39,6 +39,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
@@ -77,8 +78,8 @@ public class DispatcherFilterTests {
 
 	@Test
 	public void dispatcherMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new DispatcherFilter(null),
-				"Dispatcher must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DispatcherFilter(null))
+				.withMessageContaining("Dispatcher must not be null");
 	}
 
 	@Test

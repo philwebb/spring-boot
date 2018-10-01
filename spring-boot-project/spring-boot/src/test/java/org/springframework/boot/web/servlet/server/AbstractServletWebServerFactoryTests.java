@@ -279,23 +279,20 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void contextPathMustStartWithSlash() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> getFactory().setContextPath("missingslash"),
-				"ContextPath must start with '/' and not end with '/'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("missingslash"))
+				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> getFactory().setContextPath("extraslash/"),
-				"ContextPath must start with '/' and not end with '/'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("extraslash/"))
+				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextRootPathMustNotBeSlash() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> getFactory().setContextPath("/"),
-				"Root ContextPath must be specified using an empty string");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("/"))
+				.withMessageContaining("Root ContextPath must be specified using an empty string");
 	}
 
 	@Test
@@ -769,8 +766,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
-		this.thrown.expect(IllegalStateException.class, () -> factory.getValidSessionStoreDir(false),
-				"points to a file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> factory.getValidSessionStoreDir(false))
+				.withMessageContaining("points to a file");
 	}
 
 	@Test

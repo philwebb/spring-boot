@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -48,8 +49,8 @@ public class CachingOperationInvokerTests {
 
 	@Test
 	public void createInstanceWithTtlSetToZero() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new CachingOperationInvoker(mock(OperationInvoker.class), 0),
-				"TimeToLive");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
+				.withMessageContaining("TimeToLive");
 	}
 
 	@Test

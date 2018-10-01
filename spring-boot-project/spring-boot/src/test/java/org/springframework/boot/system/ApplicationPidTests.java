@@ -27,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ApplicationPid}.
@@ -54,8 +55,8 @@ public class ApplicationPidTests {
 	@Test
 	public void throwIllegalStateWritingMissingPid() throws Exception {
 		ApplicationPid pid = new ApplicationPid(null);
-		this.thrown.expect(IllegalStateException.class, () -> pid.write(this.temporaryFolder.newFile()),
-				"No PID available");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> pid.write(this.temporaryFolder.newFile()))
+				.withMessageContaining("No PID available");
 	}
 
 	@Test

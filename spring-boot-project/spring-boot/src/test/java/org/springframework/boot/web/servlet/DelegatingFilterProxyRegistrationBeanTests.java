@@ -35,6 +35,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.filter.GenericFilterBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.isA;
 
 /**
@@ -52,16 +53,14 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void targetBeanNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DelegatingFilterProxyRegistrationBean(null),
-				"TargetBeanName must not be null or empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
+				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
 	public void targetBeanNameMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DelegatingFilterProxyRegistrationBean(""),
-				"TargetBeanName must not be null or empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
+				.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
@@ -96,10 +95,9 @@ public class DelegatingFilterProxyRegistrationBeanTests
 
 	@Test
 	public void createServletRegistrationBeanMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DelegatingFilterProxyRegistrationBean("mockFilter",
-						(ServletRegistrationBean[]) null),
-				"ServletRegistrationBeans must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DelegatingFilterProxyRegistrationBean("mockFilter",
+						(ServletRegistrationBean[]) null))
+				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Override

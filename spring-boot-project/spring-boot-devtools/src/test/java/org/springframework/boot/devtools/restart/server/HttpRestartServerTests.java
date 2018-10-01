@@ -38,6 +38,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -67,16 +68,14 @@ public class HttpRestartServerTests {
 
 	@Test
 	public void sourceFolderUrlFilterMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpRestartServer((SourceFolderUrlFilter) null),
-				"SourceFolderUrlFilter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((SourceFolderUrlFilter) null))
+				.withMessageContaining("SourceFolderUrlFilter must not be null");
 	}
 
 	@Test
 	public void restartServerMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpRestartServer((RestartServer) null),
-				"RestartServer must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServer((RestartServer) null))
+				.withMessageContaining("RestartServer must not be null");
 	}
 
 	@Test

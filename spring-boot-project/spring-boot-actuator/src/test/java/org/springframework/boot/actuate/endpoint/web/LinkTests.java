@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Link}.
@@ -34,8 +35,8 @@ public class LinkTests {
 
 	@Test
 	public void createWhenHrefIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Link(null),
-				"HREF must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Link(null))
+				.withMessageContaining("HREF must not be null");
 	}
 
 	@Test

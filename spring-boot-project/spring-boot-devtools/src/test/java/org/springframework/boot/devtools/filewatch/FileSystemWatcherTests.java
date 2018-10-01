@@ -37,6 +37,7 @@ import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -64,62 +65,57 @@ public class FileSystemWatcherTests {
 
 	@Test
 	public void pollIntervalMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new FileSystemWatcher(true,
-						Duration.ofMillis(0), Duration.ofMillis(1)), "PollInterval must be positive");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true,
+						Duration.ofMillis(0), Duration.ofMillis(1)))
+				.withMessageContaining("PollInterval must be positive");
 	}
 
 	@Test
 	public void quietPeriodMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FileSystemWatcher(true, Duration.ofMillis(1),
-				Duration.ofMillis(0)),
-				"QuietPeriod must be positive");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
+				Duration.ofMillis(0)))
+				.withMessageContaining("QuietPeriod must be positive");
 	}
 
 	@Test
 	public void pollIntervalMustBeGreaterThanQuietPeriod() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new FileSystemWatcher(true, Duration.ofMillis(1),
-						Duration.ofMillis(1)),
-				"PollInterval must be greater than QuietPeriod");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1),
+						Duration.ofMillis(1)))
+				.withMessageContaining("PollInterval must be greater than QuietPeriod");
 	}
 
 	@Test
 	public void listenerMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.watcher.addListener(null),
-				"FileChangeListener must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addListener(null))
+				.withMessageContaining("FileChangeListener must not be null");
 	}
 
 	@Test
 	public void cannotAddListenerToStartedListener() {
 		this.watcher.start();
-		this.thrown.expect(IllegalStateException.class,
-				() -> this.watcher.addListener(mock(FileChangeListener.class)),
-				"FileSystemWatcher already started");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.watcher.addListener(mock(FileChangeListener.class)))
+				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
 	public void sourceFolderMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.watcher.addSourceFolder(null),
-				"Folder must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(null))
+				.withMessageContaining("Folder must not be null");
 	}
 
 	@Test
 	public void sourceFolderMustNotBeAFile() {
 		File folder = new File("pom.xml");
 		assertThat(folder.isFile()).isTrue();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.watcher.addSourceFolder(new File("pom.xml")),
-				"Folder 'pom.xml' must not be a file");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.watcher.addSourceFolder(new File("pom.xml")))
+				.withMessageContaining("Folder 'pom.xml' must not be a file");
 	}
 
 	@Test
 	public void cannotAddSourceFolderToStartedListener() throws Exception {
 		this.watcher.start();
-		this.thrown.expect(IllegalStateException.class,
-				() -> this.watcher.addSourceFolder(this.temp.newFolder()),
-				"FileSystemWatcher already started");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.watcher.addSourceFolder(this.temp.newFolder()))
+				.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test

@@ -39,6 +39,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AbstractJsonMarshalTester}.
@@ -97,15 +98,14 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> createTester(null, ResolvableType.forClass(ExampleObject.class)),
-				"ResourceLoadClass must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
+				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	public void createWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> createTester(getClass(), null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> createTester(getClass(), null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test

@@ -67,9 +67,8 @@ public class DefaultReactiveHealthIndicatorRegistryTests {
 	@Test
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
-		this.thrown.expect(IllegalStateException.class,
-				() -> this.registry.register("one", this.two),
-				"HealthIndicator with name 'one' already registered");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.registry.register("one", this.two))
+				.withMessageContaining("HealthIndicator with name 'one' already registered");
 	}
 
 	@Test

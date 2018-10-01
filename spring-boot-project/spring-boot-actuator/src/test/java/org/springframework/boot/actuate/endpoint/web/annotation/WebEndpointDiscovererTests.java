@@ -81,10 +81,9 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenWebExtensionIsMissingEndpointShouldThrowException() {
 		load(TestWebEndpointExtensionConfiguration.class,
-				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						discoverer::getEndpoints,
-						"Invalid extension 'endpointExtension': no endpoint found with id '"
-								+ "test'"));
+				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("Invalid extension 'endpointExtension': no endpoint found with id '"
+												+ "test'"));
 	}
 
 	@Test
@@ -140,37 +139,33 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingWebEndpointConfiguration.class,
-				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						discoverer::getEndpoints,
-						"Found multiple extensions for the endpoint bean "
-								+ "testEndpoint (testExtensionOne, testExtensionTwo)"));
+				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("Found multiple extensions for the endpoint bean "
+												+ "testEndpoint (testExtensionOne, testExtensionTwo)"));
 	}
 
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class,
-				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						discoverer::getEndpoints,
-						"Found two endpoints with the id 'test': "));
+				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpointConfiguration.class,
-				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						discoverer::getEndpoints,
-						"Unable to map duplicate endpoint operations: "
-								+ "[web request predicate GET to path 'test' "
-								+ "produces: application/json] to clashingOperationsEndpoint"));
+				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("Unable to map duplicate endpoint operations: "
+												+ "[web request predicate GET to path 'test' "
+												+ "produces: application/json] to clashingOperationsEndpoint"));
 	}
 
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidWebExtensionConfiguration.class,
-				(discoverer) -> this.thrown.expect(IllegalStateException.class,
-						discoverer::getEndpoints,
-						"Endpoint bean 'nonWebEndpoint' cannot support the "
-								+ "extension bean 'nonWebWebEndpointExtension'"));
+				(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("Endpoint bean 'nonWebEndpoint' cannot support the "
+												+ "extension bean 'nonWebWebEndpointExtension'"));
 	}
 
 	@Test

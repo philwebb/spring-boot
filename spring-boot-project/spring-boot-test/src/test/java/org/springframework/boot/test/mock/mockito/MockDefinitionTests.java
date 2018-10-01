@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.example.ExampleService;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -45,8 +46,8 @@ public class MockDefinitionTests {
 
 	@Test
 	public void classToMockMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new MockDefinition(null, null, null, null, false, null, null),
-				"TypeToMock must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))
+				.withMessageContaining("TypeToMock must not be null");
 	}
 
 	@Test

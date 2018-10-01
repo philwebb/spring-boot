@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpTunnelPayloadForwarder}.
@@ -39,9 +40,8 @@ public class HttpTunnelPayloadForwarderTests {
 
 	@Test
 	public void targetChannelMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpTunnelPayloadForwarder(null),
-				"TargetChannel must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayloadForwarder(null))
+				.withMessageContaining("TargetChannel must not be null");
 	}
 
 	@Test
@@ -70,12 +70,12 @@ public class HttpTunnelPayloadForwarderTests {
 	public void overflow() throws Exception {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
-		this.thrown.expect(IllegalStateException.class, () -> {
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> {
 			for (int i = 2; i < 130; i++) {
 				forwarder.forward(payload(i, "data" + i));
 			}
-		},
-				"Too many messages queued");
+		})
+				.withMessageContaining("Too many messages queued");
 	}
 
 	private HttpTunnelPayload payload(long sequence, String data) {

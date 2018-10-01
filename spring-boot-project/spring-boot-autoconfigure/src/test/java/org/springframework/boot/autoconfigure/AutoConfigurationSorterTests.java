@@ -36,6 +36,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -144,8 +145,8 @@ public class AutoConfigurationSorterTests {
 	public void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
 				this.autoConfigurationMetadata);
-		this.thrown.expect(IllegalStateException.class, () -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)),
-				"AutoConfigure cycle detected");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
+				.withMessageContaining("AutoConfigure cycle detected");
 	}
 
 	@Test
@@ -175,8 +176,8 @@ public class AutoConfigurationSorterTests {
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
 		this.sorter = new AutoConfigurationSorter(readerFactory,
 				this.autoConfigurationMetadata);
-		this.thrown.expect(IllegalStateException.class, () -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)),
-				"AutoConfigure cycle detected");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
+				.withMessageContaining("AutoConfigure cycle detected");
 	}
 
 	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames)

@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ChangedFile}.
@@ -42,21 +43,20 @@ public class ChangedFileTests {
 
 	@Test
 	public void sourceFolderMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ChangedFile(null, this.temp.newFile(), Type.ADD),
-				"SourceFolder must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
+				.withMessageContaining("SourceFolder must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ChangedFile(this.temp.newFolder(), null, Type.ADD),
-				"File must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test

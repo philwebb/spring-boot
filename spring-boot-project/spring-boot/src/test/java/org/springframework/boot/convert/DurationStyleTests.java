@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 
 /**
@@ -38,8 +39,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> DurationStyle.detectAndParse(null),
-				"Value must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse(null))
+				.withMessageContaining("Value must not be null");
 	}
 
 	@Test
@@ -147,9 +148,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectAndParseWhenBadFormatShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> DurationStyle.detectAndParse("10foo"),
-				"'10foo' is not a valid duration");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
+				.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
@@ -182,8 +182,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void detectWhenUnknownShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> DurationStyle.detect("bad"), "'bad' is not a valid duration");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detect("bad"))
+				.withMessageContaining("'bad' is not a valid duration");
 	}
 
 	@Test
@@ -226,9 +226,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseIso8601WhenSimpleShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> DurationStyle.ISO8601.parse("10d"),
-				"'10d' is not a valid ISO-8601 duration");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
+				.withMessageContaining("'10d' is not a valid ISO-8601 duration");
 	}
 
 	@Test
@@ -257,9 +256,8 @@ public class DurationStyleTests {
 
 	@Test
 	public void parseSimpleWhenIso8601ShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> DurationStyle.SIMPLE.parse("PT10H"),
-				"'PT10H' is not a valid simple duration");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
+				.withMessageContaining("'PT10H' is not a valid simple duration");
 	}
 
 	@Test

@@ -186,8 +186,8 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.addAdditionalTomcatConnectors((Connector[]) null),
-				"Connectors must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
+				.withMessageContaining("Connectors must not be null");
 	}
 
 	@Test
@@ -223,33 +223,30 @@ public class TomcatServletWebServerFactoryTests
 	@Test
 	public void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> factory.setTomcatContextCustomizers(null),
-				"TomcatContextCustomizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setTomcatContextCustomizers(null))
+				.withMessageContaining("TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	public void addNullContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null),
-				"TomcatContextCustomizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null))
+				.withMessageContaining("TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	public void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> factory.setTomcatConnectorCustomizers(null),
-				"TomcatConnectorCustomizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
+				.withMessageContaining("TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test
 	public void addNullConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> factory
-						.addConnectorCustomizers((TomcatConnectorCustomizer[]) null), "TomcatConnectorCustomizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory
+						.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+				.withMessageContaining("TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test

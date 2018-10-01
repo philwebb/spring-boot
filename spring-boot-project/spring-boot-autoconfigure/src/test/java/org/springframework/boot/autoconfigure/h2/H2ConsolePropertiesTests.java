@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 /**
  * Tests for {@link H2ConsoleProperties}.
  *
@@ -35,24 +37,22 @@ public class H2ConsolePropertiesTests {
 	@Test
 	public void pathMustNotBeEmpty() {
 		this.properties = new H2ConsoleProperties();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.properties.setPath(""),
-				"Path must have length greater than 1");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath(""))
+				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void pathMustHaveLengthGreaterThanOne() {
 		this.properties = new H2ConsoleProperties();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> this.properties.setPath("/"),
-				"Path must have length greater than 1");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("/"))
+				.withMessageContaining("Path must have length greater than 1");
 	}
 
 	@Test
 	public void customPathMustBeginWithASlash() {
 		this.properties = new H2ConsoleProperties();
-		this.thrown.expect(IllegalArgumentException.class, () -> this.properties.setPath("custom"),
-				"Path must start with '/'");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.properties.setPath("custom"))
+				.withMessageContaining("Path must start with '/'");
 	}
 
 }

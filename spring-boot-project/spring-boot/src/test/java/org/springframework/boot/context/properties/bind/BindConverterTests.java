@@ -64,9 +64,8 @@ public class BindConverterTests {
 
 	@Test
 	public void createWhenConversionServiceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> BindConverter.get(null, null),
-				"ConversionService must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> BindConverter.get(null, null))
+				.withMessageContaining("ConversionService must not be null");
 	}
 
 	@Test

@@ -26,6 +26,7 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpHeaderAccessManager}.
@@ -57,28 +58,26 @@ public class HttpHeaderAccessManagerTests {
 
 	@Test
 	public void headerNameMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderAccessManager(null, SECRET),
-				"HeaderName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(null, SECRET))
+				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void headerNameMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderAccessManager("", SECRET),
-				"HeaderName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager("", SECRET))
+				.withMessageContaining("HeaderName must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpHeaderAccessManager(HEADER, null),
-				"ExpectedSecret must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, null))
+				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test
 	public void expectedSecretMustNotBeEmpty() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new HttpHeaderAccessManager(HEADER, ""),
-				"ExpectedSecret must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderAccessManager(HEADER, ""))
+				.withMessageContaining("ExpectedSecret must not be empty");
 	}
 
 	@Test

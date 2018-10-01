@@ -35,6 +35,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -59,15 +60,15 @@ public class UndertowReactiveWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.setBuilderCustomizers(null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class, () -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null),
-				"Customizers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

@@ -225,9 +225,8 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"),
-				"No ConfigurationProperties annotation found");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
+				.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test

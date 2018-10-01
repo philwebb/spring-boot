@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -77,15 +78,14 @@ public class DispatcherTests {
 
 	@Test
 	public void accessManagerMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new Dispatcher(null, Collections.emptyList()),
-				"AccessManager must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
+				.withMessageContaining("AccessManager must not be null");
 	}
 
 	@Test
 	public void mappersMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Dispatcher(this.accessManager, null),
-				"Mappers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Dispatcher(this.accessManager, null))
+				.withMessageContaining("Mappers must not be null");
 	}
 
 	@Test

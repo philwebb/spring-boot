@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PropertyMapper}.
@@ -65,14 +66,14 @@ public class PropertyMapperTests {
 
 	@Test
 	public void fromWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from((Supplier<?>) null),
-				"Supplier must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from((Supplier<?>) null))
+				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void toWhenConsumerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from(() -> "").to(null),
-				"Consumer must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").to(null))
+				.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
@@ -92,8 +93,8 @@ public class PropertyMapperTests {
 
 	@Test
 	public void asWhenAdapterIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> this.map.from(() -> "").as(null),
-				"Adapter must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> this.map.from(() -> "").as(null))
+				.withMessageContaining("Adapter must not be null");
 	}
 
 	@Test

@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -39,17 +40,17 @@ public class ExitCodeGeneratorsTests {
 
 	@Test
 	public void addAllWhenGeneratorsIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> {
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> {
 			List<ExitCodeGenerator> generators = null;
 			new ExitCodeGenerators().addAll(generators);
-		},
-				"Generators must not be null");
+		})
+				.withMessageContaining("Generators must not be null");
 	}
 
 	@Test
 	public void addWhenGeneratorIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new ExitCodeGenerators().add(null),
-				"Generator must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ExitCodeGenerators().add(null))
+				.withMessageContaining("Generator must not be null");
 	}
 
 	@Test

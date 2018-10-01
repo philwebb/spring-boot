@@ -37,6 +37,7 @@ import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -72,15 +73,14 @@ public class RootUriRequestExpectationManagerTests {
 
 	@Test
 	public void createWhenRootUriIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new RootUriRequestExpectationManager(null, this.delegate),
-				"RootUri must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
+				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	public void createWhenExpectationManagerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new RootUriRequestExpectationManager(this.uri, null),
-				"ExpectationManager must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
+				.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
@@ -120,9 +120,8 @@ public class RootUriRequestExpectationManagerTests {
 		given(this.delegate.validateRequest(any(ClientHttpRequest.class)))
 				.willThrow(new AssertionError(
 						"Request URI expected:</hello> was:<http://example.com/bad>"));
-		this.thrown.expect(AssertionError.class,
-				() -> this.manager.validateRequest(request),
-				"Request URI expected:<http://example.com/hello>");
+		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> this.manager.validateRequest(request))
+				.withMessageContaining("Request URI expected:<http://example.com/hello>");
 	}
 
 	@Test
@@ -181,9 +180,8 @@ public class RootUriRequestExpectationManagerTests {
 		MockRestServiceServer server = RootUriRequestExpectationManager
 				.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
-		this.thrown.expect(AssertionError.class,
-				() -> restTemplate.getForEntity("http://spring.io/hello", String.class),
-				"expected:<http://example.com/hello> but was:<http://spring.io/hello>");
+		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> restTemplate.getForEntity("http://spring.io/hello", String.class))
+				.withMessageContaining("expected:<http://example.com/hello> but was:<http://spring.io/hello>");
 	}
 
 }

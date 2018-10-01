@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AutoConfigurationPackages}.
@@ -55,9 +56,8 @@ public class AutoConfigurationPackagesTests {
 	public void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				EmptyConfig.class);
-		this.thrown.expect(IllegalStateException.class,
-				() -> AutoConfigurationPackages.get(context.getBeanFactory()),
-				"Unable to retrieve @EnableAutoConfiguration base packages");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
+				.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 
 	@Test

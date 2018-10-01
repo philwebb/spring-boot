@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.hamcrest.Matchers.startsWith;
 
 /**
@@ -40,8 +41,8 @@ public class MatchedTests {
 
 	@Test
 	public void byMatcherDoesNotMatch() {
-		this.thrown.expect(AssertionError.class, () -> assertThat("1234").is(Matched.by(startsWith("23"))),
-				"a string starting with \"23\"");
+		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.by(startsWith("23"))))
+				.withMessageContaining("a string starting with \"23\"");
 	}
 
 	@Test
@@ -51,8 +52,8 @@ public class MatchedTests {
 
 	@Test
 	public void whenMatcherDoesNotMatch() {
-		this.thrown.expect(AssertionError.class, () -> assertThat("1234").is(Matched.when(startsWith("23"))),
-				"a string starting with \"23\"");
+		assertThatExceptionOfType((Class<? extends Throwable>) AssertionError.class).isThrownBy(() -> assertThat("1234").is(Matched.when(startsWith("23"))))
+				.withMessageContaining("a string starting with \"23\"");
 	}
 
 }

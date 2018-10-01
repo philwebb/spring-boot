@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WebEndpointProperties}.
@@ -50,9 +51,8 @@ public class WebEndpointPropertiesTests {
 	@Test
 	public void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> properties.setBasePath("admin"),
-				"Base path must start with '/' or be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> properties.setBasePath("admin"))
+				.withMessageContaining("Base path must start with '/' or be empty");
 	}
 
 	@Test

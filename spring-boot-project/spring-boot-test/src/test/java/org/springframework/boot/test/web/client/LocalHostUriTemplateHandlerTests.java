@@ -28,6 +28,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,21 +47,21 @@ public class LocalHostUriTemplateHandlerTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostUriTemplateHandler(null),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostUriTemplateHandler(null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	public void createWhenSchemeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostUriTemplateHandler(new MockEnvironment(), null),
-				"Scheme must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
+				.withMessageContaining("Scheme must not be null");
 	}
 
 	@Test
 	public void createWhenHandlerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http",
-				null),
-				"Handler must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http",
+				null))
+				.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

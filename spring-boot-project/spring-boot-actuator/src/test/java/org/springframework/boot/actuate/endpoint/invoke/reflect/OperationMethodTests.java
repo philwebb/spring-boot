@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OperationMethod}.
@@ -43,15 +44,14 @@ public class OperationMethodTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new OperationMethod(null, OperationType.READ),
-				"Method must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethod(null, OperationType.READ))
+				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenOperationTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new OperationMethod(this.exampleMethod, null),
-				"OperationType must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
+				.withMessageContaining("OperationType must not be null");
 	}
 
 	@Test

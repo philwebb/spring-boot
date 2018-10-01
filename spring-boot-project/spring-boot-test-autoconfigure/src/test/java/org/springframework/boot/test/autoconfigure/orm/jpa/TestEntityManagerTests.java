@@ -31,6 +31,7 @@ import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -65,9 +66,8 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void createWhenEntityManagerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new TestEntityManager(null),
-				"EntityManagerFactory must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new TestEntityManager(null))
+				.withMessageContaining("EntityManagerFactory must not be null");
 	}
 
 	@Test
@@ -213,9 +213,8 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void getEntityManagerWhenNotSetShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class,
-				this.testEntityManager::getEntityManager,
-				"No transactional EntityManager found");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(this.testEntityManager::getEntityManager)
+				.withMessageContaining("No transactional EntityManager found");
 	}
 
 	private void bindEntityManager() {

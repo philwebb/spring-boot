@@ -39,6 +39,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.Assert.fail;
 
 /**
@@ -178,8 +179,8 @@ public abstract class AbstractApplicationContextRunnerTests<T extends AbstractAp
 
 	@Test
 	public void thrownRuleWorksWithCheckedException() {
-		get().run((context) -> this.thrown.expect(IOException.class, () -> throwCheckedException("Expected message"),
-				"Expected message"));
+		get().run((context) -> assertThatExceptionOfType((Class<? extends Throwable>) IOException.class).isThrownBy(() -> throwCheckedException("Expected message"))
+						.withMessageContaining("Expected message"));
 	}
 
 	protected abstract T get();

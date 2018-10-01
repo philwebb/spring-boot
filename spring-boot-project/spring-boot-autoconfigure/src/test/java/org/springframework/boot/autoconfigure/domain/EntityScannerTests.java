@@ -35,6 +35,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link EntityScanner}.
@@ -48,8 +49,8 @@ public class EntityScannerTests {
 
 	@Test
 	public void createWhenContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new EntityScanner(null),
-				"Context must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new EntityScanner(null))
+				.withMessageContaining("Context must not be null");
 	}
 
 	@Test

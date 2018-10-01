@@ -29,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.example.RealExampleService;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -46,8 +47,8 @@ public class SpyDefinitionTests {
 
 	@Test
 	public void classToSpyMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new SpyDefinition(null, null, null, true, null),
-				"TypeToSpy must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new SpyDefinition(null, null, null, true, null))
+				.withMessageContaining("TypeToSpy must not be null");
 	}
 
 	@Test
@@ -90,16 +91,16 @@ public class SpyDefinitionTests {
 	public void createSpyWhenNullInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
-		this.thrown.expect(IllegalArgumentException.class, () -> definition.createSpy(null),
-				"Instance must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> definition.createSpy(null))
+				.withMessageContaining("Instance must not be null");
 	}
 
 	@Test
 	public void createSpyWhenWrongInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE,
 				MockReset.BEFORE, true, null);
-		this.thrown.expect(IllegalArgumentException.class, () -> definition.createSpy(new ExampleServiceCaller(null)),
-				"must be an instance of");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> definition.createSpy(new ExampleServiceCaller(null)))
+				.withMessageContaining("must be an instance of");
 	}
 
 	@Test

@@ -29,6 +29,7 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link FileSnapshot}.
@@ -50,14 +51,14 @@ public class FileSnapshotTests {
 
 	@Test
 	public void fileMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FileSnapshot(null),
-				"File must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(null))
+				.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	public void fileMustNotBeAFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class, () -> new FileSnapshot(this.temporaryFolder.newFolder()),
-				"File must not be a folder");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new FileSnapshot(this.temporaryFolder.newFolder()))
+				.withMessageContaining("File must not be a folder");
 	}
 
 	@Test

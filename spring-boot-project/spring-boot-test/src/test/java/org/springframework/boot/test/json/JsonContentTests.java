@@ -23,6 +23,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.core.ResolvableType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link JsonContent}.
@@ -41,15 +42,14 @@ public class JsonContentTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new JsonContent<ExampleObject>(null, TYPE, JSON),
-				"ResourceLoadClass must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON))
+				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
 	public void createWhenJsonIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new JsonContent<ExampleObject>(getClass(), TYPE, null),
-				"JSON must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(getClass(), TYPE, null))
+				.withMessageContaining("JSON must not be null");
 	}
 
 	@Test

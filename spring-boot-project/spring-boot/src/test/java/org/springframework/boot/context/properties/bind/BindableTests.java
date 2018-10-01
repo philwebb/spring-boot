@@ -29,6 +29,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -44,14 +45,14 @@ public class BindableTests {
 
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> Bindable.of((Class<?>) null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of((Class<?>) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	public void ofTypeWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> Bindable.of((ResolvableType) null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of((ResolvableType) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -88,10 +89,9 @@ public class BindableTests {
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> Bindable.of(ResolvableType.forClass(String.class))
-						.withExistingValue(123),
-				"ExistingValue must be an instance of " + String.class.getName());
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class))
+						.withExistingValue(123))
+				.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
 	}
 
 	@Test

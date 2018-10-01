@@ -28,6 +28,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link SpringApplicationJsonEnvironmentPostProcessor}.
@@ -51,8 +52,8 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");
-		this.thrown.expect(JsonParseException.class, () -> this.processor.postProcessEnvironment(this.environment, null),
-				"Cannot parse JSON");
+		assertThatExceptionOfType((Class<? extends Throwable>) JsonParseException.class).isThrownBy(() -> this.processor.postProcessEnvironment(this.environment, null))
+				.withMessageContaining("Cannot parse JSON");
 	}
 
 	@Test

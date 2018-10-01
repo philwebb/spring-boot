@@ -34,6 +34,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -59,8 +60,8 @@ public class LocalHostWebClientTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new LocalHostWebClient(null),
-				"Environment must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new LocalHostWebClient(null))
+				.withMessageContaining("Environment must not be null");
 	}
 
 	@Test

@@ -27,6 +27,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DiscoveredOperationMethod}.
@@ -41,9 +42,8 @@ public class DiscoveredOperationMethodTests {
 	@Test
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new DiscoveredOperationMethod(method, OperationType.READ, null),
-				"AnnotationAttributes must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+				.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
 	@Test

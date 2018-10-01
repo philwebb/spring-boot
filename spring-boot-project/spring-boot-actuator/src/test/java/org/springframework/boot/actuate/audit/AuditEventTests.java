@@ -26,6 +26,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link AuditEvent}.
@@ -64,16 +65,16 @@ public class AuditEventTests {
 
 	@Test
 	public void nullTimestamp() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new AuditEvent(null, "phil", "UNKNOWN",
-				Collections.singletonMap("a", (Object) "b")),
-				"Timestamp must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN",
+				Collections.singletonMap("a", (Object) "b")))
+				.withMessageContaining("Timestamp must not be null");
 	}
 
 	@Test
 	public void nullType() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new AuditEvent("phil", null,
-				Collections.singletonMap("a", (Object) "b")),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new AuditEvent("phil", null,
+				Collections.singletonMap("a", (Object) "b")))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test

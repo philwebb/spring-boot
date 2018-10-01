@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -67,14 +68,14 @@ public class RootUriTemplateHandlerTests {
 
 	@Test
 	public void createWithNullRootUriShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new RootUriTemplateHandler((String) null),
-				"RootUri must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler((String) null))
+				.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	public void createWithNullHandlerShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new RootUriTemplateHandler("http://example.com", null),
-				"Handler must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new RootUriTemplateHandler("http://example.com", null))
+				.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

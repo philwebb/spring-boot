@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ControllerEndpointDiscoverer}.
@@ -141,9 +142,8 @@ public class ControllerEndpointDiscovererTests {
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
 				.run(assertDiscoverer(
-						(discoverer) -> this.thrown.expect(IllegalStateException.class,
-								discoverer::getEndpoints,
-								"ControllerEndpoints must not declare operations")));
+						(discoverer) -> assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(discoverer::getEndpoints)
+										.withMessageContaining("ControllerEndpoints must not declare operations")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDiscoverer(

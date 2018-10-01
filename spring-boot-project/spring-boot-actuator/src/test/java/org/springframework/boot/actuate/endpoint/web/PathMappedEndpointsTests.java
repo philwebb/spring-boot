@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -44,15 +45,15 @@ public class PathMappedEndpointsTests {
 
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null),
-				"Supplier must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
+				.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new PathMappedEndpoints(null,
-				(Collection<EndpointsSupplier<?>>) null),
-				"Suppliers must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null,
+				(Collection<EndpointsSupplier<?>>) null))
+				.withMessageContaining("Suppliers must not be null");
 	}
 
 	@Test

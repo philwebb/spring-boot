@@ -28,6 +28,7 @@ import org.junit.rules.MyExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -73,12 +74,11 @@ public class ServletListenerRegistrationBeanTests {
 
 	@Test
 	public void cannotRegisterUnsupportedType() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new ServletListenerRegistrationBean<EventListener>(
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new ServletListenerRegistrationBean<EventListener>(
 						new EventListener() {
 
-						}),
-				"Listener is not of a supported type");
+						}))
+				.withMessageContaining("Listener is not of a supported type");
 	}
 
 }

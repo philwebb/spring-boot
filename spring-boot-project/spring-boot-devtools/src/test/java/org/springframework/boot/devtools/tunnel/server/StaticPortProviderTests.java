@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link StaticPortProvider}.
@@ -34,8 +35,8 @@ public class StaticPortProviderTests {
 
 	@Test
 	public void portMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new StaticPortProvider(0),
-				"Port must be positive");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new StaticPortProvider(0))
+				.withMessageContaining("Port must be positive");
 	}
 
 	@Test

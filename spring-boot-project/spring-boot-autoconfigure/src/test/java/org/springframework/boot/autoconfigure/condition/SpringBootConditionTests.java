@@ -27,6 +27,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 /**
  * Tests for {@link SpringBootCondition}.
  *
@@ -40,16 +42,14 @@ public class SpringBootConditionTests {
 
 	@Test
 	public void sensibleClassException() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> new AnnotationConfigApplicationContext(ErrorOnClass.class),
-				"Error processing condition on " + ErrorOnClass.class.getName());
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
 	public void sensibleMethodException() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class),
-				"Error processing condition on " + ErrorOnMethod.class.getName()
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
+				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName()
 						+ ".myBean");
 	}
 

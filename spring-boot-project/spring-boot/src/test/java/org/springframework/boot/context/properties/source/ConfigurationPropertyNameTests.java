@@ -28,6 +28,7 @@ import org.junit.rules.MyExpectedException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
@@ -44,32 +45,32 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameShouldNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> ConfigurationPropertyName.of(null),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyName.of(null))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void ofNameShouldNotStartWithDash() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("-foo"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("-foo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	public void ofNameShouldNotStartWithDot() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of(".foo"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of(".foo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	public void ofNameShouldNotEndWithDot() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("foo."), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("foo."))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	public void ofNameShouldNotContainUppercase() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("fOo"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("fOo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
@@ -160,20 +161,20 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameWhenMissingCloseBracket() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("[bar"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("[bar"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	public void ofNameWhenMissingOpenBracket() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("bar]"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("bar]"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	public void ofNameWhenMultipleMismatchedBrackets() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("[a[[[b]ar]"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("[a[[[b]ar]"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
@@ -186,8 +187,8 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void ofNameWithWhitespaceInName() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("foo. bar"), "is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("foo. bar"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
@@ -219,8 +220,8 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void adaptWhenNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> ConfigurationPropertyName.adapt(null, '.'),
-				"Name must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyName.adapt(null, '.'))
+				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
@@ -417,16 +418,14 @@ public class ConfigurationPropertyNameTests {
 
 	@Test
 	public void appendWhenElementNameIsNotValidShouldThrowException() {
-		this.thrown.expect(InvalidConfigurationPropertyNameException.class,
-				() -> ConfigurationPropertyName.of("foo").append("-bar"),
-				"Configuration property name '-bar' is not valid");
+		assertThatExceptionOfType((Class<? extends Throwable>) InvalidConfigurationPropertyNameException.class).isThrownBy(() -> ConfigurationPropertyName.of("foo").append("-bar"))
+				.withMessageContaining("Configuration property name '-bar' is not valid");
 	}
 
 	@Test
 	public void appendWhenElementNameMultiDotShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> ConfigurationPropertyName.of("foo").append("bar.baz"),
-				"Element value 'bar.baz' must be a single item");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyName.of("foo").append("bar.baz"))
+				.withMessageContaining("Element value 'bar.baz' must be a single item");
 	}
 
 	@Test

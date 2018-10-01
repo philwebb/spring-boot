@@ -32,6 +32,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.test.context.ContextCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -106,8 +107,8 @@ public class PropertyMappingContextCustomizerFactoryTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
-		this.thrown.expect(BeanCreationException.class, context::refresh,
-				"The @PropertyMapping annotation "
+		assertThatExceptionOfType((Class<? extends Throwable>) BeanCreationException.class).isThrownBy(context::refresh)
+				.withMessageContaining("The @PropertyMapping annotation "
 						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
 						+ "cannot be used in combination with the @Component annotation @Configuration");
 	}

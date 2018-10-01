@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link MapConfigurationPropertySource}.
@@ -38,8 +39,8 @@ public class MapConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenMapIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new MapConfigurationPropertySource(null),
-				"Map must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new MapConfigurationPropertySource(null))
+				.withMessageContaining("Map must not be null");
 	}
 
 	@Test
@@ -55,8 +56,8 @@ public class MapConfigurationPropertySourceTests {
 	@Test
 	public void putAllWhenMapIsNullShouldThrowException() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		this.thrown.expect(IllegalArgumentException.class, () -> source.putAll(null),
-				"Map must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> source.putAll(null))
+				.withMessageContaining("Map must not be null");
 	}
 
 	@Test

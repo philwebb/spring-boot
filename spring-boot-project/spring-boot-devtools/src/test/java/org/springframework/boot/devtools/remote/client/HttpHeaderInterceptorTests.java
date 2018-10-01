@@ -32,6 +32,7 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -77,26 +78,26 @@ public class HttpHeaderInterceptorTests {
 
 	@Test
 	public void constructorNullHeaderName() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderInterceptor(null, this.value),
-				"Name must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
+				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderInterceptor("", this.value),
-				"Name must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor("", this.value))
+				.withMessageContaining("Name must not be empty");
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderInterceptor(this.name, null),
-				"Value must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
+				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new HttpHeaderInterceptor(this.name, ""),
-				"Value must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new HttpHeaderInterceptor(this.name, ""))
+				.withMessageContaining("Value must not be empty");
 	}
 
 	@Test

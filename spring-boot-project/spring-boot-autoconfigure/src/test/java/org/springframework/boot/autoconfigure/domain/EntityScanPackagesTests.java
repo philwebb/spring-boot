@@ -72,31 +72,30 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> EntityScanPackages.register(null),
-				"Registry must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null))
+				.withMessageContaining("Registry must not be null");
 
 	}
 
 	@Test
 	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> EntityScanPackages.register(this.context, (String[]) null),
-				"PackageNames must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(this.context, (String[]) null))
+				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> EntityScanPackages.register(null, Collections.emptyList()),
-				"Registry must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages.register(null, Collections.emptyList()))
+				.withMessageContaining("Registry must not be null");
 	}
 
 	@Test
 	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> EntityScanPackages
-						.register(this.context, (Collection<String>) null), "PackageNames must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> EntityScanPackages
+						.register(this.context, (Collection<String>) null))
+				.withMessageContaining("PackageNames must not be null");
 	}
 
 	@Test

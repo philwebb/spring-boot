@@ -26,6 +26,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -42,23 +43,20 @@ public class PropertySourceOriginTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new PropertySourceOrigin(null, "name"),
-				"PropertySource must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(null, "name"))
+				.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new PropertySourceOrigin(mock(PropertySource.class), null),
-				"PropertyName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new PropertySourceOrigin(mock(PropertySource.class), ""),
-				"PropertyName must not be empty");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
+				.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test

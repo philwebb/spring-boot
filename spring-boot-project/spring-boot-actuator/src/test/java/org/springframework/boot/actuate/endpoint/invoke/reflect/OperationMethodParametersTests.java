@@ -35,6 +35,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -55,24 +56,22 @@ public class OperationMethodParametersTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new OperationMethodParameters(null,
-				mock(ParameterNameDiscoverer.class)),
-				"Method must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(null,
+				mock(ParameterNameDiscoverer.class)))
+				.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class,
-				() -> new OperationMethodParameters(this.exampleMethod, null),
-				"ParameterNameDiscoverer must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
+				.withMessageContaining("ParameterNameDiscoverer must not be null");
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class,
-				() -> new OperationMethodParameters(this.exampleMethod,
-						mock(ParameterNameDiscoverer.class)),
-				"Failed to extract parameter names");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> new OperationMethodParameters(this.exampleMethod,
+						mock(ParameterNameDiscoverer.class)))
+				.withMessageContaining("Failed to extract parameter names");
 	}
 
 	@Test

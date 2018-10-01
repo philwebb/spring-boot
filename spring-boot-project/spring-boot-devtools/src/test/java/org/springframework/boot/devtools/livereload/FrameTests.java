@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link Frame}.
@@ -38,14 +39,14 @@ public class FrameTests {
 
 	@Test
 	public void payloadMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Frame((String) null),
-				"Payload must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Frame((String) null))
+				.withMessageContaining("Payload must not be null");
 	}
 
 	@Test
 	public void typeMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class, () -> new Frame((Frame.Type) null),
-				"Type must not be null");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalArgumentException.class).isThrownBy(() -> new Frame((Frame.Type) null))
+				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -90,16 +91,15 @@ public class FrameTests {
 	@Test
 	public void readFragmentedNotSupported() throws Exception {
 		byte[] bytes = new byte[] { 0x0F };
-		this.thrown.expect(IllegalStateException.class,
-				() -> Frame.read(newConnectionInputStream(bytes)),
-				"Fragmented frames are not supported");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+				.withMessageContaining("Fragmented frames are not supported");
 	}
 
 	@Test
 	public void readLargeFramesNotSupported() throws Exception {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
-		this.thrown.expect(IllegalStateException.class, () -> Frame.read(newConnectionInputStream(bytes)),
-				"Large frames are not supported");
+		assertThatExceptionOfType((Class<? extends Throwable>) IllegalStateException.class).isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
+				.withMessageContaining("Large frames are not supported");
 	}
 
 	@Test
