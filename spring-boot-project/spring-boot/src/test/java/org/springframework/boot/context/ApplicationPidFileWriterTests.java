@@ -60,7 +60,7 @@ public class ApplicationPidFileWriterTests {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Rule
-	public MyExpectedException exception = MyExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Before
 	@After
@@ -150,8 +150,8 @@ public class ApplicationPidFileWriterTests {
 		file.setReadOnly();
 		System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		this.exception.expect(IllegalStateException.class);
-		this.exception.expectMessage("Cannot create pid file");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Cannot create pid file");
 		listener.onApplicationEvent(EVENT);
 	}
 
@@ -162,8 +162,8 @@ public class ApplicationPidFileWriterTests {
 		SpringApplicationEvent event = createPreparedEvent(
 				"spring.pid.fail-on-write-error", "true");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
-		this.exception.expect(IllegalStateException.class);
-		this.exception.expectMessage("Cannot create pid file");
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Cannot create pid file");
 		listener.onApplicationEvent(event);
 	}
 

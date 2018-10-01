@@ -56,7 +56,7 @@ public class PropertiesLauncherTests {
 	public OutputCapture output = new OutputCapture();
 
 	@Rule
-	public MyExpectedException expected = MyExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -102,7 +102,7 @@ public class PropertiesLauncherTests {
 	@Test
 	public void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
-		this.expected.expectMessage("Invalid source folder");
+		this.thrown.expectMessage("Invalid source folder");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(launcher.getHomeDirectory())
 				.isNotEqualTo(new File(System.getProperty("loader.home")));

@@ -74,7 +74,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BatchAutoConfigurationTests {
 
 	@Rule
-	public MyExpectedException expected = MyExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class,
@@ -176,7 +176,7 @@ public class BatchAutoConfigurationTests {
 					assertThat(
 							context.getBean(BatchProperties.class).getInitializeSchema())
 									.isEqualTo(DataSourceInitializationMode.NEVER);
-					this.expected.expect(BadSqlGrammarException.class);
+					this.thrown.expect(BadSqlGrammarException.class);
 					new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION");
 				});

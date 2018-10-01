@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Rule
-	public MyExpectedException expected = MyExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
@@ -48,8 +48,8 @@ public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
 	@Test
 	public void error() {
-		this.expected.expect(JsonParseException.class);
-		this.expected.expectMessage("Cannot parse JSON");
+		this.thrown.expect(JsonParseException.class);
+		this.thrown.expectMessage("Cannot parse JSON");
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.application.json=foo:bar");

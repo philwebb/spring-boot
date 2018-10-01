@@ -62,7 +62,7 @@ public class AutoConfigurationImportSelectorTests {
 	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@Rule
-	public MyExpectedException expected = MyExpectedException.none();
+	public MyExpectedException thrown = MyExpectedException.none();
 
 	@Before
 	public void setup() {
@@ -173,13 +173,13 @@ public class AutoConfigurationImportSelectorTests {
 
 	@Test
 	public void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		this.expected.expect(IllegalStateException.class);
+		this.thrown.expect(IllegalStateException.class);
 		selectImports(EnableAutoConfigurationWithFaultyClassExclude.class);
 	}
 
 	@Test
 	public void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		this.expected.expect(IllegalStateException.class);
+		this.thrown.expect(IllegalStateException.class);
 		selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class);
 	}
 
@@ -188,7 +188,7 @@ public class AutoConfigurationImportSelectorTests {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				"org.springframework.boot.autoconfigure."
 						+ "AutoConfigurationImportSelectorTests.TestConfiguration");
-		this.expected.expect(IllegalStateException.class);
+		this.thrown.expect(IllegalStateException.class);
 		selectImports(BasicEnableAutoConfiguration.class);
 	}
 
