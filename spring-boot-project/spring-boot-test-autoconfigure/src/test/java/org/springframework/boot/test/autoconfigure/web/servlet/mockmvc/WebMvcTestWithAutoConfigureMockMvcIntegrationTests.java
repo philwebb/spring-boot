@@ -46,9 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false, webClientEnabled = false, webDriverEnabled = false)
 public class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private ApplicationContext context;
 

@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class OperationMethodTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
 			String.class);
 

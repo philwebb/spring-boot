@@ -66,9 +66,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class RestTemplateBuilderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	@Mock

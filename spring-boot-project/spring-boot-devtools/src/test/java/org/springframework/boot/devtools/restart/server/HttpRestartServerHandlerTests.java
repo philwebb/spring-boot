@@ -34,9 +34,7 @@ import static org.mockito.Mockito.verify;
  */
 public class HttpRestartServerHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void serverMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpRestartServerHandler(null))

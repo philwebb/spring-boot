@@ -37,9 +37,7 @@ import static org.mockito.Mockito.withSettings;
  */
 public class FilteredConfigurationPropertiesSourceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))

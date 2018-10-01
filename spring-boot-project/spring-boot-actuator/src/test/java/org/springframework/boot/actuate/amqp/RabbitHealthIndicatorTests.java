@@ -45,9 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 public class RabbitHealthIndicatorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private RabbitTemplate rabbitTemplate;
 

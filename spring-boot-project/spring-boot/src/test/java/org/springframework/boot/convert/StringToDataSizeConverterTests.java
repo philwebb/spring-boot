@@ -40,9 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @RunWith(Parameterized.class)
 public class StringToDataSizeConverterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ConversionService conversionService;
 
 	public StringToDataSizeConverterTests(String name,

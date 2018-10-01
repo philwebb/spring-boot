@@ -67,9 +67,7 @@ public class HttpTunnelServerTests {
 
 	private static final String SEQ_HEADER = "x-seq";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private HttpTunnelServer server;
 
 	@Mock

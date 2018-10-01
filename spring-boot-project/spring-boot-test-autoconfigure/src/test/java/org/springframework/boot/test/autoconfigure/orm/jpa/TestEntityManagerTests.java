@@ -42,9 +42,7 @@ import static org.mockito.Mockito.verify;
  */
 public class TestEntityManagerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private EntityManagerFactory entityManagerFactory;
 

@@ -41,9 +41,7 @@ public class BasicJsonTesterTests {
 
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 

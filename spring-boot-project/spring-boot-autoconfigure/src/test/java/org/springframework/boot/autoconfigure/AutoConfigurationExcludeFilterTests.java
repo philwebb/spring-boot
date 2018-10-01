@@ -44,9 +44,7 @@ public class AutoConfigurationExcludeFilterTests {
 
 	private static final Class<?> FILTERED = ExampleFilteredAutoConfiguration.class;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigApplicationContext context;
 
 	@After

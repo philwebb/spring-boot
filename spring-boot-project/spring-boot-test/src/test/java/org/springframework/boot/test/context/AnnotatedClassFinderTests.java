@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class AnnotatedClassFinderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotatedClassFinder finder = new AnnotatedClassFinder(
 			SpringBootConfiguration.class);
 

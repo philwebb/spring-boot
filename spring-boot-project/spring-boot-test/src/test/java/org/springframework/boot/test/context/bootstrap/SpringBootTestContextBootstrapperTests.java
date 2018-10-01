@@ -38,9 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringBootTestContextBootstrapperTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
 		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> buildTestContext(

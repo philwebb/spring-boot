@@ -42,9 +42,7 @@ public class H2ConsoleAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Before
 	public void setupContext() {
 		this.context.setServletContext(new MockServletContext());

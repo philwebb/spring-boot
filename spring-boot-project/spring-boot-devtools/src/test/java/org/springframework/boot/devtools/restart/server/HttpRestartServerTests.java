@@ -49,9 +49,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class HttpRestartServerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private RestartServer delegate;
 

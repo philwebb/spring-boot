@@ -47,9 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class PropertiesMeterFilterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private DistributionStatisticConfig config;
 

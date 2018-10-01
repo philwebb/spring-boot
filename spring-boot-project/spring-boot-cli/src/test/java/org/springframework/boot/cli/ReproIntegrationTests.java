@@ -35,9 +35,7 @@ public class ReproIntegrationTests {
 	@Rule
 	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void grabAntBuilder() throws Exception {
 		this.cli.run("grab-ant-builder.groovy");

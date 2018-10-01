@@ -50,9 +50,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class SessionAutoConfigurationJdbcTests
 		extends AbstractSessionAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					DataSourceTransactionManagerAutoConfiguration.class,

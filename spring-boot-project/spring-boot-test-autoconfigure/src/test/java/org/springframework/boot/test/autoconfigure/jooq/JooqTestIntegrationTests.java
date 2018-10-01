@@ -46,9 +46,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
 @JooqTest
 public class JooqTestIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private DSLContext dsl;
 

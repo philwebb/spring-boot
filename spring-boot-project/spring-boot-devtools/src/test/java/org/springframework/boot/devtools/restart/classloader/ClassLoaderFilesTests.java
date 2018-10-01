@@ -40,9 +40,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ClassLoaderFilesTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test

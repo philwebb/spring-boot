@@ -44,9 +44,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ConversionServiceParameterValueMapperTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void mapParameterShouldDelegateToConversionService() {
 		DefaultFormattingConversionService conversionService = spy(

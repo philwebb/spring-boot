@@ -55,9 +55,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ValidationAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigApplicationContext context;
 
 	@After

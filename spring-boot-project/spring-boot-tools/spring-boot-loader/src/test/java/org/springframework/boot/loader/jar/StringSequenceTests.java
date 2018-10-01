@@ -29,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class StringSequenceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(NullPointerException.class);

@@ -53,9 +53,7 @@ public class RandomAccessDataFileTests {
 		}
 	}
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

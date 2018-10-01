@@ -60,9 +60,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		}
 	}
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void getClientRegistrationsWhenUsingDefinedProviderShouldAdapt() {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();

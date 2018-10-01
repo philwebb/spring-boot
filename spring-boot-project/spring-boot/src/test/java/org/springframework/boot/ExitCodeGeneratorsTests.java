@@ -35,9 +35,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ExitCodeGeneratorsTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void addAllWhenGeneratorsIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {

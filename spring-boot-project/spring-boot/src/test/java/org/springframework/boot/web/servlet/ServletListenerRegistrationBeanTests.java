@@ -40,9 +40,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ServletListenerRegistrationBeanTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private ServletContextListener listener;
 

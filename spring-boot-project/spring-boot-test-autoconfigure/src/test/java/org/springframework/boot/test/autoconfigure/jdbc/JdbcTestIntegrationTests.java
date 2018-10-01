@@ -48,9 +48,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
 @TestPropertySource(properties = "spring.datasource.schema=classpath:org/springframework/boot/test/autoconfigure/jdbc/schema.sql")
 public class JdbcTestIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 

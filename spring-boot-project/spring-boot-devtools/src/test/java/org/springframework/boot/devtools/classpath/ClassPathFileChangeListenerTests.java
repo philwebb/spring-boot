@@ -49,9 +49,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ClassPathFileChangeListenerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private ApplicationEventPublisher eventPublisher;
 

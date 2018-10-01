@@ -63,9 +63,7 @@ public class DefaultErrorWebExceptionHandlerIntegrationTests {
 					"server.port=0")
 			.withUserConfiguration(Application.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void jsonError() {
 		this.contextRunner.run((context) -> {

@@ -42,9 +42,7 @@ import static org.hamcrest.Matchers.instanceOf;
  */
 public class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;

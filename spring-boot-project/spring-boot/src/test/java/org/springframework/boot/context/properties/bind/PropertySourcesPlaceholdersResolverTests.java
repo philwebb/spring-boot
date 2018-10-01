@@ -42,9 +42,7 @@ public class PropertySourcesPlaceholdersResolverTests {
 
 	private PropertySourcesPlaceholdersResolver resolver;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))

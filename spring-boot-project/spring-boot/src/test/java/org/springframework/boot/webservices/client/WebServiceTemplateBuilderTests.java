@@ -62,9 +62,7 @@ public class WebServiceTemplateBuilderTests {
 
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private WebServiceMessageSender messageSender;
 

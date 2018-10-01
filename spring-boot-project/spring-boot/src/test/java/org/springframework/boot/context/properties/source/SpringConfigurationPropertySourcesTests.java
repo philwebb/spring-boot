@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class SpringConfigurationPropertySourcesTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenPropertySourcesIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringConfigurationPropertySources(null))

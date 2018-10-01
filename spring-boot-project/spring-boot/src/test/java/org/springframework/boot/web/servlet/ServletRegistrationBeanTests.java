@@ -51,9 +51,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ServletRegistrationBeanTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final MockServlet servlet = new MockServlet();
 
 	@Mock

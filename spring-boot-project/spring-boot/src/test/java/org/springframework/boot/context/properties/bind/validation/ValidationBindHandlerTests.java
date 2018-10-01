@@ -53,9 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ValidationBindHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private ValidationBindHandler handler;

@@ -59,9 +59,7 @@ public class RemoteDevToolsAutoConfigurationTests {
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigWebApplicationContext context;
 
 	private MockHttpServletRequest request;

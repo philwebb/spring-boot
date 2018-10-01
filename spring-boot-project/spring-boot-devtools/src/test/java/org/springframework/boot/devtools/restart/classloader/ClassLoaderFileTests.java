@@ -34,9 +34,7 @@ public class ClassLoaderFileTests {
 
 	public static final byte[] BYTES = "ABC".getBytes();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void kindMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ClassLoaderFile(null, null))

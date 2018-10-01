@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ApplicationPidTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

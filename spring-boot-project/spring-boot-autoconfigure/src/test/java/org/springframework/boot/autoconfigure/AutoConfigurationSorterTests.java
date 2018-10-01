@@ -75,9 +75,7 @@ public class AutoConfigurationSorterTests {
 
 	private static final String W2 = AutoConfigureW2.class.getName();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AutoConfigurationSorter sorter;
 
 	private AutoConfigurationMetadata autoConfigurationMetadata = mock(

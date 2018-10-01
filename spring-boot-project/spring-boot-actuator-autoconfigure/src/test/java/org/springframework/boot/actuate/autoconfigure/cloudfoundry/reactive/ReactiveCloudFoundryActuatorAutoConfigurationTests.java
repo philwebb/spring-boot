@@ -75,9 +75,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(
 					ReactiveSecurityAutoConfiguration.class,

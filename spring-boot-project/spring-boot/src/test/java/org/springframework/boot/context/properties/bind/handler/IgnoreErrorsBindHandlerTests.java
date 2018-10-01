@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class IgnoreErrorsBindHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;

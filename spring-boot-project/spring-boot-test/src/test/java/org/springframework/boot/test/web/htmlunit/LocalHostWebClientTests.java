@@ -48,9 +48,7 @@ import static org.mockito.Mockito.verify;
 @SuppressWarnings("resource")
 public class LocalHostWebClientTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Captor
 	private ArgumentCaptor<WebRequest> requestCaptor;
 

@@ -53,9 +53,7 @@ import static org.mockito.Mockito.verify;
  */
 public class JmxEndpointExporterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private MBeanServer mBeanServer;
 

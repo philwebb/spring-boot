@@ -41,9 +41,7 @@ public class MockServerRestTemplateCustomizerTests {
 
 	private MockServerRestTemplateCustomizer customizer;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Before
 	public void setup() {
 		this.customizer = new MockServerRestTemplateCustomizer();

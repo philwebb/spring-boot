@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ClassPathExclusions("snakeyaml-*.jar")
 public class NoSnakeYamlPropertySourceLoaderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test

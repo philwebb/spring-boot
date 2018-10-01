@@ -40,9 +40,7 @@ import static org.mockito.Mockito.mock;
  */
 public class PathMappedEndpointsTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))

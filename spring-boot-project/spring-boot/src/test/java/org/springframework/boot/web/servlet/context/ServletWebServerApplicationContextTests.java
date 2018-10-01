@@ -87,9 +87,7 @@ import static org.mockito.Mockito.withSettings;
  */
 public class ServletWebServerApplicationContextTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ServletWebServerApplicationContext context;
 
 	@Captor

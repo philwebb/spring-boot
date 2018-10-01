@@ -49,9 +49,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class CloudFoundrySecurityServiceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private static final String CLOUD_CONTROLLER = "http://my-cloud-controller.com";
 
 	private static final String CLOUD_CONTROLLER_PERMISSIONS = CLOUD_CONTROLLER

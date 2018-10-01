@@ -41,9 +41,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RestClientTest({ ExampleRestClient.class, AnotherExampleRestClient.class })
 public class RestClientTestTwoComponentsIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private ExampleRestClient client1;
 

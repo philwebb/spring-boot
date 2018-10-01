@@ -44,9 +44,7 @@ import static org.mockito.Mockito.mock;
  */
 public class WebServerFactoryCustomizerBeanPostProcessorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock

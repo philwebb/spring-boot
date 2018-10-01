@@ -35,9 +35,7 @@ public class PropertyMapperTests {
 
 	private PropertyMapper map = PropertyMapper.get();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void fromNullValue() {
 		ExampleDest dest = new ExampleDest();

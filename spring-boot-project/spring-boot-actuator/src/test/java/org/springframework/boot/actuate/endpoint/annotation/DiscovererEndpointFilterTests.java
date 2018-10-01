@@ -41,9 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 public class DiscovererEndpointFilterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenDiscovererIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestDiscovererEndpointFilter(null))

@@ -31,9 +31,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class InfoTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void infoIsImmutable() {
 		Info info = new Info.Builder().withDetail("foo", "bar").build();

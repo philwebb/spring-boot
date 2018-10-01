@@ -41,9 +41,7 @@ public class EntityScanPackagesTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@After
 	public void cleanup() {
 		if (this.context != null) {

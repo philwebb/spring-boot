@@ -35,9 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class MainMethodTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;

@@ -35,9 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ClassPathChangedEventTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private Object source = new Object();
 
 	@Test

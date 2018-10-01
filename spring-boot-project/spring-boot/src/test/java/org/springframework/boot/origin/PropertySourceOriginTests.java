@@ -38,9 +38,7 @@ import static org.mockito.Mockito.withSettings;
  */
 public class PropertySourceOriginTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new PropertySourceOrigin(null, "name"))

@@ -52,9 +52,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  */
 public class RootUriRequestExpectationManagerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private String uri = "http://example.com";
 
 	@Mock

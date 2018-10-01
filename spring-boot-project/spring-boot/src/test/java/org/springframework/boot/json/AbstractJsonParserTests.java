@@ -35,9 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public abstract class AbstractJsonParserTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final JsonParser parser = getParser();
 
 	protected abstract JsonParser getParser();

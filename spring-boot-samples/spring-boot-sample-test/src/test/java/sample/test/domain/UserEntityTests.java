@@ -40,9 +40,7 @@ public class UserEntityTests {
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber(
 			"00000000000000000");
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private TestEntityManager entityManager;
 

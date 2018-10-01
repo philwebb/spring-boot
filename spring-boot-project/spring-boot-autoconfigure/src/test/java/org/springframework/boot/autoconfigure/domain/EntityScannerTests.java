@@ -44,9 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class EntityScannerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenContextIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EntityScanner(null))

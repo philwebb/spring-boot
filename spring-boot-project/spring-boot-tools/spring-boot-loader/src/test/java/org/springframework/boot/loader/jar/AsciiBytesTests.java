@@ -32,9 +32,7 @@ public class AsciiBytesTests {
 
 	private static final char NO_SUFFIX = 0;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createFromBytes() {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66 });

@@ -35,9 +35,7 @@ public class OAuth2ClientPropertiesTests {
 
 	private OAuth2ClientProperties properties = new OAuth2ClientProperties();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void clientIdAbsentForLoginClientsThrowsException() {
 		LoginClientRegistration registration = new LoginClientRegistration();

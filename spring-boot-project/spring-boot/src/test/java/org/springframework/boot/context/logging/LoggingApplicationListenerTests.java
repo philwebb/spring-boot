@@ -85,9 +85,7 @@ public class LoggingApplicationListenerTests {
 
 	private static final String[] NO_ARGS = {};
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 

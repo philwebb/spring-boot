@@ -59,9 +59,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 	private static final ResolvableType TYPE = ResolvableType
 			.forClass(ExampleObject.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 

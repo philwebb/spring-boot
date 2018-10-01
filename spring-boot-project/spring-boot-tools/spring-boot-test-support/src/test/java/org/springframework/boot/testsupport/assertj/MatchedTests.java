@@ -31,9 +31,7 @@ import static org.hamcrest.Matchers.startsWith;
  */
 public class MatchedTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void byMatcherMatches() {
 		assertThat("1234").is(Matched.by(startsWith("12")));

@@ -33,9 +33,7 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringApplicationRunnerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
 		SpringApplicationRunnerConfiguration configuration = mock(

@@ -44,9 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class MockitoPostProcessorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void cannotMockMultipleBeans() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

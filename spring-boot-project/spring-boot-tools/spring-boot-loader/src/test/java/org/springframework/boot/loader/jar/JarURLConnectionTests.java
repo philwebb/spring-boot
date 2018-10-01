@@ -44,9 +44,7 @@ public class JarURLConnectionTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder(new File("target"));
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private File rootJarFile;
 
 	private JarFile jarFile;

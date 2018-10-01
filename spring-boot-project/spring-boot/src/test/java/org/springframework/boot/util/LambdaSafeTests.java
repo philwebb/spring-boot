@@ -46,9 +46,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class LambdaSafeTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void callbackWhenCallbackTypeIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))

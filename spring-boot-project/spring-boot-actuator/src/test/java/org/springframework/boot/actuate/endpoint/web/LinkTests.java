@@ -30,9 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class LinkTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenHrefIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Link(null))

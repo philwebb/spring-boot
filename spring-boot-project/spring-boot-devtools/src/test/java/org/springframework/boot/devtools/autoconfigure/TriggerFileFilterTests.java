@@ -33,9 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class TriggerFileFilterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 

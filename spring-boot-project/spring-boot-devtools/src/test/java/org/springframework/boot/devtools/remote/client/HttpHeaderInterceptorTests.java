@@ -43,9 +43,7 @@ import static org.mockito.BDDMockito.given;
  */
 public class HttpHeaderInterceptorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private String name;
 
 	private String value;

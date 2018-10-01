@@ -43,9 +43,7 @@ public class FileSnapshotTests {
 	private static final long MODIFIED = new Date().getTime()
 			- TimeUnit.DAYS.toMillis(10);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

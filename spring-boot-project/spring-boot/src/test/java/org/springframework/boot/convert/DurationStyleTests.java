@@ -34,9 +34,7 @@ import static org.junit.Assert.fail;
  */
 public class DurationStyleTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> DurationStyle.detectAndParse(null))

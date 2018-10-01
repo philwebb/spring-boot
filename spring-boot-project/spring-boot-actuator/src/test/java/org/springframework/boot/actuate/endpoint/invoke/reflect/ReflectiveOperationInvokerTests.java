@@ -42,9 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ReflectiveOperationInvokerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private Example target;
 
 	private OperationMethod operationMethod;

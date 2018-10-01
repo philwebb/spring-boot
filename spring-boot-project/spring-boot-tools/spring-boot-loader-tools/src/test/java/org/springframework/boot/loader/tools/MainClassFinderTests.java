@@ -44,9 +44,7 @@ public class MainClassFinderTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TestJarFile testJarFile;
 
 	@Before

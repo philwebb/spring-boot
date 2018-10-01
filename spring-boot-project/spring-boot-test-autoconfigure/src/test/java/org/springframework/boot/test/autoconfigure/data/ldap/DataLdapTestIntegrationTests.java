@@ -47,9 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 		"spring.ldap.embedded.ldif=classpath:org/springframework/boot/test/autoconfigure/data/ldap/schema.ldif" })
 public class DataLdapTestIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private LdapTemplate ldapTemplate;
 

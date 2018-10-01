@@ -55,9 +55,7 @@ public class TokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private CloudFoundrySecurityService securityService;
 

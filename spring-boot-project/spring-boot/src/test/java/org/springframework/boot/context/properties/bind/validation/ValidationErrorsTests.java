@@ -47,9 +47,7 @@ public class ValidationErrorsTests {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
 			.of("foo");
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(),

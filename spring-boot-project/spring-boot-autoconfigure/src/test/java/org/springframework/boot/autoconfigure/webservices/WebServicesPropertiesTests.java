@@ -29,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class WebServicesPropertiesTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private WebServicesProperties properties;
 
 	@Test

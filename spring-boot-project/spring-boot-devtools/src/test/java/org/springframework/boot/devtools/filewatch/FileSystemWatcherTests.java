@@ -47,9 +47,7 @@ import static org.mockito.Mockito.mock;
  */
 public class FileSystemWatcherTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private FileSystemWatcher watcher;
 
 	private List<Set<ChangedFiles>> changes = Collections

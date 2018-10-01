@@ -38,9 +38,7 @@ public class ConnectionInputStreamTests {
 
 	private static final byte[] NO_BYTES = {};
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void readHeader() throws Exception {
 		String header = "";

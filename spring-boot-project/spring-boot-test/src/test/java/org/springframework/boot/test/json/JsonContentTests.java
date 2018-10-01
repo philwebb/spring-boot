@@ -37,9 +37,7 @@ public class JsonContentTests {
 	private static final ResolvableType TYPE = ResolvableType
 			.forClass(ExampleObject.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new JsonContent<ExampleObject>(null, TYPE, JSON))

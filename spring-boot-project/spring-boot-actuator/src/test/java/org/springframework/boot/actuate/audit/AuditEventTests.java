@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class AuditEventTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void nowEvent() {
 		AuditEvent event = new AuditEvent("phil", "UNKNOWN",

@@ -39,9 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class HttpStatusHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private MockHttpServletRequest servletRequest;
 
 	private MockHttpServletResponse servletResponse;

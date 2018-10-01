@@ -39,9 +39,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class TaskSchedulerBuilderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
 
 	@Test

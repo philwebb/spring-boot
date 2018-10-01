@@ -50,9 +50,7 @@ public class DataNeo4jTestIntegrationTests {
 	@ClassRule
 	public static Neo4jContainer neo4j = new Neo4jContainer();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private Session session;
 

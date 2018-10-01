@@ -41,9 +41,7 @@ public class MockDefinitionTests {
 	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType
 			.forClass(ExampleService.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void classToMockMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))

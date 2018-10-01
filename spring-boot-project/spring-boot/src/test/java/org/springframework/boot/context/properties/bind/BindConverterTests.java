@@ -51,9 +51,7 @@ import static org.mockito.Mockito.verify;
  */
 public class BindConverterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 

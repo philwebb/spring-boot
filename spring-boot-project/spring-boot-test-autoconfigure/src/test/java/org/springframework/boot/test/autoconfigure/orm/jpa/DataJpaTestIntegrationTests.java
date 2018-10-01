@@ -47,9 +47,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
 @TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
 public class DataJpaTestIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private TestEntityManager entities;
 

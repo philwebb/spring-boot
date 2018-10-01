@@ -46,9 +46,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ApplicationContextServerWebExchangeMatcherTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenContextClassIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestApplicationContextServerWebExchangeMatcher<>(null))

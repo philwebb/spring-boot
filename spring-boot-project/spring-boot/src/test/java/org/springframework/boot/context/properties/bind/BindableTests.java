@@ -40,9 +40,7 @@ import static org.mockito.Mockito.mock;
  */
 public class BindableTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Bindable.of((Class<?>) null))

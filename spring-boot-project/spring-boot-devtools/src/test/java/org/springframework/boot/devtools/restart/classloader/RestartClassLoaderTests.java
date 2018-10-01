@@ -55,9 +55,7 @@ public class RestartClassLoaderTests {
 
 	private static final String PACKAGE_PATH = PACKAGE.replace('.', '/');
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 

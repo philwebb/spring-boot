@@ -40,9 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class SpringApplicationJsonEnvironmentPostProcessorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
 	private ConfigurableEnvironment environment = new StandardEnvironment();

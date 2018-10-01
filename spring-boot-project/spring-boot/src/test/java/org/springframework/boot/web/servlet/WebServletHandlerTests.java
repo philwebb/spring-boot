@@ -47,9 +47,7 @@ public class WebServletHandlerTests {
 
 	private final SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void defaultServletConfiguration() throws IOException {

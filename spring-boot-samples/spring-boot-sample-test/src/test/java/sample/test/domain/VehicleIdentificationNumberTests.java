@@ -34,9 +34,7 @@ public class VehicleIdentificationNumberTests {
 
 	private static final String SAMPLE_VIN = "41549485710496749";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);

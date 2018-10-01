@@ -69,9 +69,7 @@ public class JooqAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.name:jooqtest");
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void noDataSource() {
 		this.contextRunner

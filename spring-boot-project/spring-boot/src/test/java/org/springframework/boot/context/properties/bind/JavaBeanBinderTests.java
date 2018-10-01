@@ -49,9 +49,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class JavaBeanBinderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;

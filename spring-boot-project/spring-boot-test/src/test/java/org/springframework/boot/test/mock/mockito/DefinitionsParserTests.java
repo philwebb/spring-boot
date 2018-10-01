@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class DefinitionsParserTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private DefinitionsParser parser = new DefinitionsParser();
 
 	@Test

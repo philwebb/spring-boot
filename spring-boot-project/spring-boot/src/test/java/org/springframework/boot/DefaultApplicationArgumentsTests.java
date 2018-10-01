@@ -37,9 +37,7 @@ public class DefaultApplicationArgumentsTests {
 	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz",
 			"--debug", "spring", "boot" };
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void argumentsMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DefaultApplicationArguments(null))

@@ -74,9 +74,7 @@ import static org.mockito.Mockito.mock;
  */
 public class JtaAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigApplicationContext context;
 
 	@Before

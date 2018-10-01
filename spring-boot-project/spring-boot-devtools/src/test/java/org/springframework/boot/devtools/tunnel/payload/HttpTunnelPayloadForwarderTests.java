@@ -35,9 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class HttpTunnelPayloadForwarderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void targetChannelMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayloadForwarder(null))

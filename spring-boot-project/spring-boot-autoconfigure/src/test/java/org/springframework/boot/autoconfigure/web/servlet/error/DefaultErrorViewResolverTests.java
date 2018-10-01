@@ -60,9 +60,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 public class DefaultErrorViewResolverTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private DefaultErrorViewResolver resolver;
 
 	@Mock

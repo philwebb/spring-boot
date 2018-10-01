@@ -45,9 +45,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ReactiveMongoClientFactoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private MockEnvironment environment = new MockEnvironment();
 
 	@Test

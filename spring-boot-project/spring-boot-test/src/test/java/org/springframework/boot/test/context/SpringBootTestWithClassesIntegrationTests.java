@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @SpringBootTest(classes = SpringBootTestWithClassesIntegrationTests.Config.class)
 public class SpringBootTestWithClassesIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private ApplicationContext context;
 

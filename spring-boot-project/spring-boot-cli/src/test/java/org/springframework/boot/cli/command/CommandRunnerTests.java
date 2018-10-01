@@ -44,9 +44,7 @@ import static org.mockito.Mockito.verify;
  */
 public class CommandRunnerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private CommandRunner commandRunner;
 
 	@Mock

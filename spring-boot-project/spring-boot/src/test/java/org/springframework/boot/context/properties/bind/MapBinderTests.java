@@ -79,9 +79,7 @@ public class MapBinderTests {
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable
 			.mapOf(String.class, String[].class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;

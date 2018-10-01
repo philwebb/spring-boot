@@ -110,9 +110,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TestCompiler compiler;
 
 	@Before

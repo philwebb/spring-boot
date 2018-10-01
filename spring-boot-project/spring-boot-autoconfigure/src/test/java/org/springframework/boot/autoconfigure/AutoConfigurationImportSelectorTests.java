@@ -62,9 +62,7 @@ public class AutoConfigurationImportSelectorTests {
 
 	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);

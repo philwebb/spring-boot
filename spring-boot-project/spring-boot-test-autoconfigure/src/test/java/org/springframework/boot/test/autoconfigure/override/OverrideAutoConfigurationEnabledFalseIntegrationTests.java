@@ -47,9 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ImportAutoConfiguration(ExampleTestConfig.class)
 public class OverrideAutoConfigurationEnabledFalseIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private ApplicationContext context;
 

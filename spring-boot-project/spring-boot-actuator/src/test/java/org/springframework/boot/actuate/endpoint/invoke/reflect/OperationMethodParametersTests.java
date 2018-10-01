@@ -45,9 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 public class OperationMethodParametersTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example",
 			String.class);
 

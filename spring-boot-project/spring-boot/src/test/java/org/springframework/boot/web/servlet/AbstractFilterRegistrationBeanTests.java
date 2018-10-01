@@ -50,9 +50,7 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractFilterRegistrationBeanTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	ServletContext servletContext;
 

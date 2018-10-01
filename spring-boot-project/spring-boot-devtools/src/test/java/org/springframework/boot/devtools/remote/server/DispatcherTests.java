@@ -53,9 +53,7 @@ import static org.mockito.Mockito.withSettings;
  */
 public class DispatcherTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private AccessManager accessManager;
 

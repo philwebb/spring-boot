@@ -29,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class H2ConsolePropertiesTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private H2ConsoleProperties properties;
 
 	@Test

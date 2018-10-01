@@ -37,9 +37,7 @@ public class ObjectContentTests {
 	private static final ResolvableType TYPE = ResolvableType
 			.forClass(ExampleObject.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenObjectIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))

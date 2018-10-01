@@ -43,9 +43,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class EndpointServletTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))

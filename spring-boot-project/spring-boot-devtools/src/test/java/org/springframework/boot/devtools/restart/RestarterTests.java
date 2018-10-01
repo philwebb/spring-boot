@@ -57,9 +57,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class RestarterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture out = new OutputCapture();
 

@@ -45,9 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 public class JsonObjectDeserializerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 
 	@Test

@@ -40,9 +40,7 @@ public class HttpHeaderAccessManagerTests {
 
 	private static final String SECRET = "password";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private MockHttpServletRequest request;
 
 	private ServerHttpRequest serverRequest;

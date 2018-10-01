@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class FrameTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void payloadMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Frame((String) null))

@@ -59,9 +59,7 @@ import static org.mockito.Mockito.mock;
  */
 public class IntegrationAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class,
 					IntegrationAutoConfiguration.class));

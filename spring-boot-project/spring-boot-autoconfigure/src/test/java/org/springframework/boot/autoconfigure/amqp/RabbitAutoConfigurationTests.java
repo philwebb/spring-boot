@@ -86,9 +86,7 @@ import static org.mockito.Mockito.verify;
  */
 public class RabbitAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
 

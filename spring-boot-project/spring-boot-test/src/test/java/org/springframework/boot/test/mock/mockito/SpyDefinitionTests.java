@@ -42,9 +42,7 @@ public class SpyDefinitionTests {
 	private static final ResolvableType REAL_SERVICE_TYPE = ResolvableType
 			.forClass(RealExampleService.class);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void classToSpyMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpyDefinition(null, null, null, true, null))

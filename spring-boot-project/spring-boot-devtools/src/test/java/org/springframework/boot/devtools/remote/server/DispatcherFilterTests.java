@@ -53,9 +53,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class DispatcherFilterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private Dispatcher dispatcher;
 

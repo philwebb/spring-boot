@@ -43,9 +43,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class BindResultTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private Consumer<String> consumer;
 

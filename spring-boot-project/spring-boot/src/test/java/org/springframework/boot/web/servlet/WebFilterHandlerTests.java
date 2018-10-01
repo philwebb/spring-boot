@@ -54,9 +54,7 @@ public class WebFilterHandlerTests {
 
 	private final SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void defaultFilterConfiguration() throws IOException {

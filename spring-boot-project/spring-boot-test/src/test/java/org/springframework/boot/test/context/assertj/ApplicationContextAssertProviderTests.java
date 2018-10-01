@@ -41,9 +41,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ApplicationContextAssertProviderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private ConfigurableApplicationContext mockContext;
 

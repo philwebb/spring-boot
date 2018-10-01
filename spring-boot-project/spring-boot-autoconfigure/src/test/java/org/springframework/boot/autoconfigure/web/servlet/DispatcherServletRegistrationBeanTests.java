@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class DispatcherServletRegistrationBeanTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenPathIsNullThrowsException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new DispatcherServletRegistrationBean(new DispatcherServlet(),

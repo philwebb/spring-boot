@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class MapConfigurationPropertySourceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenMapIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new MapConfigurationPropertySource(null))

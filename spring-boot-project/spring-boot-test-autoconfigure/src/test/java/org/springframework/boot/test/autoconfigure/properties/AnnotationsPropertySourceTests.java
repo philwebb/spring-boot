@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class AnnotationsPropertySourceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new AnnotationsPropertySource(null))

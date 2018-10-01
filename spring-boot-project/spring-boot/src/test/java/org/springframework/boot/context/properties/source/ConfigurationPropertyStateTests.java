@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ConfigurationPropertyStateTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void searchWhenIterableIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyState.search(null, (e) -> true))

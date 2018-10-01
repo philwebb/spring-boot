@@ -54,9 +54,7 @@ public class DefaultErrorAttributesTests {
 	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(
 			HttpStatus.NOT_FOUND);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
 	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create()

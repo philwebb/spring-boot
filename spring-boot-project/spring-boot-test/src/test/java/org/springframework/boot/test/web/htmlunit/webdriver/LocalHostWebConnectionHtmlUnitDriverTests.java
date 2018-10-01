@@ -48,9 +48,7 @@ import static org.mockito.Mockito.verify;
  */
 public class LocalHostWebConnectionHtmlUnitDriverTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private WebClient webClient;
 

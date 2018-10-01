@@ -80,9 +80,7 @@ public class ConfigFileApplicationListenerTests {
 
 	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture out = new OutputCapture();
 

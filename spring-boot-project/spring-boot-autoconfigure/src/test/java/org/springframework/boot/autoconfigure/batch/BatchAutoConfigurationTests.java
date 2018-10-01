@@ -74,9 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class BatchAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(BatchAutoConfiguration.class,
 					TransactionAutoConfiguration.class));

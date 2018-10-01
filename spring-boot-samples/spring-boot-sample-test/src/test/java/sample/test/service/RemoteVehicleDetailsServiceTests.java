@@ -48,9 +48,7 @@ public class RemoteVehicleDetailsServiceTests {
 
 	private static final String VIN = "00000000000000000";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private RemoteVehicleDetailsService service;
 

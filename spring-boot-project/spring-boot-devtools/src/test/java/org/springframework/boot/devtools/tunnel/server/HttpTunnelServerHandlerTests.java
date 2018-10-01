@@ -34,9 +34,7 @@ import static org.mockito.Mockito.verify;
  */
 public class HttpTunnelServerHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void serverMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelServerHandler(null))

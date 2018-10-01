@@ -37,9 +37,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 public class HealthTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void statusMustNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Health.Builder(null, null))

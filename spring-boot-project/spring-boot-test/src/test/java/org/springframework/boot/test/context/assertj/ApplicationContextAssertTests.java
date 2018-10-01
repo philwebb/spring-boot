@@ -37,9 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ApplicationContextAssertTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private StaticApplicationContext parent;
 
 	private StaticApplicationContext context;

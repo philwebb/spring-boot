@@ -44,9 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class MetricsEndpointTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT,
 			new MockClock());
 

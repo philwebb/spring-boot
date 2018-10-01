@@ -53,9 +53,7 @@ public class DataRedisTestIntegrationTests {
 	@ClassRule
 	public static RedisContainer redis = new RedisContainer();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private RedisOperations<Object, Object> operations;
 

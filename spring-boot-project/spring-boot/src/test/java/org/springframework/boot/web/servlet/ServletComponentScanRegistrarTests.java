@@ -38,9 +38,7 @@ public class ServletComponentScanRegistrarTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@After
 	public void after() {
 		if (this.context != null) {

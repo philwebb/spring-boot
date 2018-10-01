@@ -49,9 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ConditionalOnPropertyTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ConfigurableApplicationContext context;
 
 	private ConfigurableEnvironment environment = new StandardEnvironment();

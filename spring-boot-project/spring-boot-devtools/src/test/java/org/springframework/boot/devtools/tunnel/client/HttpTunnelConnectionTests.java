@@ -53,9 +53,7 @@ import static org.mockito.Mockito.verify;
  */
 public class HttpTunnelConnectionTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 

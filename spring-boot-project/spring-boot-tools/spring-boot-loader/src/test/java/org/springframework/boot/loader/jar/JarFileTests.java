@@ -61,9 +61,7 @@ public class JarFileTests {
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

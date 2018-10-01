@@ -39,9 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @DataMongoTest
 public class DataMongoTestIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 

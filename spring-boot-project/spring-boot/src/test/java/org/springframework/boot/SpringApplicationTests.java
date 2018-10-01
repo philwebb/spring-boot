@@ -133,9 +133,7 @@ public class SpringApplicationTests {
 
 	private String headlessProperty;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture output = new OutputCapture();
 

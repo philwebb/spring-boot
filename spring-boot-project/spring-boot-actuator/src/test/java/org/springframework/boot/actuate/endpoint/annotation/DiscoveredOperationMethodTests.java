@@ -36,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class DiscoveredOperationMethodTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");

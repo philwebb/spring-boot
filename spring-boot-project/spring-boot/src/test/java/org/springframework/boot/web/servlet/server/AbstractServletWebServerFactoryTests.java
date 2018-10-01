@@ -136,9 +136,7 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractServletWebServerFactoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

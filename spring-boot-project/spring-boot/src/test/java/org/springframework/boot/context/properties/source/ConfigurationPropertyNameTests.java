@@ -40,9 +40,7 @@ import static org.assertj.core.api.Assertions.fail;
  */
 public class ConfigurationPropertyNameTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void ofNameShouldNotBeNull() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ConfigurationPropertyName.of(null))

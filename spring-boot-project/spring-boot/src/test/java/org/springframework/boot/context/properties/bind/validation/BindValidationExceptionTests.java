@@ -32,9 +32,7 @@ import static org.mockito.Mockito.mock;
  */
 public class BindValidationExceptionTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenValidationErrorsIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new BindValidationException(null))

@@ -30,9 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class StaticPortProviderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void portMustBePositive() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new StaticPortProvider(0))

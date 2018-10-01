@@ -31,9 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ExtendedGroovyClassLoaderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ClassLoader contextClassLoader;
 
 	private ExtendedGroovyClassLoader defaultScopeGroovyClassLoader;

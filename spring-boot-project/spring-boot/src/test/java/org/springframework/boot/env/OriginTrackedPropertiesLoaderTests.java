@@ -40,9 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class OriginTrackedPropertiesLoaderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ClassPathResource resource;
 
 	private Map<String, OriginTrackedValue> properties;

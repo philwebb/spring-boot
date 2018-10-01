@@ -39,9 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class DelegatingApplicationContextInitializerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
 
 	@Test

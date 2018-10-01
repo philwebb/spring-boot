@@ -55,9 +55,7 @@ public class PropertiesLauncherTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 

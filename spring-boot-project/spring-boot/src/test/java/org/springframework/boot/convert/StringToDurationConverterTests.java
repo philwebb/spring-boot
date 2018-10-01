@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @RunWith(Parameterized.class)
 public class StringToDurationConverterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ConversionService conversionService;
 
 	public StringToDurationConverterTests(String name,

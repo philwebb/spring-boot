@@ -44,9 +44,7 @@ import static org.mockito.Mockito.verify;
  */
 public class TemplateAvailabilityProvidersTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TemplateAvailabilityProviders providers;
 
 	@Mock

@@ -42,9 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ConfigurationsTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenClassesIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new TestConfigurations(null))

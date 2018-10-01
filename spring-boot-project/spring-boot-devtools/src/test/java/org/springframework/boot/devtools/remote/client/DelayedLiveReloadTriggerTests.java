@@ -48,9 +48,7 @@ public class DelayedLiveReloadTriggerTests {
 
 	private static final String URL = "http://localhost:8080";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private OptionalLiveReloadServer liveReloadServer;
 

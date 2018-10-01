@@ -47,9 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class DevToolPropertiesIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ConfigurableApplicationContext context;
 
 	@Before

@@ -72,9 +72,7 @@ import static org.mockito.Mockito.verify;
  */
 public class LocalDevToolsAutoConfigurationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public MockRestarter mockRestarter = new MockRestarter();
 

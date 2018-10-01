@@ -44,9 +44,7 @@ public class StaticResourceRequestTests {
 
 	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void atCommonLocationsShouldMatchCommonLocations() {
 		RequestMatcher matcher = this.resourceRequest.atCommonLocations();

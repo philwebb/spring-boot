@@ -42,9 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ImportsContextCustomizerFactoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 
 	@Test

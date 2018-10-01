@@ -42,9 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringIterableConfigurationPropertySourceTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SpringIterableConfigurationPropertySource(null,

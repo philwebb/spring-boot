@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @SuppressWarnings("resource")
 public class AutoConfigurationPackagesTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void setAndGet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(

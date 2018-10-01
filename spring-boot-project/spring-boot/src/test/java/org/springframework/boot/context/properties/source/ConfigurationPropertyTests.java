@@ -38,9 +38,7 @@ public class ConfigurationPropertyTests {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName
 			.of("foo");
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenNameIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new ConfigurationProperty(null, "bar", null))

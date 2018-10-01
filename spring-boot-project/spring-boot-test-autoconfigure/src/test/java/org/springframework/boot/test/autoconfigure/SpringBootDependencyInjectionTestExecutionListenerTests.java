@@ -47,9 +47,7 @@ public class SpringBootDependencyInjectionTestExecutionListenerTests {
 	@Rule
 	public OutputCapture out = new OutputCapture();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private SpringBootDependencyInjectionTestExecutionListener reportListener = new SpringBootDependencyInjectionTestExecutionListener();
 
 	@Test

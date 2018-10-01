@@ -38,9 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class InMemoryAuditEventRepositoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void lessThanCapacity() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();

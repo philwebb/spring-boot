@@ -41,9 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ClassPathExclusions("tomcat-embed-el-*.jar")
 public class MessageInterpolatorFactoryWithoutElIntegrationTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void defaultMessageInterpolatorShouldFail() {
 		// Sanity test

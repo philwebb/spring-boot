@@ -32,9 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class LayoutsTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void jarFile() {
 		assertThat(Layouts.forFile(new File("test.jar"))).isInstanceOf(Layouts.Jar.class);

@@ -108,9 +108,7 @@ public class ConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture output = new OutputCapture();
 

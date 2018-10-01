@@ -38,9 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class RemoteUrlPropertyExtractorTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@After
 	public void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class))

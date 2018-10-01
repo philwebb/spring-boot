@@ -36,9 +36,7 @@ public class ModifiedClassPathRunnerExclusionsTests {
 	private static final String EXCLUDED_RESOURCE = "META-INF/services/"
 			+ "javax.validation.spi.ValidationProvider";
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void entriesAreFilteredFromTestClassClassLoader() {
 		assertThat(getClass().getClassLoader().getResource(EXCLUDED_RESOURCE)).isNull();

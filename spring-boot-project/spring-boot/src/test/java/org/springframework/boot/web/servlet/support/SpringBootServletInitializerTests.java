@@ -57,9 +57,7 @@ import static org.mockito.Mockito.mock;
  */
 public class SpringBootServletInitializerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture output = new OutputCapture();
 

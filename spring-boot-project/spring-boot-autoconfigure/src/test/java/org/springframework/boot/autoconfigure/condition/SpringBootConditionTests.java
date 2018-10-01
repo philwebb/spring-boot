@@ -37,9 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @SuppressWarnings("resource")
 public class SpringBootConditionTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void sensibleClassException() {
 		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))

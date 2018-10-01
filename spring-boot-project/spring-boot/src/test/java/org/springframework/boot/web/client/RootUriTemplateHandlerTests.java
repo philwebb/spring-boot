@@ -45,9 +45,7 @@ import static org.mockito.Mockito.verify;
  */
 public class RootUriTemplateHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private URI uri;
 
 	@Mock

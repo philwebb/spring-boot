@@ -37,9 +37,7 @@ import static org.mockito.Mockito.mock;
  */
 public class DefaultReactiveHealthIndicatorRegistryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ReactiveHealthIndicator one = mock(ReactiveHealthIndicator.class);
 
 	private ReactiveHealthIndicator two = mock(ReactiveHealthIndicator.class);

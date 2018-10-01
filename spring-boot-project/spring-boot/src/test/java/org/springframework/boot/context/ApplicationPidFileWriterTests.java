@@ -60,9 +60,7 @@ public class ApplicationPidFileWriterTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Before
 	@After
 	public void resetListener() {

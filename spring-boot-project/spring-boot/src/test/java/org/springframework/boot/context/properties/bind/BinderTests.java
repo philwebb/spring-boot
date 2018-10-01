@@ -68,9 +68,7 @@ import static org.mockito.Mockito.withSettings;
  */
 public class BinderTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;

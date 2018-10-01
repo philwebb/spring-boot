@@ -68,9 +68,7 @@ public class RemoteClientConfigurationTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigServletWebServerApplicationContext context;
 
 	private AnnotationConfigApplicationContext clientContext;

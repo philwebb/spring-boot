@@ -42,9 +42,7 @@ import static org.mockito.Mockito.verify;
  */
 public class LocalHostUriTemplateHandlerTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new LocalHostUriTemplateHandler(null))

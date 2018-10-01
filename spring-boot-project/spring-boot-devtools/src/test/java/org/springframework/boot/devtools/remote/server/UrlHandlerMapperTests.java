@@ -38,9 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 public class UrlHandlerMapperTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private Handler handler = mock(Handler.class);
 
 	@Test

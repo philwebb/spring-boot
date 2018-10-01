@@ -55,9 +55,7 @@ public class EndpointMBeanTests {
 
 	private static final String[] NO_SIGNATURE = {};
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(
 			new TestJmxOperation());
 

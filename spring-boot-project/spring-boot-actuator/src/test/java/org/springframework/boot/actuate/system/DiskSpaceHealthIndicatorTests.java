@@ -45,9 +45,7 @@ public class DiskSpaceHealthIndicatorTests {
 
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Mock
 	private File fileMock;
 

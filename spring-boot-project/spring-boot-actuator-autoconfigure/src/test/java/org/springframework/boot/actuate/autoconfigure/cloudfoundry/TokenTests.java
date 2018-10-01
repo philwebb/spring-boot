@@ -32,9 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class TokenTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void invalidJwtShouldThrowException() {
 		this.thrown

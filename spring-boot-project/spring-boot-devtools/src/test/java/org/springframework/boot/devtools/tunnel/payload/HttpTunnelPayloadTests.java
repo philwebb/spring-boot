@@ -49,9 +49,7 @@ import static org.mockito.Mockito.mock;
  */
 public class HttpTunnelPayloadTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void sequenceMustBePositive() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))

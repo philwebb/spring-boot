@@ -44,9 +44,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  */
 public class PropertyMappingContextCustomizerFactoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 
 	@Test

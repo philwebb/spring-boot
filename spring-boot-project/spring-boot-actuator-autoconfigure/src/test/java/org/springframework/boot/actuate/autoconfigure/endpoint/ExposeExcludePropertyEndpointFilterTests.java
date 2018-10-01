@@ -39,9 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ExposeExcludePropertyEndpointFilterTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ExposeExcludePropertyEndpointFilter<?> filter;
 
 	@Before

@@ -71,9 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractReactiveWebServerFactoryTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public OutputCapture output = new OutputCapture();
 

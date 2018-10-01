@@ -53,9 +53,7 @@ import static org.junit.Assert.fail;
  */
 public abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void runWithInitializerShouldInitialize() {
 		AtomicBoolean called = new AtomicBoolean();

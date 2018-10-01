@@ -42,9 +42,7 @@ import static org.mockito.Mockito.verify;
  */
 public class TunnelClientTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test

@@ -50,9 +50,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ClassPathFileSystemWatcherTests {
 
-	@Rule
-	public MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder temp = new TemporaryFolder();
 
