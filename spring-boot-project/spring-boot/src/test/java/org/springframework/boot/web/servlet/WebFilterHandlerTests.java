@@ -147,8 +147,7 @@ public class WebFilterHandlerTests {
 
 	@Test
 	public void urlPatternsDeclaredTwice() throws IOException {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalStateException.class,
 				"The urlPatterns and value attributes are mutually exclusive.");
 		getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class);
 	}

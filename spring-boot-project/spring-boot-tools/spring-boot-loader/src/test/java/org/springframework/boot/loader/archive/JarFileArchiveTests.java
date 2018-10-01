@@ -135,7 +135,7 @@ public class JarFileArchiveTests {
 	public void zip64ArchivesAreHandledGracefully() throws IOException {
 		File file = this.temporaryFolder.newFile("test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
-		this.thrown.expectMessage(equalTo("Zip64 archives are not supported"));
+		equalTo("Zip64 archives are not supported"));
 		new JarFileArchive(file);
 	}
 
@@ -156,7 +156,7 @@ public class JarFileArchiveTests {
 		output.closeEntry();
 		output.close();
 		JarFileArchive jarFileArchive = new JarFileArchive(file);
-		this.thrown.expectMessage(
+		
 				equalTo("Failed to get nested archive for entry nested/zip64.jar"));
 		jarFileArchive
 				.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"));

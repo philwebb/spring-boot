@@ -62,23 +62,22 @@ public class ReflectiveOperationInvokerTests {
 
 	@Test
 	public void createWhenTargetIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Target must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Target must not be null");
 		new ReflectiveOperationInvoker(null, this.operationMethod,
 				this.parameterValueMapper);
 	}
 
 	@Test
 	public void createWhenOperationMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("OperationMethod must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"OperationMethod must not be null");
 		new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper);
 	}
 
 	@Test
 	public void createWhenParameterValueMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ParameterValueMapper must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ParameterValueMapper must not be null");
 		new ReflectiveOperationInvoker(this.target, this.operationMethod, null);
 	}
 

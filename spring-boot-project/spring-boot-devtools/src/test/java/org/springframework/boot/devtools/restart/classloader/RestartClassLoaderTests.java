@@ -95,15 +95,14 @@ public class RestartClassLoaderTests {
 
 	@Test
 	public void parentMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Parent must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Parent must not be null");
 		new RestartClassLoader(null, new URL[] {});
 	}
 
 	@Test
 	public void updatedFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("UpdatedFiles must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"UpdatedFiles must not be null");
 		new RestartClassLoader(this.parentClassLoader, new URL[] {}, null);
 	}
 

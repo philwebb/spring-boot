@@ -40,21 +40,21 @@ public class VehicleIdentificationNumberTests {
 	@Test
 	public void createWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must not be null");
+		"VIN must not be null");
 		new VehicleIdentificationNumber(null);
 	}
 
 	@Test
 	public void createWhenVinIsMoreThan17CharsShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must be exactly 17 characters");
+		"VIN must be exactly 17 characters");
 		new VehicleIdentificationNumber("012345678901234567");
 	}
 
 	@Test
 	public void createWhenVinIsLessThan17CharsShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must be exactly 17 characters");
+		"VIN must be exactly 17 characters");
 		new VehicleIdentificationNumber("0123456789012345");
 	}
 

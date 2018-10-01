@@ -503,7 +503,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 	@Test
 	public void invalidDoubleRegistration() {
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Compilation failed");
+		"Compilation failed");
 		compile(InvalidDoubleRegistrationProperties.class);
 	}
 
@@ -906,7 +906,7 @@ public class ConfigurationMetadataAnnotationProcessorTests {
 		FileCopyUtils.copy("Hello World", new FileWriter(additionalMetadataFile));
 
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Compilation failed");
+		"Compilation failed");
 		compile(SimpleProperties.class);
 	}
 

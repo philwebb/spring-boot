@@ -65,8 +65,8 @@ public class DefaultHealthIndicatorRegistryTests {
 	@Test
 	public void registerAlreadyUsedName() {
 		this.registry.register("one", this.one);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("HealthIndicator with name 'one' already registered");
+		this.thrown.expect(IllegalStateException.class,
+				"HealthIndicator with name 'one' already registered");
 		this.registry.register("one", this.two);
 	}
 

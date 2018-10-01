@@ -63,8 +63,8 @@ public class DefaultErrorAttributesTests {
 
 	@Test
 	public void missingExceptionAttribute() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Missing exception attribute in ServerWebExchange");
+		this.thrown.expect(IllegalStateException.class,
+				"Missing exception attribute in ServerWebExchange");
 		MockServerWebExchange exchange = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);

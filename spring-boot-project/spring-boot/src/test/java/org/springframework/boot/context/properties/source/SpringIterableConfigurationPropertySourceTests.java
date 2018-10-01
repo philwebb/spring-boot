@@ -46,15 +46,14 @@ public class SpringIterableConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PropertySource must not be null");
 		new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class));
 	}
 
 	@Test
 	public void createWhenMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Mapper must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Mapper must not be null");
 		new SpringIterableConfigurationPropertySource(
 				mock(EnumerablePropertySource.class), null);
 	}

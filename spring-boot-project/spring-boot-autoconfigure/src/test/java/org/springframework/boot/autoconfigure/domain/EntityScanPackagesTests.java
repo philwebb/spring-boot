@@ -71,8 +71,7 @@ public class EntityScanPackagesTests {
 
 	@Test
 	public void registerFromArrayWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Registry must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null");
 		EntityScanPackages.register(null);
 
 	}
@@ -80,23 +79,22 @@ public class EntityScanPackagesTests {
 	@Test
 	public void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PackageNames must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PackageNames must not be null");
 		EntityScanPackages.register(this.context, (String[]) null);
 	}
 
 	@Test
 	public void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Registry must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Registry must not be null");
 		EntityScanPackages.register(null, Collections.emptyList());
 	}
 
 	@Test
 	public void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PackageNames must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PackageNames must not be null");
 		EntityScanPackages.register(this.context, (Collection<String>) null);
 	}
 

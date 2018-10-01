@@ -55,22 +55,21 @@ public class OperationMethodParametersTests {
 
 	@Test
 	public void createWhenMethodIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Method must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Method must not be null");
 		new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class));
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ParameterNameDiscoverer must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ParameterNameDiscoverer must not be null");
 		new OperationMethodParameters(this.exampleMethod, null);
 	}
 
 	@Test
 	public void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Failed to extract parameter names");
+		this.thrown.expect(IllegalStateException.class,
+				"Failed to extract parameter names");
 		new OperationMethodParameters(this.exampleMethod,
 				mock(ParameterNameDiscoverer.class));
 	}

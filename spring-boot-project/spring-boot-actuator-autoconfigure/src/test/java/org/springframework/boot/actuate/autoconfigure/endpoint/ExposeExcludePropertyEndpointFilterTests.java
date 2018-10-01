@@ -50,30 +50,28 @@ public class ExposeExcludePropertyEndpointFilterTests {
 
 	@Test
 	public void createWhenEndpointTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EndpointType must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"EndpointType must not be null");
 		new ExposeExcludePropertyEndpointFilter<>(null, new MockEnvironment(), "foo");
 	}
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Environment must not be null");
 		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class, null, "foo");
 	}
 
 	@Test
 	public void createWhenPrefixIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Prefix must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Prefix must not be empty");
 		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
 				new MockEnvironment(), null);
 	}
 
 	@Test
 	public void createWhenPrefixIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Prefix must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Prefix must not be empty");
 		new ExposeExcludePropertyEndpointFilter<>(ExposableEndpoint.class,
 				new MockEnvironment(), "");
 	}

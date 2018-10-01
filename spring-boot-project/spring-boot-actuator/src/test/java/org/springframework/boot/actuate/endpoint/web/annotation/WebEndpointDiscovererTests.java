@@ -80,8 +80,7 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenWebExtensionIsMissingEndpointShouldThrowException() {
 		load(TestWebEndpointExtensionConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage(
+			this.thrown.expect(IllegalStateException.class,
 					"Invalid extension 'endpointExtension': no endpoint found with id '"
 							+ "test'");
 			discoverer.getEndpoints();
@@ -141,9 +140,9 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenTwoExtensionsHaveTheSameEndpointTypeShouldThrowException() {
 		load(ClashingWebEndpointConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Found multiple extensions for the endpoint bean "
-					+ "testEndpoint (testExtensionOne, testExtensionTwo)");
+			this.thrown.expect(IllegalStateException.class,
+					"Found multiple extensions for the endpoint bean "
+							+ "testEndpoint (testExtensionOne, testExtensionTwo)");
 			discoverer.getEndpoints();
 		});
 	}
@@ -151,8 +150,8 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenTwoStandardEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingStandardEndpointConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Found two endpoints with the id 'test': ");
+			this.thrown.expect(IllegalStateException.class,
+					"Found two endpoints with the id 'test': ");
 			discoverer.getEndpoints();
 		});
 	}
@@ -160,10 +159,10 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenWhenEndpointHasTwoOperationsWithTheSameNameShouldThrowException() {
 		load(ClashingOperationsEndpointConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Unable to map duplicate endpoint operations: "
-					+ "[web request predicate GET to path 'test' "
-					+ "produces: application/json] to clashingOperationsEndpoint");
+			this.thrown.expect(IllegalStateException.class,
+					"Unable to map duplicate endpoint operations: "
+							+ "[web request predicate GET to path 'test' "
+							+ "produces: application/json] to clashingOperationsEndpoint");
 			discoverer.getEndpoints();
 		});
 	}
@@ -171,9 +170,9 @@ public class WebEndpointDiscovererTests {
 	@Test
 	public void getEndpointsWhenExtensionIsNotCompatibleWithTheEndpointTypeShouldThrowException() {
 		load(InvalidWebExtensionConfiguration.class, (discoverer) -> {
-			this.thrown.expect(IllegalStateException.class);
-			this.thrown.expectMessage("Endpoint bean 'nonWebEndpoint' cannot support the "
-					+ "extension bean 'nonWebWebEndpointExtension'");
+			this.thrown.expect(IllegalStateException.class,
+					"Endpoint bean 'nonWebEndpoint' cannot support the "
+							+ "extension bean 'nonWebWebEndpointExtension'");
 			discoverer.getEndpoints();
 		});
 	}

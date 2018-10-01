@@ -49,21 +49,21 @@ public class UserEntityTests {
 	@Test
 	public void createWhenUsernameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be empty");
+		"Username must not be empty");
 		new User(null, VIN);
 	}
 
 	@Test
 	public void createWhenUsernameIsEmptyShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be empty");
+		"Username must not be empty");
 		new User("", VIN);
 	}
 
 	@Test
 	public void createWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must not be null");
+		"VIN must not be null");
 		new User("sboot", null);
 	}
 

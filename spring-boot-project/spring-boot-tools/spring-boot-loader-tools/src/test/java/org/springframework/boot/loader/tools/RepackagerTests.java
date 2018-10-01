@@ -178,7 +178,7 @@ public class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to find a single main class "
+		"Unable to find a single main class "
 				+ "from the following candidates [a.b.C, a.b.D]");
 		repackager.repackage(NO_LIBRARIES);
 	}
@@ -187,7 +187,7 @@ public class RepackagerTests {
 	public void noMainClass() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to find main class");
+		"Unable to find main class");
 		new Repackager(this.testJarFile.getFile()).repackage(NO_LIBRARIES);
 	}
 
@@ -256,7 +256,7 @@ public class RepackagerTests {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Invalid destination");
+		"Invalid destination");
 		repackager.repackage(null, NO_LIBRARIES);
 	}
 
@@ -265,7 +265,7 @@ public class RepackagerTests {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Invalid destination");
+		"Invalid destination");
 		repackager.repackage(this.temporaryFolder.getRoot(), NO_LIBRARIES);
 	}
 
@@ -285,7 +285,7 @@ public class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Libraries must not be null");
+		"Libraries must not be null");
 		repackager.repackage(file, null);
 	}
 
@@ -328,7 +328,7 @@ public class RepackagerTests {
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Duplicate library");
+		"Duplicate library");
 		repackager.repackage((callback) -> {
 			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
 			callback.library(new Library(libJarFile, LibraryScope.COMPILE, false));
@@ -422,7 +422,7 @@ public class RepackagerTests {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Layout must not be null");
+		"Layout must not be null");
 		repackager.setLayout(null);
 	}
 

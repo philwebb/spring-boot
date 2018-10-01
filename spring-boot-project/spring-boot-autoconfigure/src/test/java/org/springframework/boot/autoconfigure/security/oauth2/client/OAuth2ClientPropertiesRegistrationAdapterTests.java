@@ -195,8 +195,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		login.setProvider("missing");
 		properties.getRegistration().getLogin().put("registration", login);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unknown provider ID 'missing'");
+		this.thrown.expect(IllegalStateException.class, "Unknown provider ID 'missing'");
 		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
 	}
 
@@ -276,8 +275,7 @@ public class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		OAuth2ClientProperties.LoginClientRegistration login = new OAuth2ClientProperties.LoginClientRegistration();
 		properties.getRegistration().getLogin().put("missing", login);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalStateException.class,
 				"Provider ID must be specified for client registration 'missing'");
 		OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties);
 	}

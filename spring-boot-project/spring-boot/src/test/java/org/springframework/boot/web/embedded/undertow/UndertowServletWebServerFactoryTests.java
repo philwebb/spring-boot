@@ -85,16 +85,16 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.setBuilderCustomizers(null);
 	}
 
 	@Test
 	public void addNullAddBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null);
 	}
 
@@ -115,16 +115,16 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.setDeploymentInfoCustomizers(null);
 	}
 
 	@Test
 	public void addNullAddDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.addDeploymentInfoCustomizers((UndertowDeploymentInfoCustomizer[]) null);
 	}
 

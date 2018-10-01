@@ -38,8 +38,7 @@ public class HttpRestartServerHandlerTests {
 
 	@Test
 	public void serverMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Server must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Server must not be null");
 		new HttpRestartServerHandler(null);
 	}
 

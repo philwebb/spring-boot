@@ -42,8 +42,7 @@ public class OAuth2ClientPropertiesTests {
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
 		this.properties.getRegistration().getLogin().put("foo", registration);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Client id must not be empty.");
+		this.thrown.expect(IllegalStateException.class, "Client id must not be empty.");
 		this.properties.validate();
 	}
 
@@ -62,8 +61,7 @@ public class OAuth2ClientPropertiesTests {
 		registration.setClientSecret("secret");
 		registration.setProvider("google");
 		this.properties.getRegistration().getAuthorizationCode().put("foo", registration);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Client id must not be empty.");
+		this.thrown.expect(IllegalStateException.class, "Client id must not be empty.");
 		this.properties.validate();
 	}
 

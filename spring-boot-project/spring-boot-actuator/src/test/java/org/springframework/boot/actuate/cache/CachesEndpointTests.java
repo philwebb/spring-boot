@@ -159,7 +159,6 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", cacheManager(mockCache("dupe-cache"), mockCache("b")));
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-
 		this.thrown.expectMessage("dupe-cache");
 		this.thrown.expectMessage("test");
 		this.thrown.expectMessage("another");

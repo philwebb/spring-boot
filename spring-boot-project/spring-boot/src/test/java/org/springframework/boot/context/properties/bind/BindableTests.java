@@ -44,15 +44,13 @@ public class BindableTests {
 
 	@Test
 	public void ofClassWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		Bindable.of((Class<?>) null);
 	}
 
 	@Test
 	public void ofTypeWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		Bindable.of((ResolvableType) null);
 	}
 
@@ -90,8 +88,7 @@ public class BindableTests {
 
 	@Test
 	public void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalArgumentException.class,
 				"ExistingValue must be an instance of " + String.class.getName());
 		Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123);
 	}

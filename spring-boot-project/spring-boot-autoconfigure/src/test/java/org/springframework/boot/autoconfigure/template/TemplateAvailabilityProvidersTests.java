@@ -69,8 +69,8 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassLoader must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ClassLoader must not be null");
 		new TemplateAvailabilityProviders((ApplicationContext) null);
 	}
 
@@ -86,8 +86,8 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenClassLoaderIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassLoader must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ClassLoader must not be null");
 		new TemplateAvailabilityProviders((ClassLoader) null);
 	}
 
@@ -100,8 +100,7 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void createWhenProvidersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Providers must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Providers must not be null");
 		new TemplateAvailabilityProviders(
 				(Collection<TemplateAvailabilityProvider>) null);
 	}
@@ -115,39 +114,38 @@ public class TemplateAvailabilityProvidersTests {
 
 	@Test
 	public void getProviderWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ApplicationContext must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ApplicationContext must not be null");
 		this.providers.getProvider(this.view, null);
 	}
 
 	@Test
 	public void getProviderWhenViewIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("View must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "View must not be null");
 		this.providers.getProvider(null, this.environment, this.classLoader,
 				this.resourceLoader);
 	}
 
 	@Test
 	public void getProviderWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Environment must not be null");
 		this.providers.getProvider(this.view, null, this.classLoader,
 				this.resourceLoader);
 	}
 
 	@Test
 	public void getProviderWhenClassLoaderIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassLoader must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ClassLoader must not be null");
 		this.providers.getProvider(this.view, this.environment, null,
 				this.resourceLoader);
 	}
 
 	@Test
 	public void getProviderWhenResourceLoaderIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResourceLoader must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ResourceLoader must not be null");
 		this.providers.getProvider(this.view, this.environment, this.classLoader, null);
 	}
 

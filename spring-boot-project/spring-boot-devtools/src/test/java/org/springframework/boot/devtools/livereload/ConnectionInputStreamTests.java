@@ -68,8 +68,7 @@ public class ConnectionInputStreamTests {
 	public void checkedRead() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
+		this.thrown.expect(IOException.class, "End of stream");
 		inputStream.checkedRead();
 	}
 
@@ -77,8 +76,7 @@ public class ConnectionInputStreamTests {
 	public void checkedReadArray() throws Exception {
 		ConnectionInputStream inputStream = new ConnectionInputStream(
 				new ByteArrayInputStream(NO_BYTES));
-		this.thrown.expect(IOException.class);
-		this.thrown.expectMessage("End of stream");
+		this.thrown.expect(IOException.class, "End of stream");
 		byte[] buffer = new byte[100];
 		inputStream.checkedRead(buffer, 0, buffer.length);
 	}

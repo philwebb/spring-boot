@@ -97,15 +97,14 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	@Test
 	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResourceLoadClass must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ResourceLoadClass must not be null");
 		createTester(null, ResolvableType.forClass(ExampleObject.class));
 	}
 
 	@Test
 	public void createWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		createTester(getClass(), null);
 	}
 

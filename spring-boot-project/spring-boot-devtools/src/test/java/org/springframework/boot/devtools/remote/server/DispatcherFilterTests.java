@@ -77,8 +77,7 @@ public class DispatcherFilterTests {
 
 	@Test
 	public void dispatcherMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Dispatcher must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Dispatcher must not be null");
 		new DispatcherFilter(null);
 	}
 

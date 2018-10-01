@@ -81,8 +81,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockProjectGenerationError(400, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.getDependencies().add("foo:bar");
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage(jsonMessage);
+		this.thrown.expect(ReportableException.class, jsonMessage);
 		this.invoker.generate(request);
 	}
 
@@ -90,8 +89,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 	public void generateProjectBadRequestNoExtraMessage() throws Exception {
 		mockProjectGenerationError(400, null);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("unexpected 400 error");
+		this.thrown.expect(ReportableException.class, "unexpected 400 error");
 		this.invoker.generate(request);
 	}
 
@@ -102,8 +100,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("No content received from server");
+		this.thrown.expect(ReportableException.class, "No content received from server");
 		this.invoker.generate(request);
 	}
 
@@ -112,8 +109,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		String jsonMessage = "whatever error on the server";
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage(jsonMessage);
+		this.thrown.expect(ReportableException.class, jsonMessage);
 		this.invoker.generate(request);
 	}
 
@@ -124,8 +120,8 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 200);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("Invalid content received from server");
+		this.thrown.expect(ReportableException.class,
+				"Invalid content received from server");
 		this.invoker.generate(request);
 	}
 
@@ -135,8 +131,7 @@ public class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockStatus(response, 500);
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
-		this.thrown.expect(ReportableException.class);
-		this.thrown.expectMessage("No content received from server");
+		this.thrown.expect(ReportableException.class, "No content received from server");
 		this.invoker.generate(request);
 	}
 

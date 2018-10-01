@@ -65,24 +65,21 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier);
 	}
 
 	@Test
 	public void getWhenTypeIsClassShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		ApplicationContextAssertProvider.get(null, ApplicationContext.class,
 				this.mockContextSupplier);
 	}
 
 	@Test
 	public void getWhenContextTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must be an interface");
+		this.thrown.expect(IllegalArgumentException.class, "Type must be an interface");
 		ApplicationContextAssertProvider.get(
 				TestAssertProviderApplicationContextClass.class, ApplicationContext.class,
 				this.mockContextSupplier);
@@ -90,16 +87,16 @@ public class ApplicationContextAssertProviderTests {
 
 	@Test
 	public void getWhenContextTypeIsClassShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextType must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ContextType must not be null");
 		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 				null, this.mockContextSupplier);
 	}
 
 	@Test
 	public void getWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ContextType must be an interface");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ContextType must be an interface");
 		ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 				StaticApplicationContext.class, this.mockContextSupplier);
 	}

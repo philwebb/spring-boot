@@ -60,8 +60,8 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ApplicationContext must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ApplicationContext must not be null");
 		new ApplicationContextAssert<>(null, null);
 	}
 
@@ -84,15 +84,13 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasBeanWhenHasNoBeanShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("no such bean");
+		this.thrown.expect(AssertionError.class, "no such bean");
 		assertThat(getAssert(this.context)).hasBean("foo");
 	}
 
 	@Test
 	public void hasBeanWhenNotStartedShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage(String
+		this.thrown.expect(AssertionError.class, String
 				.format("but context failed to start:%n java.lang.RuntimeException"));
 		assertThat(getAssert(this.failure)).hasBean("foo");
 	}
@@ -105,8 +103,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasSingleBeanWhenHasNoBeansShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to have a single bean of type");
+		this.thrown.expect(AssertionError.class, "to have a single bean of type");
 		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
 	}
 
@@ -114,8 +111,7 @@ public class ApplicationContextAssertTests {
 	public void hasSingleBeanWhenHasMultipleShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found:");
+		this.thrown.expect(AssertionError.class, "but found:");
 		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
 	}
 
@@ -132,8 +128,7 @@ public class ApplicationContextAssertTests {
 	public void hasSingleBeanWhenInParentShouldFail() {
 		this.parent.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found:");
+		this.thrown.expect(AssertionError.class, "but found:");
 		assertThat(getAssert(this.context)).hasSingleBean(Foo.class);
 	}
 
@@ -151,8 +146,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void doesNotHaveBeanOfTypeWhenHasBeanOfTypeShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found");
+		this.thrown.expect(AssertionError.class, "but found");
 		this.context.registerSingleton("foo", Foo.class);
 		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
 	}
@@ -168,8 +162,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void doesNotHaveBeanOfTypeWhenInParentShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found");
+		this.thrown.expect(AssertionError.class, "but found");
 		this.parent.registerSingleton("foo", Foo.class);
 		assertThat(getAssert(this.context)).doesNotHaveBean(Foo.class);
 	}
@@ -188,8 +181,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void doesNotHaveBeanOfNameWhenHasBeanOfTypeShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found");
+		this.thrown.expect(AssertionError.class, "but found");
 		this.context.registerSingleton("foo", Foo.class);
 		assertThat(getAssert(this.context)).doesNotHaveBean("foo");
 	}
@@ -239,8 +231,7 @@ public class ApplicationContextAssertTests {
 	public void getBeanOfTypeWhenHasMultipleBeansShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found");
+		this.thrown.expect(AssertionError.class, "but found");
 		assertThat(getAssert(this.context)).getBean(Foo.class);
 	}
 
@@ -270,8 +261,7 @@ public class ApplicationContextAssertTests {
 	public void getBeanOfTypeWhenHasMultipleBeansIncludingParentShouldFail() {
 		this.parent.registerSingleton("foo", Foo.class);
 		this.context.registerSingleton("bar", Foo.class);
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("but found");
+		this.thrown.expect(AssertionError.class, "but found");
 		assertThat(getAssert(this.context)).getBean(Foo.class);
 	}
 
@@ -317,8 +307,7 @@ public class ApplicationContextAssertTests {
 	@Test
 	public void getBeanOfNameAndTypeWhenHasNoBeanOfNameButDifferentTypeShouldFail() {
 		this.context.registerSingleton("foo", Foo.class);
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("of type");
+		this.thrown.expect(AssertionError.class, "of type");
 		assertThat(getAssert(this.context)).getBean("foo", String.class);
 	}
 
@@ -376,8 +365,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void getFailureWhenDidNotFailShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("context started");
+		this.thrown.expect(AssertionError.class, "context started");
 		assertThat(getAssert(this.context)).getFailure();
 	}
 
@@ -388,8 +376,7 @@ public class ApplicationContextAssertTests {
 
 	@Test
 	public void hasFailedWhenNotFailedShouldFail() {
-		this.thrown.expect(AssertionError.class);
-		this.thrown.expectMessage("to have failed");
+		this.thrown.expect(AssertionError.class, "to have failed");
 		assertThat(getAssert(this.context)).hasFailed();
 	}
 

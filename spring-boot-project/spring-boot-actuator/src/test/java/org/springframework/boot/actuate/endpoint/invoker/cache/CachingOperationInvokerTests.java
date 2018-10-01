@@ -48,8 +48,7 @@ public class CachingOperationInvokerTests {
 
 	@Test
 	public void createInstanceWithTtlSetToZero() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("TimeToLive");
+		this.thrown.expect(IllegalArgumentException.class, "TimeToLive");
 		new CachingOperationInvoker(mock(OperationInvoker.class), 0);
 	}
 

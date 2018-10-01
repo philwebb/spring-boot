@@ -40,16 +40,14 @@ public class SpringBootConditionTests {
 
 	@Test
 	public void sensibleClassException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalStateException.class,
 				"Error processing condition on " + ErrorOnClass.class.getName());
 		new AnnotationConfigApplicationContext(ErrorOnClass.class);
 	}
 
 	@Test
 	public void sensibleMethodException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Error processing condition on "
+		this.thrown.expect(IllegalStateException.class, "Error processing condition on "
 				+ ErrorOnMethod.class.getName() + ".myBean");
 		new AnnotationConfigApplicationContext(ErrorOnMethod.class);
 	}

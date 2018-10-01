@@ -48,8 +48,7 @@ public class EntityScannerTests {
 
 	@Test
 	public void createWhenContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Context must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Context must not be null");
 		new EntityScanner(null);
 	}
 

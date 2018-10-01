@@ -65,15 +65,14 @@ public class EndpointMBeanTests {
 
 	@Test
 	public void createWhenResponseMapperIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResponseMapper must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ResponseMapper must not be null");
 		new EndpointMBean(null, null, mock(ExposableJmxEndpoint.class));
 	}
 
 	@Test
 	public void createWhenEndpointIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Endpoint must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Endpoint must not be null");
 		new EndpointMBean(mock(JmxOperationResponseMapper.class), null, null);
 	}
 
@@ -189,8 +188,8 @@ public class EndpointMBeanTests {
 	public void getAttributeShouldThrowException()
 			throws AttributeNotFoundException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
-		this.thrown.expect(AttributeNotFoundException.class);
-		this.thrown.expectMessage("EndpointMBeans do not support attributes");
+		this.thrown.expect(AttributeNotFoundException.class,
+				"EndpointMBeans do not support attributes");
 		bean.getAttribute("test");
 	}
 
@@ -198,8 +197,8 @@ public class EndpointMBeanTests {
 	public void setAttributeShouldThrowException() throws AttributeNotFoundException,
 			InvalidAttributeValueException, MBeanException, ReflectionException {
 		EndpointMBean bean = createEndpointMBean();
-		this.thrown.expect(AttributeNotFoundException.class);
-		this.thrown.expectMessage("EndpointMBeans do not support attributes");
+		this.thrown.expect(AttributeNotFoundException.class,
+				"EndpointMBeans do not support attributes");
 		bean.setAttribute(new Attribute("test", "test"));
 	}
 

@@ -51,8 +51,7 @@ public class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleBeans.class);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalStateException.class,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
 						+ "but found [example1, example2]");
@@ -64,8 +63,7 @@ public class MockitoPostProcessorTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		context.register(MultipleQualifiedBeans.class);
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage(
+		this.thrown.expect(IllegalStateException.class,
 				"Unable to register mock bean " + ExampleService.class.getName()
 						+ " expected a single matching bean to replace "
 						+ "but found [example1, example3]");

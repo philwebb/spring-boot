@@ -87,15 +87,15 @@ public class DefaultErrorViewResolverTests {
 
 	@Test
 	public void createWhenApplicationContextIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ApplicationContext must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ApplicationContext must not be null");
 		new DefaultErrorViewResolver(null, new ResourceProperties());
 	}
 
 	@Test
 	public void createWhenResourcePropertiesIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ResourceProperties must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ResourceProperties must not be null");
 		new DefaultErrorViewResolver(mock(ApplicationContext.class), null);
 	}
 

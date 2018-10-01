@@ -47,15 +47,13 @@ public class EndpointServletTests {
 
 	@Test
 	public void createWhenServletClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
 		new EndpointServlet((Class<Servlet>) null);
 	}
 
 	@Test
 	public void createWhenServletIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Servlet must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Servlet must not be null");
 		new EndpointServlet((Servlet) null);
 	}
 

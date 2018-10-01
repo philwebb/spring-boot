@@ -84,7 +84,7 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void fileNotNull() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
+		"File must not be null");
 		new RandomAccessDataFile(null);
 	}
 
@@ -92,7 +92,7 @@ public class RandomAccessDataFileTests {
 	public void fileExists() {
 		File file = new File("/does/not/exist");
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage(
+		
 				String.format("File %s must exist", file.getAbsolutePath()));
 		new RandomAccessDataFile(file);
 	}
@@ -142,14 +142,14 @@ public class RandomAccessDataFileTests {
 	@Test
 	public void inputStreamReadNullBytes() throws Exception {
 		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
+		"Bytes must not be null");
 		this.inputStream.read(null);
 	}
 
 	@Test
 	public void inputStreamReadNullBytesWithOffset() throws Exception {
 		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Bytes must not be null");
+		"Bytes must not be null");
 		this.inputStream.read(null, 0, 1);
 	}
 

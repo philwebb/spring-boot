@@ -117,8 +117,7 @@ public class ServletEndpointDiscovererTests {
 	public void getEndpointWhenEndpointHasOperationsShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
 				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage(
+					this.thrown.expect(IllegalStateException.class,
 							"ServletEndpoints must not declare operations");
 					discoverer.getEndpoints();
 				}));
@@ -128,8 +127,7 @@ public class ServletEndpointDiscovererTests {
 	public void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
 				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must be a supplier");
+					this.thrown.expect(IllegalStateException.class, "must be a supplier");
 					discoverer.getEndpoints();
 				}));
 	}
@@ -139,8 +137,8 @@ public class ServletEndpointDiscovererTests {
 		this.contextRunner
 				.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
 				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must supply an EndpointServlet");
+					this.thrown.expect(IllegalStateException.class,
+							"must supply an EndpointServlet");
 					discoverer.getEndpoints();
 				}));
 	}
@@ -149,8 +147,8 @@ public class ServletEndpointDiscovererTests {
 	public void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
 				.run(assertDiscoverer((discoverer) -> {
-					this.thrown.expect(IllegalStateException.class);
-					this.thrown.expectMessage("must not supply null");
+					this.thrown.expect(IllegalStateException.class,
+							"must not supply null");
 					discoverer.getEndpoints();
 				}));
 	}

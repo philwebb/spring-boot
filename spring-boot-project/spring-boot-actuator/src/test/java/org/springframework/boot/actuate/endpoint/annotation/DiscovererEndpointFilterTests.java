@@ -45,8 +45,7 @@ public class DiscovererEndpointFilterTests {
 
 	@Test
 	public void createWhenDiscovererIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Discoverer must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Discoverer must not be null");
 		new TestDiscovererEndpointFilter(null);
 	}
 

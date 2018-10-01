@@ -41,8 +41,7 @@ public class ObjectContentTests {
 
 	@Test
 	public void createWhenObjectIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Object must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Object must not be null");
 		new ObjectContent<ExampleObject>(TYPE, null);
 	}
 

@@ -50,15 +50,15 @@ public class LambdaSafeTests {
 
 	@Test
 	public void callbackWhenCallbackTypeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("CallbackType must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"CallbackType must not be null");
 		LambdaSafe.callback(null, new Object(), null);
 	}
 
 	@Test
 	public void callbackWhenCallbackInstanceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("CallbackInstance must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"CallbackInstance must not be null");
 		LambdaSafe.callback(Object.class, null, null);
 	}
 

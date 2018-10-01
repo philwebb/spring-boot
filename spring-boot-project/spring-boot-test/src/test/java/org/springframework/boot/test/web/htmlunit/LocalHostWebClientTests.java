@@ -59,8 +59,8 @@ public class LocalHostWebClientTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullWillThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Environment must not be null");
 		new LocalHostWebClient(null);
 	}
 

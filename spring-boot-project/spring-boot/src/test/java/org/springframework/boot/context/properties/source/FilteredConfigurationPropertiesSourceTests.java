@@ -41,15 +41,13 @@ public class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Source must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Source must not be null");
 		new FilteredConfigurationPropertiesSource(null, Objects::nonNull);
 	}
 
 	@Test
 	public void createWhenFilterIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Filter must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Filter must not be null");
 		new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(),
 				null);
 	}

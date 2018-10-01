@@ -91,8 +91,7 @@ public class DelegatingApplicationContextInitializerTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context,
 				"context.initializer.classes=" + NotSuitableInit.class.getName());
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("generic parameter");
+		this.thrown.expect(IllegalArgumentException.class, "generic parameter");
 		this.initializer.initialize(context);
 	}
 

@@ -46,22 +46,20 @@ public class LocalHostUriTemplateHandlerTests {
 
 	@Test
 	public void createWhenEnvironmentIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Environment must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Environment must not be null");
 		new LocalHostUriTemplateHandler(null);
 	}
 
 	@Test
 	public void createWhenSchemeIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Scheme must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Scheme must not be null");
 		new LocalHostUriTemplateHandler(new MockEnvironment(), null);
 	}
 
 	@Test
 	public void createWhenHandlerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Handler must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Handler must not be null");
 		new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null);
 	}
 

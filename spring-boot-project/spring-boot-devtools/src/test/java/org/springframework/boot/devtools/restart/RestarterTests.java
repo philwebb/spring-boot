@@ -75,8 +75,8 @@ public class RestarterTests {
 	@Test
 	public void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Restarter has not been initialized");
+		this.thrown.expect(IllegalStateException.class,
+				"Restarter has not been initialized");
 		Restarter.getInstance();
 	}
 
@@ -103,8 +103,7 @@ public class RestarterTests {
 
 	@Test
 	public void addUrlsMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Urls must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Urls must not be null");
 		Restarter.getInstance().addUrls(null);
 	}
 
@@ -122,8 +121,8 @@ public class RestarterTests {
 
 	@Test
 	public void addClassLoaderFilesMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ClassLoaderFiles must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ClassLoaderFiles must not be null");
 		Restarter.getInstance().addClassLoaderFiles(null);
 	}
 

@@ -100,16 +100,16 @@ public class TomcatReactiveWebServerFactoryTests
 	@Test
 	public void setNullConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.setTomcatConnectorCustomizers(null);
 	}
 
 	@Test
 	public void addNullAddConnectorCustomizersShouldThrowException() {
 		TomcatReactiveWebServerFactory factory = getFactory();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Customizers must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Customizers must not be null");
 		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
 	}
 

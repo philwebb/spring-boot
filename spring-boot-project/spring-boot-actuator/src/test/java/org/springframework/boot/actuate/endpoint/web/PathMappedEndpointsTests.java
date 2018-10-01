@@ -44,15 +44,13 @@ public class PathMappedEndpointsTests {
 
 	@Test
 	public void createWhenSupplierIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Supplier must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Supplier must not be null");
 		new PathMappedEndpoints(null, (WebEndpointsSupplier) null);
 	}
 
 	@Test
 	public void createWhenSuppliersIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Suppliers must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Suppliers must not be null");
 		new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null);
 	}
 

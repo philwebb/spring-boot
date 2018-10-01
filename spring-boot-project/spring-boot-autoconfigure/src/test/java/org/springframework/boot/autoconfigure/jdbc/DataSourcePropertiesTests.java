@@ -71,8 +71,8 @@ public class DataSourcePropertiesTests {
 		properties.setBeanClassLoader(
 				new FilteredClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
-		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class);
-		this.thrown.expectMessage("Failed to determine suitable jdbc url");
+		this.thrown.expect(DataSourceProperties.DataSourceBeanCreationException.class,
+				"Failed to determine suitable jdbc url");
 		properties.determineUrl();
 	}
 

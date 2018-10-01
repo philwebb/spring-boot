@@ -34,8 +34,7 @@ public class LinkTests {
 
 	@Test
 	public void createWhenHrefIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("HREF must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "HREF must not be null");
 		new Link(null);
 	}
 

@@ -35,14 +35,14 @@ public class StringSequenceTests {
 	@Test
 	public void createWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Source must not be null");
+		"Source must not be null");
 		new StringSequence(null);
 	}
 
 	@Test
 	public void createWithIndexWhenSourceIsNullShouldThrowException() {
 		this.thrown.expect(NullPointerException.class);
-		this.thrown.expectMessage("Source must not be null");
+		"Source must not be null");
 		new StringSequence(null, 0, 0);
 	}
 

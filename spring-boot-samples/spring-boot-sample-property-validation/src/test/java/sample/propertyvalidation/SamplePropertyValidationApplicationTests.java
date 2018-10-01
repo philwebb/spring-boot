@@ -63,7 +63,7 @@ public class SamplePropertyValidationApplicationTests {
 		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090")
 				.applyTo(this.context);
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Failed to bind properties under 'sample'");
+		"Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 
@@ -71,7 +71,7 @@ public class SamplePropertyValidationApplicationTests {
 	public void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		this.thrown.expect(BeanCreationException.class);
-		this.thrown.expectMessage("Failed to bind properties under 'sample'");
+		"Failed to bind properties under 'sample'");
 		this.context.refresh();
 	}
 

@@ -102,7 +102,7 @@ public class PropertiesLauncherTests {
 	@Test
 	public void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
-		this.thrown.expectMessage("Invalid source folder");
+		"Invalid source folder");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertThat(launcher.getHomeDirectory())
 				.isNotEqualTo(new File(System.getProperty("loader.home")));

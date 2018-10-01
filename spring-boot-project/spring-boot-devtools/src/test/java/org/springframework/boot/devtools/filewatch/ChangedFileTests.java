@@ -42,22 +42,20 @@ public class ChangedFileTests {
 
 	@Test
 	public void sourceFolderMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("SourceFolder must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"SourceFolder must not be null");
 		new ChangedFile(null, this.temp.newFile(), Type.ADD);
 	}
 
 	@Test
 	public void fileMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("File must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "File must not be null");
 		new ChangedFile(this.temp.newFolder(), null, Type.ADD);
 	}
 
 	@Test
 	public void typeMustNotBeNull() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Type must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Type must not be null");
 		new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null);
 	}
 

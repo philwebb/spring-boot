@@ -55,16 +55,15 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void folderMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Folder must not be null");
 		new FolderSnapshot(null);
 	}
 
 	@Test
 	public void folderMustNotBeFile() throws Exception {
 		File file = this.temporaryFolder.newFile();
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Folder '" + file + "' must not be a file");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Folder '" + file + "' must not be a file");
 		new FolderSnapshot(file);
 	}
 
@@ -106,15 +105,14 @@ public class FolderSnapshotTests {
 
 	@Test
 	public void getChangedFilesSnapshotMustNotBeNull() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Snapshot must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Snapshot must not be null");
 		this.initialSnapshot.getChangedFiles(null, null);
 	}
 
 	@Test
 	public void getChangedFilesSnapshotMustBeTheSameSourceFolder() throws Exception {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Snapshot source folder must be '" + this.folder + "'");
+		this.thrown.expect(IllegalArgumentException.class,
+				"Snapshot source folder must be '" + this.folder + "'");
 		this.initialSnapshot
 				.getChangedFiles(new FolderSnapshot(createTestFolderStructure()), null);
 	}

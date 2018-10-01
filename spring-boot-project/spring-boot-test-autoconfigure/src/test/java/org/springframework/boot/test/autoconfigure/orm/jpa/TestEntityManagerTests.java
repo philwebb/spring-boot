@@ -65,8 +65,8 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void createWhenEntityManagerIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("EntityManagerFactory must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"EntityManagerFactory must not be null");
 		new TestEntityManager(null);
 	}
 
@@ -213,8 +213,8 @@ public class TestEntityManagerTests {
 
 	@Test
 	public void getEntityManagerWhenNotSetShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("No transactional EntityManager found");
+		this.thrown.expect(IllegalStateException.class,
+				"No transactional EntityManager found");
 		this.testEntityManager.getEntityManager();
 	}
 

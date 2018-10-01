@@ -56,7 +56,7 @@ public class LayoutsTests {
 	@Test
 	public void unknownFile() {
 		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to deduce layout for 'test.txt'");
+		"Unable to deduce layout for 'test.txt'");
 		Layouts.forFile(new File("test.txt"));
 	}
 

@@ -27,6 +27,9 @@ public class MyExpectedException {
 	public void expect(Class<?> exceptionClass) {
 	}
 
+	public void expect(Class<?> exceptionClass, String message) {
+	}
+
 	public static MyExpectedException none() {
 		throw new UnsupportedOperationException("Auto-generated method stub");
 	}

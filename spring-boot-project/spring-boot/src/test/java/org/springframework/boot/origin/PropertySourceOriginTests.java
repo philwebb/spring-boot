@@ -42,22 +42,22 @@ public class PropertySourceOriginTests {
 
 	@Test
 	public void createWhenPropertySourceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertySource must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PropertySource must not be null");
 		new PropertySourceOrigin(null, "name");
 	}
 
 	@Test
 	public void createWhenPropertyNameIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertyName must not be empty");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PropertyName must not be empty");
 		new PropertySourceOrigin(mock(PropertySource.class), null);
 	}
 
 	@Test
 	public void createWhenPropertyNameIsEmptyShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("PropertyName must not be empty");
+		this.thrown.expect(IllegalArgumentException.class,
+				"PropertyName must not be empty");
 		new PropertySourceOrigin(mock(PropertySource.class), "");
 	}
 

@@ -63,8 +63,8 @@ public class BindConverterTests {
 
 	@Test
 	public void createWhenConversionServiceIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ConversionService must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ConversionService must not be null");
 		BindConverter.get(null, null);
 	}
 

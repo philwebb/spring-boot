@@ -60,7 +60,7 @@ public class RemoteVehicleDetailsServiceTests {
 	@Test
 	public void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("VIN must not be null");
+		"VIN must not be null");
 		this.service.getVehicleDetails(null);
 	}
 

@@ -102,8 +102,8 @@ public class StringToDataSizeConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		this.thrown.expectMessage("'10WB' is not a valid data size");
+		this.thrown.expect(ConversionFailedException.class,
+				"'10WB' is not a valid data size");
 		convert("10WB");
 	}
 

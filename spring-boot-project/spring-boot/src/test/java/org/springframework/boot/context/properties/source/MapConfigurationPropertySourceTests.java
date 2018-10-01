@@ -38,8 +38,7 @@ public class MapConfigurationPropertySourceTests {
 
 	@Test
 	public void createWhenMapIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Map must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Map must not be null");
 		new MapConfigurationPropertySource(null);
 	}
 
@@ -55,8 +54,7 @@ public class MapConfigurationPropertySourceTests {
 
 	@Test
 	public void putAllWhenMapIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Map must not be null");
+		this.thrown.expect(IllegalArgumentException.class, "Map must not be null");
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.putAll(null);
 	}

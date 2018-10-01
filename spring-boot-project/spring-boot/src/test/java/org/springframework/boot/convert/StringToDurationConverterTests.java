@@ -137,8 +137,8 @@ public class StringToDurationConverterTests {
 
 	@Test
 	public void convertWhenBadFormatShouldThrowException() {
-		this.thrown.expect(ConversionFailedException.class);
-		this.thrown.expectMessage("'10foo' is not a valid duration");
+		this.thrown.expect(ConversionFailedException.class,
+				"'10foo' is not a valid duration");
 		convert("10foo");
 	}
 

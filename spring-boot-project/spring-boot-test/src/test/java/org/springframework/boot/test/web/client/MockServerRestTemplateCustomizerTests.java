@@ -58,8 +58,8 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void createWhenExpectationManagerClassIsNullShouldThrowException() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("ExpectationManager must not be null");
+		this.thrown.expect(IllegalArgumentException.class,
+				"ExpectationManager must not be null");
 		new MockServerRestTemplateCustomizer(null);
 	}
 
@@ -102,9 +102,9 @@ public class MockServerRestTemplateCustomizerTests {
 
 	@Test
 	public void getServerWhenNoServersAreBoundShouldThrowException() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
-				+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
+		this.thrown.expect(IllegalStateException.class,
+				"Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 		this.customizer.getServer();
 	}
 
@@ -112,9 +112,9 @@ public class MockServerRestTemplateCustomizerTests {
 	public void getServerWhenMultipleServersAreBoundShouldThrowException() {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("Unable to return a single MockRestServiceServer since "
-				+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
+		this.thrown.expect(IllegalStateException.class,
+				"Unable to return a single MockRestServiceServer since "
+						+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 		this.customizer.getServer();
 	}
 

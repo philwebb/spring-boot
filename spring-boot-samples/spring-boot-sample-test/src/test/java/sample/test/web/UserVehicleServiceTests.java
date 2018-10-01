@@ -63,7 +63,7 @@ public class UserVehicleServiceTests {
 	@Test
 	public void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Username must not be null");
+		"Username must not be null");
 		this.service.getVehicleDetails(null);
 	}
 

@@ -77,29 +77,25 @@ public class HttpHeaderInterceptorTests {
 
 	@Test
 	public void constructorNullHeaderName() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Name must not be empty");
 		new HttpHeaderInterceptor(null, this.value);
 	}
 
 	@Test
 	public void constructorEmptyHeaderName() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Name must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Name must not be empty");
 		new HttpHeaderInterceptor("", this.value);
 	}
 
 	@Test
 	public void constructorNullHeaderValue() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Value must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Value must not be empty");
 		new HttpHeaderInterceptor(this.name, null);
 	}
 
 	@Test
 	public void constructorEmptyHeaderValue() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Value must not be empty");
+		this.thrown.expect(IllegalArgumentException.class, "Value must not be empty");
 		new HttpHeaderInterceptor(this.name, "");
 	}
 

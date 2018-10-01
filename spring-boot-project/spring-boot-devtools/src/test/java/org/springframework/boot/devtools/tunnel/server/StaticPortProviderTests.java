@@ -34,8 +34,7 @@ public class StaticPortProviderTests {
 
 	@Test
 	public void portMustBePositive() {
-		this.thrown.expect(IllegalArgumentException.class);
-		this.thrown.expectMessage("Port must be positive");
+		this.thrown.expect(IllegalArgumentException.class, "Port must be positive");
 		new StaticPortProvider(0);
 	}
 

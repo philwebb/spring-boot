@@ -42,11 +42,11 @@ public class SpringBootTestContextBootstrapperTests {
 
 	@Test
 	public void springBootTestWithANonMockWebEnvironmentAndWebAppConfigurationFailsFast() {
-		this.thrown.expect(IllegalStateException.class);
-		this.thrown.expectMessage("@WebAppConfiguration should only be used with "
-				+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
-				+ "environment. Please remove @WebAppConfiguration or reconfigure "
-				+ "@SpringBootTest.");
+		this.thrown.expect(IllegalStateException.class,
+				"@WebAppConfiguration should only be used with "
+						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
+						+ "environment. Please remove @WebAppConfiguration or reconfigure "
+						+ "@SpringBootTest.");
 		buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 
