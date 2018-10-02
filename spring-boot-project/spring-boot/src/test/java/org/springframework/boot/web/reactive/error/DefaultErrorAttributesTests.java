@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;

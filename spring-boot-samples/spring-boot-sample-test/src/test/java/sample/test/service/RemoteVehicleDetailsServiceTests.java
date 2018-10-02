@@ -18,7 +18,6 @@ package sample.test.service;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import sample.test.domain.VehicleIdentificationNumber;
 

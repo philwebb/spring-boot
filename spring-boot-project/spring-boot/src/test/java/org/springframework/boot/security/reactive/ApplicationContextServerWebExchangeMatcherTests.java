@@ -20,7 +20,6 @@ import java.util.function.Supplier;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

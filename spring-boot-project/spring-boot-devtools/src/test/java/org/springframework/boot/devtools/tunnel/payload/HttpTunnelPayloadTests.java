@@ -27,7 +27,6 @@ import java.nio.channels.WritableByteChannel;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;

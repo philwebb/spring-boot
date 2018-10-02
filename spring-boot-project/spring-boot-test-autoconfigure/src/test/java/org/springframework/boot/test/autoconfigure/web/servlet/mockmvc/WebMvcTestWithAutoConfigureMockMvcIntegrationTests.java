@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 

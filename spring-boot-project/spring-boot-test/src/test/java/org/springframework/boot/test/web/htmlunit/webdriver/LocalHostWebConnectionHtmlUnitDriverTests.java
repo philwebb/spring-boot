@@ -25,7 +25,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

@@ -18,7 +18,6 @@ package org.springframework.boot.devtools.restart.classloader;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 

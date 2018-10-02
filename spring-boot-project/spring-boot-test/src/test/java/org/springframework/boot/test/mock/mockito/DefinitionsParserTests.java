@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 
 import org.springframework.beans.factory.annotation.Qualifier;

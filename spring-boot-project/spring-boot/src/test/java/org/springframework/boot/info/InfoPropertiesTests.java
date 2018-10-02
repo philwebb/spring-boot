@@ -18,9 +18,7 @@ package org.springframework.boot.info;
 
 import java.util.Properties;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.PropertySource;
 
@@ -33,9 +31,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  */
 public class InfoPropertiesTests {
-
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void inputIsImmutable() {
@@ -65,7 +60,8 @@ public class InfoPropertiesTests {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(infoProperties.iterator()::remove);
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+				.isThrownBy(infoProperties.iterator()::remove);
 	}
 
 	@Test

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.jdbc;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -29,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  */
 public class EmbeddedDatabaseConnectionTests {
-
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void h2CustomDatabaseName() {
@@ -53,13 +48,15 @@ public class EmbeddedDatabaseConnectionTests {
 
 	@Test
 	public void getUrlWithNullDatabaseName() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
 	public void getUrlWithEmptyDatabaseName() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 

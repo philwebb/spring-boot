@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.info;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -30,9 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class SimpleInfoContributorTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Test
 	public void prefixIsMandatory() {
 		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new SimpleInfoContributor(null, new Object()));

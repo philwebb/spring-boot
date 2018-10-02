@@ -21,7 +21,6 @@ import java.util.Collections;
 import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 

@@ -19,7 +19,6 @@ package sample.propertyvalidation;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -36,9 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class SamplePropertyValidationApplicationTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@After

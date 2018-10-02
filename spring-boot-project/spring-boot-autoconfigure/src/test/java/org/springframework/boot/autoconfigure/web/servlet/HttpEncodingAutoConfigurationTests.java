@@ -27,7 +27,6 @@ import javax.servlet.Filter;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -53,9 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class HttpEncodingAutoConfigurationTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private AnnotationConfigWebApplicationContext context;
 
 	@After

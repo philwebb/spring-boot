@@ -82,7 +82,6 @@ import org.junit.After;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 
@@ -136,7 +135,6 @@ import static org.mockito.Mockito.verify;
  */
 public abstract class AbstractServletWebServerFactoryTests {
 
-	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -204,7 +202,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		this.webServer.stop();
-		assertThatExceptionOfType(IOException.class).isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
+		assertThatExceptionOfType(IOException.class)
+				.isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
 	}
 
 	@Test
@@ -277,20 +276,25 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	@Test
 	public void contextPathMustStartWithSlash() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("missingslash"))
-				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> getFactory().setContextPath("missingslash"))
+				.withMessageContaining(
+						"ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextPathMustNotEndWithSlash() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("extraslash/"))
-				.withMessageContaining("ContextPath must start with '/' and not end with '/'");
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> getFactory().setContextPath("extraslash/"))
+				.withMessageContaining(
+						"ContextPath must start with '/' and not end with '/'");
 	}
 
 	@Test
 	public void contextRootPathMustNotBeSlash() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> getFactory().setContextPath("/"))
-				.withMessageContaining("Root ContextPath must be specified using an empty string");
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> getFactory().setContextPath("/")).withMessageContaining(
+						"Root ContextPath must be specified using an empty string");
 	}
 
 	@Test
@@ -384,7 +388,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-		assertThatExceptionOfType(SSLException.class).isThrownBy(() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
+		assertThatExceptionOfType(SSLException.class).isThrownBy(
+				() -> getResponse(getLocalUrl("https", "/hello"), requestFactory));
 	}
 
 	@Test
@@ -687,16 +692,13 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(
 				new ServletRegistrationBean<>(new ExampleServlet(true, false), "/hello"));
 		this.webServer.start();
-
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
 				new SSLContextBuilder()
 						.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-
 		HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
-
 		assertThat(getResponse(getLocalUrl("https", "/hello"), requestFactory))
 				.contains("scheme=https");
 	}
@@ -764,7 +766,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 	public void getValidSessionStoreWhenSessionStoreReferencesFile() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().setStoreDir(this.temporaryFolder.newFile());
-		assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> factory.getValidSessionStoreDir(false))
+		assertThatExceptionOfType(IllegalStateException.class)
+				.isThrownBy(() -> factory.getValidSessionStoreDir(false))
 				.withMessageContaining("points to a file");
 	}
 
@@ -993,7 +996,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 					}
 
 				}));
-		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer()::start);
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(factory.getWebServer()::start);
 	}
 
 	@Test

@@ -18,7 +18,6 @@ package org.springframework.boot.test.mock.mockito;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.mockito.mock.MockCreationSettings;

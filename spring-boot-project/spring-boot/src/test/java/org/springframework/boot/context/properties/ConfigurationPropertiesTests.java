@@ -33,11 +33,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -108,7 +106,6 @@ public class ConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
@@ -168,8 +165,10 @@ public class ConfigurationPropertiesTests {
 	@Test
 	public void loadWhenHasIgnoreUnknownFieldsFalseAndUnknownFieldsShouldFail() {
 		removeSystemProperties();
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class,
+						"name=foo", "bar=baz"))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -223,7 +222,9 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(
+						() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
 				.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
@@ -498,26 +499,32 @@ public class ConfigurationPropertiesTests {
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedJsr303Configuration.class, "description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(
+						() -> load(ValidatedJsr303Configuration.class, "description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadValidatedOnBeanMethodAndJsr303ConstraintDoesNotMatchShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedOnBeanJsr303Configuration.class, "description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(ValidatedOnBeanJsr303Configuration.class, "description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedNestedJsr303Properties.class, "properties.description=");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class,
+						"properties.description="))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedButIsValidShouldFail() {
-		this.thrown.expectCause(Matchers.instanceOf(BindException.class));
-		load(ValidatedValidNestedJsr303Properties.class);
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(ValidatedValidNestedJsr303Properties.class))
+				.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -737,10 +744,12 @@ public class ConfigurationPropertiesTests {
 	@Test
 	public void loadWhenFailsShouldIncludeAnnotationDetails() {
 		removeSystemProperties();
-		this.thrown.expectMessage("Could not bind properties to "
-				+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
-				+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
-		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz");
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class,
+						"name=foo", "bar=baz"))
+				.withMessageContaining("Could not bind properties to "
+						+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
+						+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
 	}
 
 	@Test

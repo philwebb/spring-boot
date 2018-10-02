@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.util.LambdaSafe.Filter;
 import org.springframework.boot.util.LambdaSafe.InvocationResult;

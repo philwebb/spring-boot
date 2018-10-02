@@ -18,7 +18,6 @@ package org.springframework.boot.testsupport.runner.classpath;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;

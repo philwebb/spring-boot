@@ -27,9 +27,7 @@ import java.util.Map;
 import javax.validation.Validation;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 
@@ -52,7 +50,6 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -68,7 +65,6 @@ import static org.mockito.Mockito.withSettings;
  */
 public class BinderTests {
 
-	
 	private List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
@@ -80,21 +76,25 @@ public class BinderTests {
 
 	@Test
 	public void createWhenSourcesIsNullShouldThrowException() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(
+						() -> new Binder((Iterable<ConfigurationPropertySource>) null))
 				.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
 	public void bindWhenNameIsNullShouldThrowException() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null,
-				Bindable.of(String.class), BindHandler.DEFAULT))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null,
+						Bindable.of(String.class), BindHandler.DEFAULT))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	public void bindWhenTargetIsNullShouldThrowException() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null,
-				BindHandler.DEFAULT))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"),
+						null, BindHandler.DEFAULT))
 				.withMessageContaining("Target must not be null");
 	}
 
@@ -222,10 +222,11 @@ public class BinderTests {
 
 	@Test
 	public void bindWhenHasMalformedDateShouldThrowException() {
-		this.thrown.expectCause(instanceOf(ConversionFailedException.class));
 		this.sources.add(new MockConfigurationPropertySource("foo",
 				"2014-04-01T01:30:00.000-05:00"));
-		this.binder.bind("foo", Bindable.of(LocalDate.class));
+		assertThatExceptionOfType(BindException.class)
+				.isThrownBy(() -> this.binder.bind("foo", Bindable.of(LocalDate.class)))
+				.withCauseInstanceOf(ConversionFailedException.class);
 	}
 
 	@Test

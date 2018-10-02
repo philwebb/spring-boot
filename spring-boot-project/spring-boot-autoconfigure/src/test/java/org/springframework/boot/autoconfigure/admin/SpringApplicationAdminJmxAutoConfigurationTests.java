@@ -26,7 +26,6 @@ import javax.management.ObjectName;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -59,9 +58,7 @@ public class SpringApplicationAdminJmxAutoConfigurationTests {
 
 	private static final String DEFAULT_JMX_NAME = "org.springframework.boot:type=Admin,name=SpringApplication";
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

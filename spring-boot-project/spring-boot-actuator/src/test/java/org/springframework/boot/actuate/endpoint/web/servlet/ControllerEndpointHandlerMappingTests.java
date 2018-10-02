@@ -20,7 +20,6 @@ import java.util.Arrays;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
@@ -46,9 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 public class ControllerEndpointHandlerMappingTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
 	@Test

@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;

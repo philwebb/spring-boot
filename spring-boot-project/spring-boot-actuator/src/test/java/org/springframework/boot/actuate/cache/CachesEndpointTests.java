@@ -22,9 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
@@ -46,9 +44,6 @@ import static org.mockito.Mockito.verify;
  * @author Stephane Nicoll
  */
 public class CachesEndpointTests {
-
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
 
 	@Test
 	public void allCachesWithSingleCacheManager() {
@@ -159,10 +154,10 @@ public class CachesEndpointTests {
 		cacheManagers.put("test", cacheManager(mockCache("dupe-cache"), mockCache("b")));
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		this.thrown.expectMessage("dupe-cache");
-		this.thrown.expectMessage("test");
-		this.thrown.expectMessage("another");
-		endpoint.clearCache("dupe-cache", null);
+		assertThatExceptionOfType(NonUniqueCacheException.class)
+				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null))
+				.withMessageContaining("dupe-cache").withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test

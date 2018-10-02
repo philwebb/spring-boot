@@ -31,7 +31,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -66,9 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class BasicErrorControllerDirectMockMvcTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private ConfigurableWebApplicationContext wac;
 
 	private MockMvc mockMvc;

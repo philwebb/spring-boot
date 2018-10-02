@@ -51,7 +51,6 @@ import org.springframework.boot.web.servlet.server.AbstractServletWebServerFacto
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.hamcrest.CoreMatchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -263,8 +262,9 @@ public class JettyServletWebServerFactoryTests
 			threadPool.setMaxThreads(2);
 			threadPool.setMinThreads(2);
 		});
-		this.thrown.expectCause(isA(IllegalStateException.class));
-		factory.getWebServer().start();
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(factory.getWebServer()::start)
+				.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test

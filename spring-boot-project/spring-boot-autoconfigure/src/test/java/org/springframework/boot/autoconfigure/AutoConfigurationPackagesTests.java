@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
 import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;

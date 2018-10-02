@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.gson.Gson;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;

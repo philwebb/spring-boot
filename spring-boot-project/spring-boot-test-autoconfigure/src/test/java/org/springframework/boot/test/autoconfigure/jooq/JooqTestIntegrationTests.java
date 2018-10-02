@@ -22,7 +22,6 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

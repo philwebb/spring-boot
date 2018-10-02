@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,9 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ConditionalOnSingleCandidateTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@After

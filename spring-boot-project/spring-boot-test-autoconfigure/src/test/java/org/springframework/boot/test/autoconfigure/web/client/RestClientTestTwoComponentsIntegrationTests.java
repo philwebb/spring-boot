@@ -18,7 +18,6 @@ package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;

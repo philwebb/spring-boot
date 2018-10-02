@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.runner.RunWith;
 import org.neo4j.ogm.session.Session;
 

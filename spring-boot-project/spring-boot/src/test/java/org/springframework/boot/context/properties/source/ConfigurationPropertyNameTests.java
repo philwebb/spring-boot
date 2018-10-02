@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 

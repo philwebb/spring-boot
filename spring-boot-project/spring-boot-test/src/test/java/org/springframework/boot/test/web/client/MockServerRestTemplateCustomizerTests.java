@@ -19,7 +19,6 @@ package org.springframework.boot.test.web.client;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.test.web.client.RequestExpectationManager;

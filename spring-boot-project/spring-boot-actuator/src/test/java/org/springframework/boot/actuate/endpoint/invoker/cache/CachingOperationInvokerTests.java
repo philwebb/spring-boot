@@ -21,9 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -44,12 +42,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 public class CachingOperationInvokerTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
 	@Test
 	public void createInstanceWithTtlSetToZero() {
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
+				() -> new CachingOperationInvoker(mock(OperationInvoker.class), 0))
 				.withMessageContaining("TimeToLive");
 	}
 

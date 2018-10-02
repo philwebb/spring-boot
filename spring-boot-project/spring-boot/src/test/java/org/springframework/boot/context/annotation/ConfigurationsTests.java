@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

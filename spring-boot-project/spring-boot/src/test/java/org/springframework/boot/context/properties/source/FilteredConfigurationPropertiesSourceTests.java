@@ -20,7 +20,6 @@ import java.util.Objects;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;

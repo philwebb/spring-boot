@@ -24,7 +24,6 @@ import java.io.InputStream;
 import org.assertj.core.api.AssertProvider;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.skyscreamer.jsonassert.comparator.DefaultComparator;
@@ -61,9 +60,7 @@ public class JsonContentAssertTests {
 	private static JSONComparator COMPARATOR = new DefaultComparator(
 			JSONCompareMode.LENIENT);
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 

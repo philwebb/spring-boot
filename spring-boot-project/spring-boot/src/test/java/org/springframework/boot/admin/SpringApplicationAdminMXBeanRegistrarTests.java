@@ -25,9 +25,7 @@ import javax.management.ObjectName;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -51,9 +49,6 @@ import static org.mockito.Mockito.mock;
 public class SpringApplicationAdminMXBeanRegistrarTests {
 
 	private static final String OBJECT_NAME = "org.springframework.boot:type=Test,name=SpringApplication";
-
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
 
 	private MBeanServer mBeanServer;
 
@@ -131,7 +126,8 @@ public class SpringApplicationAdminMXBeanRegistrarTests {
 		invokeShutdown(objectName);
 		assertThat(this.context.isRunning()).isFalse();
 		// JMX cleanup
-		assertThatExceptionOfType(InstanceNotFoundException.class).isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
+		assertThatExceptionOfType(InstanceNotFoundException.class)
+				.isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
 	}
 
 	private Boolean isApplicationReady(ObjectName objectName) {

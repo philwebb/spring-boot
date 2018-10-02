@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 
 import io.undertow.Undertow.Builder;
@@ -44,6 +43,7 @@ import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -52,8 +52,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -86,14 +84,16 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setBuilderCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> factory.setBuilderCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
+				() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
@@ -114,15 +114,17 @@ public class UndertowServletWebServerFactoryTests
 	@Test
 	public void setNullDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	public void addNullAddDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
-		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> factory.addDeploymentInfoCustomizers(
-				(UndertowDeploymentInfoCustomizer[]) null))
+		assertThatExceptionOfType(IllegalArgumentException.class)
+				.isThrownBy(() -> factory.addDeploymentInfoCustomizers(
+						(UndertowDeploymentInfoCustomizer[]) null))
 				.withMessageContaining("Customizers must not be null");
 	}
 
@@ -207,18 +209,20 @@ public class UndertowServletWebServerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsEmptyCipherFailure() throws Exception {
-		this.thrown.expect(anyOf(instanceOf(SSLHandshakeException.class),
-				instanceOf(SocketException.class)));
-		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
-				new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" });
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(
+						new String[] { "TLSv1.2" },
+						new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" }))
+				.satisfies(this::sslHandshakeExceptionRequirement);
 	}
 
 	@Test
 	public void sslRestrictedProtocolsECDHETLS1Failure() throws Exception {
-		this.thrown.expect(
-				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
-		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
-				new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" });
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(
+						new String[] { "TLSv1" },
+						new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" }))
+				.satisfies(this::sslHandshakeExceptionRequirement);
 	}
 
 	@Test
@@ -235,10 +239,16 @@ public class UndertowServletWebServerFactoryTests
 
 	@Test
 	public void sslRestrictedProtocolsRSATLS11Failure() throws Exception {
-		this.thrown.expect(
-				anyOf(instanceOf(SSLException.class), instanceOf(SocketException.class)));
-		testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
-				new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" });
+		assertThatExceptionOfType(WebServerException.class)
+				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(
+						new String[] { "TLSv1.1" },
+						new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" }))
+				.satisfies(this::sslHandshakeExceptionRequirement);
+	}
+
+	private void sslHandshakeExceptionRequirement(WebServerException ex) {
+		assertThat(ex).isInstanceOfAny(SSLHandshakeException.class,
+				SocketException.class);
 	}
 
 	@Override

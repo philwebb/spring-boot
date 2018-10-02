@@ -20,7 +20,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -35,9 +34,7 @@ import static org.mockito.Mockito.mock;
  */
 public class InitializrServiceTests extends AbstractHttpClientMockTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final InitializrService invoker = new InitializrService(this.http);
 
 	@Test

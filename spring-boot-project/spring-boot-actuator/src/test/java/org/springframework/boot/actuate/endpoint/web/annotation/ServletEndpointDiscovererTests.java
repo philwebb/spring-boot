@@ -31,7 +31,6 @@ import javax.servlet.ServletResponse;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredEndpoint;
@@ -60,9 +59,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 public class ServletEndpointDiscovererTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test

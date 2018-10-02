@@ -24,7 +24,6 @@ import javax.management.ObjectName;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.mock.env.MockEnvironment;
@@ -42,9 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 public class DefaultEndpointObjectNameFactoryTests {
 
-	@Rule
-	public final MyExpectedException thrown = MyExpectedException.none();
-
+	
 	private final MockEnvironment environment = new MockEnvironment();
 
 	private final JmxEndpointProperties properties = new JmxEndpointProperties(

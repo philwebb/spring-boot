@@ -18,7 +18,6 @@ package org.springframework.boot.context.config;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;

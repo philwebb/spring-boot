@@ -26,7 +26,6 @@ import com.mongodb.connection.ClusterSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;

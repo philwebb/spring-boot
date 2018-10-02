@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.h2;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MyExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
