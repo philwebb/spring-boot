@@ -37,14 +37,15 @@ public interface BindHandler {
 
 	/**
 	 * Called when binding of an element starts but before any result has been determined.
+	 * @param <T> the bindable source type
 	 * @param name the name of the element being bound
 	 * @param target the item being bound
 	 * @param context the bind context
 	 * @return {@code true} if binding should proceed
 	 */
-	default boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
+	default <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
 			BindContext context) {
-		return true;
+		return target;
 	}
 
 	/**

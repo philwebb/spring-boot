@@ -80,7 +80,7 @@ public class ErrorWebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
-	@Order(-1)
+	@Order(1)
 	public ErrorWebExceptionHandler errorWebExceptionHandler(
 			ErrorAttributes errorAttributes) {
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(

@@ -47,7 +47,7 @@ public abstract class AbstractBindHandler implements BindHandler {
 	}
 
 	@Override
-	public boolean onStart(ConfigurationPropertyName name, Bindable<?> target,
+	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
 			BindContext context) {
 		return this.parent.onStart(name, target, context);
 	}
