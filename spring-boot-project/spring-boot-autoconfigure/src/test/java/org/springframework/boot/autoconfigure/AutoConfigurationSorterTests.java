@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import org.springframework.core.Ordered;
@@ -53,7 +52,11 @@ public class AutoConfigurationSorterTests {
 
 	private static final String A = AutoConfigureA.class.getName();
 
+	private static final String DEPA = DepAutoConfigureA.class.getName();
+
 	private static final String B = AutoConfigureB.class.getName();
+
+	private static final String DEPB = DepAutoConfigureB.class.getName();
 
 	private static final String C = AutoConfigureC.class.getName();
 
@@ -69,80 +72,81 @@ public class AutoConfigurationSorterTests {
 
 	private static final String Z = AutoConfigureZ.class.getName();
 
+	private static final String DEPZ = DepAutoConfigureZ.class.getName();
+
 	private static final String A2 = AutoConfigureA2.class.getName();
 
 	private static final String W2 = AutoConfigureW2.class.getName();
 
-	private AutoConfigurationSorter sorter;
-
 	private AutoConfigurationMetadata autoConfigurationMetadata = mock(
 			AutoConfigurationMetadata.class);
 
-	@Before
-	public void setup() {
-		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(),
-				this.autoConfigurationMetadata);
-	}
-
 	@Test
 	public void byOrderAnnotation() {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST, DEFAULT));
+		List<String> actual = sort(Arrays.asList(LOWEST, HIGHEST, DEFAULT));
 		assertThat(actual).containsExactly(HIGHEST, DEFAULT, LOWEST);
 	}
 
 	@Test
 	public void byAutoConfigureAfter() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
+		List<String> actual = sort(Arrays.asList(A, B, C));
 		assertThat(actual).containsExactly(C, B, A);
 	}
 
 	@Test
+	public void byAutoConfigureAfterWithDeprecated() {
+		List<String> actual = sort(Arrays.asList(DEPA, DEPB, C));
+		assertThat(actual).containsExactly(C, DEPB, DEPA);
+	}
+
+	@Test
 	public void byAutoConfigureBefore() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
+		List<String> actual = sort(Arrays.asList(X, Y, Z));
 		assertThat(actual).containsExactly(Z, Y, X);
 	}
 
 	@Test
+	public void byAutoConfigureBeforeWithDeprecated() {
+		List<String> actual = sort(Arrays.asList(X, Y, DEPZ));
+		assertThat(actual).containsExactly(DEPZ, Y, X);
+	}
+
+	@Test
 	public void byAutoConfigureAfterDoubles() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
+		List<String> actual = sort(Arrays.asList(A, B, C, E));
 		assertThat(actual).containsExactly(C, E, B, A);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfter() {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
+		List<String> actual = sort(Arrays.asList(A, B, C, W, X));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfterWithClassNames() {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		List<String> actual = sort(Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
 	@Test
 	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder() {
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
+		List<String> actual = sort(Arrays.asList(W, X, A, B, C));
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	public void byAutoConfigureAfterWithMissing() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
+		List<String> actual = sort(Arrays.asList(A, B));
 		assertThat(actual).containsExactly(B, A);
 	}
 
 	@Test
 	public void byAutoConfigureAfterWithCycle() {
-		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(),
-				this.autoConfigurationMetadata);
+
 		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
+				.isThrownBy(() -> sort(new CachingMetadataReaderFactory(),
+						this.autoConfigurationMetadata, Arrays.asList(A, B, C, D)))
 				.withMessageContaining("AutoConfigure cycle detected");
 	}
 
@@ -150,10 +154,8 @@ public class AutoConfigurationSorterTests {
 	public void usesAnnotationPropertiesWhenPossible() throws Exception {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A2, B, C, W2, X);
-		this.sorter = new AutoConfigurationSorter(readerFactory,
-				this.autoConfigurationMetadata);
-		List<String> actual = this.sorter
-				.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		List<String> actual = sort(readerFactory, this.autoConfigurationMetadata,
+				Arrays.asList(A2, B, C, W2, X));
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
@@ -161,9 +163,8 @@ public class AutoConfigurationSorterTests {
 	public void useAnnotationWithNoDirectLink() throws Exception {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, E);
-		this.sorter = new AutoConfigurationSorter(readerFactory,
-				this.autoConfigurationMetadata);
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, E));
+		List<String> actual = sort(readerFactory, this.autoConfigurationMetadata,
+				Arrays.asList(A, E));
 		assertThat(actual).containsExactly(E, A);
 	}
 
@@ -171,10 +172,9 @@ public class AutoConfigurationSorterTests {
 	public void useAnnotationWithNoDirectLinkAndCycle() throws Exception {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
-		this.sorter = new AutoConfigurationSorter(readerFactory,
-				this.autoConfigurationMetadata);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
+				.isThrownBy(() -> sort(readerFactory, this.autoConfigurationMetadata,
+						Arrays.asList(D, B)))
 				.withMessageContaining("AutoConfigure cycle detected");
 	}
 
@@ -217,6 +217,19 @@ public class AutoConfigurationSorterTests {
 		return StringUtils.collectionToCommaDelimitedString(items);
 	}
 
+	private List<String> sort(List<String> classNames) {
+		return sort(new SkipCycleMetadataReaderFactory(), this.autoConfigurationMetadata,
+				classNames);
+	}
+
+	private List<String> sort(MetadataReaderFactory metadataReaderFactory,
+			AutoConfigurationMetadata autoConfigurationMetadata,
+			List<String> classNames) {
+		AutoConfigurationClasses classes = new AutoConfigurationClasses(
+				metadataReaderFactory, autoConfigurationMetadata, classNames);
+		return AutoConfigurationSorter.INSTANCE.getInPriorityOrder(classes);
+	}
+
 	@AutoConfigureOrder
 	public static class OrderUnspecified {
 
@@ -237,6 +250,11 @@ public class AutoConfigurationSorterTests {
 
 	}
 
+	@AutoConfigureAfter(DepAutoConfigureB.class)
+	public static class DepAutoConfigureA {
+
+	}
+
 	@AutoConfigureAfter(name = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureB")
 	public static class AutoConfigureA2 {
 
@@ -248,7 +266,18 @@ public class AutoConfigurationSorterTests {
 
 	}
 
+	@AutoConfigureAfter({ DeprecatedAutoConfigureC.class, AutoConfigureD.class,
+			AutoConfigureE.class })
+	public static class DepAutoConfigureB {
+
+	}
+
 	public static class AutoConfigureC {
+
+	}
+
+	@DeprecatedAutoConfiguration(replacement = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureC")
+	public static class DeprecatedAutoConfigureC {
 
 	}
 
@@ -280,8 +309,18 @@ public class AutoConfigurationSorterTests {
 
 	}
 
+	@DeprecatedAutoConfiguration(replacement = "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureY")
+	public static class DeprecatedAutoConfigureY {
+
+	}
+
 	@AutoConfigureBefore(AutoConfigureY.class)
 	public static class AutoConfigureZ {
+
+	}
+
+	@AutoConfigureBefore(DeprecatedAutoConfigureY.class)
+	public static class DepAutoConfigureZ {
 
 	}
 

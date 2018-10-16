@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -27,9 +29,19 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  */
 public class TestAutoConfigurationSorter extends AutoConfigurationSorter {
 
+	private MetadataReaderFactory metadataReaderFactory;
+
+	private AutoConfigurationMetadata autoConfigurationMetadata;
+
 	public TestAutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory) {
-		super(metadataReaderFactory,
-				AutoConfigurationMetadataLoader.loadMetadata(new Properties()));
+		this.metadataReaderFactory = metadataReaderFactory;
+		this.autoConfigurationMetadata = AutoConfigurationMetadataLoader
+				.loadMetadata(new Properties());
+	}
+
+	public List<String> getInPriorityOrder(Collection<String> classNames) {
+		return getInPriorityOrder(new AutoConfigurationClasses(this.metadataReaderFactory,
+				this.autoConfigurationMetadata, classNames));
 	}
 
 }

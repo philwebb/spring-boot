@@ -16,19 +16,12 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -40,21 +33,13 @@ import org.springframework.util.Assert;
  */
 class AutoConfigurationSorter {
 
-	private final MetadataReaderFactory metadataReaderFactory;
+	public static final AutoConfigurationSorter INSTANCE = new AutoConfigurationSorter();
 
-	private final AutoConfigurationMetadata autoConfigurationMetadata;
-
-	AutoConfigurationSorter(MetadataReaderFactory metadataReaderFactory,
-			AutoConfigurationMetadata autoConfigurationMetadata) {
-		Assert.notNull(metadataReaderFactory, "MetadataReaderFactory must not be null");
-		this.metadataReaderFactory = metadataReaderFactory;
-		this.autoConfigurationMetadata = autoConfigurationMetadata;
+	protected AutoConfigurationSorter() {
 	}
 
-	public List<String> getInPriorityOrder(Collection<String> classNames) {
-		AutoConfigurationClasses classes = new AutoConfigurationClasses(
-				this.metadataReaderFactory, this.autoConfigurationMetadata, classNames);
-		List<String> orderedClassNames = new ArrayList<>(classNames);
+	public List<String> getInPriorityOrder(AutoConfigurationClasses classes) {
+		List<String> orderedClassNames = new ArrayList<>(classes.getNames(false));
 		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
 		// Then sort by order
@@ -71,7 +56,7 @@ class AutoConfigurationSorter {
 	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
 			List<String> classNames) {
 		List<String> toSort = new ArrayList<>(classNames);
-		toSort.addAll(classes.getAllNames());
+		toSort.addAll(classes.getNames(true));
 		Set<String> sorted = new LinkedHashSet<>();
 		Set<String> processing = new LinkedHashSet<>();
 		while (!toSort.isEmpty()) {
@@ -97,158 +82,6 @@ class AutoConfigurationSorter {
 		}
 		processing.remove(current);
 		sorted.add(current);
-	}
-
-	private static class AutoConfigurationClasses {
-
-		private final Map<String, AutoConfigurationClass> classes = new HashMap<>();
-
-		AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
-				AutoConfigurationMetadata autoConfigurationMetadata,
-				Collection<String> classNames) {
-			addToClasses(metadataReaderFactory, autoConfigurationMetadata, classNames,
-					true);
-		}
-
-		public Set<String> getAllNames() {
-			return this.classes.keySet();
-		}
-
-		private void addToClasses(MetadataReaderFactory metadataReaderFactory,
-				AutoConfigurationMetadata autoConfigurationMetadata,
-				Collection<String> classNames, boolean required) {
-			for (String className : classNames) {
-				if (!this.classes.containsKey(className)) {
-					AutoConfigurationClass autoConfigurationClass = new AutoConfigurationClass(
-							className, metadataReaderFactory, autoConfigurationMetadata);
-					boolean available = autoConfigurationClass.isAvailable();
-					if (required || available) {
-						this.classes.put(className, autoConfigurationClass);
-					}
-					if (available) {
-						addToClasses(metadataReaderFactory, autoConfigurationMetadata,
-								autoConfigurationClass.getBefore(), false);
-						addToClasses(metadataReaderFactory, autoConfigurationMetadata,
-								autoConfigurationClass.getAfter(), false);
-					}
-				}
-			}
-		}
-
-		public AutoConfigurationClass get(String className) {
-			return this.classes.get(className);
-		}
-
-		public Set<String> getClassesRequestedAfter(String className) {
-			Set<String> classesRequestedAfter = new LinkedHashSet<>();
-			classesRequestedAfter.addAll(get(className).getAfter());
-			this.classes.forEach((name, autoConfigurationClass) -> {
-				if (autoConfigurationClass.getBefore().contains(className)) {
-					classesRequestedAfter.add(name);
-				}
-			});
-			return classesRequestedAfter;
-		}
-
-	}
-
-	private static class AutoConfigurationClass {
-
-		private final String className;
-
-		private final MetadataReaderFactory metadataReaderFactory;
-
-		private final AutoConfigurationMetadata autoConfigurationMetadata;
-
-		private volatile AnnotationMetadata annotationMetadata;
-
-		private volatile Set<String> before;
-
-		private volatile Set<String> after;
-
-		AutoConfigurationClass(String className,
-				MetadataReaderFactory metadataReaderFactory,
-				AutoConfigurationMetadata autoConfigurationMetadata) {
-			this.className = className;
-			this.metadataReaderFactory = metadataReaderFactory;
-			this.autoConfigurationMetadata = autoConfigurationMetadata;
-		}
-
-		public boolean isAvailable() {
-			try {
-				if (!wasProcessed()) {
-					getAnnotationMetadata();
-				}
-				return true;
-			}
-			catch (Exception ex) {
-				return false;
-			}
-		}
-
-		public Set<String> getBefore() {
-			if (this.before == null) {
-				this.before = (wasProcessed()
-						? this.autoConfigurationMetadata.getSet(this.className,
-								"AutoConfigureBefore", Collections.emptySet())
-						: getAnnotationValue(AutoConfigureBefore.class));
-			}
-			return this.before;
-		}
-
-		public Set<String> getAfter() {
-			if (this.after == null) {
-				this.after = (wasProcessed()
-						? this.autoConfigurationMetadata.getSet(this.className,
-								"AutoConfigureAfter", Collections.emptySet())
-						: getAnnotationValue(AutoConfigureAfter.class));
-			}
-			return this.after;
-		}
-
-		private int getOrder() {
-			if (wasProcessed()) {
-				return this.autoConfigurationMetadata.getInteger(this.className,
-						"AutoConfigureOrder", AutoConfigureOrder.DEFAULT_ORDER);
-			}
-			Map<String, Object> attributes = getAnnotationMetadata()
-					.getAnnotationAttributes(AutoConfigureOrder.class.getName());
-			return (attributes != null) ? (Integer) attributes.get("value")
-					: AutoConfigureOrder.DEFAULT_ORDER;
-		}
-
-		private boolean wasProcessed() {
-			return (this.autoConfigurationMetadata != null
-					&& this.autoConfigurationMetadata.wasProcessed(this.className));
-		}
-
-		private Set<String> getAnnotationValue(Class<?> annotation) {
-			Map<String, Object> attributes = getAnnotationMetadata()
-					.getAnnotationAttributes(annotation.getName(), true);
-			if (attributes == null) {
-				return Collections.emptySet();
-			}
-			Set<String> value = new LinkedHashSet<>();
-			Collections.addAll(value, (String[]) attributes.get("value"));
-			Collections.addAll(value, (String[]) attributes.get("name"));
-			return value;
-		}
-
-		private AnnotationMetadata getAnnotationMetadata() {
-			if (this.annotationMetadata == null) {
-				try {
-					MetadataReader metadataReader = this.metadataReaderFactory
-							.getMetadataReader(this.className);
-					this.annotationMetadata = metadataReader.getAnnotationMetadata();
-				}
-				catch (IOException ex) {
-					throw new IllegalStateException(
-							"Unable to read meta-data for class " + this.className, ex);
-				}
-			}
-			return this.annotationMetadata;
-		}
-
 	}
 
 }

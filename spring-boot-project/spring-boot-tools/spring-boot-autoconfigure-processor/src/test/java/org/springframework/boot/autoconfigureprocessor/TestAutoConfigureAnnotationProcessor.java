@@ -37,7 +37,8 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 		"org.springframework.boot.autoconfigure.condition.TestConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureBefore",
 		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureAfter",
-		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder" })
+		"org.springframework.boot.autoconfigureprocessor.TestAutoConfigureOrder",
+		"org.springframework.boot.autoconfigureprocessor.TestDeprecatedAutoConfiguration" })
 public class TestAutoConfigureAnnotationProcessor
 		extends AutoConfigureAnnotationProcessor {
 
@@ -59,6 +60,8 @@ public class TestAutoConfigureAnnotationProcessor
 		put(annotations, "AutoConfigureBefore", TestAutoConfigureBefore.class);
 		put(annotations, "AutoConfigureAfter", TestAutoConfigureAfter.class);
 		put(annotations, "AutoConfigureOrder", TestAutoConfigureOrder.class);
+		put(annotations, "DeprecatedAutoConfiguration",
+				TestDeprecatedAutoConfiguration.class);
 	}
 
 	private void put(Map<String, String> annotations, String key, Class<?> value) {

@@ -112,6 +112,15 @@ public class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	public void exclusionsUseDeprecatedReplacements() {
+		String[] imports = selectImports(
+				SpringBootApplicationWithDeprecatedExclusions.class);
+		assertThat(imports).hasSize(getAutoConfigurationClassNames().size() - 1);
+		assertThat(this.importSelector.getLastEvent().getExclusions())
+				.contains(MustacheAutoConfiguration.class.getName());
+	}
+
+	@Test
 	public void propertyExclusionsAreApplied() {
 		this.environment.setProperty("spring.autoconfigure.exclude",
 				FreeMarkerAutoConfiguration.class.getName());
@@ -330,6 +339,16 @@ public class AutoConfigurationImportSelectorTests {
 
 	@SpringBootApplication(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
 	private class SpringBootApplicationWithClassNameExclusions {
+
+	}
+
+	@SpringBootApplication(exclude = DeprecatedMustacheAutoConfiguration.class)
+	private class SpringBootApplicationWithDeprecatedExclusions {
+
+	}
+
+	@DeprecatedAutoConfiguration(replacement = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
+	private static class DeprecatedMustacheAutoConfiguration {
 
 	}
 

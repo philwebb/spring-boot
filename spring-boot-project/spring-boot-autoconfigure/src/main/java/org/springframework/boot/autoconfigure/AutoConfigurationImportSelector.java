@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.EnvironmentAware;
@@ -51,8 +49,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -119,8 +115,8 @@ public class AutoConfigurationImportSelector
 		List<String> configurations = getCandidateConfigurations(annotationMetadata,
 				attributes);
 		configurations = removeDuplicates(configurations);
-		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
-		checkExcludedClasses(configurations, exclusions);
+		Set<String> exclusions = getExclusions(autoConfigurationMetadata,
+				annotationMetadata, attributes, configurations);
 		configurations.removeAll(exclusions);
 		configurations = filter(configurations, autoConfigurationMetadata);
 		fireAutoConfigurationImportEvents(configurations, exclusions);
@@ -195,10 +191,36 @@ public class AutoConfigurationImportSelector
 		return EnableAutoConfiguration.class;
 	}
 
-	private void checkExcludedClasses(List<String> configurations,
-			Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
-		for (String exclusion : exclusions) {
+	private Set<String> getExclusions(AutoConfigurationMetadata autoConfigurationMetadata,
+			AnnotationMetadata annotationMetadata, AnnotationAttributes attributes,
+			List<String> configurations) {
+		Set<String> names = getExclusions(annotationMetadata, attributes);
+		AutoConfigurationClasses classes = new AutoConfigurationClasses(this.beanFactory,
+				this.resourceLoader, autoConfigurationMetadata, names);
+		names = classes.getNames(false);
+		checkExcludedClasses(configurations, names);
+		return names;
+	}
+
+	/**
+	 * Return any exclusions that limit the candidate configurations.
+	 * @param metadata the source metadata
+	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
+	 * attributes}
+	 * @return exclusions or an empty set
+	 */
+	protected Set<String> getExclusions(AnnotationMetadata metadata,
+			AnnotationAttributes attributes) {
+		Set<String> excluded = new LinkedHashSet<>();
+		excluded.addAll(asList(attributes, "exclude"));
+		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
+		excluded.addAll(getExcludeAutoConfigurationsProperty());
+		return excluded;
+	}
+
+	private void checkExcludedClasses(List<String> configurations, Set<String> names) {
+		List<String> invalidExcludes = new ArrayList<>(names.size());
+		for (String exclusion : names) {
 			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader())
 					&& !configurations.contains(exclusion)) {
 				invalidExcludes.add(exclusion);
@@ -222,22 +244,6 @@ public class AutoConfigurationImportSelector
 		throw new IllegalStateException(String
 				.format("The following classes could not be excluded because they are"
 						+ " not auto-configuration classes:%n%s", message));
-	}
-
-	/**
-	 * Return any exclusions that limit the candidate configurations.
-	 * @param metadata the source metadata
-	 * @param attributes the {@link #getAttributes(AnnotationMetadata) annotation
-	 * attributes}
-	 * @return exclusions or an empty set
-	 */
-	protected Set<String> getExclusions(AnnotationMetadata metadata,
-			AnnotationAttributes attributes) {
-		Set<String> excluded = new LinkedHashSet<>();
-		excluded.addAll(asList(attributes, "exclude"));
-		excluded.addAll(Arrays.asList(attributes.getStringArray("excludeName")));
-		excluded.addAll(getExcludeAutoConfigurationsProperty());
-		return excluded;
 	}
 
 	private List<String> getExcludeAutoConfigurationsProperty() {
@@ -438,7 +444,6 @@ public class AutoConfigurationImportSelector
 					.flatMap(Collection::stream)
 					.collect(Collectors.toCollection(LinkedHashSet::new));
 			processedConfigurations.removeAll(allExclusions);
-
 			return sortAutoConfigurations(processedConfigurations,
 					getAutoConfigurationMetadata())
 							.stream()
@@ -457,19 +462,10 @@ public class AutoConfigurationImportSelector
 
 		private List<String> sortAutoConfigurations(Set<String> configurations,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
-			return new AutoConfigurationSorter(getMetadataReaderFactory(),
-					autoConfigurationMetadata).getInPriorityOrder(configurations);
-		}
-
-		private MetadataReaderFactory getMetadataReaderFactory() {
-			try {
-				return this.beanFactory.getBean(
-						SharedMetadataReaderFactoryContextInitializer.BEAN_NAME,
-						MetadataReaderFactory.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return new CachingMetadataReaderFactory(this.resourceLoader);
-			}
+			AutoConfigurationClasses classes = new AutoConfigurationClasses(
+					this.beanFactory, this.resourceLoader, autoConfigurationMetadata,
+					configurations);
+			return AutoConfigurationSorter.INSTANCE.getInPriorityOrder(classes);
 		}
 
 	}
@@ -492,9 +488,9 @@ public class AutoConfigurationImportSelector
 		 * @param exclusions the exclusions that were applied to the original list
 		 */
 		AutoConfigurationEntry(Collection<String> configurations,
-				Collection<String> exclusions) {
+				Set<String> exclusions) {
 			this.configurations = new ArrayList<>(configurations);
-			this.exclusions = new HashSet<>(exclusions);
+			this.exclusions = exclusions;
 		}
 
 		public List<String> getConfigurations() {

@@ -57,7 +57,8 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
 		"org.springframework.boot.autoconfigure.AutoConfigureBefore",
 		"org.springframework.boot.autoconfigure.AutoConfigureAfter",
-		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
+		"org.springframework.boot.autoconfigure.AutoConfigureOrder",
+		"org.springframework.boot.autoconfigure.DeprecatedAutoConfiguration" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	protected static final String PROPERTIES_PATH = "META-INF/"
@@ -95,6 +96,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 				"org.springframework.boot.autoconfigure.AutoConfigureAfter");
 		annotations.put("AutoConfigureOrder",
 				"org.springframework.boot.autoconfigure.AutoConfigureOrder");
+		annotations.put("DeprecatedAutoConfiguration",
+				"org.springframework.boot.autoconfigure.DeprecatedAutoConfiguration");
 	}
 
 	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
@@ -107,6 +110,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		attributes.put("AutoConfigureBefore", ValueExtractor.allFrom("value", "name"));
 		attributes.put("AutoConfigureAfter", ValueExtractor.allFrom("value", "name"));
 		attributes.put("AutoConfigureOrder", ValueExtractor.allFrom("value"));
+		attributes.put("DeprecatedAutoConfiguration",
+				ValueExtractor.allFrom("replacement"));
 	}
 
 	@Override

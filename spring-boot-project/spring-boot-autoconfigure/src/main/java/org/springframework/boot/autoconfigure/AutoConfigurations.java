@@ -36,8 +36,7 @@ import org.springframework.util.ClassUtils;
  */
 public class AutoConfigurations extends Configurations implements Ordered {
 
-	private static final AutoConfigurationSorter SORTER = new AutoConfigurationSorter(
-			new SimpleMetadataReaderFactory(), null);
+	private static final SimpleMetadataReaderFactory METADATA_READER_FACTORY = new SimpleMetadataReaderFactory();
 
 	private static final Ordered ORDER = new AutoConfigurationImportSelector();
 
@@ -49,7 +48,12 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
 		List<String> names = classes.stream().map(Class::getName)
 				.collect(Collectors.toList());
-		List<String> sorted = SORTER.getInPriorityOrder(names);
+		return sort(new AutoConfigurationClasses(METADATA_READER_FACTORY, null, names));
+	}
+
+	private Collection<Class<?>> sort(AutoConfigurationClasses classes) {
+		List<String> sorted = AutoConfigurationSorter.INSTANCE
+				.getInPriorityOrder(classes);
 		return sorted.stream()
 				.map((className) -> ClassUtils.resolveClassName(className, null))
 				.collect(Collectors.toCollection(ArrayList::new));

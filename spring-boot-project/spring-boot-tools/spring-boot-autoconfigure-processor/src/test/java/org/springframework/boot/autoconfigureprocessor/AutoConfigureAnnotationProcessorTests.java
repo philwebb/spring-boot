@@ -127,6 +127,15 @@ public class AutoConfigureAnnotationProcessorTests {
 						"123");
 	}
 
+	@Test
+	public void annotatedClassWithDeprecation() throws Exception {
+		Properties properties = compile(TestDeprecatedConfiguration.class);
+		assertThat(properties).containsEntry(
+				"org.springframework.boot.autoconfigureprocessor."
+						+ "TestDeprecatedConfiguration.DeprecatedAutoConfiguration",
+				"org.springframework.boot.autoconfigureprocessor.TestOrderedClassConfiguration");
+	}
+
 	private Properties compile(Class<?>... types) throws IOException {
 		TestAutoConfigureAnnotationProcessor processor = new TestAutoConfigureAnnotationProcessor(
 				this.compiler.getOutputLocation());
