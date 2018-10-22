@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.mustache;
 import com.samskivert.mustache.Mustache.Compiler;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.reactive.result.view.MustacheViewResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

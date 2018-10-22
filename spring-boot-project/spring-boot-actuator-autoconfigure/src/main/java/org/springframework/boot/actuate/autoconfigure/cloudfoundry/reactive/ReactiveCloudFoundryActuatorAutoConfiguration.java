@@ -43,7 +43,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

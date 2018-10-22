@@ -24,9 +24,9 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 

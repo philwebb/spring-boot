@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

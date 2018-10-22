@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package org.springframework.boot.autoconfigure.web;
 
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.FilteringSpringBootCondition;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebEnvironment;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.context.annotation.Condition;
@@ -42,7 +45,6 @@ import org.springframework.web.context.WebApplicationContext;
  * @see ConditionalOnNotWebApplication
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 20)
-@Deprecated
 class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
 	private static final String SERVLET_WEB_APPLICATION_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package org.springframework.boot.autoconfigure.web;
 
 import org.junit.After;
 import org.junit.Test;
 import reactor.core.publisher.Mono;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -41,8 +41,6 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@Deprecated
-@SuppressWarnings("deprecation")
 public class ConditionalOnWebApplicationTests {
 
 	private ConfigurableApplicationContext context;

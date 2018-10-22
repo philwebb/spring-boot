@@ -35,8 +35,9 @@ import org.springframework.util.CollectionUtils;
  * {@link AutoConfigurationImportFilter}.
  *
  * @author Phillip Webb
+ * @since 2.1.0
  */
-abstract class FilteringSpringBootCondition extends SpringBootCondition
+public abstract class FilteringSpringBootCondition extends SpringBootCondition
 		implements AutoConfigurationImportFilter, BeanFactoryAware, BeanClassLoaderAware {
 
 	private BeanFactory beanFactory;

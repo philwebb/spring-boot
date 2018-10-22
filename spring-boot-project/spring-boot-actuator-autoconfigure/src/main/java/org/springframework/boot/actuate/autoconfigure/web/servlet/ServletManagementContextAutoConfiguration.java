@@ -22,8 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

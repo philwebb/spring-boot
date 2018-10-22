@@ -29,4 +29,5 @@
 	<suppress files="Rating\.java" checks="JavadocVariable" />
 	<suppress files="Direction\.java" checks="JavadocVariable" />
 	<suppress files="JooqExamples\.java" checks="AvoidStaticImport"/>
+	<suppress files="OnWebApplicationCondition\.java" checks="ImportControl"/>
 </suppressions>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package org.springframework.boot.autoconfigure.web;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -29,14 +29,11 @@ import org.springframework.context.annotation.Conditional;
  * application context.
  *
  * @author Dave Syer
- * @deprecated since 2.1.0 in favor of
- * {@link org.springframework.boot.autoconfigure.web.ConditionalOnNotWebApplication}
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnWebApplicationCondition.class)
-@Deprecated
 public @interface ConditionalOnNotWebApplication {
 
 }

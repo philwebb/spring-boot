@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.freemarker;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;

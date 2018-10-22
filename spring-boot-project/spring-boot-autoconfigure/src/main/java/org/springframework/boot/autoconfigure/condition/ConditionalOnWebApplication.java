@@ -31,11 +31,14 @@ import org.springframework.context.annotation.Conditional;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @deprecated since 2.1.0 in favor of
+ * {@link org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication}
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Conditional(OnWebApplicationCondition.class)
+@Deprecated
 public @interface ConditionalOnWebApplication {
 
 	/**

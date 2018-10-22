@@ -30,9 +30,9 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;

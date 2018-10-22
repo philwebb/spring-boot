@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.condition;
+package org.springframework.boot.autoconfigure.web;
 
 import org.junit.Test;
 import reactor.core.publisher.Mono;
@@ -37,8 +37,6 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@Deprecated
-@SuppressWarnings("deprecation")
 public class ConditionalOnNotWebApplicationTests {
 
 	@Test
