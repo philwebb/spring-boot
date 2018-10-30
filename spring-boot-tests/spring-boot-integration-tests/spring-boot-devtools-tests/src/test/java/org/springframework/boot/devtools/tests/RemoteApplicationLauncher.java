@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.springframework.boot.devtools.RemoteSpringApplication;
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
@@ -42,14 +43,29 @@ abstract class RemoteApplicationLauncher implements ApplicationLauncher {
 				createApplicationClassPath(), "com.example.DevToolsTestApplication",
 				"--server.port=0", "--spring.devtools.remote.secret=secret");
 		int port = awaitServerPort(applicationJvm.getStandardOut());
-		LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
-				"remote-spring-application", createRemoteSpringApplicationClassPath(),
-				RemoteSpringApplication.class.getName(),
-				"--spring.devtools.remote.secret=secret", "http://localhost:" + port);
-		awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
+		Function<Integer, Process> remoteRestarter = getRemoteRestarter(javaLauncher);
 		return new LaunchedApplication(new File("target/remote"),
 				applicationJvm.getStandardOut(), applicationJvm.getStandardError(),
-				applicationJvm.getProcess(), remoteSpringApplicationJvm.getProcess());
+				applicationJvm.getProcess(), remoteRestarter.apply(port),
+				remoteRestarter);
+	}
+
+	private Function<Integer, Process> getRemoteRestarter(JvmLauncher javaLauncher) {
+		return (port) -> {
+			try {
+				LaunchedJvm remoteSpringApplicationJvm = javaLauncher.launch(
+						"remote-spring-application",
+						createRemoteSpringApplicationClassPath(),
+						RemoteSpringApplication.class.getName(),
+						"--spring.devtools.remote.secret=secret",
+						"http://localhost:" + port);
+				awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
+				return remoteSpringApplicationJvm.getProcess();
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
+		};
 	}
 
 	protected abstract String createApplicationClassPath() throws Exception;
