@@ -115,6 +115,16 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Test
+	public void testAnnotationOnBeanMethodCondition() throws Exception {
+		// gh-15177
+		this.context.register(WithAnnotationBeanConfiguration.class,
+				OnAnnotationMethodReturnConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.containsBean("withAnnotationBean")).isTrue();
+		assertThat(this.context.containsBean("withoutAnnotationBean")).isTrue();
+	}
+
+	@Test
 	public void testOnMissingBeanType() throws Exception {
 		this.context.register(FooConfiguration.class,
 				OnBeanMissingClassConfiguration.class);
@@ -178,6 +188,27 @@ public class ConditionalOnBeanTests {
 		@Bean
 		public String bar() {
 			return "bar";
+		}
+
+	}
+
+	@Configuration
+	protected static class WithAnnotationBeanConfiguration {
+
+		@Bean
+		public WithAnnotationBean withAnnotationBean() {
+			return new WithAnnotationBean();
+		}
+
+	}
+
+	@Configuration
+	protected static class OnAnnotationMethodReturnConfiguration {
+
+		@Bean
+		@ConditionalOnBean(annotation = TestAnnotation.class)
+		public WithoutAnnotationBean withoutAnnotationBean() {
+			return new WithoutAnnotationBean();
 		}
 
 	}
@@ -311,6 +342,15 @@ public class ConditionalOnBeanTests {
 		public String toString() {
 			return this.value;
 		}
+
+	}
+
+	@TestAnnotation
+	public static class WithAnnotationBean {
+
+	}
+
+	public static class WithoutAnnotationBean {
 
 	}
 
