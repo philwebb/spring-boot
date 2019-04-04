@@ -19,7 +19,7 @@ package org.springframework.boot.load.it.jar;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -36,7 +36,7 @@ public final class EmbeddedJarStarter {
 		context.setContextPath("/");
 		server.setHandler(context);
 
-		AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+		AnnotationConfigServletWebApplicationContext webApplicationContext = new AnnotationConfigServletWebApplicationContext();
 		webApplicationContext.register(SpringConfiguration.class);
 		DispatcherServlet dispatcherServlet = new DispatcherServlet(webApplicationContext);
 		context.addServlet(new ServletHolder(dispatcherServlet), "/*");

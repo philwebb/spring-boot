@@ -20,7 +20,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -32,7 +32,7 @@ public class SpringInitializer implements WebApplicationInitializer {
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-		AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+		AnnotationConfigServletWebApplicationContext webApplicationContext = new AnnotationConfigServletWebApplicationContext();
 		webApplicationContext.register(SpringConfiguration.class);
 		servletContext.addServlet("dispatcherServlet",
 				new DispatcherServlet(webApplicationContext)).addMapping("/*");
