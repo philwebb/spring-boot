@@ -23,6 +23,11 @@
 		</dependency>
 		<!-- Optional -->
 		<dependency>
+			<groupId>io.spring.annex</groupId>
+			<artifactId>spring-annex</artifactId>
+			<version>0.0.1.BUILD-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jdbc</artifactId>
 			<optional>true</optional>

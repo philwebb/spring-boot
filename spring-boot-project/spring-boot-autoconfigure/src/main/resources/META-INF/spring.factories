@@ -5,7 +5,8 @@ org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingL
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.autoconfigure.BackgroundPreinitializer
+org.springframework.boot.autoconfigure.BackgroundPreinitializer,\
+org.springframework.boot.autoconfigure.annotation.AnnotationRegistriesRegistrar
 
 # Auto Configuration Import Listeners
 org.springframework.boot.autoconfigure.AutoConfigurationImportListener=\
