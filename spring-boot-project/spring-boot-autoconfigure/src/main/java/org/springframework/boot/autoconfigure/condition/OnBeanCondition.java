@@ -233,7 +233,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy, Class<?> type,
 			Class<?>[] parameterizedContainers, Set<String> result) {
-		String[] names = beanFactory.getBeanNamesForType(type);
+		String[] names = beanFactory.getBeanNamesForType(type, true, false);
 		if (names.length > 0) {
 			result = addAll(result, names);
 		}
@@ -390,6 +390,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
+	/**
+	 * A search specification extracted from the underlying annotation.
+	 */
 	private static class Spec<A extends Annotation> {
 
 		private static final String[] EMPTY = {};
@@ -414,11 +417,11 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			Map<String, Object> attributes = annotation.asMap(Adapt.CLASS_TO_STRING);
 			this.annotationType = annotationType;
 			this.names = extract(attributes, "name");
-			String[] types = extract(attributes, "value", "type");
 			this.annotations = extract(attributes, "annotation");
 			this.ignoredTypes = extract(attributes, "ignored", "ignoredType");
 			this.parameterizedContainers = extract(attributes, "parameterizedContainer");
 			this.strategy = annotation.getValue("search", SearchStrategy.class).orElse(null);
+			String[] types = extractTypes(attributes);
 			BeanTypeDeductionException deductionException = null;
 			if (ObjectUtils.isEmpty(types) && ObjectUtils.isEmpty(this.names)) {
 				try {
@@ -428,8 +431,12 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 					deductionException = ex;
 				}
 			}
-			this.types = filterTypes(types);
+			this.types = types;
 			validate(deductionException);
+		}
+
+		protected String[] extractTypes(Map<String, Object> attributes) {
+			return extract(attributes, "value", "type");
 		}
 
 		private String[] extract(Map<String, Object> attributes, String... attributeNames) {
@@ -457,10 +464,6 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			System.arraycopy(source, 0, result, 0, source.length);
 			System.arraycopy(additional, 0, result, additional.length, additional.length);
 			return result;
-		}
-
-		protected String[] filterTypes(String[] types) {
-			return types;
 		}
 
 		protected void validate(BeanTypeDeductionException ex) {
@@ -608,6 +611,10 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	}
 
+	/**
+	 * Specialized {@link Spec specification} for
+	 * {@link ConditionalOnSingleCandidate @ConditionalOnSingleCandidate}.
+	 */
 	private static class SingleCandidateSpec extends Spec<ConditionalOnSingleCandidate> {
 
 		private static final String[] FILTERED_TYPES = { "", Object.class.getName() };
@@ -617,32 +624,39 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		@Override
-		protected String[] filterTypes(String[] types) {
-			String[] filtered = null;
+		protected String[] extractTypes(Map<String, Object> attributes) {
+			String[] types = super.extractTypes(attributes);
+			String[] filteredTypes = null;
 			int size = 0;
 			for (int i = 0; i < types.length; i++) {
-				for (int j = 0; j < FILTERED_TYPES.length; j++) {
-					if (types[i].equals(FILTERED_TYPES[i])) {
-						if (filtered == null) {
-							filtered = new String[types.length];
-							System.arraycopy(types, 0, filtered, 0, i);
-						}
-						else {
-							filtered[size] = types[i];
-						}
-					}
-					else {
-						size++;
+				if (isFilteredType(types[i])) {
+					if (filteredTypes == null) {
+						filteredTypes = new String[types.length];
+						System.arraycopy(types, 0, filteredTypes, 0, i);
 					}
 				}
+				else {
+					if (filteredTypes != null) {
+						filteredTypes[size] = types[i];
+					}
+					size++;
+				}
 			}
-			if (filtered != null) {
+			if (filteredTypes != null) {
 				String[] result = new String[size];
-				System.arraycopy(filtered, 0, result, 0, size);
+				System.arraycopy(filteredTypes, 0, result, 0, size);
 				return result;
 			}
 			return types;
+		}
 
+		private boolean isFilteredType(String type) {
+			for (String filteredType : FILTERED_TYPES) {
+				if (type.equals(filteredType)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override
@@ -654,6 +668,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	}
 
+	/**
+	 * Results collected during the condition evaluation.
+	 */
 	private static final class MatchResult {
 
 		private final Map<String, Collection<String>> matchedAnnotations = new HashMap<>();
@@ -737,7 +754,10 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	}
 
-	private static class BeanTypeDeductionException extends RuntimeException {
+	/**
+	 * Exteption thrown when the bean type cannot be deduced.
+	 */
+	static class BeanTypeDeductionException extends RuntimeException {
 
 		private BeanTypeDeductionException(String className, String beanMethodName, Throwable cause) {
 			super("Failed to deduce bean type for " + className + "." + beanMethodName, cause);
