@@ -766,3 +766,4 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 }
+// FIXME use faster class lookups
