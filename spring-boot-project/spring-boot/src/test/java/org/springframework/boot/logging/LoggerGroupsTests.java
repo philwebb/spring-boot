@@ -17,6 +17,8 @@
 package org.springframework.boot.logging;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,21 +26,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link LoggingGroups}
+ * Tests for {@link LoggerGroups}
  *
  * @author HaiTao Zhang
  */
-public class LoggingGroupsTests {
+public class LoggerGroupsTests {
 
 	private LoggingSystem loggingSystem = mock(LoggingSystem.class);
 
 	@Test
-	void setLoggerGroupWithTheConfiguredLevelToAllMembers() {
-		LoggingGroups loggingGroups = new LoggingGroups(this.loggingSystem);
-		loggingGroups.setLoggerGroup("test", Arrays.asList("test.member", "test.member2"));
-		loggingGroups.setLoggerGroupLevel("test", LogLevel.DEBUG);
-		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.DEBUG);
-		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.DEBUG);
+	void updateLoggerGroupWithTheConfiguredLevelToAllMembers() {
+		Map<String, LoggerGroups.LoggerGroup> groups = Collections.singletonMap("test",
+				new LoggerGroups.LoggerGroup("test", Arrays.asList("test.member", "test.member2"), LogLevel.DEBUG));
+		LoggerGroups loggerGroups = new LoggerGroups(this.loggingSystem, groups);
+		loggerGroups.updateGroupLevel("test", LogLevel.WARN);
+		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.WARN);
+		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.WARN);
 	}
 
 }

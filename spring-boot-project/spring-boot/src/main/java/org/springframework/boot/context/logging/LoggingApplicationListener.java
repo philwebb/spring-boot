@@ -37,7 +37,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggingGroups;
+import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -100,6 +100,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable.mapOf(String.class,
 			String[].class);
 
+	private final Map<String, LoggerGroups.LoggerGroup> groups = new LinkedHashMap<>();
+
 	/**
 	 * The default order for the LoggingApplicationListener.
 	 */
@@ -129,7 +131,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	public static final String LOGFILE_BEAN_NAME = "springBootLogFile";
 
 	/**
-	 * The name of the{@link LoggingGroups} bean.
+	 * The name of the{@link LoggerGroups} bean.
 	 */
 	public static final String LOGGING_GROUPS_BEAN_NAME = "springBootLoggingGroups";
 
@@ -173,7 +175,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private LoggingSystem loggingSystem;
 
-	private LoggingGroups loggingGroups;
+	private LoggerGroups loggerGroups;
 
 	private LogFile logFile;
 
@@ -244,8 +246,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (this.logFile != null && !beanFactory.containsBean(LOGFILE_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGFILE_BEAN_NAME, this.logFile);
 		}
-		if (this.loggingGroups != null && !beanFactory.containsBean(LOGGING_GROUPS_BEAN_NAME)) {
-			beanFactory.registerSingleton(LOGGING_GROUPS_BEAN_NAME, this.loggingGroups);
+		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGING_GROUPS_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOGGING_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
 	}
 
@@ -269,7 +271,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 		new LoggingSystemProperties(environment).apply();
-		this.loggingGroups = new LoggingGroups(this.loggingSystem);
 		this.logFile = LogFile.get(environment);
 		if (this.logFile != null) {
 			this.logFile.applyToSystemProperties();
@@ -277,6 +278,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
+		this.loggerGroups = new LoggerGroups(this.loggingSystem, this.groups);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
 	}
 
@@ -321,10 +323,12 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeFinalLoggingLevels(ConfigurableEnvironment environment, LoggingSystem system) {
+		Map<String, String[]> groups = getGroups();
+		initializeDefaultLoggerGroups(groups);
 		if (this.springBootLogging != null) {
 			initializeLogLevel(system, this.springBootLogging);
 		}
-		setLogLevels(system, environment);
+		setLogLevels(system, environment, groups);
 	}
 
 	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
@@ -333,32 +337,40 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeLogLevel(LoggingSystem system, LogLevel level, String logger) {
-		List<String> groupLoggers = DEFAULT_GROUP_LOGGERS.get(logger);
-		if (groupLoggers == null) {
-			system.setLogLevel(logger, level);
-			return;
+		List<String> members = DEFAULT_GROUP_LOGGERS.get(logger);
+		if (members != null) {
+			configureGroups(system, level, logger, members);
 		}
-		this.loggingGroups.setLoggerGroup(logger, groupLoggers);
-		this.loggingGroups.setLoggerGroupLevel(logger, level);
+		system.setLogLevel(logger, level);
 	}
 
-	protected void setLogLevels(LoggingSystem system, Environment environment) {
+	private void configureGroups(LoggingSystem system, LogLevel level, String logger, List<String> members) {
+		setLogLevel(system, members, level);
+		this.groups.put(logger, new LoggerGroups.LoggerGroup(logger, members, level));
+	}
+
+	protected void setLogLevels(LoggingSystem system, Environment environment, Map<String, String[]> groups) {
 		if (!(environment instanceof ConfigurableEnvironment)) {
 			return;
 		}
 		Binder binder = Binder.get(environment);
-		Map<String, String[]> groups = getGroups();
 		binder.bind(LOGGING_GROUP, STRING_STRINGS_MAP.withExistingValue(groups));
 		Map<String, LogLevel> levels = binder.bind(LOGGING_LEVEL, STRING_LOGLEVEL_MAP).orElseGet(Collections::emptyMap);
 		levels.forEach((name, level) -> {
-			String[] groupedNames = groups.get(name);
-			if (ObjectUtils.isEmpty(groupedNames)) {
+			String[] members = groups.get(name);
+			if (ObjectUtils.isEmpty(members)) {
 				setLogLevel(system, name, level);
 			}
 			else {
-				setLogLevel(groupedNames, level, name);
+				List<String> memberList = Arrays.asList(members);
+				configureGroups(system, level, name, memberList);
 			}
 		});
+	}
+
+	private void initializeDefaultLoggerGroups(Map<String, String[]> groups) {
+		groups.entrySet().forEach((group) -> this.groups.put(group.getKey(),
+				new LoggerGroups.LoggerGroup(group.getKey(), Arrays.asList(group.getValue()), null)));
 	}
 
 	private Map<String, String[]> getGroups() {
@@ -367,13 +379,9 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		return groups;
 	}
 
-	private void setLogLevel(String[] names, LogLevel level, String groupName) {
-		try {
-			this.loggingGroups.setLoggerGroup(groupName, Arrays.asList(names));
-			this.loggingGroups.setLoggerGroupLevel(groupName, level);
-		}
-		catch (RuntimeException ex) {
-			this.logger.error("Cannot set level '" + level + "' for '" + groupName + "'");
+	private void setLogLevel(LoggingSystem system, List<String> names, LogLevel level) {
+		for (String name : names) {
+			setLogLevel(system, name, level);
 		}
 	}
 
