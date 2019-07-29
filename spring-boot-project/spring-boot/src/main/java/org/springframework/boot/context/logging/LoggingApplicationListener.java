@@ -36,8 +36,9 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.logging.LogFile;
+import org.springframework.boot.logging.LogGroup;
+import org.springframework.boot.logging.LogGroups;
 import org.springframework.boot.logging.LogLevel;
-import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -100,8 +101,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private static final Bindable<Map<String, String[]>> STRING_STRINGS_MAP = Bindable.mapOf(String.class,
 			String[].class);
 
-	private final Map<String, LoggerGroups.LoggerGroup> groups = new LinkedHashMap<>();
-
 	/**
 	 * The default order for the LoggingApplicationListener.
 	 */
@@ -127,13 +126,22 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	/**
 	 * The name of the {@link LogFile} bean.
+	 * @since 2.2.0
 	 */
-	public static final String LOGFILE_BEAN_NAME = "springBootLogFile";
+	public static final String LOG_FILE_BEAN_NAME = "springBootLogFile";
 
 	/**
-	 * The name of the{@link LoggerGroups} bean.
+	 * The name of the{@link LogGroups} bean.
+	 * @since 2.2.0
 	 */
-	public static final String LOGGING_GROUPS_BEAN_NAME = "springBootLoggingGroups";
+	public static final String LOG_GROUPS_BEAN_NAME = "springBootLogGroups";
+
+	/**
+	 * The name of the {@link LogFile} bean.
+	 * @deprecated since 2.2.0 in favor of {@link #LOG_FILE_BEAN_NAME}
+	 */
+	@Deprecated
+	public static final String LOGFILE_BEAN_NAME = LOG_FILE_BEAN_NAME;
 
 	private static final Map<String, List<String>> DEFAULT_GROUP_LOGGERS;
 	static {
@@ -175,9 +183,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private LoggingSystem loggingSystem;
 
-	private LoggerGroups loggerGroups;
-
 	private LogFile logFile;
+
+	private final Map<String, LogGroup> groups = new LinkedHashMap<>();
+
+	private LogGroups logGroups;
 
 	private int order = DEFAULT_ORDER;
 
@@ -243,11 +253,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
-		if (this.logFile != null && !beanFactory.containsBean(LOGFILE_BEAN_NAME)) {
-			beanFactory.registerSingleton(LOGFILE_BEAN_NAME, this.logFile);
+		if (this.logFile != null && !beanFactory.containsBean(LOG_FILE_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOG_FILE_BEAN_NAME, this.logFile);
 		}
-		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGING_GROUPS_BEAN_NAME)) {
-			beanFactory.registerSingleton(LOGGING_GROUPS_BEAN_NAME, this.loggerGroups);
+		if (this.logGroups != null && !beanFactory.containsBean(LOG_GROUPS_BEAN_NAME)) {
+			beanFactory.registerSingleton(LOG_GROUPS_BEAN_NAME, this.logGroups);
 		}
 	}
 
@@ -278,7 +288,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeEarlyLoggingLevel(environment);
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
-		this.loggerGroups = new LoggerGroups(this.loggingSystem, this.groups);
+		this.logGroups = new LogGroups(this.loggingSystem, this.groups);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
 	}
 
@@ -338,17 +348,20 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void initializeLogLevel(LoggingSystem system, LogLevel level, String logger) {
 		List<String> members = DEFAULT_GROUP_LOGGERS.get(logger);
-		if (members != null) {
-			configureGroups(system, level, logger, members);
+		if (members == null) {
+			system.setLogLevel(logger, level);
+			return;
 		}
-		system.setLogLevel(logger, level);
+		// FIXME
+		configureGroups(system, level, logger, members);
 	}
 
 	private void configureGroups(LoggingSystem system, LogLevel level, String logger, List<String> members) {
 		setLogLevel(system, members, level);
-		this.groups.put(logger, new LoggerGroups.LoggerGroup(logger, members, level));
+		this.groups.put(logger, new LogGroup(logger, members, level));
 	}
 
+	// FIXME breaks back compat
 	protected void setLogLevels(LoggingSystem system, Environment environment, Map<String, String[]> groups) {
 		if (!(environment instanceof ConfigurableEnvironment)) {
 			return;
@@ -362,6 +375,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 				setLogLevel(system, name, level);
 			}
 			else {
+				// FIXME
 				List<String> memberList = Arrays.asList(members);
 				configureGroups(system, level, name, memberList);
 			}
@@ -370,7 +384,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private void initializeDefaultLoggerGroups(Map<String, String[]> groups) {
 		groups.entrySet().forEach((group) -> this.groups.put(group.getKey(),
-				new LoggerGroups.LoggerGroup(group.getKey(), Arrays.asList(group.getValue()), null)));
+				new LogGroup(group.getKey(), Arrays.asList(group.getValue()), null)));
 	}
 
 	private Map<String, String[]> getGroups() {

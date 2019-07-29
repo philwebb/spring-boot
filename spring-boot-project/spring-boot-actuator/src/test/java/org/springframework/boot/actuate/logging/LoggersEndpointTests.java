@@ -29,7 +29,8 @@ import org.springframework.boot.actuate.logging.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLevels;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LoggerGroups;
+import org.springframework.boot.logging.LogGroup;
+import org.springframework.boot.logging.LogGroups;
 import org.springframework.boot.logging.LoggingSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,13 +49,13 @@ class LoggersEndpointTests {
 
 	private final LoggingSystem loggingSystem = mock(LoggingSystem.class);
 
-	private LoggerGroups loggerGroups;
+	private LogGroups loggerGroups;
 
 	@BeforeEach
 	void setup() {
-		Map<String, LoggerGroups.LoggerGroup> groups = Collections.singletonMap("test",
-				new LoggerGroups.LoggerGroup("test", Collections.singletonList("test.member"), LogLevel.DEBUG));
-		this.loggerGroups = new LoggerGroups(this.loggingSystem, groups);
+		Map<String, LogGroup> groups = Collections.singletonMap("test",
+				new LogGroup("test", Collections.singletonList("test.member"), LogLevel.DEBUG));
+		this.loggerGroups = new LogGroups(this.loggingSystem, groups);
 	}
 
 	@Test

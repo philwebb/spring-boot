@@ -31,7 +31,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LoggerGroups;
+import org.springframework.boot.logging.LogGroup;
+import org.springframework.boot.logging.LogGroups;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -49,14 +50,14 @@ public class LoggersEndpoint {
 
 	private final LoggingSystem loggingSystem;
 
-	private final LoggerGroups loggerGroups;
+	private final LogGroups loggerGroups;
 
 	/**
 	 * Create a new {@link LoggersEndpoint} instance.
 	 * @param loggingSystem the logging system to expose
 	 * @param loggerGroups the logging group to expose if it exists
 	 */
-	public LoggersEndpoint(LoggingSystem loggingSystem, LoggerGroups loggerGroups) {
+	public LoggersEndpoint(LoggingSystem loggingSystem, LogGroups loggerGroups) {
 		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
 		this.loggingSystem = loggingSystem;
 		this.loggerGroups = loggerGroups;
@@ -72,19 +73,22 @@ public class LoggersEndpoint {
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
 		if (this.loggerGroups != null) {
-			Map<String, LoggerLevels> groups = new LinkedHashMap<>();
-			this.loggerGroups.stream()
-					.forEach((group) -> groups.put(group.getName(), new LoggerLevels(group.getConfiguredLevel())));
-			result.put("groups", groups);
+			result.put("groups", getGroups());
 		}
 		return result;
+	}
+
+	private Map<String, LoggerLevels> getGroups() {
+		Map<String, LoggerLevels> groups = new LinkedHashMap<>();
+		this.loggerGroups.forEach((group) -> groups.put(group.getName(), new LoggerLevels(group.getConfiguredLevel())));
+		return groups;
 	}
 
 	@ReadOperation
 	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
 		if (this.loggerGroups != null) {
-			LoggerGroups.LoggerGroup loggerGroup = this.loggerGroups.getGroup(name);
+			LogGroup loggerGroup = this.loggerGroups.getGroup(name);
 			if (loggerGroup != null) {
 				return new GroupLoggerLevels(loggerGroup.getConfiguredLevel(), loggerGroup.getMembers());
 			}
@@ -127,7 +131,7 @@ public class LoggersEndpoint {
 			this.configuredLevel = getName(configuredLevel);
 		}
 
-		private String getName(LogLevel level) {
+		protected final String getName(LogLevel level) {
 			return (level != null) ? level.name() : null;
 		}
 
@@ -158,7 +162,7 @@ public class LoggersEndpoint {
 
 		public SingleLoggerLevels(LoggerConfiguration configuration) {
 			super(configuration.getConfiguredLevel());
-			this.effectiveLevel = super.getName(configuration.getEffectiveLevel());
+			this.effectiveLevel = getName(configuration.getEffectiveLevel());
 		}
 
 		public String getEffectiveLevel() {

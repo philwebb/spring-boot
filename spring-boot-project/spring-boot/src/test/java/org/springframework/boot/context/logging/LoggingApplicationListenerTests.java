@@ -50,7 +50,7 @@ import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LoggerGroups;
+import org.springframework.boot.logging.LogGroups;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -285,7 +285,7 @@ class LoggingApplicationListenerTests {
 		this.loggerContext.getLogger("org.hibernate.SQL").debug("testdebugsqlgroup");
 		assertThat(this.output).contains("testdebugwebgroup");
 		assertThat(this.output).contains("testdebugsqlgroup");
-		LoggerGroups loggerGroups = (LoggerGroups) ReflectionTestUtils.getField(this.initializer, "loggerGroups");
+		LogGroups loggerGroups = (LogGroups) ReflectionTestUtils.getField(this.initializer, "loggerGroups");
 		assertThat(loggerGroups.getGroup("web").getConfiguredLevel()).isEqualTo(LogLevel.DEBUG);
 	}
 

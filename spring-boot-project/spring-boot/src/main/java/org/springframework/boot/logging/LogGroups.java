@@ -28,15 +28,15 @@ import java.util.stream.Stream;
  * @author HaiTao Zhang
  * @since 2.2.0
  */
-public class LoggerGroups implements Iterable<LoggerGroups.LoggerGroup> {
+public class LogGroups implements Iterable<LogGroup> {
 
 	private final LoggingSystem loggingSystem;
 
-	private final Map<String, LoggerGroup> groups = new ConcurrentHashMap<>();
+	private final Map<String, LogGroup> groups;
 
-	public LoggerGroups(LoggingSystem loggingSystem, Map<String, LoggerGroup> groups) {
+	public LogGroups(LoggingSystem loggingSystem, Map<String, LogGroup> groups) {
 		this.loggingSystem = loggingSystem;
-		this.groups.putAll(groups);
+		this.groups = new ConcurrentHashMap<>(groups);
 	}
 
 	/**
@@ -45,16 +45,16 @@ public class LoggerGroups implements Iterable<LoggerGroups.LoggerGroup> {
 	 * @param name the logger group name
 	 * @return the logger group
 	 */
-	public LoggerGroup getGroup(String name) {
+	public LogGroup getGroup(String name) {
 		return this.groups.get(name);
 	}
 
 	@Override
-	public Iterator<LoggerGroup> iterator() {
+	public Iterator<LogGroup> iterator() {
 		return this.groups.values().iterator();
 	}
 
-	public Stream<LoggerGroup> stream() {
+	public Stream<LogGroup> stream() {
 		return this.groups.values().stream();
 	}
 
@@ -64,44 +64,13 @@ public class LoggerGroups implements Iterable<LoggerGroups.LoggerGroup> {
 	 * @param updatedLevel the new level for the group
 	 */
 	public void updateGroupLevel(String name, LogLevel updatedLevel) {
-		LoggerGroup group = this.groups.get(name);
+		LogGroup group = this.groups.get(name);
 		if (group != null) {
 			List<String> members = group.getMembers();
 			LogLevel configuredLevel = (updatedLevel != null) ? updatedLevel : group.getConfiguredLevel();
-			this.groups.put(name, new LoggerGroup(name, members, configuredLevel));
+			this.groups.put(name, new LogGroup(name, members, configuredLevel));
 			members.forEach((logger) -> this.loggingSystem.setLogLevel(logger, configuredLevel));
 		}
-	}
-
-	/**
-	 * A single logger group.
-	 */
-	public static class LoggerGroup {
-
-		private final String name;
-
-		private final List<String> members;
-
-		private final LogLevel configuredLevel;
-
-		public LoggerGroup(String name, List<String> members, LogLevel configuredLevel) {
-			this.name = name;
-			this.members = members;
-			this.configuredLevel = configuredLevel;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public List<String> getMembers() {
-			return this.members;
-		}
-
-		public LogLevel getConfiguredLevel() {
-			return this.configuredLevel;
-		}
-
 	}
 
 }
