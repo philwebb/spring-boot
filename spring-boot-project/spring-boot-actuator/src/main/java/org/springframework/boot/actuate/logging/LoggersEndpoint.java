@@ -31,8 +31,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
-import org.springframework.boot.logging.LogGroup;
-import org.springframework.boot.logging.LogGroups;
+import org.springframework.boot.logging.LoggerGroup;
+import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -50,15 +50,16 @@ public class LoggersEndpoint {
 
 	private final LoggingSystem loggingSystem;
 
-	private final LogGroups loggerGroups;
+	private final LoggerGroups loggerGroups;
 
 	/**
 	 * Create a new {@link LoggersEndpoint} instance.
 	 * @param loggingSystem the logging system to expose
-	 * @param loggerGroups the logging group to expose if it exists
+	 * @param loggerGroups the logger group to expose
 	 */
-	public LoggersEndpoint(LoggingSystem loggingSystem, LogGroups loggerGroups) {
+	public LoggersEndpoint(LoggingSystem loggingSystem, LoggerGroups loggerGroups) {
 		Assert.notNull(loggingSystem, "LoggingSystem must not be null");
+		Assert.notNull(loggerGroups, "LoggerGroups must not be null");
 		this.loggingSystem = loggingSystem;
 		this.loggerGroups = loggerGroups;
 	}
@@ -72,9 +73,7 @@ public class LoggersEndpoint {
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("levels", getLevels());
 		result.put("loggers", getLoggers(configurations));
-		if (this.loggerGroups != null) {
-			result.put("groups", getGroups());
-		}
+		result.put("groups", getGroups());
 		return result;
 	}
 
@@ -87,11 +86,9 @@ public class LoggersEndpoint {
 	@ReadOperation
 	public LoggerLevels loggerLevels(@Selector String name) {
 		Assert.notNull(name, "Name must not be null");
-		if (this.loggerGroups != null) {
-			LogGroup loggerGroup = this.loggerGroups.getGroup(name);
-			if (loggerGroup != null) {
-				return new GroupLoggerLevels(loggerGroup.getConfiguredLevel(), loggerGroup.getMembers());
-			}
+		LoggerGroup group = this.loggerGroups.get(name);
+		if (group != null) {
+			return new GroupLoggerLevels(group.getConfiguredLevel(), group.getMembers());
 		}
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(name);
 		return (configuration != null) ? new SingleLoggerLevels(configuration) : null;
@@ -100,8 +97,9 @@ public class LoggersEndpoint {
 	@WriteOperation
 	public void configureLogLevel(@Selector String name, @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "Name must not be empty");
-		if (this.loggerGroups != null && this.loggerGroups.getGroup(name) != null) {
-			this.loggerGroups.updateGroupLevel(name, configuredLevel);
+		LoggerGroup group = this.loggerGroups.get(name);
+		if (group != null && group.hasMembers()) {
+			group.configureLogLevel(configuredLevel, this.loggingSystem::setLogLevel);
 			return;
 		}
 		this.loggingSystem.setLogLevel(name, configuredLevel);

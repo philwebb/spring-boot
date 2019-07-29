@@ -16,23 +16,29 @@
 
 package org.springframework.boot.logging;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * A single logger group.
+ * 
+ * @author HaiTao Zhang
+ * @author Phillip Webb
+ * @since 2.2.0
  */
-public class LogGroup {
+public final class LoggerGroup {
 
 	private final String name;
 
 	private final List<String> members;
 
-	private final LogLevel configuredLevel;
+	private LogLevel configuredLevel;
 
-	public LogGroup(String name, List<String> members, LogLevel configuredLevel) {
+	LoggerGroup(String name, List<String> members) {
 		this.name = name;
-		this.members = members;
-		this.configuredLevel = configuredLevel;
+		this.members = Collections.unmodifiableList(new ArrayList<>(members));
 	}
 
 	public String getName() {
@@ -43,8 +49,17 @@ public class LogGroup {
 		return this.members;
 	}
 
+	public boolean hasMembers() {
+		return !this.members.isEmpty();
+	}
+
 	public LogLevel getConfiguredLevel() {
 		return this.configuredLevel;
+	}
+
+	public void configureLogLevel(LogLevel level, BiConsumer<String, LogLevel> configurer) {
+		this.configuredLevel = level;
+		this.members.forEach((name) -> configurer.accept(name, level));
 	}
 
 }

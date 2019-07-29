@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link LogGroups}
+ * Tests for {@link LoggerGroups}
  *
  * @author HaiTao Zhang
  */
@@ -36,9 +36,9 @@ public class LoggerGroupsTests {
 
 	@Test
 	void updateLoggerGroupWithTheConfiguredLevelToAllMembers() {
-		Map<String, LogGroup> groups = Collections.singletonMap("test",
-				new LogGroup("test", Arrays.asList("test.member", "test.member2"), LogLevel.DEBUG));
-		LogGroups loggerGroups = new LogGroups(this.loggingSystem, groups);
+		Map<String, LoggerGroup> groups = Collections.singletonMap("test",
+				new LoggerGroup("test", Arrays.asList("test.member", "test.member2"), LogLevel.DEBUG));
+		LoggerGroups loggerGroups = new LoggerGroups(this.loggingSystem, groups);
 		loggerGroups.updateGroupLevel("test", LogLevel.WARN);
 		verify(this.loggingSystem).setLogLevel("test.member", LogLevel.WARN);
 		verify(this.loggingSystem).setLogLevel("test.member2", LogLevel.WARN);
