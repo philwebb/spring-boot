@@ -48,8 +48,8 @@ public class LoggersEndpointAutoConfiguration {
 	@Conditional(OnEnabledLoggingSystemCondition.class)
 	@ConditionalOnMissingBean
 	public LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem,
-			ObjectProvider<LoggerGroups> loggerGroupsProvider) {
-		return new LoggersEndpoint(loggingSystem, loggerGroupsProvider.getIfAvailable());
+			ObjectProvider<LoggerGroups> springBootLoggerGroups) {
+		return new LoggersEndpoint(loggingSystem, springBootLoggerGroups.getIfAvailable(LoggerGroups::new));
 	}
 
 	static class OnEnabledLoggingSystemCondition extends SpringBootCondition {
