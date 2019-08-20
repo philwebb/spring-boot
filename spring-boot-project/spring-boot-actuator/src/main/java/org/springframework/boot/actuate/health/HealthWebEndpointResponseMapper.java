@@ -28,7 +28,10 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 2.2.0 since the response mapper cannot support
+ * {@link HealthEndpointGroup groups}
  */
+@Deprecated
 public class HealthWebEndpointResponseMapper {
 
 	private final HealthStatusHttpMapper statusHttpMapper;

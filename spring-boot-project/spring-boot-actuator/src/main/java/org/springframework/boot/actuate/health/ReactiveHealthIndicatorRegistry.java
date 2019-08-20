@@ -27,7 +27,11 @@ import java.util.Map;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @see HealthIndicatorRegistry
+ * @deprecated since 2.2.0 in favor of a {@link ReactiveHealthContributor}
+ * {@link ContributorRegistry}
  */
+@Deprecated
 public interface ReactiveHealthIndicatorRegistry {
 
 	/**

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.couchbase;
 import com.couchbase.client.java.Cluster;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator;
 import org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
@@ -38,7 +38,7 @@ class CouchbaseHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(AutoConfigurations
-					.of(CouchbaseHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class));
+					.of(CouchbaseHealthIndicatorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
