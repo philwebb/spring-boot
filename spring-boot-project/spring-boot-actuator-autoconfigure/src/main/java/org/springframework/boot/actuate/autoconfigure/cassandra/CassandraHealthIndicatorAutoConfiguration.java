@@ -20,11 +20,11 @@ import java.util.Map;
 
 import com.datastax.driver.core.Cluster;
 
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthIndicatorConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -53,12 +53,12 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 @AutoConfigureAfter({ CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
 		CassandraReactiveHealthIndicatorAutoConfiguration.class })
 public class CassandraHealthIndicatorAutoConfiguration
-		extends CompositeHealthIndicatorConfiguration<CassandraHealthIndicator, CassandraOperations> {
+		extends CompositeHealthContributorConfiguration<CassandraHealthIndicator, CassandraOperations> {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "cassandraHealthIndicator")
-	public HealthIndicator cassandraHealthIndicator(Map<String, CassandraOperations> cassandraOperations) {
-		return createHealthIndicator(cassandraOperations);
+	public HealthContributor cassandraHealthIndicator(Map<String, CassandraOperations> cassandraOperations) {
+		return createContributor(cassandraOperations);
 	}
 
 }
