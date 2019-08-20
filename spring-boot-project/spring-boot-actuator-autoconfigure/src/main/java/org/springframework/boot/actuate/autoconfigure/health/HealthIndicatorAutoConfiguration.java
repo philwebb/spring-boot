@@ -16,29 +16,25 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthContributor health
- * contributors}. Technology specific auto-configurations should be ordered before this
- * auto-configuration.
+ * contributors}.
  *
+ * @author Andy Wilkinson
+ * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 2.2.0
+ * @author Vedran Pavic
+ * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of {@link HealthContributorAutoConfiguration}
  */
+@Deprecated
 @Configuration(proxyBeanMethods = false)
-public class HealthContributorAutoConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean({ HealthContributor.class, ReactiveHealthContributor.class })
-	public ApplicationHealthIndicator applicationHealthContributor() {
-		return new ApplicationHealthIndicator();
-	}
+@AutoConfigureBefore(HealthContributorAutoConfiguration.class)
+public class HealthIndicatorAutoConfiguration {
 
 }

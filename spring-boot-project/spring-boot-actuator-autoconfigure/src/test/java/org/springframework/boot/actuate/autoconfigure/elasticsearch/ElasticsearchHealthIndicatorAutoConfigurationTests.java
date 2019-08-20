@@ -20,6 +20,8 @@ import io.searchbox.client.JestClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchHealthIndicator;
 import org.springframework.boot.actuate.elasticsearch.ElasticsearchJestHealthIndicator;
 import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
@@ -41,7 +43,8 @@ class ElasticsearchHealthIndicatorAutoConfigurationTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
 			.of(ElasticsearchAutoConfiguration.class, ElasticSearchClientHealthIndicatorAutoConfiguration.class,
-					ElasticSearchJestHealthIndicatorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+					ElasticSearchJestHealthIndicatorAutoConfiguration.class, HealthIndicatorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

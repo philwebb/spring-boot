@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration(proxyBeanMethods = false)
 @SuppressWarnings("deprecation")
-class LegacyHealthEndpointLegacyConfiguration {
+class LegacyHealthEndpointAdaptersConfiguration {
 
 	@Bean
 	@ConditionalOnBean(org.springframework.boot.actuate.health.HealthAggregator.class)
@@ -44,11 +44,6 @@ class LegacyHealthEndpointLegacyConfiguration {
 	HttpCodeStatusMapper healthStatusHttpMapperHttpCodeStatusMapperAdapter(
 			org.springframework.boot.actuate.health.HealthStatusHttpMapper healthStatusHttpMapper) {
 		return new HealthStatusHttpMapperHttpCodeStatusMapperAdapter(healthStatusHttpMapper);
-	}
-
-	@Bean
-	HealthIndicatorProperties healthIndicatorProperties(HealthEndpointProperties healthEndpointProperties) {
-		return new HealthIndicatorProperties(healthEndpointProperties);
 	}
 
 }
