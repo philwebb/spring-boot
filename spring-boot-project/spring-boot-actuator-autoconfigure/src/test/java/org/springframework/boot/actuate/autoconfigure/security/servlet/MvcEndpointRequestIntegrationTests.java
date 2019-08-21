@@ -21,6 +21,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
@@ -33,7 +36,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -84,15 +86,46 @@ public class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestI
 				});
 	}
 
+	@Test
+	public void toAnyEndpointShouldMatchServletEndpoint() {
+		getContextRunner().withPropertyValues("spring.security.user.password=password",
+				"management.endpoints.web.exposure.include=se1").run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/actuator/se1").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/actuator/se1").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+					webTestClient.get().uri("/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/actuator/se1/list").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+				});
+	}
+
+	@Test
+	public void toAnyEndpointWhenServletPathSetShouldMatchServletEndpoint() {
+		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
+				"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
+				.run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/se1").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+					webTestClient.get().uri("/admin/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/se1/list").header("Authorization", getBasicAuth())
+							.exchange().expectStatus().isOk();
+				});
+	}
+
 	@Override
 	protected WebApplicationContextRunner getContextRunner() {
 		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withUserConfiguration(WebMvcEndpointConfiguration.class, SecurityConfiguration.class,
-						BaseConfiguration.class)
+				.withUserConfiguration(ServletEndpointManagementContextConfiguration.class,
+						SecurityRequestMatchersManagementContextConfiguration.class, WebMvcEndpointConfiguration.class,
+						SecurityConfiguration.class, BaseConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
+						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 						UserDetailsServiceAutoConfiguration.class, WebMvcAutoConfiguration.class,
-						SecurityRequestMatcherProviderAutoConfiguration.class, JacksonAutoConfiguration.class,
-						HttpMessageConvertersAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
+						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class));
 	}
 
 	@Configuration

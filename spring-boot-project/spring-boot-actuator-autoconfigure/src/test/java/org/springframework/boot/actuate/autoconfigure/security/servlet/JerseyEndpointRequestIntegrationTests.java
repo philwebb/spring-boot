@@ -25,6 +25,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.junit.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
@@ -38,7 +41,6 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityRequestMatcherProviderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -61,12 +63,13 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 	protected WebApplicationContextRunner getContextRunner() {
 		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-				.withUserConfiguration(JerseyEndpointConfiguration.class, SecurityConfiguration.class,
-						BaseConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class,
-						UserDetailsServiceAutoConfiguration.class,
-						SecurityRequestMatcherProviderAutoConfiguration.class, JacksonAutoConfiguration.class,
-						JerseyAutoConfiguration.class));
+				.withUserConfiguration(ServletEndpointManagementContextConfiguration.class,
+						SecurityRequestMatchersManagementContextConfiguration.class, JerseyEndpointConfiguration.class,
+						SecurityConfiguration.class, BaseConfiguration.class)
+				.withConfiguration(
+						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+								SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class,
+								JacksonAutoConfiguration.class, JerseyAutoConfiguration.class));
 	}
 
 	@Test
@@ -95,6 +98,35 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
 					webTestClient.get().uri("/admin/actuator/e2").header("Authorization", getBasicAuth()).exchange()
 							.expectStatus().isOk();
+				});
+	}
+
+	@Test
+	public void toAnyEndpointShouldMatchServletEndpoint() {
+		getContextRunner().withPropertyValues("spring.security.user.password=password",
+				"management.endpoints.web.exposure.include=se1").run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/actuator/se1").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/actuator/se1").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+					webTestClient.get().uri("/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/actuator/se1/list").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+				});
+	}
+
+	@Test
+	public void toAnyEndpointWhenApplicationPathSetShouldMatchServletEndpoint() {
+		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin",
+				"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
+				.run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/se1").header("Authorization", getBasicAuth()).exchange()
+							.expectStatus().isOk();
+					webTestClient.get().uri("/admin/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+					webTestClient.get().uri("/admin/actuator/se1/list").header("Authorization", getBasicAuth())
+							.exchange().expectStatus().isOk();
 				});
 	}
 

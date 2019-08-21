@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.function.Supplier;
 
+import org.jolokia.http.AgentServlet;
 import org.junit.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -26,8 +28,10 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -108,11 +112,17 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 		}
 
 		@Bean
+		public TestServletEndpoint servletEndpoint() {
+			return new TestServletEndpoint();
+		}
+
+		@Bean
 		public PathMappedEndpoints pathMappedEndpoints() {
 			List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 			endpoints.add(mockEndpoint("e1"));
 			endpoints.add(mockEndpoint("e2"));
 			endpoints.add(mockEndpoint("e3"));
+			endpoints.add(mockEndpoint("se1"));
 			return new PathMappedEndpoints("/actuator", () -> endpoints);
 		}
 
@@ -151,6 +161,16 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 		@ReadOperation
 		public Object getAll() {
 			return null;
+		}
+
+	}
+
+	@ServletEndpoint(id = "se1")
+	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+
+		@Override
+		public EndpointServlet get() {
+			return new EndpointServlet(AgentServlet.class);
 		}
 
 	}
