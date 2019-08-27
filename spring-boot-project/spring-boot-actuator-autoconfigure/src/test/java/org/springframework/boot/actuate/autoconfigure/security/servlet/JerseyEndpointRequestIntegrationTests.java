@@ -15,39 +15,17 @@
  */
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.model.Resource;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
-import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
-import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
-import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -58,19 +36,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * @author Madhura Bhave
  */
 public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrationTests {
-
-	@Override
-	protected WebApplicationContextRunner getContextRunner() {
-		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-				.withUserConfiguration(ServletEndpointManagementContextConfiguration.class,
-						SecurityRequestMatchersManagementContextConfiguration.class, JerseyEndpointConfiguration.class,
-						SecurityConfiguration.class, BaseConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class,
-								JacksonAutoConfiguration.class, JerseyAutoConfiguration.class));
-	}
 
 	@Test
 	public void toLinksWhenApplicationPathSetShouldMatch() {
@@ -130,15 +95,17 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 				});
 	}
 
+	@Override
+	protected WebApplicationContextRunner createContextRunner() {
+		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
+				.withUserConfiguration(JerseyEndpointConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(WebEndpointProperties.class)
 	static class JerseyEndpointConfiguration {
-
-		private final ApplicationContext applicationContext;
-
-		JerseyEndpointConfiguration(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
 
 		@Bean
 		public TomcatServletWebServerFactory tomcat() {
@@ -148,24 +115,6 @@ public class JerseyEndpointRequestIntegrationTests extends AbstractEndpointReque
 		@Bean
 		public ResourceConfig resourceConfig() {
 			return new ResourceConfig();
-		}
-
-		@Bean
-		public ResourceConfigCustomizer webEndpointRegistrar() {
-			return this::customize;
-		}
-
-		private void customize(ResourceConfig config) {
-			List<String> mediaTypes = Arrays.asList(javax.ws.rs.core.MediaType.APPLICATION_JSON,
-					ActuatorMediaType.V2_JSON);
-			EndpointMediaTypes endpointMediaTypes = new EndpointMediaTypes(mediaTypes, mediaTypes);
-			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
-					new ConversionServiceParameterValueMapper(), endpointMediaTypes,
-					Arrays.asList((id) -> id.toString()), Collections.emptyList(), Collections.emptyList());
-			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
-					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
-					new EndpointLinksResolver(discoverer.getEndpoints()));
-			config.registerResources(new HashSet<>(resources));
 		}
 
 	}

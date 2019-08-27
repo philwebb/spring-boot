@@ -15,24 +15,27 @@
  */
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.jolokia.http.AgentServlet;
 import org.junit.Test;
 
-import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
-import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -43,17 +46,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 /**
  * Abstract base class for {@link EndpointRequest} tests.
  *
  * @author Madhura Bhave
  */
 public abstract class AbstractEndpointRequestIntegrationTests {
-
-	protected abstract WebApplicationContextRunner getContextRunner();
 
 	@Test
 	public void toEndpointShouldMatch() {
@@ -82,6 +80,17 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 			webTestClient.get().uri("/actuator/").exchange().expectStatus().isOk();
 		});
 	}
+
+	protected final WebApplicationContextRunner getContextRunner() {
+		return createContextRunner().withPropertyValues("management.endpoints.web.exposure.include=*")
+				.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class).withConfiguration(
+						AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
+								UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
+								WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
+
+	}
+
+	protected abstract WebApplicationContextRunner createContextRunner();
 
 	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
@@ -114,23 +123,6 @@ public abstract class AbstractEndpointRequestIntegrationTests {
 		@Bean
 		public TestServletEndpoint servletEndpoint() {
 			return new TestServletEndpoint();
-		}
-
-		@Bean
-		public PathMappedEndpoints pathMappedEndpoints() {
-			List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
-			endpoints.add(mockEndpoint("e1"));
-			endpoints.add(mockEndpoint("e2"));
-			endpoints.add(mockEndpoint("e3"));
-			endpoints.add(mockEndpoint("se1"));
-			return new PathMappedEndpoints("/actuator", () -> endpoints);
-		}
-
-		private TestPathMappedEndpoint mockEndpoint(String id) {
-			TestPathMappedEndpoint endpoint = mock(TestPathMappedEndpoint.class);
-			given(endpoint.getEndpointId()).willReturn(EndpointId.of(id));
-			given(endpoint.getRootPath()).willReturn(id);
-			return endpoint;
 		}
 
 	}
