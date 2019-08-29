@@ -3,20 +3,17 @@
 
 [partintro]
 --
-This section dives into the details of Spring Boot. Here you can learn about the key
-features that you may want to use and customize. If you have not already done so, you
-might want to read the "<<getting-started.adoc#getting-started>>" and
-"<<using-spring-boot.adoc#using-boot>>" sections, so that you have a good grounding of the
-basics.
+This section dives into the details of Spring Boot.
+Here you can learn about the key features that you may want to use and customize.
+If you have not already done so, you might want to read the "<<getting-started.adoc#getting-started>>" and "<<using-spring-boot.adoc#using-boot>>" sections, so that you have a good grounding of the basics.
 --
 
 
 
 [[boot-features-spring-application]]
 == SpringApplication
-The `SpringApplication` class provides a convenient way to bootstrap a Spring application
-that is started from a `main()` method. In many situations, you can delegate to the
-static `SpringApplication.run` method, as shown in the following example:
+The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
+In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -37,24 +34,21 @@ When your application starts, you should see something similar to the following 
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::   v{spring-boot-version}
 
-2013-07-31 00:08:16.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication            : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
-2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
-2014-03-04 13:09:54.912  INFO 41370 --- [           main] .t.TomcatServletWebServerFactory : Server initialized with port: 8080
-2014-03-04 13:09:56.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
+2019-04-31 13:09:54.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication            : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
+2019-04-31 13:09:54.166  INFO 56603 --- [           main] ationConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
+2019-04-01 13:09:56.912  INFO 41370 --- [           main] .t.TomcatServletWebServerFactory : Server initialized with port: 8080
+2019-04-01 13:09:57.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
 ----
 
-By default, `INFO` logging messages are shown, including some relevant startup details,
-such as the user that launched the application. If you need a log level other than `INFO`,
-you can set it, as described in <<boot-features-custom-log-levels>>,
+By default, `INFO` logging messages are shown, including some relevant startup details, such as the user that launched the application.
+If you need a log level other than `INFO`, you can set it, as described in <<boot-features-custom-log-levels>>.
 
 
 
 [[boot-features-startup-failure]]
 === Startup Failure
-If your application fails to start, registered `FailureAnalyzers` get a chance to provide
-a dedicated error message and a concrete action to fix the problem. For instance, if you
-start a web application on port `8080` and that port is already in use, you should see
-something similar to the following message:
+If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
+For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
 [indent=0]
 ----
@@ -71,17 +65,12 @@ something similar to the following message:
 	Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
 ----
 
-NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations, and you can
-<<howto.adoc#howto-failure-analyzer,add your own>>.
+NOTE: Spring Boot provides numerous `FailureAnalyzer` implementations, and you can <<howto.adoc#howto-failure-analyzer,add your own>>.
 
-If no failure analyzers are able to handle the exception, you can still display the full
-conditions report to better understand what went wrong. To do so, you need to
-<<boot-features-external-config,enable the `debug` property>> or
-<<boot-features-custom-log-levels,enable `DEBUG` logging>> for
-`org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener`.
+If no failure analyzers are able to handle the exception, you can still display the full conditions report to better understand what went wrong.
+To do so, you need to <<boot-features-external-config,enable the `debug` property>> or <<boot-features-custom-log-levels,enable `DEBUG` logging>> for `org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener`.
 
-For instance, if you are running your application by using `java -jar`, you can enable
-the `debug` property as follows:
+For instance, if you are running your application by using `java -jar`, you can enable the `debug` property as follows:
 
 [indent=0,subs="attributes"]
 ----
@@ -92,12 +81,10 @@ the `debug` property as follows:
 
 [[boot-features-banner]]
 === Customizing the Banner
-The banner that is printed on start up can be changed by adding a `banner.txt` file to
-your classpath or by setting the `spring.banner.location` property to the location of such
-a file. If the file has an encoding other than UTF-8, you can set `spring.banner.charset`.
-In addition to a text file, you can also add a `banner.gif`, `banner.jpg`, or `banner.png`
-image file to your classpath or set the `spring.banner.image.location` property. Images
-are converted into an ASCII art representation and printed above any text banner.
+The banner that is printed on start up can be changed by adding a `banner.txt` file to your classpath or by setting the `spring.banner.location` property to the location of such a file.
+If the file has an encoding other than UTF-8, you can set `spring.banner.charset`.
+In addition to a text file, you can also add a `banner.gif`, `banner.jpg`, or `banner.png` image file to your classpath or set the `spring.banner.image.location` property.
+Images are converted into an ASCII art representation and printed above any text banner.
 
 Inside your `banner.txt` file, you can use any of the following placeholders:
 
@@ -105,45 +92,39 @@ Inside your `banner.txt` file, you can use any of the following placeholders:
 |===
 | Variable | Description
 
-|`${application.version}`
-|The version number of your application, as declared in `MANIFEST.MF`. For example,
-`Implementation-Version: 1.0` is printed as `1.0`.
+| `${application.version}`
+| The version number of your application, as declared in `MANIFEST.MF`.
+  For example, `Implementation-Version: 1.0` is printed as `1.0`.
 
-|`${application.formatted-version}`
-|The version number of your application, as declared in `MANIFEST.MF` and formatted for
-display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
+| `${application.formatted-version}`
+| The version number of your application, as declared in `MANIFEST.MF` and formatted for display (surrounded with brackets and prefixed with `v`). For example `(v1.0)`.
 
-|`${spring-boot.version}`
-|The Spring Boot version that you are using. For example `{spring-boot-version}`.
+| `${spring-boot.version}`
+| The Spring Boot version that you are using. For example `{spring-boot-version}`.
 
-|`${spring-boot.formatted-version}`
-|The Spring Boot version that you are using, formatted for display (surrounded with
-brackets and prefixed with `v`). For example `(v{spring-boot-version})`.
+| `${spring-boot.formatted-version}`
+| The Spring Boot version that you are using, formatted for display (surrounded with brackets and prefixed with `v`).
+  For example `(v{spring-boot-version})`.
 
-|`${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
-|Where `NAME` is the name of an ANSI escape code. See
-{sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
+| `${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
+| Where `NAME` is the name of an ANSI escape code.
+  See {sc-spring-boot}/ansi/AnsiPropertySource.{sc-ext}[`AnsiPropertySource`] for details.
 
-|`${application.title}`
-|The title of your application, as declared in `MANIFEST.MF`. For example
-`Implementation-Title: MyApp` is printed as `MyApp`.
+| `${application.title}`
+| The title of your application, as declared in `MANIFEST.MF`.
+  For example `Implementation-Title: MyApp` is printed as `MyApp`.
 |===
 
-TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate
-a banner programmatically. Use the `org.springframework.boot.Banner` interface and
-implement your own `printBanner()` method.
+TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate a banner programmatically.
+Use the `org.springframework.boot.Banner` interface and implement your own `printBanner()` method.
 
-You can also use the `spring.main.banner-mode` property to determine if the banner has
-to be printed on `System.out` (`console`), sent to the configured logger (`log`), or not
-produced at all (`off`).
+You can also use the `spring.main.banner-mode` property to determine if the banner has to be printed on `System.out` (`console`), sent to the configured logger (`log`), or not produced at all (`off`).
 
-The printed banner is registered as a singleton bean under the following name:
-`springBootBanner`.
+The printed banner is registered as a singleton bean under the following name: `springBootBanner`.
 
 [NOTE]
 ====
-YAML maps `off` to `false`, so be sure to add quotes if you want to disable the banner in
-your application, as shown in the following example:
+YAML maps `off` to `false`, so be sure to add quotes if you want to disable the banner in your application, as shown in the following example:
 
 [source,yaml,indent=0]
 ----
@@ -153,10 +134,12 @@ your application, as shown in the following example:
 ----
 ====
 
+
+
 [[boot-features-customizing-spring-application]]
 === Customizing SpringApplication
-If the `SpringApplication` defaults are not to your taste, you can instead create a local
-instance and customize it. For example, to turn off the banner, you could write:
+If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
+For example, to turn off the banner, you could write:
 
 [source,java,indent=0]
 ----
@@ -167,58 +150,43 @@ instance and customize it. For example, to turn off the banner, you could write:
 	}
 ----
 
-NOTE: The constructor arguments passed to `SpringApplication` are configuration sources
-for Spring beans. In most cases, these are references to `@Configuration` classes, but
-they could also be references to XML configuration or to packages that should be scanned.
+NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
+In most cases, these are references to `@Configuration` classes, but they could also be references to XML configuration or to packages that should be scanned.
 
-It is also possible to configure the `SpringApplication` by using an
-`application.properties` file. See _<<boot-features-external-config>>_ for details.
+It is also possible to configure the `SpringApplication` by using an `application.properties` file.
+See _<<boot-features-external-config>>_ for details.
 
-For a complete list of the configuration options, see the
-{dc-spring-boot}/SpringApplication.{dc-ext}[`SpringApplication` Javadoc].
+For a complete list of the configuration options, see the {dc-spring-boot}/SpringApplication.{dc-ext}[`SpringApplication` Javadoc].
 
 
 
 [[boot-features-fluent-builder-api]]
 === Fluent Builder API
-If you need to build an `ApplicationContext` hierarchy (multiple contexts with a
-parent/child relationship) or if you prefer using a "`fluent`" builder API, you can
-use the `SpringApplicationBuilder`.
+If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a "`fluent`" builder API, you can use the `SpringApplicationBuilder`.
 
-The `SpringApplicationBuilder` lets you chain together multiple method calls and includes
-`parent` and `child` methods that let you create a hierarchy, as shown in the following
-example:
+The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
 
 [source,java,indent=0]
 ----
 include::{code-examples}/builder/SpringApplicationBuilderExample.java[tag=hierarchy]
 ----
 
-NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy. For
-example, Web components *must* be contained within the child context, and the same
-`Environment` is used for both parent and child contexts. See the
-{dc-spring-boot}/builder/SpringApplicationBuilder.{dc-ext}[`SpringApplicationBuilder`
-Javadoc] for full details.
+NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
+For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
+See the {dc-spring-boot}/builder/SpringApplicationBuilder.{dc-ext}[`SpringApplicationBuilder` Javadoc] for full details.
 
 
 
 [[boot-features-application-events-and-listeners]]
 === Application Events and Listeners
-In addition to the usual Spring Framework events, such as
-{spring-javadoc}/context/event/ContextRefreshedEvent.{dc-ext}[`ContextRefreshedEvent`],
-a `SpringApplication` sends some additional application events.
+In addition to the usual Spring Framework events, such as {spring-javadoc}/context/event/ContextRefreshedEvent.{dc-ext}[`ContextRefreshedEvent`], a `SpringApplication` sends some additional application events.
 
 [NOTE]
 ====
-Some events are actually triggered before the `ApplicationContext` is created, so you
-cannot register a listener on those as a `@Bean`. You can register them with the
-`SpringApplication.addListeners(...)` method or the
-`SpringApplicationBuilder.listeners(...)` method.
+Some events are actually triggered before the `ApplicationContext` is created, so you cannot register a listener on those as a `@Bean`.
+You can register them with the `SpringApplication.addListeners(...)` method or the `SpringApplicationBuilder.listeners(...)` method.
 
-If you want those listeners to be registered automatically, regardless of the way the
-application is created, you can add a `META-INF/spring.factories` file to your project
-and reference your listener(s) by using the
-`org.springframework.context.ApplicationListener` key, as shown in the following example:
+If you want those listeners to be registered automatically, regardless of the way the application is created, you can add a `META-INF/spring.factories` file to your project and reference your listener(s) by using the `org.springframework.context.ApplicationListener` key, as shown in the following example:
 
 [indent=0]
 ----
@@ -229,65 +197,48 @@ and reference your listener(s) by using the
 
 Application events are sent in the following order, as your application runs:
 
-. An `ApplicationStartingEvent` is sent at the start of a run but before any processing,
-except for the registration of listeners and initializers.
-. An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in
-the context is known but before the context is created.
-. An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean
-definitions have been loaded.
-. An `ApplicationStartedEvent` is sent after the context has been refreshed but before any
-application and command-line runners have been called.
-. An `ApplicationReadyEvent` is sent after any application and command-line runners have
-been called. It indicates that the application is ready to service requests.
+. An `ApplicationStartingEvent` is sent at the start of a run but before any processing, except for the registration of listeners and initializers.
+. An `ApplicationEnvironmentPreparedEvent` is sent when the `Environment` to be used in the context is known but before the context is created.
+. An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
+. An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any application and command-line runners have been called.
+  It indicates that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
-TIP: You often need not use application events, but it can be handy to know that they
-exist. Internally, Spring Boot uses events to handle a variety of tasks.
+TIP: You often need not use application events, but it can be handy to know that they exist.
+Internally, Spring Boot uses events to handle a variety of tasks.
 
-Application events are sent by using Spring Framework's event publishing mechanism. Part
-of this mechanism ensures that an event published to the listeners in a child context is
-also published to the listeners in any ancestor contexts. As a result of this, if your
-application uses a hierarchy of `SpringApplication` instances, a listener may receive
-multiple instances of the same type of application event.
+Application events are sent by using Spring Framework's event publishing mechanism.
+Part of this mechanism ensures that an event published to the listeners in a child context is also published to the listeners in any ancestor contexts.
+As a result of this, if your application uses a hierarchy of `SpringApplication` instances, a listener may receive multiple instances of the same type of application event.
 
-To allow your listener to distinguish between an event for its context and an event for
-a descendant context, it should request that its application context is injected and then
-compare the injected context with the context of the event. The context can be injected
-by implementing `ApplicationContextAware` or, if the listener is a bean, by using
-`@Autowired`.
+To allow your listener to distinguish between an event for its context and an event for a descendant context, it should request that its application context is injected and then compare the injected context with the context of the event.
+The context can be injected by implementing `ApplicationContextAware` or, if the listener is a bean, by using `@Autowired`.
 
 
 
 [[boot-features-web-environment]]
 === Web Environment
-A `SpringApplication` attempts to create the right type of `ApplicationContext` on your
-behalf. The algorithm used to determine a `WebApplicationType` is fairly simple:
+A `SpringApplication` attempts to create the right type of `ApplicationContext` on your behalf.
+The algorithm used to determine a `WebApplicationType` is fairly simple:
 
-* If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is
-used
-* If Spring MVC is not present and Spring WebFlux is present, an
-`AnnotationConfigReactiveWebServerApplicationContext` is used
+* If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is used
+* If Spring MVC is not present and Spring WebFlux is present, an `AnnotationConfigReactiveWebServerApplicationContext` is used
 * Otherwise, `AnnotationConfigApplicationContext` is used
 
-This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in
-the same application, Spring MVC will be used by default. You can override that easily
-by calling `setWebApplicationType(WebApplicationType)`.
+This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in the same application, Spring MVC will be used by default.
+You can override that easily by calling `setWebApplicationType(WebApplicationType)`.
 
-It is also possible to take complete control of the `ApplicationContext` type that is
-used by calling `setApplicationContextClass(...)`.
+It is also possible to take complete control of the `ApplicationContext` type that is used by calling `setApplicationContextClass(...)`.
 
-TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when
-using `SpringApplication` within a JUnit test.
+TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when using `SpringApplication` within a JUnit test.
 
 
 
 [[boot-features-application-arguments]]
 === Accessing Application Arguments
-If you need to access the application arguments that were passed to
-`SpringApplication.run(...)`, you can inject a
-`org.springframework.boot.ApplicationArguments` bean. The `ApplicationArguments`
-interface provides access to both the raw `String[]` arguments as well as parsed `option`
-and `non-option` arguments, as shown in the following example:
+If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
+The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -308,22 +259,18 @@ and `non-option` arguments, as shown in the following example:
 	}
 ----
 
-TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring
-`Environment`. This lets you also inject single application arguments by using the
-`@Value` annotation.
+TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
+This lets you also inject single application arguments by using the `@Value` annotation.
 
 
 
 [[boot-features-command-line-runner]]
 === Using the ApplicationRunner or CommandLineRunner
-If you need to run some specific code once the `SpringApplication` has started, you can
-implement the `ApplicationRunner` or `CommandLineRunner` interfaces. Both interfaces work
-in the same way and offer a single `run` method, which is called just before
-`SpringApplication.run(...)` completes.
+If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
+Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
 
-The `CommandLineRunner` interfaces provides access to application arguments as a simple
-string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface
-discussed earlier. The following example shows a `CommandLineRunner` with a `run` method:
+The `CommandLineRunner` interfaces provides access to application arguments as a simple string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
+The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
 ----
@@ -340,98 +287,70 @@ discussed earlier. The following example shows a `CommandLineRunner` with a `run
 	}
 ----
 
-If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be
-called in a specific order, you can additionally implement the
-`org.springframework.core.Ordered` interface or use the
-`org.springframework.core.annotation.Order` annotation.
+If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 
 
 
 [[boot-features-application-exit]]
 === Application Exit
-Each `SpringApplication` registers a shutdown hook with the JVM to ensure that the
-`ApplicationContext` closes gracefully on exit. All the standard Spring lifecycle
-callbacks (such as the `DisposableBean` interface or the `@PreDestroy` annotation) can be
-used.
+Each `SpringApplication` registers a shutdown hook with the JVM to ensure that the `ApplicationContext` closes gracefully on exit.
+All the standard Spring lifecycle callbacks (such as the `DisposableBean` interface or the `@PreDestroy` annotation) can be used.
 
-In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
-interface if they wish to return a specific exit code when `SpringApplication.exit()` is
-called. This exit code can then be passed to `System.exit()` to return it as a status
-code, as shown in the following example:
+In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator` interface if they wish to return a specific exit code when `SpringApplication.exit()` is called.
+This exit code can then be passed to `System.exit()` to return it as a status code, as shown in the following example:
 
 [source,java,indent=0]
 ----
 include::{code-examples}/ExitCodeApplication.java[tag=example]
 ----
 
-Also, the `ExitCodeGenerator` interface may be implemented by exceptions. When such an
-exception is encountered, Spring Boot returns the exit code provided by the implemented
-`getExitCode()` method.
+Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
+When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.
+
 
 
 [[boot-features-application-admin]]
 === Admin Features
-It is possible to enable admin-related features for the application by specifying the
-`spring.application.admin.enabled` property. This exposes the
-{sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`]
-on the platform `MBeanServer`. You could use this feature to administer your Spring Boot
-application remotely. This feature could also be useful for any service wrapper
-implementation.
+It is possible to enable admin-related features for the application by specifying the `spring.application.admin.enabled` property.
+This exposes the {sc-spring-boot}/admin/SpringApplicationAdminMXBean.{sc-ext}[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.
+You could use this feature to administer your Spring Boot application remotely.
+This feature could also be useful for any service wrapper implementation.
 
-TIP: If you want to know on which HTTP port the application is running, get the property
-with a key of `local.server.port`.
+TIP: If you want to know on which HTTP port the application is running, get the property with a key of `local.server.port`.
 
-CAUTION: Take care when enabling this feature, as the MBean exposes a method to shutdown
-the application.
+CAUTION: Take care when enabling this feature, as the MBean exposes a method to shutdown the application.
 
 
 
 [[boot-features-external-config]]
 == Externalized Configuration
-Spring Boot lets you externalize your configuration so that you can work with the same
-application code in different environments. You can use properties files, YAML files,
-environment variables, and command-line arguments to externalize configuration. Property
-values can be injected directly into your beans by using the `@Value` annotation,
-accessed through Spring's `Environment` abstraction, or be
-<<boot-features-external-config-typesafe-configuration-properties,bound to structured
-objects>> through `@ConfigurationProperties`.
+Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
+You can use properties files, YAML files, environment variables, and command-line arguments to externalize configuration.
+Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<boot-features-external-config-typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
-Spring Boot uses a very particular `PropertySource` order that is designed to allow
-sensible overriding of values. Properties are considered in the following order:
+Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
+Properties are considered in the following order:
 
-. <<using-boot-devtools-globalsettings,Devtools global settings properties>>
-on your home directory (`~/.spring-boot-devtools.properties` when devtools is active).
-. {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`]
-annotations on your tests.
-. `properties` attribute on your tests. Available on
-{dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest`] and the
-<<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test
-annotations for testing a particular slice of your application>>.
+. <<using-boot-devtools-globalsettings,Devtools global settings properties>> on your home directory (`~/.spring-boot-devtools.properties` when devtools is active).
+. {spring-javadoc}/test/context/TestPropertySource.{dc-ext}[`@TestPropertySource`] annotations on your tests.
+. `properties` attribute on your tests.
+  Available on {dc-spring-boot-test}/context/SpringBootTest.{dc-ext}[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
 . Command line arguments.
-. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment
-variable or system property).
+. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
 . `ServletConfig` init parameters.
 . `ServletContext` init parameters.
 . JNDI attributes from `java:comp/env`.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
 . A `RandomValuePropertySource` that has properties only in `+random.*+`.
-. <<boot-features-external-config-profile-specific-properties,Profile-specific
-application properties>> outside of your packaged jar
-(`application-\{profile}.properties` and YAML variants).
-. <<boot-features-external-config-profile-specific-properties,Profile-specific
-application properties>> packaged inside your jar (`application-\{profile}.properties`
-and YAML variants).
-. Application properties outside of your packaged jar (`application.properties` and YAML
-variants).
-. Application properties packaged inside your jar (`application.properties` and YAML
-variants).
-. {spring-javadoc}/context/annotation/PropertySource.{dc-ext}[`@PropertySource`]
-annotations on your `@Configuration` classes.
+. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
+. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
+. Application properties outside of your packaged jar (`application.properties` and YAML variants).
+. Application properties packaged inside your jar (`application.properties` and YAML variants).
+. {spring-javadoc}/context/annotation/PropertySource.{dc-ext}[`@PropertySource`] annotations on your `@Configuration` classes.
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 
-To provide a concrete example, suppose you develop a `@Component` that uses a `name`
-property, as shown in the following example:
+To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -449,48 +368,44 @@ property, as shown in the following example:
 	}
 ----
 
-On your application classpath (for example, inside your jar) you can have an
-`application.properties` file that provides a sensible default property value for `name`.
-When running in a new environment, an `application.properties` file can be provided
-outside of your jar that overrides the `name`. For one-off testing, you can launch with a
-specific command line switch (for example, `java -jar app.jar --name="Spring"`).
+On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
+When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
+For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
 [TIP]
 ====
-The `SPRING_APPLICATION_JSON` properties can be supplied on the command line with an
-environment variable. For example, you could use the following line in a UN{asterisk}X
-shell:
+The `SPRING_APPLICATION_JSON` properties can be supplied on the command line with an environment variable.
+For example, you could use the following line in a UN{asterisk}X shell:
 
+[indent=0]
 ----
-$ SPRING_APPLICATION_JSON='{"acme":{"name":"test"}}' java -jar myapp.jar
+	$ SPRING_APPLICATION_JSON='{"acme":{"name":"test"}}' java -jar myapp.jar
 ----
 
 In the preceding example, you end up with `acme.name=test` in the Spring `Environment`.
-You can also supply the JSON as `spring.application.json` in a System property, as shown
-in the following example:
+You can also supply the JSON as `spring.application.json` in a System property, as shown in the following example:
 
+[indent=0]
 ----
-$ java -Dspring.application.json='{"name":"test"}' -jar myapp.jar
-----
-
-You can also supply the JSON by using a command line argument, as shown in the following
-example:
-
-----
-$ java -jar myapp.jar --spring.application.json='{"name":"test"}'
+	$ java -Dspring.application.json='{"name":"test"}' -jar myapp.jar
 ----
 
-You can also supply the JSON as a JNDI variable, as follows:
-`java:comp/env/spring.application.json`.
+You can also supply the JSON by using a command line argument, as shown in the following example:
+
+[indent=0]
+----
+	$ java -jar myapp.jar --spring.application.json='{"name":"test"}'
+----
+
+You can also supply the JSON as a JNDI variable, as follows: `java:comp/env/spring.application.json`.
 ====
 
 
 
 [[boot-features-external-config-random-values]]
 === Configuring Random Values
-The `RandomValuePropertySource` is useful for injecting random values (for example, into
-secrets or test cases). It can produce integers, longs, uuids, or strings, as shown in the
-following example:
+The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
+It can produce integers, longs, uuids, or strings, as shown in the following example:
 
 [source,properties,indent=0]
 ----
@@ -502,45 +417,36 @@ following example:
 	my.number.in.range=${random.int[1024,65536]}
 ----
 
-The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any
-character and `value,max` are integers. If `max` is provided, then `value` is the minimum
-value and `max` is the maximum value (exclusive).
+The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
+If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
 
 
 
 [[boot-features-external-config-command-line-args]]
 === Accessing Command Line Properties
-By default, `SpringApplication` converts any command line option arguments (that is,
-arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds
-them to the Spring `Environment`. As mentioned previously, command line properties always
-take precedence over other property sources.
+By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
+As mentioned previously, command line properties always take precedence over other property sources.
 
-If you do not want command line properties to be added to the `Environment`, you can
-disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
+If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
 
 
 
 [[boot-features-external-config-application-property-files]]
 === Application Property Files
-`SpringApplication` loads properties from `application.properties` files in the following
-locations and adds them to the Spring `Environment`:
+`SpringApplication` loads properties from `application.properties` files in the following locations and adds them to the Spring `Environment`:
 
 . A `/config` subdirectory of the current directory
 . The current directory
 . A classpath `/config` package
 . The classpath root
 
-The list is ordered by precedence (properties defined in locations higher in the list
-override those defined in lower locations).
+The list is ordered by precedence (properties defined in locations higher in the list override those defined in lower locations).
 
-NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as an
-alternative to '.properties'.
+NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as an alternative to '.properties'.
 
-If you do not like `application.properties` as the configuration file name, you can
-switch to another file name by specifying a `spring.config.name` environment property.
-You can also refer to an explicit location by using the `spring.config.location`
-environment property (which is a comma-separated list of directory locations or file
-paths). The following example shows how to specify a different file name:
+If you do not like `application.properties` as the configuration file name, you can switch to another file name by specifying a `spring.config.name` environment property.
+You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
+The following example shows how to specify a different file name:
 
 [indent=0]
 ----
@@ -554,39 +460,30 @@ The following example shows how to specify two locations:
 	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
 ----
 
-WARNING: `spring.config.name` and `spring.config.location` are used very early to
-determine which files have to be loaded, so they must be defined as an environment
-property (typically an OS environment variable, a system property, or a command-line
-argument).
+WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
+They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
-If `spring.config.location` contains directories (as opposed to files), they should end
-in `/` (and, at runtime, be appended with the names generated from `spring.config.name`
-before being loaded, including profile-specific file names). Files specified in
-`spring.config.location` are used as-is, with no support for profile-specific variants,
-and are overridden by any profile-specific properties.
+If `spring.config.location` contains directories (as opposed to files), they should end in `/` (and, at runtime, be appended with the names generated from `spring.config.name` before being loaded, including profile-specific file names).
+Files specified in `spring.config.location` are used as-is, with no support for profile-specific variants, and are overridden by any profile-specific properties.
 
-Config locations are searched in reverse order. By default, the configured locations are
-`classpath:/,classpath:/config/,file:./,file:./config/`. The resulting search order is
-the following:
+Config locations are searched in reverse order.
+By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/`.
+The resulting search order is the following:
 
 . `file:./config/`
 . `file:./`
 . `classpath:/config/`
 . `classpath:/`
 
-When custom config locations are configured by using `spring.config.location`, they
-replace the default locations. For example, if `spring.config.location` is configured with
-the value `classpath:/custom-config/,file:./custom-config/`, the search order becomes the
-following:
+When custom config locations are configured by using `spring.config.location`, they replace the default locations.
+For example, if `spring.config.location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the search order becomes the following:
 
 . `file:./custom-config/`
 . `classpath:custom-config/`
 
-Alternatively, when custom config locations are configured by using
-`spring.config.additional-location`, they are used in addition to the default locations.
-Additional locations are searched before the default locations. For example, if
-additional locations of `classpath:/custom-config/,file:./custom-config/` are configured,
-the search order becomes the following:
+Alternatively, when custom config locations are configured by using `spring.config.additional-location`, they are used in addition to the default locations.
+Additional locations are searched before the default locations.
+For example, if additional locations of `classpath:/custom-config/,file:./custom-config/` are configured, the search order becomes the following:
 
 . `file:./custom-config/`
 . `classpath:custom-config/`
@@ -595,50 +492,34 @@ the search order becomes the following:
 . `classpath:/config/`
 . `classpath:/`
 
-This search ordering lets you specify default values in one configuration file and then
-selectively override those values in another. You can provide default values for your
-application in `application.properties` (or whatever other basename you choose with
-`spring.config.name`) in one of the default locations. These default values can then be
-overridden at runtime with a different file located in one of the custom locations.
+This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
+You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
+These default values can then be overridden at runtime with a different file located in one of the custom locations.
 
-NOTE: If you use environment variables rather than system properties, most operating
-systems disallow period-separated key names, but you can use underscores instead (for
-example, `SPRING_CONFIG_NAME` instead of `spring.config.name`).
+NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, `SPRING_CONFIG_NAME` instead of `spring.config.name`).
 
-NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`)
-or servlet context initialization parameters can be used instead of, or as well as,
-environment variables or system properties.
+NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
 
 
 [[boot-features-external-config-profile-specific-properties]]
 === Profile-specific Properties
-In addition to `application.properties` files, profile-specific properties can also be
-defined by using the following naming convention: `application-\{profile}.properties`. The
-`Environment` has a set of default profiles (by default, `[default]`) that are used if no
-active profiles are set. In other words, if no profiles are explicitly activated, then
-properties from `application-default.properties` are loaded.
+In addition to `application.properties` files, profile-specific properties can also be defined by using the following naming convention: `application-\{profile}.properties`.
+The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set. In other words, if no profiles are explicitly activated, then properties from `application-default.properties` are loaded.
 
-Profile-specific properties are loaded from the same locations as standard
-`application.properties`, with profile-specific files always overriding the non-specific
-ones, whether or not the profile-specific files are inside or outside your
-packaged jar.
+Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones, whether or not the profile-specific files are inside or outside your packaged jar.
 
-If several profiles are specified, a last-wins strategy applies. For example, profiles
-specified by the `spring.profiles.active` property are added after those configured
-through the `SpringApplication` API and therefore take precedence.
+If several profiles are specified, a last-wins strategy applies.
+For example, profiles specified by the `spring.profiles.active` property are added after those configured through the `SpringApplication` API and therefore take precedence.
 
-NOTE: If you have specified any files in `spring.config.location`, profile-specific
-variants of those files are not considered. Use directories in
-`spring.config.location` if you want to also use profile-specific properties.
+NOTE: If you have specified any files in `spring.config.location`, profile-specific variants of those files are not considered.
+Use directories in `spring.config.location` if you want to also use profile-specific properties.
 
 
 
 [[boot-features-external-config-placeholders-in-properties]]
 === Placeholders in Properties
-The values in `application.properties` are filtered through the existing `Environment`
-when they are used, so you can refer back to previously defined values (for example, from
-System properties).
+The values in `application.properties` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
 
 [source,properties,indent=0]
 ----
@@ -646,44 +527,34 @@ System properties).
 	app.description=${app.name} is a Spring Boot application
 ----
 
-TIP: You can also use this technique to create "`short`" variants of existing Spring Boot
-properties. See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to for
-details.
+TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
+See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to for details.
 
 
 
 [[boot-features-encrypting-properties]]
 === Encrypting Properties
-Spring Boot does not provide any built in support for encrypting property values, however,
-it does provide the hook points necessary to modify values contained in the Spring
-`Environment`. The `EnvironmentPostProcessor` interface allows you to manipulate the
-`Environment` before the application starts. See <<howto-customize-the-environment-or-application-context>>
-for details.
+Spring Boot does not provide any built in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
+The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
+See <<howto-customize-the-environment-or-application-context>> for details.
 
-If you're looking for a secure way to store credentials and passwords, the
-https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides
-support for storing externalized configuration in
-https://www.vaultproject.io/[HashiCorp Vault].
+If you're looking for a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
 
 
 
 [[boot-features-external-config-yaml]]
 === Using YAML Instead of Properties
-https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for
-specifying hierarchical configuration data. The `SpringApplication` class automatically
-supports YAML as an alternative to properties whenever you have the
-https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
+https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
+The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
 
-NOTE: If you use "`Starters`", SnakeYAML is automatically provided by
-`spring-boot-starter`.
+NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
 
 
 [[boot-features-external-config-loading-yaml]]
 ==== Loading YAML
 Spring Framework provides two convenient classes that can be used to load YAML documents.
-The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean`
-loads YAML as a `Map`.
+The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
 
 For example, consider the following YAML document:
 
@@ -708,8 +579,8 @@ The preceding example would be transformed into the following properties:
 	environments.prod.name=My Cool App
 ----
 
-YAML lists are represented as property keys with `[index]` dereferencers. For example,
-consider the following YAML:
+YAML lists are represented as property keys with `[index]` dereferencers.
+For example, consider the following YAML:
 
 [source,yaml,indent=0]
 ----
@@ -727,11 +598,8 @@ The preceding example would be transformed into these properties:
 	my.servers[1]=another.example.com
 ----
 
-To bind to properties like that by using Spring Boot's `Binder` utilities (which is what
-`@ConfigurationProperties` does), you need to have a property in the target bean of type
-`java.util.List` (or `Set`) and you either need to provide a setter or initialize it with
-a mutable value. For example, the following example binds to the properties shown
-previously:
+To bind to properties like that by using Spring Boot's `Binder` utilities (which is what `@ConfigurationProperties` does), you need to have a property in the target bean of type `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with a mutable value.
+For example, the following example binds to the properties shown previously:
 
 [source,java,indent=0]
 ----
@@ -750,17 +618,14 @@ previously:
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
 ==== Exposing YAML as Properties in the Spring Environment
-The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource` in
-the Spring `Environment`. Doing so lets you use the `@Value` annotation with placeholders
-syntax to access YAML properties.
+The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource` in the Spring `Environment`.
+Doing so lets you use the `@Value` annotation with placeholders syntax to access YAML properties.
 
 
 
 [[boot-features-external-config-multi-profile-yaml]]
 ==== Multi-profile YAML Documents
-You can specify multiple profile-specific YAML documents in a single file by using a
-`spring.profiles` key to indicate when the document applies, as shown in the following
-example:
+You can specify multiple profile-specific YAML documents in a single file by using a `spring.profiles` key to indicate when the document applies, as shown in the following example:
 
 [source,yaml,indent=0]
 ----
@@ -778,24 +643,19 @@ example:
 		address: 192.168.1.120
 ----
 
-In the preceding example, if the `development` profile is active, the `server.address`
-property is `127.0.0.1`. Similarly, if the `production` *and* `eu-central` profiles are
-active, the `server.address` property is `192.168.1.120`. If the `development`,
-`production` and `eu-central` profiles are *not* enabled, then the value for the property
-is `192.168.1.100`.
+In the preceding example, if the `development` profile is active, the `server.address` property is `127.0.0.1`.
+Similarly, if the `production` *and* `eu-central` profiles are active, the `server.address` property is `192.168.1.120`.
+If the `development`, `production` and `eu-central` profiles are *not* enabled, then the value for the property is `192.168.1.100`.
 
 [NOTE]
 ====
-`spring.profiles` can therefore contain a simple profile name (for example `production`)
-or a profile expression. A profile expression allows for more complicated profile logic
-to be expressed, for example `production & (eu-central | eu-west)`. Check the
-{spring-reference}core.html#beans-definition-profiles-java[reference guide] for more
-details.
+`spring.profiles` can therefore contain a simple profile name (for example `production`) or a profile expression.
+A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
+Check the {spring-reference}core.html#beans-definition-profiles-java[reference guide] for more details.
 ====
 
-If none are explicitly active when the application context starts, the default profiles
-are activated. So, in the following YAML, we set a value for `spring.security.user.password`
-that is available *only* in the "default" profile:
+If none are explicitly active when the application context starts, the default profiles are activated.
+So, in the following YAML, we set a value for `spring.security.user.password` that is available *only* in the "default" profile:
 
 [source,yaml,indent=0]
 ----
@@ -809,9 +669,7 @@ that is available *only* in the "default" profile:
 	      password: weak
 ----
 
-Whereas, in the following example, the password is always set because it is not attached
-to any profile, and it would have to be explicitly reset in all other profiles as
-necessary:
+Whereas, in the following example, the password is always set because it is not attached to any profile, and it would have to be explicitly reset in all other profiles as necessary:
 
 [source,yaml,indent=0]
 ----
@@ -823,21 +681,18 @@ necessary:
 	      password: weak
 ----
 
-Spring profiles designated by using the `spring.profiles` element may optionally be
-negated by using the `!` character. If both negated and non-negated profiles are
-specified for a single document, at least one non-negated profile must match, and no
-negated profiles may match.
+Spring profiles designated by using the `spring.profiles` element may optionally be negated by using the `!` character.
+If both negated and non-negated profiles are specified for a single document, at least one non-negated profile must match, and no negated profiles may match.
 
 
 
 [[boot-features-external-config-yaml-shortcomings]]
 ==== YAML Shortcomings
-YAML files cannot be loaded by using the `@PropertySource` annotation. So, in the case
-that you need to load values that way, you need to use a properties file.
+YAML files cannot be loaded by using the `@PropertySource` annotation.
+So, in the case that you need to load values that way, you need to use a properties file.
 
-Using the multi YAML document syntax in profile-specific YAML files can lead to unexpected
-behavior. For example, consider the following config in a file called `application-dev.yml`,
-with the `dev` profile being active:
+Using the multi YAML document syntax in profile-specific YAML files can lead to unexpected behavior.
+For example, consider the following config in a file called `application-dev.yml`, with the `dev` profile being active:
 
 [source,yaml,indent=0]
 ----
@@ -852,18 +707,14 @@ with the `dev` profile being active:
 ----
 
 In the example above, profile negation and profile expressions will not behave as expected.
-We recommend that you don't combine profile-specific YAML files and multiple YAML documents and stick
-to using only one of them.
+We recommend that you don't combine profile-specific YAML files and multiple YAML documents and stick to using only one of them.
 
 
 
 [[boot-features-external-config-typesafe-configuration-properties]]
 === Type-safe Configuration Properties
-Using the `@Value("$\{property}")` annotation to inject configuration properties can
-sometimes be cumbersome, especially if you are working with multiple properties or your
-data is hierarchical in nature. Spring Boot provides an alternative method of working
-with properties that lets strongly typed beans govern and validate the configuration of
-your application, as shown in the following example:
+Using the `@Value("$\{property}")` annotation to inject configuration properties can sometimes be cumbersome, especially if you are working with multiple properties or your data is hierarchical in nature.
+Spring Boot provides an alternative method of working with properties that lets strongly typed beans govern and validate the configuration of your application, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -923,47 +774,37 @@ The preceding POJO defines the following properties:
 
 * `acme.enabled`, with a value of `false` by default.
 * `acme.remote-address`, with a type that can be coerced from `String`.
-* `acme.security.username`, with a nested "security" object whose name is determined by
-the name of the property. In particular, the return type is not used at all there and
-could have been `SecurityProperties`.
+* `acme.security.username`, with a nested "security" object whose name is determined by the name of the property.
+  In particular, the return type is not used at all there and could have been `SecurityProperties`.
 * `acme.security.password`.
 * `acme.security.roles`, with a collection of `String`.
 
-NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily
-configuring auto-configured beans. Similar to auto-configuration classes, `@ConfigurationProperties`
-classes available in Spring Boot are for internal use only. The properties that map to the class,
-which are configured via properties files, YAML files, environment variables etc., are public API but
-the content of the class itself is not meant to be used directly.
+NOTE: Spring Boot auto-configuration heavily makes use of `@ConfigurationProperties` for easily configuring auto-configured beans.
+Similar to auto-configuration classes, `@ConfigurationProperties` classes available in Spring Boot are for internal use only.
+The properties that map to the class, which are configured via properties files, YAML files, environment variables etc., are public API but the content of the class itself is not meant to be used directly.
 
 [NOTE]
 ====
-Getters and setters are usually mandatory, since binding is through standard Java Beans
-property descriptors, just like in Spring MVC. A setter may be omitted in the following
-cases:
+Getters and setters are usually mandatory, since binding is through standard Java Beans property descriptors, just like in Spring MVC.
+A setter may be omitted in the following cases:
 
-* Maps, as long as they are initialized, need a getter but not necessarily a setter,
-since they can be mutated by the binder.
-* Collections and arrays can be accessed either through an index (typically with YAML) or
-by using a single comma-separated value (properties). In the latter case, a setter is
-mandatory. We recommend to always add a setter for such types. If you initialize a
-collection, make sure it is not immutable (as in the preceding example).
-* If nested POJO properties are initialized (like the `Security` field in the preceding
-example), a setter is not required. If you want the binder to create the instance on the
-fly by using its default constructor, you need a setter.
+* Maps, as long as they are initialized, need a getter but not necessarily a setter, since they can be mutated by the binder.
+* Collections and arrays can be accessed either through an index (typically with YAML) or by using a single comma-separated value (properties).
+  In the latter case, a setter is mandatory.
+  We recommend to always add a setter for such types.
+  If you initialize a collection, make sure it is not immutable (as in the preceding example).
+* If nested POJO properties are initialized (like the `Security` field in the preceding example), a setter is not required.
+  If you want the binder to create the instance on the fly by using its default constructor, you need a setter.
 
-Some people use Project Lombok to add getters and setters automatically. Make sure that
-Lombok does not generate any particular constructor for such a type, as it is used
-automatically by the container to instantiate the object.
+Some people use Project Lombok to add getters and setters automatically.
+Make sure that Lombok does not generate any particular constructor for such a type, as it is used automatically by the container to instantiate the object.
 
-Finally, only standard Java Bean properties are considered and binding on static
-properties is not supported.
+Finally, only standard Java Bean properties are considered and binding on static properties is not supported.
 ====
 
-TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value`
-and `@ConfigurationProperties`>>.
+TIP: See also the <<boot-features-external-config-vs-value,differences between `@Value` and `@ConfigurationProperties`>>.
 
-You also need to list the properties classes to register in the
-`@EnableConfigurationProperties` annotation, as shown in the following example:
+You also need to list the properties classes to register in the `@EnableConfigurationProperties` annotation, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -975,23 +816,16 @@ You also need to list the properties classes to register in the
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered that way, the bean has a
-conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix
-specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified
-name of the bean. If the annotation does not provide any prefix, only the fully qualified
-name of the bean is used.
+When the `@ConfigurationProperties` bean is registered that way, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
+If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
 The bean name in the example above is `acme-com.example.AcmeProperties`.
 ====
 
-The preceding configuration creates a regular bean for `AcmeProperties`. We recommend that
-`@ConfigurationProperties` only deal with the environment and, in particular, does not
-inject other beans from the context. Keep in mind that the
-`@EnableConfigurationProperties` annotation is _also_ automatically applied to your
-project so that any _existing_ bean annotated with `@ConfigurationProperties` is
-configured from the `Environment`. Instead of annotating `MyConfiguration` with
-`@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties`
-a bean, as shown in the following example:
+The preceding configuration creates a regular bean for `AcmeProperties`.
+We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
+Keep in mind that the `@EnableConfigurationProperties` annotation is _also_ automatically applied to your project so that any _existing_ bean annotated with `@ConfigurationProperties` is configured from the `Environment`.
+Instead of annotating `MyConfiguration` with `@EnableConfigurationProperties(AcmeProperties.class)`, you could make `AcmeProperties` a bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1004,8 +838,7 @@ a bean, as shown in the following example:
 	}
 ----
 
-This style of configuration works particularly well with the `SpringApplication` external
-YAML configuration, as shown in the following example:
+This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
 
 [source,yaml,indent=0]
 ----
@@ -1022,8 +855,7 @@ YAML configuration, as shown in the following example:
 	# additional configuration as required
 ----
 
-To work with `@ConfigurationProperties` beans, you can inject them in the same way
-as any other bean, as shown in the following example:
+To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1048,20 +880,17 @@ as any other bean, as shown in the following example:
 	}
 ----
 
-TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be
-used by IDEs to offer auto-completion for your own keys. See the
-<<configuration-metadata>> appendix for details.
+TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
+See the <<configuration-metadata>> appendix for details.
 
 
 
 [[boot-features-external-config-3rd-party-configuration]]
 ==== Third-party Configuration
-As well as using `@ConfigurationProperties` to annotate a class, you can also use it on
-public `@Bean` methods. Doing so can be particularly useful when you want to bind
-properties to third-party components that are outside of your control.
+As well as using `@ConfigurationProperties` to annotate a class, you can also use it on public `@Bean` methods.
+Doing so can be particularly useful when you want to bind properties to third-party components that are outside of your control.
 
-To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to
-its bean registration, as shown in the following example:
+To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1072,21 +901,16 @@ its bean registration, as shown in the following example:
 	}
 ----
 
-Any property defined with the `another` prefix is mapped onto that `AnotherComponent` bean
-in manner similar to the preceding `AcmeProperties` example.
+Any property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
 
 
 
 [[boot-features-external-config-relaxed-binding]]
 ==== Relaxed Binding
-Spring Boot uses some relaxed rules for binding `Environment` properties to
-`@ConfigurationProperties` beans, so there does not need to be an exact match between the
-`Environment` property name and the bean property name.  Common examples where this is
-useful include dash-separated environment properties (for example, `context-path` binds
-to `contextPath`), and capitalized environment properties (for example, `PORT` binds to
-`port`).
+Spring Boot uses some relaxed rules for binding `Environment` properties to `@ConfigurationProperties` beans, so there does not need to be an exact match between the `Environment` property name and the bean property name.
+Common examples where this is useful include dash-separated environment properties (for example, `context-path` binds to `contextPath`), and capitalized environment properties (for example, `PORT` binds to `port`).
 
-For example, consider the following `@ConfigurationProperties` class:
+As an example, consider the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
@@ -1106,60 +930,55 @@ For example, consider the following `@ConfigurationProperties` class:
 	}
 ----
 
-In the preceding example, the following properties names can all be used:
+With the preceding code, the following properties names can all be used:
 
 .relaxed binding
 [cols="1,4"]
 |===
 | Property | Note
 
-|`acme.my-project.person.first-name`
-|Kebab case, which is recommended for use in `.properties` and `.yml` files.
+| `acme.my-project.person.first-name`
+| Kebab case, which is recommended for use in `.properties` and `.yml` files.
 
-|`acme.myProject.person.firstName`
-|Standard camel case syntax.
+| `acme.myProject.person.firstName`
+| Standard camel case syntax.
 
-|`acme.my_project.person.first_name`
-|Underscore notation, which is an alternative format for use in `.properties` and `.yml`
-files.
+| `acme.my_project.person.first_name`
+| Underscore notation, which is an alternative format for use in `.properties` and `.yml` files.
 
-|`ACME_MYPROJECT_PERSON_FIRSTNAME`
-|Upper case format, which is recommended when using system environment variables.
+| `ACME_MYPROJECT_PERSON_FIRSTNAME`
+| Upper case format, which is recommended when using system environment variables.
 |===
 
-NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase and
-separated by `-`, such as `acme.my-project.person`).
+NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase and separated by `-`, such as `acme.my-project.person`).
 
 .relaxed binding rules per property source
 [cols="2,4,4"]
 |===
 | Property Source | Simple | List
 
-|Properties Files
-|Camel case, kebab case, or underscore notation
-|Standard list syntax using `[ ]` or comma-separated values
+| Properties Files
+| Camel case, kebab case, or underscore notation
+| Standard list syntax using `[ ]` or comma-separated values
 
-|YAML Files
-|Camel case, kebab case, or underscore notation
-|Standard YAML list syntax or comma-separated values
+| YAML Files
+| Camel case, kebab case, or underscore notation
+| Standard YAML list syntax or comma-separated values
 
-|Environment Variables
-|Upper case format with underscore as the delimiter. `_` should not be used within a
-property name
-|Numeric values surrounded by underscores, such as `MY_ACME_1_OTHER = my.acme[1].other`
+| Environment Variables
+| Upper case format with underscore as the delimiter. `_` should not be used within a property name
+| Numeric values surrounded by underscores, such as `MY_ACME_1_OTHER = my.acme[1].other`
 
-|System properties
-|Camel case, kebab case, or underscore notation
-|Standard list syntax using `[ ]` or comma-separated values
+| System properties
+| Camel case, kebab case, or underscore notation
+| Standard list syntax using `[ ]` or comma-separated values
 |===
 
-TIP: We recommend that, when possible, properties are stored in lower-case kebab format,
-such as `my.property-name=acme`.
+TIP: We recommend that, when possible, properties are stored in lower-case kebab format, such as `my.property-name=acme`.
 
-When binding to `Map` properties, if the `key` contains anything other than lowercase
-alpha-numeric characters or `-`, you need to use the bracket notation so that the original
-value is preserved. If the key is not surrounded by `[]`, any characters that are not alpha-numeric
-or `-` are removed. For example, consider binding the following properties to a `Map`:
+When binding to `Map` properties, if the `key` contains anything other than lowercase alpha-numeric characters or `-`, you need to use the bracket notation so that the original value is preserved.
+If the key is not surrounded by `[]`, any characters that are not alpha-numeric or `-` are removed.
+For example, consider binding the following properties to a `Map`:
 
 [source,yaml,indent=0]
 ----
@@ -1176,12 +995,10 @@ The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as th
 
 [[boot-features-external-config-complex-type-merge]]
 ==== Merging Complex Types
-When lists are configured in more than one place, overriding works by replacing the entire
-list.
+When lists are configured in more than one place, overriding works by replacing the entire list.
 
-For example, assume a `MyPojo` object with `name` and `description` attributes that are
-`null` by default. The following example exposes a list of `MyPojo` objects from
-`AcmeProperties`:
+For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
+The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
 [source,java,indent=0]
 ----
@@ -1213,14 +1030,12 @@ Consider the following configuration:
 	    - name: my another name
 ----
 
-If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry,
-as previously defined. If the `dev` profile is enabled, however, the `list` _still_
-contains only one entry (with a name of `my another name` and a description of `null`).
-This configuration _does not_ add a second `MyPojo` instance to the list, and it does not
-merge the items.
+If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry, as previously defined.
+If the `dev` profile is enabled, however, the `list` _still_ contains only one entry (with a name of `my another name` and a description of `null`).
+This configuration _does not_ add a second `MyPojo` instance to the list, and it does not merge the items.
 
-When a `List` is specified in multiple profiles, the one with the highest priority
-(and only that one) is used. Consider the following example:
+When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
+Consider the following example:
 
 [source,yaml,indent=0]
 ----
@@ -1238,13 +1053,11 @@ When a `List` is specified in multiple profiles, the one with the highest priori
 	    - name: my another name
 ----
 
-In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains
-_one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
-For YAML, both comma-separated lists and YAML lists can be used for
-completely overriding the contents of the list.
+In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
+For YAML, both comma-separated lists and YAML lists can be used for completely overriding the contents of the list.
 
-For `Map` properties, you can bind with property values drawn from multiple sources. However,
-for the same property in multiple sources, the one with the highest priority is used.
+For `Map` properties, you can bind with property values drawn from multiple sources.
+However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
 [source,java,indent=0]
@@ -1282,44 +1095,32 @@ Consider the following configuration:
 	      description: dev description 2
 ----
 
-If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1`
-(with a name of `my name 1` and a description of `my description 1`).
-If the `dev` profile is enabled, however, `map` contains two entries with keys `key1`
-(with a name of `dev name 1` and a description of `my description 1`) and
-`key2` (with a name of `dev name 2` and a description of `dev description 2`).
+If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).
+If the `dev` profile is enabled, however, `map` contains two entries with keys `key1` (with a name of `dev name 1` and a description of `my description 1`) and `key2` (with a name of `dev name 2` and a description of `dev description 2`).
 
-NOTE: The preceding merging rules apply to properties from all property sources and not just
-YAML files.
+NOTE: The preceding merging rules apply to properties from all property sources and not just YAML files.
+
+
 
 [[boot-features-external-config-conversion]]
 ==== Properties Conversion
-Spring Boot attempts to coerce the external application properties to the right type when
-it binds to the `@ConfigurationProperties` beans. If you need custom type conversion, you
-can provide a `ConversionService` bean (with a bean named `conversionService`) or custom
-property editors (through a `CustomEditorConfigurer` bean) or custom `Converters` (with
-bean definitions annotated as `@ConfigurationPropertiesBinding`).
+Spring Boot attempts to coerce the external application properties to the right type when it binds to the `@ConfigurationProperties` beans.
+If you need custom type conversion, you can provide a `ConversionService` bean (with a bean named `conversionService`) or custom property editors (through a `CustomEditorConfigurer` bean) or custom `Converters` (with bean definitions annotated as `@ConfigurationPropertiesBinding`).
 
-NOTE: As this bean is requested very early during the application lifecycle, make sure to
-limit the dependencies that your `ConversionService` is using. Typically, any dependency
-that you require may not be fully initialized at creation time. You may want to rename
-your custom `ConversionService` if it is not required for configuration keys coercion and
-only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
+NOTE: As this bean is requested very early during the application lifecycle, make sure to limit the dependencies that your `ConversionService` is using.
+Typically, any dependency that you require may not be fully initialized at creation time.
+You may want to rename your custom `ConversionService` if it is not required for configuration keys coercion and only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
 
 
 
 [[boot-features-external-config-conversion-duration]]
 ===== Converting durations
-Spring Boot has dedicated support for expressing durations. If you expose a
-`java.time.Duration` property, the following formats in application properties are
-available:
+Spring Boot has dedicated support for expressing durations.
+If you expose a `java.time.Duration` property, the following formats in application properties are available:
 
-* A regular `long` representation (using milliseconds as the default unit unless a
-`@DurationUnit` has been specified)
-* The standard ISO-8601 format
-{java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by
-`java.time.Duration`]
-* A more readable format where the value and the unit are coupled (e.g. `10s` means 10
-seconds)
+* A regular `long` representation (using milliseconds as the default unit unless a `@DurationUnit` has been specified)
+* The standard ISO-8601 format {java-javadoc}/java/time/Duration.html#parse-java.lang.CharSequence-[used by `java.time.Duration`]
+* A more readable format where the value and the unit are coupled (e.g. `10s` means 10 seconds)
 
 Consider the following example:
 
@@ -1328,9 +1129,8 @@ Consider the following example:
 include::{code-examples}/context/properties/bind/AppSystemProperties.java[tag=example]
 ----
 
-To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent. A
-read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and
-`500ms`.
+To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
+A read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and `500ms`.
 
 You can also use any of the supported units. These are:
 
@@ -1342,26 +1142,20 @@ You can also use any of the supported units. These are:
 * `h` for hours
 * `d` for days
 
-The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated
-in the sample above.
+The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated in the sample above.
 
-TIP: If you are upgrading from a previous version that is simply using `Long` to express
-the duration, make sure to define the unit (using `@DurationUnit`) if it isn't
-milliseconds alongside the switch to `Duration`. Doing so gives a transparent upgrade path
-while supporting a much richer format.
+TIP: If you are upgrading from a previous version that is simply using `Long` to express the duration, make sure to define the unit (using `@DurationUnit`) if it isn't milliseconds alongside the switch to `Duration`.
+Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 
 [[boot-features-external-config-conversion-datasize]]
 ===== Converting Data Sizes
-Spring Framework has a `DataSize` value type that allows to express size in bytes. If you
-expose a `DataSize` property, the following formats in application properties are
-available:
+Spring Framework has a `DataSize` value type that expresses a size in bytes.
+If you expose a `DataSize` property, the following formats in application properties are available:
 
-* A regular `long` representation (using bytes as the default unit unless a
-`@DataSizeUnit` has been specified)
-* A more readable format where the value and the unit are coupled (e.g. `10MB` means 10
-megabytes)
+* A regular `long` representation (using bytes as the default unit unless a `@DataSizeUnit` has been specified)
+* A more readable format where the value and the unit are coupled (e.g. `10MB` means 10 megabytes)
 
 Consider the following example:
 
@@ -1370,8 +1164,8 @@ Consider the following example:
 include::{code-examples}/context/properties/bind/AppIoProperties.java[tag=example]
 ----
 
-To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent. A size threshold
-of 256 bytes can be specified as `256` or `256B`.
+To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
+A size threshold of 256 bytes can be specified as `256` or `256B`.
 
 You can also use any of the supported units. These are:
 
@@ -1381,23 +1175,18 @@ You can also use any of the supported units. These are:
 * `GB` for gigabytes
 * `TB` for terabytes
 
-The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated
-in the sample above.
+The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated in the sample above.
 
-TIP: If you are upgrading from a previous version that is simply using `Long` to express
-the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongside
-the switch to `DataSize`. Doing so gives a transparent upgrade path while supporting a
-much richer format.
+TIP: If you are upgrading from a previous version that is simply using `Long` to express the size, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes alongsidethe switch to `DataSize`.
+Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
-Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are
-annotated with Spring's `@Validated` annotation. You can use JSR-303 `javax.validation`
-constraint annotations directly on your configuration class. To do so, ensure that a
-compliant JSR-303 implementation is on your classpath and then add constraint annotations
-to your fields, as shown in the following example:
+Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
+You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
+To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1413,13 +1202,11 @@ to your fields, as shown in the following example:
 	}
 ----
 
-TIP: You can also trigger validation by annotating the `@Bean` method that creates the
-configuration properties with `@Validated`.
+TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
-Although nested properties will also be validated when bound, it's good practice to
-also annotate the associated field as `@Valid`. This ensure that validation is triggered
-even if no nested properties are found. The following example builds on the preceding
-`AcmeProperties` example:
+Although nested properties will also be validated when bound, it's good practice to also annotate the associated field as `@Valid`.
+This ensures that validation is triggered even if no nested properties are found.
+The following example builds on the preceding `AcmeProperties` example:
 
 [source,java,indent=0]
 ----
@@ -1447,32 +1234,26 @@ even if no nested properties are found. The following example builds on the prec
 	}
 ----
 
-You can also add a custom Spring `Validator` by creating a bean definition called
-`configurationPropertiesValidator`. The `@Bean` method should be declared `static`. The
-configuration properties validator is created very early in the application's lifecycle,
-and declaring the `@Bean` method as static lets the bean be created without having to
-instantiate the `@Configuration` class. Doing so avoids any problems that may be caused
-by early instantiation. There is a
-{github-code}/spring-boot-samples/spring-boot-sample-property-validation[property
-validation sample] that shows how to set things up.
+You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.
+The `@Bean` method should be declared `static`.
+The configuration properties validator is created very early in the application's lifecycle, and declaring the `@Bean` method as static lets the bean be created without having to instantiate the `@Configuration` class.
+Doing so avoids any problems that may be caused by early instantiation.
+There is a {github-code}/spring-boot-samples/spring-boot-sample-property-validation[property validation sample] that shows how to set things up.
 
-TIP: The `spring-boot-actuator` module includes an endpoint that exposes all
-`@ConfigurationProperties` beans. Point your web browser to
-`/actuator/configprops` or use the equivalent JMX endpoint. See the
-"<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>"
-section for details.
+TIP: The `spring-boot-actuator` module includes an endpoint that exposes all `@ConfigurationProperties` beans.
+Point your web browser to `/actuator/configprops` or use the equivalent JMX endpoint.
+See the "<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>" section for details.
 
 
 
 [[boot-features-external-config-vs-value]]
 ==== @ConfigurationProperties vs. @Value
-The `@Value` annotation is a core container feature, and it does not provide the same
-features as type-safe configuration properties. The following table summarizes the
-features that are supported by `@ConfigurationProperties` and `@Value`:
+The `@Value` annotation is a core container feature, and it does not provide the same features as type-safe configuration properties.
+The following table summarizes the features that are supported by `@ConfigurationProperties` and `@Value`:
 
 [cols="4,2,2"]
 |===
-|Feature |`@ConfigurationProperties` |`@Value`
+| Feature |`@ConfigurationProperties` |`@Value`
 
 | <<boot-features-external-config-relaxed-binding,Relaxed binding>>
 | Yes
@@ -1487,23 +1268,17 @@ features that are supported by `@ConfigurationProperties` and `@Value`:
 | Yes
 |===
 
-If you define a set of configuration keys for your own components, we recommend you
-group them in a POJO annotated with `@ConfigurationProperties`. You should also be aware
-that, since `@Value` does not support relaxed binding, it is not a good candidate if you
-need to provide the value by using environment variables.
+If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
+You should also be aware that, since `@Value` does not support relaxed binding, it is not a good candidate if you need to provide the value by using environment variables.
 
-Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not
-processed from <<boot-features-external-config-application-property-files,application
-property files>>.
+Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-application-property-files,application property files>>.
 
 
 
 [[boot-features-profiles]]
 == Profiles
-Spring Profiles provide a way to segregate parts of your application configuration and
-make it be available only in certain environments.  Any `@Component` or `@Configuration`
-can be marked with `@Profile` to limit when it is loaded, as shown in the following
-example:
+Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
+Any `@Component` or `@Configuration` can be marked with `@Profile` to limit when it is loaded, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -1516,38 +1291,30 @@ example:
 	}
 ----
 
-You can use a `spring.profiles.active` `Environment` property to specify which profiles
-are active. You can specify the property in any of the ways described earlier in this
-chapter. For example, you could include it in your `application.properties`, as shown in
-the following example:
+You can use a `spring.profiles.active` `Environment` property to specify which profiles are active.
+You can specify the property in any of the ways described earlier in this chapter.
+For example, you could include it in your `application.properties`, as shown in the following example:
 
 [source,properties,indent=0]
 ----
 	spring.profiles.active=dev,hsqldb
 ----
 
-You could also specify it on the command line by using the following switch:
-`--spring.profiles.active=dev,hsqldb`.
+You could also specify it on the command line by using the following switch: `--spring.profiles.active=dev,hsqldb`.
 
 
 
 [[boot-features-adding-active-profiles]]
 === Adding Active Profiles
-The `spring.profiles.active` property follows the same ordering rules as other
-properties: The highest `PropertySource` wins. This means that you can specify active
-profiles in `application.properties` and then *replace* them by using the command line
-switch.
+The `spring.profiles.active` property follows the same ordering rules as other properties: The highest `PropertySource` wins.
+This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
-Sometimes, it is useful to have profile-specific properties that *add* to the active
-profiles rather than replace them. The `spring.profiles.include` property can be used to
-unconditionally add active profiles. The `SpringApplication` entry point also has a Java
-API for setting additional profiles (that is, on top of those activated by the
-`spring.profiles.active` property). See the `setAdditionalProfiles()` method in
-{dc-spring-boot}/SpringApplication.html[SpringApplication].
+Sometimes, it is useful to have profile-specific properties that *add* to the active profiles rather than replace them.
+The `spring.profiles.include` property can be used to unconditionally add active profiles.
+The `SpringApplication` entry point also has a Java API for setting additional profiles (that is, on top of those activated by the `spring.profiles.active` property).
+See the `setAdditionalProfiles()` method in {dc-spring-boot}/SpringApplication.html[SpringApplication].
 
-For example, when an application with the following properties is run by using the
-switch, `--spring.profiles.active=prod`, the `proddb` and `prodmq` profiles are also
-activated:
+For example, when an application with the following properties is run by using the switch, `--spring.profiles.active=prod`, the `proddb` and `prodmq` profiles are also activated:
 
 [source,yaml,indent=0]
 ----
@@ -1560,45 +1327,35 @@ activated:
 	  - prodmq
 ----
 
-NOTE: Remember that the `spring.profiles` property can be defined in a YAML document to
-determine when this particular document is included in the configuration. See
-<<howto-change-configuration-depending-on-the-environment>> for more details.
+NOTE: Remember that the `spring.profiles` property can be defined in a YAML document to determine when this particular document is included in the configuration.
+See <<howto-change-configuration-depending-on-the-environment>> for more details.
 
 
 
 [[boot-features-programmatically-setting-profiles]]
 === Programmatically Setting Profiles
-You can programmatically set active profiles by calling
-`SpringApplication.setAdditionalProfiles(...)` before your application runs. It is also
-possible to activate profiles by using Spring's `ConfigurableEnvironment` interface.
+You can programmatically set active profiles by calling `SpringApplication.setAdditionalProfiles(...)` before your application runs.
+It is also possible to activate profiles by using Spring's `ConfigurableEnvironment` interface.
 
 
 
 [[boot-features-profile-specific-configuration]]
 === Profile-specific Configuration Files
-Profile-specific variants of both `application.properties` (or `application.yml`) and
-files referenced through `@ConfigurationProperties` are considered as files and loaded.
+Profile-specific variants of both `application.properties` (or `application.yml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
 See "<<boot-features-external-config-profile-specific-properties>>" for details.
 
 
 
 [[boot-features-logging]]
 == Logging
-Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal
-logging but leaves the underlying log implementation open. Default configurations are
-provided for
-{java-javadoc}/java/util/logging/package-summary.html[Java Util
-Logging], https://logging.apache.org/log4j/2.x/[Log4J2], and
-https://logback.qos.ch/[Logback]. In each case, loggers are pre-configured to use console
-output with optional file output also available.
+Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal logging but leaves the underlying log implementation open.
+Default configurations are provided for {java-javadoc}/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4J2], and https://logback.qos.ch/[Logback].
+In each case, loggers are pre-configured to use console output with optional file output also available.
 
-By default, if you use the "`Starters`", Logback is used for logging. Appropriate Logback
-routing is also included to ensure that dependent libraries that use Java Util Logging,
-Commons Logging, Log4J, or SLF4J all work correctly.
+By default, if you use the "`Starters`", Logback is used for logging. Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J, or SLF4J all work correctly.
 
-TIP: There are a lot of logging frameworks available for Java. Do not worry if the above
-list seems confusing. Generally, you do not need to change your logging dependencies and
-the Spring Boot defaults work just fine.
+TIP: There are a lot of logging frameworks available for Java. Do not worry if the above list seems confusing.
+Generally, you do not need to change your logging dependencies and the Spring Boot defaults work just fine.
 
 
 
@@ -1608,11 +1365,11 @@ The default log output from Spring Boot resembles the following example:
 
 [indent=0]
 ----
-2014-03-05 10:57:51.112  INFO 45469 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/7.0.52
-2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2014-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1358 ms
-2014-03-05 10:57:51.698  INFO 45469 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
-2014-03-05 10:57:51.702  INFO 45469 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2019-03-05 10:57:51.112  INFO 45469 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/7.0.52
+2019-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-03-05 10:57:51.253  INFO 45469 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1358 ms
+2019-03-05 10:57:51.698  INFO 45469 --- [ost-startStop-1] o.s.b.c.e.ServletRegistrationBean        : Mapping servlet: 'dispatcherServlet' to [/]
+2019-03-05 10:57:51.702  INFO 45469 --- [ost-startStop-1] o.s.b.c.embedded.FilterRegistrationBean  : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
 ----
 
 The following items are output:
@@ -1628,11 +1385,12 @@ The following items are output:
 NOTE: Logback does not have a `FATAL` level. It is mapped to `ERROR`.
 
 
+
 [[boot-features-logging-console-output]]
 === Console Output
-The default log configuration echoes messages to the console as they are written. By
-default, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged. You can also
-enable a "`debug`" mode by starting your application with a `--debug` flag.
+The default log configuration echoes messages to the console as they are written.
+By default, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged.
+You can also enable a "`debug`" mode by starting your application with a `--debug` flag.
 
 [indent=0]
 ----
@@ -1641,25 +1399,21 @@ enable a "`debug`" mode by starting your application with a `--debug` flag.
 
 NOTE: You can also specify `debug=true` in your `application.properties`.
 
-When the debug mode is enabled, a selection of core loggers (embedded container,
-Hibernate, and Spring Boot) are configured to output more information. Enabling the debug
-mode does _not_ configure your application to log all messages with `DEBUG` level.
+When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate, and Spring Boot) are configured to output more information.
+Enabling the debug mode does _not_ configure your application to log all messages with `DEBUG` level.
 
-Alternatively, you can enable a "`trace`" mode by starting your application with a
-`--trace` flag (or `trace=true` in your `application.properties`). Doing so enables trace
-logging for a selection of core loggers (embedded container, Hibernate schema generation,
-and the whole Spring portfolio).
+Alternatively, you can enable a "`trace`" mode by starting your application with a `--trace` flag (or `trace=true` in your `application.properties`).
+Doing so enables trace logging for a selection of core loggers (embedded container, Hibernate schema generation, and the whole Spring portfolio).
+
+
 
 [[boot-features-logging-color-coded-output]]
 ==== Color-coded Output
-If your terminal supports ANSI, color output is used to aid readability. You can set
-`spring.output.ansi.enabled` to a
-{dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto
-detection.
+If your terminal supports ANSI, color output is used to aid readability.
+You can set `spring.output.ansi.enabled` to a {dc-spring-boot}/ansi/AnsiOutput.Enabled.{dc-ext}[supported value] to override the auto-detection.
 
-Color coding is configured by using the `%clr` conversion word. In its simplest form, the
-converter colors the output according to the log level, as shown in the following
-example:
+Color coding is configured by using the `%clr` conversion word.
+In its simplest form, the converter colors the output according to the log level, as shown in the following example:
 
 [source,indent=0]
 ----
@@ -1669,30 +1423,29 @@ example:
 The following table describes the mapping of log levels to colors:
 
 |===
-|Level | Color
+| Level | Color
 
-|`FATAL`
+| `FATAL`
 | Red
 
-|`ERROR`
+| `ERROR`
 | Red
 
-|`WARN`
+| `WARN`
 | Yellow
 
-|`INFO`
+| `INFO`
 | Green
 
-|`DEBUG`
+| `DEBUG`
 | Green
 
-|`TRACE`
+| `TRACE`
 | Green
 |===
 
-Alternatively, you can specify the color or style that should be used by providing it as
-an option to the conversion. For example, to make the text yellow, use the following
-setting:
+Alternatively, you can specify the color or style that should be used by providing it as an option to the conversion.
+For example, to make the text yellow, use the following setting:
 
 [source,indent=0]
 ----
@@ -1709,58 +1462,54 @@ The following colors and styles are supported:
 * `red`
 * `yellow`
 
+
+
 [[boot-features-logging-file-output]]
 === File Output
-By default, Spring Boot logs only to the console and does not write log files. If you
-want to write log files in addition to the console output, you need to set a
-`logging.file` or `logging.path` property (for example, in your
-`application.properties`).
+By default, Spring Boot logs only to the console and does not write log files.
+If you want to write log files in addition to the console output, you need to set a `logging.file` or `logging.path` property (for example, in your `application.properties`).
 
 The following table shows how the `logging.*` properties can be used together:
 
 .Logging properties
 [cols="1,1,1,4"]
 |===
-|`logging.file` |`logging.path` |Example |Description
+| `logging.file` | `logging.path` | Example | Description
 
-|_(none)_
-|_(none)_
+| _(none)_
+| _(none)_
 |
-|Console only logging.
+| Console only logging.
 
-|Specific file
-|_(none)_
-|`my.log`
-|Writes to the specified log file. Names can be an exact location or relative to the
-current directory.
+| Specific file
+| _(none)_
+| `my.log`
+| Writes to the specified log file.
+  Names can be an exact location or relative to the current directory.
 
-|_(none)_
-|Specific directory
-|`/var/log`
-|Writes `spring.log` to the specified directory. Names can be an exact location or
-relative to the current directory.
+| _(none)_
+| Specific directory
+| `/var/log`
+| Writes `spring.log` to the specified directory.
+  Names can be an exact location or relative to the current directory.
 |===
 
-Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level,
-`WARN`-level, and `INFO`-level messages are logged by default. Size limits can be changed
-using the `logging.file.max-size` property. Previously rotated files are archived
-indefinitely unless the `logging.file.max-history` property has been set.
+Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
+Size limits can be changed using the `logging.file.max-size` property.
+Previously rotated files are archived indefinitely unless the `logging.file.max-history` property has been set.
 
-NOTE: The logging system is initialized early in the application lifecycle. Consequently,
-logging properties are not found in property files loaded through `@PropertySource`
-annotations.
+NOTE: The logging system is initialized early in the application lifecycle.
+Consequently, logging properties are not found in property files loaded through `@PropertySource` annotations.
 
-TIP: Logging properties are independent of the actual logging infrastructure. As a
-result, specific configuration keys (such as `logback.configurationFile` for Logback) are
-not managed by spring Boot.
+TIP: Logging properties are independent of the actual logging infrastructure.
+As a result, specific configuration keys (such as `logback.configurationFile` for Logback) are not managed by spring Boot.
+
 
 
 [[boot-features-custom-log-levels]]
 === Log Levels
-All the supported logging systems can have the logger levels set in the Spring
-`Environment` (for example, in `application.properties`) by using
-`+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN,
-ERROR, FATAL, or OFF. The `root` logger can be configured by using `logging.level.root`.
+All the supported logging systems can have the logger levels set in the Spring `Environment` (for example, in `application.properties`) by using `+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF.
+The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
@@ -1775,138 +1524,125 @@ The following example shows potential logging settings in `application.propertie
 
 [[boot-features-custom-log-groups]]
 === Log Groups
-It's often useful to be able to group related loggers together so that they can all be
-configured at the same time. For example, you might commonly change the logging levels for
-_all_ Tomcat related loggers, but you can't easily remember top level packages.
+It's often useful to be able to group related loggers together so that they can all be configured at the same time.
+For example, you might commonly change the logging levels for _all_ Tomcat related loggers, but you can't easily remember top level packages.
 
-To help with this, Spring Boot allows you to define logging groups in your Spring
-`Environment`. For example, here's how you could define a "`tomcat`" group by adding
-it to your `application.properties`:
+To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
+For example, here's how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	logging.group.tomcat=org.apache.catalina, org.apache.coyote, org.apache.tomcat
 ----
 
-Once defined, you can change the level for all the loggers in the group with a single
-line:
+Once defined, you can change the level for all the loggers in the group with a single line:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	logging.level.tomcat=TRACE
 ----
 
-Spring Boot includes the following pre-defined logging groups that can be used
-out-of-the-box:
+Spring Boot includes the following pre-defined logging groups that can be used out-of-the-box:
 
 [cols="1,4"]
 |===
-|Name |Loggers
+| Name | Loggers
 
-|web
-|`org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`
+| web
+| `org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`
 
-|sql
-|`org.springframework.jdbc.core`, `org.hibernate.SQL`
-
+| sql
+| `org.springframework.jdbc.core`, `org.hibernate.SQL`
 |===
 
 
 
 [[boot-features-custom-log-configuration]]
 === Custom Log Configuration
-The various logging systems can be activated by including the appropriate libraries on
-the classpath and can be further customized by providing a suitable configuration file in
-the root of the classpath or in a location specified by the following Spring `Environment`
-property: `logging.config`.
+The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: `logging.config`.
 
-You can force Spring Boot to use a particular logging system by using the
-`org.springframework.boot.logging.LoggingSystem` system property. The value should be the
-fully qualified class name of a `LoggingSystem` implementation. You can also disable
-Spring Boot's logging configuration entirely by using a value of `none`.
+You can force Spring Boot to use a particular logging system by using the `org.springframework.boot.logging.LoggingSystem` system property.
+The value should be the fully qualified class name of a `LoggingSystem` implementation.
+You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
 
-NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is
-not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
+NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
 The only way to change the logging system or disable it entirely is via System properties.
 
 Depending on your logging system, the following files are loaded:
 
 |===
-|Logging System |Customization
+| Logging System | Customization
 
-|Logback
-|`logback-spring.xml`, `logback-spring.groovy`, `logback.xml`, or `logback.groovy`
+| Logback
+| `logback-spring.xml`, `logback-spring.groovy`, `logback.xml`, or `logback.groovy`
 
-|Log4j2
-|`log4j2-spring.xml` or `log4j2.xml`
+| Log4j2
+| `log4j2-spring.xml` or `log4j2.xml`
 
-|JDK (Java Util Logging)
-|`logging.properties`
+| JDK (Java Util Logging)
+| `logging.properties`
 |===
 
-NOTE: When possible, we recommend that you use the `-spring` variants for your logging
-configuration (for example, `logback-spring.xml` rather than `logback.xml`). If you use
-standard configuration locations, Spring cannot completely control log initialization.
+NOTE: When possible, we recommend that you use the `-spring` variants for your logging configuration (for example, `logback-spring.xml` rather than `logback.xml`).
+If you use standard configuration locations, Spring cannot completely control log initialization.
 
-WARNING: There are known classloading issues with Java Util Logging that cause problems
-when running from an 'executable jar'. We recommend that you avoid it when running from
-an 'executable jar' if at all possible.
+WARNING: There are known classloading issues with Java Util Logging that cause problems when running from an 'executable jar'.
+We recommend that you avoid it when running from an 'executable jar' if at all possible.
 
-To help with the customization, some other properties are transferred from the Spring
-`Environment` to System properties, as described in the following table:
+To help with the customization, some other properties are transferred from the Spring `Environment` to System properties, as described in the following table:
 
 |===
-|Spring Environment |System Property |Comments
+| Spring Environment | System Property | Comments
 
-|`logging.exception-conversion-word`
-|`LOG_EXCEPTION_CONVERSION_WORD`
-|The conversion word used when logging exceptions.
+| `logging.exception-conversion-word`
+| `LOG_EXCEPTION_CONVERSION_WORD`
+| The conversion word used when logging exceptions.
 
-|`logging.file`
-|`LOG_FILE`
-|If defined, it is used in the default log configuration.
+| `logging.file`
+| `LOG_FILE`
+| If defined, it is used in the default log configuration.
 
-|`logging.file.max-size`
-|`LOG_FILE_MAX_SIZE`
-|Maximum log file size (if LOG_FILE enabled). (Only supported with the default Logback
-setup.)
+| `logging.file.max-size`
+| `LOG_FILE_MAX_SIZE`
+| Maximum log file size (if LOG_FILE enabled).
+  (Only supported with the default Logback setup.)
 
-|`logging.file.max-history`
-|`LOG_FILE_MAX_HISTORY`
-|Maximum number of archive log files to keep (if LOG_FILE enabled). (Only supported with
-the default Logback setup.)
+| `logging.file.max-history`
+| `LOG_FILE_MAX_HISTORY`
+| Maximum number of archive log files to keep (if LOG_FILE enabled).
+  (Only supported with the default Logback setup.)
 
-|`logging.path`
-|`LOG_PATH`
-|If defined, it is used in the default log configuration.
+| `logging.path`
+| `LOG_PATH`
+| If defined, it is used in the default log configuration.
 
-|`logging.pattern.console`
-|`CONSOLE_LOG_PATTERN`
-|The log pattern to use on the console (stdout). (Only supported with the default Logback
-setup.)
+| `logging.pattern.console`
+| `CONSOLE_LOG_PATTERN`
+| The log pattern to use on the console (stdout).
+  (Only supported with the default Logback setup.)
 
-|`logging.pattern.dateformat`
-|`LOG_DATEFORMAT_PATTERN`
-|Appender pattern for log date format. (Only supported with the default Logback setup.)
+| `logging.pattern.dateformat`
+| `LOG_DATEFORMAT_PATTERN`
+| Appender pattern for log date format.
+  (Only supported with the default Logback setup.)
 
-|`logging.pattern.file`
-|`FILE_LOG_PATTERN`
-|The log pattern to use in a file (if `LOG_FILE` is enabled). (Only supported with the
-default Logback setup.)
+| `logging.pattern.file`
+| `FILE_LOG_PATTERN`
+| The log pattern to use in a file (if `LOG_FILE` is enabled).
+  (Only supported with the default Logback setup.)
 
-|`logging.pattern.level`
-|`LOG_LEVEL_PATTERN`
-|The format to use when rendering the log level (default `%5p`). (Only supported with the
-default Logback setup.)
+| `logging.pattern.level`
+| `LOG_LEVEL_PATTERN`
+| The format to use when rendering the log level (default `%5p`).
+  (Only supported with the default Logback setup.)
 
-|`PID`
-|`PID`
-|The current process ID (discovered if possible and when not already defined as an OS
-environment variable).
+| `PID`
+| `PID`
+| The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
 
-All the supported logging systems can consult System properties when parsing their
-configuration files.  See the default configurations in `spring-boot.jar` for examples:
+All the supported logging systems can consult System properties when parsing their configuration files.
+See the default configurations in `spring-boot.jar` for examples:
 
 * {github-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
 * {github-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
@@ -1914,23 +1650,19 @@ configuration files.  See the default configurations in `spring-boot.jar` for ex
 
 [TIP]
 ====
-If you want to use a placeholder in a logging property, you should use
-<<boot-features-external-config-placeholders-in-properties,Spring Boot's syntax>> and not
-the syntax of the underlying framework. Notably, if you use Logback, you should use `:`
-as the delimiter between a property name and its default value and not use `:-`.
+If you want to use a placeholder in a logging property, you should use <<boot-features-external-config-placeholders-in-properties,Spring Boot's syntax>> and not the syntax of the underlying framework.
+Notably, if you use Logback, you should use `:` as the delimiter between a property name and its default value and not use `:-`.
 ====
 
 [TIP]
 ====
+You can add MDC and other ad-hoc content to log lines by overriding only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback).
+For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC entry for "user", if it exists, as shown in the following example.
 
-You can add MDC and other ad-hoc content to log lines by overriding only the
-`LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback). For example, if you use
-`logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC
-entry for "user", if it exists, as shown in the following example.
-
+[indent=0]
 ----
-2015-09-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
-Handling authenticated request
+	2019-08-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
+	Handling authenticated request
 ----
 ====
 
@@ -1938,36 +1670,31 @@ Handling authenticated request
 
 [[boot-features-logback-extensions]]
 === Logback Extensions
-Spring Boot includes a number of extensions to Logback that can help with advanced
-configuration. You can use these extensions in your `logback-spring.xml` configuration
-file.
+Spring Boot includes a number of extensions to Logback that can help with advanced configuration.
+You can use these extensions in your `logback-spring.xml` configuration file.
 
-NOTE: Because the standard `logback.xml` configuration file is loaded too early, you
-cannot use extensions in it. You need to either use `logback-spring.xml` or define a
-`logging.config` property.
+NOTE: Because the standard `logback.xml` configuration file is loaded too early, you cannot use extensions in it.
+You need to either use `logback-spring.xml` or define a `logging.config` property.
 
-WARNING: The extensions cannot be used with Logback's
-https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning]. If you
-attempt to do so, making changes to the configuration file results in an error similar to
-one of the following being logged:
+WARNING: The extensions cannot be used with Logback's https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning].
+If you attempt to do so, making changes to the configuration file results in an error similar to one of the following being logged:
 
+[indent=0]
 ----
-ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
-ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
+	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
+	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
 ----
 
 
 
 ==== Profile-specific Configuration
-The `<springProfile>` tag lets you optionally include or exclude sections of
-configuration based on the active Spring profiles. Profile sections are supported
-anywhere within the `<configuration>` element. Use the `name` attribute to specify which
-profile accepts the configuration. The `<springProfile>` tag can contain a simple profile
-name (for example `staging`) or a profile expression. A profile expression allows for more
-complicated profile logic to be expressed, for example
-`production & (eu-central | eu-west)`. Check the
-{spring-reference}core.html#beans-definition-profiles-java[reference guide] for more
-details. The following listing shows three sample profiles:
+The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
+Profile sections are supported anywhere within the `<configuration>` element.
+Use the `name` attribute to specify which profile accepts the configuration.
+The `<springProfile>` tag can contain a simple profile name (for example `staging`) or a profile expression.
+A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
+Check the {spring-reference}core.html#beans-definition-profiles-java[reference guide] for more details.
+The following listing shows three sample profiles:
 
 [source,xml,indent=0]
 ----
@@ -1987,15 +1714,13 @@ details. The following listing shows three sample profiles:
 
 
 ==== Environment Properties
-The `<springProperty>` tag lets you expose properties from the Spring `Environment` for
-use within Logback. Doing so can be useful if you want to access values from your
-`application.properties` file in your Logback configuration. The tag works in a similar
-way to Logback's standard `<property>` tag. However, rather than specifying a direct
-`value`, you specify the `source` of the property (from the `Environment`). If you need
-to store the property somewhere other than in `local` scope, you can use the `scope`
-attribute. If you need a fallback value (in case the property is not set in the
-`Environment`), you can use the `defaultValue` attribute. The following example shows how
-to expose properties for use within Logback:
+The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
+Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.
+The tag works in a similar way to Logback's standard `<property>` tag.
+However, rather than specifying a direct `value`, you specify the `source` of the property (from the `Environment`).
+If you need to store the property somewhere other than in `local` scope, you can use the `scope` attribute.
+If you need a fallback value (in case the property is not set in the `Environment`), you can use the `defaultValue` attribute.
+The following example shows how to expose properties for use within Logback:
 
 [source,xml,indent=0]
 ----
@@ -2014,18 +1739,14 @@ However, properties can be added to the `Environment` by using the relaxed rules
 
 [[boot-features-internationalization]]
 == Internationalization
-Spring Boot supports localized messages so that your application can cater to users
-of different language preferences. By default, Spring Boot looks for the presence of
-a `messages` resource bundle at the root of the classpath.
+Spring Boot supports localized messages so that your application can cater to users of different language preferences.
+By default, Spring Boot looks for the presence of a `messages` resource bundle at the root of the classpath.
 
-NOTE: The auto-configuration applies when the default properties file for the configured
-resource bundle is available (i.e. `messages.properties` by default). If your resource
-bundle contains only language-specific properties files, you are required to add the
-default. If no properties file is found that matches any of the configured base names,
-there will be no auto-configured `MessageSource`.
+NOTE: The auto-configuration applies when the default properties file for the configured resource bundle is available (i.e. `messages.properties` by default).
+If your resource bundle contains only language-specific properties files, you are required to add the default.
+If no properties file is found that matches any of the configured base names, there will be no auto-configured `MessageSource`.
 
-The basename of the resource bundle as well as several other attributes can be configured
-using the `spring.messages` namespace, as shown in the following example:
+The basename of the resource bundle as well as several other attributes can be configured using the `spring.messages` namespace, as shown in the following example:
 
 [source,properties,indent=0]
 ----
@@ -2033,12 +1754,9 @@ using the `spring.messages` namespace, as shown in the following example:
 	spring.messages.fallback-to-system-locale=false
 ----
 
-TIP: `spring.messages.basename` supports comma-separated list of locations, either a
-package qualifier or a resource resolved from the classpath root.
+TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.
 
-See {sc-spring-boot-autoconfigure}/context/MessageSourceProperties.{sc-ext}[
-`MessageSourceProperties`] for more supported options.
-
+See {sc-spring-boot-autoconfigure}/context/MessageSourceProperties.{sc-ext}[`MessageSourceProperties`] for more supported options.
 
 
 
@@ -2056,50 +1774,44 @@ Jackson is the preferred and default library.
 
 [[boot-features-json-jackson]]
 === Jackson
-Auto-configuration for Jackson is provided and Jackson is part of
-`spring-boot-starter-json`. When Jackson is on the classpath an `ObjectMapper`
-bean is automatically configured. Several configuration properties are provided for
-<<howto.adoc#howto-customize-the-jackson-objectmapper,customizing the configuration of the
-`ObjectMapper`>>.
+Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
+When Jackson is on the classpath an `ObjectMapper` bean is automatically configured.
+Several configuration properties are provided for <<howto.adoc#howto-customize-the-jackson-objectmapper,customizing the configuration of the `ObjectMapper`>>.
 
 
 
 [[boot-features-json-gson]]
 === Gson
-Auto-configuration for Gson is provided. When Gson is on the classpath a `Gson` bean is
-automatically configured.  Several `+spring.gson.*+` configuration properties are
-provided for customizing the configuration. To take more control, one or more
-`GsonBuilderCustomizer` beans can be used.
+Auto-configuration for Gson is provided.
+When Gson is on the classpath a `Gson` bean is automatically configured.
+Several `+spring.gson.*+` configuration properties are provided for customizing the configuration.
+To take more control, one or more `GsonBuilderCustomizer` beans can be used.
 
 
 
 [[boot-features-json-json-b]]
 === JSON-B
-Auto-configuration for JSON-B is provided. When the JSON-B API and an implementation are
-on the classpath a `Jsonb` bean will be automatically configured. The preferred JSON-B
-implementation is Apache Johnzon for which dependency management is provided.
+Auto-configuration for JSON-B is provided.
+When the JSON-B API and an implementation are on the classpath a `Jsonb` bean will be automatically configured.
+The preferred JSON-B implementation is Apache Johnzon for which dependency management is provided.
 
 
 
 [[boot-features-developing-web-applications]]
 == Developing Web Applications
-Spring Boot is well suited for web application development. You can create a
-self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty. Most web
-applications use the `spring-boot-starter-web` module to get up and running quickly. You
-can also choose to build reactive web applications by using the
-`spring-boot-starter-webflux` module.
+Spring Boot is well suited for web application development.
+You can create a self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty.
+Most web applications use the `spring-boot-starter-web` module to get up and running quickly.
+You can also choose to build reactive web applications by using the `spring-boot-starter-webflux` module.
 
-If you have not yet developed a Spring Boot web application, you can follow the
-"Hello World!" example in the
-_<<getting-started.adoc#getting-started-first-application, Getting started>>_ section.
+If you have not yet developed a Spring Boot web application, you can follow the "Hello World!" example in the _<<getting-started.adoc#getting-started-first-application, Getting started>>_ section.
 
 
 
 [[boot-features-spring-mvc]]
 === The "`Spring Web MVC Framework`"
-The {spring-reference}web.html#mvc[Spring Web MVC framework] (often referred to as simply
-"`Spring MVC`") is a rich "`model view controller`" web framework. Spring MVC lets you
-create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
+The {spring-reference}web.html#mvc[Spring Web MVC framework] (often referred to as simply "`Spring MVC`") is a rich "`model view controller`" web framework.
+Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
 The following code shows a typical `@RestController` that serves JSON data:
@@ -2128,55 +1840,39 @@ The following code shows a typical `@RestController` that serves JSON data:
 	}
 ----
 
-Spring MVC is part of the core Spring Framework, and detailed information is available in
-the  {spring-reference}web.html#mvc[reference documentation]. There are also several
-guides that cover Spring MVC available at https://spring.io/guides.
+Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-reference}web.html#mvc[reference documentation].
+There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
 
 
 [[boot-features-spring-mvc-auto-configuration]]
 ==== Spring MVC Auto-configuration
-Spring Boot provides auto-configuration for Spring MVC that works well with most
-applications.
+Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
-* Support for serving static resources, including support for WebJars (covered
-<<boot-features-spring-mvc-static-content,later in this document>>)).
+* Support for serving static resources, including support for WebJars (covered <<boot-features-spring-mvc-static-content,later in this document>>)).
 * Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
-* Support for `HttpMessageConverters` (covered
-<<boot-features-spring-mvc-message-converters,later in this document>>).
-* Automatic registration of `MessageCodesResolver` (covered
-<<boot-features-spring-message-codes,later in this document>>).
+* Support for `HttpMessageConverters` (covered <<boot-features-spring-mvc-message-converters,later in this document>>).
+* Automatic registration of `MessageCodesResolver` (covered <<boot-features-spring-message-codes,later in this document>>).
 * Static `index.html` support.
-* Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this
-document>>).
-* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered
-<<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
+* Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this document>>).
+* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
 
-If you want to keep Spring Boot MVC features and you want to add additional
-{spring-reference}web.html#mvc[MVC configuration] (interceptors, formatters, view
-controllers, and other features), you can add your own `@Configuration` class of type
-`WebMvcConfigurer` but *without* `@EnableWebMvc`. If you wish to provide custom
-instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or
-`ExceptionHandlerExceptionResolver`, you can declare a `WebMvcRegistrationsAdapter`
-instance to provide such components.
+If you want to keep Spring Boot MVC features and you want to add additional {spring-reference}web.html#mvc[MVC configuration] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
+If you wish to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, you can declare a `WebMvcRegistrationsAdapter` instance to provide such components.
 
-If you want to take complete control of Spring MVC, you can add your own `@Configuration`
-annotated with `@EnableWebMvc`.
+If you want to take complete control of Spring MVC, you can add your own `@Configuration` annotated with `@EnableWebMvc`.
 
 
 [[boot-features-spring-mvc-message-converters]]
 ==== HttpMessageConverters
-Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and
-responses. Sensible defaults are included out of the box. For example, objects can be
-automatically converted to JSON (by using the Jackson library) or XML (by using the
-Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not
-available). By default, strings are encoded in `UTF-8`.
+Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and responses.
+Sensible defaults are included out of the box. For example, objects can be automatically converted to JSON (by using the Jackson library) or XML (by using the Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not available).
+By default, strings are encoded in `UTF-8`.
 
-If you need to add or customize converters, you can use Spring Boot's
-`HttpMessageConverters` class, as shown in the following listing:
+If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
 [source,java,indent=0]
 ----
@@ -2197,22 +1893,18 @@ If you need to add or customize converters, you can use Spring Boot's
 	}
 ----
 
-Any `HttpMessageConverter` bean that is present in the context is added to the list of
-converters. You can also override default converters in the same way.
+Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
+You can also override default converters in the same way.
 
 
 
 [[boot-features-json-components]]
 ==== Custom JSON Serializers and Deserializers
-If you use Jackson to serialize and deserialize JSON data, you might want to write your
-own `JsonSerializer` and `JsonDeserializer` classes. Custom serializers are usually
-https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through
-a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes
-it easier to directly register Spring Beans.
+If you use Jackson to serialize and deserialize JSON data, you might want to write your own `JsonSerializer` and `JsonDeserializer` classes.
+Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes it easier to directly register Spring Beans.
 
-You can use the `@JsonComponent` annotation directly on `JsonSerializer` or
-`JsonDeserializer` implementations. You can also use it on classes that contain
-serializers/deserializers as inner classes, as shown in the following example:
+You can use the `@JsonComponent` annotation directly on `JsonSerializer` or `JsonDeserializer` implementations.
+You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2235,18 +1927,11 @@ serializers/deserializers as inner classes, as shown in the following example:
 	}
 ----
 
-All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with
-Jackson. Because `@JsonComponent` is meta-annotated with `@Component`, the usual
-component-scanning rules apply.
+All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
+Because `@JsonComponent` is meta-annotated with `@Component`, the usual component-scanning rules apply.
 
-Spring Boot also provides
-{sc-spring-boot}/jackson/JsonObjectSerializer.{sc-ext}[`JsonObjectSerializer`] and
-{sc-spring-boot}/jackson/JsonObjectDeserializer.{sc-ext}[`JsonObjectDeserializer`] base
-classes that provide useful alternatives to the standard Jackson versions when
-serializing objects. See
-{dc-spring-boot}/jackson/JsonObjectSerializer.{dc-ext}[`JsonObjectSerializer`]
-and {dc-spring-boot}/jackson/JsonObjectDeserializer.{dc-ext}[`JsonObjectDeserializer`] in
-the Javadoc for details.
+Spring Boot also provides {sc-spring-boot}/jackson/JsonObjectSerializer.{sc-ext}[`JsonObjectSerializer`] and {sc-spring-boot}/jackson/JsonObjectDeserializer.{sc-ext}[`JsonObjectDeserializer`] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
+See {dc-spring-boot}/jackson/JsonObjectSerializer.{dc-ext}[`JsonObjectSerializer`] and {dc-spring-boot}/jackson/JsonObjectDeserializer.{dc-ext}[`JsonObjectDeserializer`] in the Javadoc for details.
 
 
 
