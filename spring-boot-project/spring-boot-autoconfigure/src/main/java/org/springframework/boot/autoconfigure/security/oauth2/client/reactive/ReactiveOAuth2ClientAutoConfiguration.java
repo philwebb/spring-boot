@@ -43,6 +43,7 @@ import org.springframework.security.oauth2.client.registration.InMemoryReactiveC
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
+import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security's Reactive
@@ -87,6 +88,14 @@ public class ReactiveOAuth2ClientAutoConfiguration {
 	public ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
 			ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 		return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(WebFilterChainProxy.class)
+	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@EnableWebFluxSecurity
+	static class EnableOAuth2ClientWebFluxSecurityConfiguration {
+
 	}
 
 	static class NonServletApplicationCondition extends NoneNestedConditions {

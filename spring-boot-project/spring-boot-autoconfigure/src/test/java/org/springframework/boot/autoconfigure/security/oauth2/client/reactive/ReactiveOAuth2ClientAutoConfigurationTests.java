@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,7 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.client.web.server.AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.web.server.WebFilterChainProxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -113,6 +115,14 @@ public class ReactiveOAuth2ClientAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
 				.run((context) -> assertThat(context)
 						.hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class));
+	}
+
+	@Test
+	public void configurationRegistersSecurityWebFilterChainBean() { // gh-17949
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
+				.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(WebFilterChainProxy.class));
 	}
 
 	@Test
