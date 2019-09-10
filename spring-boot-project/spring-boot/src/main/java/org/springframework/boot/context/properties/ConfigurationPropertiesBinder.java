@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -45,8 +46,8 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Internal class by the {@link ConfigurationPropertiesBindingPostProcessor} to handle the
- * actual {@link ConfigurationProperties @ConfigurationProperties} binding.
+ * Internal class used by the {@link ConfigurationPropertiesBindingPostProcessor} to
+ * handle the actual {@link ConfigurationProperties @ConfigurationProperties} binding.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
@@ -184,6 +185,16 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
+	}
+
+	/**
+	 * @param beanFactory
+	 * @return
+	 */
+	public static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
+		beanFactory.getBean(BEAN_NAME);
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
 	}
 
 }

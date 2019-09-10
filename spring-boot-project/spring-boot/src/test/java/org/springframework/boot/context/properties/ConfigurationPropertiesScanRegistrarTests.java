@@ -60,7 +60,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"bar-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$BarProperties");
 		assertThat(bingDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 		assertThat(fooDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
-		assertThat(barDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(barDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"b.second-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BSecondProperties");
 		assertThat(aDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 		// Constructor injection
-		assertThat(bFirstDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(bFirstDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 		// Post-processing injection
 		assertThat(bSecondDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}

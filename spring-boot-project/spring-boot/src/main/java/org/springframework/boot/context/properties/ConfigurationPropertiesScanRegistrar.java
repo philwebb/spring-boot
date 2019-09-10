@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.EnvironmentAware;
@@ -43,11 +43,10 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties @ConfigurationProperties} bean definitions via scanning.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class ConfigurationPropertiesScanRegistrar
 		implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
-
-	// FIXME revisit
 
 	private Environment environment;
 
@@ -56,7 +55,7 @@ class ConfigurationPropertiesScanRegistrar
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Set<String> packagesToScan = getPackagesToScan(importingClassMetadata);
-		register(registry, (ConfigurableListableBeanFactory) registry, packagesToScan);
+		scan(registry, packagesToScan);
 	}
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
@@ -71,48 +70,44 @@ class ConfigurationPropertiesScanRegistrar
 		if (packagesToScan.isEmpty()) {
 			packagesToScan.add(ClassUtils.getPackageName(metadata.getClassName()));
 		}
+		packagesToScan.removeIf((candidate) -> !StringUtils.hasText(candidate));
 		return packagesToScan;
 	}
 
-	protected void register(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory,
-			Set<String> packagesToScan) {
-		scan(packagesToScan, beanFactory, registry);
+	private void scan(BeanDefinitionRegistry registry, Set<String> packages) {
+		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
+		ClassPathScanningCandidateComponentProvider scanner = getScanner(registry);
+		for (String basePackage : packages) {
+			for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
+				register(registrar, candidate.getBeanClassName());
+			}
+		}
 	}
 
-	protected void scan(Set<String> packages, ConfigurableListableBeanFactory beanFactory,
-			BeanDefinitionRegistry registry) {
+	private ClassPathScanningCandidateComponentProvider getScanner(BeanDefinitionRegistry registry) {
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
 		scanner.setEnvironment(this.environment);
 		scanner.setResourceLoader(this.resourceLoader);
 		scanner.addIncludeFilter(new AnnotationTypeFilter(ConfigurationProperties.class));
 		TypeExcludeFilter typeExcludeFilter = new TypeExcludeFilter();
-		typeExcludeFilter.setBeanFactory(beanFactory);
+		typeExcludeFilter.setBeanFactory((BeanFactory) registry);
 		scanner.addExcludeFilter(typeExcludeFilter);
-		for (String basePackage : packages) {
-			if (StringUtils.hasText(basePackage)) {
-				scan(beanFactory, registry, scanner, basePackage);
-			}
+		return scanner;
+	}
+
+	private void register(ConfigurationPropertiesBeanRegistrar registrar, String className) throws LinkageError {
+		try {
+			register(registrar, ClassUtils.forName(className, null));
+		}
+		catch (ClassNotFoundException ex) {
+			// Ignore
 		}
 	}
 
-	private void scan(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry,
-			ClassPathScanningCandidateComponentProvider scanner, String basePackage) throws LinkageError {
-		for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-			String beanClassName = candidate.getBeanClassName();
-			try {
-				Class<?> type = ClassUtils.forName(beanClassName, null);
-				if (!isComponent(type)) {
-					ConfigurationPropertiesBeanDefinitionRegistrar.register(registry, beanFactory, type);
-				}
-			}
-			catch (ClassNotFoundException ex) {
-				// Ignore
-			}
+	private void register(ConfigurationPropertiesBeanRegistrar registrar, Class<?> type) {
+		if (!MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
+			registrar.register(type);
 		}
-	}
-
-	private boolean isComponent(Class<?> type) {
-		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class);
 	}
 
 	@Override

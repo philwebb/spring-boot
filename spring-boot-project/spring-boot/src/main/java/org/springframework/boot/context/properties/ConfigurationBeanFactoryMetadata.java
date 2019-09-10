@@ -31,20 +31,20 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 
 /**
- * Utility class to memorize {@code @Bean} definition meta data during initialization of
+ * Utility class to memorize {@code @Bean} definition metadata during initialization of
  * the bean factory.
  *
  * @author Dave Syer
  * @since 1.1.0
+ * @deprecated since 2.2.0 in favor of {@link ConfigurationPropertiesBean}
  */
+@Deprecated
 public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware {
 
 	/**
 	 * The bean name that this class is registered with.
 	 */
 	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class.getName();
-
-	// FIXME remove ACA
 
 	private ConfigurableApplicationContext applicationContext;
 

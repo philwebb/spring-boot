@@ -57,17 +57,12 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	/**
 	 * The bean name of the configuration properties validator.
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link ConfigurationPropertiesBindingPostProcessorRegistrar#VALIDATOR_BEAN_NAME}
 	 */
-	@Deprecated
-	public static final String VALIDATOR_BEAN_NAME = ConfigurationPropertiesBindingPostProcessorRegistrar.VALIDATOR_BEAN_NAME;
-
-	private ConfigurationBeanFactoryMetadata beanFactoryMetadata;
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
 	private ApplicationContext applicationContext;
 
-	private ConfigurationPropertiesBinder configurationPropertiesBinder;
+	private Delegate delegate;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -78,10 +73,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 	public void afterPropertiesSet() throws Exception {
 		// We can't use constructor injection of the application context because
 		// it causes eager factory bean initialization
-		this.beanFactoryMetadata = this.applicationContext.getBean(ConfigurationBeanFactoryMetadata.BEAN_NAME,
-				ConfigurationBeanFactoryMetadata.class);
-		this.configurationPropertiesBinder = this.applicationContext.getBean(ConfigurationPropertiesBinder.BEAN_NAME,
-				ConfigurationPropertiesBinder.class);
+		// FIXME double check this is still the case, at lease try to push into the setAC
+		this.delegate = new Delegate(this.applicationContext);
 	}
 
 	@Override
@@ -91,51 +84,70 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		ConfigurationProperties annotation = getAnnotation(bean, beanName, ConfigurationProperties.class);
-		if (annotation != null && !hasBeenBound(beanName)) {
-			bind(bean, beanName, annotation);
-		}
+		this.delegate.bindIfNecessary(bean, beanName);
 		return bean;
 	}
 
-	private boolean hasBeenBound(String beanName) {
-		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) this.applicationContext
-				.getAutowireCapableBeanFactory();
-		if (registry.containsBeanDefinition(beanName)) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(beanName);
-			return beanDefinition instanceof ConfigurationPropertiesBeanDefinition;
-		}
-		return false;
-	}
+	private static class Delegate {
 
-	private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
-		ResolvableType type = getBeanType(bean, beanName);
-		Validated validated = getAnnotation(bean, beanName, Validated.class);
-		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-				: new Annotation[] { annotation };
-		Bindable<?> target = Bindable.of(type).withExistingValue(bean).withAnnotations(annotations);
-		try {
-			this.configurationPropertiesBinder.bind(target);
-		}
-		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(beanName, bean.getClass(), annotation, ex);
-		}
-	}
+		private final ApplicationContext applicationContext;
 
-	private ResolvableType getBeanType(Object bean, String beanName) {
-		Method factoryMethod = this.beanFactoryMetadata.findFactoryMethod(beanName);
-		if (factoryMethod != null) {
-			return ResolvableType.forMethodReturnType(factoryMethod);
-		}
-		return ResolvableType.forClass(bean.getClass());
-	}
+		private final ConfigurationPropertiesBinder configurationPropertiesBinder;
 
-	private <A extends Annotation> A getAnnotation(Object bean, String beanName, Class<A> type) {
-		A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
-		if (annotation == null) {
-			annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);
+		private final BeanDefinitionRegistry registry;
+
+		Delegate(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+			this.configurationPropertiesBinder = ConfigurationPropertiesBinder.get(applicationContext);
+			this.registry = (BeanDefinitionRegistry) applicationContext.getAutowireCapableBeanFactory();
 		}
-		return annotation;
+
+		void bindIfNecessary(Object bean, String beanName) throws BeansException {
+			ConfigurationProperties annotation = getAnnotation(bean, beanName, ConfigurationProperties.class);
+			if (annotation != null && !hasBeenBoundAsValueObject(beanName)) {
+				bind(bean, beanName, annotation);
+			}
+		}
+
+		private boolean hasBeenBoundAsValueObject(String beanName) {
+			if (this.registry.containsBeanDefinition(beanName)) {
+				BeanDefinition beanDefinition = this.registry.getBeanDefinition(beanName);
+				return beanDefinition instanceof ConfigurationPropertiesValueObjectBeanDefinition;
+			}
+			return false;
+		}
+
+		private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
+			// FIXME this needs to use ConfigurationPropertiesBean
+			ResolvableType type = getBeanType(bean, beanName);
+			Validated validated = getAnnotation(bean, beanName, Validated.class);
+			Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
+					: new Annotation[] { annotation };
+			Bindable<?> target = Bindable.of(type).withExistingValue(bean).withAnnotations(annotations);
+			try {
+				this.configurationPropertiesBinder.bind(target);
+			}
+			catch (Exception ex) {
+				throw new ConfigurationPropertiesBindException(beanName, bean.getClass(), annotation, ex);
+			}
+		}
+
+		private ResolvableType getBeanType(Object bean, String beanName) {
+			Method factoryMethod = this.beanFactoryMetadata.findFactoryMethod(beanName);
+			if (factoryMethod != null) {
+				return ResolvableType.forMethodReturnType(factoryMethod);
+			}
+			return ResolvableType.forClass(bean.getClass());
+		}
+
+		private <A extends Annotation> A getAnnotation(Object bean, String beanName, Class<A> type) {
+			A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
+			if (annotation == null) {
+				annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);
+			}
+			return annotation;
+		}
+
 	}
 
 }

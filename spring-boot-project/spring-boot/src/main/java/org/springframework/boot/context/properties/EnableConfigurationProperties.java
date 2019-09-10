@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ ConfigurationPropertiesBeanRegistrar.class, ConfigurationPropertiesBindingPostProcessorRegistrar.class })
+@Import(EnableConfigurationPropertiesRegistrar.class)
 public @interface EnableConfigurationProperties {
 
 	/**

@@ -16,9 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -35,45 +33,9 @@ import org.springframework.core.type.AnnotationMetadata;
 @Deprecated
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements ImportBeanDefinitionRegistrar {
 
-	// FIXME revisit
-
-	/**
-	 * The bean name of the configuration properties validator.
-	 * @since 2.2.0
-	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator"; // FIXME
-
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME)) {
-			registerConfigurationPropertiesBinder(registry);
-		}
-		if (!registry.containsBeanDefinition(ConfigurationPropertiesBindingPostProcessor.BEAN_NAME)) {
-			registerConfigurationPropertiesBindingPostProcessor(registry);
-			registerConfigurationBeanFactoryMetadata(registry);
-		}
-	}
-
-	private void registerConfigurationPropertiesBinder(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationPropertiesBinder.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, VALIDATOR_BEAN_NAME);
-		registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
-	}
-
-	private void registerConfigurationPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(ConfigurationPropertiesBindingPostProcessor.BEAN_NAME, definition);
-	}
-
-	private void registerConfigurationBeanFactoryMetadata(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationBeanFactoryMetadata.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(ConfigurationBeanFactoryMetadata.BEAN_NAME, definition);
+		new EnableConfigurationPropertiesRegistrar().registerBeanDefinitions(importingClassMetadata, registry);
 	}
 
 }

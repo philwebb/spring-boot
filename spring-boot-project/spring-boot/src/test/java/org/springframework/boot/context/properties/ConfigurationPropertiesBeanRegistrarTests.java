@@ -59,7 +59,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 		this.registrar.registerBeanDefinitions(getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
 				"bar-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$BarProperties");
-		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 	}
 
 	@Test
