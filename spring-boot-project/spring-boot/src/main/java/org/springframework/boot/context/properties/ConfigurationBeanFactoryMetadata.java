@@ -44,6 +44,8 @@ public class ConfigurationBeanFactoryMetadata implements ApplicationContextAware
 	 */
 	public static final String BEAN_NAME = ConfigurationBeanFactoryMetadata.class.getName();
 
+	// FIXME remove ACA
+
 	private ConfigurableApplicationContext applicationContext;
 
 	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(Class<A> type) {

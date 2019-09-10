@@ -36,6 +36,8 @@ import org.springframework.util.MultiValueMap;
  */
 class ConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
+	// FIXME fine to change
+
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		ConfigurableListableBeanFactory beanFactory = (ConfigurableListableBeanFactory) registry;

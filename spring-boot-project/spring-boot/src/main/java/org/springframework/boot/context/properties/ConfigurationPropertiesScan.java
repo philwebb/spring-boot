@@ -37,7 +37,8 @@ import org.springframework.core.annotation.AliasFor;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ ConfigurationPropertiesScanRegistrar.class, ConfigurationPropertiesBindingPostProcessorRegistrar.class })
+@Import({ ConfigurationPropertiesScanRegistrar.class })
+@EnableConfigurationProperties
 public @interface ConfigurationPropertiesScan {
 
 	/**

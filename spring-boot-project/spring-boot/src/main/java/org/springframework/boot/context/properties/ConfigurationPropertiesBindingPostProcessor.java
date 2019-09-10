@@ -48,6 +48,8 @@ import org.springframework.validation.annotation.Validated;
 public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {
 
+	// FIXME revisit
+
 	/**
 	 * The bean name that this post-processor is registered with.
 	 */

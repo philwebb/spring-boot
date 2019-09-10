@@ -36,6 +36,8 @@ import org.springframework.validation.annotation.Validated;
  */
 final class ConfigurationPropertiesBeanDefinition extends GenericBeanDefinition {
 
+	// FIXME fine to change
+
 	static ConfigurationPropertiesBeanDefinition from(ConfigurableListableBeanFactory beanFactory, String beanName,
 			Class<?> type) {
 		ConfigurationPropertiesBeanDefinition beanDefinition = new ConfigurationPropertiesBeanDefinition();

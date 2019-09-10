@@ -42,6 +42,8 @@ import org.springframework.util.StringUtils;
  */
 final class ConfigurationPropertiesBeanDefinitionRegistrar {
 
+	// FIXME fine to change
+
 	private static final boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
 
 	private ConfigurationPropertiesBeanDefinitionRegistrar() {

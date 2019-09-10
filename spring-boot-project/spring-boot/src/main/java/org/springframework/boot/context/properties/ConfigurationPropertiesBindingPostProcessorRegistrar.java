@@ -29,13 +29,19 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.0.0
+ * @deprecated since 2.2.0 in favor of
+ * {@link EnableConfigurationProperties @EnableConfigurationProperties}
  */
+@Deprecated
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements ImportBeanDefinitionRegistrar {
+
+	// FIXME revisit
 
 	/**
 	 * The bean name of the configuration properties validator.
+	 * @since 2.2.0
 	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator"; // FIXME
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {

@@ -47,6 +47,8 @@ import org.springframework.util.StringUtils;
 class ConfigurationPropertiesScanRegistrar
 		implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
 
+	// FIXME revisit
+
 	private Environment environment;
 
 	private ResourceLoader resourceLoader;

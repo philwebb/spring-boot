@@ -53,6 +53,9 @@ import org.springframework.validation.annotation.Validated;
  */
 class ConfigurationPropertiesBinder implements ApplicationContextAware {
 
+	// FIXME fine to change
+	// FIXME make no ACA
+
 	/**
 	 * The bean name that this binder is registered with.
 	 */
