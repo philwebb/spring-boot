@@ -33,12 +33,6 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegistrar {
 
-	/**
-	 * The bean name of the configuration properties validator.
-	 * @since 2.2.0
-	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator"; // FIXME
-
 	public void xregisterBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
 		getTypes(metadata).forEach(registrar::register);
@@ -65,7 +59,8 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 		GenericBeanDefinition definition = new GenericBeanDefinition();
 		definition.setBeanClass(ConfigurationPropertiesBinder.class);
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, VALIDATOR_BEAN_NAME);
+		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
+				ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME);
 		registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
 	}
 
@@ -76,6 +71,7 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 		registry.registerBeanDefinition(ConfigurationPropertiesBindingPostProcessor.BEAN_NAME, definition);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void registerConfigurationBeanFactoryMetadata(BeanDefinitionRegistry registry) {
 		GenericBeanDefinition definition = new GenericBeanDefinition();
 		definition.setBeanClass(ConfigurationBeanFactoryMetadata.class);

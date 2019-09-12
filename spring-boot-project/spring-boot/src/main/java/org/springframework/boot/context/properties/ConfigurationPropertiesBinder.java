@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -54,9 +53,6 @@ import org.springframework.validation.annotation.Validated;
  */
 class ConfigurationPropertiesBinder implements ApplicationContextAware {
 
-	// FIXME fine to change
-	// FIXME make no ACA
-
 	/**
 	 * The bean name that this binder is registered with.
 	 */
@@ -81,7 +77,8 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		// FIXME can we make this not an ACA
 		this.applicationContext = applicationContext;
 		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
 		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,

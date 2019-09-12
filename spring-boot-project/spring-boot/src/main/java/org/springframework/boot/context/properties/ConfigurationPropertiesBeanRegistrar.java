@@ -32,15 +32,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Registers a bean definition for a configuration properties class.
- *
- * a type annotated with {@link ConfigurationProperties @ConfigurationProperties} using
- * the prefix of the annotation in the bean name.
+ * Delegate used by {@link EnableConfigurationPropertiesRegistrar} and
+ * {@link ConfigurationPropertiesScanRegistrar} to register a bean definition for a
+ * {@link ConfigurationProperties @ConfigurationProperties} class.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
- * @see EnableConfigurationPropertiesRegistrar
- * @see ConfigurationPropertiesScanRegistrar
  */
 final class ConfigurationPropertiesBeanRegistrar {
 
@@ -75,7 +72,7 @@ final class ConfigurationPropertiesBeanRegistrar {
 		return containsBeanDefinition(this.beanFactory, name);
 	}
 
-	private static boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
+	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
 		if (beanFactory instanceof ListableBeanFactory
 				&& ((ListableBeanFactory) beanFactory).containsBeanDefinition(name)) {
 			return true;
