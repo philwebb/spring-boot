@@ -115,7 +115,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 				this.binder.bind(configurationPropertiesBean.asBindTarget());
 			}
 			catch (Exception ex) {
-				new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
+				throw new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
 			}
 		}
 
