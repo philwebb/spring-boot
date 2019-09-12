@@ -18,8 +18,10 @@ package org.springframework.boot.context.properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
@@ -78,6 +80,17 @@ public class ConfigurationPropertiesBindingPostProcessor
 		return bean;
 	}
 
+	static void register(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
+
+		}
+
+	}
+
 	private static class Delegate {
 
 		private final ApplicationContext applicationContext;
@@ -94,7 +107,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 		void bindIfNecessary(Object bean, String beanName) throws BeansException {
 			ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
-					.get(this.applicationContext, beanName, beanName);
+					.get(this.applicationContext, bean, beanName);
 			if (configurationPropertiesBean == null || hasBeenBoundAsValueObject(beanName)) {
 				return;
 			}

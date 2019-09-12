@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,7 +135,7 @@ public final class Bindable<T> {
 		ToStringCreator creator = new ToStringCreator(this);
 		creator.append("type", this.type);
 		creator.append("value", (this.value != null) ? "provided" : "none");
-		creator.append("annotations", this.annotations);
+		creator.append("annotations", Arrays.toString(this.annotations));
 		return creator.toString();
 	}
 

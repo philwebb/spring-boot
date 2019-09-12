@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -56,7 +59,7 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	/**
 	 * The bean name that this binder is registered with.
 	 */
-	static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
+	private static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
 	private final String validatorBeanName;
 
@@ -182,6 +185,17 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 			return ((ConfigurableApplicationContext) this.applicationContext).getBeanFactory()::copyRegisteredEditorsTo;
 		}
 		return null;
+	}
+
+	static void register(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBinder.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
+					ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME);
+			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+		}
 	}
 
 	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {

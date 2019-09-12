@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -35,20 +33,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
- * Tests for {@link ConfigurationPropertiesBeanRegistrar}.
+ * Tests for {@link EnableConfigurationPropertiesRegistrar}.
  *
  * @author Madhura Bhave
  * @author Stephane Nicoll
  */
 class ConfigurationPropertiesBeanRegistrarTests {
 
-	private final ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar();
-
 	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+
+	private final ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(
+			this.beanFactory);
 
 	@Test
 	void typeWithDefaultConstructorShouldRegisterGenericBeanDefinition() throws Exception {
-		this.registrar.registerBeanDefinitions(getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
+		this.registrar.register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
 				"foo-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$FooProperties");
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
@@ -56,7 +55,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	@Test
 	void typeWithOneConstructorWithParametersShouldRegisterConfigurationPropertiesBeanDefinition() throws Exception {
-		this.registrar.registerBeanDefinitions(getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
+		this.registrar.register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
 				"bar-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$BarProperties");
 		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
@@ -64,7 +63,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	@Test
 	void typeWithMultipleConstructorsShouldRegisterGenericBeanDefinition() throws Exception {
-		this.registrar.registerBeanDefinitions(getAnnotationMetadata(TestConfiguration.class), this.beanFactory);
+		this.registrar.register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(
 				"bing-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrarTests$BingProperties");
 		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
@@ -72,9 +71,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	@Test
 	void typeWithNoAnnotationShouldFail() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.registrar
-						.registerBeanDefinitions(getAnnotationMetadata(InvalidConfiguration.class), this.beanFactory))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.registrar.register(InvalidConfiguration.class))
 				.withMessageContaining("No ConfigurationProperties annotation found")
 				.withMessageContaining(ConfigurationPropertiesBeanRegistrar.class.getName());
 	}
@@ -82,19 +79,17 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registrationWithDuplicatedTypeShouldRegisterSingleBeanDefinition() throws IOException {
 		DefaultListableBeanFactory factory = spy(this.beanFactory);
-		this.registrar.registerBeanDefinitions(getAnnotationMetadata(DuplicateConfiguration.class), factory);
+		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(this.beanFactory);
+		registrar.register(DuplicateConfiguration.class);
 		verify(factory, times(1)).registerBeanDefinition(anyString(), any());
 	}
 
 	@Test
 	void registrationWithNoTypeShouldNotRegisterAnything() throws IOException {
 		DefaultListableBeanFactory factory = spy(this.beanFactory);
-		this.registrar.registerBeanDefinitions(getAnnotationMetadata(EmptyConfiguration.class), factory);
+		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(this.beanFactory);
+		registrar.register(EmptyConfiguration.class);
 		verifyZeroInteractions(factory);
-	}
-
-	private AnnotationMetadata getAnnotationMetadata(Class<?> source) throws IOException {
-		return new SimpleMetadataReaderFactory().getMetadataReader(source.getName()).getAnnotationMetadata();
 	}
 
 	@EnableConfigurationProperties({ FooProperties.class, BarProperties.class, BingProperties.class })

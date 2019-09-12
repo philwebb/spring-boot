@@ -20,9 +20,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
@@ -33,50 +31,20 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegistrar {
 
-	public void xregisterBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
-		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
-		getTypes(metadata).forEach(registrar::register);
+	@Override
+	@SuppressWarnings("deprecation")
+	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+		ConfigurationPropertiesBinder.register(registry);
+		ConfigurationPropertiesBindingPostProcessor.register(registry);
+		ConfigurationBeanFactoryMetadata.register(registry);
+		ConfigurationPropertiesBeanRegistrar beanRegistrar = new ConfigurationPropertiesBeanRegistrar(registry);
+		getTypes(metadata).forEach(beanRegistrar::register);
 	}
 
 	private Set<Class<?>> getTypes(AnnotationMetadata metadata) {
 		return metadata.getAnnotations().stream(EnableConfigurationProperties.class)
 				.flatMap((annotation) -> Arrays.stream(annotation.getClassArray(MergedAnnotation.VALUE)))
 				.filter((type) -> void.class != type).collect(Collectors.toSet());
-	}
-
-	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		if (!registry.containsBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME)) {
-			registerConfigurationPropertiesBinder(registry);
-		}
-		if (!registry.containsBeanDefinition(ConfigurationPropertiesBindingPostProcessor.BEAN_NAME)) {
-			registerConfigurationPropertiesBindingPostProcessor(registry);
-			registerConfigurationBeanFactoryMetadata(registry);
-		}
-	}
-
-	private void registerConfigurationPropertiesBinder(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationPropertiesBinder.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME);
-		registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
-	}
-
-	private void registerConfigurationPropertiesBindingPostProcessor(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(ConfigurationPropertiesBindingPostProcessor.BEAN_NAME, definition);
-	}
-
-	@SuppressWarnings("deprecation")
-	private void registerConfigurationBeanFactoryMetadata(BeanDefinitionRegistry registry) {
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(ConfigurationBeanFactoryMetadata.class);
-		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		registry.registerBeanDefinition(ConfigurationBeanFactoryMetadata.BEAN_NAME, definition);
 	}
 
 }

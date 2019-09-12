@@ -110,7 +110,7 @@ public final class ConfigurationPropertiesBean {
 
 	private static <A extends Annotation> A getAnnotation(Method factoryMethod, Class<?> beanType,
 			Class<A> annotationType) {
-		A annotation = AnnotationUtils.findAnnotation(factoryMethod, annotationType);
+		A annotation = (factoryMethod != null) ? AnnotationUtils.findAnnotation(factoryMethod, annotationType) : null;
 		if (annotation == null) {
 			annotation = AnnotationUtils.findAnnotation(beanType, annotationType);
 		}
