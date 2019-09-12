@@ -16,9 +16,15 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.annotation.Annotation;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BeanDefinition} that is used for registering
@@ -44,13 +50,18 @@ final class ConfigurationPropertiesValueObjectBeanDefinition extends GenericBean
 
 	private Object createBean() {
 		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(this.beanFactory);
-		ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
-				.forValueObject(getBeanClass(), this.beanName);
+		ResolvableType type = ResolvableType.forClass(getBeanClass());
+		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(getBeanClass(),
+				ConfigurationProperties.class);
+		Validated validated = AnnotationUtils.findAnnotation(getBeanClass(), Validated.class);
+		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
+				: new Annotation[] { annotation };
+		Bindable<Object> bindTarget = Bindable.of(type).withAnnotations(annotations);
 		try {
-			return binder.bindOrCreate(configurationPropertiesBean.asBindable());
+			return binder.bindOrCreate(bindTarget);
 		}
 		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
+			throw new ConfigurationPropertiesBindException(this.beanName, getBeanClass(), annotation, ex);
 		}
 	}
 

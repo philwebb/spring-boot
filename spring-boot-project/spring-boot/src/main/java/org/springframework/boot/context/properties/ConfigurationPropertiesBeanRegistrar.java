@@ -15,12 +15,16 @@
  */
 package org.springframework.boot.context.properties;
 
+import java.lang.reflect.Constructor;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -67,22 +71,6 @@ final class ConfigurationPropertiesBeanRegistrar {
 		return (StringUtils.hasText(prefix) ? prefix + "-" + type.getName() : type.getName());
 	}
 
-	private void registerBeanDefinition(String beanName, Class<?> type,
-			MergedAnnotation<ConfigurationProperties> annotation) {
-		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
-				+ " annotation found on  '" + type.getName() + "'.");
-		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
-	}
-
-	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		if (ConfigurationPropertiesBean.isValueObject(type)) {
-			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
-		}
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(type);
-		return definition;
-	}
-
 	private boolean containsBeanDefinition(String name) {
 		return containsBeanDefinition(this.beanFactory, name);
 	}
@@ -96,6 +84,33 @@ final class ConfigurationPropertiesBeanRegistrar {
 			return containsBeanDefinition(((HierarchicalBeanFactory) beanFactory).getParentBeanFactory(), name);
 		}
 		return false;
+	}
+
+	private void registerBeanDefinition(String beanName, Class<?> type,
+			MergedAnnotation<ConfigurationProperties> annotation) {
+		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
+				+ " annotation found on  '" + type.getName() + "'.");
+		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
+	}
+
+	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+		if (isValueObject(type)) {
+			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
+		}
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(type);
+		return definition;
+	}
+
+	private boolean isValueObject(Class<?> type) {
+		if (KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type)) {
+			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
+			if (primaryConstructor != null) {
+				return primaryConstructor.getParameterCount() > 0;
+			}
+		}
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		return constructors.length == 1 && constructors[0].getParameterCount() > 0;
 	}
 
 }

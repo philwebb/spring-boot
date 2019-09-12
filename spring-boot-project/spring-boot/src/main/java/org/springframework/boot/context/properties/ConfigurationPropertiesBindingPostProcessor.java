@@ -16,23 +16,15 @@
 
 package org.springframework.boot.context.properties;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.PropertySources;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -47,8 +39,6 @@ import org.springframework.validation.annotation.Validated;
  */
 public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {
-
-	// FIXME revisit
 
 	/**
 	 * The bean name that this post-processor is registered with.
@@ -92,60 +82,33 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 		private final ApplicationContext applicationContext;
 
-		private final ConfigurationPropertiesBinder configurationPropertiesBinder;
-
 		private final BeanDefinitionRegistry registry;
+
+		private final ConfigurationPropertiesBinder binder;
 
 		Delegate(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
-			this.configurationPropertiesBinder = ConfigurationPropertiesBinder.get(applicationContext);
 			this.registry = (BeanDefinitionRegistry) applicationContext.getAutowireCapableBeanFactory();
+			this.binder = ConfigurationPropertiesBinder.get(applicationContext);
 		}
 
 		void bindIfNecessary(Object bean, String beanName) throws BeansException {
-			ConfigurationProperties annotation = getAnnotation(bean, beanName, ConfigurationProperties.class);
-			if (annotation != null && !hasBeenBoundAsValueObject(beanName)) {
-				bind(bean, beanName, annotation);
+			ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
+					.get(this.applicationContext, beanName, beanName);
+			if (configurationPropertiesBean == null || hasBeenBoundAsValueObject(beanName)) {
+				return;
+			}
+			try {
+				this.binder.bind(configurationPropertiesBean.asBindTarget());
+			}
+			catch (Exception ex) {
+				new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
 			}
 		}
 
 		private boolean hasBeenBoundAsValueObject(String beanName) {
-			if (this.registry.containsBeanDefinition(beanName)) {
-				BeanDefinition beanDefinition = this.registry.getBeanDefinition(beanName);
-				return beanDefinition instanceof ConfigurationPropertiesValueObjectBeanDefinition;
-			}
-			return false;
-		}
-
-		private void bind(Object bean, String beanName, ConfigurationProperties annotation) {
-			// FIXME this needs to use ConfigurationPropertiesBean
-			ResolvableType type = getBeanType(bean, beanName);
-			Validated validated = getAnnotation(bean, beanName, Validated.class);
-			Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
-					: new Annotation[] { annotation };
-			Bindable<?> target = Bindable.of(type).withExistingValue(bean).withAnnotations(annotations);
-			try {
-				this.configurationPropertiesBinder.bind(target);
-			}
-			catch (Exception ex) {
-				throw new ConfigurationPropertiesBindException(beanName, bean.getClass(), annotation, ex);
-			}
-		}
-
-		private ResolvableType getBeanType(Object bean, String beanName) {
-			Method factoryMethod = this.beanFactoryMetadata.findFactoryMethod(beanName);
-			if (factoryMethod != null) {
-				return ResolvableType.forMethodReturnType(factoryMethod);
-			}
-			return ResolvableType.forClass(bean.getClass());
-		}
-
-		private <A extends Annotation> A getAnnotation(Object bean, String beanName, Class<A> type) {
-			A annotation = this.beanFactoryMetadata.findFactoryAnnotation(beanName, type);
-			if (annotation == null) {
-				annotation = AnnotationUtils.findAnnotation(bean.getClass(), type);
-			}
-			return annotation;
+			return this.registry.containsBeanDefinition(beanName) && this.registry
+					.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
 		}
 
 	}

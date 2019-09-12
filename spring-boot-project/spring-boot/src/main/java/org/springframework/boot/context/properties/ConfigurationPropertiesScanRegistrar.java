@@ -105,9 +105,13 @@ class ConfigurationPropertiesScanRegistrar
 	}
 
 	private void register(ConfigurationPropertiesBeanRegistrar registrar, Class<?> type) {
-		if (!MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class)) {
+		if (!isComponent(type)) {
 			registrar.register(type);
 		}
+	}
+
+	private boolean isComponent(Class<?> type) {
+		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class);
 	}
 
 	@Override

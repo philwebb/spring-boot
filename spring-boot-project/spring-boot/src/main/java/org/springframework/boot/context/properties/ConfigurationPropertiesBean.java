@@ -17,85 +17,104 @@
 package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * @author Phillip Webb
  * @since 2.0.0
+ * @see #get(ApplicationContext, Object, String)
+ * @see #getAll(ApplicationContext)
  */
 public final class ConfigurationPropertiesBean {
 
-	public ResolvableType getType() {
-		return null;
+	private final String name;
+
+	private final Object instance;
+
+	private final ConfigurationProperties annotation;
+
+	private final Bindable<?> bindTarget;
+
+	ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
+			Bindable<?> bindTarget) {
+		this.name = name;
+		this.instance = instance;
+		this.annotation = annotation;
+		this.bindTarget = bindTarget;
 	}
 
-	public Annotation[] getAnnotations() {
-		return null;
+	public String getName() {
+		return this.name;
 	}
 
-	public String getBeanName() {
-		return null;
+	public Object getInstance() {
+		return this.instance;
 	}
 
-	public Object getBean() {
-		return null;
+	public ConfigurationProperties getAnnotation() {
+		return this.annotation;
 	}
 
-	public static boolean isConfigurationPropertiesBean(ApplicationContext applicationContext, String beanName,
-			Object bean) {
-		return false;
+	public Bindable<?> asBindTarget() {
+		return this.bindTarget;
 	}
 
-	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, String beanName, Object bean) {
-		return null;
-	}
-
-	public static ConfigurationPropertiesBean forValueObject(Class<?> type, String beanName) {
-		return null;
+	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
+		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
+		ConfigurationProperties annotation = getAnnotation(factoryMethod, bean.getClass(),
+				ConfigurationProperties.class);
+		if (annotation == null) {
+			return null;
+		}
+		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
+				: ResolvableType.forClass(bean.getClass());
+		Validated validated = getAnnotation(factoryMethod, bean.getClass(), Validated.class);
+		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
+				: new Annotation[] { annotation };
+		Bindable<?> bindTarget = Bindable.of(type).withAnnotations(annotations).withExistingValue(bean);
+		return new ConfigurationPropertiesBean(beanName, bean, annotation, bindTarget);
 	}
 
 	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
+		throw new IllegalStateException();
+	}
+
+	private static Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
+		if (applicationContext instanceof ConfigurableApplicationContext) {
+			return findFactoryMethod((ConfigurableApplicationContext) applicationContext, beanName);
+		}
 		return null;
 	}
 
-	/**
-	 * @param type
-	 * @return
-	 */
-	public static boolean isValueObject(Class<?> type) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private static Method findFactoryMethod(ConfigurableApplicationContext applicationContext, String beanName) {
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		if (beanFactory.containsBeanDefinition(beanName)) {
+			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
+			if (beanDefinition instanceof RootBeanDefinition) {
+				return ((RootBeanDefinition) beanDefinition).getResolvedFactoryMethod();
+			}
+		}
+		return null;
 	}
-	// private static boolean isValueObject(Class<?> type) {
-	// List<Constructor<?>> constructors = determineConstructors(type);
-	// return (constructors.size() == 1 && constructors.get(0).getParameterCount() > 0);
-	// }
-	//
-	// private static List<Constructor<?>> determineConstructors(Class<?> type) {
-	// List<Constructor<?>> constructors = new ArrayList<>();
-	// if (KOTLIN_PRESENT && KotlinDetector.isKotlinType(type)) {
-	// Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-	// if (primaryConstructor != null) {
-	// constructors.add(primaryConstructor);
-	// }
-	// }
-	// else {
-	// constructors.addAll(Arrays.asList(type.getDeclaredConstructors()));
-	// }
-	// return constructors;
-	// }
 
-	/**
-	 * @return
-	 */
-	Bindable<?> asBindable() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	private static <A extends Annotation> A getAnnotation(Method factoryMethod, Class<?> beanType,
+			Class<A> annotationType) {
+		A annotation = AnnotationUtils.findAnnotation(factoryMethod, annotationType);
+		if (annotation == null) {
+			annotation = AnnotationUtils.findAnnotation(beanType, annotationType);
+		}
+		return annotation;
 	}
-	// private static final boolean KOTLIN_PRESENT = KotlinDetector.isKotlinPresent();
 
 }

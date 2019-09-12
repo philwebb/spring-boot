@@ -187,14 +187,8 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 		return null;
 	}
 
-	/**
-	 * @param beanFactory
-	 * @return
-	 */
-	public static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
-		beanFactory.getBean(BEAN_NAME);
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Auto-generated method stub");
+	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
+		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
 	}
 
 }

@@ -33,17 +33,15 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 
 	private final ConfigurationProperties annotation;
 
-	// FIXME can prob delete constructor
+	ConfigurationPropertiesBindException(ConfigurationPropertiesBean bean, Exception cause) {
+		this(bean.getName(), bean.getInstance().getClass(), bean.getAnnotation(), cause);
+	}
+
 	ConfigurationPropertiesBindException(String beanName, Class<?> beanType, ConfigurationProperties annotation,
 			Exception cause) {
 		super(beanName, getMessage(beanType, annotation), cause);
 		this.beanType = beanType;
 		this.annotation = annotation;
-	}
-
-	ConfigurationPropertiesBindException(ConfigurationPropertiesBean configurationPropertiesBean, Exception cause) {
-		super(null, null, cause);
-		throw new IllegalStateException();
 	}
 
 	/**
