@@ -23,8 +23,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -45,12 +43,16 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class ConfigurationPropertiesScanRegistrar
-		implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
+class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegistrar {
 
-	private Environment environment;
+	private final Environment environment;
 
-	private ResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
+
+	ConfigurationPropertiesScanRegistrar(Environment environment, ResourceLoader resourceLoader) {
+		this.environment = environment;
+		this.resourceLoader = resourceLoader;
+	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
@@ -112,16 +114,6 @@ class ConfigurationPropertiesScanRegistrar
 
 	private boolean isComponent(Class<?> type) {
 		return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).isPresent(Component.class);
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
 	}
 
 }

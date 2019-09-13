@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -89,17 +88,18 @@ public final class ConfigurationPropertiesBean {
 
 	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
 
-		private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext context,
-				ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
-			Map<String, Object> beans = new HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
-			if (beanFactoryMetadata != null) {
-				beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
-			}
-			return beans;
-		}
+		// private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext
+		// context,
+		// ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
+		// Map<String, Object> beans = new
+		// HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
+		// if (beanFactoryMetadata != null) {
+		// beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+		// }
+		// return beans;
+		// }
 
 		throw new IllegalStateException();
-
 
 	}
 
