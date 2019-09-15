@@ -41,6 +41,12 @@ import org.springframework.context.annotation.Import;
 public @interface EnableConfigurationProperties {
 
 	/**
+	 * The bean name of the configuration properties validator.
+	 * @since 2.2.0
+	 */
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+
+	/**
 	 * Convenient way to quickly register
 	 * {@link ConfigurationProperties @ConfigurationProperties} annotated beans with
 	 * Spring. Standard Spring Beans will also be scanned regardless of this value.

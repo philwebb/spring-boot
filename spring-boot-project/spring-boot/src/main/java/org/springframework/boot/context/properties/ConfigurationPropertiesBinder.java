@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -54,38 +56,30 @@ import org.springframework.validation.annotation.Validated;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-class ConfigurationPropertiesBinder implements ApplicationContextAware {
+class ConfigurationPropertiesBinder {
 
-	/**
-	 * The bean name that this binder is registered with.
-	 */
 	private static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
-	private final String validatorBeanName;
+	private static final String FACTORY_BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinderFactory";
 
-	private ApplicationContext applicationContext;
+	private static final String VALIDATOR_BEAN_NAME = EnableConfigurationProperties.VALIDATOR_BEAN_NAME;
 
-	private PropertySources propertySources;
+	private final ApplicationContext applicationContext;
 
-	private Validator configurationPropertiesValidator;
+	private final PropertySources propertySources;
 
-	private boolean jsr303Present;
+	private final Validator configurationPropertiesValidator;
+
+	private final boolean jsr303Present;
 
 	private volatile Validator jsr303Validator;
 
 	private volatile Binder binder;
 
-	ConfigurationPropertiesBinder(String validatorBeanName) {
-		this.validatorBeanName = validatorBeanName;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		// FIXME can we make this not an ACA
+	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 		this.propertySources = new PropertySourcesDeducer(applicationContext).getPropertySources();
-		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext,
-				this.validatorBeanName);
+		this.configurationPropertiesValidator = getConfigurationPropertiesValidator(applicationContext);
 		this.jsr303Present = ConfigurationPropertiesJsr303Validator.isJsr303Present(applicationContext);
 	}
 
@@ -107,10 +101,9 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 		return annotation;
 	}
 
-	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext,
-			String validatorBeanName) {
-		if (applicationContext.containsBean(validatorBeanName)) {
-			return applicationContext.getBean(validatorBeanName, Validator.class);
+	private Validator getConfigurationPropertiesValidator(ApplicationContext applicationContext) {
+		if (applicationContext.containsBean(VALIDATOR_BEAN_NAME)) {
+			return applicationContext.getBean(VALIDATOR_BEAN_NAME, Validator.class);
 		}
 		return null;
 	}
@@ -188,18 +181,45 @@ class ConfigurationPropertiesBinder implements ApplicationContextAware {
 	}
 
 	static void register(BeanDefinitionRegistry registry) {
+		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
+			GenericBeanDefinition definition = new GenericBeanDefinition();
+			definition.setBeanClass(ConfigurationPropertiesBinder.Factory.class);
+			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
+		}
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			GenericBeanDefinition definition = new GenericBeanDefinition();
 			definition.setBeanClass(ConfigurationPropertiesBinder.class);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-					ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME);
+			definition.setFactoryBeanName(FACTORY_BEAN_NAME);
+			definition.setFactoryMethodName("create");
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
 		}
 	}
 
 	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
 		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
+	}
+
+	/**
+	 * Factory bean used to create the {@link ConfigurationPropertiesBinder}. The bean
+	 * needs to be {@link ApplicationContextAware} since we can't directly inject an
+	 * {@link ApplicationContext} into the constructor without causing eager
+	 * {@link FactoryBean} initialization.
+	 */
+	static class Factory implements ApplicationContextAware {
+
+		private ApplicationContext applicationContext;
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			this.applicationContext = applicationContext;
+		}
+
+		ConfigurationPropertiesBinder create() {
+			return new ConfigurationPropertiesBinder(this.applicationContext);
+		}
+
 	}
 
 }

@@ -24,13 +24,18 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.validation.annotation.Validated;
 
 /**
+ * Provides access to {@link ConfigurationProperties} beans from an
+ * {@link ApplicationContext}.
+ *
  * @author Phillip Webb
  * @since 2.0.0
  * @see #get(ApplicationContext, Object, String)
@@ -54,23 +59,55 @@ public final class ConfigurationPropertiesBean {
 		this.bindTarget = bindTarget;
 	}
 
+	/**
+	 * Return the name of the Spring bean.
+	 * @return the bean name
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Return the actual Spring bean instance.
+	 * @return the bean instance
+	 */
 	public Object getInstance() {
 		return this.instance;
 	}
 
+	/**
+	 * Return the {@link ConfigurationProperties} annotation for the bean. The annotation
+	 * may be defined on the bean itself or from the factory method that create the bean
+	 * (usually a {@link Bean @Bean} method).
+	 * @return the configuration properties annotation
+	 */
 	public ConfigurationProperties getAnnotation() {
 		return this.annotation;
 	}
 
+	/**
+	 * Return a {@link Bindable} instance suitable that can be used as a target for the
+	 * {@link Binder}.
+	 * @return a bind target for use with the {@link Binder}
+	 */
 	public Bindable<?> asBindTarget() {
 		return this.bindTarget;
 	}
 
-	public static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
+	/**
+	 * Return a {@link ConfigurationPropertiesBean @ConfigurationPropertiesBean} instance
+	 * for the given bean details or {@code null} if the bean is not a
+	 * {@link ConfigurationProperties @ConfigurationProperties} object. Annotations are
+	 * considered both on the bean itself, as well as any factory method (for example a
+	 * {@link Bean @Bean} method).
+	 * @param applicationContext the source application context
+	 * @param bean the bean to consider
+	 * @param beanName the bean name
+	 * @return a configuration properties bean or {@code null} if the neither the bean or
+	 * factory method are annotated with
+	 * {@link ConfigurationProperties @ConfigurationProperties}
+	 */
+	static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
 		ConfigurationProperties annotation = getAnnotation(factoryMethod, bean.getClass(),
 				ConfigurationProperties.class);
@@ -86,6 +123,14 @@ public final class ConfigurationPropertiesBean {
 		return new ConfigurationPropertiesBean(beanName, bean, annotation, bindTarget);
 	}
 
+	/**
+	 * Return all {@link ConfigurationProperties @ConfigurationProperties} beans contained
+	 * in the given application context. Both directly annotated beans, as well as beans
+	 * that have {@link ConfigurationProperties @ConfigurationProperties} annotated
+	 * factory methods are included.
+	 * @param applicationContext the source application context
+	 * @return a map of all configuration properties beans keyed by the bean name
+	 */
 	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
 
 		// private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext

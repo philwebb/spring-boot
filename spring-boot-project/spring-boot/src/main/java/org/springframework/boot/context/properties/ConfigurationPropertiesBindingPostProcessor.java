@@ -38,7 +38,10 @@ import org.springframework.core.env.PropertySources;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @since 1.0.0
+ * @deprecated since 2.2.0 in favor of
+ * {@link EnableConfigurationProperties @EnableConfigurationProperties}
  */
+@Deprecated
 public class ConfigurationPropertiesBindingPostProcessor
 		implements BeanPostProcessor, PriorityOrdered, ApplicationContextAware, InitializingBean {
 
@@ -49,12 +52,17 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	/**
 	 * The bean name of the configuration properties validator.
+	 * @deprecated since 2.2.0 in favor of
+	 * {@link EnableConfigurationProperties#VALIDATOR_BEAN_NAME}
 	 */
-	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+	@Deprecated
+	public static final String VALIDATOR_BEAN_NAME = EnableConfigurationProperties.VALIDATOR_BEAN_NAME;
 
 	private ApplicationContext applicationContext;
 
-	private Delegate delegate;
+	private BeanDefinitionRegistry registry;
+
+	private ConfigurationPropertiesBinder binder;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -65,8 +73,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 	public void afterPropertiesSet() throws Exception {
 		// We can't use constructor injection of the application context because
 		// it causes eager factory bean initialization
-		// FIXME double check this is still the case, at lease try to push into the setAC
-		this.delegate = new Delegate(this.applicationContext);
+		this.registry = (BeanDefinitionRegistry) this.applicationContext.getAutowireCapableBeanFactory();
+		this.binder = ConfigurationPropertiesBinder.get(this.applicationContext);
 	}
 
 	@Override
@@ -76,8 +84,22 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		this.delegate.bindIfNecessary(bean, beanName);
+		ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
+				.get(this.applicationContext, bean, beanName);
+		if (configurationPropertiesBean != null && !hasBoundValueObject(beanName)) {
+			try {
+				this.binder.bind(configurationPropertiesBean.asBindTarget());
+			}
+			catch (Exception ex) {
+				throw new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
+			}
+		}
 		return bean;
+	}
+
+	private boolean hasBoundValueObject(String beanName) {
+		return this.registry.containsBeanDefinition(beanName) && this.registry
+				.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
 	}
 
 	static void register(BeanDefinitionRegistry registry) {
@@ -86,44 +108,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 			definition.setBeanClass(ConfigurationPropertiesBindingPostProcessor.class);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
-
 		}
-
-	}
-
-	private static class Delegate {
-
-		private final ApplicationContext applicationContext;
-
-		private final BeanDefinitionRegistry registry;
-
-		private final ConfigurationPropertiesBinder binder;
-
-		Delegate(ApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-			this.registry = (BeanDefinitionRegistry) applicationContext.getAutowireCapableBeanFactory();
-			this.binder = ConfigurationPropertiesBinder.get(applicationContext);
-		}
-
-		void bindIfNecessary(Object bean, String beanName) throws BeansException {
-			ConfigurationPropertiesBean configurationPropertiesBean = ConfigurationPropertiesBean
-					.get(this.applicationContext, bean, beanName);
-			if (configurationPropertiesBean == null || hasBeenBoundAsValueObject(beanName)) {
-				return;
-			}
-			try {
-				this.binder.bind(configurationPropertiesBean.asBindTarget());
-			}
-			catch (Exception ex) {
-				throw new ConfigurationPropertiesBindException(configurationPropertiesBean, ex);
-			}
-		}
-
-		private boolean hasBeenBoundAsValueObject(String beanName) {
-			return this.registry.containsBeanDefinition(beanName) && this.registry
-					.getBeanDefinition(beanName) instanceof ConfigurationPropertiesValueObjectBeanDefinition;
-		}
-
 	}
 
 }
