@@ -18,8 +18,11 @@ package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -30,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -95,6 +99,45 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	/**
+	 * Return all {@link ConfigurationProperties @ConfigurationProperties} beans contained
+	 * in the given application context. Both directly annotated beans, as well as beans
+	 * that have {@link ConfigurationProperties @ConfigurationProperties} annotated
+	 * factory methods are included.
+	 * @param applicationContext the source application context
+	 * @return a map of all configuration properties beans keyed by the bean name
+	 */
+	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
+		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+		if (applicationContext instanceof ConfigurableApplicationContext) {
+			return getAll((ConfigurableApplicationContext) applicationContext);
+		}
+		Map<String, ConfigurationPropertiesBean> propertiesBeans = new LinkedHashMap<>();
+		applicationContext.getBeansWithAnnotation(ConfigurationProperties.class).forEach((beanName, bean) -> {
+			propertiesBeans.put(beanName, get(applicationContext, bean, beanName));
+		});
+		return propertiesBeans;
+	}
+
+	private static Map<String, ConfigurationPropertiesBean> getAll(ConfigurableApplicationContext applicationContext) {
+		Map<String, ConfigurationPropertiesBean> propertiesBeans = new LinkedHashMap<>();
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		Iterator<String> beanNames = beanFactory.getBeanNamesIterator();
+		while (beanNames.hasNext()) {
+			String beanName = beanNames.next();
+			try {
+				Object bean = beanFactory.getBean(beanName);
+				ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName);
+				if (propertiesBean != null) {
+					propertiesBeans.put(beanName, propertiesBean);
+				}
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+			}
+		}
+		return propertiesBeans;
+	}
+
+	/**
 	 * Return a {@link ConfigurationPropertiesBean @ConfigurationPropertiesBean} instance
 	 * for the given bean details or {@code null} if the bean is not a
 	 * {@link ConfigurationProperties @ConfigurationProperties} object. Annotations are
@@ -109,43 +152,18 @@ public final class ConfigurationPropertiesBean {
 	 */
 	static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
-		ConfigurationProperties annotation = getAnnotation(factoryMethod, bean.getClass(),
+		ConfigurationProperties annotation = getAnnotation(applicationContext, beanName, factoryMethod,
 				ConfigurationProperties.class);
 		if (annotation == null) {
 			return null;
 		}
 		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
 				: ResolvableType.forClass(bean.getClass());
-		Validated validated = getAnnotation(factoryMethod, bean.getClass(), Validated.class);
+		Validated validated = getAnnotation(applicationContext, beanName, factoryMethod, Validated.class);
 		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
 				: new Annotation[] { annotation };
 		Bindable<?> bindTarget = Bindable.of(type).withAnnotations(annotations).withExistingValue(bean);
 		return new ConfigurationPropertiesBean(beanName, bean, annotation, bindTarget);
-	}
-
-	/**
-	 * Return all {@link ConfigurationProperties @ConfigurationProperties} beans contained
-	 * in the given application context. Both directly annotated beans, as well as beans
-	 * that have {@link ConfigurationProperties @ConfigurationProperties} annotated
-	 * factory methods are included.
-	 * @param applicationContext the source application context
-	 * @return a map of all configuration properties beans keyed by the bean name
-	 */
-	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
-
-		// private Map<String, Object> getConfigurationPropertiesBeans(ApplicationContext
-		// context,
-		// ConfigurationBeanFactoryMetadata beanFactoryMetadata) {
-		// Map<String, Object> beans = new
-		// HashMap<>(context.getBeansWithAnnotation(ConfigurationProperties.class));
-		// if (beanFactoryMetadata != null) {
-		// beans.putAll(beanFactoryMetadata.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
-		// }
-		// return beans;
-		// }
-
-		throw new IllegalStateException();
-
 	}
 
 	private static Method findFactoryMethod(ApplicationContext applicationContext, String beanName) {
@@ -166,11 +184,11 @@ public final class ConfigurationPropertiesBean {
 		return null;
 	}
 
-	private static <A extends Annotation> A getAnnotation(Method factoryMethod, Class<?> beanType,
-			Class<A> annotationType) {
+	private static <A extends Annotation> A getAnnotation(ApplicationContext applicationContext, String beanName,
+			Method factoryMethod, Class<A> annotationType) {
 		A annotation = (factoryMethod != null) ? AnnotationUtils.findAnnotation(factoryMethod, annotationType) : null;
 		if (annotation == null) {
-			annotation = AnnotationUtils.findAnnotation(beanType, annotationType);
+			annotation = applicationContext.findAnnotationOnBean(beanName, annotationType);
 		}
 		return annotation;
 	}
