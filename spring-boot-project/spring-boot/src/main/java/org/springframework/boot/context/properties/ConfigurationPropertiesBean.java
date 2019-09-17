@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -152,14 +153,14 @@ public final class ConfigurationPropertiesBean {
 	 */
 	static ConfigurationPropertiesBean get(ApplicationContext applicationContext, Object bean, String beanName) {
 		Method factoryMethod = findFactoryMethod(applicationContext, beanName);
-		ConfigurationProperties annotation = getAnnotation(applicationContext, beanName, factoryMethod,
+		ConfigurationProperties annotation = getAnnotation(applicationContext, bean, beanName, factoryMethod,
 				ConfigurationProperties.class);
 		if (annotation == null) {
 			return null;
 		}
 		ResolvableType type = (factoryMethod != null) ? ResolvableType.forMethodReturnType(factoryMethod)
 				: ResolvableType.forClass(bean.getClass());
-		Validated validated = getAnnotation(applicationContext, beanName, factoryMethod, Validated.class);
+		Validated validated = getAnnotation(applicationContext, bean, beanName, factoryMethod, Validated.class);
 		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
 				: new Annotation[] { annotation };
 		Bindable<?> bindTarget = Bindable.of(type).withAnnotations(annotations).withExistingValue(bean);
@@ -184,13 +185,22 @@ public final class ConfigurationPropertiesBean {
 		return null;
 	}
 
-	private static <A extends Annotation> A getAnnotation(ApplicationContext applicationContext, String beanName,
-			Method factoryMethod, Class<A> annotationType) {
-		A annotation = (factoryMethod != null) ? AnnotationUtils.findAnnotation(factoryMethod, annotationType) : null;
-		if (annotation == null) {
-			annotation = applicationContext.findAnnotationOnBean(beanName, annotationType);
+	private static <A extends Annotation> A getAnnotation(ApplicationContext applicationContext, Object bean,
+			String beanName, Method factoryMethod, Class<A> annotationType) {
+		if (factoryMethod != null) {
+			A annotation = AnnotationUtils.findAnnotation(factoryMethod, annotationType);
+			if (annotation != null) {
+				return annotation;
+			}
 		}
-		return annotation;
+		A annotation = AnnotationUtils.findAnnotation(bean.getClass(), annotationType);
+		if (annotation != null) {
+			return annotation;
+		}
+		if (AopUtils.isAopProxy(bean)) {
+			return AnnotationUtils.findAnnotation(AopUtils.getTargetClass(bean), annotationType);
+		}
+		return null;
 	}
 
 }
