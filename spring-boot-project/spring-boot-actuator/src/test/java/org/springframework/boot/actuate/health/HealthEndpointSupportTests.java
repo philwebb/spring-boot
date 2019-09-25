@@ -105,16 +105,18 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	}
 
 	@Test
-	void getHealthResultWhenAlwaysIncludesDetailsIsFalseAndGroupIsTrueIncludesDetails() {
+	void getHealthResultWhenAlwaysShowIsFalseAndGroupIsTrueShowsDetails() {
 		this.registry.registerContributor("test", createContributor(this.up));
 		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE,
 				false, "test");
 		assertThat(((Health) getHealth(result)).getDetails()).containsEntry("spring", "boot");
 	}
 
+	// FIXME
+
 	@Test
-	void getHealthResultWhenAlwaysIncludesDetailsIsFalseAndGroupIsFalseIncludesNoDetails() {
-		this.primaryGroup.setIncludeDetails(false);
+	void getHealthResultWhenAlwaysShowIsFalseAndGroupIsFalseShowsNoDetails() {
+		this.primaryGroup.setShowDetails(false);
 		this.registry.registerContributor("test", createContributor(this.up));
 		HealthEndpointSupport<C, T> endpoint = create(this.registry, this.groups);
 		HealthResult<T> rootResult = endpoint.getHealth(ApiVersion.V3, SecurityContext.NONE, false);
@@ -124,8 +126,8 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	}
 
 	@Test
-	void getHealthResultWhenAlwaysIncludesDetailsIsTrueIncludesDetails() {
-		this.primaryGroup.setIncludeDetails(false);
+	void getHealthResultWhenAlwaysShowIsTrueShowsDetails() {
+		this.primaryGroup.setShowDetails(false);
 		this.registry.registerContributor("test", createContributor(this.up));
 		HealthResult<T> result = create(this.registry, this.groups).getHealth(ApiVersion.V3, SecurityContext.NONE, true,
 				"test");

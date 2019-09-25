@@ -94,7 +94,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				"management.endpoint.health.status.http-mapping.down=200").run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup primary = groups.getPrimary();
-					assertThat(primary.includeDetails(SecurityContext.NONE)).isTrue();
+					assertThat(primary.showDetails(SecurityContext.NONE)).isTrue();
 					assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN))
 							.isEqualTo(Status.UP);
 					assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
