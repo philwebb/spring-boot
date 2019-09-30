@@ -18,14 +18,14 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.jersey;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import org.glassfish.jersey.server.ResourceConfig;
+import javax.annotation.PostConstruct;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.model.Resource;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
+import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
@@ -42,6 +43,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -60,29 +62,62 @@ import org.springframework.context.annotation.Bean;
 class JerseyWebEndpointManagementContextConfiguration {
 
 	@Bean
-	public BeanPostProcessor resourceConfigBeanPostProcessor(WebEndpointsSupplier webEndpointsSupplier,
-			ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-			WebEndpointProperties webEndpointProperties) {
-		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
-		allEndpoints.addAll(webEndpointsSupplier.getEndpoints());
-		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
-		return new BeanPostProcessor() {
-			@Override
-			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-				if (bean instanceof ResourceConfig) {
-					ResourceConfig resourceConfig = (ResourceConfig) bean;
-					JerseyEndpointResourceFactory resourceFactory = new JerseyEndpointResourceFactory();
-					String basePath = webEndpointProperties.getBasePath();
-					EndpointMapping endpointMapping = new EndpointMapping(basePath);
-					Collection<ExposableWebEndpoint> webEndpoints = Collections
-							.unmodifiableCollection(webEndpointsSupplier.getEndpoints());
-					resourceConfig.registerResources(
-							new HashSet<>(resourceFactory.createEndpointResources(endpointMapping, webEndpoints,
-									endpointMediaTypes, new EndpointLinksResolver(allEndpoints, basePath))));
-				}
-				return bean;
-			}
-		};
+	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(ResourceConfig resourceConfig,
+			WebEndpointsSupplier webEndpointsSupplier, ServletEndpointsSupplier servletEndpointsSupplier,
+			EndpointMediaTypes endpointMediaTypes, WebEndpointProperties webEndpointProperties) {
+		return new JerseyWebEndpointsResourcesRegistrar(resourceConfig, webEndpointsSupplier, servletEndpointsSupplier,
+				endpointMediaTypes, webEndpointProperties.getBasePath());
+	}
+
+	/**
+	 * Register endpoints with the {@link ResourceConfig}. The
+	 * {@link ResourceConfigCustomizer} cannot be used because we don't want to apply
+	 */
+	static class JerseyWebEndpointsResourcesRegistrar {
+
+		private final ResourceConfig resourceConfig;
+
+		private final WebEndpointsSupplier webEndpointsSupplier;
+
+		private final ServletEndpointsSupplier servletEndpointsSupplier;
+
+		private final EndpointMediaTypes mediaTypes;
+
+		private final String basePath;
+
+		JerseyWebEndpointsResourcesRegistrar(ResourceConfig resourceConfig, WebEndpointsSupplier webEndpointsSupplier,
+				ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
+				String basePath) {
+			super();
+			this.resourceConfig = resourceConfig;
+			this.webEndpointsSupplier = webEndpointsSupplier;
+			this.servletEndpointsSupplier = servletEndpointsSupplier;
+			this.mediaTypes = endpointMediaTypes;
+			this.basePath = basePath;
+		}
+
+		@PostConstruct
+		void register() {
+			Collection<ExposableWebEndpoint> webEndpoints = this.webEndpointsSupplier.getEndpoints();
+			Collection<ExposableServletEndpoint> servletEndpoints = this.servletEndpointsSupplier.getEndpoints();
+			EndpointLinksResolver linksResolver = getLinksResolver(webEndpoints, servletEndpoints);
+			EndpointMapping mapping = new EndpointMapping(this.basePath);
+			JerseyEndpointResourceFactory resourceFactory = new JerseyEndpointResourceFactory();
+			register(resourceFactory.createEndpointResources(mapping, webEndpoints, this.mediaTypes, linksResolver));
+		}
+
+		private EndpointLinksResolver getLinksResolver(Collection<ExposableWebEndpoint> webEndpoints,
+				Collection<ExposableServletEndpoint> servletEndpoints) {
+			List<ExposableEndpoint<?>> endpoints = new ArrayList<>(webEndpoints.size() + servletEndpoints.size());
+			endpoints.addAll(webEndpoints);
+			endpoints.addAll(servletEndpoints);
+			return new EndpointLinksResolver(endpoints, this.basePath);
+		}
+
+		private void register(Collection<Resource> resources) {
+			this.resourceConfig.registerResources(new HashSet<>(resources));
+		}
+
 	}
 
 }
