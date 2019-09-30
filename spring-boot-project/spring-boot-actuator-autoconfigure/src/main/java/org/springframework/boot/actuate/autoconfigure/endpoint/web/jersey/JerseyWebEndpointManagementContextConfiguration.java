@@ -39,7 +39,6 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -56,8 +55,7 @@ import org.springframework.context.annotation.Bean;
  */
 @ManagementContextConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass(ResourceConfig.class)
-@ConditionalOnBean(WebEndpointsSupplier.class)
+@ConditionalOnBean({ ResourceConfig.class, WebEndpointsSupplier.class })
 @ConditionalOnMissingBean(type = "org.springframework.web.servlet.DispatcherServlet")
 class JerseyWebEndpointManagementContextConfiguration {
 
