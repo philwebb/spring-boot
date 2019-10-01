@@ -1,0 +1,23 @@
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          simplesamlphp:
+            signingcredentials:
+              - private-key-location: "classpath:saml/private-key-location"
+                certificate-location: "classpath:saml/certificate-location"
+            identityprovider:
+              verificationcredentials:
+                - certificate-location: "classpath:saml/certificate-location"
+              entity-id: simplesaml
+              sso-url: https://simplesaml-for-spring-saml/SSOService.php
+          okta:
+            signingcredentials:
+              - private-key-location: "classpath:saml/private-key-location"
+                certificate-location: "classpath:saml/certificate-location"
+            identityprovider:
+              verificationcredentials:
+                - certificate-location: "classpath:saml/certificate-location"
+              entity-id: okta-id-1234
+              sso-url: https://okta-for-spring/saml2/idp/SSOService.php
