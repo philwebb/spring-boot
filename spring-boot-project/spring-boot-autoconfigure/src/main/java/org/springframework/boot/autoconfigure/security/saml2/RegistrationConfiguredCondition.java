@@ -21,6 +21,7 @@ import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.security.saml2.SAML2RelyingPartyProperties.Registration;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
@@ -32,28 +33,27 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * properties are defined.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
+class RegistrationConfiguredCondition extends SpringBootCondition {
 
-class RegistrationsConfiguredCondition extends SpringBootCondition {
+	private static final String PROPERTY = "spring.security.saml2.relyingparty.registration";
 
-	private static final Bindable<Map<String, SAML2RelyingPartyProperties.RelyingParty>> STRING_REGISTRATION_MAP = Bindable
-			.mapOf(String.class, SAML2RelyingPartyProperties.RelyingParty.class);
+	private static final Bindable<Map<String, Registration>> STRING_REGISTRATION_MAP = Bindable.mapOf(String.class,
+			Registration.class);
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConditionMessage.Builder message = ConditionMessage.forCondition("Relying Parties Configured Condition");
-		Map<String, SAML2RelyingPartyProperties.RelyingParty> registrations = getRegistrations(
-				context.getEnvironment());
-		if (!registrations.isEmpty()) {
-			return ConditionOutcome.match(
-					message.foundExactly("registered relying parties " + String.join(", ", registrations.keySet())));
+		ConditionMessage.Builder message = ConditionMessage.forCondition("Relying Party Registration Condition");
+		Map<String, Registration> registrations = getRegistrations(context.getEnvironment());
+		if (registrations.isEmpty()) {
+			return ConditionOutcome.noMatch(message.didNotFind("any registrations").atAll());
 		}
-		return ConditionOutcome.noMatch(message.notAvailable("registered relying parties"));
+		return ConditionOutcome.match(message.found("registration", "registrations").items(registrations.keySet()));
 	}
 
-	private Map<String, SAML2RelyingPartyProperties.RelyingParty> getRegistrations(Environment environment) {
-		return Binder.get(environment).bind("spring.security.saml2.relyingparty.registration", STRING_REGISTRATION_MAP)
-				.orElse(Collections.emptyMap());
+	private Map<String, Registration> getRegistrations(Environment environment) {
+		return Binder.get(environment).bind(PROPERTY, STRING_REGISTRATION_MAP).orElse(Collections.emptyMap());
 	}
 
 }

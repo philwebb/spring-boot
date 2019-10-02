@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
  * SAML2 relying party properties.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.2.0
  */
 @ConfigurationProperties("spring.security.saml2.relyingparty")
@@ -36,61 +37,71 @@ public class SAML2RelyingPartyProperties {
 	/**
 	 * SAML2 relying party registrations.
 	 */
-	private Map<String, RelyingParty> registration = new LinkedHashMap<>();
+	private Map<String, Registration> registration = new LinkedHashMap<>();
 
-	public Map<String, RelyingParty> getRegistration() {
+	public Map<String, Registration> getRegistration() {
 		return this.registration;
 	}
 
 	/**
 	 * Represents a SAML Relying Party.
 	 */
-	public static class RelyingParty {
+	public static class Registration {
 
-		/**
-		 * Credentials used for signing the SAML authentication request.
-		 */
-		private List<Signingcredential> signingcredentials = new ArrayList<>();
+		private final Signing signing = new Signing();
 
 		/**
 		 * Remote SAML Identity Provider.
 		 */
 		private Identityprovider identityprovider = new Identityprovider();
 
-		List<Signingcredential> getSigningcredentials() {
-			return this.signingcredentials;
+		public Signing getSigning() {
+			return this.signing;
 		}
 
 		Identityprovider getIdentityprovider() {
 			return this.identityprovider;
 		}
 
-		public static class Signingcredential {
+		public static class Signing {
 
 			/**
-			 * Private key used for signing or decrypting.
+			 * Credentials used for signing the SAML authentication request.
 			 */
-			private Resource privateKeyLocation;
+			private List<Credential> credentials = new ArrayList<>();
 
-			/**
-			 * Relying Party X509Certificate shared with the identity provider.
-			 */
-			private Resource certificateLocation;
-
-			public Resource getPrivateKeyLocation() {
-				return this.privateKeyLocation;
+			public List<Credential> getCredentials() {
+				return this.credentials;
 			}
 
-			public void setPrivateKeyLocation(Resource privateKey) {
-				this.privateKeyLocation = privateKey;
-			}
+			public static class Credential {
 
-			public Resource getCertificateLocation() {
-				return this.certificateLocation;
-			}
+				/**
+				 * Private key used for signing or decrypting.
+				 */
+				private Resource privateKeyLocation;
 
-			public void setCertificateLocation(Resource certificate) {
-				this.certificateLocation = certificate;
+				/**
+				 * Relying Party X509Certificate shared with the identity provider.
+				 */
+				private Resource certificateLocation;
+
+				public Resource getPrivateKeyLocation() {
+					return this.privateKeyLocation;
+				}
+
+				public void setPrivateKeyLocation(Resource privateKey) {
+					this.privateKeyLocation = privateKey;
+				}
+
+				public Resource getCertificateLocation() {
+					return this.certificateLocation;
+				}
+
+				public void setCertificateLocation(Resource certificate) {
+					this.certificateLocation = certificate;
+				}
+
 			}
 
 		}
@@ -112,11 +123,7 @@ public class SAML2RelyingPartyProperties {
 		 */
 		private String ssoUrl;
 
-		/**
-		 * Locations of X.509 certificates used for verification of incoming SAML
-		 * messages.
-		 */
-		private List<Verificationcredential> verificationcredentials = new ArrayList<>();
+		private Verification verification = new Verification();
 
 		public String getEntityId() {
 			return this.entityId;
@@ -134,23 +141,40 @@ public class SAML2RelyingPartyProperties {
 			this.ssoUrl = ssoUrl;
 		}
 
-		List<Verificationcredential> getVerificationcredentials() {
-			return this.verificationcredentials;
+		/**
+		 * @return the verification
+		 */
+		public Verification getVerification() {
+			return this.verification;
 		}
 
-		public static class Verificationcredential {
+		public static class Verification {
 
 			/**
-			 * X.509 certificate used for verification of incoming SAML messages.
+			 * Locations of X.509 certificates used for verification of incoming SAML
+			 * messages.
 			 */
-			private Resource certificate;
+			private List<Credential> credentials = new ArrayList<>();
 
-			public Resource getCertificateLocation() {
-				return this.certificate;
+			public List<Credential> getCredentials() {
+				return this.credentials;
 			}
 
-			public void setCertificateLocation(Resource certificate) {
-				this.certificate = certificate;
+			public static class Credential {
+
+				/**
+				 * X.509 certificate used for verification of incoming SAML messages.
+				 */
+				private Resource certificate;
+
+				public Resource getCertificateLocation() {
+					return this.certificate;
+				}
+
+				public void setCertificateLocation(Resource certificate) {
+					this.certificate = certificate;
+				}
+
 			}
 
 		}

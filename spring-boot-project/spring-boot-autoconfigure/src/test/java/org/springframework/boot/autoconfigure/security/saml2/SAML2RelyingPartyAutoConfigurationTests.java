@@ -47,10 +47,10 @@ import static org.mockito.Mockito.mock;
  */
 public class SAML2RelyingPartyAutoConfigurationTests {
 
+	private static final String PREFIX = "spring.security.saml2.relyingparty.registration";
+
 	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(SAML2RelyingPartyAutoConfiguration.class, SecurityAutoConfiguration.class));
-
-	private static final String REGISTRATION_PREFIX = "spring.security.saml2.relyingparty.registration";
 
 	@Test
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClass() {
@@ -106,16 +106,11 @@ public class SAML2RelyingPartyAutoConfigurationTests {
 
 	private String[] getPropertyValues() {
 		return new String[] {
-				REGISTRATION_PREFIX
-						+ ".foo.signingcredentials[0].private-key-location=classpath:saml/private-key-location",
-				REGISTRATION_PREFIX
-						+ ".foo.signingcredentials[0].certificate-location=classpath:saml/certificate-location",
-				REGISTRATION_PREFIX
-						+ ".foo.identityprovider.sso-url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
-				REGISTRATION_PREFIX
-						+ ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-				REGISTRATION_PREFIX
-						+ ".foo.identityprovider.verificationcredentials[0].certificate-location=classpath:saml/certificate-location" };
+				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
+				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.identityprovider.sso-url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}
 
 	private boolean hasFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
