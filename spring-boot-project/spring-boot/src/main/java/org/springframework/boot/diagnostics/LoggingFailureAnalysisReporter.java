@@ -19,6 +19,7 @@ package org.springframework.boot.diagnostics;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,12 +34,8 @@ public final class LoggingFailureAnalysisReporter implements FailureAnalysisRepo
 
 	@Override
 	public void report(FailureAnalysis failureAnalysis) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Application failed to start due to an exception", failureAnalysis.getCause());
-		}
-		if (logger.isErrorEnabled()) {
-			logger.error(buildMessage(failureAnalysis));
-		}
+		logger.debug("Application failed to start due to an exception", failureAnalysis.getCause());
+		logger.error(LogMessage.of(() -> buildMessage(failureAnalysis)));
 	}
 
 	private String buildMessage(FailureAnalysis failureAnalysis) {

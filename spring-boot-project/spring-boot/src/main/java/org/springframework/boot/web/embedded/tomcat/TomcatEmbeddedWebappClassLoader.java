@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.compat.JreCompat;
 
+import org.springframework.core.log.LogMessage;
+
 /**
  * Extension of Tomcat's {@link ParallelWebappClassLoader} that does not consider the
  * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to
@@ -101,9 +103,7 @@ public class TomcatEmbeddedWebappClassLoader extends ParallelWebappClassLoader {
 	@Override
 	protected void addURL(URL url) {
 		// Ignore URLs added by the Tomcat 8 implementation (see gh-919)
-		if (logger.isTraceEnabled()) {
-			logger.trace("Ignoring request to add " + url + " to the tomcat classloader");
-		}
+		logger.trace(LogMessage.format("Ignoring request to add %s to the tomcat classloader", url));
 	}
 
 	private Class<?> loadFromParent(String name) {

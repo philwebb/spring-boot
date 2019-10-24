@@ -27,6 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -62,9 +63,9 @@ class PropertySourcesDeducer {
 		if (beans.size() == 1) {
 			return beans.values().iterator().next();
 		}
-		if (beans.size() > 1 && logger.isWarnEnabled()) {
-			logger.warn("Multiple PropertySourcesPlaceholderConfigurer beans registered " + beans.keySet()
-					+ ", falling back to Environment");
+		if (beans.size() > 1) {
+			logger.warn(LogMessage.of(() -> "Multiple PropertySourcesPlaceholderConfigurer beans registered "
+					+ beans.keySet() + ", falling back to Environment"));
 		}
 		return null;
 	}

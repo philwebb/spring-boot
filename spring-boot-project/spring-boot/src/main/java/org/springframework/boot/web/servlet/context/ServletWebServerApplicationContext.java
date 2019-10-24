@@ -47,6 +47,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
@@ -274,15 +275,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		servletContext.log("Initializing Spring embedded WebApplicationContext");
 		try {
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Published root WebApplicationContext as ServletContext attribute with name ["
-						+ WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE + "]");
-			}
+			logger.debug(
+					LogMessage.format("Published root WebApplicationContext as ServletContext attribute with name [%s]",
+							WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
 			setServletContext(servletContext);
-			if (logger.isInfoEnabled()) {
-				long elapsedTime = System.currentTimeMillis() - getStartupDate();
-				logger.info("Root WebApplicationContext: initialization completed in " + elapsedTime + " ms");
-			}
+			logger.info(LogMessage.of(() -> "Root WebApplicationContext: initialization completed in "
+					+ (System.currentTimeMillis() - getStartupDate()) + " ms"));
 		}
 		catch (RuntimeException | Error ex) {
 			logger.error("Context initialization failed", ex);
@@ -382,9 +380,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 		public void restore() {
 			this.scopes.forEach((key, value) -> {
-				if (logger.isInfoEnabled()) {
-					logger.info("Restoring user defined scope " + key);
-				}
+				logger.info(LogMessage.format("Restoring user defined scope %s", key));
 				this.beanFactory.registerScope(key, value);
 			});
 		}

@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -75,9 +76,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (!name.startsWith(PREFIX)) {
 			return null;
 		}
-		if (logger.isTraceEnabled()) {
-			logger.trace("Generating random property for '" + name + "'");
-		}
+		logger.trace(LogMessage.format("Generating random property for '%s'", name));
 		return getRandomValue(name.substring(PREFIX.length()));
 	}
 

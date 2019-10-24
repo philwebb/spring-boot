@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.log.LogMessage;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -80,17 +81,13 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 			return null;
 		}
 		catch (Throwable ex) {
-			if (this.logger.isWarnEnabled()) {
-				this.logger.warn("Unexpected failure when loading class resource " + resource, ex);
-			}
+			this.logger.warn(LogMessage.format("Unexpected failure when loading class resource %s", resource), ex);
 			return null;
 		}
 	}
 
 	private void handleFailure(Resource resource, Throwable ex) {
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Ignoring candidate class resource " + resource + " due to " + ex);
-		}
+		this.logger.debug(LogMessage.of(() -> "Ignoring candidate class resource " + resource + " due to " + ex));
 	}
 
 }

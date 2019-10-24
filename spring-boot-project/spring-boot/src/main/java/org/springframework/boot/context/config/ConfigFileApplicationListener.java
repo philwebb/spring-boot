@@ -63,6 +63,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -388,15 +389,12 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				return;
 			}
 			if (this.activatedProfiles) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Profiles already activated, '" + profiles + "' will not be applied");
-				}
+				this.logger.debug(LogMessage
+						.of(() -> String.format("Profiles already activated, '%s' will not be applied", profiles)));
 				return;
 			}
 			this.profiles.addAll(profiles);
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Activated activeProfiles " + StringUtils.collectionToCommaDelimitedString(profiles));
-			}
+			this.logger.debug(LogMessage.of(() -> String.format("Activated activeProfiles %s", profiles)));
 			this.activatedProfiles = true;
 			removeUnprocessedDefaultProfiles();
 		}
@@ -499,29 +497,17 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			try {
 				Resource resource = this.resourceLoader.getResource(location);
 				if (resource == null || !resource.exists()) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped missing config ", location, resource,
-								profile);
-						this.logger.trace(description);
-					}
+					this.logger.trace(getDescription("Skipped missing config ", location, resource, profile));
 					return;
 				}
 				if (!StringUtils.hasText(StringUtils.getFilenameExtension(resource.getFilename()))) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped empty config extension ", location,
-								resource, profile);
-						this.logger.trace(description);
-					}
+					this.logger.trace(getDescription("Skipped empty config extension ", location, resource, profile));
 					return;
 				}
 				String name = "applicationConfig: [" + location + "]";
 				List<Document> documents = loadDocuments(loader, name, resource);
 				if (CollectionUtils.isEmpty(documents)) {
-					if (this.logger.isTraceEnabled()) {
-						StringBuilder description = getDescription("Skipped unloaded config ", location, resource,
-								profile);
-						this.logger.trace(description);
-					}
+					this.logger.trace(getDescription("Skipped unloaded config ", location, resource, profile));
 					return;
 				}
 				List<Document> loaded = new ArrayList<>();
@@ -535,10 +521,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				Collections.reverse(loaded);
 				if (!loaded.isEmpty()) {
 					loaded.forEach((document) -> consumer.accept(profile, document));
-					if (this.logger.isDebugEnabled()) {
-						StringBuilder description = getDescription("Loaded config file ", location, resource, profile);
-						this.logger.debug(description);
-					}
+					this.logger.debug(getDescription("Loaded config file ", location, resource, profile));
 				}
 			}
 			catch (Exception ex) {
@@ -578,26 +561,28 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}).collect(Collectors.toList());
 		}
 
-		private StringBuilder getDescription(String prefix, String location, Resource resource, Profile profile) {
-			StringBuilder result = new StringBuilder(prefix);
-			try {
-				if (resource != null) {
-					String uri = resource.getURI().toASCIIString();
-					result.append("'");
-					result.append(uri);
-					result.append("' (");
-					result.append(location);
-					result.append(")");
+		private LogMessage getDescription(String prefix, String location, Resource resource, Profile profile) {
+			return LogMessage.of(() -> {
+				StringBuilder result = new StringBuilder(prefix);
+				try {
+					if (resource != null) {
+						String uri = resource.getURI().toASCIIString();
+						result.append("'");
+						result.append(uri);
+						result.append("' (");
+						result.append(location);
+						result.append(")");
+					}
 				}
-			}
-			catch (IOException ex) {
-				result.append(location);
-			}
-			if (profile != null) {
-				result.append(" for profile ");
-				result.append(profile);
-			}
-			return result;
+				catch (IOException ex) {
+					result.append(location);
+				}
+				if (profile != null) {
+					result.append(" for profile ");
+					result.append(profile);
+				}
+				return result;
+			});
 		}
 
 		private Set<Profile> getProfiles(Binder binder, String name) {

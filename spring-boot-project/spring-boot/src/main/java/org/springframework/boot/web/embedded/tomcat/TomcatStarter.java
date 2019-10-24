@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link ServletContainerInitializer} used to trigger {@link ServletContextInitializer
@@ -57,10 +58,8 @@ class TomcatStarter implements ServletContainerInitializer {
 			this.startUpException = ex;
 			// Prevent Tomcat from logging and re-throwing when we know we can
 			// deal with it in the main thread, but log for information here.
-			if (logger.isErrorEnabled()) {
-				logger.error("Error starting Tomcat context. Exception: " + ex.getClass().getName() + ". Message: "
-						+ ex.getMessage());
-			}
+			logger.error(LogMessage.of(() -> "Error starting Tomcat context. Exception: " + ex.getClass().getName()
+					+ ". Message: " + ex.getMessage()));
 		}
 	}
 

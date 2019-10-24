@@ -38,6 +38,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.log.LogMessage;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -100,9 +101,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 		}
 
 		private void warn(String message) {
-			if (logger.isWarnEnabled()) {
-				logger.warn(String.format("%n%n** WARNING ** : %s%n%n", message));
-			}
+			logger.warn(LogMessage.format("%n%n** WARNING ** : %s%n%n", message));
 		}
 
 	}

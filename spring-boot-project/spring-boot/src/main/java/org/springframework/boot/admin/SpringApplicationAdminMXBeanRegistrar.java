@@ -40,6 +40,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -127,9 +128,7 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 	public void afterPropertiesSet() throws Exception {
 		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
 		server.registerMBean(new SpringApplicationAdmin(), this.objectName);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Application Admin MBean registered with name '" + this.objectName + "'");
-		}
+		logger.debug(LogMessage.format("Application Admin MBean registered with name '%s'", this.objectName));
 	}
 
 	@Override
