@@ -42,4 +42,6 @@
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
+	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
 </suppressions>
