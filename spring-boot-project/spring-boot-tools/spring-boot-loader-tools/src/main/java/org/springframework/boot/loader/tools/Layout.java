@@ -42,7 +42,7 @@ public interface Layout {
 	 * @return the destination relative to the root of the archive (should end with '/')
 	 * or {@code null} if the library should not be included.
 	 */
-	String getLibraryDestination(String libraryName, LibraryScope scope);
+	String getLibraryDestination(String libraryName, LibraryScope scope); // BOOT-INF/{layer}/lib
 
 	/**
 	 * Returns the location of classes within the archive.
