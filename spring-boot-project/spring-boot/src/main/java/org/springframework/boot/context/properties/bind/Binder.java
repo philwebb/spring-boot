@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,8 +55,6 @@ public class Binder {
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
 			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
-	private final List<DataObjectBinder> dataObjectBinders = new ArrayList<>();
-
 	private final Iterable<ConfigurationPropertySource> sources;
 
 	private final PlaceholdersResolver placeholdersResolver;
@@ -68,7 +65,7 @@ public class Binder {
 
 	private final BindHandler defaultBindHandler;
 
-	private final BindConstructorProvider constructorProvider;
+	private final List<DataObjectBinder> dataObjectBinders;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -168,7 +165,12 @@ public class Binder {
 				: ApplicationConversionService.getSharedInstance();
 		this.propertyEditorInitializer = propertyEditorInitializer;
 		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
-		this.constructorProvider = constructorProvider;
+		if (constructorProvider == null) {
+			constructorProvider = BindConstructorProvider.DEFAULT;
+		}
+		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
+		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
+		this.dataObjectBinders = Collections.unmodifiableList(Arrays.asList(valueObjectBinder, javaBeanBinder));
 	}
 
 	/**
@@ -339,16 +341,8 @@ public class Binder {
 		return context.getConverter().convert(result, target);
 	}
 
-	private List<DataObjectBinder> getDataObjectBinders() {
-		if (this.dataObjectBinders.isEmpty()) {
-			this.dataObjectBinders
-					.addAll(Arrays.asList(new ValueObjectBinder(this.constructorProvider), new JavaBeanBinder()));
-		}
-		return this.dataObjectBinders;
-	}
-
 	private Object create(Bindable<?> target, Context context) {
-		for (DataObjectBinder dataObjectBinder : getDataObjectBinders()) {
+		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
 			Object instance = dataObjectBinder.create(target, context);
 			if (instance != null) {
 				return instance;
@@ -454,7 +448,7 @@ public class Binder {
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
 		return context.withDataObject(type, () -> {
-			for (DataObjectBinder dataObjectBinder : getDataObjectBinders()) {
+			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders) {
 				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
 				if (instance != null) {
 					return instance;

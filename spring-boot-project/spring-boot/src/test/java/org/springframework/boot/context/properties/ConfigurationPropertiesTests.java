@@ -2144,7 +2144,7 @@ class ConfigurationPropertiesTests {
 			this.nested = nested;
 		}
 
-		static class Nested {
+		static final class Nested {
 
 			private final int age;
 
@@ -2180,7 +2180,7 @@ class ConfigurationPropertiesTests {
 			this.nested = nested;
 		}
 
-		static class Nested {
+		static final class Nested {
 
 			private int age;
 
@@ -2224,7 +2224,7 @@ class ConfigurationPropertiesTests {
 			return this.nested;
 		}
 
-		static class Nested {
+		static final class Nested {
 
 			private int age;
 
@@ -2246,6 +2246,10 @@ class ConfigurationPropertiesTests {
 
 				AnotherNested(String name) {
 					this.nested = new Nested();
+				}
+
+				Nested getNested() {
+					return this.nested;
 				}
 
 			}

@@ -229,27 +229,27 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingReturnsJavaBean() {
-		BindMethod bindType = BindMethod.forClass(NoConstructorBinding.class);
+	void bindTypeForTypeWhenNoConstructorBindingReturnsJavaBean() {
+		BindMethod bindType = BindMethod.forType(NoConstructorBinding.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingOnTypeReturnsValueObject() {
-		BindMethod bindType = BindMethod.forClass(ConstructorBindingOnType.class);
+	void bindTypeForTypeWhenNoConstructorBindingOnTypeReturnsValueObject() {
+		BindMethod bindType = BindMethod.forType(ConstructorBindingOnType.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForClassWhenNoConstructorBindingOnConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.forClass(ConstructorBindingOnConstructor.class);
+	void bindTypeForTypeWhenNoConstructorBindingOnConstructorReturnsValueObject() {
+		BindMethod bindType = BindMethod.forType(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForClassWhenConstructorBindingOnMultipleConstructorsThrowsException() {
+	void bindTypeForTypeWhenConstructorBindingOnMultipleConstructorsThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> BindMethod.forClass(ConstructorBindingOnMultipleConstructors.class))
+				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
 				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 						+ " has more than one @ConstructorBinding constructor");
 	}

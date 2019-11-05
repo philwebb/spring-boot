@@ -22,7 +22,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 import kotlin.reflect.KFunction;
 import kotlin.reflect.KParameter;
@@ -48,27 +47,13 @@ class ValueObjectBinder implements DataObjectBinder {
 	private final BindConstructorProvider constructorProvider;
 
 	ValueObjectBinder(BindConstructorProvider constructorProvider) {
-		this.constructorProvider = (constructorProvider != null) ? constructorProvider
-				: this::getDefaultBindConstructor;
-	}
-
-	private Constructor<?> getDefaultBindConstructor(Class<?> type) {
-		Constructor<?>[] constructors = type.getDeclaredConstructors();
-		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
-			return constructors[0];
-		}
-		return null;
+		this.constructorProvider = constructorProvider;
 	}
 
 	@Override
 	public <T> T bind(ConfigurationPropertyName name, Bindable<T> target, Binder.Context context,
 			DataObjectPropertyBinder propertyBinder) {
-		Class<T> type = (Class<T>) target.getType().resolve();
-		Constructor<?> bindConstructor = this.constructorProvider.getBindConstructor(type);
-		if (bindConstructor == null) {
-			return null;
-		}
-		ValueObject<T> valueObject = ValueObject.get(target, bindConstructor);
+		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider);
 		if (valueObject == null) {
 			return null;
 		}
@@ -87,12 +72,7 @@ class ValueObjectBinder implements DataObjectBinder {
 
 	@Override
 	public <T> T create(Bindable<T> target, Binder.Context context) {
-		Class<T> type = (Class<T>) target.getType().resolve();
-		Constructor<?> bindConstructor = this.constructorProvider.getBindConstructor(type);
-		if (bindConstructor == null) {
-			return null;
-		}
-		ValueObject<T> valueObject = ValueObject.get(target, bindConstructor);
+		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider);
 		if (valueObject == null) {
 			return null;
 		}
@@ -124,9 +104,13 @@ class ValueObjectBinder implements DataObjectBinder {
 		abstract List<ConstructorParameter> getConstructorParameters();
 
 		@SuppressWarnings("unchecked")
-		static <T> ValueObject<T> get(Bindable<T> bindable, Constructor<?> bindConstructor) {
+		static <T> ValueObject<T> get(Bindable<T> bindable, BindConstructorProvider constructorProvider) {
 			Class<T> type = (Class<T>) bindable.getType().resolve();
 			if (type == null || type.isEnum() || Modifier.isAbstract(type.getModifiers())) {
+				return null;
+			}
+			Constructor<?> bindConstructor = constructorProvider.getBindConstructor(bindable);
+			if (bindConstructor == null) {
 				return null;
 			}
 			if (KotlinDetector.isKotlinType(type)) {
@@ -213,11 +197,6 @@ class ValueObjectBinder implements DataObjectBinder {
 		@SuppressWarnings("unchecked")
 		static <T> ValueObject<T> get(Constructor<?> bindConstructor) {
 			return new DefaultValueObject<>((Constructor<T>) bindConstructor);
-		}
-
-		private static boolean isCandidateConstructor(Constructor<?> candidate, Predicate<Constructor<?>> filter) {
-			int modifiers = candidate.getModifiers();
-			return !Modifier.isPrivate(modifiers) && !Modifier.isProtected(modifiers) && filter.test(candidate);
 		}
 
 	}

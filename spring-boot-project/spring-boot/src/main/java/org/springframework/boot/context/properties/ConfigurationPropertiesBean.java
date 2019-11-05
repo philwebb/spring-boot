@@ -70,12 +70,12 @@ public final class ConfigurationPropertiesBean {
 	private final BindMethod bindMethod;
 
 	private ConfigurationPropertiesBean(String name, Object instance, ConfigurationProperties annotation,
-			Bindable<?> bindTarget, BindMethod bindMethod) {
+			Bindable<?> bindTarget) {
 		this.name = name;
 		this.instance = instance;
 		this.annotation = annotation;
 		this.bindTarget = bindTarget;
-		this.bindMethod = bindMethod;
+		this.bindMethod = BindMethod.forType(bindTarget.getType().resolve());
 	}
 
 	/**
@@ -261,14 +261,13 @@ public final class ConfigurationPropertiesBean {
 		Validated validated = findAnnotation(instance, type, factory, Validated.class);
 		Annotation[] annotations = (validated != null) ? new Annotation[] { annotation, validated }
 				: new Annotation[] { annotation };
-		BindMethod bindMethod = BindMethod.forClass(type);
 		ResolvableType bindType = (factory != null) ? ResolvableType.forMethodReturnType(factory)
 				: ResolvableType.forClass(type);
 		Bindable<Object> bindTarget = Bindable.of(bindType).withAnnotations(annotations);
 		if (instance != null) {
 			bindTarget = bindTarget.withExistingValue(instance);
 		}
-		return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget, bindMethod);
+		return new ConfigurationPropertiesBean(name, instance, annotation, bindTarget);
 	}
 
 	private static <A extends Annotation> A findAnnotation(Object instance, Class<?> type, Method factory,
@@ -308,11 +307,9 @@ public final class ConfigurationPropertiesBean {
 		 */
 		VALUE_OBJECT;
 
-		static BindMethod forClass(Class<?> type) {
-			if (ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(type) != null) {
-				return VALUE_OBJECT;
-			}
-			return JAVA_BEAN;
+		static BindMethod forType(Class<?> type) {
+			return (ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(type) != null)
+					? VALUE_OBJECT : JAVA_BEAN;
 		}
 
 	}

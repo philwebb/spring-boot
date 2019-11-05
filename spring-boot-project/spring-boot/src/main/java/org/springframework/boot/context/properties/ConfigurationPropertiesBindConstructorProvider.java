@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
@@ -29,58 +30,39 @@ import org.springframework.util.Assert;
  * {@link ConfigurationProperties @ConfigurationProperties}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class ConfigurationPropertiesBindConstructorProvider implements BindConstructorProvider {
 
-	public static final ConfigurationPropertiesBindConstructorProvider INSTANCE = new ConfigurationPropertiesBindConstructorProvider();
+	static final ConfigurationPropertiesBindConstructorProvider INSTANCE = new ConfigurationPropertiesBindConstructorProvider();
 
 	@Override
-	public Constructor<?> getBindConstructor(Class<?> type) {
-		Constructor<?> bindConstructor = findBindConstructor(type);
-		if (bindConstructor != null) {
-			return bindConstructor;
-		}
-		if (isConstructorBindingType(type)) {
-			Constructor<?> deducedConstructor = getDeducedConstructor(type);
-			if (deducedConstructor != null) {
-				return deducedConstructor;
-			}
-		}
-		return null;
+	public Constructor<?> getBindConstructor(Bindable<?> bindable) {
+		return getBindConstructor(bindable.getType().resolve());
 	}
 
-	private static Constructor<?> getDeducedConstructor(Class<?> type) {
-		if (KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type)) {
-			Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-			if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
-				return primaryConstructor;
-			}
+	Constructor<?> getBindConstructor(Class<?> type) {
+		if (type == null) {
+			return null;
 		}
-		else {
-			Constructor<?>[] constructors = type.getDeclaredConstructors();
-			if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
-				return constructors[0];
-			}
+		Constructor<?> constructor = findConstructorBindingAnnotatedConstructor(type);
+		if (constructor == null && isConstructorBindingAnnotatedType(type)) {
+			constructor = deduceBindConstructor(type);
 		}
-		return null;
+		return constructor;
 	}
 
-	private static boolean isConstructorBindingType(Class<?> type) {
-		return MergedAnnotations.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY_AND_ENCLOSING_CLASSES)
-				.isPresent(ConstructorBinding.class);
-	}
-
-	private static Constructor<?> findBindConstructor(Class<?> type) {
-		if (KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type)) {
+	private Constructor<?> findConstructorBindingAnnotatedConstructor(Class<?> type) {
+		if (isKotlinType(type)) {
 			Constructor<?> constructor = BeanUtils.findPrimaryConstructor(type);
 			if (constructor != null) {
-				return findBindConstructor(type, constructor);
+				return findAnnotatedConstructor(type, constructor);
 			}
 		}
-		return findBindConstructor(type, type.getDeclaredConstructors());
+		return findAnnotatedConstructor(type, type.getDeclaredConstructors());
 	}
 
-	private static Constructor<?> findBindConstructor(Class<?> type, Constructor<?>... candidates) {
+	private Constructor<?> findAnnotatedConstructor(Class<?> type, Constructor<?>... candidates) {
 		Constructor<?> constructor = null;
 		for (Constructor<?> candidate : candidates) {
 			if (MergedAnnotations.from(candidate).isPresent(ConstructorBinding.class)) {
@@ -92,6 +74,34 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 			}
 		}
 		return constructor;
+	}
+
+	private boolean isConstructorBindingAnnotatedType(Class<?> type) {
+		return MergedAnnotations.from(type, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY_AND_ENCLOSING_CLASSES)
+				.isPresent(ConstructorBinding.class);
+	}
+
+	private Constructor<?> deduceBindConstructor(Class<?> type) {
+		if (isKotlinType(type)) {
+			return deducedKotlinBindConstructor(type);
+		}
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
+			return constructors[0];
+		}
+		return null;
+	}
+
+	private Constructor<?> deducedKotlinBindConstructor(Class<?> type) {
+		Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
+		if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
+			return primaryConstructor;
+		}
+		return null;
+	}
+
+	private boolean isKotlinType(Class<?> type) {
+		return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
 	}
 
 }
