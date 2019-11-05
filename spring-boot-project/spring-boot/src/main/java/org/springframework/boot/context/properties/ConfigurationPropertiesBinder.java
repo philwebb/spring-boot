@@ -28,6 +28,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -151,7 +152,7 @@ class ConfigurationPropertiesBinder {
 	private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
-					getConversionService(), getPropertyEditorInitializer());
+					getConversionService(), getPropertyEditorInitializer(), null, getBindConstructorProvider());
 		}
 		return this.binder;
 	}
@@ -166,6 +167,10 @@ class ConfigurationPropertiesBinder {
 
 	private ConversionService getConversionService() {
 		return new ConversionServiceDeducer(this.applicationContext).getConversionService();
+	}
+
+	private BindConstructorProvider getBindConstructorProvider() {
+		return ConfigurationPropertiesBindConstructorProvider.INSTANCE;
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {

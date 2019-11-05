@@ -2140,7 +2140,7 @@ class ConfigurationPropertiesTests {
 			return this.nested;
 		}
 
-		public void setNested(Nested nested) {
+		void setNested(Nested nested) {
 			this.nested = nested;
 		}
 
@@ -2176,7 +2176,7 @@ class ConfigurationPropertiesTests {
 			return this.nested;
 		}
 
-		public void setNested(Nested nested) {
+		void setNested(Nested nested) {
 			this.nested = nested;
 		}
 
@@ -2236,15 +2236,15 @@ class ConfigurationPropertiesTests {
 				return this.age;
 			}
 
-			public void setAge(int age) {
+			void setAge(int age) {
 				this.age = age;
 			}
 
-			public static class AnotherNested {
+			static class AnotherNested {
 
 				private final Nested nested;
 
-				public AnotherNested(String name) {
+				AnotherNested(String name) {
 					this.nested = new Nested();
 				}
 

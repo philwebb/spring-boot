@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -213,8 +212,8 @@ class ConfigurationPropertiesBeanTests {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
-		assertThat(Arrays.stream(ConstructorBindingOnConstructor.class.getDeclaredConstructors())
-				.filter(target.getConstructorFilter())).hasSize(1);
+		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
+				.getBindConstructor(ConstructorBindingOnConstructor.class)).isNotNull();
 	}
 
 	@Test
