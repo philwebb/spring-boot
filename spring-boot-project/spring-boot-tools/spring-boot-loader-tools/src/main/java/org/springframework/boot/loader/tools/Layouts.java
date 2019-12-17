@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.util.PropertyPlaceholderHelper;
+
 /**
  * Common {@link Layout}s.
  *
@@ -83,8 +85,38 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getClasspathIndexLocation() {
+			return "BOOT-INF/classpath.idx";
+		}
+
+		@Override
 		public boolean isExecutable() {
 			return true;
+		}
+
+	}
+
+	/**
+	 * Executable JAR layout with support for layers.
+	 */
+	public static class LayeredJar extends Jar implements LayeredLayout {
+
+		private static final PropertyPlaceholderHelper HELPER = new PropertyPlaceholderHelper("{", "}");
+
+		private static final String LAYERED_LIBRARY_DESTINATION = "BOOT-INF/{layer}/lib/";
+
+		private static final String LAYERED_CLASSES_DESTINATION = "BOOT-INF/{layer}/classes/";
+
+		@Override
+		public String getLayeredLibraryDestination(LayerResolver resolver, String libraryName) {
+			return HELPER.replacePlaceholders(getLibraryDestination(libraryName, null),
+					(placeholderName) -> resolver.resolveLayer(LAYERED_LIBRARY_DESTINATION, libraryName));
+		}
+
+		@Override
+		public String getLayeredClassesDestination(LayerResolver resolver) {
+			return HELPER.replacePlaceholders(getRepackagedClassesLocation(),
+					(placeholderName) -> resolver.resolveLayer(LAYERED_CLASSES_DESTINATION, ""));
 		}
 
 	}

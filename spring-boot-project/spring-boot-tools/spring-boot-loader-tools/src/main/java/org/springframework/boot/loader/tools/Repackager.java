@@ -76,6 +76,8 @@ public class Repackager {
 
 	private LayoutFactory layoutFactory;
 
+	private LayerResolver layerResolver = LayerResolver.DEFAULT;
+
 	public Repackager(File source) {
 		this(source, null);
 	}
@@ -128,6 +130,17 @@ public class Repackager {
 			throw new IllegalArgumentException("Layout must not be null");
 		}
 		this.layout = layout;
+	}
+
+	/**
+	 * Sets the layer resolver to use for layered layouts.
+	 * @param layerResolver the layerResolver
+	 */
+	public void setLayerResolver(LayerResolver layerResolver) {
+		if (layerResolver == null) {
+			throw new IllegalArgumentException("Layer Resolver must not be null");
+		}
+		this.layerResolver = layerResolver;
 	}
 
 	/**
@@ -235,9 +248,10 @@ public class Repackager {
 			writer.writeManifest(buildManifest(sourceJar));
 			writeLoaderClasses(writer);
 			if (this.layout instanceof RepackagingLayout) {
-				writer.writeEntries(sourceJar,
-						new RenamingEntryTransformer(((RepackagingLayout) this.layout).getRepackagedClassesLocation()),
-						writeableLibraries);
+				String location = (this.layout instanceof LayeredLayout)
+						? ((LayeredLayout) this.layout).getLayeredClassesDestination(this.layerResolver)
+						: ((RepackagingLayout) layout).getRepackagedClassesLocation();
+				writer.writeEntries(sourceJar, new RenamingEntryTransformer(location), writeableLibraries);
 			}
 			else {
 				writer.writeEntries(sourceJar, writeableLibraries);
@@ -414,8 +428,8 @@ public class Repackager {
 		private WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library.getFile())) {
-					String libraryDestination = Repackager.this.layout.getLibraryDestination(library.getName(),
-							library.getScope());
+					Layout layout = Repackager.this.layout;
+					String libraryDestination = getLibraryDestination(library, layout);
 					if (libraryDestination != null) {
 						Library existing = this.libraryEntryNames.putIfAbsent(libraryDestination + library.getName(),
 								library);
@@ -425,6 +439,13 @@ public class Repackager {
 					}
 				}
 			});
+		}
+
+		private String getLibraryDestination(Library library, Layout layout) {
+			return (layout instanceof LayeredLayout)
+					? ((LayeredLayout) layout).getLayeredLibraryDestination(Repackager.this.layerResolver,
+							library.getName())
+					: Repackager.this.layout.getLibraryDestination(library.getName(), library.getScope());
 		}
 
 		@Override
@@ -446,6 +467,10 @@ public class Repackager {
 			for (Entry<String, Library> entry : this.libraryEntryNames.entrySet()) {
 				writer.writeNestedLibrary(entry.getKey().substring(0, entry.getKey().lastIndexOf('/') + 1),
 						entry.getValue());
+			}
+			if (Repackager.this.layout instanceof RepackagingLayout) {
+				String location = ((RepackagingLayout) (Repackager.this.layout)).getClasspathIndexLocation();
+				writer.writeClasspathIndex(location, new ArrayList<>(this.libraryEntryNames.keySet()));
 			}
 		}
 

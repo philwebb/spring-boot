@@ -34,6 +34,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -185,6 +186,19 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		new CrcAndSize(file).setupStoredEntry(entry);
 		try (FileInputStream input = new FileInputStream(file)) {
 			writeEntry(entry, new InputStreamEntryWriter(input), new LibraryUnpackHandler(library));
+		}
+	}
+
+	public void writeClasspathIndex(String location, List<String> libraries) throws IOException {
+		if (location != null) {
+			JarArchiveEntry entry = new JarArchiveEntry(location);
+			writeEntry(entry, (outputStream) -> {
+				for (String library : libraries) {
+					outputStream.write(library.getBytes());
+					outputStream.write("\r\n".getBytes());
+				}
+				outputStream.flush();
+			});
 		}
 	}
 

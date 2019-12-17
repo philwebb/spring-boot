@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -42,9 +43,12 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
 		List<Archive> archives = new ArrayList<>();
 		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
-		assertThat(archives).hasSize(2);
-		assertThat(getUrls(archives)).containsOnly(new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
-				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL());
+		assertThat(archives).hasSize(4);
+		assertThat(getUrls(archives)).containsExactlyInAnyOrder(
+				new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/bar.jar").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/baz.jar").toURI().toURL());
 		for (Archive archive : archives) {
 			archive.close();
 		}
@@ -57,13 +61,31 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 			JarLauncher launcher = new JarLauncher(archive);
 			List<Archive> classPathArchives = new ArrayList<>();
 			launcher.getClassPathArchivesIterator().forEachRemaining(classPathArchives::add);
-			assertThat(classPathArchives).hasSize(2);
+			assertThat(classPathArchives).hasSize(4);
 			assertThat(getUrls(classPathArchives)).containsOnly(
 					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/classes!/"),
-					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"));
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/foo.jar!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/bar.jar!/"),
+					new URL("jar:" + jarRoot.toURI().toURL() + "!/BOOT-INF/lib/baz.jar!/"));
 			for (Archive classPathArchive : classPathArchives) {
 				classPathArchive.close();
 			}
+		}
+	}
+
+	@Test
+	void explodedJarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
+		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true));
+		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
+		List<Archive> archives = new ArrayList<>();
+		Iterator<Archive> iterator = launcher.getClassPathArchivesIterator();
+		assertThat(launcher.getUrls(iterator)).containsExactly(
+				new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/bar.jar").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/baz.jar").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL());
+		for (Archive archive : archives) {
+			archive.close();
 		}
 	}
 

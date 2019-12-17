@@ -48,12 +48,30 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 	File tempDir;
 
 	protected File createJarArchive(String name, String entryPrefix) throws IOException {
+		return createJarArchive(name, entryPrefix, false);
+	}
+
+	protected File createJarArchive(String name, String entryPrefix, boolean indexed) throws IOException {
 		File archive = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/classes/"));
 		jarOutputStream.putNextEntry(new JarEntry(entryPrefix + "/lib/"));
-		JarEntry libFoo = new JarEntry(entryPrefix + "/lib/foo.jar");
+		if (indexed) {
+			JarEntry indexEntry = new JarEntry(entryPrefix + "/classpath.idx");
+			jarOutputStream.putNextEntry(indexEntry);
+			jarOutputStream.write(
+					("BOOT-INF/lib/bar.jar\r\n" + "BOOT-INF/lib/baz.jar\r\n" + "BOOT-INF/lib/foo.jar\r\n").getBytes());
+		}
+		addNestedJars(entryPrefix, "/lib/foo.jar", jarOutputStream);
+		addNestedJars(entryPrefix, "/lib/bar.jar", jarOutputStream);
+		addNestedJars(entryPrefix, "/lib/baz.jar", jarOutputStream);
+		jarOutputStream.close();
+		return archive;
+	}
+
+	private void addNestedJars(String entryPrefix, String lib, JarOutputStream jarOutputStream) throws IOException {
+		JarEntry libFoo = new JarEntry(entryPrefix + lib);
 		libFoo.setMethod(ZipEntry.STORED);
 		ByteArrayOutputStream fooJarStream = new ByteArrayOutputStream();
 		new JarOutputStream(fooJarStream).close();
@@ -63,8 +81,6 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		libFoo.setCrc(crc32.getValue());
 		jarOutputStream.putNextEntry(libFoo);
 		jarOutputStream.write(fooJarStream.toByteArray());
-		jarOutputStream.close();
-		return archive;
 	}
 
 	protected File explode(File archive) throws IOException {

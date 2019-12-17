@@ -17,22 +17,16 @@
 package org.springframework.boot.loader.tools;
 
 /**
- * A specialization of {@link Layout} that repackages an existing archive by moving its
- * content to a new location.
+ * A specialization of {@link RepackagingLayout} that supports layers in the repackaged
+ * archive.
  *
- * @author Andy Wilkinson
- * @since 1.4.0
+ * @author Madhura Bhave
+ * @since 2.3.0
  */
-public interface RepackagingLayout extends Layout {
+public interface LayeredLayout extends RepackagingLayout {
 
-	/**
-	 * Returns the location to which classes should be moved.
-	 * @return the repackaged classes location
-	 */
-	String getRepackagedClassesLocation();
+	String getLayeredLibraryDestination(LayerResolver resolver, String libraryName);
 
-	default String getClasspathIndexLocation() {
-		return null;
-	}
+	String getLayeredClassesDestination(LayerResolver resolver);
 
 }

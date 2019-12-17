@@ -16,6 +16,9 @@
 
 package org.springframework.boot.loader;
 
+import java.io.File;
+import java.util.regex.Pattern;
+
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
@@ -30,11 +33,15 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
+	private static final Pattern CLASSES_PATTERN = Pattern.compile("BOOT-INF.*/classes/");
+
+	private static final Pattern LIBS_PATTERN = Pattern.compile("BOOT-INF.*/lib/.+");
+
 	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
 		if (entry.isDirectory()) {
-			return entry.getName().equals("BOOT-INF/classes/");
+			return CLASSES_PATTERN.matcher(entry.getName()).matches();
 		}
-		return entry.getName().startsWith("BOOT-INF/lib/");
+		return LIBS_PATTERN.matcher(entry.getName()).matches();
 	};
 
 	public JarLauncher() {
@@ -57,6 +64,15 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
+	}
+
+	@Override
+	protected File getIndex(String root) {
+		File file = new File(root + "/BOOT-INF/classpath.idx");
+		if (file.exists()) {
+			return file;
+		}
+		return null;
 	}
 
 	public static void main(String[] args) throws Exception {

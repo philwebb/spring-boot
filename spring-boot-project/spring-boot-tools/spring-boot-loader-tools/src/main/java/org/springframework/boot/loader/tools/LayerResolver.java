@@ -17,22 +17,24 @@
 package org.springframework.boot.loader.tools;
 
 /**
- * A specialization of {@link Layout} that repackages an existing archive by moving its
- * content to a new location.
+ * Strategy interface used to resolve which layer a file should be in.
  *
- * @author Andy Wilkinson
- * @since 1.4.0
+ * @author Madhura Bhave
+ * @since 2.3.0
  */
-public interface RepackagingLayout extends Layout {
+public interface LayerResolver {
 
 	/**
-	 * Returns the location to which classes should be moved.
-	 * @return the repackaged classes location
+	 * The default layer resolver.
 	 */
-	String getRepackagedClassesLocation();
+	LayerResolver DEFAULT = new SimpleLayerResolver();
 
-	default String getClasspathIndexLocation() {
-		return null;
-	}
+	/**
+	 * Returns the layer that the file should be added to.
+	 * @param destination the original destination for the file
+	 * @param file the name of the file
+	 * @return the resolved layer
+	 */
+	String resolveLayer(String destination, String file);
 
 }
