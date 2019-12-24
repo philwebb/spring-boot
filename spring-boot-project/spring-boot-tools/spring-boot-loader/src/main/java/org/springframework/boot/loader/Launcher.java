@@ -52,7 +52,9 @@ public abstract class Launcher {
 			JarFile.registerUrlProtocolHandler();
 		}
 		ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator());
-		launch(args, getMainClass(), classLoader);
+		JarMode mode = JarMode.get();
+		String mainClass = (mode != null) ? mode.getLaunchClass() : getMainClass();
+		launch(args, mainClass, classLoader);
 	}
 
 	/**
@@ -98,13 +100,13 @@ public abstract class Launcher {
 	/**
 	 * Launch the application given the archive file and a fully configured classloader.
 	 * @param args the incoming arguments
-	 * @param mainClass the main class to run
+	 * @param launchClass the launch class to run
 	 * @param classLoader the classloader
 	 * @throws Exception if the launch fails
 	 */
-	protected void launch(String[] args, String mainClass, ClassLoader classLoader) throws Exception {
+	protected void launch(String[] args, String launchClass, ClassLoader classLoader) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
-		createMainMethodRunner(mainClass, args, classLoader).run();
+		createMainMethodRunner(launchClass, args, classLoader).run();
 	}
 
 	/**
@@ -170,6 +172,40 @@ public abstract class Launcher {
 	 */
 	protected boolean supportsNestedJars() {
 		return true;
+	}
+
+	/**
+	 * Boot modes that can be used to launch an alternative class.
+	 */
+	private enum JarMode {
+
+		TOOLS("org.springframework.boot.jarmode.tools.ToolsJarMode");
+
+		private static final String PROPERTY_NAME = "jarmode";
+
+		private final String launchClass;
+
+		JarMode(String launchClass) {
+			this.launchClass = launchClass;
+		}
+
+		String getLaunchClass() {
+			return this.launchClass;
+		}
+
+		static JarMode get() {
+			String mode = System.getProperty(PROPERTY_NAME);
+			if (mode != null) {
+				mode = mode.toLowerCase().trim();
+				for (JarMode candidate : values()) {
+					if (candidate.name().toLowerCase().equals(mode)) {
+						return candidate;
+					}
+				}
+			}
+			return null;
+		}
+
 	}
 
 }

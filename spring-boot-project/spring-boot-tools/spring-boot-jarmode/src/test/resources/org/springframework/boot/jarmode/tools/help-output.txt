@@ -1,0 +1,8 @@
+Usage:
+  java -Djarmode=tools -jar test.jar
+
+Available commands:
+  dockerfile      Generates a Dockerfile for the jar
+  list-layers     List layers from the jar that can be extracted
+  extract-layers  Extracts layers from the jar for image creation
+  help            Help about any command

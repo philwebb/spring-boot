@@ -1,0 +1,8 @@
+Generates a Dockerfile for the jar
+
+Usage:
+  java -Djarmode=tools -jar test.jar dockerfile [options] [<from>]
+
+Options:
+  --folder string  The folder contianing the jar
+  --no-wildcards   Use the full jar name rather than '*.jar'
