@@ -40,15 +40,9 @@ import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
 
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
-import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.LayoutFactory;
-import org.springframework.boot.loader.tools.Layouts.Expanded;
-import org.springframework.boot.loader.tools.Layouts.Jar;
-import org.springframework.boot.loader.tools.Layouts.None;
-import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
-import org.springframework.boot.loader.tools.Repackager.MainClassTimeoutWarningListener;
 
 /**
  * Repackage existing JAR and WAR archives so that they can be executed from the command
@@ -274,7 +268,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private Repackager getRepackager(File source) {
 		Repackager repackager = new Repackager(source, this.layoutFactory);
-		repackager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener());
+		repackager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener(this::getLog));
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);
@@ -358,58 +352,6 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			getLog().info("Replacing " + artifactId + " with repackaged archive");
 			source.setFile(target);
 		}
-	}
-
-	private class LoggingMainClassTimeoutWarningListener implements MainClassTimeoutWarningListener {
-
-		@Override
-		public void handleTimeoutWarning(long duration, String mainMethod) {
-			getLog().warn("Searching for the main-class is taking some time, "
-					+ "consider using the mainClass configuration parameter");
-		}
-
-	}
-
-	/**
-	 * Archive layout types.
-	 */
-	public enum LayoutType {
-
-		/**
-		 * Jar Layout.
-		 */
-		JAR(new Jar()),
-
-		/**
-		 * War Layout.
-		 */
-		WAR(new War()),
-
-		/**
-		 * Zip Layout.
-		 */
-		ZIP(new Expanded()),
-
-		/**
-		 * Dir Layout.
-		 */
-		DIR(new Expanded()),
-
-		/**
-		 * No Layout.
-		 */
-		NONE(new None());
-
-		private final Layout layout;
-
-		LayoutType(Layout layout) {
-			this.layout = layout;
-		}
-
-		public Layout layout() {
-			return this.layout;
-		}
-
 	}
 
 }

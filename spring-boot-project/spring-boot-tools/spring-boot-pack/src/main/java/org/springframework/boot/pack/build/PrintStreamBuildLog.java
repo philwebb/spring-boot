@@ -17,15 +17,10 @@
 package org.springframework.boot.pack.build;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.function.Consumer;
 
-import org.springframework.boot.pack.docker.LogUpdateEvent;
 import org.springframework.boot.pack.docker.TotalProgressBar;
 import org.springframework.boot.pack.docker.TotalProgressEvent;
-import org.springframework.boot.pack.docker.type.Image;
-import org.springframework.boot.pack.docker.type.ImageReference;
-import org.springframework.boot.pack.docker.type.VolumeName;
 
 /**
  * {@link BuildLog} implementation that prints output to a {@link PrintStream}.
@@ -33,7 +28,7 @@ import org.springframework.boot.pack.docker.type.VolumeName;
  * @author Phillip Webb
  * @see BuildLog#to(PrintStream)
  */
-class PrintStreamBuildLog implements BuildLog {
+class PrintStreamBuildLog extends AbstractBuildLog {
 
 	private final PrintStream out;
 
@@ -42,55 +37,13 @@ class PrintStreamBuildLog implements BuildLog {
 	}
 
 	@Override
-	public void start(BuildRequest request) {
-		this.out.println("Building image '" + request.getName() + "'");
-		this.out.println();
+	protected void log(String message) {
+		this.out.println(message);
 	}
 
 	@Override
-	public Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference) {
-		return new TotalProgressBar(" > Pulling builder image '" + imageReference + "'", '.', false, this.out);
-	}
-
-	@Override
-	public void pulledBulder(BuildRequest request, Image image) {
-		this.out.println(" > Pulled builder image '" + getDigest(image) + "'");
-	}
-
-	@Override
-	public Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference) {
-		return new TotalProgressBar(" > Pulling run image '" + imageReference + "'", '.', false, this.out);
-	}
-
-	@Override
-	public void pulledRunImage(BuildRequest request, Image image) {
-		this.out.println(" > Pulled run image '" + getDigest(image) + "'");
-	}
-
-	@Override
-	public void executingLifecycle(BuildRequest request, LifecycleVersion version, VolumeName buildCacheVolume) {
-		this.out.println(" > Executing lifecycle version " + version);
-		this.out.println(" > Using build cache volume '" + buildCacheVolume + "'");
-	}
-
-	@Override
-	public Consumer<LogUpdateEvent> runningPhase(BuildRequest request, String name) {
-		this.out.println();
-		this.out.println(" > Running " + name);
-		String prefix = String.format("    %-14s", "[" + name + "] ");
-		return (event) -> this.out.println(prefix + event);
-	}
-
-	@Override
-	public void executedLifecycle(BuildRequest request) {
-		this.out.println();
-		this.out.println("Successfully built image '" + request.getName() + "'");
-		this.out.println();
-	}
-
-	private String getDigest(Image image) {
-		List<String> digests = image.getDigests();
-		return (digests.isEmpty() ? "" : digests.get(0));
+	protected Consumer<TotalProgressEvent> getProgressConsumer(String prefix) {
+		return new TotalProgressBar(prefix, '.', false, this.out);
 	}
 
 }

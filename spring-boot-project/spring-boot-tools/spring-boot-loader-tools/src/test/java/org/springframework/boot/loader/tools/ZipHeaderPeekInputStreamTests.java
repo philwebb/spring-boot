@@ -21,8 +21,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.loader.tools.JarWriter.ZipHeaderPeekInputStream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

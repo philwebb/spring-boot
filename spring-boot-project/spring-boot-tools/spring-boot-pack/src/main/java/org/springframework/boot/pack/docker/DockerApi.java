@@ -139,10 +139,8 @@ public class DockerApi {
 		 * @param listener a pull listener to receive update events
 		 * @return the {@link ImageApi pulled image} instance
 		 * @throws IOException on IO error
-		 * @throws DockerException on Docker API error
 		 */
-		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener)
-				throws IOException, DockerException {
+		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
 			URI createUri = buildUrl("/images/create", "fromImage", reference.toString());
@@ -170,7 +168,6 @@ public class DockerApi {
 		 * @param archive the archive to load
 		 * @param listener a pull listener to receive update events
 		 * @throws IOException on IO error
-		 * @throws DockerException on Docker API error
 		 */
 		public void load(ImageArchive archive, UpdateListener<LoadImageUpdateEvent> listener) throws IOException {
 			Assert.notNull(archive, "Archive must not be null");
