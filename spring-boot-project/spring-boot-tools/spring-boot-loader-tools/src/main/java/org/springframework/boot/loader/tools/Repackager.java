@@ -308,7 +308,7 @@ public class Repackager {
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
 		manifest.getMainAttributes().putValue(BOOT_CLASSES_ATTRIBUTE, (this.layout instanceof RepackagingLayout)
 				? ((RepackagingLayout) this.layout).getRepackagedClassesLocation() : this.layout.getClassesLocation());
-		String lib = this.layout.getLibraryDestination("", LibraryScope.COMPILE);
+		String lib = this.layout.getLibraryLocation("", LibraryScope.COMPILE);
 		if (StringUtils.hasLength(lib)) {
 			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, lib);
 		}
@@ -442,24 +442,24 @@ public class Repackager {
 		private WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library.getFile())) {
-					String destination = getDestination(library);
-					if (destination != null) {
-						Library existing = this.libraryEntryNames.putIfAbsent(destination + library.getName(), library);
+					String location = getLocation(library);
+					if (location != null) {
+						Library existing = this.libraryEntryNames.putIfAbsent(location + library.getName(), library);
 						Assert.state(existing == null, "Duplicate library " + library.getName());
 					}
 				}
 			});
 		}
 
-		private String getDestination(Library library) {
+		private String getLocation(Library library) {
 			Layout layout = Repackager.this.layout;
 			if (layout instanceof LayeredLayout) {
 				Layers layers = Repackager.this.layers;
 				Layer layer = layers.getLayer(library);
 				Assert.state(layer != null, "Invalid 'null' library layer from " + layers.getClass().getName());
-				return ((LayeredLayout) layout).getLibraryDestination(library.getName(), library.getScope(), layer);
+				return ((LayeredLayout) layout).getLibraryLocation(library.getName(), library.getScope(), layer);
 			}
-			return layout.getLibraryDestination(library.getName(), library.getScope());
+			return layout.getLibraryLocation(library.getName(), library.getScope());
 		}
 
 		@Override
@@ -481,7 +481,7 @@ public class Repackager {
 						entry.getValue());
 			}
 			if (Repackager.this.layout instanceof RepackagingLayout) {
-				String location = ((RepackagingLayout) (Repackager.this.layout)).getClasspathIndexLocation();
+				String location = ((RepackagingLayout) (Repackager.this.layout)).getClasspathIndexFileLocation();
 				writer.writeClasspathIndex(location, new ArrayList<>(this.libraryEntryNames.keySet()));
 			}
 		}

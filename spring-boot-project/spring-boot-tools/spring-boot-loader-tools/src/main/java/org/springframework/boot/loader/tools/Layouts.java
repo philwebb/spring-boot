@@ -83,7 +83,7 @@ public final class Layouts {
 		}
 
 		@Override
-		public String getClasspathIndexLocation() {
+		public String getClasspathIndexFileLocation() {
 			return "BOOT-INF/classpath.idx";
 		}
 
@@ -100,12 +100,17 @@ public final class Layouts {
 	public static class LayeredJar extends Jar implements LayeredLayout {
 
 		@Override
+		public String getLayersIndexFileLocation() {
+			return "BOOT-INF/layers.idx";
+		}
+
+		@Override
 		public String getRepackagedClassesLocation(Layer layer) {
 			return "BOOT-INF/layer/" + layer + "/classes/";
 		}
 
 		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope, Layer layer) {
+		public String getLibraryLocation(String libraryName, LibraryScope scope, Layer layer) {
 			return "BOOT-INF/layer/" + layer + "/lib/";
 		}
 

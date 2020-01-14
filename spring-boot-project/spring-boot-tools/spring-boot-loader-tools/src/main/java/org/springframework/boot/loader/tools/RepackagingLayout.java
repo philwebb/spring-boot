@@ -31,7 +31,13 @@ public interface RepackagingLayout extends Layout {
 	 */
 	String getRepackagedClassesLocation();
 
-	default String getClasspathIndexLocation() {
+	/**
+	 * Returns the location of the classpath index file that should be written or
+	 * {@code null} if not index is required. The result should include the filename and
+	 * is relative to the root of the jar.
+	 * @return the classpath index file location
+	 */
+	default String getClasspathIndexFileLocation() {
 		return null;
 	}
 

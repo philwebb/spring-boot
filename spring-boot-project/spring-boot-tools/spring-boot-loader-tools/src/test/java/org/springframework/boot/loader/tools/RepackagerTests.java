@@ -395,8 +395,8 @@ class RepackagerTests {
 		Layout layout = mock(Layout.class);
 		LibraryScope scope = mock(LibraryScope.class);
 		given(layout.getLauncherClassName()).willReturn("testLauncher");
-		given(layout.getLibraryDestination(anyString(), eq(scope))).willReturn("test/");
-		given(layout.getLibraryDestination(anyString(), eq(LibraryScope.COMPILE))).willReturn("test-lib/");
+		given(layout.getLibraryLocation(anyString(), eq(scope))).willReturn("test/");
+		given(layout.getLibraryLocation(anyString(), eq(LibraryScope.COMPILE))).willReturn("test-lib/");
 		repackager.setLayout(layout);
 		repackager.repackage((callback) -> callback.library(new Library(libJarFile, scope)));
 		assertThat(hasEntry(file, "test/" + libJarFile.getName())).isTrue();

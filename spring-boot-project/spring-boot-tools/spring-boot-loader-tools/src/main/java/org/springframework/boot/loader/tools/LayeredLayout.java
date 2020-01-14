@@ -25,8 +25,30 @@ package org.springframework.boot.loader.tools;
  */
 public interface LayeredLayout extends RepackagingLayout {
 
+	/**
+	 * Returns the location of the layers index file that should be written or
+	 * {@code null} if not index is required. The result should include the filename and
+	 * is relative to the root of the jar.
+	 * @return the layers index file location
+	 */
+	String getLayersIndexFileLocation();
+
+	/**
+	 * Returns the location to which classes should be moved within the context of a
+	 * layer.
+	 * @param layer the destination layer for the content
+	 * @return the repackaged classes location
+	 */
 	String getRepackagedClassesLocation(Layer layer);
 
-	String getLibraryDestination(String libraryName, LibraryScope scope, Layer layer);
+	/**
+	 * Returns the destination path for a given library within the context of a layer.
+	 * @param libraryName the name of the library (excluding any path)
+	 * @param scope the scope of the library
+	 * @param layer the destination layer for the content
+	 * @return the location of the library relative to the root of the archive (should end
+	 * with '/') or {@code null} if the library should not be included.
+	 */
+	String getLibraryLocation(String libraryName, LibraryScope scope, Layer layer);
 
 }
