@@ -28,8 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -53,9 +58,7 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -347,13 +350,12 @@ class RepackagerTests {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
-		Layouts.LayeredJar layout = new Layouts.LayeredJar();
-		LayerResolver layerResolver = mock(LayerResolver.class);
-		given(layerResolver.resolveLayer(any(), contains(libJarFile1.getName()))).willReturn("layer/0001");
-		given(layerResolver.resolveLayer(any(), contains(libJarFile2.getName()))).willReturn("layer/0002");
-		given(layerResolver.resolveLayer(any(), contains(libJarFile3.getName()))).willReturn("layer/0003");
-		repackager.setLayerResolver(layerResolver);
-		repackager.setLayout(layout);
+		TestLayers layers = new TestLayers();
+		layers.addLibrary(libJarFile1, "0001");
+		layers.addLibrary(libJarFile2, "0002");
+		layers.addLibrary(libJarFile3, "0003");
+		repackager.setLayers(layers);
+		repackager.setLayout(new Layouts.LayeredJar());
 		repackager.repackage((callback) -> {
 			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
 			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
@@ -778,6 +780,42 @@ class RepackagerTests {
 		@Override
 		public void writeLoadedClasses(LoaderClassesWriter writer) throws IOException {
 			writer.writeEntry("test", new ByteArrayInputStream("test".getBytes()));
+		}
+
+	}
+
+	static class TestLayers implements Layers {
+
+		private static final Layer DEFAULT_LAYER = new Layer("default");
+
+		private Set<Layer> layers = new LinkedHashSet<Layer>();
+
+		private Map<String, Layer> libraries = new HashMap<>();
+
+		public TestLayers() {
+			this.layers.add(DEFAULT_LAYER);
+		}
+
+		public void addLibrary(File jarFile, String layerName) {
+			Layer layer = new Layer(layerName);
+			this.layers.add(layer);
+			this.libraries.put(jarFile.getName(), layer);
+		}
+
+		@Override
+		public Iterator<Layer> iterator() {
+			return this.layers.iterator();
+		}
+
+		@Override
+		public Layer getLayer(String name) {
+			return DEFAULT_LAYER;
+		}
+
+		@Override
+		public Layer getLayer(Library library) {
+			String name = new File(library.getName()).getName();
+			return this.libraries.getOrDefault(name, DEFAULT_LAYER);
 		}
 
 	}

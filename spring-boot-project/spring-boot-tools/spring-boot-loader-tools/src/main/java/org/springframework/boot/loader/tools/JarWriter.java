@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,7 +28,9 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
@@ -62,6 +65,10 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
+
+	private static final int UNIX_FILE_MODE = UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM;
+
+	private static final int UNIX_DIR_MODE = UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM;
 
 	private final JarArchiveOutputStream jarOutput;
 
@@ -122,11 +129,11 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), NEVER_UNPACK);
+		this.writeEntries(jarFile, EntryTransformer.NONE, NEVER_UNPACK);
 	}
 
 	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler) throws IOException {
-		this.writeEntries(jarFile, new IdentityEntryTransformer(), unpackHandler);
+		this.writeEntries(jarFile, EntryTransformer.NONE, unpackHandler);
 	}
 
 	void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
@@ -193,11 +200,13 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		if (location != null) {
 			JarArchiveEntry entry = new JarArchiveEntry(location);
 			writeEntry(entry, (outputStream) -> {
+				BufferedWriter writer = new BufferedWriter(
+						new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
 				for (String library : libraries) {
-					outputStream.write(library.getBytes());
-					outputStream.write("\r\n".getBytes());
+					writer.write(library);
+					writer.write("\n");
 				}
-				outputStream.flush();
+				writer.flush();
 			});
 		}
 	}
@@ -271,28 +280,26 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
 			throws IOException {
-		String parent = entry.getName();
-		if (parent.endsWith("/")) {
-			parent = parent.substring(0, parent.length() - 1);
-			entry.setUnixMode(UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
-		}
-		else {
-			entry.setUnixMode(UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
-		}
-		if (parent.lastIndexOf('/') != -1) {
-			parent = parent.substring(0, parent.lastIndexOf('/') + 1);
-			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent), null, unpackHandler);
-			}
-		}
-
-		if (this.writtenEntries.add(entry.getName())) {
+		String name = entry.getName();
+		writeParentFolderEntries(name);
+		if (this.writtenEntries.add(name)) {
+			entry.setUnixMode(name.endsWith("/") ? UNIX_DIR_MODE : UNIX_FILE_MODE);
 			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
 			this.jarOutput.putArchiveEntry(entry);
 			if (entryWriter != null) {
 				entryWriter.write(this.jarOutput);
 			}
 			this.jarOutput.closeArchiveEntry();
+		}
+	}
+
+	private void writeParentFolderEntries(String name) throws IOException {
+		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
+		while (parent.lastIndexOf('/') != -1) {
+			parent = parent.substring(0, parent.lastIndexOf('/'));
+			if (!parent.isEmpty()) {
+				writeEntry(new JarArchiveEntry(parent + "/"), null, NEVER_UNPACK);
+			}
 		}
 	}
 
@@ -458,21 +465,15 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * An {@code EntryTransformer} enables the transformation of {@link JarEntry jar
 	 * entries} during the writing process.
 	 */
+	@FunctionalInterface
 	interface EntryTransformer {
 
+		/**
+		 * No-op entity transformer.
+		 */
+		EntryTransformer NONE = (jarEntry) -> jarEntry;
+
 		JarArchiveEntry transform(JarArchiveEntry jarEntry);
-
-	}
-
-	/**
-	 * An {@code EntryTransformer} that returns the entry unchanged.
-	 */
-	private static final class IdentityEntryTransformer implements EntryTransformer {
-
-		@Override
-		public JarArchiveEntry transform(JarArchiveEntry jarEntry) {
-			return jarEntry;
-		}
 
 	}
 

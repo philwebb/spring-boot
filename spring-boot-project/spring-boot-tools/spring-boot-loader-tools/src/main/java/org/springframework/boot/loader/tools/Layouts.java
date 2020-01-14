@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.util.PropertyPlaceholderHelper;
-
 /**
  * Common {@link Layout}s.
  *
@@ -101,22 +99,14 @@ public final class Layouts {
 	 */
 	public static class LayeredJar extends Jar implements LayeredLayout {
 
-		private static final PropertyPlaceholderHelper HELPER = new PropertyPlaceholderHelper("{", "}");
-
-		private static final String LAYERED_LIBRARY_DESTINATION = "BOOT-INF/{layer}/lib/";
-
-		private static final String LAYERED_CLASSES_DESTINATION = "BOOT-INF/{layer}/classes/";
-
 		@Override
-		public String getLayeredLibraryDestination(LayerResolver resolver, String libraryName) {
-			return HELPER.replacePlaceholders(getLibraryDestination(libraryName, null),
-					(placeholderName) -> resolver.resolveLayer(LAYERED_LIBRARY_DESTINATION, libraryName));
+		public String getRepackagedClassesLocation(Layer layer) {
+			return "BOOT-INF/layer/" + layer + "/classes/";
 		}
 
 		@Override
-		public String getLayeredClassesDestination(LayerResolver resolver) {
-			return HELPER.replacePlaceholders(getRepackagedClassesLocation(),
-					(placeholderName) -> resolver.resolveLayer(LAYERED_CLASSES_DESTINATION, ""));
+		public String getLibraryDestination(String libraryName, LibraryScope scope, Layer layer) {
+			return "BOOT-INF/layer/" + layer + "/lib/";
 		}
 
 	}

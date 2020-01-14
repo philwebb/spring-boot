@@ -16,33 +16,31 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.util.Iterator;
+
 /**
- * Default implementation of {@link LayerResolver}.
+ * Strategy interface used to provide information about layers to the {@link Repackager}.
  *
  * @author Madhura Bhave
+ * @since 2.3.0
+ * @see Layer
  */
-class SimpleLayerResolver implements LayerResolver {
+public interface Layers extends Iterable<Layer> {
 
-	private static final String CLASSES_LAYER = "layers/0001";
+	/**
+	 * The default layer resolver.
+	 */
+	Layers IMPLICIT = new ImplicitLayerResolver();
 
-	private static final String SNAPSHOTS_LAYER = "layers/0002";
-
-	private static final String DEPENDENCIES_LAYER = "layers/0003";
-
-	private static final String CATCH_ALL_LAYER = "layers/0004";
-
+	/**
+	 * Return the jar layers in the order that they should be added (starting with the
+	 * least frequently changed layer).
+	 */
 	@Override
-	public String resolveLayer(String destination, String file) {
-		if (destination.endsWith("/classes/")) {
-			return CLASSES_LAYER;
-		}
-		if (file.toUpperCase().contains("SNAPSHOT")) {
-			return SNAPSHOTS_LAYER;
-		}
-		if (destination.endsWith("/lib/")) {
-			return DEPENDENCIES_LAYER;
-		}
-		return CATCH_ALL_LAYER;
-	}
+	Iterator<Layer> iterator();
+
+	Layer getLayer(String name);
+
+	Layer getLayer(Library library);
 
 }

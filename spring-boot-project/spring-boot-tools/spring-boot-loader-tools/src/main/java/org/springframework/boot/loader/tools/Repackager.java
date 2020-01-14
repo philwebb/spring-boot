@@ -48,6 +48,8 @@ import org.springframework.util.StringUtils;
  */
 public class Repackager {
 
+	// FIXME write a layers manifest
+
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
@@ -76,20 +78,16 @@ public class Repackager {
 
 	private LayoutFactory layoutFactory;
 
-	private LayerResolver layerResolver = LayerResolver.DEFAULT;
+	private Layers layers = Layers.IMPLICIT;
 
 	public Repackager(File source) {
 		this(source, null);
 	}
 
 	public Repackager(File source, LayoutFactory layoutFactory) {
-		if (source == null) {
-			throw new IllegalArgumentException("Source file must be provided");
-		}
-		if (!source.exists() || !source.isFile()) {
-			throw new IllegalArgumentException(
-					"Source must refer to an existing file, got " + source.getAbsolutePath());
-		}
+		Assert.notNull(source, "Source file must be provided");
+		Assert.isTrue(source.exists() && source.isFile(),
+				"Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;
 	}
@@ -126,21 +124,18 @@ public class Repackager {
 	 * @param layout the layout
 	 */
 	public void setLayout(Layout layout) {
-		if (layout == null) {
-			throw new IllegalArgumentException("Layout must not be null");
-		}
+		Assert.notNull(layout, "Layout must not be null");
 		this.layout = layout;
 	}
 
 	/**
-	 * Sets the layer resolver to use for layered layouts.
-	 * @param layerResolver the layerResolver
+	 * Sets the layers that should be used in the jar.
+	 * @param layers the jar layers
+	 * @see LayeredLayout
 	 */
-	public void setLayerResolver(LayerResolver layerResolver) {
-		if (layerResolver == null) {
-			throw new IllegalArgumentException("Layer Resolver must not be null");
-		}
-		this.layerResolver = layerResolver;
+	public void setLayers(Layers layers) {
+		Assert.notNull(layers, "Layers must not be null");
+		this.layers = layers;
 	}
 
 	/**
@@ -182,12 +177,8 @@ public class Repackager {
 	 * @since 1.3.0
 	 */
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
-		if (destination == null || destination.isDirectory()) {
-			throw new IllegalArgumentException("Invalid destination");
-		}
-		if (libraries == null) {
-			throw new IllegalArgumentException("Libraries must not be null");
-		}
+		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
+		Assert.notNull(libraries, "Libraries must not be null");
 		if (this.layout == null) {
 			this.layout = getLayoutFactory().getLayout(this.source);
 		}
@@ -247,15 +238,7 @@ public class Repackager {
 		try (JarWriter writer = new JarWriter(destination, launchScript)) {
 			writer.writeManifest(buildManifest(sourceJar));
 			writeLoaderClasses(writer);
-			if (this.layout instanceof RepackagingLayout) {
-				String location = (this.layout instanceof LayeredLayout)
-						? ((LayeredLayout) this.layout).getLayeredClassesDestination(this.layerResolver)
-						: ((RepackagingLayout) layout).getRepackagedClassesLocation();
-				writer.writeEntries(sourceJar, new RenamingEntryTransformer(location), writeableLibraries);
-			}
-			else {
-				writer.writeEntries(sourceJar, writeableLibraries);
-			}
+			writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
 			writeableLibraries.write(writer);
 		}
 	}
@@ -267,6 +250,13 @@ public class Repackager {
 		else if (this.layout.isExecutable()) {
 			writer.writeLoaderClasses();
 		}
+	}
+
+	private EntryTransformer getEntityTransformer() {
+		if (this.layout instanceof RepackagingLayout) {
+			return new RepackagingEntryTransformer((RepackagingLayout) this.layout, this.layers);
+		}
+		return EntryTransformer.NONE;
 	}
 
 	private boolean isZip(File file) {
@@ -373,46 +363,70 @@ public class Repackager {
 	/**
 	 * An {@code EntryTransformer} that renames entries by applying a prefix.
 	 */
-	private static final class RenamingEntryTransformer implements EntryTransformer {
+	private static final class RepackagingEntryTransformer implements EntryTransformer {
 
-		private final String namePrefix;
+		private final RepackagingLayout layout;
 
-		private RenamingEntryTransformer(String namePrefix) {
-			this.namePrefix = namePrefix;
+		private final Layers layers;
+
+		private RepackagingEntryTransformer(RepackagingLayout layout, Layers layers) {
+			this.layout = layout;
+			this.layers = layers;
 		}
+
+		// String location = (this.layout instanceof LayeredLayout)
+		// ? ((LayeredLayout)
+		// this.layout).getLayeredClassesDestination(this.layerResolver)
+		// : ((RepackagingLayout) this.layout).getRepackagedClassesLocation();
 
 		@Override
 		public JarArchiveEntry transform(JarArchiveEntry entry) {
 			if (entry.getName().equals("META-INF/INDEX.LIST")) {
 				return null;
 			}
-			if ((entry.getName().startsWith("META-INF/") && !entry.getName().equals("META-INF/aop.xml")
-					&& !entry.getName().endsWith(".kotlin_module")) || entry.getName().startsWith("BOOT-INF/")
-					|| entry.getName().equals("module-info.class")) {
+			if (!isTransformable(entry)) {
 				return entry;
 			}
-			JarArchiveEntry renamedEntry = new JarArchiveEntry(this.namePrefix + entry.getName());
-			renamedEntry.setTime(entry.getTime());
-			renamedEntry.setSize(entry.getSize());
-			renamedEntry.setMethod(entry.getMethod());
+			String transformedName = transformName(entry.getName());
+			JarArchiveEntry transformedEntry = new JarArchiveEntry(transformedName);
+			transformedEntry.setTime(entry.getTime());
+			transformedEntry.setSize(entry.getSize());
+			transformedEntry.setMethod(entry.getMethod());
 			if (entry.getComment() != null) {
-				renamedEntry.setComment(entry.getComment());
+				transformedEntry.setComment(entry.getComment());
 			}
-			renamedEntry.setCompressedSize(entry.getCompressedSize());
-			renamedEntry.setCrc(entry.getCrc());
+			transformedEntry.setCompressedSize(entry.getCompressedSize());
+			transformedEntry.setCrc(entry.getCrc());
 			if (entry.getCreationTime() != null) {
-				renamedEntry.setCreationTime(entry.getCreationTime());
+				transformedEntry.setCreationTime(entry.getCreationTime());
 			}
 			if (entry.getExtra() != null) {
-				renamedEntry.setExtra(entry.getExtra());
+				transformedEntry.setExtra(entry.getExtra());
 			}
 			if (entry.getLastAccessTime() != null) {
-				renamedEntry.setLastAccessTime(entry.getLastAccessTime());
+				transformedEntry.setLastAccessTime(entry.getLastAccessTime());
 			}
 			if (entry.getLastModifiedTime() != null) {
-				renamedEntry.setLastModifiedTime(entry.getLastModifiedTime());
+				transformedEntry.setLastModifiedTime(entry.getLastModifiedTime());
 			}
-			return renamedEntry;
+			return transformedEntry;
+		}
+
+		private String transformName(String name) {
+			if (this.layout instanceof LayeredLayout) {
+				Layer layer = this.layers.getLayer(name);
+				Assert.state(layer != null, "Invalid 'null' layer from " + this.layers.getClass().getName());
+				return ((LayeredLayout) this.layout).getRepackagedClassesLocation(layer) + name;
+			}
+			return this.layout.getRepackagedClassesLocation() + name;
+		}
+
+		private boolean isTransformable(JarArchiveEntry entry) {
+			String name = entry.getName();
+			if (name.startsWith("META-INF/")) {
+				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module");
+			}
+			return !name.startsWith("BOOT-INF/") && !name.equals("module-info.class");
 		}
 
 	}
@@ -428,24 +442,24 @@ public class Repackager {
 		private WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library.getFile())) {
-					Layout layout = Repackager.this.layout;
-					String libraryDestination = getLibraryDestination(library, layout);
-					if (libraryDestination != null) {
-						Library existing = this.libraryEntryNames.putIfAbsent(libraryDestination + library.getName(),
-								library);
-						if (existing != null) {
-							throw new IllegalStateException("Duplicate library " + library.getName());
-						}
+					String destination = getDestination(library);
+					if (destination != null) {
+						Library existing = this.libraryEntryNames.putIfAbsent(destination + library.getName(), library);
+						Assert.state(existing == null, "Duplicate library " + library.getName());
 					}
 				}
 			});
 		}
 
-		private String getLibraryDestination(Library library, Layout layout) {
-			return (layout instanceof LayeredLayout)
-					? ((LayeredLayout) layout).getLayeredLibraryDestination(Repackager.this.layerResolver,
-							library.getName())
-					: Repackager.this.layout.getLibraryDestination(library.getName(), library.getScope());
+		private String getDestination(Library library) {
+			Layout layout = Repackager.this.layout;
+			if (layout instanceof LayeredLayout) {
+				Layers layers = Repackager.this.layers;
+				Layer layer = layers.getLayer(library);
+				Assert.state(layer != null, "Invalid 'null' library layer from " + layers.getClass().getName());
+				return ((LayeredLayout) layout).getLibraryDestination(library.getName(), library.getScope(), layer);
+			}
+			return layout.getLibraryDestination(library.getName(), library.getScope());
 		}
 
 		@Override
@@ -457,9 +471,7 @@ public class Repackager {
 		@Override
 		public String sha1Hash(String name) throws IOException {
 			Library library = this.libraryEntryNames.get(name);
-			if (library == null) {
-				throw new IllegalArgumentException("No library found for entry name '" + name + "'");
-			}
+			Assert.notNull(library, "No library found for entry name '" + name + "'");
 			return FileUtils.sha1Hash(library.getFile());
 		}
 

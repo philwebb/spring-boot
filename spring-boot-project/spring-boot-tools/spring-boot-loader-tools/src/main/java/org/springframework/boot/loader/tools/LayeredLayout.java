@@ -25,8 +25,8 @@ package org.springframework.boot.loader.tools;
  */
 public interface LayeredLayout extends RepackagingLayout {
 
-	String getLayeredLibraryDestination(LayerResolver resolver, String libraryName);
+	String getRepackagedClassesLocation(Layer layer);
 
-	String getLayeredClassesDestination(LayerResolver resolver);
+	String getLibraryDestination(String libraryName, LibraryScope scope, Layer layer);
 
 }
