@@ -38,8 +38,8 @@ public class Layer {
 	 * @param name the name of the layer.
 	 */
 	public Layer(String name) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.isTrue(PATTERN.matcher(name).matches(), "Name must not contain special characters");
+		Assert.hasText(name, "Name must not be empty");
+		Assert.isTrue(PATTERN.matcher(name).matches(), "Malformed layer name '" + name + "'");
 		this.name = name;
 	}
 

@@ -16,58 +16,30 @@
 
 package org.springframework.boot.loader.tools;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Implementation of {@link Layers} that uses implicit rules.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class ImplicitLayerResolver implements Layers {
-
-	private static final Layer DEPENDENCIES_LAYER = new Layer("dependencies");
-
-	private static final Layer SNAPSHOT_DEPENDENCIES_LAYER = new Layer("snapshot-dependencies");
-
-	private static final Layer RESOURCES_LAYER = new Layer("resources");
-
-	private static final Layer APPLICATION_LAYER = new Layer("application");
-
-	private static final List<Layer> LAYERS;
-	static {
-		List<Layer> layers = new ArrayList<>();
-		layers.add(DEPENDENCIES_LAYER);
-		layers.add(SNAPSHOT_DEPENDENCIES_LAYER);
-		layers.add(RESOURCES_LAYER);
-		layers.add(APPLICATION_LAYER);
-		LAYERS = Collections.unmodifiableList(layers);
-	}
+class ImplicitLayerResolver extends StandardLayers {
 
 	private static final String[] RESOURCE_LOCATIONS = { "META-INF/resources/", "resources/", "static/", "public/" };
 
 	@Override
-	public Iterator<Layer> iterator() {
-		return LAYERS.iterator();
-	}
-
-	@Override
 	public Layer getLayer(String name) {
 		if (!isClassFile(name) && isInResourceLocation(name)) {
-			return RESOURCES_LAYER;
+			return RESOURCES;
 		}
-		return APPLICATION_LAYER;
+		return APPLICATION;
 	}
 
 	@Override
 	public Layer getLayer(Library library) {
 		if (library.getName().contains("SNAPSHOT.")) {
-			return SNAPSHOT_DEPENDENCIES_LAYER;
+			return SNAPSHOT_DEPENDENCIES;
 		}
-		return DEPENDENCIES_LAYER;
+		return DEPENDENCIES;
 	}
 
 	private boolean isClassFile(String name) {

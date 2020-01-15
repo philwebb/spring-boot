@@ -18,16 +18,44 @@ package org.springframework.boot.loader.tools;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * @author pwebb
+ * Tests for {@link Layer}.
+ *
+ * @author Phillip Webb
  */
 class LayerTests {
 
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void createWhenNameIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("Name must not be empty");
+	}
+
+	@Test
+	void createWhenNameIsEmptyThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("")).withMessage("Name must not be empty");
+	}
+
+	@Test
+	void createWhenNameContainsBadCharsThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("bad!name"))
+				.withMessage("Malformed layer name 'bad!name'");
+	}
+
+	@Test
+	void equalsAndHashCode() {
+		Layer layer1 = new Layer("testa");
+		Layer layer2 = new Layer("testa");
+		Layer layer3 = new Layer("testb");
+		assertThat(layer1.hashCode()).isEqualTo(layer2.hashCode());
+		assertThat(layer1).isEqualTo(layer1).isEqualTo(layer2).isNotEqualTo(layer3);
+	}
+
+	@Test
+	void toStringReturnsName() {
+		assertThat(new Layer("test")).hasToString("test");
 	}
 
 }
