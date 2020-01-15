@@ -792,11 +792,11 @@ class RepackagerTests {
 
 		private Map<String, Layer> libraries = new HashMap<>();
 
-		public TestLayers() {
+		TestLayers() {
 			this.layers.add(DEFAULT_LAYER);
 		}
 
-		public void addLibrary(File jarFile, String layerName) {
+		void addLibrary(File jarFile, String layerName) {
 			Layer layer = new Layer(layerName);
 			this.layers.add(layer);
 			this.libraries.put(jarFile.getName(), layer);

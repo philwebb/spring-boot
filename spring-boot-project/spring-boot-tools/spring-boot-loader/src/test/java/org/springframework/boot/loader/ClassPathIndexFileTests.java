@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class ClassPathIndexFileTests {
 	@Test
 	void loadIfPossibleWhenRootIsNotFileReturnsNull() throws IOException {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("http://example.com/file"), "test.idx"))
+				.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
 				.withMessage("URL does not reference a file");
 	}
 
@@ -90,12 +91,22 @@ class ClassPathIndexFileTests {
 	void getUrlsReturnsUrls() throws Exception {
 		ClassPathIndexFile indexFile = copyAndLoadTestIndexFile();
 		List<URL> urls = indexFile.getUrls();
-		assertThat(urls).containsExactly( //
-				new File(this.temp, "BOOT-INF/layers/one/lib/a.jar").toURI().toURL(),
-				new File(this.temp, "BOOT-INF/layers/one/lib/b.jar").toURI().toURL(),
-				new File(this.temp, "BOOT-INF/layers/one/lib/c.jar").toURI().toURL(),
-				new File(this.temp, "BOOT-INF/layers/two/lib/d.jar").toURI().toURL(),
-				new File(this.temp, "BOOT-INF/layers/two/lib/e.jar").toURI().toURL());
+		List<File> expected = new ArrayList<>();
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/a.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/b.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/one/lib/c.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/d.jar"));
+		expected.add(new File(this.temp, "BOOT-INF/layers/two/lib/e.jar"));
+		assertThat(urls).containsExactly(expected.stream().map(this::toUrl).toArray(URL[]::new));
+	}
+
+	private URL toUrl(File file) {
+		try {
+			return file.toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException, MalformedURLException {

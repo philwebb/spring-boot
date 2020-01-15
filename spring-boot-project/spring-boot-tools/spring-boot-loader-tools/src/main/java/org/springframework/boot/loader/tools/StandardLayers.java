@@ -35,12 +35,24 @@ import java.util.List;
  */
 public abstract class StandardLayers implements Layers {
 
+	/**
+	 * The dependencies layer.
+	 */
 	public static final Layer DEPENDENCIES = new Layer("dependencies");
 
+	/**
+	 * The snapshot dependencies layer.
+	 */
 	public static final Layer SNAPSHOT_DEPENDENCIES = new Layer("snapshot-dependencies");
 
+	/**
+	 * The resources layer.
+	 */
 	public static final Layer RESOURCES = new Layer("resources");
 
+	/**
+	 * The application layer.
+	 */
 	public static final Layer APPLICATION = new Layer("application");
 
 	private static final List<Layer> LAYERS;

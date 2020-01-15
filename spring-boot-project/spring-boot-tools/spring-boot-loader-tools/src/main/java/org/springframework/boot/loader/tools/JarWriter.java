@@ -487,7 +487,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	interface UnpackHandler {
 
-		static UnpackHandler NEVER = new UnpackHandler() {
+		UnpackHandler NEVER = new UnpackHandler() {
 
 			@Override
 			public boolean requiresUnpack(String name) {

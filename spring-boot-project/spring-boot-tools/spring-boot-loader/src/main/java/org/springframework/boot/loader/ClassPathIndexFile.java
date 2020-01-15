@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class ClassPathIndexFile {
+final class ClassPathIndexFile {
 
 	private final File root;
 
@@ -55,7 +55,7 @@ class ClassPathIndexFile {
 
 	private String getFolder(String name) {
 		int lastSlash = name.lastIndexOf("/");
-		return lastSlash != -1 ? name.substring(0, lastSlash) : null;
+		return (lastSlash != -1) ? name.substring(0, lastSlash) : null;
 	}
 
 	int size() {

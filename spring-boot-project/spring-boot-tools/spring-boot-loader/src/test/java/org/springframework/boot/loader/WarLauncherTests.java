@@ -42,11 +42,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
 		List<Archive> archives = new ArrayList<>();
 		launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
-		assertThat(getUrls(archives)).containsOnly( //
-				new File(explodedRoot, "WEB-INF/classes").toURI().toURL(),
-				new File(explodedRoot, "WEB-INF/lib/foo.jar").toURI().toURL(),
-				new File(explodedRoot, "WEB-INF/lib/bar.jar").toURI().toURL(),
-				new File(explodedRoot, "WEB-INF/lib/baz.jar").toURI().toURL());
+		assertThat(getUrls(archives)).containsExactlyInAnyOrder(getExpectedFileUrls(explodedRoot));
 		for (Archive archive : archives) {
 			archive.close();
 		}
@@ -68,6 +64,19 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 				classPathArchive.close();
 			}
 		}
+	}
+
+	protected final URL[] getExpectedFileUrls(File explodedRoot) {
+		return getExpectedFiles(explodedRoot).stream().map(this::toUrl).toArray(URL[]::new);
+	}
+
+	protected final List<File> getExpectedFiles(File parent) {
+		List<File> expected = new ArrayList<>();
+		expected.add(new File(parent, "WEB-INF/classes"));
+		expected.add(new File(parent, "WEB-INF/lib/foo.jar"));
+		expected.add(new File(parent, "WEB-INF/lib/bar.jar"));
+		expected.add(new File(parent, "WEB-INF/lib/baz.jar"));
+		return expected;
 	}
 
 }

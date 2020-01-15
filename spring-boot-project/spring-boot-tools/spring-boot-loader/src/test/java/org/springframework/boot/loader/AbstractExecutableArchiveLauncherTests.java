@@ -117,4 +117,13 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		return urls;
 	}
 
+	protected final URL toUrl(File file) {
+		try {
+			return file.toURI().toURL();
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
 }
