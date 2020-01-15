@@ -21,6 +21,7 @@ package org.springframework.boot.loader.tools;
  * archive.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
  */
 public interface LayeredLayout extends RepackagingLayout {

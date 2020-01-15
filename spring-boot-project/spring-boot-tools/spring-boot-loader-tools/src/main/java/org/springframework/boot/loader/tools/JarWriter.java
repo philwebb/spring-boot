@@ -60,8 +60,6 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
  */
 public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 
-	private static final UnpackHandler NEVER_UNPACK = new NeverUnpackHandler();
-
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 32 * 1024;
@@ -129,7 +127,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		this.writeEntries(jarFile, EntryTransformer.NONE, NEVER_UNPACK);
+		this.writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
 	}
 
 	void writeEntries(JarFile jarFile, UnpackHandler unpackHandler) throws IOException {
@@ -273,7 +271,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
-		writeEntry(entry, entryWriter, NEVER_UNPACK);
+		writeEntry(entry, entryWriter, UnpackHandler.NEVER);
 	}
 
 	/**
@@ -304,7 +302,7 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));
 			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent + "/"), null, NEVER_UNPACK);
+				writeEntry(new JarArchiveEntry(parent + "/"), null, UnpackHandler.NEVER);
 			}
 		}
 	}
@@ -489,23 +487,23 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 	 */
 	interface UnpackHandler {
 
+		static UnpackHandler NEVER = new UnpackHandler() {
+
+			@Override
+			public boolean requiresUnpack(String name) {
+				return false;
+			}
+
+			@Override
+			public String sha1Hash(String name) throws IOException {
+				throw new UnsupportedOperationException();
+			}
+
+		};
+
 		boolean requiresUnpack(String name);
 
 		String sha1Hash(String name) throws IOException;
-
-	}
-
-	private static final class NeverUnpackHandler implements UnpackHandler {
-
-		@Override
-		public boolean requiresUnpack(String name) {
-			return false;
-		}
-
-		@Override
-		public String sha1Hash(String name) {
-			throw new UnsupportedOperationException();
-		}
 
 	}
 

@@ -22,9 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Default implementation of {@link Layers}.
+ * Implementation of {@link Layers} that uses implicit rules.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 class ImplicitLayerResolver implements Layers {
 

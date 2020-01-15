@@ -22,6 +22,7 @@ import java.util.Iterator;
  * Interface to provide information about layers to the {@link Repackager}.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
  * @see Layer
  */

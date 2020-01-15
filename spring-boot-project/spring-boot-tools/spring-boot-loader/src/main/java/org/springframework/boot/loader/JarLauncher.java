@@ -16,11 +16,12 @@
 
 package org.springframework.boot.loader;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
+import org.springframework.boot.loader.archive.ExplodedArchive;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
@@ -52,6 +53,18 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
+	protected IndexFile getClassPathIndex(Archive archive) throws IOException {
+		// Only needed for exploded archives, regular ones already have a defined order
+		if (archive instanceof ExplodedArchive) {
+			String location = archive.getManifest().getMainAttributes().getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE);
+			if (location != null) {
+				return IndexFile.loadFromFile(archive.getUrl(), location);
+			}
+		}
+		return super.getClassPathIndex(archive);
+	}
+
+	@Override
 	protected boolean isPostProcessingClassPathArchives() {
 		return false;
 	}
@@ -64,15 +77,6 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
-	}
-
-	@Override
-	protected File getIndex(String root) {
-		File file = new File(root + "/BOOT-INF/classpath.idx");
-		if (file.exists()) {
-			return file;
-		}
-		return null;
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -354,9 +354,7 @@ public class Repackager {
 
 	private void addBootBootAttributesForLayeredLayout(Attributes attributes, LayeredLayout layout) {
 		String layersIndexFileLocation = layout.getLayersIndexFileLocation();
-		Assert.state(StringUtils.hasText(layersIndexFileLocation),
-				"LayeredLayout returned null layers index file location");
-		attributes.putValue(BOOT_LAYERS_INDEX_ATTRIBUTE, layersIndexFileLocation);
+		putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layersIndexFileLocation);
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 	}
 

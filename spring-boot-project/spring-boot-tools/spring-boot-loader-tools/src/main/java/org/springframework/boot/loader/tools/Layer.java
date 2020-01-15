@@ -21,7 +21,11 @@ import java.util.regex.Pattern;
 import org.springframework.util.Assert;
 
 /**
+ * A named layer used to separate the jar when creating a Docker image.
+ *
  * @author Phillip Webb
+ * @since 2.3.0
+ * @see Layers
  */
 public class Layer {
 
@@ -29,6 +33,10 @@ public class Layer {
 
 	private final String name;
 
+	/**
+	 * Create a new {@link Layer} instance with the specified name.
+	 * @param name the name of the layer.
+	 */
 	public Layer(String name) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.isTrue(PATTERN.matcher(name).matches(), "Name must not contain special characters");
