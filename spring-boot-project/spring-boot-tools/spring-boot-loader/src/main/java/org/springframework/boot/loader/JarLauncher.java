@@ -17,9 +17,12 @@
 package org.springframework.boot.loader;
 
 import java.io.IOException;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 
@@ -34,9 +37,11 @@ import org.springframework.boot.loader.archive.ExplodedArchive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-	private static final Pattern CLASSES_PATTERN = Pattern.compile("BOOT-INF.*/classes/");
+	private static final Pattern CLASSES_PATTERN = Pattern.compile("BOOT-INF\\/(layers\\/.*\\/)?classes/");
 
-	private static final Pattern LIBS_PATTERN = Pattern.compile("BOOT-INF.*/lib/.+");
+	private static final Pattern LIBS_PATTERN = Pattern.compile("BOOT-INF\\/(layers\\/.*\\/)?lib\\/.+");
+
+	private static final String DEFAULT_CLASSPATH_INDEX_LOCATION = "BOOT-INF/classpath.idx";
 
 	static final EntryFilter NESTED_ARCHIVE_ENTRY_FILTER = (entry) -> {
 		if (entry.isDirectory()) {
@@ -53,15 +58,20 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
-	protected IndexFile getClassPathIndex(Archive archive) throws IOException {
+	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
 		// Only needed for exploded archives, regular ones already have a defined order
 		if (archive instanceof ExplodedArchive) {
-			String location = archive.getManifest().getMainAttributes().getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE);
-			if (location != null) {
-				return IndexFile.loadFromFile(archive.getUrl(), location);
-			}
+			String location = getClassPathIndexFileLocation(archive);
+			return ClassPathIndexFile.loadIfPossible(archive.getUrl(), location);
 		}
 		return super.getClassPathIndex(archive);
+	}
+
+	private String getClassPathIndexFileLocation(Archive archive) throws IOException {
+		Manifest manifest = archive.getManifest();
+		Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
+		String location = (attributes != null) ? attributes.getValue(BOOT_CLASSPATH_INDEX_ATTRIBUTE) : null;
+		return (location != null) ? location : DEFAULT_CLASSPATH_INDEX_LOCATION;
 	}
 
 	@Override
@@ -77,6 +87,10 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	@Override
 	protected boolean isNestedArchive(Archive.Entry entry) {
 		return NESTED_ARCHIVE_ENTRY_FILTER.matches(entry);
+	}
+
+	protected boolean isIndexed(Entry entry) {
+		return LIBS_PATTERN.matcher(entry.getName()).matches();
 	}
 
 	public static void main(String[] args) throws Exception {

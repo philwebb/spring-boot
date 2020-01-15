@@ -18,6 +18,7 @@ package org.springframework.boot.loader;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JarLauncher}.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
@@ -77,16 +79,14 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 	void explodedJarShouldPreserveClasspathOrderWhenIndexPresent() throws Exception {
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot, true));
-		List<Archive> archives = new ArrayList<>();
-		Iterator<Archive> iterator = launcher.getClassPathArchivesIterator();
-		assertThat(launcher.getUrls(iterator)).containsExactly(
+		Iterator<Archive> archives = launcher.getClassPathArchivesIterator();
+		URLClassLoader classLoader = (URLClassLoader) launcher.createClassLoader(archives);
+		URL[] urls = classLoader.getURLs();
+		assertThat(urls).containsExactly( //
 				new File(explodedRoot, "BOOT-INF/classes").toURI().toURL(),
+				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL(),
 				new File(explodedRoot, "BOOT-INF/lib/bar.jar").toURI().toURL(),
-				new File(explodedRoot, "BOOT-INF/lib/baz.jar").toURI().toURL(),
-				new File(explodedRoot, "BOOT-INF/lib/foo.jar").toURI().toURL());
-		for (Archive archive : archives) {
-			archive.close();
-		}
+				new File(explodedRoot, "BOOT-INF/lib/baz.jar").toURI().toURL());
 	}
 
 }

@@ -17,7 +17,6 @@
 package org.springframework.boot.loader;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,7 +41,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	private final Archive archive;
 
-	private final IndexFile classPathIndex;
+	private final ClassPathIndexFile classPathIndex;
 
 	public ExecutableArchiveLauncher() {
 		try {
@@ -64,8 +63,8 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		}
 	}
 
-	protected IndexFile getClassPathIndex(Archive archive) throws IOException {
-		return IndexFile.NONE;
+	protected ClassPathIndexFile getClassPathIndex(Archive archive) throws IOException {
+		return null;
 	}
 
 	@Override
@@ -83,35 +82,27 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
-		return super.createClassLoader(getUrls(archives).toArray(new URL[0]));
-	}
-
-	List<URL> getUrls(Iterator<Archive> archives) throws MalformedURLException {
-		List<URL> urls = new ArrayList<>(50);
+		List<URL> urls = new ArrayList<>(guessClassPathSize());
 		while (archives.hasNext()) {
 			urls.add(archives.next().getUrl());
 		}
-		addIndexedUrls(urls);
-		return urls;
+		if (this.classPathIndex != null) {
+			urls.addAll(this.classPathIndex.getUrls());
+		}
+		return super.createClassLoader(urls.toArray(new URL[0]));
 	}
 
-	private void addIndexedUrls(List<URL> urls) {
-		// FIXME
-		// List<URL> indexedUrls = this.indexed.stream().map((f) -> {
-		// try {
-		// return new File(ExecutableArchiveLauncher.this.archive.getUrl().getFile() +
-		// f).toURI().toURL();
-		// }
-		// catch (MalformedURLException ex) {
-		// return null;
-		// }
-		// }).filter(Objects::nonNull).collect(Collectors.toList());
-		// urls.addAll(indexedUrls);
+	private int guessClassPathSize() {
+		if (this.classPathIndex != null) {
+			return this.classPathIndex.size() + 10;
+		}
+		return 50;
 	}
 
 	@Override
 	protected Iterator<Archive> getClassPathArchivesIterator() throws Exception {
-		Archive.EntryFilter searchFilter = (entry) -> !isClassPathIndexed(entry) && isSearchCandidate(entry);
+		Archive.EntryFilter searchFilter = (entry) -> isSearchCandidate(entry)
+				&& isClassPathIndexSearchCandidate(entry);
 		Iterator<Archive> archives = this.archive.getNestedArchives(searchFilter, this::isNestedArchive);
 		if (isPostProcessingClassPathArchives()) {
 			archives = applyClassPathArchivePostProcessing(archives);
@@ -119,23 +110,10 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return archives;
 	}
 
-	// FIXME
-	// if (!this.indexed.isEmpty()) {
-	// Archive.EntryFilter updatedSearchFilter = getEntryFilterForIndex();
-	// return this.archive.getNestedArchives(updatedSearchFilter,
-	// this::isNestedArchive);
-	// }
-
-	// private Archive.EntryFilter getEntryFilterForIndex() {
-	// Map<String, List<IndexedFile>> grouped = this.indexed.stream().map((name) -> {
-	// int i = name.lastIndexOf("/") + 1;
-	// return new IndexedFile(name.substring(0, i), name.substring(i));
-	// }).collect(Collectors.groupingBy(IndexedFile::getRoot));
-	// return ((entry) -> ExecutableArchiveLauncher.this.isSearchCandidate(entry)
-	// && !grouped.containsKey(entry.getName()));
-	// }
-
-	private boolean isClassPathIndexed(Archive.Entry entry) {
+	private boolean isClassPathIndexSearchCandidate(Archive.Entry entry) {
+		if (this.classPathIndex != null) {
+			return this.classPathIndex.containsFolder(entry.getName());
+		}
 		return true;
 	}
 

@@ -20,10 +20,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -51,6 +54,7 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		return createJarArchive(name, entryPrefix, false);
 	}
 
+	@SuppressWarnings("resource")
 	protected File createJarArchive(String name, String entryPrefix, boolean indexed) throws IOException {
 		File archive = new File(this.tempDir, name);
 		JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(archive));
@@ -60,8 +64,11 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 		if (indexed) {
 			JarEntry indexEntry = new JarEntry(entryPrefix + "/classpath.idx");
 			jarOutputStream.putNextEntry(indexEntry);
-			jarOutputStream.write(
-					("BOOT-INF/lib/bar.jar\r\n" + "BOOT-INF/lib/baz.jar\r\n" + "BOOT-INF/lib/foo.jar\r\n").getBytes());
+			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
+			writer.write("BOOT-INF/lib/foo.jar\n");
+			writer.write("BOOT-INF/lib/bar.jar\n");
+			writer.write("BOOT-INF/lib/baz.jar\n");
+			writer.flush();
 		}
 		addNestedJars(entryPrefix, "/lib/foo.jar", jarOutputStream);
 		addNestedJars(entryPrefix, "/lib/bar.jar", jarOutputStream);
@@ -103,7 +110,7 @@ public abstract class AbstractExecutableArchiveLauncherTests {
 	}
 
 	protected Set<URL> getUrls(List<Archive> archives) throws MalformedURLException {
-		Set<URL> urls = new HashSet<>(archives.size());
+		Set<URL> urls = new LinkedHashSet<>(archives.size());
 		for (Archive archive : archives) {
 			urls.add(archive.getUrl());
 		}
