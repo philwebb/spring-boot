@@ -19,7 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.util.Iterator;
 
 /**
- * Strategy interface used to provide information about layers to the {@link Repackager}.
+ * Interface to provide information about layers to the {@link Repackager}.
  *
  * @author Madhura Bhave
  * @since 2.3.0
@@ -39,8 +39,18 @@ public interface Layers extends Iterable<Layer> {
 	@Override
 	Iterator<Layer> iterator();
 
-	Layer getLayer(String name);
+	/**
+	 * Return the layer that contains the given resource name.
+	 * @param resourceName the name of the resource (for example a {@code .class} file).
+	 * @return the layer that contains the resource (must never be {@code null})
+	 */
+	Layer getLayer(String resourceName);
 
+	/**
+	 * Return the layer that contains the given library.
+	 * @param library the library to consider
+	 * @return the layer that contains the resource (must never be {@code null})
+	 */
 	Layer getLayer(Library library);
 
 }

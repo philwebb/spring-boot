@@ -196,14 +196,20 @@ public class JarWriter implements LoaderClassesWriter, AutoCloseable {
 		}
 	}
 
-	public void writeClasspathIndex(String location, List<String> libraries) throws IOException {
+	/**
+	 * Write a simple index file containing the specified UTF-8 lines.
+	 * @param location the location of the index file
+	 * @param lines the lines to write
+	 * @throws IOException if the write fails
+	 */
+	public void writeIndexFile(String location, List<String> lines) throws IOException {
 		if (location != null) {
 			JarArchiveEntry entry = new JarArchiveEntry(location);
 			writeEntry(entry, (outputStream) -> {
 				BufferedWriter writer = new BufferedWriter(
 						new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
-				for (String library : libraries) {
-					writer.write(library);
+				for (String line : lines) {
+					writer.write(line);
 					writer.write("\n");
 				}
 				writer.flush();

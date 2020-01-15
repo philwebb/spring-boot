@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -48,17 +49,19 @@ import org.springframework.util.StringUtils;
  */
 public class Repackager {
 
-	// FIXME write a layers manifest
-
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
 
+	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
+
 	private static final String BOOT_LIB_ATTRIBUTE = "Spring-Boot-Lib";
 
-	private static final String BOOT_CLASSES_ATTRIBUTE = "Spring-Boot-Classes";
+	private static final String BOOT_CLASSPATH_INDEX_ATTRIBUTE = "Spring-Boot-Classpath-Index";
+
+	private static final String BOOT_LAYERS_INDEX_ATTRIBUTE = "Spring-Boot-Layers-Index";
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
@@ -280,39 +283,43 @@ public class Repackager {
 	}
 
 	private Manifest buildManifest(JarFile source) throws IOException {
-		Manifest manifest = source.getManifest();
-		if (manifest == null) {
-			manifest = new Manifest();
-			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-		}
-		manifest = new Manifest(manifest);
-		String startClass = this.mainClass;
-		if (startClass == null) {
-			startClass = manifest.getMainAttributes().getValue(MAIN_CLASS_ATTRIBUTE);
-		}
-		if (startClass == null) {
-			startClass = findMainMethodWithTimeoutWarning(source);
-		}
-		String launcherClassName = this.layout.getLauncherClassName();
-		if (launcherClassName != null) {
-			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
-			if (startClass == null) {
-				throw new IllegalStateException("Unable to find main class");
-			}
-			manifest.getMainAttributes().putValue(START_CLASS_ATTRIBUTE, startClass);
-		}
-		else if (startClass != null) {
-			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, startClass);
-		}
-		String bootVersion = getClass().getPackage().getImplementationVersion();
-		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
-		manifest.getMainAttributes().putValue(BOOT_CLASSES_ATTRIBUTE, (this.layout instanceof RepackagingLayout)
-				? ((RepackagingLayout) this.layout).getRepackagedClassesLocation() : this.layout.getClassesLocation());
-		String lib = this.layout.getLibraryLocation("", LibraryScope.COMPILE);
-		if (StringUtils.hasLength(lib)) {
-			manifest.getMainAttributes().putValue(BOOT_LIB_ATTRIBUTE, lib);
-		}
+		Manifest manifest = createInitialManifest(source);
+		addMainAndStartAttributes(source, manifest);
+		addBootAttributes(manifest.getMainAttributes());
 		return manifest;
+	}
+
+	private Manifest createInitialManifest(JarFile source) throws IOException {
+		if (source.getManifest() != null) {
+			return new Manifest(source.getManifest());
+		}
+		Manifest manifest = new Manifest();
+		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+		return manifest;
+	}
+
+	private void addMainAndStartAttributes(JarFile source, Manifest manifest) throws IOException {
+		String mainClass = getMainClass(source, manifest);
+		String launcherClass = this.layout.getLauncherClassName();
+		if (launcherClass != null) {
+			Assert.state(mainClass != null, "Unable to find main class");
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, launcherClass);
+			manifest.getMainAttributes().putValue(START_CLASS_ATTRIBUTE, mainClass);
+		}
+		else if (mainClass != null) {
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, mainClass);
+		}
+	}
+
+	private String getMainClass(JarFile source, Manifest manifest) throws IOException {
+		if (this.mainClass != null) {
+			return this.mainClass;
+		}
+		String attributeValue = manifest.getMainAttributes().getValue(MAIN_CLASS_ATTRIBUTE);
+		if (attributeValue != null) {
+			return attributeValue;
+		}
+		return findMainMethodWithTimeoutWarning(source);
 	}
 
 	private String findMainMethodWithTimeoutWarning(JarFile source) throws IOException {
@@ -330,6 +337,44 @@ public class Repackager {
 	protected String findMainMethod(JarFile source) throws IOException {
 		return MainClassFinder.findSingleMainClass(source, this.layout.getClassesLocation(),
 				SPRING_BOOT_APPLICATION_CLASS_NAME);
+	}
+
+	private void addBootAttributes(Attributes attributes) {
+		attributes.putValue(BOOT_VERSION_ATTRIBUTE, getClass().getPackage().getImplementationVersion());
+		if (this.layout instanceof LayeredLayout) {
+			addBootBootAttributesForLayeredLayout(attributes, (LayeredLayout) this.layout);
+		}
+		else if (this.layout instanceof RepackagingLayout) {
+			addBootBootAttributesForRepackagingLayout(attributes, (RepackagingLayout) this.layout);
+		}
+		else {
+			addBootBootAttributesForPlainLayout(attributes, this.layout);
+		}
+	}
+
+	private void addBootBootAttributesForLayeredLayout(Attributes attributes, LayeredLayout layout) {
+		String layersIndexFileLocation = layout.getLayersIndexFileLocation();
+		Assert.state(StringUtils.hasText(layersIndexFileLocation),
+				"LayeredLayout returned null layers index file location");
+		attributes.putValue(BOOT_LAYERS_INDEX_ATTRIBUTE, layersIndexFileLocation);
+		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
+	}
+
+	private void addBootBootAttributesForRepackagingLayout(Attributes attributes, RepackagingLayout layout) {
+		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
+		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, this.layout.getLibraryLocation("", LibraryScope.COMPILE));
+		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
+	}
+
+	private void addBootBootAttributesForPlainLayout(Attributes attributes, Layout layout) {
+		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, this.layout.getClassesLocation());
+		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, this.layout.getLibraryLocation("", LibraryScope.COMPILE));
+	}
+
+	private void putIfHasLength(Attributes attributes, String name, String value) {
+		if (StringUtils.hasLength(value)) {
+			attributes.putValue(name, value);
+		}
 	}
 
 	private void renameFile(File file, File dest) {
@@ -373,11 +418,6 @@ public class Repackager {
 			this.layout = layout;
 			this.layers = layers;
 		}
-
-		// String location = (this.layout instanceof LayeredLayout)
-		// ? ((LayeredLayout)
-		// this.layout).getLayeredClassesDestination(this.layerResolver)
-		// : ((RepackagingLayout) this.layout).getRepackagedClassesLocation();
 
 		@Override
 		public JarArchiveEntry transform(JarArchiveEntry entry) {
@@ -482,7 +522,7 @@ public class Repackager {
 			}
 			if (Repackager.this.layout instanceof RepackagingLayout) {
 				String location = ((RepackagingLayout) (Repackager.this.layout)).getClasspathIndexFileLocation();
-				writer.writeClasspathIndex(location, new ArrayList<>(this.libraryEntryNames.keySet()));
+				writer.writeIndexFile(location, new ArrayList<>(this.libraryEntryNames.keySet()));
 			}
 		}
 
