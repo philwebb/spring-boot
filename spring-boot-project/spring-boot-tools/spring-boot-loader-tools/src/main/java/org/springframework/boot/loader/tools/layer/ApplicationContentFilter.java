@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.library;
+package org.springframework.boot.loader.tools.layer;
 
-import java.io.Serializable;
-
-import org.springframework.boot.loader.tools.Library;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 
 /**
- * A filter that can tell if a {@link Library} has been included or excluded.
+ * {@link ContentFilter} that matches application items based on an Ant-style path
+ * pattern.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public interface LibraryFilter extends Serializable {
+public class ApplicationContentFilter implements ContentFilter<String> {
 
-	/**
-	 * Return true if the {@link Library} is included by the filter.
-	 * @param library the library
-	 * @return true if the library is included
-	 */
-	boolean isLibraryIncluded(Library library);
+	private static final AntPathMatcher MATCHER = new AntPathMatcher();
 
-	/**
-	 * Return true if the {@link Library} is excluded by the filter.
-	 * @param library the library
-	 * @return true if the library is excluded
-	 */
-	boolean isLibraryExcluded(Library library);
+	private final String pattern;
+
+	public ApplicationContentFilter(String pattern) {
+		Assert.hasText(pattern, "Pattern must not be empty");
+		this.pattern = pattern;
+	}
+
+	@Override
+	public boolean matches(String path) {
+		return MATCHER.match(this.pattern, path);
+	}
 
 }

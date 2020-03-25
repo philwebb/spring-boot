@@ -14,8 +14,30 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.gradle.tasks.bundling;
+
 /**
- * Support for custom layers for everything in BOOT-INF/classes.
+ * {@link BootManifestAttributes} for layered layouts.
  *
+ * @author Phillip Webb
  */
-package org.springframework.boot.loader.tools.layer.application;
+class LayeredBootManifestAttributes extends BootManifestAttributes {
+
+	static final String LAYERS_INDEX = "Spring-Boot-Layers-Index";
+
+	private final String layersIndex;
+
+	LayeredBootManifestAttributes(String mainClass, String classPathIndex, String layersIndex) {
+		super(mainClass, classPathIndex);
+		this.layersIndex = layersIndex;
+	}
+
+	/**
+	 * Return the location of the layers index file.
+	 * @return the layers index location
+	 */
+	String getLayersIndex() {
+		return this.layersIndex;
+	}
+
+}

@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools.layer.application;
-
-import java.io.Serializable;
+package org.springframework.boot.loader.tools.layer;
 
 /**
- * A filter that can tell if a resource has been included or excluded.
+ * Callback interface that can be used to filter layer contents.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
+ * @param <T> the content type
  * @since 2.3.0
  */
-public interface ResourceFilter extends Serializable {
+@FunctionalInterface
+public interface ContentFilter<T> {
 
 	/**
-	 * Return true if the resource is included by the filter.
-	 * @param resourceName the resource name
-	 * @return true if the resource is included
+	 * Return if the filter matches the specified item.
+	 * @param item the item to test
+	 * @return if the filter matches
 	 */
-	boolean isResourceIncluded(String resourceName);
-
-	/**
-	 * Return true if the resource is included by the filter.
-	 * @param resourceName the resource name
-	 * @return true if the resource is excluded
-	 */
-	boolean isResourceExcluded(String resourceName);
+	boolean matches(T item);
 
 }

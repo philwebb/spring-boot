@@ -68,22 +68,26 @@ public class CustomLayersProviderTests {
 	private Library mockLibrary(String name, String groupId, String version) {
 		Library library = mock(Library.class);
 		given(library.getName()).willReturn(name);
-		given(library.getCoordinates()).willReturn(new LibraryCoordinates(groupId, null, version));
+		given(library.getCoordinates()).willReturn(LibraryCoordinates.of(groupId, null, version));
 		return library;
 	}
 
 	@Test
-	void getLayerResolverWhenDocumentContainsLibraryLayerWithNoFilters() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.customLayersProvider.getLayers(getDocument("library-layer-no-filter.xml")))
-				.withMessage("Filters for layer-content must not be empty.");
+	void getLayerResolverWhenDocumentContainsLibraryLayerWithNoFilters() throws Exception {
+		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("dependencies-layer-no-filter.xml"));
+		Library library = mockLibrary("my-library", "com.acme", null);
+		assertThat(layers.getLayer(library).toString()).isEqualTo("my-deps");
+		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer("application.yml"))
+				.withMessageContaining("match any layer");
 	}
 
 	@Test
-	void getLayerResolverWhenDocumentContainsResourceLayerWithNoFilters() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.customLayersProvider.getLayers(getDocument("resource-layer-no-filter.xml")))
-				.withMessage("Filters for layer-content must not be empty.");
+	void getLayerResolverWhenDocumentContainsResourceLayerWithNoFilters() throws Exception {
+		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("application-layer-no-filter.xml"));
+		Library library = mockLibrary("my-library", "com.acme", null);
+		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("my-layer");
+		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(library))
+				.withMessageContaining("match any layer");
 	}
 
 	private Document getDocument(String resourceName) throws Exception {

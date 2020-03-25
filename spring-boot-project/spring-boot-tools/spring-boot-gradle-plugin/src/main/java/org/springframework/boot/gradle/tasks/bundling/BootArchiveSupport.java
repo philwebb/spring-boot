@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.file.RelativePath;
@@ -34,6 +35,7 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
+import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
@@ -44,6 +46,9 @@ import org.gradle.api.tasks.util.PatternSet;
  * Support class for implementations of {@link BootArchive}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
+ * @see BootJar
+ * @see BootWar
  */
 class BootArchiveSupport {
 
@@ -61,46 +66,70 @@ class BootArchiveSupport {
 
 	private final PatternSet requiresUnpack = new PatternSet();
 
-	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
-
 	private final PatternSet exclusions = new PatternSet();
 
 	private final String loaderMainClass;
+
+	private final Spec<FileCopyDetails> librarySpec;
+
+	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
 	private LaunchScriptConfiguration launchScript;
 
 	private boolean excludeDevtools = true;
 
-	BootArchiveSupport(String loaderMainClass, Function<FileCopyDetails, ZipCompression> compressionResolver) {
+	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
+			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
+		this.librarySpec = librarySpec;
 		this.compressionResolver = compressionResolver;
 		this.requiresUnpack.include(Specs.satisfyNone());
 		configureExclusions();
 	}
 
-	void configureManifest(Jar jar, String mainClassName, String springBootClasses, String springBootLib) {
-		Attributes attributes = jar.getManifest().getAttributes();
+	void configureManifest(Manifest manifest, BootManifestAttributes bootAttributes) {
+		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent("Start-Class", mainClassName);
-		attributes.computeIfAbsent("Spring-Boot-Version", (key) -> determineSpringBootVersion());
-		attributes.putIfAbsent("Spring-Boot-Classes", springBootClasses);
-		attributes.putIfAbsent("Spring-Boot-Lib", springBootLib);
+		attributes.putIfAbsent(BootManifestAttributes.START_CLASS, bootAttributes.getMainClass());
+		attributes.computeIfAbsent(BootManifestAttributes.BOOT_VERSION, (name) -> determineSpringBootVersion());
+		if (bootAttributes.getClassPathIndex() != null) {
+			attributes.putIfAbsent(BootManifestAttributes.CLASSPATH_INDEX, bootAttributes.getClassPathIndex());
+		}
+		if (bootAttributes instanceof NonLayeredBootManifestAttributes) {
+			NonLayeredBootManifestAttributes flatAttributes = (NonLayeredBootManifestAttributes) bootAttributes;
+			attributes.putIfAbsent(NonLayeredBootManifestAttributes.CLASSES, flatAttributes.getClasses());
+			attributes.putIfAbsent(NonLayeredBootManifestAttributes.LIB, flatAttributes.getLib());
+		}
+		else if (bootAttributes instanceof LayeredBootManifestAttributes) {
+			LayeredBootManifestAttributes layeredAttributes = (LayeredBootManifestAttributes) bootAttributes;
+			attributes.putIfAbsent(LayeredBootManifestAttributes.LAYERS_INDEX, layeredAttributes.getLayersIndex());
+		}
 	}
 
 	private String determineSpringBootVersion() {
-		String implementationVersion = getClass().getPackage().getImplementationVersion();
-		return (implementationVersion != null) ? implementationVersion : "unknown";
+		String version = getClass().getPackage().getImplementationVersion();
+		return (version != null) ? version : "unknown";
 	}
 
 	CopyAction createCopyAction(Jar jar) {
-		CopyAction copyAction = new BootZipCopyAction(jar.getArchiveFile().get().getAsFile(),
-				jar.isPreserveFileTimestamps(), isUsingDefaultLoader(jar), this.requiresUnpack.getAsSpec(),
-				this.exclusions.getAsExcludeSpec(), this.launchScript, this.compressionResolver,
-				jar.getMetadataCharset());
-		if (!jar.isReproducibleFileOrder()) {
-			return copyAction;
-		}
-		return new ReproducibleOrderingCopyAction(copyAction);
+		return createCopyAction(jar, null, false);
+	}
+
+	CopyAction createCopyAction(Jar jar, LayerResolver layerResolver, boolean includeLayerTools) {
+		File output = jar.getArchiveFile().get().getAsFile();
+		Manifest manifest = jar.getManifest();
+		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
+		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
+		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
+		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
+		LaunchScriptConfiguration launchScript = this.launchScript;
+		Spec<FileCopyDetails> librarySpec = this.librarySpec;
+		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
+		String encoding = jar.getMetadataCharset();
+		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
+				includeLayerTools, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver, encoding,
+				layerResolver);
+		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
@@ -132,7 +161,19 @@ class BootArchiveSupport {
 		configureExclusions();
 	}
 
-	boolean isZip(File file) {
+	void excludeNonZipLibraryFiles(FileCopyDetails details) {
+		if (this.librarySpec.isSatisfiedBy(details)) {
+			excludeNonZipFiles(details);
+		}
+	}
+
+	void excludeNonZipFiles(FileCopyDetails details) {
+		if (!isZip(details.getFile())) {
+			details.exclude();
+		}
+	}
+
+	private boolean isZip(File file) {
 		try {
 			try (FileInputStream fileInputStream = new FileInputStream(file)) {
 				return isZip(fileInputStream);
@@ -160,6 +201,17 @@ class BootArchiveSupport {
 		this.exclusions.setExcludes(excludes);
 	}
 
+	void moveModuleInfoToRoot(CopySpec spec) {
+		spec.filesMatching("module-info.class", BootArchiveSupport::moveToRoot);
+	}
+
+	private static void moveToRoot(FileCopyDetails details) {
+		details.setRelativePath(details.getRelativeSourcePath());
+	}
+
+	/**
+	 * {@link CopyAction} variant that sorts entries to ensure reproducible ordering.
+	 */
 	private static final class ReproducibleOrderingCopyAction implements CopyAction {
 
 		private final CopyAction delegate;
