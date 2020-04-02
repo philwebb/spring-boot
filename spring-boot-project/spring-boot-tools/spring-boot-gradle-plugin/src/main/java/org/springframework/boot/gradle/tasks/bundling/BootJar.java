@@ -113,8 +113,8 @@ public class BootJar extends Jar implements BootArchive {
 	protected CopyAction createCopyAction() {
 		if (this.layered != null) {
 			LayerResolver layerResolver = new LayerResolver(getConfigurations(), this.layered, this::isLibrary);
-			boolean includeLayerTools = this.layered.isIncludeLayerTools();
-			return this.support.createCopyAction(this, layerResolver, includeLayerTools);
+			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_FOLDER : null;
+			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
 		}
 		return this.support.createCopyAction(this);
 	}

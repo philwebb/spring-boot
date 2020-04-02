@@ -37,8 +37,6 @@ import org.springframework.boot.loader.tools.AbstractJarWriter.EntryTransformer;
 import org.springframework.boot.loader.tools.AbstractJarWriter.UnpackHandler;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -84,11 +82,11 @@ public abstract class Packager {
 
 	private boolean includeLayersIndex = false;
 
-	private Layers layers = Layers.IMPLICIT;
+	private Layers layers;
+
+	private LayersIndex layersIndex;
 
 	private boolean includeRelevantJarModeJars = true;
-
-	private MultiValueMap<Layer, String> layersMap = new LinkedMultiValueMap<>();
 
 	/**
 	 * Create a new {@link Packager} instance.
@@ -147,6 +145,7 @@ public abstract class Packager {
 	public void setLayers(Layers layers) {
 		Assert.notNull(layers, "Layers must not be null");
 		this.layers = layers;
+		this.layersIndex = new LayersIndex(layers);
 	}
 
 	/**
@@ -203,20 +202,11 @@ public abstract class Packager {
 	}
 
 	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
-		String location = ((RepackagingLayout) this.layout).getLayersIndexFileLocation();
-		if (StringUtils.hasLength(location)) {
-			Layer layerIndexLayer = this.layers.getLayer(location);
-			this.layersMap.add(layerIndexLayer, location);
-			List<String> layerNames = new ArrayList<>();
-			this.layers.forEach((layer) -> {
-				List<String> fileNames = this.layersMap.get(layer);
-				if (fileNames != null) {
-					for (String fileName : fileNames) {
-						layerNames.add(layer + " " + fileName);
-					}
-				}
-			});
-			writer.writeIndexFile(location, layerNames);
+		String name = ((RepackagingLayout) this.layout).getLayersIndexFileLocation();
+		if (StringUtils.hasLength(name)) {
+			Layer layer = this.layers.getLayer(name);
+			this.layersIndex.add(layer, name);
+			writer.writeEntry(name, this.layersIndex::writeTo);
 		}
 	}
 
@@ -458,7 +448,7 @@ public abstract class Packager {
 		public void writeNestedLibrary(String location, Library library) throws IOException {
 			this.writer.writeNestedLibrary(location, library);
 			Layer layer = Packager.this.layers.getLayer(library);
-			Packager.this.layersMap.add(layer, location + library.getName());
+			Packager.this.layersIndex.add(layer, location + library.getName());
 		}
 
 		@Override
@@ -466,7 +456,7 @@ public abstract class Packager {
 			this.writer.writeToArchive(entry, entryWriter);
 			if (!entry.getName().endsWith("/")) {
 				Layer layer = Packager.this.layers.getLayer(entry.getName());
-				Packager.this.layersMap.add(layer, entry.getName());
+				Packager.this.layersIndex.add(layer, entry.getName());
 			}
 		}
 

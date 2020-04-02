@@ -16,14 +16,24 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
@@ -78,12 +88,22 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeResource();
 		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(jarModeLayerTools())).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/example/Main.class")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/application/classes/static/file.txt")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
+			Map<String, List<String>> index = readLayerIndex(jarFile);
+			assertThat(index.keySet()).containsExactly("dependencies", "spring-boot-loader", "snapshot-dependencies",
+					"application");
+			assertThat(index.get("dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
+			assertThat(index.get("spring-boot-loader"))
+					.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+			assertThat(index.get("snapshot-dependencies")).containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+			assertThat(index.get("application")).containsExactly("META-INF/MANIFEST.MF",
+					"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt",
+					"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
+					"BOOT-INF/layers.idx");
 		}
 	}
 
@@ -92,23 +112,28 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeMainClass();
 		writeResource();
 		BuildResult build = this.gradleBuild.build("bootJar");
-		System.out.println(build.getOutput());
 		assertThat(build.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(jarModeLayerTools())).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/commons-dependencies/lib/commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/snapshot-dependencies/lib/commons-io-2.7-SNAPSHOT.jar"))
-					.isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/app/classes/example/Main.class")).isNotNull();
-			assertThat(jarFile.getEntry("BOOT-INF/layers/static/classes/static/file.txt")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/layers.idx")).isNotNull();
+			Map<String, List<String>> index = readLayerIndex(jarFile);
+			assertThat(index.keySet()).containsExactly("commons-dependencies", "snapshot-dependencies", "static",
+					"app");
+			assertThat(index.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
+			assertThat(index.get("snapshot-dependencies")).containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+			assertThat(index.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
+			List<String> appLayer = new ArrayList<>(index.get("app"));
+			List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
+					"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
+					"BOOT-INF/layers.idx");
+			assertThat(appLayer).containsSubsequence(nonLoaderEntries);
+			appLayer.removeAll(nonLoaderEntries);
+			assertThat(appLayer).allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
 		}
-	}
-
-	private String jarModeLayerTools() {
-		JarModeLibrary library = JarModeLibrary.LAYER_TOOLS;
-		String version = library.getCoordinates().getVersion();
-		String layer = (version == null || !version.contains("SNAPSHOT")) ? "dependencies" : "snapshot-dependencies";
-		return "BOOT-INF/layers/" + layer + "/lib/" + library.getName();
 	}
 
 	private void writeMainClass() {
@@ -141,6 +166,15 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	private Map<String, List<String>> readLayerIndex(JarFile jarFile) throws IOException {
+		ZipEntry indexEntry = jarFile.getEntry("BOOT-INF/layers.idx");
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
+			return reader.lines().map((line) -> line.split(" "))
+					.collect(Collectors.groupingBy((layerAndPath) -> layerAndPath[0], LinkedHashMap::new,
+							Collectors.mapping((layerAndPath) -> layerAndPath[1], Collectors.toList())));
 		}
 	}
 
