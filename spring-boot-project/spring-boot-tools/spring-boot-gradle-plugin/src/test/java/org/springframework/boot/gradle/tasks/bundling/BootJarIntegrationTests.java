@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,24 +88,40 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeMainClass();
 		writeResource();
 		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> indexedLayers;
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
-			Map<String, List<String>> index = readLayerIndex(jarFile);
-			assertThat(index.keySet()).containsExactly("dependencies", "spring-boot-loader", "snapshot-dependencies",
-					"application");
-			assertThat(index.get("dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
-			assertThat(index.get("spring-boot-loader"))
-					.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
-			assertThat(index.get("snapshot-dependencies")).containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
-			assertThat(index.get("application")).containsExactly("META-INF/MANIFEST.MF",
-					"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt",
-					"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
-					"BOOT-INF/layers.idx");
+			indexedLayers = readLayerIndex(jarFile);
 		}
+		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
+				"application");
+		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
+		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar",
+				"BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar", "BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		assertThat(indexedLayers.get("spring-boot-loader"))
+				.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+		assertThat(indexedLayers.get("snapshot-dependencies"))
+				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		assertThat(indexedLayers.get("application")).containsExactly("META-INF/MANIFEST.MF",
+				"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt",
+				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
+				"BOOT-INF/layers.idx");
+		BuildResult listLayers = this.gradleBuild.build("listLayers");
+		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		String listLayersOutput = listLayers.getOutput();
+		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
+		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
+		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
+		assertThat(extractedLayers.keySet()).isEqualTo(indexedLayers.keySet());
+		extractedLayers.forEach(
+				(name, contents) -> assertThat(contents).containsExactlyInAnyOrderElementsOf(indexedLayers.get(name)));
 	}
 
 	@TestTemplate
@@ -113,27 +130,44 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeResource();
 		BuildResult build = this.gradleBuild.build("bootJar");
 		assertThat(build.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> indexedLayers;
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/layers.idx")).isNotNull();
-			Map<String, List<String>> index = readLayerIndex(jarFile);
-			assertThat(index.keySet()).containsExactly("commons-dependencies", "snapshot-dependencies", "static",
-					"app");
-			assertThat(index.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
-			assertThat(index.get("snapshot-dependencies")).containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
-			assertThat(index.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
-			List<String> appLayer = new ArrayList<>(index.get("app"));
-			List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
-					"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
-					"BOOT-INF/layers.idx");
-			assertThat(appLayer).containsSubsequence(nonLoaderEntries);
-			appLayer.removeAll(nonLoaderEntries);
-			assertThat(appLayer).allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+			indexedLayers = readLayerIndex(jarFile);
 		}
+		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
+				"static", "app");
+		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
+		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar",
+				"BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
+		assertThat(indexedLayers.get("snapshot-dependencies"))
+				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
+		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
+		List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
+				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
+				"BOOT-INF/layers.idx");
+		assertThat(appLayer).containsSubsequence(nonLoaderEntries);
+		appLayer.removeAll(nonLoaderEntries);
+		assertThat(appLayer).allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
+		BuildResult listLayers = this.gradleBuild.build("listLayers");
+		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		String listLayersOutput = listLayers.getOutput();
+		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
+		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
+		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
+		assertThat(extractedLayers.keySet()).isEqualTo(indexedLayers.keySet());
+		extractedLayers.forEach(
+				(name, contents) -> assertThat(contents).containsExactlyInAnyOrderElementsOf(indexedLayers.get(name)));
 	}
 
 	private void writeMainClass() {
@@ -176,6 +210,17 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 					.collect(Collectors.groupingBy((layerAndPath) -> layerAndPath[0], LinkedHashMap::new,
 							Collectors.mapping((layerAndPath) -> layerAndPath[1], Collectors.toList())));
 		}
+	}
+
+	private Map<String, List<String>> readExtractedLayers(File root, List<String> layerNames) throws IOException {
+		Map<String, List<String>> extractedLayers = new LinkedHashMap<>();
+		for (String layerName : layerNames) {
+			File layer = new File(root, layerName);
+			assertThat(layer).isDirectory();
+			extractedLayers.put(layerName, Files.walk(layer.toPath()).filter((path) -> path.toFile().isFile())
+					.map(layer.toPath()::relativize).map(Path::toString).collect(Collectors.toList()));
+		}
+		return extractedLayers;
 	}
 
 }
