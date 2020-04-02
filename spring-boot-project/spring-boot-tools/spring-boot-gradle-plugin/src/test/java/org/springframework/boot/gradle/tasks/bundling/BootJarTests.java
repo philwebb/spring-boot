@@ -80,14 +80,6 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	}
 
 	@Test
-	void whenJarIsLayeredThenBootInfContainsOnlyLayersAndIndexFiles() throws IOException {
-		List<String> entryNames = getEntryNames(createLayeredJar());
-		assertThat(entryNames.stream().filter((name) -> name.startsWith("BOOT-INF/"))
-				.filter((name) -> !name.startsWith("BOOT-INF/layers/"))).contains("BOOT-INF/layers.idx",
-						"BOOT-INF/classpath.idx");
-	}
-
-	@Test
 	void whenJarIsLayeredThenManifestContainsEntryForLayersIndexInPlaceOfClassesAndLib() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
