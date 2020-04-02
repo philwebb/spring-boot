@@ -89,8 +89,9 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		writeResource();
 		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
+		String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
+			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -102,13 +103,17 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
 				"application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
-		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar",
-				"BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar", "BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar",
-				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
+		List<String> expectedDependencies = new ArrayList<>();
+		expectedDependencies.add("BOOT-INF/lib/commons-lang3-3.9.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		List<String> expectedSnapshotDependencies = new ArrayList<>();
+		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("spring-boot-loader"))
 				.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
-		assertThat(indexedLayers.get("snapshot-dependencies"))
-				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("application")).containsExactly("META-INF/MANIFEST.MF",
 				"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt", "BOOT-INF/classpath.idx",
 				"BOOT-INF/layers.idx");
@@ -131,8 +136,9 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		BuildResult build = this.gradleBuild.build("bootJar");
 		assertThat(build.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
+		String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName())).isNotNull();
+			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -145,11 +151,15 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
 				"static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
-		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar",
-				"BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar", "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
+		List<String> expectedDependencies = new ArrayList<>();
+		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		List<String> expectedSnapshotDependencies = new ArrayList<>();
+		expectedSnapshotDependencies.add("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
-		assertThat(indexedLayers.get("snapshot-dependencies"))
-				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
+		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
 		List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
