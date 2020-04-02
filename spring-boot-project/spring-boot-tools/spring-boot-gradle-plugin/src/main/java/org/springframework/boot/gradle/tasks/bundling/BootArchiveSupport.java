@@ -87,22 +87,19 @@ class BootArchiveSupport {
 		configureExclusions();
 	}
 
-	void configureManifest(Manifest manifest, BootManifestAttributes bootAttributes) {
+	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
+			String layersIndex) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
-		attributes.putIfAbsent(BootManifestAttributes.START_CLASS, bootAttributes.getMainClass());
-		attributes.computeIfAbsent(BootManifestAttributes.BOOT_VERSION, (name) -> determineSpringBootVersion());
-		if (bootAttributes.getClassPathIndex() != null) {
-			attributes.putIfAbsent(BootManifestAttributes.CLASSPATH_INDEX, bootAttributes.getClassPathIndex());
+		attributes.putIfAbsent("Start-Class", mainClass);
+		attributes.computeIfAbsent("Spring-Boot-Version", (name) -> determineSpringBootVersion());
+		attributes.putIfAbsent("Spring-Boot-Classes", classes);
+		attributes.putIfAbsent("Spring-Boot-Lib", lib);
+		if (classPathIndex != null) {
+			attributes.putIfAbsent("Spring-Boot-Classpath-Index", classPathIndex);
 		}
-		if (bootAttributes instanceof NonLayeredBootManifestAttributes) {
-			NonLayeredBootManifestAttributes flatAttributes = (NonLayeredBootManifestAttributes) bootAttributes;
-			attributes.putIfAbsent(NonLayeredBootManifestAttributes.CLASSES, flatAttributes.getClasses());
-			attributes.putIfAbsent(NonLayeredBootManifestAttributes.LIB, flatAttributes.getLib());
-		}
-		else if (bootAttributes instanceof LayeredBootManifestAttributes) {
-			LayeredBootManifestAttributes layeredAttributes = (LayeredBootManifestAttributes) bootAttributes;
-			attributes.putIfAbsent(LayeredBootManifestAttributes.LAYERS_INDEX, layeredAttributes.getLayersIndex());
+		if (layersIndex != null) {
+			attributes.putIfAbsent("Spring-Boot-Layers-Index", layersIndex);
 		}
 	}
 

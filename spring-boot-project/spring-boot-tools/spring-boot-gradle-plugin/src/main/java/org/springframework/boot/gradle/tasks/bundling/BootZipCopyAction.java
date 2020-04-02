@@ -50,8 +50,10 @@ import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link CopyAction} for creating a Spring Boot zip archive (typically a jar or war).
@@ -341,7 +343,7 @@ class BootZipCopyAction implements CopyAction {
 
 		private void writeClassPathIndexIfNecessary() throws IOException {
 			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
-			String classPathIndex = (String) manifestAttributes.get(BootManifestAttributes.CLASSPATH_INDEX);
+			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
 			if (classPathIndex != null) {
 				writeEntry(classPathIndex,
 						ZipEntryWriter.fromLines(BootZipCopyAction.this.encoding, this.writtenLibraries), true);
@@ -349,9 +351,10 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void writeLayersIndexIfNecessary() throws IOException {
-			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
-			String name = (String) manifestAttributes.get(LayeredBootManifestAttributes.LAYERS_INDEX);
-			if (name != null && BootZipCopyAction.this.layerResolver != null) {
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
+				String name = (String) manifestAttributes.get("Spring-Boot-Layers-Index");
+				Assert.state(StringUtils.hasText(name), "Missing layer index manifest attribute");
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(name);
 				this.layerIndex.add(layer, name);
 				writeEntry(name, (entry, out) -> this.layerIndex.writeTo(out), false);

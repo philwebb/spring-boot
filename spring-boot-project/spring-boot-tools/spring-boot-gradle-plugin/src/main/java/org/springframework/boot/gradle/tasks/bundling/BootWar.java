@@ -70,12 +70,8 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getBootManifestAttributes());
+		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER, null, null);
 		super.copy();
-	}
-
-	private NonLayeredBootManifestAttributes getBootManifestAttributes() {
-		return new NonLayeredBootManifestAttributes(getMainClassName(), null, CLASSES_FOLDER, LIB_FOLDER);
 	}
 
 	@Override

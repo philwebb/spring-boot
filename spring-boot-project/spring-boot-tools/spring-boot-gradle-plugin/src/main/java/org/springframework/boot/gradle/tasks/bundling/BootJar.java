@@ -97,16 +97,9 @@ public class BootJar extends Jar implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getBootManifestAttributes());
+		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_FOLDER, LIB_FOLDER, CLASSPATH_INDEX,
+				(this.layered != null) ? LAYERS_INDEX : null);
 		super.copy();
-	}
-
-	private BootManifestAttributes getBootManifestAttributes() {
-		String main = getMainClassName();
-		if (this.layered == null) {
-			return new NonLayeredBootManifestAttributes(main, CLASSPATH_INDEX, CLASSES_FOLDER, LIB_FOLDER);
-		}
-		return new LayeredBootManifestAttributes(main, CLASSPATH_INDEX, LAYERS_INDEX);
 	}
 
 	@Override
