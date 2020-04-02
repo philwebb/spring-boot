@@ -57,6 +57,8 @@ import org.springframework.boot.loader.tools.layer.CustomLayers;
  */
 public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo {
 
+	private static final org.springframework.boot.loader.tools.Layers IMPLICIT_LAYERS = org.springframework.boot.loader.tools.Layers.IMPLICIT;
+
 	/**
 	 * The Maven project.
 	 * @since 1.0.0
@@ -134,10 +136,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			packager.setLayout(this.layout.layout());
 		}
 		if (this.layers != null && this.layers.isEnabled()) {
-			if (this.layers.getConfiguration() != null) {
-				packager.setLayers(getCustomLayers(this.layers.getConfiguration()));
-			}
-			packager.setIncludeLayersIndex(true);
+			packager.setLayers((this.layers.getConfiguration() != null)
+					? getCustomLayers(this.layers.getConfiguration()) : IMPLICIT_LAYERS);
 			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());
 		}
 		return packager;

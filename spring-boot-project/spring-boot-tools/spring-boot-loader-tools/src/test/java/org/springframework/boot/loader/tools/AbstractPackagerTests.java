@@ -256,7 +256,6 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		layers.addLibrary(libJarFile3, "0003");
 		packager.setLayers(layers);
 		packager.setIncludeRelevantJarModeJars(false);
-		packager.setIncludeLayersIndex(true);
 		execute(packager, (callback) -> {
 			callback.library(new Library(libJarFile1, LibraryScope.COMPILE));
 			callback.library(new Library(libJarFile2, LibraryScope.COMPILE));
@@ -355,7 +354,6 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		P packager = createPackager();
 		TestLayers layers = new TestLayers();
 		packager.setLayers(layers);
-		packager.setIncludeLayersIndex(true);
 		execute(packager, Libraries.NONE);
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
