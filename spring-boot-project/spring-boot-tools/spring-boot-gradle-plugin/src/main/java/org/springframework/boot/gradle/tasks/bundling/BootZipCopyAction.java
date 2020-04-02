@@ -313,10 +313,14 @@ class BootZipCopyAction implements CopyAction {
 			}
 		}
 
-		private void writeJarModeLibrary(String location, JarModeLibrary jarModeLibrary) throws IOException {
-			String name = location + jarModeLibrary.getName();
-			writeEntry(name, ZipEntryWriter.fromInputStream(jarModeLibrary.openStream()), false,
-					(entry) -> prepareStoredEntry(jarModeLibrary.openStream(), entry));
+		private void writeJarModeLibrary(String location, JarModeLibrary library) throws IOException {
+			String name = location + library.getName();
+			writeEntry(name, ZipEntryWriter.fromInputStream(library.openStream()), false,
+					(entry) -> prepareStoredEntry(library.openStream(), entry));
+			if (BootZipCopyAction.this.layerResolver != null) {
+				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
+				this.layerIndex.add(layer, name);
+			}
 		}
 
 		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {
