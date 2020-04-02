@@ -103,14 +103,14 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 				"application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar",
-				"BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar", "BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+				"BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar", "BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar",
+				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
 		assertThat(indexedLayers.get("spring-boot-loader"))
 				.allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
 		assertThat(indexedLayers.get("snapshot-dependencies"))
 				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
 		assertThat(indexedLayers.get("application")).containsExactly("META-INF/MANIFEST.MF",
-				"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt",
-				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
+				"BOOT-INF/classes/example/Main.class", "BOOT-INF/classes/static/file.txt", "BOOT-INF/classpath.idx",
 				"BOOT-INF/layers.idx");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -146,15 +146,14 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 				"static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		assertThat(indexedLayers.get("dependencies")).containsExactly("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar",
-				"BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+				"BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar", "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly("BOOT-INF/lib/commons-lang3-3.9.jar");
 		assertThat(indexedLayers.get("snapshot-dependencies"))
 				.containsExactly("BOOT-INF/lib/commons-io-2.7-SNAPSHOT.jar");
 		assertThat(indexedLayers.get("static")).containsExactly("BOOT-INF/classes/static/file.txt");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
 		List<String> nonLoaderEntries = Arrays.asList("META-INF/MANIFEST.MF", "BOOT-INF/classes/example/Main.class",
-				"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName(), "BOOT-INF/classpath.idx",
-				"BOOT-INF/layers.idx");
+				"BOOT-INF/classpath.idx", "BOOT-INF/layers.idx");
 		assertThat(appLayer).containsSubsequence(nonLoaderEntries);
 		appLayer.removeAll(nonLoaderEntries);
 		assertThat(appLayer).allMatch(Pattern.compile("org/springframework/boot/loader/.+\\.class").asPredicate());
