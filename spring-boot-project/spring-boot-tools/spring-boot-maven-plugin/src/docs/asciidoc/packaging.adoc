@@ -76,7 +76,7 @@ The `layout` property defaults to a guess based on the archive type (`jar` or `w
 [[repackage-layers]]
 === Layered jars
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a Docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders futher so that they can be written into distinct Docker layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders futher so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
 To use this feature, the layering feature must be enabled:
@@ -185,14 +185,14 @@ The `<into>` block claims content using nested `<include>` and `<exclude>` eleme
 The `<applicaton>` section uses Ant-style patch matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
 
-If no `<include>` is defined then all content (not claimed by an earlier block) is considered.
+If no `<include>` is defined, then all content (not claimed by an earlier block) is considered.
 
 If no `<exclude>` is defined, then no exclusions are applied.
 
 Looking at the `<dependencies>` example above, we can see tha the first `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
 The subsequent `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
 
-The `<application>` block as similar rules.
+The `<application>` block has similar rules.
 First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.
 Then claiming any remaining classes and resources for the `application` layer.
 
