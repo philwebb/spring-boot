@@ -52,8 +52,8 @@ public class CustomLayersProviderTests {
 	@Test
 	void getLayerResolverWhenDocumentValid() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("layers.xml"));
-		assertThat(layers).extracting("name").containsExactly("configuration", "application", "my-resources",
-				"snapshot-dependencies", "my-deps", "my-dependencies-name");
+		assertThat(layers).extracting("name").containsExactly("my-deps", "my-dependencies-name",
+				"snapshot-dependencies", "my-resources", "configuration", "application");
 		Library snapshot = mockLibrary("test-SNAPSHOT.jar", "org.foo", "1.0.0-SNAPSHOT");
 		Library groupId = mockLibrary("my-library", "com.acme", null);
 		Library otherDependency = mockLibrary("other-library", "org.foo", null);
