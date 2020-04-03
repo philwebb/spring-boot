@@ -82,8 +82,12 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	@Test
 	void whenJarIsLayeredThenManifestContainsEntryForLayersIndexInPlaceOfClassesAndLib() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes")).isEqualTo(null);
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(null);
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classes"))
+					.isEqualTo("BOOT-INF/classes/");
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib"))
+					.isEqualTo("BOOT-INF/lib/");
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
+					.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Layers-Index"))
 					.isEqualTo("BOOT-INF/layers.idx");
 		}
