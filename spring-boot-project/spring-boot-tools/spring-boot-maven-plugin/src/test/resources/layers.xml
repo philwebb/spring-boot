@@ -22,11 +22,11 @@
 		<into layer="my-dependencies-name"/>
 	</dependencies>
 	<layerOrder>
-		<layer>configuration</layer>
-		<layer>application</layer>
-		<layer>my-resources</layer>
-		<layer>snapshot-dependencies</layer>
 		<layer>my-deps</layer>
 		<layer>my-dependencies-name</layer>
+		<layer>snapshot-dependencies</layer>
+		<layer>my-resources</layer>
+		<layer>configuration</layer>
+		<layer>application</layer>
 	</layerOrder>	
 </layers>
