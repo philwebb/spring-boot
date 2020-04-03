@@ -164,10 +164,6 @@ public class BootJar extends Jar implements BootArchive {
 		return this.layered;
 	}
 
-	public void setLayered(boolean layered) {
-		this.layered = layered ? new LayeredSpec() : null;
-	}
-
 	public void layered() {
 		layered(true);
 	}
