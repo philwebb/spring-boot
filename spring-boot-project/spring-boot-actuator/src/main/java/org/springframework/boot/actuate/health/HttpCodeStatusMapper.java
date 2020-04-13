@@ -27,6 +27,12 @@ package org.springframework.boot.actuate.health;
 public interface HttpCodeStatusMapper {
 
 	/**
+	 * A {@link HttpCodeStatusMapper} instance using default mappings.
+	 * @since 2.3.0
+	 */
+	HttpCodeStatusMapper DEFAULT = new SimpleHttpCodeStatusMapper();
+
+	/**
 	 * Return the HTTP status code that corresponds to the given {@link Status health
 	 * status}.
 	 * @param status the health status to map

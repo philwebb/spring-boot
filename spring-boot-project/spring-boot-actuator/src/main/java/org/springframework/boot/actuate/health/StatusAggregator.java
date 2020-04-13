@@ -33,6 +33,12 @@ import java.util.Set;
 public interface StatusAggregator {
 
 	/**
+	 * A {@link StatusAggregator} instance using default ordering rules.
+	 * @since 2.3.0
+	 */
+	StatusAggregator DEFAULT = new SimpleStatusAggregator();
+
+	/**
 	 * Return the aggregate status for the given set of statuses.
 	 * @param statuses the statuses to aggregate
 	 * @return the aggregate status
