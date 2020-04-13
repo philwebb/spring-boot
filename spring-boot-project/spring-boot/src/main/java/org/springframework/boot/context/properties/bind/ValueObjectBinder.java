@@ -20,8 +20,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import kotlin.reflect.KFunction;
 import kotlin.reflect.KParameter;
@@ -35,6 +37,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DataObjectBinder} for immutable value objects.
@@ -65,12 +68,50 @@ class ValueObjectBinder implements DataObjectBinder {
 		for (ConstructorParameter parameter : parameters) {
 			Object arg = parameter.bind(propertyBinder);
 			bound = bound || arg != null;
-			arg = (arg != null) ? arg : parameter.getDefaultValue(context.getConverter());
+			arg = (arg != null) ? arg : getDefaultValue(context, parameter);
 			args.add(arg);
 		}
 		context.clearConfigurationProperty();
 		context.popConstructorBoundTypes();
 		return bound ? valueObject.instantiate(args) : null;
+	}
+
+	private <T> T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
+		Annotation[] annotations = parameter.getAnnotations();
+		ResolvableType type = parameter.getType();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof DefaultValue) {
+				if (((DefaultValue) annotation).value().length == 1
+						&& StringUtils.isEmpty(((DefaultValue) annotation).value()[0])) {
+					return getNewInstanceIfPossible(context, type);
+				}
+				return context.getConverter().convert(((DefaultValue) annotation).value(), type, annotations);
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getNewInstanceIfPossible(Binder.Context context, ResolvableType type) {
+		Class<T> resolved = (Class<T>) type.resolve();
+		if (resolved != null && !isEmptyDefaultValueAllowed(resolved)) {
+			throw new IllegalStateException(
+					"Parameter of type " + resolved.getName() + " must have a non-empty default value.");
+		}
+		T instance = create(Bindable.of(type), context);
+		if (instance != null) {
+			return instance;
+		}
+		return (resolved != null) ? BeanUtils.instantiateClass(resolved) : null;
+	}
+
+	private <T> boolean isEmptyDefaultValueAllowed(Class<T> resolved) {
+		if (resolved.getName().startsWith("java.lang") || resolved.isPrimitive() || resolved.isEnum()
+				|| resolved.isArray() || Map.class.isAssignableFrom(resolved)
+				|| Collection.class.isAssignableFrom(resolved)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -82,7 +123,7 @@ class ValueObjectBinder implements DataObjectBinder {
 		List<ConstructorParameter> parameters = valueObject.getConstructorParameters();
 		List<Object> args = new ArrayList<>(parameters.size());
 		for (ConstructorParameter parameter : parameters) {
-			args.add(parameter.getDefaultValue(context.getConverter()));
+			args.add(getDefaultValue(context, parameter));
 		}
 		return valueObject.instantiate(args);
 	}
@@ -228,17 +269,16 @@ class ValueObjectBinder implements DataObjectBinder {
 			this.annotations = annotations;
 		}
 
-		Object getDefaultValue(BindConverter converter) {
-			for (Annotation annotation : this.annotations) {
-				if (annotation instanceof DefaultValue) {
-					return converter.convert(((DefaultValue) annotation).value(), this.type, this.annotations);
-				}
-			}
-			return null;
-		}
-
 		Object bind(DataObjectPropertyBinder propertyBinder) {
 			return propertyBinder.bindProperty(this.name, Bindable.of(this.type).withAnnotations(this.annotations));
+		}
+
+		Annotation[] getAnnotations() {
+			return this.annotations;
+		}
+
+		ResolvableType getType() {
+			return this.type;
 		}
 
 	}

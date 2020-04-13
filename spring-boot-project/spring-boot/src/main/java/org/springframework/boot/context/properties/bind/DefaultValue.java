@@ -38,6 +38,6 @@ public @interface DefaultValue {
 	 * array-based properties.
 	 * @return the default value of the property.
 	 */
-	String[] value();
+	String[] value() default "";
 
 }
