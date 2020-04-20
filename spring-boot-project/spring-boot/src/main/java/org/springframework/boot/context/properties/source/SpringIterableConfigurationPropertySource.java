@@ -86,7 +86,17 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
-		return ConfigurationPropertyState.search(this, name::isAncestorOf);
+		return ConfigurationPropertyState.search(this, (propertyName) -> {
+			boolean ancestorOf = name.isAncestorOf(propertyName);
+			if (ancestorOf || !shouldTryLegacyName(name.toString())) {
+				return ancestorOf;
+			}
+			return ConfigurationPropertyName.of(name.toString().replace('-', '.')).isAncestorOf(propertyName);
+		});
+	}
+
+	private boolean shouldTryLegacyName(String name) {
+		return this.getPropertySource() instanceof SystemEnvironmentPropertySource && name.contains("-");
 	}
 
 	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
