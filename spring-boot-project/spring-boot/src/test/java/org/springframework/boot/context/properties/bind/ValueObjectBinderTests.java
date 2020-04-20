@@ -269,7 +269,8 @@ class ValueObjectBinderTests {
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bindOrCreate("foo",
 						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForCollectionTypes.class)))
-				.withStackTraceContaining("Parameter of type java.util.List must have a non-empty default value.");
+				.withStackTraceContaining(
+						"Parameter of type java.util.List<java.lang.String> must have a non-empty default value.");
 	}
 
 	@Test
@@ -277,7 +278,8 @@ class ValueObjectBinderTests {
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bindOrCreate("foo",
 						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForMapTypes.class)))
-				.withStackTraceContaining("Parameter of type java.util.Map must have a non-empty default value.");
+				.withStackTraceContaining(
+						"Parameter of type java.util.Map<java.lang.String, java.lang.String> must have a non-empty default value.");
 	}
 
 	@Test
@@ -285,7 +287,7 @@ class ValueObjectBinderTests {
 		assertThatExceptionOfType(BindException.class)
 				.isThrownBy(() -> this.binder.bindOrCreate("foo",
 						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForArrayTypes.class)))
-				.withStackTraceContaining("Parameter of type [Ljava.lang.String; must have a non-empty default value.");
+				.withStackTraceContaining("Parameter of type java.lang.String[] must have a non-empty default value.");
 	}
 
 	@Test
@@ -550,11 +552,11 @@ class ValueObjectBinderTests {
 			this.nestedJavaBean = nestedJavaBean;
 		}
 
-		public NestedImmutable getNestedImmutable() {
+		NestedImmutable getNestedImmutable() {
 			return this.nestedImmutable;
 		}
 
-		public NestedJavaBean getNestedJavaBean() {
+		NestedJavaBean getNestedJavaBean() {
 			return this.nestedJavaBean;
 		}
 

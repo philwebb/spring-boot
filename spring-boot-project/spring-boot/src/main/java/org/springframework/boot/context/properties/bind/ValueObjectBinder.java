@@ -37,7 +37,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link DataObjectBinder} for immutable value objects.
@@ -76,44 +75,6 @@ class ValueObjectBinder implements DataObjectBinder {
 		return bound ? valueObject.instantiate(args) : null;
 	}
 
-	private <T> T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
-		Annotation[] annotations = parameter.getAnnotations();
-		ResolvableType type = parameter.getType();
-		for (Annotation annotation : annotations) {
-			if (annotation instanceof DefaultValue) {
-				if (((DefaultValue) annotation).value().length == 1
-						&& StringUtils.isEmpty(((DefaultValue) annotation).value()[0])) {
-					return getNewInstanceIfPossible(context, type);
-				}
-				return context.getConverter().convert(((DefaultValue) annotation).value(), type, annotations);
-			}
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getNewInstanceIfPossible(Binder.Context context, ResolvableType type) {
-		Class<T> resolved = (Class<T>) type.resolve();
-		if (resolved != null && !isEmptyDefaultValueAllowed(resolved)) {
-			throw new IllegalStateException(
-					"Parameter of type " + resolved.getName() + " must have a non-empty default value.");
-		}
-		T instance = create(Bindable.of(type), context);
-		if (instance != null) {
-			return instance;
-		}
-		return (resolved != null) ? BeanUtils.instantiateClass(resolved) : null;
-	}
-
-	private <T> boolean isEmptyDefaultValueAllowed(Class<T> resolved) {
-		if (resolved.getName().startsWith("java.lang") || resolved.isPrimitive() || resolved.isEnum()
-				|| resolved.isArray() || Map.class.isAssignableFrom(resolved)
-				|| Collection.class.isAssignableFrom(resolved)) {
-			return false;
-		}
-		return true;
-	}
-
 	@Override
 	public <T> T create(Bindable<T> target, Binder.Context context) {
 		ValueObject<T> valueObject = ValueObject.get(target, this.constructorProvider, context);
@@ -126,6 +87,44 @@ class ValueObjectBinder implements DataObjectBinder {
 			args.add(getDefaultValue(context, parameter));
 		}
 		return valueObject.instantiate(args);
+	}
+
+	private <T> T getDefaultValue(Binder.Context context, ConstructorParameter parameter) {
+		ResolvableType type = parameter.getType();
+		Annotation[] annotations = parameter.getAnnotations();
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof DefaultValue) {
+				DefaultValue defaultValue = (DefaultValue) annotation;
+				if (defaultValue.value().length == 0) {
+					return getNewInstanceIfPossible(context, type);
+				}
+				return context.getConverter().convert(defaultValue.value(), type, annotations);
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getNewInstanceIfPossible(Binder.Context context, ResolvableType type) {
+		Class<T> resolved = (Class<T>) type.resolve();
+		Assert.state(resolved == null || isEmptyDefaultValueAllowed(resolved),
+				() -> "Parameter of type " + type + " must have a non-empty default value.");
+		T instance = create(Bindable.of(type), context);
+		if (instance != null) {
+			return instance;
+		}
+		return (resolved != null) ? BeanUtils.instantiateClass(resolved) : null;
+	}
+
+	private boolean isEmptyDefaultValueAllowed(Class<?> type) {
+		if (type.isPrimitive() || type.isEnum() || isAggregate(type) || type.getName().startsWith("java.lang")) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isAggregate(Class<?> type) {
+		return type.isArray() || Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 	}
 
 	/**
