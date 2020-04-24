@@ -57,8 +57,8 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	@Override
-	protected boolean isEndpointExposed(Object endpointBean) {
-		Class<?> type = ClassUtils.getUserClass(endpointBean.getClass());
+	protected boolean isEndpointTypeExposed(Class<?> beanType) {
+		Class<?> type = ClassUtils.getUserClass(beanType);
 		MergedAnnotations annotations = MergedAnnotations.from(type);
 		return annotations.isPresent(ControllerEndpoint.class) || annotations.isPresent(RestControllerEndpoint.class);
 	}

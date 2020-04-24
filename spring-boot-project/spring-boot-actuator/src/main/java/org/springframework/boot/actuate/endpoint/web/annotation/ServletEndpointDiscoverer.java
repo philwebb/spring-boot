@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EndpointDiscoverer} for {@link ExposableServletEndpoint servlet endpoints}.
@@ -57,9 +56,8 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	}
 
 	@Override
-	protected boolean isEndpointExposed(Object endpointBean) {
-		Class<?> type = ClassUtils.getUserClass(endpointBean.getClass());
-		return MergedAnnotations.from(type).isPresent(ServletEndpoint.class);
+	protected boolean isEndpointTypeExposed(Class<?> beanType) {
+		return MergedAnnotations.from(beanType).isPresent(ServletEndpoint.class);
 	}
 
 	@Override
