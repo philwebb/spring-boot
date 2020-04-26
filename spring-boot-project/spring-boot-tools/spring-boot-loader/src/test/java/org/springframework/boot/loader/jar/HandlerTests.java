@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,7 +43,6 @@ class HandlerTests {
 	@AfterEach
 	void cleanup() {
 		Handler.clearCache();
-		assertThat(RandomAccessDataFile.count).isZero();
 	}
 
 	@Test

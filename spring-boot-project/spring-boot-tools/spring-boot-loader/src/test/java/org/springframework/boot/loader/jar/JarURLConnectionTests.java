@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.boot.loader.jar.JarURLConnection.JarEntryName;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,7 +57,6 @@ class JarURLConnectionTests {
 	void tearDown() throws Exception {
 		this.jarFile.close();
 		Handler.clearCache();
-		assertThat(RandomAccessDataFile.count).isZero();
 	}
 
 	@Test
