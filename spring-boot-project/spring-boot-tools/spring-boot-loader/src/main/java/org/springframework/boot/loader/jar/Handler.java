@@ -343,4 +343,18 @@ public class Handler extends URLStreamHandler {
 		JarURLConnection.setUseFastExceptions(useFastConnectionExceptions);
 	}
 
+	static void clearCache() {
+		Map<File, JarFile> cache = rootFileCache.get();
+		if (cache != null) {
+			rootFileCache.clear();
+			for (JarFile jarFile : cache.values()) {
+				try {
+					jarFile.close();
+				}
+				catch (IOException ex) {
+				}
+			}
+		}
+	}
+
 }

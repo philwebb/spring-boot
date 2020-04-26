@@ -21,11 +21,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
+import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +40,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HandlerTests {
 
 	private final Handler handler = new Handler();
+
+	@AfterEach
+	void cleanup() {
+		Handler.clearCache();
+		assertThat(RandomAccessDataFile.count).isZero();
+	}
 
 	@Test
 	void parseUrlWithJarRootContextAndAbsoluteSpecThatUsesContext() throws MalformedURLException {

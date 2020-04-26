@@ -96,6 +96,8 @@ class JarFileTests {
 	@AfterEach
 	void tearDown() throws Exception {
 		this.jarFile.close();
+		Handler.clearCache();
+		assertThat(RandomAccessDataFile.count).isZero();
 	}
 
 	@Test
