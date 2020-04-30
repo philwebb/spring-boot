@@ -26,23 +26,47 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * {@link PropertySource} backed by a directory that contains files for each value. The
+ * {@link PropertySource} will recursively scan a given source directory and expose a
+ * property for each file found. The property name will be the filename, and the property
+ * value will be the contents of the file.
+ * <p>
+ * Directories are only scanned when the source is first created. The directory is not
+ * monitored for updates, so files should not be added or removed. However, the contents
+ * of a file can be updated if the property source was created with a {@code cacheContent}
+ * value of {@code false}. Nested folders are included in the source, but with a
+ * {@code '.'} rather than {@code '/'} used as the path separator.
+ * <p>
+ * Property values are returned as {@link Value} instances which allows them to be treated
+ * either as an {@link InputStreamSource} or as a {@link CharSequence}. In addition, if
+ * used with an {@link Environment} configured with an
+ * {@link ApplicationConversionService}, property values can be converted to a
+ * {@code String} or {@code byte[]}.
+ * <p>
+ * This property source is typically used to read Kubernetes {@code configMap} volume
+ * mounts.
+ *
  * @author Phillip Webb
  * @since 2.3.0
  */
-public class DirectoryPathProperySource extends EnumerablePropertySource<Path> implements OriginLookup<String> {
+public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> implements OriginLookup<String> {
 
 	private static final int MAX_DEPTH = 100;
 
@@ -53,20 +77,21 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 	private final boolean cacheContent;
 
 	/**
-	 * Create a new {@link DirectoryPathProperySource} instance.
+	 * Create a new {@link PathDirectoryPropertySource} instance.
 	 * @param name the name of the property source
 	 * @param sourceDirectory the underlying source directory
 	 */
-	public DirectoryPathProperySource(String name, Path sourceDirectory) {
+	public PathDirectoryPropertySource(String name, Path sourceDirectory) {
 		this(name, sourceDirectory, true);
 	}
 
 	/**
-	 * Create a new {@link DirectoryPathProperySource} instance.
+	 * Create a new {@link PathDirectoryPropertySource} instance.
 	 * @param name the name of the property source
 	 * @param sourceDirectory the underlying source directory
+	 * @param cacheContent if file content should be cached when first read
 	 */
-	private DirectoryPathProperySource(String name, Path sourceDirectory, boolean cacheContent) {
+	public PathDirectoryPropertySource(String name, Path sourceDirectory, boolean cacheContent) {
 		super(name, sourceDirectory);
 		Assert.isTrue(Files.exists(sourceDirectory), "Directory '" + sourceDirectory + "' does not exist");
 		Assert.isTrue(Files.isDirectory(sourceDirectory), "File '" + sourceDirectory + "' is not a directory");
@@ -97,13 +122,23 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 		return this.cacheContent;
 	}
 
+	/**
+	 * A value returned from the property source which exposes the contents of the
+	 * property file. Values can either be treated as {@link CharSequence} or as an
+	 * {@link InputStreamSource}.
+	 */
 	public interface Value extends CharSequence, InputStreamSource {
 
 	}
 
+	/**
+	 * A single property file that was found when when the source was created.
+	 */
 	private static final class PropertyFile {
 
 		private static final Location START_OF_FILE = new Location(0, 0);
+
+		private final Path path;
 
 		private final PathResource resource;
 
@@ -112,21 +147,22 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 		private final PropertyFileContent cachedContent;
 
 		private PropertyFile(Path path, boolean cacheContent) {
+			this.path = path;
 			this.resource = new PathResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
-			this.cachedContent = cacheContent ? new PropertyFileContent(this.resource, this.origin, true) : null;
+			this.cachedContent = cacheContent ? new PropertyFileContent(path, this.resource, this.origin, true) : null;
 		}
 
-		public PropertyFileContent getContent() {
+		PropertyFileContent getContent() {
 			return (this.cachedContent != null) ? this.cachedContent
-					: new PropertyFileContent(this.resource, this.origin, false);
+					: new PropertyFileContent(this.path, this.resource, this.origin, false);
 		}
 
-		public Origin getOrigin() {
+		Origin getOrigin() {
 			return this.origin;
 		}
 
-		public static Map<String, PropertyFile> findAll(Path sourceDirectory, boolean cacheContent) {
+		static Map<String, PropertyFile> findAll(Path sourceDirectory, boolean cacheContent) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
 				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isRegularFile).forEach((path) -> {
@@ -147,18 +183,28 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 		}
 
 		private static String getName(Path relativePath) {
-			if (relativePath.getNameCount() == 1) {
+			int nameCount = relativePath.getNameCount();
+			if (nameCount == 1) {
 				return relativePath.toString();
 			}
-			// FIXME
-			return null;
+			StringBuilder name = new StringBuilder();
+			for (int i = 0; i < nameCount; i++) {
+				name.append(i != 0 ? "." : "");
+				name.append(relativePath.getName(i));
+			}
+			return name.toString();
 		}
 
 	}
 
+	/**
+	 * The contents of a found property file.
+	 */
 	private static class PropertyFileContent implements Value, OriginProvider {
 
-		private final PathResource resource;
+		private final Path path;
+
+		private final Resource resource;
 
 		private final boolean cacheContent;
 
@@ -166,7 +212,8 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 
 		private final Origin origin;
 
-		private PropertyFileContent(PathResource resource, Origin origin, boolean cacheContent) {
+		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent) {
+			this.path = path;
 			this.resource = resource;
 			this.origin = origin;
 			this.cacheContent = cacheContent;
@@ -200,6 +247,7 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 		@Override
 		public InputStream getInputStream() throws IOException {
 			if (!this.cacheContent) {
+				assertStillExists();
 				return this.resource.getInputStream();
 			}
 			return new ByteArrayInputStream(getBytes());
@@ -208,9 +256,11 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 		private byte[] getBytes() {
 			try {
 				if (!this.cacheContent) {
+					assertStillExists();
 					return FileCopyUtils.copyToByteArray(this.resource.getInputStream());
 				}
 				if (this.content == null) {
+					assertStillExists();
 					synchronized (this.resource) {
 						if (this.content == null) {
 							this.content = FileCopyUtils.copyToByteArray(this.resource.getInputStream());
@@ -222,6 +272,10 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
 			}
+		}
+
+		private void assertStillExists() {
+			Assert.state(Files.exists(this.path), () -> "The property file '" + this.path + "' no longer exists");
 		}
 
 	}
