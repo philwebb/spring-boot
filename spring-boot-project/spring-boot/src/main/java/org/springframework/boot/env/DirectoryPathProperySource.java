@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -106,19 +107,23 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 
 		private final PathResource resource;
 
+		private final Origin origin;
+
 		private final PropertyFileContent cachedContent;
 
 		private PropertyFile(Path path, boolean cacheContent) {
 			this.resource = new PathResource(path);
-			this.cachedContent = cacheContent ? new PropertyFileContent(this.resource, true) : null;
+			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
+			this.cachedContent = cacheContent ? new PropertyFileContent(this.resource, this.origin, true) : null;
 		}
 
 		public PropertyFileContent getContent() {
-			return (this.cachedContent != null) ? this.cachedContent : new PropertyFileContent(this.resource, false);
+			return (this.cachedContent != null) ? this.cachedContent
+					: new PropertyFileContent(this.resource, this.origin, false);
 		}
 
 		public Origin getOrigin() {
-			return new TextResourceOrigin(this.resource, START_OF_FILE);
+			return this.origin;
 		}
 
 		public static Map<String, PropertyFile> findAll(Path sourceDirectory, boolean cacheContent) {
@@ -151,7 +156,7 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 
 	}
 
-	private static class PropertyFileContent implements Value {
+	private static class PropertyFileContent implements Value, OriginProvider {
 
 		private final PathResource resource;
 
@@ -159,9 +164,17 @@ public class DirectoryPathProperySource extends EnumerablePropertySource<Path> i
 
 		private volatile byte[] content;
 
-		private PropertyFileContent(PathResource resource, boolean cacheContent) {
+		private final Origin origin;
+
+		private PropertyFileContent(PathResource resource, Origin origin, boolean cacheContent) {
 			this.resource = resource;
+			this.origin = origin;
 			this.cacheContent = cacheContent;
+		}
+
+		@Override
+		public Origin getOrigin() {
+			return this.origin;
 		}
 
 		@Override
