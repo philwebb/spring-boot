@@ -19,68 +19,74 @@ package org.springframework.boot.env;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link DirectoryProperySource}.
+ * Tests for {@link DirectoryPathProperySource}.
  *
  * @author Phillip Webb
  */
-class DirectoryProperySourceTests {
+class DirectoryPathProperySourceTests {
 
 	@TempDir
-	File directory;
+	Path directory;
 
 	@Test
 	void createWhenNameIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryProperySource(null, this.directory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryPathProperySource(null, this.directory))
 				.withMessageContaining("name must contain");
 	}
 
 	@Test
 	void createWhenSourceIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryProperySource("test", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryPathProperySource("test", null))
 				.withMessage("Property source must not be null");
 	}
 
 	@Test
 	void createWhenSourceDoesNotExistThrowsException() {
-		File missing = new File(this.directory, "missing");
-		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryProperySource("test", missing))
+		Path missing = this.directory.resolve("missing");
+		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryPathProperySource("test", missing))
 				.withMessage("Directory '" + missing + "' does not exist");
 	}
 
 	@Test
 	void createWhenSourceIsFileThrowsException() throws Exception {
-		File file = new File(this.directory, "file");
-		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file);
-		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryProperySource("test", file))
+		Path file = this.directory.resolve("file");
+		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
+		assertThatIllegalArgumentException().isThrownBy(() -> new DirectoryPathProperySource("test", file))
 				.withMessage("File '" + file + "' is not a directory");
 	}
 
 	@Test
 	void getPropertyNamesFromFlatReturnsPropertyNames() throws Exception {
-		DirectoryProperySource properySource = getFlatPropertySource();
+		DirectoryPathProperySource properySource = getFlatPropertySource();
 		assertThat(properySource.getPropertyNames()).containsExactly("a", "b", "c");
 	}
 
 	@Test
 	void getPropertyFromFlatReturnsFileContent() throws Exception {
-		DirectoryProperySource properySource = getFlatPropertySource();
-		assertThat(properySource.getProperty("b")).isEqualTo("B");
+		DirectoryPathProperySource properySource = getFlatPropertySource();
+		assertThat(properySource.getProperty("b")).hasToString("B");
 	}
 
 	@Test
 	void getPropertyFromFlatWhenMissingReturnsNull() throws Exception {
-		DirectoryProperySource properySource = getFlatPropertySource();
+		DirectoryPathProperySource properySource = getFlatPropertySource();
 		assertThat(properySource.getProperty("missing")).isNull();
 	}
 
@@ -91,16 +97,16 @@ class DirectoryProperySourceTests {
 
 	@Test
 	void getOriginFromFlatReturnsOrigin() throws Exception {
-		DirectoryProperySource properySource = getFlatPropertySource();
+		DirectoryPathProperySource properySource = getFlatPropertySource();
 		TextResourceOrigin origin = (TextResourceOrigin) properySource.getOrigin("b");
-		assertThat(origin.getResource().getFile()).isEqualTo(new File(this.directory, "b"));
+		assertThat(origin.getResource().getFile()).isEqualTo(this.directory.resolve("b").toFile());
 		assertThat(origin.getLocation().getLine()).isEqualTo(0);
 		assertThat(origin.getLocation().getColumn()).isEqualTo(0);
 	}
 
 	@Test
 	void getOriginFromFlatWhenMissingReturnsNull() throws Exception {
-		DirectoryProperySource properySource = getFlatPropertySource();
+		DirectoryPathProperySource properySource = getFlatPropertySource();
 		assertThat(properySource.getOrigin("missing")).isNull();
 	}
 
@@ -109,15 +115,27 @@ class DirectoryProperySourceTests {
 		// FIXME
 	}
 
-	private DirectoryProperySource getFlatPropertySource() throws IOException {
+	@Test
+	void getPropertyViaEnvironmentSupportsConversion() throws Exception {
+		StandardEnvironment environment = new StandardEnvironment();
+		ConversionService conversionService = ApplicationConversionService.getSharedInstance();
+		environment.setConversionService((ConfigurableConversionService) conversionService);
+		environment.getPropertySources().addFirst(getFlatPropertySource());
+		assertThat(environment.getProperty("a")).isEqualTo("A");
+		assertThat(environment.getProperty("b")).isEqualTo("B");
+		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
+		assertThat(environment.getProperty("c", byte[].class)).contains('C');
+	}
+
+	private DirectoryPathProperySource getFlatPropertySource() throws IOException {
 		addProperty("a", "A");
 		addProperty("b", "B");
 		addProperty("c", "C");
-		return new DirectoryProperySource("test", this.directory);
+		return new DirectoryPathProperySource("test", this.directory);
 	}
 
 	private void addProperty(String path, String value) throws IOException {
-		File file = new File(this.directory, path);
+		File file = this.directory.resolve(path).toFile();
 		FileCopyUtils.copy(value.getBytes(StandardCharsets.UTF_8), file);
 	}
 
