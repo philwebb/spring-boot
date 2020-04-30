@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.env.PathDirectoryPropertySource.Option;
 import org.springframework.boot.env.PathDirectoryPropertySource.Value;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.core.convert.ConversionService;
@@ -88,6 +89,14 @@ class PathDirectoryPropertySourceTests {
 	}
 
 	@Test
+	void getPropertyNamesWhenLowercaseReturnsPropertyNames() throws Exception {
+		addProperty("SpRiNg", "boot");
+		PathDirectoryPropertySource propertySource = new PathDirectoryPropertySource("test", this.directory,
+				Option.USE_LOWERCASE_NAMES);
+		assertThat(propertySource.getPropertyNames()).containsExactly("spring");
+	}
+
+	@Test
 	void getPropertyFromFlatReturnsFileContent() throws Exception {
 		PathDirectoryPropertySource propertySource = getFlatPropertySource();
 		assertThat(propertySource.getProperty("b")).hasToString("B");
@@ -142,7 +151,7 @@ class PathDirectoryPropertySourceTests {
 	}
 
 	@Test
-	void getPropertyWhenCacheContentIgnoresUpdates() throws Exception {
+	void getPropertyWhenNotAlwaysReadIgnoresUpdates() throws Exception {
 		PathDirectoryPropertySource propertySource = getNestedPropertySource();
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
@@ -155,9 +164,10 @@ class PathDirectoryPropertySourceTests {
 	}
 
 	@Test
-	void getPropertyWhenNotCachedReflectsUpdates() throws Exception {
+	void getPropertyWhenAlwaysReadReflectsUpdates() throws Exception {
 		addNested();
-		PathDirectoryPropertySource propertySource = new PathDirectoryPropertySource("test", this.directory, false);
+		PathDirectoryPropertySource propertySource = new PathDirectoryPropertySource("test", this.directory,
+				Option.ALWAYS_READ);
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
 		assertThat(v1).isNotSameAs(v2);
@@ -167,6 +177,19 @@ class PathDirectoryPropertySourceTests {
 		assertThat(v1).hasToString("XX");
 		assertThat(FileCopyUtils.copyToByteArray(v1.getInputStream())).containsExactly('X', 'X');
 		assertThat(propertySource.getProperty("fa.b")).hasToString("XX");
+	}
+
+	@Test
+	void getPropertyWhenLowercaseReturnsValue() throws Exception {
+		addProperty("SpRiNg", "boot");
+		PathDirectoryPropertySource propertySource = new PathDirectoryPropertySource("test", this.directory,
+				Option.USE_LOWERCASE_NAMES);
+		assertThat(propertySource.getProperty("spring")).hasToString("boot");
+	}
+
+	@Test
+	void get() {
+
 	}
 
 	private PathDirectoryPropertySource getFlatPropertySource() throws IOException {

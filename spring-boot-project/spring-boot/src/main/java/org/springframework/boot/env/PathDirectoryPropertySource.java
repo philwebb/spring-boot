@@ -22,8 +22,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -50,9 +53,9 @@ import org.springframework.util.StringUtils;
  * <p>
  * Directories are only scanned when the source is first created. The directory is not
  * monitored for updates, so files should not be added or removed. However, the contents
- * of a file can be updated if the property source was created with a {@code cacheContent}
- * value of {@code false}. Nested folders are included in the source, but with a
- * {@code '.'} rather than {@code '/'} used as the path separator.
+ * of a file can be updated as long as the property source was created with a
+ * {@link Option#ALWAYS_READ} option. Nested folders are included in the source, but with
+ * a {@code '.'} rather than {@code '/'} used as the path separator.
  * <p>
  * Property values are returned as {@link Value} instances which allows them to be treated
  * either as an {@link InputStreamSource} or as a {@link CharSequence}. In addition, if
@@ -74,7 +77,7 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 
 	private final String[] names;
 
-	private final boolean cacheContent;
+	private final Set<Option> options;
 
 	/**
 	 * Create a new {@link PathDirectoryPropertySource} instance.
@@ -82,21 +85,25 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 	 * @param sourceDirectory the underlying source directory
 	 */
 	public PathDirectoryPropertySource(String name, Path sourceDirectory) {
-		this(name, sourceDirectory, true);
+		this(name, sourceDirectory, EnumSet.noneOf(Option.class));
 	}
 
 	/**
 	 * Create a new {@link PathDirectoryPropertySource} instance.
 	 * @param name the name of the property source
 	 * @param sourceDirectory the underlying source directory
-	 * @param cacheContent if file content should be cached when first read
+	 * @param options the property source options
 	 */
-	public PathDirectoryPropertySource(String name, Path sourceDirectory, boolean cacheContent) {
+	public PathDirectoryPropertySource(String name, Path sourceDirectory, Option... options) {
+		this(name, sourceDirectory, EnumSet.copyOf(Arrays.asList(options)));
+	}
+
+	private PathDirectoryPropertySource(String name, Path sourceDirectory, Set<Option> options) {
 		super(name, sourceDirectory);
 		Assert.isTrue(Files.exists(sourceDirectory), "Directory '" + sourceDirectory + "' does not exist");
 		Assert.isTrue(Files.isDirectory(sourceDirectory), "File '" + sourceDirectory + "' is not a directory");
-		this.propertyFiles = PropertyFile.findAll(sourceDirectory, cacheContent);
-		this.cacheContent = cacheContent;
+		this.propertyFiles = PropertyFile.findAll(sourceDirectory, options);
+		this.options = options;
 		this.names = StringUtils.toStringArray(this.propertyFiles.keySet());
 	}
 
@@ -119,7 +126,26 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 
 	@Override
 	public boolean isImmutable() {
-		return this.cacheContent;
+		return !this.options.contains(Option.ALWAYS_READ);
+	}
+
+	/**
+	 * Property source options.
+	 */
+	public enum Option {
+
+		/**
+		 * Always read the value of the file when accessing the property value. When this
+		 * option is not set the property source will cache the value when it's first
+		 * read.
+		 */
+		ALWAYS_READ,
+
+		/**
+		 * Convert file and directory names to lowercase.
+		 */
+		USE_LOWERCASE_NAMES
+
 	}
 
 	/**
@@ -146,11 +172,12 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 
 		private final PropertyFileContent cachedContent;
 
-		private PropertyFile(Path path, boolean cacheContent) {
+		private PropertyFile(Path path, Set<Option> options) {
 			this.path = path;
 			this.resource = new PathResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
-			this.cachedContent = cacheContent ? new PropertyFileContent(path, this.resource, this.origin, true) : null;
+			this.cachedContent = options.contains(Option.ALWAYS_READ) ? null
+					: new PropertyFileContent(path, this.resource, this.origin, true);
 		}
 
 		PropertyFileContent getContent() {
@@ -162,13 +189,16 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 			return this.origin;
 		}
 
-		static Map<String, PropertyFile> findAll(Path sourceDirectory, boolean cacheContent) {
+		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
 				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isRegularFile).forEach((path) -> {
 					String name = getName(sourceDirectory.relativize(path));
 					if (StringUtils.hasText(name)) {
-						propertyFiles.put(name, new PropertyFile(path, cacheContent));
+						if (options.contains(Option.USE_LOWERCASE_NAMES)) {
+							name = name.toLowerCase();
+						}
+						propertyFiles.put(name, new PropertyFile(path, options));
 					}
 				});
 				return Collections.unmodifiableMap(propertyFiles);
