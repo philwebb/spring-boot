@@ -189,7 +189,7 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 			}
 			StringBuilder name = new StringBuilder();
 			for (int i = 0; i < nameCount; i++) {
-				name.append(i != 0 ? "." : "");
+				name.append((i != 0) ? "." : "");
 				name.append(relativePath.getName(i));
 			}
 			return name.toString();
@@ -200,7 +200,7 @@ public class PathDirectoryPropertySource extends EnumerablePropertySource<Path> 
 	/**
 	 * The contents of a found property file.
 	 */
-	private static class PropertyFileContent implements Value, OriginProvider {
+	private static final class PropertyFileContent implements Value, OriginProvider {
 
 		private final Path path;
 
