@@ -19,9 +19,12 @@ package org.springframework.boot.context.properties.source;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -119,6 +122,50 @@ class ConfigurationPropertySourcesTests {
 		sources.addLast(new MapPropertySource("baz", Collections.singletonMap("baz", "barf")));
 		Iterable<ConfigurationPropertySource> configurationSources = ConfigurationPropertySources.from(sources);
 		assertThat(configurationSources.iterator()).toIterable().hasSize(5);
+	}
+
+	@Test // gh-20625
+	void environmentPropertyAccessShouldBePerformant() {
+		StandardEnvironment environment = new StandardEnvironment();
+		MutablePropertySources propertySources = environment.getPropertySources();
+		for (int i = 0; i < 100; i++) {
+			propertySources.addLast(new TestPropertySource(i));
+		}
+		ConfigurationPropertySources.attach(environment);
+		long start = System.nanoTime();
+		for (int i = 0; i < 1000; i++) {
+			environment.getProperty("missing" + i);
+		}
+		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		assertThat(total).isLessThan(500);
+	}
+
+	static class TestPropertySource extends MapPropertySource implements OriginLookup<String> {
+
+		public TestPropertySource(int index) {
+			super("test-" + index, createProperties(index));
+		}
+
+		private static Map<String, Object> createProperties(int index) {
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			for (int i = 0; i < 1000; i++) {
+				String name = "test-" + index + "-property-" + i;
+				String value = name + "-value";
+				map.put(name, value);
+			}
+			return map;
+		}
+
+		@Override
+		public Origin getOrigin(String key) {
+			return null;
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+
 	}
 
 }
