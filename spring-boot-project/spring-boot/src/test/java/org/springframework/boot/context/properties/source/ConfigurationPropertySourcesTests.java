@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -140,10 +141,20 @@ class ConfigurationPropertySourcesTests {
 		for (int i = 0; i < 100; i++) {
 			propertySources.addLast(new TestPropertySource(i, immutable));
 		}
-		ConfigurationPropertySources.attach(environment);
+		// ConfigurationPropertySources.attach(environment);
 		long start = System.nanoTime();
-		for (int i = 0; i < maxTime; i++) {
-			environment.getProperty("missing" + i);
+		for (int i = 0; i < 1000; i++) {
+			// environment.getProperty("missing" + i);
+			for (PropertySource<?> propertySource : propertySources) {
+				if (propertySource instanceof MapPropertySource) {
+					Map<String, Object> map = ((MapPropertySource) propertySource).getSource();
+					map.forEach((k, v) -> {
+					});
+				}
+				if (propertySource instanceof EnumerablePropertySource<?>) {
+					// ((EnumerablePropertySource<?>) propertySource).getPropertyNames();
+				}
+			}
 		}
 		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 		assertThat(total).isLessThan(maxTime);
