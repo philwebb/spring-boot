@@ -190,10 +190,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 					: new HashMap<>(propertyNames.length);
 			for (PropertyMapper propertyMapper : this.mappers) {
 				for (String propertyName : propertyNames) {
-					ConfigurationPropertyName configurationPropertyName = propertyMapper.map(propertyName);
-					if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
-						mappings.add(configurationPropertyName, propertyName);
-						names.putIfAbsent(propertyName, configurationPropertyName);
+					if (!names.containsKey(propertyName)) {
+						ConfigurationPropertyName configurationPropertyName = propertyMapper.map(propertyName);
+						if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
+							mappings.add(configurationPropertyName, propertyName);
+							names.put(propertyName, configurationPropertyName);
+						}
 					}
 				}
 			}
