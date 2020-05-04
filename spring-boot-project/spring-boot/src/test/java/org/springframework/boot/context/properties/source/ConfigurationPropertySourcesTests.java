@@ -125,25 +125,37 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-20625
-	void environmentPropertyAccessShouldBePerformant() {
+	void environmentPropertyAccessWhenImmutableShouldBePerformant() {
+		testPropertySourcePerformance(true, 1000);
+	}
+
+	@Test // gh-20625
+	void environmentPropertyAccessWhenMutableShouldBePerformant() {
+		testPropertySourcePerformance(false, 1000);
+	}
+
+	private void testPropertySourcePerformance(boolean immutable, int maxTime) {
 		StandardEnvironment environment = new StandardEnvironment();
 		MutablePropertySources propertySources = environment.getPropertySources();
 		for (int i = 0; i < 100; i++) {
-			propertySources.addLast(new TestPropertySource(i));
+			propertySources.addLast(new TestPropertySource(i, immutable));
 		}
 		ConfigurationPropertySources.attach(environment);
 		long start = System.nanoTime();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < maxTime; i++) {
 			environment.getProperty("missing" + i);
 		}
 		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
-		assertThat(total).isLessThan(500);
+		assertThat(total).isLessThan(maxTime);
 	}
 
 	static class TestPropertySource extends MapPropertySource implements OriginLookup<String> {
 
-		public TestPropertySource(int index) {
+		private final boolean immutable;
+
+		TestPropertySource(int index, boolean immutable) {
 			super("test-" + index, createProperties(index));
+			this.immutable = immutable;
 		}
 
 		private static Map<String, Object> createProperties(int index) {
@@ -163,7 +175,7 @@ class ConfigurationPropertySourcesTests {
 
 		@Override
 		public boolean isImmutable() {
-			return true;
+			return this.immutable;
 		}
 
 	}

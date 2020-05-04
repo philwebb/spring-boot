@@ -17,15 +17,14 @@
 package org.springframework.boot.context.properties.source;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.boot.origin.Origin;
@@ -75,6 +74,9 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+		if (name == null) {
+			return null;
+		}
 		ConfigurationProperty configurationProperty = super.getConfigurationProperty(name);
 		if (configurationProperty != null) {
 			return configurationProperty;
@@ -208,7 +210,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			if (names == null || names.isEmpty()) {
 				return Collections.emptySet();
 			}
-			Set<ConfigurationPropertyName> result = new LinkedHashSet<>(names.size());
+			List<ConfigurationPropertyName> result = new ArrayList<>(names.size());
 			for (String propertyName : propertyNames) {
 				ConfigurationPropertyName configurationPropertyName = names.get(propertyName);
 				if (configurationPropertyName != null) {

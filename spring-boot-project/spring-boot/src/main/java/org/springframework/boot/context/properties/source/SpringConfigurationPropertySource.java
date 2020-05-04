@@ -76,13 +76,20 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+		if (name == null) {
+			return null;
+		}
 		for (PropertyMapper mapper : this.mappers) {
-			for (String candidate : mapper.map(name)) {
-				Object value = getPropertySource().getProperty(candidate);
-				if (value != null) {
-					Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
-					return ConfigurationProperty.of(name, value, origin);
+			try {
+				for (String candidate : mapper.map(name)) {
+					Object value = getPropertySource().getProperty(candidate);
+					if (value != null) {
+						Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
+						return ConfigurationProperty.of(name, value, origin);
+					}
 				}
+			}
+			catch (Exception ex) {
 			}
 		}
 		return null;
