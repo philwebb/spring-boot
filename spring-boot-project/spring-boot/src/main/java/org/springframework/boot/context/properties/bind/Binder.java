@@ -31,6 +31,8 @@ import java.util.function.Supplier;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyCache;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyCache.ThreadLocalCaching;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -305,7 +307,9 @@ public class Binder {
 		Assert.notNull(target, "Target must not be null");
 		handler = (handler != null) ? handler : this.defaultBindHandler;
 		Context context = new Context();
-		return bind(name, target, handler, context, false, create);
+		try (ThreadLocalCaching cache = ConfigurationPropertyCache.withThreadLocalCache()) {
+			return bind(name, target, handler, context, false, create);
+		}
 	}
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, Context context,
