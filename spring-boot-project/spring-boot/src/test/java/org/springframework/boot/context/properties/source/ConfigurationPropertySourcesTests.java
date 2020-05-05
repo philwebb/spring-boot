@@ -130,8 +130,8 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-20625
-	void environmentPropertyAccessWhenMutableShouldBePerformant() {
-		testPropertySourcePerformance(false, 1000);
+	void environmentPropertyAccessWhenMutableWithThreadLocalCacheShouldBePerformant() {
+		ConfigurationPropertyCache.withThreadLocalCache(() -> testPropertySourcePerformance(false, 1000));
 	}
 
 	private void testPropertySourcePerformance(boolean immutable, int maxTime) {

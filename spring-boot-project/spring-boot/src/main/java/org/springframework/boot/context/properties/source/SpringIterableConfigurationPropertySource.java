@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,26 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * {@link ConfigurationPropertySource} backed by an {@link EnumerablePropertySource}.
@@ -47,11 +52,14 @@ import org.springframework.util.ObjectUtils;
 class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
 		implements IterableConfigurationPropertySource {
 
-	private volatile Cache cache;
+	private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
 
-	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper mapper) {
-		super(propertySource, mapper, null);
+	private final Mappings immutableMappings;
+
+	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
+		super(propertySource, mappers);
 		assertEnumerablePropertySource();
+		this.immutableMappings = isImmutablePropertySource() ? new Mappings(getMappers()) : null;
 	}
 
 	private void assertEnumerablePropertySource() {
@@ -67,11 +75,21 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	@Override
 	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
-		ConfigurationProperty configurationProperty = super.getConfigurationProperty(name);
-		if (configurationProperty == null) {
-			configurationProperty = find(getPropertyMappings(getCache()), name);
+		if (name == null) {
+			return null;
 		}
-		return configurationProperty;
+		ConfigurationProperty configurationProperty = super.getConfigurationProperty(name);
+		if (configurationProperty != null) {
+			return configurationProperty;
+		}
+		for (String candidate : getMappings().getMapped(name)) {
+			Object value = getPropertySource().getProperty(candidate);
+			if (value != null) {
+				Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
+				return ConfigurationProperty.of(name, value, origin);
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -84,64 +102,47 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return getConfigurationPropertyNames().iterator();
 	}
 
+	private Collection<ConfigurationPropertyName> getConfigurationPropertyNames() {
+		if (!isImmutablePropertySource()) {
+			return getMappings().getConfigurationPropertyNames(getPropertySource().getPropertyNames());
+		}
+		Collection<ConfigurationPropertyName> configurationPropertyNames = this.configurationPropertyNames;
+		if (configurationPropertyNames == null) {
+			configurationPropertyNames = getMappings()
+					.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
+			this.configurationPropertyNames = configurationPropertyNames;
+		}
+		return configurationPropertyNames;
+	}
+
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
-		return ConfigurationPropertyState.search(this, name::isAncestorOf);
-	}
-
-	private List<ConfigurationPropertyName> getConfigurationPropertyNames() {
-		Cache cache = getCache();
-		List<ConfigurationPropertyName> names = (cache != null) ? cache.getNames() : null;
-		if (names != null) {
-			return names;
-		}
-		PropertyMapping[] mappings = getPropertyMappings(cache);
-		names = new ArrayList<>(mappings.length);
-		for (PropertyMapping mapping : mappings) {
-			names.add(mapping.getConfigurationPropertyName());
-		}
-		names = Collections.unmodifiableList(names);
-		if (cache != null) {
-			cache.setNames(names);
-		}
-		return names;
-	}
-
-	private PropertyMapping[] getPropertyMappings(Cache cache) {
-		PropertyMapping[] result = (cache != null) ? cache.getMappings() : null;
-		if (result != null) {
-			return result;
-		}
-		String[] names = getPropertySource().getPropertyNames();
-		List<PropertyMapping> mappings = new ArrayList<>(names.length * 2);
-		for (String name : names) {
-			Collections.addAll(mappings, getMapper().map(name));
-		}
-		result = mappings.toArray(new PropertyMapping[0]);
-		if (cache != null) {
-			cache.setMappings(result);
+		ConfigurationPropertyState result = super.containsDescendantOf(name);
+		if (result == ConfigurationPropertyState.UNKNOWN) {
+			result = ConfigurationPropertyState.search(this, name::isAncestorOf);
 		}
 		return result;
 	}
 
-	private Cache getCache() {
-		CacheKey key = CacheKey.get(getPropertySource());
-		if (key == null) {
-			return null;
+	private Mappings getMappings() {
+		Mappings mappings = (this.immutableMappings != null) ? this.immutableMappings
+				: ConfigurationPropertyCache.get(this, Mappings.class, () -> new Mappings(getMappers()));
+		if (!mappings.hasMappings()) {
+			EnumerablePropertySource<?> propertySource = getPropertySource();
+			mappings.updateMappings(propertySource::getPropertyNames);
 		}
-		Cache cache = this.cache;
-		try {
-			if (cache != null && cache.hasKeyEqualTo(key)) {
-				return cache;
-			}
-			cache = new Cache(key.copy());
-			this.cache = cache;
-			return cache;
+		return mappings;
+	}
+
+	private boolean isImmutablePropertySource() {
+		EnumerablePropertySource<?> source = getPropertySource();
+		if (source instanceof OriginLookup) {
+			return ((OriginLookup<?>) source).isImmutable();
 		}
-		catch (ConcurrentModificationException ex) {
-			// Not fatal at this point, we can continue without a cache
-			return null;
+		if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
+			return source.getSource() == System.getenv();
 		}
+		return false;
 	}
 
 	@Override
@@ -149,100 +150,76 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		return (EnumerablePropertySource<?>) super.getPropertySource();
 	}
 
-	private static class Cache {
+	private static class Mappings {
 
-		private final CacheKey key;
+		private final PropertyMapper[] mappers;
 
-		private List<ConfigurationPropertyName> names;
+		private volatile MultiValueMap<ConfigurationPropertyName, String> mappings;
 
-		private PropertyMapping[] mappings;
+		private volatile Map<String, ConfigurationPropertyName> names;
 
-		Cache(CacheKey key) {
-			this.key = key;
+		Mappings(PropertyMapper[] mappers) {
+			this.mappers = mappers;
 		}
 
-		boolean hasKeyEqualTo(CacheKey key) {
-			return this.key.equals(key);
+		boolean hasMappings() {
+			return this.mappings != null;
 		}
 
-		List<ConfigurationPropertyName> getNames() {
-			return this.names;
+		void updateMappings(Supplier<String[]> propertyNames) {
+			int count = 0;
+			while (true) {
+				try {
+					updateMappings(propertyNames.get());
+					return;
+				}
+				catch (ConcurrentModificationException ex) {
+					if (count++ > 10) {
+						throw ex;
+					}
+				}
+			}
 		}
 
-		void setNames(List<ConfigurationPropertyName> names) {
+		private void updateMappings(String[] propertyNames) {
+			MultiValueMap<ConfigurationPropertyName, String> currentMappings = this.mappings;
+			MultiValueMap<ConfigurationPropertyName, String> mappings = (currentMappings != null)
+					? new LinkedMultiValueMap<>(currentMappings) : new LinkedMultiValueMap<>(propertyNames.length);
+			Map<String, ConfigurationPropertyName> currentNames = this.names;
+			Map<String, ConfigurationPropertyName> names = (currentNames != null) ? new HashMap<>(currentNames)
+					: new HashMap<>(propertyNames.length);
+			for (PropertyMapper propertyMapper : this.mappers) {
+				for (String propertyName : propertyNames) {
+					if (!names.containsKey(propertyName)) {
+						ConfigurationPropertyName configurationPropertyName = propertyMapper.map(propertyName);
+						if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
+							mappings.add(configurationPropertyName, propertyName);
+							names.put(propertyName, configurationPropertyName);
+						}
+					}
+				}
+			}
+			this.mappings = mappings;
 			this.names = names;
 		}
 
-		PropertyMapping[] getMappings() {
-			return this.mappings;
+		List<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
+			return this.mappings.getOrDefault(configurationPropertyName, Collections.emptyList());
 		}
 
-		void setMappings(PropertyMapping[] mappings) {
-			this.mappings = mappings;
-		}
-
-	}
-
-	private static final class CacheKey {
-
-		private static final CacheKey IMMUTABLE_PROPERTY_SOURCE = new CacheKey(new Object[0]);
-
-		private final Object key;
-
-		private CacheKey(Object key) {
-			this.key = key;
-		}
-
-		CacheKey copy() {
-			if (this == IMMUTABLE_PROPERTY_SOURCE) {
-				return IMMUTABLE_PROPERTY_SOURCE;
+		Collection<ConfigurationPropertyName> getConfigurationPropertyNames(String[] propertyNames) {
+			Map<String, ConfigurationPropertyName> names = this.names;
+			if (names == null || names.isEmpty()) {
+				return Collections.emptySet();
 			}
-			return new CacheKey(copyKey(this.key));
-		}
-
-		private Object copyKey(Object key) {
-			if (key instanceof Set) {
-				return new HashSet<Object>((Set<?>) key);
+			List<ConfigurationPropertyName> result = new ArrayList<>(names.size());
+			for (String propertyName : propertyNames) {
+				ConfigurationPropertyName configurationPropertyName = names.get(propertyName);
+				if (configurationPropertyName != null) {
+					result.add(configurationPropertyName);
+				}
 			}
-			return ((String[]) key).clone();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null || getClass() != obj.getClass()) {
-				return false;
-			}
-			CacheKey otherCacheKey = (CacheKey) obj;
-			return ObjectUtils.nullSafeEquals(this.key, otherCacheKey.key);
-		}
-
-		@Override
-		public int hashCode() {
-			return this.key.hashCode();
-		}
-
-		static CacheKey get(EnumerablePropertySource<?> source) {
-			if (isImmutable(source)) {
-				return IMMUTABLE_PROPERTY_SOURCE;
-			}
-			if (source instanceof MapPropertySource) {
-				MapPropertySource mapPropertySource = (MapPropertySource) source;
-				return new CacheKey(mapPropertySource.getSource().keySet());
-			}
-			return new CacheKey(source.getPropertyNames());
-		}
-
-		private static boolean isImmutable(EnumerablePropertySource<?> source) {
-			if (source instanceof OriginLookup) {
-				return ((OriginLookup<?>) source).isImmutable();
-			}
-			if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
-				return source.getSource() == System.getenv();
-			}
-			return false;
+			return result;
 		}
 
 	}

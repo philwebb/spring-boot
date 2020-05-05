@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
@@ -37,32 +40,13 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 	public static final PropertyMapper INSTANCE = new SystemEnvironmentPropertyMapper();
 
 	@Override
-	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
+	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
 		String name = convertName(configurationPropertyName);
 		String legacyName = convertLegacyName(configurationPropertyName);
 		if (name.equals(legacyName)) {
-			return new PropertyMapping[] { new PropertyMapping(name, configurationPropertyName) };
+			return Collections.singletonList(name);
 		}
-		return new PropertyMapping[] { new PropertyMapping(name, configurationPropertyName),
-				new PropertyMapping(legacyName, configurationPropertyName) };
-	}
-
-	@Override
-	public PropertyMapping[] map(String propertySourceName) {
-		ConfigurationPropertyName name = convertName(propertySourceName);
-		if (name == null || name.isEmpty()) {
-			return NO_MAPPINGS;
-		}
-		return new PropertyMapping[] { new PropertyMapping(propertySourceName, name) };
-	}
-
-	private ConfigurationPropertyName convertName(String propertySourceName) {
-		try {
-			return ConfigurationPropertyName.adapt(propertySourceName, '_', this::processElementValue);
-		}
-		catch (Exception ex) {
-			return null;
-		}
+		return Arrays.asList(name, legacyName);
 	}
 
 	private String convertName(ConfigurationPropertyName name) {
@@ -93,6 +77,20 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 
 	private Object convertLegacyNameElement(String element) {
 		return element.replace('-', '_').toUpperCase(Locale.ENGLISH);
+	}
+
+	@Override
+	public ConfigurationPropertyName map(String propertySourceName) {
+		return convertName(propertySourceName);
+	}
+
+	private ConfigurationPropertyName convertName(String propertySourceName) {
+		try {
+			return ConfigurationPropertyName.adapt(propertySourceName, '_', this::processElementValue);
+		}
+		catch (Exception ex) {
+			return ConfigurationPropertyName.EMPTY;
+		}
 	}
 
 	private CharSequence processElementValue(CharSequence value) {
