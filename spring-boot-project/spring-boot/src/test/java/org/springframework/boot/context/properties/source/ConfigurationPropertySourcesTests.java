@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -134,6 +135,12 @@ class ConfigurationPropertySourcesTests {
 		ConfigurationPropertyCache.withThreadLocalCache(() -> testPropertySourcePerformance(false, 1000));
 	}
 
+	@Test // gh-20625
+	@Disabled("for manual testing")
+	void environmentPropertyAccessWhenMutableShouldBeTolerable() {
+		testPropertySourcePerformance(false, 5000);
+	}
+
 	private void testPropertySourcePerformance(boolean immutable, int maxTime) {
 		StandardEnvironment environment = new StandardEnvironment();
 		MutablePropertySources propertySources = environment.getPropertySources();
@@ -142,10 +149,11 @@ class ConfigurationPropertySourcesTests {
 		}
 		ConfigurationPropertySources.attach(environment);
 		long start = System.nanoTime();
-		for (int i = 0; i < maxTime; i++) {
+		for (int i = 0; i < 1000; i++) {
 			environment.getProperty("missing" + i);
 		}
 		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		assertThat(environment.getProperty("test-10-property-80")).isEqualTo("test-10-property-80-value");
 		assertThat(total).isLessThan(maxTime);
 	}
 
