@@ -249,6 +249,16 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 			}
 		}
 
+		@Override
+		public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+			return isAncestorOf(this.first, name, candidate) || isAncestorOf(this.second, name, candidate);
+		}
+
+		private boolean isAncestorOf(PropertyMapper mapper, ConfigurationPropertyName name,
+				ConfigurationPropertyName candidate) {
+			return mapper != null && mapper.isAncestorOf(name, candidate);
+		}
+
 		private PropertyMapping[] merge(PropertyMapping[] first, PropertyMapping[] second) {
 			if (ObjectUtils.isEmpty(second)) {
 				return first;

@@ -76,6 +76,11 @@ final class DefaultPropertyMapper implements PropertyMapper {
 		return NO_MAPPINGS;
 	}
 
+	@Override
+	public boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
+		return name.isAncestorOf(candidate);
+	}
+
 	private static class LastMapping<T> {
 
 		private final T from;

@@ -55,4 +55,6 @@ interface PropertyMapper {
 	 */
 	PropertyMapping[] map(String propertySourceName);
 
+	boolean isAncestorOf(ConfigurationPropertyName name, ConfigurationPropertyName candidate);
+
 }
