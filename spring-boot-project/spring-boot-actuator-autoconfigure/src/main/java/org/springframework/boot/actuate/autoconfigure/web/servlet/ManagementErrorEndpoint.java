@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
@@ -53,10 +54,16 @@ public class ManagementErrorEndpoint {
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, Object> invoke(ServletWebRequest request) {
-		return this.errorAttributes.getErrorAttributes(request, includeStackTrace(request), includeMessage(request),
-				includeBindingErrors(request));
+		return this.errorAttributes.getErrorAttributes(request, getErrorAttributeOptions(request));
 	}
 
+	private ErrorAttributeOptions getErrorAttributeOptions(ServletWebRequest request) {
+		return new ErrorAttributeOptions().includeException(this.errorProperties.isIncludeException())
+				.includeStackTrace(includeStackTrace(request)).includeMessage(includeMessage(request))
+				.includeBindingErrors((includeBindingErrors(request)));
+	}
+
+	@SuppressWarnings("deprecation")
 	private boolean includeStackTrace(ServletWebRequest request) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:

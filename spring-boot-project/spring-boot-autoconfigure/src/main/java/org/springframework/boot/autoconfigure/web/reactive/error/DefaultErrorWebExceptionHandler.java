@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -113,11 +114,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
-		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.TEXT_HTML);
-		boolean includeMessage = isIncludeMessage(request, MediaType.TEXT_HTML);
-		boolean includeBindingErrors = isIncludeBindingErrors(request, MediaType.TEXT_HTML);
-		Map<String, Object> error = getErrorAttributes(request, includeStackTrace, includeMessage,
-				includeBindingErrors);
+		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML));
 		int errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
 		return Flux.just(getData(errorStatus).toArray(new String[] {}))
@@ -144,13 +141,16 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
-		boolean includeStackTrace = isIncludeStackTrace(request, MediaType.ALL);
-		boolean includeMessage = isIncludeMessage(request, MediaType.ALL);
-		boolean includeBindingErrors = isIncludeBindingErrors(request, MediaType.ALL);
-		Map<String, Object> error = getErrorAttributes(request, includeStackTrace, includeMessage,
-				includeBindingErrors);
+		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
 		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
 				.body(BodyInserters.fromValue(error));
+	}
+
+	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
+		return new ErrorAttributeOptions().includeException(this.errorProperties.isIncludeException())
+				.includeStackTrace(isIncludeStackTrace(request, mediaType))
+				.includeMessage(isIncludeMessage(request, mediaType))
+				.includeBindingErrors(isIncludeBindingErrors(request, mediaType));
 	}
 
 	/**

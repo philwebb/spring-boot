@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -42,9 +43,10 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>status - The status code</li>
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
- * <li>message - The exception message</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
- * <li>trace - The exception stack trace</li>
+ * <li>message - The exception message (if configured)</li>
+ * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception (if
+ * configured)</li>
+ * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * <li>requestId - Unique ID associated with the current request</li>
  * </ul>
@@ -60,20 +62,22 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
-	private final boolean includeException;
+	private final Boolean includeException;
 
 	/**
-	 * Create a new {@link DefaultErrorAttributes} instance that does not include the
-	 * "exception" attribute.
+	 * Create a new {@link DefaultErrorAttributes} instance.
 	 */
 	public DefaultErrorAttributes() {
-		this(false);
+		this.includeException = null;
 	}
 
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
 	 * @param includeException whether to include the "exception" attribute
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link ErrorAttributeOptions#includeException(boolean)}
 	 */
+	@Deprecated
 	public DefaultErrorAttributes(boolean includeException) {
 		this.includeException = includeException;
 	}
@@ -81,12 +85,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	@Deprecated
 	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return getErrorAttributes(request, includeStackTrace, false, false);
+		return getErrorAttributes(request, new ErrorAttributeOptions().includeStackTrace(includeStackTrace));
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace,
-			boolean includeMessage, boolean includeBindingErrors) {
+	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		if (this.includeException != null) {
+			options.includeException(this.includeException);
+		}
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
@@ -96,9 +102,9 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation, includeMessage));
+		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation, options));
 		errorAttributes.put("requestId", request.exchange().getRequest().getId());
-		handleException(errorAttributes, determineException(error), includeStackTrace, includeBindingErrors);
+		handleException(errorAttributes, determineException(error), options);
 		return errorAttributes;
 	}
 
@@ -110,8 +116,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation,
-			boolean includeMessage) {
-		if (!includeMessage) {
+			ErrorAttributeOptions options) {
+		if (!options.isIncludeMessage()) {
 			return "";
 		}
 		if (error instanceof BindingResult) {
@@ -141,15 +147,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace,
-			boolean includeBindingErrors) {
-		if (this.includeException) {
+	private void handleException(Map<String, Object> errorAttributes, Throwable error, ErrorAttributeOptions options) {
+		if (options.isIncludeException()) {
 			errorAttributes.put("exception", error.getClass().getName());
 		}
-		if (includeStackTrace) {
+		if (options.isIncludeStackTrace()) {
 			addStackTrace(errorAttributes, error);
 		}
-		if (includeBindingErrors && (error instanceof BindingResult)) {
+		if (options.isIncludeBindingErrors() && (error instanceof BindingResult)) {
 			BindingResult result = (BindingResult) error;
 			if (result.hasErrors()) {
 				errorAttributes.put("errors", result.getAllErrors());

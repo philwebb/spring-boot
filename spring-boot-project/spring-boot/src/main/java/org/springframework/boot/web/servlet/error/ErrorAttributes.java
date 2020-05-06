@@ -18,6 +18,7 @@ package org.springframework.boot.web.servlet.error;
 
 import java.util.Map;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,7 +41,7 @@ public interface ErrorAttributes {
 	 * @param includeStackTrace if stack trace element should be included
 	 * @return a map of error attributes
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(WebRequest, boolean, boolean, boolean)}
+	 * {@link #getErrorAttributes(WebRequest, ErrorAttributeOptions)}
 	 */
 	@Deprecated
 	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace);
@@ -50,14 +51,13 @@ public interface ErrorAttributes {
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
-	 * @param includeStackTrace if stack trace element should be included
-	 * @param includeMessage if message element should be included
-	 * @param includeBindingErrors if errors element should be included
+	 * @param options options for error attribute contents
 	 * @return a map of error attributes
 	 * @since 2.3.0
 	 */
-	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace, boolean includeMessage,
-			boolean includeBindingErrors);
+	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+		return null;
+	}
 
 	/**
 	 * Return the underlying cause of the error or {@code null} if the error cannot be
