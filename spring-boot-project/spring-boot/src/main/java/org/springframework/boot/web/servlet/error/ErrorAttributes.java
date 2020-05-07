@@ -56,7 +56,7 @@ public interface ErrorAttributes {
 	 * @since 2.3.0
 	 */
 	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-		return null;
+		return getErrorAttributes(webRequest, options.isIncludeStackTrace());
 	}
 
 	/**

@@ -52,7 +52,7 @@ public interface ErrorAttributes {
 	 * @return a map of error attributes
 	 */
 	default Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-		return null;
+		return getErrorAttributes(request, options.isIncludeStackTrace());
 	}
 
 	/**

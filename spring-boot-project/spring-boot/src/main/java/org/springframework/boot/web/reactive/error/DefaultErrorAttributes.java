@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -64,6 +65,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private final Boolean includeException;
 
+	private Map<String, Object> errorAttributes;
+
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
 	 */
@@ -85,7 +88,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	@Deprecated
 	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-		return getErrorAttributes(request, new ErrorAttributeOptions().includeStackTrace(includeStackTrace));
+		return this.errorAttributes;
 	}
 
 	@Override
@@ -93,19 +96,30 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		if (this.includeException != null) {
 			options.includeException(this.includeException);
 		}
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
-		errorAttributes.put("timestamp", new Date());
-		errorAttributes.put("path", request.path());
+		this.errorAttributes = new LinkedHashMap<>();
+		this.errorAttributes.put("timestamp", new Date());
+		this.errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
 				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
-		errorAttributes.put("status", errorStatus.value());
-		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation, options));
-		errorAttributes.put("requestId", request.exchange().getRequest().getId());
-		handleException(errorAttributes, determineException(error), options);
-		return errorAttributes;
+		this.errorAttributes.put("status", errorStatus.value());
+		this.errorAttributes.put("error", errorStatus.getReasonPhrase());
+		this.errorAttributes.put("message", determineMessage(error, responseStatusAnnotation, options));
+		this.errorAttributes.put("requestId", request.exchange().getRequest().getId());
+		handleException(this.errorAttributes, determineException(error), options);
+		return allowSubclassOverride(request, options);
+	}
+
+	private Map<String, Object> allowSubclassOverride(ServerRequest webRequest, ErrorAttributeOptions options) {
+		// A subclass that only overrides the deprecated getErrorAttributes(WebRequest,
+		// boolean) might modify the Map created by this base class, or might return a
+		// newly created Map.
+		Map<String, Object> modifiedErrorAttributes = getErrorAttributes(webRequest, options.isIncludeStackTrace());
+		if (modifiedErrorAttributes != this.errorAttributes) {
+			return modifiedErrorAttributes;
+		}
+		return this.errorAttributes;
 	}
 
 	private HttpStatus determineHttpStatus(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {

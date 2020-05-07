@@ -70,6 +70,8 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	private final Boolean includeException;
 
+	private Map<String, Object> errorAttributes;
+
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
 	 */
@@ -107,7 +109,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	@Deprecated
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-		return getErrorAttributes(webRequest, new ErrorAttributeOptions().includeStackTrace(includeStackTrace));
+		return this.errorAttributes;
 	}
 
 	@Override
@@ -115,12 +117,23 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		if (this.includeException != null) {
 			options.includeException(this.includeException);
 		}
-		Map<String, Object> errorAttributes = new LinkedHashMap<>();
-		errorAttributes.put("timestamp", new Date());
-		addStatus(errorAttributes, webRequest);
-		addErrorDetails(errorAttributes, webRequest, options);
-		addPath(errorAttributes, webRequest);
-		return errorAttributes;
+		this.errorAttributes = new LinkedHashMap<>();
+		this.errorAttributes.put("timestamp", new Date());
+		addStatus(this.errorAttributes, webRequest);
+		addErrorDetails(this.errorAttributes, webRequest, options);
+		addPath(this.errorAttributes, webRequest);
+		return allowSubclassOverride(webRequest, options);
+	}
+
+	private Map<String, Object> allowSubclassOverride(WebRequest webRequest, ErrorAttributeOptions options) {
+		// A subclass that only overrides the deprecated getErrorAttributes(WebRequest,
+		// boolean) might modify the Map created by this base class, or might return a
+		// newly created Map.
+		Map<String, Object> modifiedErrorAttributes = getErrorAttributes(webRequest, options.isIncludeStackTrace());
+		if (modifiedErrorAttributes != this.errorAttributes) {
+			return modifiedErrorAttributes;
+		}
+		return this.errorAttributes;
 	}
 
 	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
