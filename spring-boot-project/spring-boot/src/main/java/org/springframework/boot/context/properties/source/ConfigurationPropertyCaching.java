@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.time.Duration;
 
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Interface that can be used to control configuration property source caches.
@@ -40,7 +41,7 @@ public interface ConfigurationPropertyCaching {
 
 	/**
 	 * Set amount of time that an item can live in the cache. Calling this method will
-	 * enable the cache.
+	 * also enable the cache.
 	 * @param timeToLive the time to live value.
 	 */
 	void setTimeToLive(Duration timeToLive);
@@ -55,7 +56,7 @@ public interface ConfigurationPropertyCaching {
 	 * @param environment the spring environment
 	 * @return a caching instance that controls all sources in the environment
 	 */
-	public static ConfigurationPropertyCaching get(Environment environment) {
+	static ConfigurationPropertyCaching get(Environment environment) {
 		return get(environment, null);
 	}
 
@@ -67,8 +68,9 @@ public interface ConfigurationPropertyCaching {
 	 * must match
 	 * @return a caching instance that controls the matching source
 	 */
-	public static ConfigurationPropertyCaching get(Environment environment, Object underlyingSource) {
-		return get(ConfigurationPropertySources.get(environment), underlyingSource);
+	static ConfigurationPropertyCaching get(Environment environment, Object underlyingSource) {
+		Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(environment);
+		return get(sources, underlyingSource);
 	}
 
 	/**
@@ -76,7 +78,7 @@ public interface ConfigurationPropertyCaching {
 	 * @param sources the configuration property sources
 	 * @return a caching instance that controls the sources
 	 */
-	public static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources) {
+	static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources) {
 		return get(sources, null);
 	}
 
@@ -89,8 +91,8 @@ public interface ConfigurationPropertyCaching {
 	 * must match
 	 * @return a caching instance that controls the matching source
 	 */
-	public static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources,
-			Object underlyingSource) {
+	static ConfigurationPropertyCaching get(Iterable<ConfigurationPropertySource> sources, Object underlyingSource) {
+		Assert.notNull(sources, "Sources must not be null");
 		if (underlyingSource == null) {
 			return new ConfigurationPropertySourcesCaching(sources);
 		}

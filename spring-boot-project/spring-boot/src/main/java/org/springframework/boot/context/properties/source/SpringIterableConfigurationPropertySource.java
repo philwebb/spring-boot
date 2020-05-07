@@ -55,12 +55,12 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
 
-	private final ConfigurationPropertyCache<Mappings> cache;
+	private final SoftReferenceConfigurationPropertyCache<Mappings> cache;
 
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
 		super(propertySource, mappers);
 		assertEnumerablePropertySource();
-		this.cache = new ConfigurationPropertyCache<>(isImmutablePropertySource());
+		this.cache = new SoftReferenceConfigurationPropertyCache<>(isImmutablePropertySource());
 	}
 
 	private void assertEnumerablePropertySource() {

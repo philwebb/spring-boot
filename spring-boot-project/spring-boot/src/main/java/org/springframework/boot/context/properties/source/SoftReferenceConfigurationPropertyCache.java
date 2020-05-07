@@ -23,14 +23,17 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
+ * Simple cache that uses a {@link SoftReference} to cache a value for as long as
+ * possible.
+ *
+ * @param <T> the value type
  * @author Phillip Webb
- * @param <T>
  */
-class ConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
+class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
 	private static final Duration UNLIMITED = Duration.ZERO;
 
-	private final boolean alwaysEnabled;
+	private final boolean neverExpire;
 
 	private volatile Duration timeToLive;
 
@@ -38,8 +41,8 @@ class ConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
 	private volatile Instant lastAccessed = now();
 
-	ConfigurationPropertyCache(boolean alwaysEnabled) {
-		this.alwaysEnabled = alwaysEnabled;
+	SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
+		this.neverExpire = neverExpire;
 	}
 
 	@Override
@@ -59,41 +62,53 @@ class ConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
 	@Override
 	public void clear() {
-		if (!this.alwaysEnabled) {
-			this.value = new SoftReference<>(null);
-		}
+		this.lastAccessed = null;
 	}
 
-	T get(Supplier<T> factory, UnaryOperator<T> updator) {
-		T result = this.value.get();
-		if (result == null) {
-			result = updator.apply(factory.get());
-			this.value = new SoftReference<>(result);
+	/**
+	 * Get an value from the cache, creating it if necessary.
+	 * @param factory a factory used to create the item if there is no reference to it.
+	 * @param refreshAction action called to refresh the value if it has expired
+	 * @return the value from the cache
+	 */
+	T get(Supplier<T> factory, UnaryOperator<T> refreshAction) {
+		T value = getValue();
+		if (value == null) {
+			value = refreshAction.apply(factory.get());
+			setValue(value);
 		}
 		else if (hasExpired()) {
-			result = updator.apply(result);
+			value = refreshAction.apply(value);
+			setValue(value);
 		}
-		if (!this.alwaysEnabled) {
+		if (!this.neverExpire) {
 			this.lastAccessed = now();
 		}
-		return result;
+		return value;
 	}
 
 	private boolean hasExpired() {
-		Duration timeToLive = this.timeToLive;
-		Instant lastAccessed = this.lastAccessed;
-		if (timeToLive == null) {
-			return true;
-		}
-		if (this.alwaysEnabled || UNLIMITED.equals(timeToLive)) {
+		if (this.neverExpire) {
 			return false;
 		}
-		return lastAccessed == null || now().isAfter(lastAccessed.plus(timeToLive));
-
+		Duration timeToLive = this.timeToLive;
+		Instant lastAccessed = this.lastAccessed;
+		if (timeToLive == null || lastAccessed == null) {
+			return true;
+		}
+		return !UNLIMITED.equals(timeToLive) && now().isAfter(lastAccessed.plus(timeToLive));
 	}
 
 	protected Instant now() {
 		return Instant.now();
+	}
+
+	protected T getValue() {
+		return this.value.get();
+	}
+
+	protected void setValue(T value) {
+		this.value = new SoftReference<>(value);
 	}
 
 }

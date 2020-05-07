@@ -17,7 +17,7 @@
 package org.springframework.boot.context.properties.source;
 
 /**
- * Interface used to indicate that a {@link ConfigurationPropertySource} support
+ * Interface used to indicate that a {@link ConfigurationPropertySource} supports
  * {@link ConfigurationPropertyCaching}.
  *
  * @author Phillip Webb
@@ -31,7 +31,7 @@ interface CachingConfigurationPropertySource {
 	ConfigurationPropertyCaching getCaching();
 
 	/**
-	 * Find {@link ConfigurationPropertyCaching} for the given source
+	 * Find {@link ConfigurationPropertyCaching} for the given source.
 	 * @param source the configuration property source
 	 * @return a {@link ConfigurationPropertyCaching} instance or {@code null} if the
 	 * source does not support caching.

@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -137,7 +138,7 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-20625
-	// @Disabled("for manual testing")
+	@Disabled("for manual testing")
 	void environmentPropertyAccessWhenMutableShouldBeTolerable() {
 		testPropertySourcePerformance(false, 5000);
 	}
