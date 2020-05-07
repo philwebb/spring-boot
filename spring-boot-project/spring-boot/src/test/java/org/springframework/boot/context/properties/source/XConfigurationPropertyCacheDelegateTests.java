@@ -30,23 +30,23 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyCache.ThreadLocalCaching;
+import org.springframework.boot.context.properties.source.XConfigurationPropertyCache.ThreadLocalCaching;
 import org.springframework.core.env.MapPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfigurationPropertyCacheDelegate}.
+ * Tests for {@link XConfigurationPropertyCacheDelegate}.
  *
  * @author Phillip Webb
  */
-class ConfigurationPropertyCacheDelegateTests {
+class XConfigurationPropertyCacheDelegateTests {
 
 	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2020-01-02T09:00:00Z"), ZoneOffset.UTC);
 
 	private Map<ConfigurationPropertySource, AtomicInteger> itemCount = new HashMap<>();
 
-	private ConfigurationPropertyCacheDelegate cache = new ConfigurationPropertyCacheDelegate(FIXED_CLOCK);
+	private XConfigurationPropertyCacheDelegate cache = new XConfigurationPropertyCacheDelegate(FIXED_CLOCK);
 
 	@Mock
 	private ConfigurationPropertySource source;

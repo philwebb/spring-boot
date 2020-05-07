@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,15 +51,16 @@ import org.springframework.util.MultiValueMap;
  * @see PropertyMapper
  */
 class SpringIterableConfigurationPropertySource extends SpringConfigurationPropertySource
-		implements IterableConfigurationPropertySource {
+		implements IterableConfigurationPropertySource, CachingConfigurationPropertySource {
 
 	private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
 
-	private volatile SoftReference<Mappings> mappings = new SoftReference<>(null);
+	private final ConfigurationPropertyCache<Mappings> cache;
 
 	SpringIterableConfigurationPropertySource(EnumerablePropertySource<?> propertySource, PropertyMapper... mappers) {
 		super(propertySource, mappers);
 		assertEnumerablePropertySource();
+		this.cache = new ConfigurationPropertyCache<>(isImmutablePropertySource());
 	}
 
 	private void assertEnumerablePropertySource() {
@@ -72,6 +72,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 				throw new IllegalArgumentException("PropertySource must be fully enumerable");
 			}
 		}
+	}
+
+	@Override
+	public ConfigurationPropertyCaching getCaching() {
+		return this.cache;
 	}
 
 	@Override
@@ -126,17 +131,16 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private Mappings getMappings() {
-		return ConfigurationPropertyCache.get(this, Mappings.class, () -> {
-			Mappings mappings = this.mappings.get();
-			if (mappings == null) {
-				mappings = new Mappings(getMappers());
-				this.mappings = new SoftReference<>(mappings);
-			}
-			if (!mappings.hasMappings() || !isImmutablePropertySource()) {
-				mappings.updateMappings(getPropertySource()::getPropertyNames);
-			}
-			return mappings;
-		});
+		return this.cache.get(this::createMappings, this::updateMappings);
+	}
+
+	private Mappings createMappings() {
+		return new Mappings(getMappers(), isImmutablePropertySource());
+	}
+
+	private Mappings updateMappings(Mappings mappings) {
+		mappings.updateMappings(getPropertySource()::getPropertyNames);
+		return mappings;
 	}
 
 	private boolean isImmutablePropertySource() {
@@ -159,30 +163,33 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final PropertyMapper[] mappers;
 
+		private final boolean immutable;
+
 		private volatile MultiValueMap<ConfigurationPropertyName, String> mappings;
 
-		private volatile Map<String, ConfigurationPropertyName> names;
+		private volatile Map<String, ConfigurationPropertyName> reverseMappings;
+
+		private volatile Collection<ConfigurationPropertyName> configurationPropertyNames;
 
 		private volatile String[] lastUpdated;
 
-		Mappings(PropertyMapper[] mappers) {
+		Mappings(PropertyMapper[] mappers, boolean immutable) {
 			this.mappers = mappers;
-		}
-
-		boolean hasMappings() {
-			return this.mappings != null;
+			this.immutable = immutable;
 		}
 
 		void updateMappings(Supplier<String[]> propertyNames) {
-			int count = 0;
-			while (true) {
-				try {
-					updateMappings(propertyNames.get());
-					return;
-				}
-				catch (ConcurrentModificationException ex) {
-					if (count++ > 10) {
-						throw ex;
+			if (this.mappings == null || !this.immutable) {
+				int count = 0;
+				while (true) {
+					try {
+						updateMappings(propertyNames.get());
+						return;
+					}
+					catch (ConcurrentModificationException ex) {
+						if (count++ > 10) {
+							throw ex;
+						}
 					}
 				}
 			}
@@ -193,26 +200,28 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			if (lastUpdated != null && Arrays.equals(lastUpdated, propertyNames)) {
 				return;
 			}
-			MultiValueMap<ConfigurationPropertyName, String> currentMappings = this.mappings;
-			MultiValueMap<ConfigurationPropertyName, String> mappings = (currentMappings != null)
-					? new LinkedMultiValueMap<>(currentMappings) : new LinkedMultiValueMap<>(propertyNames.length);
-			Map<String, ConfigurationPropertyName> currentNames = this.names;
-			Map<String, ConfigurationPropertyName> names = (currentNames != null) ? new HashMap<>(currentNames)
-					: new HashMap<>(propertyNames.length);
+			MultiValueMap<ConfigurationPropertyName, String> previousMappings = this.mappings;
+			MultiValueMap<ConfigurationPropertyName, String> mappings = (previousMappings != null)
+					? new LinkedMultiValueMap<>(previousMappings) : new LinkedMultiValueMap<>(propertyNames.length);
+			Map<String, ConfigurationPropertyName> previousReverseMappings = this.reverseMappings;
+			Map<String, ConfigurationPropertyName> reverseMappings = (previousReverseMappings != null)
+					? new HashMap<>(previousReverseMappings) : new HashMap<>(propertyNames.length);
 			for (PropertyMapper propertyMapper : this.mappers) {
 				for (String propertyName : propertyNames) {
-					if (!names.containsKey(propertyName)) {
+					if (!reverseMappings.containsKey(propertyName)) {
 						ConfigurationPropertyName configurationPropertyName = propertyMapper.map(propertyName);
 						if (configurationPropertyName != null && !configurationPropertyName.isEmpty()) {
 							mappings.add(configurationPropertyName, propertyName);
-							names.put(propertyName, configurationPropertyName);
+							reverseMappings.put(propertyName, configurationPropertyName);
 						}
 					}
 				}
 			}
 			this.mappings = mappings;
-			this.names = names;
-			this.lastUpdated = propertyNames;
+			this.reverseMappings = reverseMappings;
+			this.lastUpdated = this.immutable ? null : propertyNames;
+			this.configurationPropertyNames = this.immutable
+					? Collections.unmodifiableCollection(reverseMappings.values()) : null;
 		}
 
 		List<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
@@ -220,18 +229,22 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		}
 
 		Collection<ConfigurationPropertyName> getConfigurationPropertyNames(String[] propertyNames) {
-			Map<String, ConfigurationPropertyName> names = this.names;
-			if (names == null || names.isEmpty()) {
+			Collection<ConfigurationPropertyName> names = this.configurationPropertyNames;
+			if (names != null) {
+				return names;
+			}
+			Map<String, ConfigurationPropertyName> reverseMappings = this.reverseMappings;
+			if (reverseMappings == null || reverseMappings.isEmpty()) {
 				return Collections.emptySet();
 			}
-			List<ConfigurationPropertyName> result = new ArrayList<>(names.size());
+			List<ConfigurationPropertyName> relevantNames = new ArrayList<>(reverseMappings.size());
 			for (String propertyName : propertyNames) {
-				ConfigurationPropertyName configurationPropertyName = names.get(propertyName);
+				ConfigurationPropertyName configurationPropertyName = reverseMappings.get(propertyName);
 				if (configurationPropertyName != null) {
-					result.add(configurationPropertyName);
+					relevantNames.add(configurationPropertyName);
 				}
 			}
-			return result;
+			return relevantNames;
 		}
 
 	}

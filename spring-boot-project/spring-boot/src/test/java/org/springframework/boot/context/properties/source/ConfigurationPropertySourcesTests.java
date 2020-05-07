@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.Origin;
@@ -131,23 +130,34 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test // gh-20625
-	void environmentPropertyAccessWhenMutableWithThreadLocalCacheShouldBePerformant() {
-		ConfigurationPropertyCache.withThreadLocalCache(() -> testPropertySourcePerformance(false, 1000));
+	void environmentPropertyAccessWhenMutableWithCacheShouldBePerformant() {
+		StandardEnvironment environment = createPerformanceTestEnvironment(false);
+		ConfigurationPropertyCaching.get(environment).enable();
+		testPropertySourcePerformance(environment, 1000);
 	}
 
 	@Test // gh-20625
-	@Disabled("for manual testing")
+	// @Disabled("for manual testing")
 	void environmentPropertyAccessWhenMutableShouldBeTolerable() {
 		testPropertySourcePerformance(false, 5000);
 	}
 
 	private void testPropertySourcePerformance(boolean immutable, int maxTime) {
+		StandardEnvironment environment = createPerformanceTestEnvironment(immutable);
+		testPropertySourcePerformance(environment, maxTime);
+	}
+
+	private StandardEnvironment createPerformanceTestEnvironment(boolean immutable) {
 		StandardEnvironment environment = new StandardEnvironment();
 		MutablePropertySources propertySources = environment.getPropertySources();
 		for (int i = 0; i < 100; i++) {
 			propertySources.addLast(new TestPropertySource(i, immutable));
 		}
 		ConfigurationPropertySources.attach(environment);
+		return environment;
+	}
+
+	private void testPropertySourcePerformance(StandardEnvironment environment, int maxTime) {
 		long start = System.nanoTime();
 		for (int i = 0; i < 1000; i++) {
 			environment.getProperty("missing" + i);

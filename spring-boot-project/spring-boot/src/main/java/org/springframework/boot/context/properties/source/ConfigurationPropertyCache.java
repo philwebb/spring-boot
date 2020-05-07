@@ -16,77 +16,84 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.time.Clock;
+import java.lang.ref.SoftReference;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.function.Supplier;
-
-import org.springframework.core.env.PropertySource;
+import java.util.function.UnaryOperator;
 
 /**
- * Utility that to control the caches used by {@link ConfigurationPropertySource}
- * implementations. Can be used to configure a global time-to-live based cache or clear
- * existing caches if a property source is known to have changed.
- * <p>
- * Can also be used to start thread-local caching for a specific period of time.
- *
  * @author Phillip Webb
- * @since 2.3.0
+ * @param <T>
  */
-public final class ConfigurationPropertyCache {
+class ConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
-	private static final ConfigurationPropertyCacheDelegate delegate = new ConfigurationPropertyCacheDelegate(
-			Clock.systemUTC());
+	private static final Duration UNLIMITED = Duration.ZERO;
 
-	private ConfigurationPropertyCache() {
+	private final boolean alwaysEnabled;
+
+	private volatile Duration timeToLive;
+
+	private volatile SoftReference<T> value = new SoftReference<>(null);
+
+	private volatile Instant lastAccessed = now();
+
+	ConfigurationPropertyCache(boolean alwaysEnabled) {
+		this.alwaysEnabled = alwaysEnabled;
 	}
 
-	/**
-	 * Update the global cache time-to-live.
-	 * @param timeToLive the time to live value or {@code null} if the global cache is
-	 * disabled.
-	 */
-	public static void setTimeToLive(Duration timeToLive) {
-		delegate.setTimeToLive(timeToLive);
+	@Override
+	public void enable() {
+		this.timeToLive = UNLIMITED;
 	}
 
-	/**
-	 * Run the given action with thread local caching enabled for the duration.
-	 * @param action the action to run
-	 */
-	public static void withThreadLocalCache(Runnable action) {
-		delegate.withThreadLocalCache(action);
+	@Override
+	public void disable() {
+		this.timeToLive = null;
 	}
 
-	/**
-	 * Run with thread local caching, enabled until the last
-	 * {@link ThreadLocalCaching#close()} is called.
-	 * @return a {@link ThreadLocalCaching} instance that <em>must</em> be closed when
-	 * thread local caching has finished
-	 */
-	public static ThreadLocalCaching withThreadLocalCache() {
-		return delegate.withThreadLocalCache();
+	@Override
+	public void setTimeToLive(Duration timeToLive) {
+		this.timeToLive = (timeToLive == null || timeToLive.isZero()) ? null : timeToLive;
 	}
 
-	public static void clear() {
-		delegate.clear();
+	@Override
+	public void clear() {
+		if (!this.alwaysEnabled) {
+			this.value = new SoftReference<>(null);
+		}
 	}
 
-	public static void clear(PropertySource<?> propertySource) {
-		delegate.clear(propertySource);
+	T get(Supplier<T> factory, UnaryOperator<T> updator) {
+		T result = this.value.get();
+		if (result == null) {
+			result = updator.apply(factory.get());
+			this.value = new SoftReference<>(result);
+		}
+		else if (hasExpired()) {
+			result = updator.apply(result);
+		}
+		if (!this.alwaysEnabled) {
+			this.lastAccessed = now();
+		}
+		return result;
 	}
 
-	static <T> T get(ConfigurationPropertySource source, Class<T> type, Supplier<T> factory) {
-		return delegate.get(source, type, factory);
+	private boolean hasExpired() {
+		Duration timeToLive = this.timeToLive;
+		Instant lastAccessed = this.lastAccessed;
+		if (timeToLive == null) {
+			return true;
+		}
+		if (this.alwaysEnabled || UNLIMITED.equals(timeToLive)) {
+			return false;
+		}
+		return lastAccessed == null || now().isAfter(lastAccessed.plus(timeToLive));
+
 	}
 
-	/**
-	 * Interface used to control thread local caching.
-	 */
-	public interface ThreadLocalCaching extends AutoCloseable {
-
-		@Override
-		void close();
-
+	protected Instant now() {
+		return Instant.now();
 	}
 
 }

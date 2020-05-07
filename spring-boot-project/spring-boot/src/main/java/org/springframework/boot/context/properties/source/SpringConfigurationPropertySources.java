@@ -39,6 +39,8 @@ import org.springframework.util.ConcurrentReferenceHashMap.ReferenceType;
  */
 class SpringConfigurationPropertySources implements Iterable<ConfigurationPropertySource> {
 
+	// FIXME cache here?
+
 	private final Iterable<PropertySource<?>> sources;
 
 	private final Map<PropertySource<?>, ConfigurationPropertySource> cache = new ConcurrentReferenceHashMap<>(16,

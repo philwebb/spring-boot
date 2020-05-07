@@ -24,16 +24,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import org.springframework.boot.context.properties.source.ConfigurationPropertyCache.ThreadLocalCaching;
+import org.springframework.boot.context.properties.source.XConfigurationPropertyCache.ThreadLocalCaching;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
- * Delegate used to implement {@link ConfigurationPropertyCache} methods.
+ * Delegate used to implement {@link XConfigurationPropertyCache} methods.
  *
  * @author Phillip Webb
  */
-class ConfigurationPropertyCacheDelegate {
+class XConfigurationPropertyCacheDelegate {
 
 	private volatile Clock clock;
 
@@ -43,7 +43,7 @@ class ConfigurationPropertyCacheDelegate {
 
 	private final ThreadLocal<ThreadLocalCache> threadLocalCache = new ThreadLocal<>();
 
-	ConfigurationPropertyCacheDelegate(Clock clock) {
+	XConfigurationPropertyCacheDelegate(Clock clock) {
 		this.clock = clock;
 	}
 
@@ -167,10 +167,10 @@ class ConfigurationPropertyCacheDelegate {
 
 		@Override
 		public void close() {
-			synchronized (ConfigurationPropertyCacheDelegate.this.threadLocalCache) {
+			synchronized (XConfigurationPropertyCacheDelegate.this.threadLocalCache) {
 				this.count--;
 				if (this.count == 0) {
-					ConfigurationPropertyCacheDelegate.this.threadLocalCache.set(null);
+					XConfigurationPropertyCacheDelegate.this.threadLocalCache.set(null);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ class ConfigurationPropertyCacheDelegate {
 		}
 
 		private Instant now() {
-			return ConfigurationPropertyCacheDelegate.this.clock.instant();
+			return XConfigurationPropertyCacheDelegate.this.clock.instant();
 		}
 
 	}
