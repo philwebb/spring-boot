@@ -108,6 +108,7 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseWithCustomErrorAttributesUsingDeprecatedApi() {
 		ErrorAttributes attributes = new ErrorAttributes() {
+
 			@Override
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
 				Map<String, Object> response = new HashMap<>();
@@ -119,6 +120,7 @@ class ManagementErrorEndpointTests {
 			public Throwable getError(WebRequest webRequest) {
 				return null;
 			}
+
 		};
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
@@ -129,6 +131,7 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiAndDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
+
 			@Override
 			@SuppressWarnings("deprecation")
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
@@ -138,7 +141,9 @@ class ManagementErrorEndpointTests {
 				response.remove("error");
 				return response;
 			}
+
 		};
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ALWAYS);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).containsEntry("message", "An error occurred");
@@ -150,14 +155,16 @@ class ManagementErrorEndpointTests {
 	@Test
 	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiWithoutDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
+
 			@Override
-			@SuppressWarnings("deprecation")
 			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
 				Map<String, Object> response = new HashMap<>();
 				response.put("message", "An error occurred");
 				return response;
 			}
+
 		};
+		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ALWAYS);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(attributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
 		assertThat(response).hasSize(1);

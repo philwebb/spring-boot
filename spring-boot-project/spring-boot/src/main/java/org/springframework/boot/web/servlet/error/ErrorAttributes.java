@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.servlet.error;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -38,25 +39,27 @@ public interface ErrorAttributes {
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
-	 * @param includeStackTrace if stack trace element should be included
-	 * @return a map of error attributes
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(WebRequest, ErrorAttributeOptions)}
-	 */
-	@Deprecated
-	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace);
-
-	/**
-	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
-	 * an error page {@link ModelAndView}, or returned as a
-	 * {@link ResponseBody @ResponseBody}.
-	 * @param webRequest the source request
 	 * @param options options for error attribute contents
 	 * @return a map of error attributes
 	 * @since 2.3.0
 	 */
 	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		return getErrorAttributes(webRequest, options.isIncludeStackTrace());
+	}
+
+	/**
+	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
+	 * an error page {@link ModelAndView}, or returned as a
+	 * {@link ResponseBody @ResponseBody}.
+	 * @param webRequest the source request
+	 * @param includeStackTrace if stack trace element should be included
+	 * @return a map of error attributes
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #getErrorAttributes(WebRequest, ErrorAttributeOptions)}
+	 */
+	@Deprecated
+	default Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+		return Collections.emptyMap();
 	}
 
 	/**

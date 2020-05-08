@@ -70,8 +70,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	private final Boolean includeException;
 
-	private Map<String, Object> errorAttributes;
-
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
 	 */
@@ -107,33 +105,36 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	@Override
-	@Deprecated
-	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-		return this.errorAttributes;
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+		if (this.includeException != null) {
+			options = options.includeException(this.includeException);
+		}
+		Map<String, Object> errorAttributes = new LinkedHashMap<>(
+				getErrorAttributes(webRequest, options.isIncludeStackTrace()));
+		if (!options.isIncludeBindingErrors()) {
+			errorAttributes.remove("errors");
+		}
+		if (!options.isIncludeException()) {
+			errorAttributes.remove("exception");
+		}
+		if (!options.isIncludeStackTrace()) {
+			errorAttributes.remove("trace");
+		}
+		if (!options.isIncludeMessage() && errorAttributes.containsKey("message")) {
+			errorAttributes.put("message", "");
+		}
+		return errorAttributes;
 	}
 
 	@Override
-	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-		if (this.includeException != null) {
-			options.includeException(this.includeException);
-		}
-		this.errorAttributes = new LinkedHashMap<>();
-		this.errorAttributes.put("timestamp", new Date());
-		addStatus(this.errorAttributes, webRequest);
-		addErrorDetails(this.errorAttributes, webRequest, options);
-		addPath(this.errorAttributes, webRequest);
-		return allowSubclassOverride(webRequest, options);
-	}
-
-	private Map<String, Object> allowSubclassOverride(WebRequest webRequest, ErrorAttributeOptions options) {
-		// A subclass that only overrides the deprecated getErrorAttributes(WebRequest,
-		// boolean) might modify the Map created by this base class, or might return a
-		// newly created Map.
-		Map<String, Object> modifiedErrorAttributes = getErrorAttributes(webRequest, options.isIncludeStackTrace());
-		if (modifiedErrorAttributes != this.errorAttributes) {
-			return modifiedErrorAttributes;
-		}
-		return this.errorAttributes;
+	@Deprecated
+	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+		Map<String, Object> errorAttributes = new LinkedHashMap<>();
+		errorAttributes.put("timestamp", new Date());
+		addStatus(errorAttributes, webRequest);
+		addErrorDetails(errorAttributes, webRequest);
+		addPath(errorAttributes, webRequest);
+		return errorAttributes;
 	}
 
 	private void addStatus(Map<String, Object> errorAttributes, RequestAttributes requestAttributes) {
@@ -153,40 +154,29 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 	}
 
-	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest,
-			ErrorAttributeOptions options) {
+	private void addErrorDetails(Map<String, Object> errorAttributes, WebRequest webRequest) {
 		Throwable error = getError(webRequest);
 		if (error != null) {
 			while (error instanceof ServletException && error.getCause() != null) {
 				error = error.getCause();
 			}
-			if (options.isIncludeException()) {
-				errorAttributes.put("exception", error.getClass().getName());
-			}
-			if (options.isIncludeStackTrace()) {
-				addStackTrace(errorAttributes, error);
-			}
+			errorAttributes.put("exception", error.getClass().getName());
+			addStackTrace(errorAttributes, error);
 		}
-		addErrorMessage(errorAttributes, webRequest, error, options);
+		addErrorMessage(errorAttributes, webRequest, error);
 	}
 
-	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error,
-			ErrorAttributeOptions options) {
+	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
 		BindingResult result = extractBindingResult(error);
 		if (result == null) {
-			addExceptionErrorMessage(errorAttributes, webRequest, error, options);
+			addExceptionErrorMessage(errorAttributes, webRequest, error);
 		}
 		else {
-			addBindingResultErrorMessage(errorAttributes, result, options);
+			addBindingResultErrorMessage(errorAttributes, result);
 		}
 	}
 
-	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error,
-			ErrorAttributeOptions options) {
-		if (!options.isIncludeMessage()) {
-			errorAttributes.put("message", "");
-			return;
-		}
+	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
 		Object message = getAttribute(webRequest, RequestDispatcher.ERROR_MESSAGE);
 		if (StringUtils.isEmpty(message) && error != null) {
 			message = error.getMessage();
@@ -197,11 +187,10 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		errorAttributes.put("message", message);
 	}
 
-	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result,
-			ErrorAttributeOptions options) {
-		errorAttributes.put("message", (options.isIncludeMessage()) ? "Validation failed for object='"
-				+ result.getObjectName() + "'. " + "Error count: " + result.getErrorCount() : "");
-		if (options.isIncludeBindingErrors() && result.hasErrors()) {
+	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {
+		errorAttributes.put("message", "Validation failed for object='" + result.getObjectName() + "'. "
+				+ "Error count: " + result.getErrorCount());
+		if (result.hasErrors()) {
 			errorAttributes.put("errors", result.getAllErrors());
 		}
 	}
