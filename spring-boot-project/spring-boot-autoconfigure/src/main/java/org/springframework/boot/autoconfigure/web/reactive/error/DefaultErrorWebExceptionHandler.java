@@ -20,8 +20,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,6 +31,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -147,10 +150,20 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	}
 
 	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
-		return new ErrorAttributeOptions().includeException(this.errorProperties.isIncludeException())
-				.includeStackTrace(isIncludeStackTrace(request, mediaType))
-				.includeMessage(isIncludeMessage(request, mediaType))
-				.includeBindingErrors(isIncludeBindingErrors(request, mediaType));
+		Set<Include> includes = EnumSet.noneOf(Include.class);
+		if (this.errorProperties.isIncludeException()) {
+			includes.add(Include.EXCEPTION);
+		}
+		if (isIncludeStackTrace(request, mediaType)) {
+			includes.add(Include.STACK_TRACE);
+		}
+		if (isIncludeMessage(request, mediaType)) {
+			includes.add(Include.MESSAGE);
+		}
+		if (isIncludeBindingErrors(request, mediaType)) {
+			includes.add(Include.BINDING_ERRORS);
+		}
+		return ErrorAttributeOptions.of(includes);
 	}
 
 	/**

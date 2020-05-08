@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -31,7 +32,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -94,7 +94,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		if (this.includeException != null) {
-			options.includeException(this.includeException);
+			options = options.including(Include.EXCEPTION);
 		}
 		this.errorAttributes = new LinkedHashMap<>();
 		this.errorAttributes.put("timestamp", new Date());
@@ -115,7 +115,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		// A subclass that only overrides the deprecated getErrorAttributes(WebRequest,
 		// boolean) might modify the Map created by this base class, or might return a
 		// newly created Map.
-		Map<String, Object> modifiedErrorAttributes = getErrorAttributes(webRequest, options.isIncludeStackTrace());
+		Map<String, Object> modifiedErrorAttributes = getErrorAttributes(webRequest,
+				options.isIncluded(Include.STACK_TRACE));
 		if (modifiedErrorAttributes != this.errorAttributes) {
 			return modifiedErrorAttributes;
 		}
@@ -131,7 +132,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation,
 			ErrorAttributeOptions options) {
-		if (!options.isIncludeMessage()) {
+		if (!options.isIncluded(Include.MESSAGE)) {
 			return "";
 		}
 		if (error instanceof BindingResult) {
@@ -162,13 +163,13 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	private void handleException(Map<String, Object> errorAttributes, Throwable error, ErrorAttributeOptions options) {
-		if (options.isIncludeException()) {
+		if (options.isIncluded(Include.EXCEPTION)) {
 			errorAttributes.put("exception", error.getClass().getName());
 		}
-		if (options.isIncludeStackTrace()) {
+		if (options.isIncluded(Include.STACK_TRACE)) {
 			addStackTrace(errorAttributes, error);
 		}
-		if (options.isIncludeBindingErrors() && (error instanceof BindingResult)) {
+		if (options.isIncluded(Include.BINDING_ERRORS) && (error instanceof BindingResult)) {
 			BindingResult result = (BindingResult) error;
 			if (result.hasErrors()) {
 				errorAttributes.put("errors", result.getAllErrors());

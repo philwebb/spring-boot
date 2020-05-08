@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -107,20 +108,20 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		if (this.includeException != null) {
-			options = options.includeException(this.includeException);
+			options = options.including(Include.EXCEPTION);
 		}
 		Map<String, Object> errorAttributes = new LinkedHashMap<>(
-				getErrorAttributes(webRequest, options.isIncludeStackTrace()));
-		if (!options.isIncludeBindingErrors()) {
+				getErrorAttributes(webRequest, options.isIncluded(Include.EXCEPTION)));
+		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");
 		}
-		if (!options.isIncludeException()) {
+		if (!options.isIncluded(Include.EXCEPTION)) {
 			errorAttributes.remove("exception");
 		}
-		if (!options.isIncludeStackTrace()) {
+		if (!options.isIncluded(Include.STACK_TRACE)) {
 			errorAttributes.remove("trace");
 		}
-		if (!options.isIncludeMessage() && errorAttributes.containsKey("message")) {
+		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.containsKey("message")) {
 			errorAttributes.put("message", "");
 		}
 		return errorAttributes;

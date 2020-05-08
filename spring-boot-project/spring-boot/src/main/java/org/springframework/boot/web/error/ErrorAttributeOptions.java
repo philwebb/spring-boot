@@ -16,119 +16,83 @@
 
 package org.springframework.boot.web.error;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Options controlling the contents of {@code ErrorAttributes}.
  *
  * @author Scott Frederick
  * @since 2.3.0
  */
-public class ErrorAttributeOptions {
+public final class ErrorAttributeOptions {
 
-	private final boolean includeException;
+	private final Set<Include> includes;
 
-	private final boolean includeStackTrace;
-
-	private final boolean includeMessage;
-
-	private final boolean includeBindingErrors;
-
-	/**
-	 * Construct an {@code ErrorAttributeOptions} with default values.
-	 */
-	public ErrorAttributeOptions() {
-		this.includeException = false;
-		this.includeStackTrace = false;
-		this.includeMessage = false;
-		this.includeBindingErrors = false;
+	private ErrorAttributeOptions(Set<Include> includes) {
+		this.includes = includes;
 	}
 
-	ErrorAttributeOptions(boolean includeException, boolean includeStackTrace, boolean includeMessage,
-			boolean includeBindingErrors) {
-		this.includeException = includeException;
-		this.includeStackTrace = includeStackTrace;
-		this.includeMessage = includeMessage;
-		this.includeBindingErrors = includeBindingErrors;
+	public boolean isIncluded(Include include) {
+		return this.includes.contains(include);
 	}
 
-	/**
-	 * Set the option for including the exception class name attribute in the error
-	 * response.
-	 * @param include {@code true} to include the exception class name attribute in the
-	 * error response, {@code false} otherwise
-	 * @return an updated {@code ErrorAttributeOptions}
-	 */
-	public ErrorAttributeOptions includeException(boolean include) {
-		return new ErrorAttributeOptions(include, this.includeStackTrace, this.includeMessage,
-				this.includeBindingErrors);
+	public Set<Include> getIncludes() {
+		return this.includes;
 	}
 
-	/**
-	 * Set the option for including the stack trace attribute in the error response.
-	 * @param include {@code true} to include the stack trace attribute in the error
-	 * response, {@code false} otherwise
-	 * @return an updated {@code ErrorAttributeOptions}
-	 */
-	public ErrorAttributeOptions includeStackTrace(boolean include) {
-		return new ErrorAttributeOptions(this.includeException, include, this.includeMessage,
-				this.includeBindingErrors);
+	public ErrorAttributeOptions including(Include... includes) {
+		EnumSet<Include> updated = EnumSet.copyOf(this.includes);
+		updated.addAll(Arrays.asList(includes));
+		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
+	}
+
+	public ErrorAttributeOptions excluding(Include... excludes) {
+		EnumSet<Include> updated = EnumSet.copyOf(this.includes);
+		updated.removeAll(Arrays.asList(excludes));
+		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
+	}
+
+	public static ErrorAttributeOptions defaults() {
+		return of();
+	}
+
+	public static ErrorAttributeOptions of(Include... includes) {
+		return of(Arrays.asList(includes));
+	}
+
+	public static ErrorAttributeOptions of(Collection<Include> includes) {
+		return new ErrorAttributeOptions(Collections.unmodifiableSet(EnumSet.copyOf(includes)));
 	}
 
 	/**
-	 * Set the option for including the message attribute in the error response.
-	 * @param include {@code true} to include the message attribute in the error response,
-	 * {@code false} otherwise
-	 * @return an updated {@code ErrorAttributeOptions}
+	 * Attributes that can be included.
 	 */
-	public ErrorAttributeOptions includeMessage(boolean include) {
-		return new ErrorAttributeOptions(this.includeException, this.includeStackTrace, include,
-				this.includeBindingErrors);
-	}
+	public static enum Include {
 
-	/**
-	 * Set the option for including the binding errors attribute in the error response.
-	 * @param include {@code true} to include the binding errors attribute in the error
-	 * response, {@code false} otherwise
-	 * @return an updated {@code ErrorAttributeOptions}
-	 */
-	public ErrorAttributeOptions includeBindingErrors(boolean include) {
-		return new ErrorAttributeOptions(this.includeException, this.includeStackTrace, this.includeMessage, include);
-	}
+		/**
+		 * Include the exception class name attribute.
+		 */
+		EXCEPTION,
 
-	/**
-	 * Get the option for including the exception class name attribute in the error
-	 * response.
-	 * @return {@code true} if the exception class name attribute is included in the error
-	 * response, {@code false} otherwise
-	 */
-	public boolean isIncludeException() {
-		return this.includeException;
-	}
+		/**
+		 * Include the stack trace attribute.
+		 */
+		STACK_TRACE,
 
-	/**
-	 * Get the option for including the stack trace attribute in the error response.
-	 * @return {@code true} if the stack trace attribute is included in the error
-	 * response, {@code false} otherwise
-	 */
-	public boolean isIncludeStackTrace() {
-		return this.includeStackTrace;
-	}
+		/**
+		 * Include the message attribute.
+		 */
+		MESSAGE,
 
-	/**
-	 * Get the option for including the message attribute in the error response.
-	 * @return {@code true} if the message attribute is included in the error response,
-	 * {@code false} otherwise
-	 */
-	public boolean isIncludeMessage() {
-		return this.includeMessage;
-	}
+		/**
+		 * Include the binding errors attribute.
+		 */
+		BINDING_ERRORS,
 
-	/**
-	 * Get the option for including the binding errors attribute in the error response.
-	 * @return {@code true} if the binding errors attribute is included in the error
-	 * response, {@code false} otherwise
-	 */
-	public boolean isIncludeBindingErrors() {
-		return this.includeBindingErrors;
 	}
 
 }

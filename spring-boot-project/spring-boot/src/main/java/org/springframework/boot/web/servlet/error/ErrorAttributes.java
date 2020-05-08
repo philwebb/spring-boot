@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,7 +45,7 @@ public interface ErrorAttributes {
 	 * @since 2.3.0
 	 */
 	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-		return getErrorAttributes(webRequest, options.isIncludeStackTrace());
+		return getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
 	}
 
 	/**
