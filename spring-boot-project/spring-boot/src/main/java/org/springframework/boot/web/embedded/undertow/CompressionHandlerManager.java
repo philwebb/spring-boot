@@ -37,26 +37,39 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
- * Configure the HTTP compression on an Undertow {@link HttpHandler}.
+ * {@link HandlerManager} that configures compression.
  *
  * @author Andy Wilkinson
- * @author Phillip Webb
+ * @author Phil Webb
  */
-final class UndertowCompressionConfigurer {
+class CompressionHandlerManager implements HandlerManager {
 
-	private UndertowCompressionConfigurer() {
+	private final HandlerManager delegate;
+
+	private final Compression compression;
+
+	CompressionHandlerManager(HandlerManager delegate, Compression compression) {
+		this.delegate = delegate;
+		this.compression = compression;
 	}
 
-	/**
-	 * Optionally wrap the given {@link HttpHandler} for HTTP compression support.
-	 * @param compression the HTTP compression configuration
-	 * @param httpHandler the HTTP handler to wrap
-	 * @return the wrapped HTTP handler if compression is enabled, or the handler itself
-	 */
-	static HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
-		if (compression == null || !compression.getEnabled()) {
-			return httpHandler;
-		}
+	@Override
+	public HttpHandler start() {
+		HttpHandler handler = this.delegate.start();
+		return configureCompression(this.compression, handler);
+	}
+
+	@Override
+	public void stop() {
+		this.delegate.stop();
+	}
+
+	@Override
+	public <T> T extract(Class<T> type) {
+		return this.delegate.extract(type);
+	}
+
+	private HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
 		ContentEncodingRepository repository = new ContentEncodingRepository();
 		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
 				Predicates.and(getCompressionPredicates(compression)));

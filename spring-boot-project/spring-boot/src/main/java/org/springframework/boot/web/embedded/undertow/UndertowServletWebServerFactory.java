@@ -69,6 +69,7 @@ import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 
+import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
 import org.springframework.boot.web.server.WebServer;
@@ -78,6 +79,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ServletWebServerFactory} that can be used to create
@@ -449,8 +451,26 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
-		return new UndertowServletWebServer(builder, manager, getContextPath(), isUseForwardHeaders(), port >= 0,
-				getCompression(), getServerHeader(), getShutdown().getGracePeriod());
+		return new UndertowServletWebServer(builder, createHandlerManager(manager, isUseForwardHeaders(),
+				getCompression(), getServerHeader(), getShutdown().getGracePeriod()), getContextPath(), port >= 0);
+	}
+
+	private static HandlerManager createHandlerManager(DeploymentManager deploymentManager, boolean useForwardHeaders,
+			Compression compression, String serverHeader, Duration shutdownGracePeriod) {
+		HandlerManager handlerManager = new DeploymentManagerHandlerManager(deploymentManager);
+		if (compression != null && compression.getEnabled()) {
+			handlerManager = new CompressionHandlerManager(handlerManager, compression);
+		}
+		if (useForwardHeaders) {
+			handlerManager = new ForwardHeadersHandlerManager(handlerManager);
+		}
+		if (StringUtils.hasText(serverHeader)) {
+			handlerManager = new ServerHeaderHandlerManager(handlerManager, serverHeader);
+		}
+		if (shutdownGracePeriod != null) {
+			handlerManager = new GracefulShutdownHandlerManager(handlerManager, shutdownGracePeriod);
+		}
+		return handlerManager;
 	}
 
 	@Override

@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -24,11 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
-import org.springframework.boot.web.server.GracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -55,11 +56,11 @@ public class UndertowWebServer implements WebServer {
 
 	private final Undertow.Builder builder;
 
+	private final HandlerManager handlerManager;
+
 	private final boolean autoStart;
 
 	private final Closeable closeable;
-
-	private final GracefulShutdown gracefulShutdown;
 
 	private Undertow undertow;
 
@@ -82,23 +83,21 @@ public class UndertowWebServer implements WebServer {
 	 * @since 2.0.4
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
-		this(builder, autoStart, closeable, GracefulShutdown.IMMEDIATE);
+		this(builder, new CloseableHandlerManager(closeable), autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
 	 * @param builder the builder
+	 * @param handlerManager the manager for the {@link HttpHandler}
 	 * @param autoStart if the server should be started
-	 * @param closeable called when the server is stopped
-	 * @param gracefulShutdown handler for graceful shutdown
 	 * @since 2.3.0
 	 */
-	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable,
-			GracefulShutdown gracefulShutdown) {
+	public UndertowWebServer(Undertow.Builder builder, HandlerManager handlerManager, boolean autoStart) {
 		this.builder = builder;
+		this.handlerManager = handlerManager;
 		this.autoStart = autoStart;
-		this.closeable = closeable;
-		this.gracefulShutdown = gracefulShutdown;
+		this.closeable = null;
 	}
 
 	@Override
@@ -112,6 +111,10 @@ public class UndertowWebServer implements WebServer {
 					return;
 				}
 				if (this.undertow == null) {
+					HttpHandler httpHandler = this.handlerManager.start();
+					if (httpHandler != null) {
+						this.builder.setHandler(httpHandler);
+					}
 					this.undertow = this.builder.build();
 				}
 				this.undertow.start();
@@ -251,11 +254,13 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public boolean shutDownGracefully() {
-		return (this.gracefulShutdown != null) && this.gracefulShutdown.shutDownGracefully();
+		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
+		return (gracefulShutdown != null) ? gracefulShutdown.shutDownGracefully() : false;
 	}
 
 	boolean inGracefulShutdown() {
-		return (this.gracefulShutdown != null) && this.gracefulShutdown.isShuttingDown();
+		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
+		return (gracefulShutdown != null) ? gracefulShutdown.isShuttingDown() : false;
 	}
 
 	/**
@@ -299,6 +304,38 @@ public class UndertowWebServer implements WebServer {
 		@Override
 		public String toString() {
 			return this.number + " (" + this.protocol + ")";
+		}
+
+	}
+
+	private static final class CloseableHandlerManager implements HandlerManager {
+
+		private final Closeable closeable;
+
+		private CloseableHandlerManager(Closeable closeable) {
+			this.closeable = closeable;
+		}
+
+		@Override
+		public HttpHandler start() {
+			return null;
+		}
+
+		@Override
+		public void stop() {
+			if (this.closeable != null) {
+				try {
+					this.closeable.close();
+				}
+				catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+
+		@Override
+		public <T> T extract(Class<T> type) {
+			return null;
 		}
 
 	}

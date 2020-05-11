@@ -23,20 +23,16 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.GracefulShutdownHandler;
 import io.undertow.servlet.api.DeploymentManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
 import org.springframework.boot.web.server.Compression;
-import org.springframework.boot.web.server.GracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -64,25 +60,15 @@ public class UndertowServletWebServer implements WebServer {
 
 	private final Builder builder;
 
-	private final DeploymentManager manager;
+	private final HandlerManager handlerManager;
 
 	private final String contextPath;
 
-	private final boolean useForwardHeaders;
-
 	private final boolean autoStart;
-
-	private final Compression compression;
-
-	private final String serverHeader;
-
-	private final Duration shutdownGracePeriod;
 
 	private Undertow undertow;
 
 	private volatile boolean started = false;
-
-	private volatile GracefulShutdown gracefulShutdown;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -123,33 +109,43 @@ public class UndertowServletWebServer implements WebServer {
 	 */
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
-		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, serverHeader, null);
+		this(builder, createHandlerManager(manager, useForwardHeaders, compression, serverHeader, null), contextPath,
+				autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
 	 * @param builder the builder
-	 * @param manager the deployment manager
+	 * @param handlerManager the manager for the {@link HttpHandler}
 	 * @param contextPath the root context path
-	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
-	 * @param compression compression configuration
-	 * @param serverHeader string to be used in HTTP header
-	 * @param shutdownGracePeriod the period to wait for activity to cease when shutting
-	 * down the server gracefully
 	 * @since 2.3.0
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
-			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader,
-			Duration shutdownGracePeriod) {
+	public UndertowServletWebServer(Builder builder, HandlerManager handlerManager, String contextPath,
+			boolean autoStart) {
 		this.builder = builder;
-		this.manager = manager;
+		this.handlerManager = handlerManager;
 		this.contextPath = contextPath;
-		this.useForwardHeaders = useForwardHeaders;
 		this.autoStart = autoStart;
-		this.compression = compression;
-		this.serverHeader = serverHeader;
-		this.shutdownGracePeriod = shutdownGracePeriod;
+	}
+
+	private static HandlerManager createHandlerManager(DeploymentManager deploymentManager, boolean useForwardHeaders,
+			Compression compression, String serverHeader, Duration shutdownGracePeriod) {
+		HandlerManager handlerManager = new DeploymentManagerHandlerManager(deploymentManager);
+		if (compression != null && compression.getEnabled()) {
+			handlerManager = new CompressionHandlerManager(handlerManager, compression);
+		}
+		if (useForwardHeaders) {
+			handlerManager = new ForwardHeadersHandlerManager(handlerManager);
+		}
+		if (StringUtils.hasText(serverHeader)) {
+			handlerManager = new ServerHeaderHandlerManager(handlerManager, serverHeader);
+		}
+		if (shutdownGracePeriod != null) {
+			handlerManager = new GracefulShutdownHandlerManager(handlerManager, shutdownGracePeriod);
+		}
+
+		return handlerManager;
 	}
 
 	@Override
@@ -190,7 +186,7 @@ public class UndertowServletWebServer implements WebServer {
 
 	public DeploymentManager getDeploymentManager() {
 		synchronized (this.monitor) {
-			return this.manager;
+			return this.handlerManager.extract(DeploymentManager.class);
 		}
 	}
 
@@ -205,29 +201,15 @@ public class UndertowServletWebServer implements WebServer {
 		}
 	}
 
-	private Undertow createUndertowServer() throws ServletException {
-		HttpHandler httpHandler = this.manager.start();
+	private Undertow createUndertowServer() {
+		HttpHandler httpHandler = this.handlerManager.start();
 		httpHandler = getContextHandler(httpHandler);
-		if (this.useForwardHeaders) {
-			httpHandler = Handlers.proxyPeerAddress(httpHandler);
-		}
-		if (StringUtils.hasText(this.serverHeader)) {
-			httpHandler = Handlers.header(httpHandler, "Server", this.serverHeader);
-		}
-		if (this.shutdownGracePeriod != null) {
-			GracefulShutdownHandler gracefulShutdownHandler = Handlers.gracefulShutdown(httpHandler);
-			this.gracefulShutdown = new UndertowGracefulShutdown(gracefulShutdownHandler, this.shutdownGracePeriod);
-			httpHandler = gracefulShutdownHandler;
-		}
-		else {
-			this.gracefulShutdown = GracefulShutdown.IMMEDIATE;
-		}
 		this.builder.setHandler(httpHandler);
 		return this.builder.build();
 	}
 
 	private HttpHandler getContextHandler(HttpHandler httpHandler) {
-		HttpHandler contextHandler = UndertowCompressionConfigurer.configureCompression(this.compression, httpHandler);
+		HttpHandler contextHandler = httpHandler;
 		if (StringUtils.isEmpty(this.contextPath)) {
 			return contextHandler;
 		}
@@ -317,8 +299,7 @@ public class UndertowServletWebServer implements WebServer {
 			}
 			this.started = false;
 			try {
-				this.manager.stop();
-				this.manager.undeploy();
+				this.handlerManager.stop();
 				this.undertow.stop();
 			}
 			catch (Exception ex) {
@@ -338,11 +319,13 @@ public class UndertowServletWebServer implements WebServer {
 
 	@Override
 	public boolean shutDownGracefully() {
-		return this.gracefulShutdown.shutDownGracefully();
+		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
+		return (gracefulShutdown != null) ? gracefulShutdown.shutDownGracefully() : false;
 	}
 
 	boolean inGracefulShutdown() {
-		return this.gracefulShutdown.isShuttingDown();
+		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
+		return (gracefulShutdown != null) ? gracefulShutdown.isShuttingDown() : false;
 	}
 
 	/**
