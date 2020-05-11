@@ -87,7 +87,7 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		HandlerManager handlerManager = new UndertowHttpHandlerAdapterHandlerManager(
 				new UndertowHttpHandlerAdapter(httpHandler));
 		if (this.useForwardHeaders) {
-			handlerManager = new ForwardHeadersHandlerManager(handlerManager);
+			handlerManager = new ForwardHeadersHttpHandlerFactory(handlerManager);
 		}
 		Compression compression = getCompression();
 		if (compression != null && compression.getEnabled()) {

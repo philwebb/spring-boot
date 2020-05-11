@@ -136,7 +136,7 @@ public class UndertowServletWebServer implements WebServer {
 			handlerManager = new CompressionHandlerManager(handlerManager, compression);
 		}
 		if (useForwardHeaders) {
-			handlerManager = new ForwardHeadersHandlerManager(handlerManager);
+			handlerManager = new ForwardHeadersHttpHandlerFactory(handlerManager);
 		}
 		if (StringUtils.hasText(serverHeader)) {
 			handlerManager = new ServerHeaderHandlerManager(handlerManager, serverHeader);
@@ -144,7 +144,6 @@ public class UndertowServletWebServer implements WebServer {
 		if (shutdownGracePeriod != null) {
 			handlerManager = new GracefulShutdownHandlerManager(handlerManager, shutdownGracePeriod);
 		}
-
 		return handlerManager;
 	}
 

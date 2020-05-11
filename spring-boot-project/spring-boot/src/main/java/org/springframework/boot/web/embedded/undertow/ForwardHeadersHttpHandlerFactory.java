@@ -20,32 +20,17 @@ import io.undertow.Handlers;
 import io.undertow.server.HttpHandler;
 
 /**
- * A {@link HandlerManager} for configuring the use of {@code X-Forwarded-…} headers.
+ * A {@link HttpHandlerFactory} for configuring the use of {@code X-Forwarded-…} headers.
  *
  * @author Andy Wilkinson
  */
-class ForwardHeadersHandlerManager implements HandlerManager {
+class ForwardHeadersHttpHandlerFactory implements HttpHandlerFactory {
 
-	private final HandlerManager delegate;
-
-	ForwardHeadersHandlerManager(HandlerManager delegate) {
-		this.delegate = delegate;
-	}
+	// FIXME just use a method reference
 
 	@Override
-	public HttpHandler start() {
-		HttpHandler httpHandler = this.delegate.start();
-		return Handlers.proxyPeerAddress(httpHandler);
-	}
-
-	@Override
-	public void stop() {
-		this.delegate.stop();
-	}
-
-	@Override
-	public <T> T extract(Class<T> type) {
-		return this.delegate.extract(type);
+	public HttpHandler getHandler(HttpHandler next) {
+		return Handlers.proxyPeerAddress(next);
 	}
 
 }

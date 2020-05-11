@@ -26,30 +26,19 @@ import io.undertow.server.handlers.SetHeaderHandler;
  *
  * @author Andy Wilkinson
  */
-class ServerHeaderHandlerManager implements HandlerManager {
+class ServerHeaderHttpHandlerFactory implements HttpHandlerFactory {
 
-	private final HandlerManager delegate;
+	// FIXME could just be a lambda
 
 	private final String serverHeader;
 
-	ServerHeaderHandlerManager(HandlerManager delegate, String serverHeader) {
-		this.delegate = delegate;
+	ServerHeaderHttpHandlerFactory(String serverHeader) {
 		this.serverHeader = serverHeader;
 	}
 
 	@Override
-	public HttpHandler start() {
-		return Handlers.header(this.delegate.start(), "Server", this.serverHeader);
-	}
-
-	@Override
-	public void stop() {
-		this.delegate.stop();
-	}
-
-	@Override
-	public <T> T extract(Class<T> type) {
-		return this.delegate.extract(type);
+	public HttpHandler getHandler(HttpHandler next) {
+		return Handlers.header(next, "Server", this.serverHeader);
 	}
 
 }

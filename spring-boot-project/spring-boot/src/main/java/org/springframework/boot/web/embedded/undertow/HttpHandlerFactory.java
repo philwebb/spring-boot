@@ -16,35 +16,26 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.Closeable;
+
 import io.undertow.server.HttpHandler;
 
 /**
- * A manager for an {@link HttpHandler}.
+ * Factory used by {@link UndertowServletWebServer} to add {@link HttpHandler
+ * HttpHandlers}. Instances returned from this factory may optionally implement
+ * {@link Closeable} if they wish to be called when the server stops.
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.3.0
  */
-public interface HandlerManager {
+@FunctionalInterface
+public interface HttpHandlerFactory {
 
 	/**
-	 * Starts the handler manager, creating and returning the {@link HttpHandler} that it
-	 * manages.
-	 * @return the {@link HttpHandler}
+	 * Create the {@link HttpHandler} instance that should be added.
+	 * @param next the next handler in the chain
+	 * @return the new HTTP handler instance
 	 */
-	HttpHandler start();
-
-	/**
-	 * Stops the handler manager, closing any resources used by its {@link HttpHandler}.
-	 */
-	void stop();
-
-	/**
-	 * Extracts an instance of the given {@code type}. Returns {@code null} if no such
-	 * instance can be extracted.
-	 * @param <T> type to extract
-	 * @param type class of the instance to extract
-	 * @return the extracted instance, or {@code null}
-	 */
-	<T> T extract(Class<T> type);
+	HttpHandler getHandler(HttpHandler next);
 
 }

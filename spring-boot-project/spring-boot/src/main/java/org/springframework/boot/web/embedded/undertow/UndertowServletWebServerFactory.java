@@ -462,7 +462,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			handlerManager = new CompressionHandlerManager(handlerManager, compression);
 		}
 		if (useForwardHeaders) {
-			handlerManager = new ForwardHeadersHandlerManager(handlerManager);
+			handlerManager = new ForwardHeadersHttpHandlerFactory(handlerManager);
 		}
 		if (StringUtils.hasText(serverHeader)) {
 			handlerManager = new ServerHeaderHandlerManager(handlerManager, serverHeader);

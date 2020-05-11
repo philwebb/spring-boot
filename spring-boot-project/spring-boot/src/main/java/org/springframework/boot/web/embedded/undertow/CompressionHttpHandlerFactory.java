@@ -37,43 +37,25 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
- * {@link HandlerManager} that configures compression.
+ * {@link HttpHandlerFactory} that adds a compression handler.
  *
  * @author Andy Wilkinson
- * @author Phil Webb
+ * @author Phillip Webb
  */
-class CompressionHandlerManager implements HandlerManager {
-
-	private final HandlerManager delegate;
+class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 
 	private final Compression compression;
 
-	CompressionHandlerManager(HandlerManager delegate, Compression compression) {
-		this.delegate = delegate;
+	CompressionHttpHandlerFactory(Compression compression) {
 		this.compression = compression;
 	}
 
 	@Override
-	public HttpHandler start() {
-		HttpHandler handler = this.delegate.start();
-		return configureCompression(this.compression, handler);
-	}
-
-	@Override
-	public void stop() {
-		this.delegate.stop();
-	}
-
-	@Override
-	public <T> T extract(Class<T> type) {
-		return this.delegate.extract(type);
-	}
-
-	private HttpHandler configureCompression(Compression compression, HttpHandler httpHandler) {
+	public HttpHandler getHandler(HttpHandler next) {
 		ContentEncodingRepository repository = new ContentEncodingRepository();
 		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
-				Predicates.and(getCompressionPredicates(compression)));
-		return new EncodingHandler(repository).setNext(httpHandler);
+				Predicates.and(getCompressionPredicates(this.compression)));
+		return new EncodingHandler(repository).setNext(next);
 	}
 
 	private static Predicate[] getCompressionPredicates(Compression compression) {
@@ -89,6 +71,9 @@ class CompressionHandlerManager implements HandlerManager {
 		return predicates.toArray(new Predicate[0]);
 	}
 
+	/**
+	 * Predicate used to match specific mime types.
+	 */
 	private static class CompressibleMimeTypePredicate implements Predicate {
 
 		private final List<MimeType> mimeTypes;
