@@ -173,7 +173,7 @@ public class UndertowWebServer implements WebServer {
 		return this.builder.build();
 	}
 
-	private HttpHandler createHttpHandler() {
+	protected HttpHandler createHttpHandler() {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
@@ -301,7 +301,7 @@ public class UndertowWebServer implements WebServer {
 		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
 	}
 
-	private String getStartLogMessage() {
+	protected String getStartLogMessage() {
 		return "Undertow started on port(s) " + getPortsDescription();
 	}
 
