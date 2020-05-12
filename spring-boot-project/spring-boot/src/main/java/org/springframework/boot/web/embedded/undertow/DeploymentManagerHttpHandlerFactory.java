@@ -28,9 +28,10 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.springframework.util.Assert;
 
 /**
- * {@link HttpHandlerFactory} that delegates to a {@link DeploymentManager}.
+ * {@link HttpHandlerFactory} that for a {@link DeploymentManager}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 
@@ -50,6 +51,9 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 		return this.deploymentManager;
 	}
 
+	/**
+	 * {@link HttpHandler} that delegates to a {@link DeploymentManager}.
+	 */
 	static class DeploymentManagerHandler implements HttpHandler, Closeable {
 
 		private final DeploymentManager deploymentManager;

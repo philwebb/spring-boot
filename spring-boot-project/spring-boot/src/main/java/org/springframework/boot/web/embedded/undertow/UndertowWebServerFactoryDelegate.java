@@ -39,6 +39,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * Delegate class used by {@link UndertowServletWebServerFactory} and
+ * {@link UndertowReactiveWebServerFactory}.
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -169,10 +172,10 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
-			HttpHandlerFactory... httpHandlerFactories) {
+			HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = createHttpHandlerFactories(webServerFactory.getCompression(),
 				this.useForwardHeaders, webServerFactory.getServerHeader(),
-				webServerFactory.getShutdown().getGracePeriod(), httpHandlerFactories);
+				webServerFactory.getShutdown().getGracePeriod(), initialHttpHandlerFactories);
 		if (isAccessLogEnabled()) {
 			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
 					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
@@ -181,9 +184,9 @@ class UndertowWebServerFactoryDelegate {
 	}
 
 	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
-			String serverHeader, Duration shutdownGracePeriod, HttpHandlerFactory... httpHandlerFactories) {
+			String serverHeader, Duration shutdownGracePeriod, HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
-		factories.addAll(Arrays.asList(httpHandlerFactories));
+		factories.addAll(Arrays.asList(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}
