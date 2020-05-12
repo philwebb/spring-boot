@@ -20,7 +20,6 @@ import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +87,10 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param contextPath the root context path
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath, boolean autoStart,
 			Compression compression) {
 		this(builder, manager, contextPath, false, autoStart, compression);
@@ -102,7 +104,10 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param useForwardHeaders if x-forward headers should be used
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression) {
 		this(builder, manager, contextPath, useForwardHeaders, autoStart, compression, null);
@@ -117,11 +122,14 @@ public class UndertowServletWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
 	 */
+	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
-		this(builder, createHttpHandlerFactories(manager, useForwardHeaders, compression, serverHeader, null),
-				contextPath, autoStart);
+		this(builder, UndertowWebServerFactoryDelegate.createHttpHandlerFactories(compression, useForwardHeaders,
+				serverHeader, null, new DeploymentManagerHttpHandlerFactory(manager)), contextPath, autoStart);
 	}
 
 	/**
@@ -148,26 +156,6 @@ public class UndertowServletWebServer implements WebServer {
 			}
 		}
 		return null;
-	}
-
-	// FIXME this is copy/paste so perhaps can be consolidated
-	private static List<HttpHandlerFactory> createHttpHandlerFactories(DeploymentManager manager,
-			boolean useForwardHeaders, Compression compression, String serverHeader, Duration shutdownGracePeriod) {
-		List<HttpHandlerFactory> factories = new ArrayList<>();
-		factories.add(new DeploymentManagerHttpHandlerFactory(manager));
-		if (compression != null && compression.getEnabled()) {
-			factories.add(new CompressionHttpHandlerFactory(compression));
-		}
-		if (useForwardHeaders) {
-			factories.add(new ForwardHeadersHttpHandlerFactory());
-		}
-		if (StringUtils.hasText(serverHeader)) {
-			factories.add(new ServerHeaderHttpHandlerFactory(serverHeader));
-		}
-		if (shutdownGracePeriod != null) {
-			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
-		}
-		return factories;
 	}
 
 	@Override

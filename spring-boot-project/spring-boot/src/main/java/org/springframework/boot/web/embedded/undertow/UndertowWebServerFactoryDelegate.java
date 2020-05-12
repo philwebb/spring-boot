@@ -169,15 +169,24 @@ class UndertowWebServerFactoryDelegate {
 
 	List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
 			HttpHandlerFactory... httpHandlerFactories) {
-		Compression compression = webServerFactory.getCompression();
-		String serverHeader = webServerFactory.getServerHeader();
-		Duration shutdownGracePeriod = webServerFactory.getShutdown().getGracePeriod();
+		List<HttpHandlerFactory> factories = createHttpHandlerFactories(webServerFactory.getCompression(),
+				this.useForwardHeaders, webServerFactory.getServerHeader(),
+				webServerFactory.getShutdown().getGracePeriod(), httpHandlerFactories);
+		if (isAccessLogEnabled()) {
+			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
+					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
+		}
+		return factories;
+	}
+
+	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
+			String serverHeader, Duration shutdownGracePeriod, HttpHandlerFactory... httpHandlerFactories) {
 		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
 		factories.addAll(Arrays.asList(httpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}
-		if (this.useForwardHeaders) {
+		if (useForwardHeaders) {
 			factories.add(new ForwardHeadersHttpHandlerFactory());
 		}
 		if (StringUtils.hasText(serverHeader)) {
@@ -185,10 +194,6 @@ class UndertowWebServerFactoryDelegate {
 		}
 		if (shutdownGracePeriod != null) {
 			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
-		}
-		if (isAccessLogEnabled()) {
-			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
-					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
 		}
 		return factories;
 	}
