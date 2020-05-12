@@ -133,7 +133,7 @@ class UndertowWebServerFactoryDelegate {
 		return this.useForwardHeaders;
 	}
 
-	Builder getBuilder(AbstractConfigurableWebServerFactory factory) {
+	Builder createBuilder(AbstractConfigurableWebServerFactory factory) {
 		Ssl ssl = factory.getSsl();
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
@@ -167,7 +167,7 @@ class UndertowWebServerFactoryDelegate {
 		return builder;
 	}
 
-	List<HttpHandlerFactory> getHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
+	List<HttpHandlerFactory> createHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
 			HttpHandlerFactory... httpHandlerFactories) {
 		Compression compression = webServerFactory.getCompression();
 		String serverHeader = webServerFactory.getServerHeader();

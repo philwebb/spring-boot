@@ -233,16 +233,38 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return this.deploymentInfoCustomizers;
 	}
 
-	//////// FIXME
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Return if filters should be initialized eagerly.
+	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
+	 * @since 2.0.0
+	 */
+	public boolean isEagerInitFilters() {
+		return this.eagerInitFilters;
+	}
+
+	/**
+	 * Set whether filters should be initialized eagerly.
+	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
+	 * {@code false}.
+	 * @since 2.0.0
+	 */
+	public void setEagerInitFilters(boolean eagerInitFilters) {
+		this.eagerInitFilters = eagerInitFilters;
+	}
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		Builder builder = this.delegate.getBuilder(this);
-		DeploymentManager manager = createDeploymentManager(initializers);
+		Builder builder = this.delegate.createBuilder(this);
+		DeploymentManager manager = createManager(initializers);
 		return getUndertowWebServer(builder, manager, getPort());
 	}
 
-	private DeploymentManager createDeploymentManager(ServletContextInitializer... initializers) {
+	private DeploymentManager createManager(ServletContextInitializer... initializers) {
 		DeploymentInfo deployment = Servlets.deployment();
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment, initializers);
 		deployment.setClassLoader(getServletClassLoader());
@@ -390,33 +412,30 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
-		HttpHandlerFactory managerFactory = new DeploymentManagerHttpHandlerFactory(manager);
-		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.getHttpHandlerFactories(this, managerFactory);
+		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.createHttpHandlerFactories(this,
+				new DeploymentManagerHttpHandlerFactory(manager));
 		return new UndertowServletWebServer(builder, httpHandlerFactories, getContextPath(), port >= 0);
 	}
 
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
-
 	/**
-	 * Return if filters should be initialized eagerly.
-	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
-	 * @since 2.0.0
+	 * {@link ServletContainerInitializer} to initialize {@link ServletContextInitializer
+	 * ServletContextInitializers}.
 	 */
-	public boolean isEagerInitFilters() {
-		return this.eagerInitFilters;
-	}
+	private static class Initializer implements ServletContainerInitializer {
 
-	/**
-	 * Set whether filters should be initialized eagerly.
-	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
-	 * {@code false}.
-	 * @since 2.0.0
-	 */
-	public void setEagerInitFilters(boolean eagerInitFilters) {
-		this.eagerInitFilters = eagerInitFilters;
+		private final ServletContextInitializer[] initializers;
+
+		Initializer(ServletContextInitializer[] initializers) {
+			this.initializers = initializers;
+		}
+
+		@Override
+		public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+			for (ServletContextInitializer initializer : this.initializers) {
+				initializer.onStartup(servletContext);
+			}
+		}
+
 	}
 
 	/**
@@ -478,26 +497,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	/**
-	 * {@link ServletContainerInitializer} to initialize {@link ServletContextInitializer
-	 * ServletContextInitializers}.
+	 * {@link ResourceManager} to hide Spring Boot loader classes.
 	 */
-	private static class Initializer implements ServletContainerInitializer {
-
-		private final ServletContextInitializer[] initializers;
-
-		Initializer(ServletContextInitializer[] initializers) {
-			this.initializers = initializers;
-		}
-
-		@Override
-		public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
-			for (ServletContextInitializer initializer : this.initializers) {
-				initializer.onStartup(servletContext);
-			}
-		}
-
-	}
-
 	private static final class LoaderHidingResourceManager implements ResourceManager {
 
 		private final ResourceManager delegate;
