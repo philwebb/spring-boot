@@ -194,7 +194,7 @@ class UndertowWebServerFactoryDelegate {
 			factories.add((next) -> Handlers.header(next, "Server", serverHeader));
 		}
 		if (shutdownGracePeriod != null) {
-			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
+			factories.add((next) -> new GracefulShutdownHttpHandler(next, shutdownGracePeriod));
 		}
 		return factories;
 	}
