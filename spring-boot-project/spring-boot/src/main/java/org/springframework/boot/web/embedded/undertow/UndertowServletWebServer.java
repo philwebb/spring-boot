@@ -66,8 +66,6 @@ public class UndertowServletWebServer implements WebServer {
 
 	private final Iterable<HttpHandlerFactory> httpHandlerFactories;
 
-	private final String contextPath;
-
 	private final boolean autoStart;
 
 	private Undertow undertow;
@@ -77,6 +75,8 @@ public class UndertowServletWebServer implements WebServer {
 	private volatile GracefulShutdown gracefulShutdown;
 
 	private volatile List<Closeable> closeables;
+
+	private final String contextPath;
 
 	private final DeploymentManager manager;
 
@@ -173,8 +173,7 @@ public class UndertowServletWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				UndertowServletWebServer.logger.info("Undertow started on port(s) " + getPortsDescription()
-						+ " with context path '" + this.contextPath + "'");
+				UndertowServletWebServer.logger.info(getStartLogMessage());
 			}
 			catch (Exception ex) {
 				try {
@@ -191,12 +190,6 @@ public class UndertowServletWebServer implements WebServer {
 					stopSilently();
 				}
 			}
-		}
-	}
-
-	public DeploymentManager getDeploymentManager() {
-		synchronized (this.monitor) {
-			return this.manager;
 		}
 	}
 
@@ -221,9 +214,15 @@ public class UndertowServletWebServer implements WebServer {
 	}
 
 	private Undertow createUndertowServer() throws ServletException {
-		HttpHandler handler = null;
 		this.closeables = new ArrayList<>();
 		this.gracefulShutdown = null;
+		HttpHandler handler = createHttpHandler();
+		this.builder.setHandler(handler);
+		return this.builder.build();
+	}
+
+	private HttpHandler createHttpHandler() {
+		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
 			if (handler instanceof Closeable) {
@@ -234,11 +233,8 @@ public class UndertowServletWebServer implements WebServer {
 				this.gracefulShutdown = (GracefulShutdown) handler;
 			}
 		}
-		if (!StringUtils.isEmpty(this.contextPath)) {
-			handler = Handlers.path().addPrefixPath(this.contextPath, handler);
-		}
-		this.builder.setHandler(handler);
-		return this.builder.build();
+		handler = addContextPathHandler(handler);
+		return handler;
 	}
 
 	private String getPortsDescription() {
@@ -351,6 +347,23 @@ public class UndertowServletWebServer implements WebServer {
 
 	boolean inGracefulShutdown() {
 		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
+	}
+
+	private String getStartLogMessage() {
+		return "Undertow started on port(s) " + getPortsDescription() + " with context path '" + this.contextPath + "'";
+	}
+
+	public DeploymentManager getDeploymentManager() {
+		synchronized (this.monitor) {
+			return this.manager;
+		}
+	}
+
+	private HttpHandler addContextPathHandler(HttpHandler handler) {
+		if (!StringUtils.isEmpty(this.contextPath)) {
+			handler = Handlers.path().addPrefixPath(this.contextPath, handler);
+		}
+		return handler;
 	}
 
 	/**

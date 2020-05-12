@@ -87,7 +87,10 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param closeable called when the server is stopped
 	 * @since 2.0.4
+	 * @Deprecated since 2.3.0 in favor of
+	 * {@link #UndertowWebServer(io.undertow.Undertow.Builder, Iterable, boolean)}
 	 */
+	@Deprecated
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
 		this(builder, Collections.singleton(new CloseableHttpHandlerFactory(closeable)), autoStart);
 	}
@@ -121,7 +124,8 @@ public class UndertowWebServer implements WebServer {
 				}
 				this.undertow.start();
 				this.started = true;
-				logger.info("Undertow started on port(s) " + getPortsDescription());
+				String message = getStartLogMessage();
+				logger.info(message);
 			}
 			catch (Exception ex) {
 				try {
@@ -162,9 +166,15 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	private Undertow createUndertowServer() {
-		HttpHandler handler = null;
 		this.closeables = new ArrayList<>();
 		this.gracefulShutdown = null;
+		HttpHandler handler = createHttpHandler();
+		this.builder.setHandler(handler);
+		return this.builder.build();
+	}
+
+	private HttpHandler createHttpHandler() {
+		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
 			if (handler instanceof Closeable) {
@@ -175,8 +185,7 @@ public class UndertowWebServer implements WebServer {
 				this.gracefulShutdown = (GracefulShutdown) handler;
 			}
 		}
-		this.builder.setHandler(handler);
-		return this.builder.build();
+		return handler;
 	}
 
 	private String getPortsDescription() {
@@ -187,11 +196,11 @@ public class UndertowWebServer implements WebServer {
 		return "unknown";
 	}
 
-	private List<UndertowWebServer.Port> getActualPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<>();
+	private List<Port> getActualPorts() {
+		List<Port> ports = new ArrayList<>();
 		try {
 			if (!this.autoStart) {
-				ports.add(new UndertowWebServer.Port(-1, "unknown"));
+				ports.add(new Port(-1, "unknown"));
 			}
 			else {
 				for (BoundChannel channel : extractChannels()) {
@@ -223,10 +232,13 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	private List<UndertowWebServer.Port> getConfiguredPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<>();
+		List<Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
-				ports.add(getPortFromListener(listener));
+				Port port = getPortFromListener(listener);
+				if (port.getNumber() != 0) {
+					ports.add(port);
+				}
 			}
 			catch (Exception ex) {
 				// Continue
@@ -273,7 +285,7 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
-		List<UndertowWebServer.Port> ports = getActualPorts();
+		List<Port> ports = getActualPorts();
 		if (ports.isEmpty()) {
 			return 0;
 		}
@@ -287,6 +299,10 @@ public class UndertowWebServer implements WebServer {
 
 	boolean inGracefulShutdown() {
 		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
+	}
+
+	private String getStartLogMessage() {
+		return "Undertow started on port(s) " + getPortsDescription();
 	}
 
 	/**
