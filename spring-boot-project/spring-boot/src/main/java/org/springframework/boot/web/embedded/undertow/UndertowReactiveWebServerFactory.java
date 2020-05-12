@@ -19,11 +19,8 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.undertow.Undertow;
 import io.undertow.UndertowOptions;
@@ -33,7 +30,6 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,29 +41,7 @@ import org.springframework.util.StringUtils;
 public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableUndertowWebServerFactory {
 
-	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
-
-	private Integer bufferSize;
-
-	private Integer ioThreads;
-
-	private Integer workerThreads;
-
-	private Boolean directBuffers;
-
-	private File accessLogDirectory;
-
-	private String accessLogPattern;
-
-	private String accessLogPrefix;
-
-	private String accessLogSuffix;
-
-	private boolean accessLogEnabled = false;
-
-	private boolean accessLogRotate = true;
-
-	private boolean useForwardHeaders;
+	private UndertowWebServerFactory factory = new UndertowWebServerFactory();
 
 	/**
 	 * Create a new {@link UndertowReactiveWebServerFactory} instance.
@@ -83,6 +57,90 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	public UndertowReactiveWebServerFactory(int port) {
 		super(port);
 	}
+
+	@Override
+	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
+		this.factory.setBuilderCustomizers(customizers);
+	}
+
+	@Override
+	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+		this.factory.addBuilderCustomizers(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
+	 * applied to the Undertow {@link io.undertow.Undertow.Builder Builder}.
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
+		return this.factory.getBuilderCustomizers();
+	}
+
+	@Override
+	public void setBufferSize(Integer bufferSize) {
+		this.factory.setBufferSize(bufferSize);
+	}
+
+	@Override
+	public void setIoThreads(Integer ioThreads) {
+		this.factory.setIoThreads(ioThreads);
+	}
+
+	@Override
+	public void setWorkerThreads(Integer workerThreads) {
+		this.factory.setWorkerThreads(workerThreads);
+	}
+
+	@Override
+	public void setUseDirectBuffers(Boolean directBuffers) {
+		this.factory.setUseDirectBuffers(directBuffers);
+	}
+
+	@Override
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.factory.setUseForwardHeaders(useForwardHeaders);
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.factory.isUseForwardHeaders();
+	}
+
+	@Override
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.factory.setAccessLogDirectory(accessLogDirectory);
+	}
+
+	@Override
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.factory.setAccessLogPattern(accessLogPattern);
+	}
+
+	@Override
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.factory.setAccessLogPrefix(accessLogPrefix);
+	}
+
+	@Override
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.factory.setAccessLogSuffix(accessLogSuffix);
+	}
+
+	public boolean isAccessLogEnabled() {
+		return this.factory.isAccessLogEnabled();
+	}
+
+	@Override
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.factory.setAccessLogEnabled(accessLogEnabled);
+	}
+
+	@Override
+	public void setAccessLogRotate(boolean accessLogRotate) {
+		this.factory.setAccessLogRotate(accessLogRotate);
+	}
+
+	/////// FIXME
 
 	// FIXME this is copy/paste so perhaps can be consolidated
 	@Override
@@ -150,100 +208,6 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 			return "0.0.0.0";
 		}
 		return getAddress().getHostAddress();
-	}
-
-	@Override
-	public void setAccessLogDirectory(File accessLogDirectory) {
-		this.accessLogDirectory = accessLogDirectory;
-	}
-
-	@Override
-	public void setAccessLogPattern(String accessLogPattern) {
-		this.accessLogPattern = accessLogPattern;
-	}
-
-	@Override
-	public void setAccessLogPrefix(String accessLogPrefix) {
-		this.accessLogPrefix = accessLogPrefix;
-	}
-
-	@Override
-	public void setAccessLogSuffix(String accessLogSuffix) {
-		this.accessLogSuffix = accessLogSuffix;
-	}
-
-	public boolean isAccessLogEnabled() {
-		return this.accessLogEnabled;
-	}
-
-	@Override
-	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.accessLogEnabled = accessLogEnabled;
-	}
-
-	@Override
-	public void setAccessLogRotate(boolean accessLogRotate) {
-		this.accessLogRotate = accessLogRotate;
-	}
-
-	protected final boolean isUseForwardHeaders() {
-		return this.useForwardHeaders;
-	}
-
-	@Override
-	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
-	}
-
-	@Override
-	public void setBufferSize(Integer bufferSize) {
-		this.bufferSize = bufferSize;
-	}
-
-	@Override
-	public void setIoThreads(Integer ioThreads) {
-		this.ioThreads = ioThreads;
-	}
-
-	@Override
-	public void setWorkerThreads(Integer workerThreads) {
-		this.workerThreads = workerThreads;
-	}
-
-	@Override
-	public void setUseDirectBuffers(Boolean directBuffers) {
-		this.directBuffers = directBuffers;
-	}
-
-	/**
-	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
-	 * {@link io.undertow.Undertow.Builder Builder}. Calling this method will replace any
-	 * existing customizers.
-	 * @param customizers the customizers to set
-	 */
-	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new LinkedHashSet<>(customizers);
-	}
-
-	/**
-	 * Returns a mutable collection of the {@link UndertowBuilderCustomizer}s that will be
-	 * applied to the Undertow {@link io.undertow.Undertow.Builder Builder}.
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.builderCustomizers;
-	}
-
-	/**
-	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
-	 * Undertow {@link io.undertow.Undertow.Builder Builder}.
-	 * @param customizers the customizers to add
-	 */
-	@Override
-	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 }

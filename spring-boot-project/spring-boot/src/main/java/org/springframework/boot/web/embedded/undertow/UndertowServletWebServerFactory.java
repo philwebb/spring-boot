@@ -102,33 +102,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
+	private UndertowWebServerFactory factory = new UndertowWebServerFactory();
 
 	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
 	private ResourceLoader resourceLoader;
-
-	private Integer bufferSize;
-
-	private Integer ioThreads;
-
-	private Integer workerThreads;
-
-	private Boolean directBuffers;
-
-	private File accessLogDirectory;
-
-	private String accessLogPattern;
-
-	private String accessLogPrefix;
-
-	private String accessLogSuffix;
-
-	private boolean accessLogEnabled = false;
-
-	private boolean accessLogRotate = true;
-
-	private boolean useForwardHeaders;
 
 	private boolean eagerInitFilters = true;
 
@@ -160,14 +138,14 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		getJsp().setRegistered(false);
 	}
 
-	/**
-	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
-	 * {@link Builder}. Calling this method will replace any existing customizers.
-	 * @param customizers the customizers to set
-	 */
+	@Override
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new LinkedHashSet<>(customizers);
+		this.factory.setBuilderCustomizers(customizers);
+	}
+
+	@Override
+	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+		this.factory.addBuilderCustomizers(customizers);
 	}
 
 	/**
@@ -176,13 +154,70 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.builderCustomizers;
+		return this.factory.getBuilderCustomizers();
 	}
 
 	@Override
-	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	public void setBufferSize(Integer bufferSize) {
+		this.factory.setBufferSize(bufferSize);
+	}
+
+	@Override
+	public void setIoThreads(Integer ioThreads) {
+		this.factory.setIoThreads(ioThreads);
+	}
+
+	@Override
+	public void setWorkerThreads(Integer workerThreads) {
+		this.factory.setWorkerThreads(workerThreads);
+	}
+
+	@Override
+	public void setUseDirectBuffers(Boolean directBuffers) {
+		this.factory.setUseDirectBuffers(directBuffers);
+	}
+
+	@Override
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.factory.setAccessLogDirectory(accessLogDirectory);
+	}
+
+	@Override
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.factory.setAccessLogPattern(accessLogPattern);
+	}
+
+	@Override
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.factory.setAccessLogPrefix(accessLogPrefix);
+	}
+
+	@Override
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.factory.setAccessLogSuffix(accessLogSuffix);
+	}
+
+	@Override
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.factory.setAccessLogEnabled(accessLogEnabled);
+	}
+
+	public boolean isAccessLogEnabled() {
+		return this.factory.isAccessLogEnabled();
+	}
+
+	@Override
+	public void setAccessLogRotate(boolean accessLogRotate) {
+		this.factory.setAccessLogRotate(accessLogRotate);
+	}
+
+	@Override
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.factory.setUseForwardHeaders(useForwardHeaders);
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.factory.isUseForwardHeaders();
 	}
 
 	/**
@@ -197,15 +232,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo}.
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	/**
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
 	 * @param customizers the customizers to add
@@ -214,6 +240,17 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
+
+	/**
+	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
+	 * will be applied to the Undertow {@link DeploymentInfo}.
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
+		return this.deploymentInfoCustomizers;
+	}
+
+	//////// FIXME
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
@@ -476,73 +513,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-	}
-
-	@Override
-	public void setBufferSize(Integer bufferSize) {
-		this.bufferSize = bufferSize;
-	}
-
-	@Override
-	public void setIoThreads(Integer ioThreads) {
-		this.ioThreads = ioThreads;
-	}
-
-	@Override
-	public void setWorkerThreads(Integer workerThreads) {
-		this.workerThreads = workerThreads;
-	}
-
-	@Override
-	public void setUseDirectBuffers(Boolean directBuffers) {
-		this.directBuffers = directBuffers;
-	}
-
-	@Override
-	public void setAccessLogDirectory(File accessLogDirectory) {
-		this.accessLogDirectory = accessLogDirectory;
-	}
-
-	@Override
-	public void setAccessLogPattern(String accessLogPattern) {
-		this.accessLogPattern = accessLogPattern;
-	}
-
-	public String getAccessLogPrefix() {
-		return this.accessLogPrefix;
-	}
-
-	@Override
-	public void setAccessLogPrefix(String accessLogPrefix) {
-		this.accessLogPrefix = accessLogPrefix;
-	}
-
-	@Override
-	public void setAccessLogSuffix(String accessLogSuffix) {
-		this.accessLogSuffix = accessLogSuffix;
-	}
-
-	@Override
-	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.accessLogEnabled = accessLogEnabled;
-	}
-
-	public boolean isAccessLogEnabled() {
-		return this.accessLogEnabled;
-	}
-
-	@Override
-	public void setAccessLogRotate(boolean accessLogRotate) {
-		this.accessLogRotate = accessLogRotate;
-	}
-
-	protected final boolean isUseForwardHeaders() {
-		return this.useForwardHeaders;
-	}
-
-	@Override
-	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
 	}
 
 	/**
