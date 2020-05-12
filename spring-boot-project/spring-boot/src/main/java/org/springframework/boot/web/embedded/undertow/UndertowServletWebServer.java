@@ -52,7 +52,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
 	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath, boolean autoStart,
@@ -69,7 +69,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 	 * @param autoStart if the server should be started
 	 * @param compression compression configuration
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
 	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
@@ -87,7 +87,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 	 * @param compression compression configuration
 	 * @param serverHeader string to be used in HTTP header
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #UndertowServletWebServer(Builder, Iterable, String, boolean)}
+	 * {@link #UndertowServletWebServer(io.undertow.Undertow.Builder, Iterable, String, boolean)}
 	 */
 	@Deprecated
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,

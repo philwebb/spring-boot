@@ -113,6 +113,10 @@ class UndertowWebServerFactoryDelegate {
 		this.accessLogPrefix = accessLogPrefix;
 	}
 
+	String getAccessLogPrefix() {
+		return this.accessLogPrefix;
+	}
+
 	void setAccessLogSuffix(String accessLogSuffix) {
 		this.accessLogSuffix = accessLogSuffix;
 	}

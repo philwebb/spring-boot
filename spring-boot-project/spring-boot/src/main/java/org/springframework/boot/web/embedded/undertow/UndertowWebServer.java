@@ -87,7 +87,7 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param closeable called when the server is stopped
 	 * @since 2.0.4
-	 * @Deprecated since 2.3.0 in favor of
+	 * @deprecated since 2.3.0 in favor of
 	 * {@link #UndertowWebServer(io.undertow.Undertow.Builder, Iterable, boolean)}
 	 */
 	@Deprecated
@@ -353,7 +353,7 @@ public class UndertowWebServer implements WebServer {
 	/**
 	 * {@link HttpHandlerFactory} to wrap a closable.
 	 */
-	private static class CloseableHttpHandlerFactory implements HttpHandlerFactory {
+	private static final class CloseableHttpHandlerFactory implements HttpHandlerFactory {
 
 		private final Closeable closeable;
 
@@ -386,7 +386,7 @@ public class UndertowWebServer implements WebServer {
 	/**
 	 * {@link Closeable} {@link HttpHandler}.
 	 */
-	private static interface CloseableHttpHandler extends HttpHandler, Closeable {
+	private interface CloseableHttpHandler extends HttpHandler, Closeable {
 
 	}
 

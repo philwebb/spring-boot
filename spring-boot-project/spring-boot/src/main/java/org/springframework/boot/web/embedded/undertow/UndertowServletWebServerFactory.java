@@ -175,6 +175,10 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.delegate.setAccessLogPrefix(accessLogPrefix);
 	}
 
+	public String getAccessLogPrefix() {
+		return this.delegate.getAccessLogPrefix();
+	}
+
 	@Override
 	public void setAccessLogSuffix(String accessLogSuffix) {
 		this.delegate.setAccessLogSuffix(accessLogSuffix);

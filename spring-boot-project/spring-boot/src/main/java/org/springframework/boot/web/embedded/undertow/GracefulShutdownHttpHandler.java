@@ -28,7 +28,7 @@ import org.springframework.boot.web.server.GracefulShutdown;
 /**
  * A {@link GracefulShutdownHandler} with support for our own {@link GracefulShutdown}
  * interface.
- * 
+ *
  * @author Andy Wilkinson
  */
 class GracefulShutdownHttpHandler extends GracefulShutdownHandler implements GracefulShutdown {

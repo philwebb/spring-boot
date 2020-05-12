@@ -60,7 +60,7 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 
 		private final HttpHandler handler;
 
-		public DeploymentManagerHandler(DeploymentManager deploymentManager) {
+		DeploymentManagerHandler(DeploymentManager deploymentManager) {
 			this.deploymentManager = deploymentManager;
 			try {
 				this.handler = deploymentManager.start();
