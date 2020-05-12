@@ -188,7 +188,7 @@ class UndertowWebServerFactoryDelegate {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}
 		if (useForwardHeaders) {
-			factories.add(new ForwardHeadersHttpHandlerFactory());
+			factories.add(Handlers::proxyPeerAddress);
 		}
 		if (StringUtils.hasText(serverHeader)) {
 			factories.add((next) -> Handlers.header(next, "Server", serverHeader));
