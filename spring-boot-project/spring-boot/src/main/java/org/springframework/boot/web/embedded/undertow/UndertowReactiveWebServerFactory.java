@@ -17,20 +17,16 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import io.undertow.Undertow;
-import io.undertow.UndertowOptions;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
-import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link UndertowWebServer}s.
@@ -41,7 +37,7 @@ import org.springframework.util.StringUtils;
 public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableUndertowWebServerFactory {
 
-	private UndertowWebServerFactory factory = new UndertowWebServerFactory();
+	private UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
 
 	/**
 	 * Create a new {@link UndertowReactiveWebServerFactory} instance.
@@ -60,12 +56,12 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 
 	@Override
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
-		this.factory.setBuilderCustomizers(customizers);
+		this.delegate.setBuilderCustomizers(customizers);
 	}
 
 	@Override
 	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		this.factory.addBuilderCustomizers(customizers);
+		this.delegate.addBuilderCustomizers(customizers);
 	}
 
 	/**
@@ -74,140 +70,79 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.factory.getBuilderCustomizers();
+		return this.delegate.getBuilderCustomizers();
 	}
 
 	@Override
 	public void setBufferSize(Integer bufferSize) {
-		this.factory.setBufferSize(bufferSize);
+		this.delegate.setBufferSize(bufferSize);
 	}
 
 	@Override
 	public void setIoThreads(Integer ioThreads) {
-		this.factory.setIoThreads(ioThreads);
+		this.delegate.setIoThreads(ioThreads);
 	}
 
 	@Override
 	public void setWorkerThreads(Integer workerThreads) {
-		this.factory.setWorkerThreads(workerThreads);
+		this.delegate.setWorkerThreads(workerThreads);
 	}
 
 	@Override
 	public void setUseDirectBuffers(Boolean directBuffers) {
-		this.factory.setUseDirectBuffers(directBuffers);
+		this.delegate.setUseDirectBuffers(directBuffers);
 	}
 
 	@Override
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.factory.setUseForwardHeaders(useForwardHeaders);
+		this.delegate.setUseForwardHeaders(useForwardHeaders);
 	}
 
 	protected final boolean isUseForwardHeaders() {
-		return this.factory.isUseForwardHeaders();
+		return this.delegate.isUseForwardHeaders();
 	}
 
 	@Override
 	public void setAccessLogDirectory(File accessLogDirectory) {
-		this.factory.setAccessLogDirectory(accessLogDirectory);
+		this.delegate.setAccessLogDirectory(accessLogDirectory);
 	}
 
 	@Override
 	public void setAccessLogPattern(String accessLogPattern) {
-		this.factory.setAccessLogPattern(accessLogPattern);
+		this.delegate.setAccessLogPattern(accessLogPattern);
 	}
 
 	@Override
 	public void setAccessLogPrefix(String accessLogPrefix) {
-		this.factory.setAccessLogPrefix(accessLogPrefix);
+		this.delegate.setAccessLogPrefix(accessLogPrefix);
 	}
 
 	@Override
 	public void setAccessLogSuffix(String accessLogSuffix) {
-		this.factory.setAccessLogSuffix(accessLogSuffix);
+		this.delegate.setAccessLogSuffix(accessLogSuffix);
 	}
 
 	public boolean isAccessLogEnabled() {
-		return this.factory.isAccessLogEnabled();
+		return this.delegate.isAccessLogEnabled();
 	}
 
 	@Override
 	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.factory.setAccessLogEnabled(accessLogEnabled);
+		this.delegate.setAccessLogEnabled(accessLogEnabled);
 	}
 
 	@Override
 	public void setAccessLogRotate(boolean accessLogRotate) {
-		this.factory.setAccessLogRotate(accessLogRotate);
+		this.delegate.setAccessLogRotate(accessLogRotate);
 	}
 
-	/////// FIXME
-
-	// FIXME this is copy/paste so perhaps can be consolidated
 	@Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
-		Undertow.Builder builder = createBuilder(getPort());
-		List<HttpHandlerFactory> factories = new ArrayList<>();
-		factories.add((next) -> new UndertowHttpHandlerAdapter(httpHandler));
-		Compression compression = getCompression();
-		if (compression != null && compression.getEnabled()) {
-			factories.add(new CompressionHttpHandlerFactory(compression));
-		}
-		if (this.useForwardHeaders) {
-			factories.add(new ForwardHeadersHttpHandlerFactory());
-		}
-		if (StringUtils.hasText(getServerHeader())) {
-			factories.add(new ServerHeaderHttpHandlerFactory(getServerHeader()));
-		}
-		Duration shutdownGracePeriod = getShutdown().getGracePeriod();
-		if (shutdownGracePeriod != null) {
-			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
-		}
-		if (isAccessLogEnabled()) {
-			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
-					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
-		}
-		return new UndertowWebServer(builder, factories, getPort() >= 0);
-	}
-
-	private Undertow.Builder createBuilder(int port) {
-		Undertow.Builder builder = Undertow.builder();
-		if (this.bufferSize != null) {
-			builder.setBufferSize(this.bufferSize);
-		}
-		if (this.ioThreads != null) {
-			builder.setIoThreads(this.ioThreads);
-		}
-		if (this.workerThreads != null) {
-			builder.setWorkerThreads(this.workerThreads);
-		}
-		if (this.directBuffers != null) {
-			builder.setDirectBuffers(this.directBuffers);
-		}
-		if (getSsl() != null && getSsl().isEnabled()) {
-			customizeSsl(builder);
-		}
-		else {
-			builder.addHttpListener(port, getListenAddress());
-		}
-		builder.setServerOption(UndertowOptions.SHUTDOWN_TIMEOUT, 0);
-		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
-			customizer.customize(builder);
-		}
-		return builder;
-	}
-
-	private void customizeSsl(Undertow.Builder builder) {
-		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider()).customize(builder);
-		if (getHttp2() != null) {
-			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
-		}
-	}
-
-	private String getListenAddress() {
-		if (getAddress() == null) {
-			return "0.0.0.0";
-		}
-		return getAddress().getHostAddress();
+		Undertow.Builder builder = this.delegate.getBuilder(this);
+		List<HttpHandlerFactory> httpHandlerFactories = new ArrayList<>();
+		httpHandlerFactories.add((next) -> new UndertowHttpHandlerAdapter(httpHandler));
+		httpHandlerFactories.addAll(this.delegate.getHttpHandlerFactories(this));
+		return new UndertowWebServer(builder, httpHandlerFactories, getPort() >= 0);
 	}
 
 }
