@@ -46,6 +46,10 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 		return new DeploymentManagerHandler(this.deploymentManager);
 	}
 
+	DeploymentManager getDeploymentManager() {
+		return this.deploymentManager;
+	}
+
 	static class DeploymentManagerHandler implements HttpHandler, Closeable {
 
 		private final DeploymentManager deploymentManager;

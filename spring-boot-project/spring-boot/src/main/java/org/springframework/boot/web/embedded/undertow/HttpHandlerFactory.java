@@ -27,7 +27,7 @@ import org.springframework.boot.web.server.GracefulShutdown;
  * HttpHandlers}. Instances returned from this factory may optionally implement the
  * following interfaces:
  * <ul>
- * <li>{@link Closeable} - if they wish to be called after the server stops.</li>
+ * <li>{@link Closeable} - if they wish to be closed just before server stops.</li>
  * <li>{@link GracefulShutdown} - if they wish to manage graceful shutdown.</li>
  * </ul>
  *

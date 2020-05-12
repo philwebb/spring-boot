@@ -65,8 +65,6 @@ public class UndertowServletWebServer implements WebServer {
 
 	private final Builder builder;
 
-	private final DeploymentManager manager;
-
 	private final Iterable<HttpHandlerFactory> httpHandlerFactories;
 
 	private final String contextPath;
@@ -80,6 +78,8 @@ public class UndertowServletWebServer implements WebServer {
 	private volatile GracefulShutdown gracefulShutdown;
 
 	private volatile List<Closeable> closeables;
+
+	private final DeploymentManager manager;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -120,32 +120,41 @@ public class UndertowServletWebServer implements WebServer {
 	 */
 	public UndertowServletWebServer(Builder builder, DeploymentManager manager, String contextPath,
 			boolean useForwardHeaders, boolean autoStart, Compression compression, String serverHeader) {
-		this(builder, manager, createHttpHandlerFactories(useForwardHeaders, compression, serverHeader, null),
+		this(builder, createHttpHandlerFactories(manager, useForwardHeaders, compression, serverHeader, null),
 				contextPath, autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
 	 * @param builder the builder
-	 * @param manager the deployment manager
 	 * @param httpHandlerFactories the handler factories
 	 * @param contextPath the root context path
 	 * @param autoStart if the server should be started
 	 * @since 2.3.0
 	 */
-	public UndertowServletWebServer(Builder builder, DeploymentManager manager,
-			Iterable<HttpHandlerFactory> httpHandlerFactories, String contextPath, boolean autoStart) {
+	public UndertowServletWebServer(Builder builder, Iterable<HttpHandlerFactory> httpHandlerFactories,
+			String contextPath, boolean autoStart) {
 		this.builder = builder;
-		this.manager = manager;
 		this.httpHandlerFactories = httpHandlerFactories;
 		this.contextPath = contextPath;
 		this.autoStart = autoStart;
+		this.manager = findManager(httpHandlerFactories);
+	}
+
+	private DeploymentManager findManager(Iterable<HttpHandlerFactory> httpHandlerFactories) {
+		for (HttpHandlerFactory httpHandlerFactory : httpHandlerFactories) {
+			if (httpHandlerFactory instanceof DeploymentManagerHttpHandlerFactory) {
+				return ((DeploymentManagerHttpHandlerFactory) httpHandlerFactory).getDeploymentManager();
+			}
+		}
+		return null;
 	}
 
 	// FIXME this is copy/paste so perhaps can be consolidated
-	private static List<HttpHandlerFactory> createHttpHandlerFactories(boolean useForwardHeaders,
-			Compression compression, String serverHeader, Duration shutdownGracePeriod) {
-		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
+	private static List<HttpHandlerFactory> createHttpHandlerFactories(DeploymentManager manager,
+			boolean useForwardHeaders, Compression compression, String serverHeader, Duration shutdownGracePeriod) {
+		List<HttpHandlerFactory> factories = new ArrayList<>();
+		factories.add(new DeploymentManagerHttpHandlerFactory(manager));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}
@@ -206,21 +215,8 @@ public class UndertowServletWebServer implements WebServer {
 	private void stopSilently() {
 		try {
 			if (this.undertow != null) {
-				stopManagerSilently();
-				this.undertow.stop();
 				this.closeables.forEach(this::closeSilently);
-			}
-		}
-		catch (Exception ex) {
-			// Ignore
-		}
-	}
-
-	private void stopManagerSilently() throws ServletException {
-		try {
-			if (this.manager != null) {
-				this.manager.stop();
-				this.manager.undeploy();
+				this.undertow.stop();
 			}
 		}
 		catch (Exception ex) {
@@ -237,7 +233,7 @@ public class UndertowServletWebServer implements WebServer {
 	}
 
 	private Undertow createUndertowServer() throws ServletException {
-		HttpHandler handler = this.manager.start();
+		HttpHandler handler = null;
 		this.closeables = new ArrayList<>();
 		this.gracefulShutdown = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
@@ -340,12 +336,10 @@ public class UndertowServletWebServer implements WebServer {
 			}
 			this.started = false;
 			try {
-				this.manager.stop();
-				this.manager.undeploy();
-				this.undertow.stop();
 				for (Closeable closeable : this.closeables) {
 					closeable.close();
 				}
+				this.undertow.stop();
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop undertow", ex);
