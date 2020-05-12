@@ -167,11 +167,13 @@ class UndertowWebServerFactoryDelegate {
 		return builder;
 	}
 
-	List<HttpHandlerFactory> getHttpHandlerFactories(AbstractConfigurableWebServerFactory factory) {
-		Compression compression = factory.getCompression();
-		String serverHeader = factory.getServerHeader();
-		Duration shutdownGracePeriod = factory.getShutdown().getGracePeriod();
+	List<HttpHandlerFactory> getHttpHandlerFactories(AbstractConfigurableWebServerFactory webServerFactory,
+			HttpHandlerFactory... httpHandlerFactories) {
+		Compression compression = webServerFactory.getCompression();
+		String serverHeader = webServerFactory.getServerHeader();
+		Duration shutdownGracePeriod = webServerFactory.getShutdown().getGracePeriod();
 		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
+		factories.addAll(Arrays.asList(httpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}

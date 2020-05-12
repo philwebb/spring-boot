@@ -390,9 +390,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
-		List<HttpHandlerFactory> httpHandlerFactories = new ArrayList<>();
-		httpHandlerFactories.add(new DeploymentManagerHttpHandlerFactory(manager));
-		httpHandlerFactories.addAll(this.delegate.getHttpHandlerFactories(this));
+		HttpHandlerFactory managerFactory = new DeploymentManagerHttpHandlerFactory(manager);
+		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.getHttpHandlerFactories(this, managerFactory);
 		return new UndertowServletWebServer(builder, httpHandlerFactories, getContextPath(), port >= 0);
 	}
 

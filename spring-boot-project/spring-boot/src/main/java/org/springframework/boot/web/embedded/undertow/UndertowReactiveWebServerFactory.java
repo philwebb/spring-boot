@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -139,9 +138,8 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 	@Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = this.delegate.getBuilder(this);
-		List<HttpHandlerFactory> httpHandlerFactories = new ArrayList<>();
-		httpHandlerFactories.add((next) -> new UndertowHttpHandlerAdapter(httpHandler));
-		httpHandlerFactories.addAll(this.delegate.getHttpHandlerFactories(this));
+		HttpHandlerFactory adapterFactory = (next) -> new UndertowHttpHandlerAdapter(httpHandler);
+		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.getHttpHandlerFactories(this, adapterFactory);
 		return new UndertowWebServer(builder, httpHandlerFactories, getPort() >= 0);
 	}
 
