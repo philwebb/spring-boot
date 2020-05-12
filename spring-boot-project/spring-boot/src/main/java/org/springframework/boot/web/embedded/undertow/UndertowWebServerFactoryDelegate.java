@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
@@ -190,7 +191,7 @@ class UndertowWebServerFactoryDelegate {
 			factories.add(new ForwardHeadersHttpHandlerFactory());
 		}
 		if (StringUtils.hasText(serverHeader)) {
-			factories.add(new ServerHeaderHttpHandlerFactory(serverHeader));
+			factories.add((next) -> Handlers.header(next, "Server", serverHeader));
 		}
 		if (shutdownGracePeriod != null) {
 			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
