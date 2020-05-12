@@ -52,6 +52,9 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 
 	@Override
 	public HttpHandler getHandler(HttpHandler next) {
+		if (!this.compression.getEnabled()) {
+			return next;
+		}
 		ContentEncodingRepository repository = new ContentEncodingRepository();
 		repository.addEncodingHandler("gzip", new GzipEncodingProvider(), 50,
 				Predicates.and(getCompressionPredicates(this.compression)));

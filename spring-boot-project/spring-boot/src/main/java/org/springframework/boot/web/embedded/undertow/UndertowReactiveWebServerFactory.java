@@ -18,9 +18,11 @@ package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import io.undertow.Undertow;
@@ -32,6 +34,7 @@ import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ReactiveWebServerFactory} that can be used to create {@link UndertowWebServer}s.
@@ -81,27 +84,31 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		super(port);
 	}
 
+	// FIXME this is copy/paste so perhaps can be consolidated
 	@Override
 	public WebServer getWebServer(org.springframework.http.server.reactive.HttpHandler httpHandler) {
 		Undertow.Builder builder = createBuilder(getPort());
-		HandlerManager handlerManager = new UndertowHttpHandlerAdapterHandlerManager(
-				new UndertowHttpHandlerAdapter(httpHandler));
-		if (this.useForwardHeaders) {
-			handlerManager = new ForwardHeadersHttpHandlerFactory(handlerManager);
-		}
+		List<HttpHandlerFactory> factories = new ArrayList<>();
+		factories.add((next) -> new UndertowHttpHandlerAdapter(httpHandler));
 		Compression compression = getCompression();
 		if (compression != null && compression.getEnabled()) {
-			handlerManager = new CompressionHandlerManager(handlerManager, compression);
+			factories.add(new CompressionHttpHandlerFactory(compression));
+		}
+		if (this.useForwardHeaders) {
+			factories.add(new ForwardHeadersHttpHandlerFactory());
+		}
+		if (StringUtils.hasText(getServerHeader())) {
+			factories.add(new ServerHeaderHttpHandlerFactory(getServerHeader()));
+		}
+		Duration shutdownGracePeriod = getShutdown().getGracePeriod();
+		if (shutdownGracePeriod != null) {
+			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
 		}
 		if (isAccessLogEnabled()) {
-			handlerManager = new AccessLogHandlerManager(handlerManager, this.accessLogDirectory, this.accessLogPattern,
-					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate);
+			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
+					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
 		}
-		Duration gracePeriod = getShutdown().getGracePeriod();
-		if (gracePeriod != null) {
-			handlerManager = new GracefulShutdownHandlerManager(handlerManager, gracePeriod);
-		}
-		return new UndertowWebServer(builder, handlerManager, getPort() >= 0);
+		return new UndertowWebServer(builder, factories, getPort() >= 0);
 	}
 
 	private Undertow.Builder createBuilder(int port) {

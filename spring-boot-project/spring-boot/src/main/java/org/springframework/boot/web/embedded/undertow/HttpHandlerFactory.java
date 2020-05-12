@@ -20,10 +20,16 @@ import java.io.Closeable;
 
 import io.undertow.server.HttpHandler;
 
+import org.springframework.boot.web.server.GracefulShutdown;
+
 /**
  * Factory used by {@link UndertowServletWebServer} to add {@link HttpHandler
- * HttpHandlers}. Instances returned from this factory may optionally implement
- * {@link Closeable} if they wish to be called when the server stops.
+ * HttpHandlers}. Instances returned from this factory may optionally implement the
+ * following interfaces:
+ * <ul>
+ * <li>{@link Closeable} - if they wish to be called after the server stops.</li>
+ * <li>{@link GracefulShutdown} - if they wish to manage graceful shutdown.</li>
+ * </ul>
  *
  * @author Phillip Webb
  * @since 2.3.0

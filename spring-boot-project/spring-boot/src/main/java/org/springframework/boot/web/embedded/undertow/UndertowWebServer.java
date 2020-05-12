@@ -22,17 +22,21 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.boot.web.server.GracefulShutdown;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,15 +60,17 @@ public class UndertowWebServer implements WebServer {
 
 	private final Undertow.Builder builder;
 
-	private final HandlerManager handlerManager;
+	private final Iterable<HttpHandlerFactory> httpHandlerFactories;
 
 	private final boolean autoStart;
-
-	private final Closeable closeable;
 
 	private Undertow undertow;
 
 	private volatile boolean started = false;
+
+	private volatile GracefulShutdown gracefulShutdown;
+
+	private volatile List<Closeable> closeables;
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
@@ -83,21 +89,21 @@ public class UndertowWebServer implements WebServer {
 	 * @since 2.0.4
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
-		this(builder, new CloseableHandlerManager(closeable), autoStart);
+		this(builder, Collections.singleton(new CloseableHttpHandlerFactory(closeable)), autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
 	 * @param builder the builder
-	 * @param handlerManager the manager for the {@link HttpHandler}
+	 * @param httpHandlerFactories the handler factories
 	 * @param autoStart if the server should be started
 	 * @since 2.3.0
 	 */
-	public UndertowWebServer(Undertow.Builder builder, HandlerManager handlerManager, boolean autoStart) {
+	public UndertowWebServer(Undertow.Builder builder, Iterable<HttpHandlerFactory> httpHandlerFactories,
+			boolean autoStart) {
 		this.builder = builder;
-		this.handlerManager = handlerManager;
+		this.httpHandlerFactories = httpHandlerFactories;
 		this.autoStart = autoStart;
-		this.closeable = null;
 	}
 
 	@Override
@@ -111,11 +117,7 @@ public class UndertowWebServer implements WebServer {
 					return;
 				}
 				if (this.undertow == null) {
-					HttpHandler httpHandler = this.handlerManager.start();
-					if (httpHandler != null) {
-						this.builder.setHandler(httpHandler);
-					}
-					this.undertow = this.builder.build();
+					this.undertow = createUndertowServer();
 				}
 				this.undertow.start();
 				this.started = true;
@@ -143,12 +145,38 @@ public class UndertowWebServer implements WebServer {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
-				this.closeable.close();
+				this.closeables.forEach(this::closeSilently);
 			}
 		}
 		catch (Exception ex) {
 			// Ignore
 		}
+	}
+
+	private void closeSilently(Closeable closeable) {
+		try {
+			closeable.close();
+		}
+		catch (Exception ex) {
+		}
+	}
+
+	private Undertow createUndertowServer() {
+		HttpHandler handler = null;
+		this.closeables = new ArrayList<>();
+		this.gracefulShutdown = null;
+		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
+			handler = factory.getHandler(handler);
+			if (handler instanceof Closeable) {
+				this.closeables.add((Closeable) handler);
+			}
+			if (handler instanceof GracefulShutdown) {
+				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdown handler can be defined");
+				this.gracefulShutdown = (GracefulShutdown) handler;
+			}
+		}
+		this.builder.setHandler(handler);
+		return this.builder.build();
 	}
 
 	private String getPortsDescription() {
@@ -233,8 +261,8 @@ public class UndertowWebServer implements WebServer {
 			this.started = false;
 			try {
 				this.undertow.stop();
-				if (this.closeable != null) {
-					this.closeable.close();
+				for (Closeable closeable : this.closeables) {
+					closeable.close();
 				}
 			}
 			catch (Exception ex) {
@@ -254,13 +282,11 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public boolean shutDownGracefully() {
-		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
-		return (gracefulShutdown != null) ? gracefulShutdown.shutDownGracefully() : false;
+		return (this.gracefulShutdown != null) ? this.gracefulShutdown.shutDownGracefully() : false;
 	}
 
 	boolean inGracefulShutdown() {
-		UndertowGracefulShutdown gracefulShutdown = this.handlerManager.extract(UndertowGracefulShutdown.class);
-		return (gracefulShutdown != null) ? gracefulShutdown.isShuttingDown() : false;
+		return (this.gracefulShutdown != null) ? this.gracefulShutdown.isShuttingDown() : false;
 	}
 
 	/**
@@ -308,35 +334,43 @@ public class UndertowWebServer implements WebServer {
 
 	}
 
-	private static final class CloseableHandlerManager implements HandlerManager {
+	/**
+	 * {@link HttpHandlerFactory} to wrap a closable.
+	 */
+	private static class CloseableHttpHandlerFactory implements HttpHandlerFactory {
 
 		private final Closeable closeable;
 
-		private CloseableHandlerManager(Closeable closeable) {
+		private CloseableHttpHandlerFactory(Closeable closeable) {
 			this.closeable = closeable;
 		}
 
 		@Override
-		public HttpHandler start() {
-			return null;
-		}
-
-		@Override
-		public void stop() {
-			if (this.closeable != null) {
-				try {
-					this.closeable.close();
-				}
-				catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
+		public HttpHandler getHandler(HttpHandler next) {
+			if (this.closeable == null) {
+				return next;
 			}
+			return new CloseableHttpHandler() {
+
+				@Override
+				public void handleRequest(HttpServerExchange exchange) throws Exception {
+					next.handleRequest(exchange);
+				}
+
+				@Override
+				public void close() throws IOException {
+					CloseableHttpHandlerFactory.this.closeable.close();
+				}
+
+			};
 		}
 
-		@Override
-		public <T> T extract(Class<T> type) {
-			return null;
-		}
+	}
+
+	/**
+	 * {@link Closeable} {@link HttpHandler}.
+	 */
+	private static interface CloseableHttpHandler extends HttpHandler, Closeable {
 
 	}
 

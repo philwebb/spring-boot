@@ -451,26 +451,26 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
-		return new UndertowServletWebServer(builder, createHandlerManager(manager, isUseForwardHeaders(),
+		return new UndertowServletWebServer(builder, manager, createHttpHandlerFactories(isUseForwardHeaders(),
 				getCompression(), getServerHeader(), getShutdown().getGracePeriod()), getContextPath(), port >= 0);
 	}
 
-	private static HandlerManager createHandlerManager(DeploymentManager deploymentManager, boolean useForwardHeaders,
+	private static List<HttpHandlerFactory> createHttpHandlerFactories(boolean useForwardHeaders,
 			Compression compression, String serverHeader, Duration shutdownGracePeriod) {
-		HandlerManager handlerManager = new DeploymentManagerHandlerManager(deploymentManager);
+		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
 		if (compression != null && compression.getEnabled()) {
-			handlerManager = new CompressionHandlerManager(handlerManager, compression);
+			factories.add(new CompressionHttpHandlerFactory(compression));
 		}
 		if (useForwardHeaders) {
-			handlerManager = new ForwardHeadersHttpHandlerFactory(handlerManager);
+			factories.add(new ForwardHeadersHttpHandlerFactory());
 		}
 		if (StringUtils.hasText(serverHeader)) {
-			handlerManager = new ServerHeaderHandlerManager(handlerManager, serverHeader);
+			factories.add(new ServerHeaderHttpHandlerFactory(serverHeader));
 		}
 		if (shutdownGracePeriod != null) {
-			handlerManager = new GracefulShutdownHandlerManager(handlerManager, shutdownGracePeriod);
+			factories.add(new GracefulShutdownHttpHandlerFactory(shutdownGracePeriod));
 		}
-		return handlerManager;
+		return factories;
 	}
 
 	@Override
@@ -680,6 +680,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		}
 
 	}
+
+	// FIXME use AccessLogHttpHandlerFactory instead
 
 	private static class AccessLogShutdownListener implements ServletContextListener {
 
