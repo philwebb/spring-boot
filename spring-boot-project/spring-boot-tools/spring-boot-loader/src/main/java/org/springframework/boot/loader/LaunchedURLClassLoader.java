@@ -27,7 +27,9 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.jar.Handler;
 
 /**
@@ -48,6 +50,12 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private final boolean exploded;
 
+	private final Object packageLock = new Object();
+
+	private volatile boolean definedFromManifest;
+
+	private final Archive rootArchive;
+
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
@@ -64,8 +72,21 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 * @param parent the parent class loader for delegation
 	 */
 	public LaunchedURLClassLoader(boolean exploded, URL[] urls, ClassLoader parent) {
+		this(exploded, null, urls, parent);
+	}
+
+	/**
+	 * Create a new {@link LaunchedURLClassLoader} instance.
+	 * @param exploded if the underlying archive is exploded
+	 * @param rootArchive the root archive or {@code null}
+	 * @param urls the URLs from which to load classes and resources
+	 * @param parent the parent class loader for delegation
+	 * @since 2.3.1
+	 */
+	public LaunchedURLClassLoader(boolean exploded, Archive rootArchive, URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.exploded = exploded;
+		this.rootArchive = rootArchive;
 	}
 
 	@Override
@@ -216,6 +237,46 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		catch (java.security.PrivilegedActionException ex) {
 			// Ignore
+		}
+	}
+
+	@Override
+	protected Package definePackage(String name, Manifest man, URL url) throws IllegalArgumentException {
+		if (!this.exploded) {
+			return super.definePackage(name, man, url);
+		}
+		synchronized (this.packageLock) {
+			this.definedFromManifest = true;
+			try {
+				return super.definePackage(name, man, url);
+			}
+			finally {
+				this.definedFromManifest = false;
+			}
+		}
+	}
+
+	@Override
+	protected Package definePackage(String name, String specTitle, String specVersion, String specVendor,
+			String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
+		if (!this.exploded || specTitle != null || specVersion != null || specVendor != null || implTitle != null
+				|| implVersion != null || implVendor != null || sealBase != null) {
+			return super.definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor,
+					sealBase);
+		}
+		synchronized (this.packageLock) {
+			if (!this.definedFromManifest && this.rootArchive != null) {
+				try {
+					Manifest manifest = this.rootArchive.getManifest();
+					if (manifest != null) {
+						return super.definePackage(name, manifest, null);
+					}
+				}
+				catch (IOException ex) {
+				}
+			}
+			return super.definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor,
+					sealBase);
 		}
 	}
 
