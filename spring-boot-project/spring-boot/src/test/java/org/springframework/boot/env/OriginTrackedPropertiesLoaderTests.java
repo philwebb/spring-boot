@@ -248,6 +248,12 @@ class OriginTrackedPropertiesLoaderTests {
 		assertThat(getValue(value)).isEqualTo("trailing ");
 	}
 
+	@Test
+	void getPropertyWithEscapedTrailingSpace() {
+		OriginTrackedValue value = this.properties.get("test-with-escaped-trailing-space");
+		assertThat(getValue(value)).isEqualTo("trailing ");
+	}
+
 	private Object getValue(OriginTrackedValue value) {
 		return (value != null) ? value.getValue() : null;
 	}
