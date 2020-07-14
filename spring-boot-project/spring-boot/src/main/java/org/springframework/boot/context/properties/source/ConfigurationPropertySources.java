@@ -110,7 +110,7 @@ public final class ConfigurationPropertySources {
 	 * {@link SpringConfigurationPropertySource}
 	 */
 	public static Iterable<ConfigurationPropertySource> from(PropertySource<?> source) {
-		return Collections.singleton(SpringConfigurationPropertySource.from(source));
+		return Collections.singleton(ConfigurationPropertySource.from(source));
 	}
 
 	/**
