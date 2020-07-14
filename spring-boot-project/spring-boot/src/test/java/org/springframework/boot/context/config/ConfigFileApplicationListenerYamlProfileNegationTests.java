@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
+@ExtendWith(UseLegacyProcessing.class)
 class ConfigFileApplicationListenerYamlProfileNegationTests {
 
 	private ConfigurableApplicationContext context;

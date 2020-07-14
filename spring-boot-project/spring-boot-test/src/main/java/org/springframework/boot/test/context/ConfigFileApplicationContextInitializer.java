@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context;
 
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,14 +27,16 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author Phillip Webb
  * @since 1.4.0
- * @see ConfigFileApplicationListener
+ * @see org.springframework.boot.context.config.ConfigFileApplicationListener
+ * @deprecated since 2.4.0 in favor of {@link ConfigDataApplicationContextInitializer}
  */
+@Deprecated
 public class ConfigFileApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		new ConfigFileApplicationListener() {
+		new org.springframework.boot.context.config.ConfigFileApplicationListener() {
 			public void apply() {
 				addPropertySources(applicationContext.getEnvironment(), applicationContext);
 				addPostProcessors(applicationContext);

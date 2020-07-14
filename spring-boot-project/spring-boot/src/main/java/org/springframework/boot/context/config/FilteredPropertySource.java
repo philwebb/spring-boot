@@ -28,7 +28,9 @@ import org.springframework.core.env.PropertySource;
  * {@link ConfigFileApplicationListener} to filter out properties for specific operations.
  *
  * @author Phillip Webb
+ * @deprecated since 2.4.0 along with {@link ConfigFileApplicationListener}
  */
+@Deprecated
 class FilteredPropertySource extends PropertySource<PropertySource<?>> {
 
 	private final Set<String> filteredProperties;

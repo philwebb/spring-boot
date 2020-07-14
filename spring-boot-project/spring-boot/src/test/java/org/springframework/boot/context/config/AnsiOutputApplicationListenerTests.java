@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@ExtendWith(UseLegacyProcessing.class) // FIXME should not be required
 class AnsiOutputApplicationListenerTests {
 
 	private ConfigurableApplicationContext context;
