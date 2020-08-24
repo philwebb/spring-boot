@@ -163,7 +163,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenOneCustomLocationDoesNotExistLoadsOthers() {
 		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=classpath:application.properties,classpath:testproperties.properties,classpath:nonexistent.properties");
+				"--spring.config.location=classpath:application.properties,classpath:testproperties.properties,optional:classpath:nonexistent.properties");
 		String property = context.getEnvironment().getProperty("the.property");
 		assertThat(property).isEqualTo("frompropertiesfile");
 	}
@@ -534,6 +534,12 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
 				"--spring.config.location=classpath:application-import-with-placeholder-in-profile-document.properties"))
 				.withCauseInstanceOf(InactiveConfigDataAccessException.class);
+	}
+
+	@Test
+	void runWhenHasNonOptionalImportThrowsException() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
+				() -> this.application.run("--spring.config.location=classpath:missing-appplication.properties"));
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {

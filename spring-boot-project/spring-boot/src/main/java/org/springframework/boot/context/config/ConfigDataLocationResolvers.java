@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
@@ -106,26 +107,37 @@ class ConfigDataLocationResolvers {
 
 	private List<ConfigDataLocation> resolveAll(ConfigDataLocationResolverContext context, String location,
 			Profiles profiles) {
+		boolean optional = location != null && location.startsWith(ConfigDataLocation.OPTIONAL_PREFIX);
+		location = (!optional) ? location : location.substring(ConfigDataLocation.OPTIONAL_PREFIX.length());
 		if (!StringUtils.hasText(location)) {
 			return Collections.emptyList();
 		}
 		for (ConfigDataLocationResolver<?> resolver : getResolvers()) {
 			if (resolver.isResolvable(context, location)) {
-				return resolve(resolver, context, location, profiles);
+				return resolve(resolver, context, optional, location, profiles);
 			}
 		}
 		throw new UnsupportedConfigDataLocationException(location);
 	}
 
 	private List<ConfigDataLocation> resolve(ConfigDataLocationResolver<?> resolver,
-			ConfigDataLocationResolverContext context, String location, Profiles profiles) {
-		List<ConfigDataLocation> resolved = nonNullList(resolver.resolve(context, location));
+			ConfigDataLocationResolverContext context, boolean optional, String location, Profiles profiles) {
+		List<ConfigDataLocation> resolved = resolve(optional, () -> resolver.resolve(context, location));
 		if (profiles == null) {
 			return resolved;
 		}
-		List<ConfigDataLocation> profileSpecific = nonNullList(
-				resolver.resolveProfileSpecific(context, location, profiles));
+		List<ConfigDataLocation> profileSpecific = resolve(optional,
+				() -> resolver.resolveProfileSpecific(context, location, profiles));
 		return merge(resolved, profileSpecific);
+	}
+
+	private List<ConfigDataLocation> resolve(boolean optional,
+			Supplier<List<? extends ConfigDataLocation>> resolveAction) {
+		List<ConfigDataLocation> resolved = nonNullList(resolveAction.get());
+		if (!resolved.isEmpty() && optional) {
+			resolved = OptionalConfigDataLocation.wrapAll(resolved);
+		}
+		return resolved;
 	}
 
 	@SuppressWarnings("unchecked")
