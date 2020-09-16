@@ -27,18 +27,16 @@ import org.springframework.core.env.Environment;
 /**
  * A simple object registry that is available during {@link Environment} post-processing
  * up to the point that the {@link ApplicationContext} is prepared. The registry can be
- * used to store objects that may be expensive to create, or need to be shared by
+ * used to store instances that may be expensive to create, or need to be shared by
  * different {@link EnvironmentPostProcessor EnvironmentPostProcessors}.
  * <p>
  * The registry uses the object type as a key, meaning that only a single instance of a
  * given class can be stored.
  * <p>
- * Registered instances may optionally use
- * {@link Registration#onApplicationContextPrepared(BiConsumer)
- * onApplicationContextPrepared(...)} to perform an action when the
- * {@link ApplicationContext} is {@link ApplicationPreparedEvent prepared}. For example,
- * an instance may choose to register itself as a regular Spring bean so that it is
- * available for the application to use.
+ * The {@link #onApplicationContextPrepared(BiConsumer)} method can be used to to perform
+ * actions when the {@link ApplicationContext} is {@link ApplicationPreparedEvent
+ * prepared}. For example, an instance may choose to register itself as a regular Spring
+ * bean so that it is available for the application to use.
  *
  * @author Phillip Webb
  * @since 2.4.0
@@ -47,40 +45,23 @@ import org.springframework.core.env.Environment;
 public interface BootstrapRegistry {
 
 	/**
-	 * Get an instance from the registry, creating one if it does not already exist.
+	 * Register a specific type with the registry. If the specified type has already been
+	 * registered, but not get obtained, it will be replaced.
 	 * @param <T> the instance type
 	 * @param type the instance type
-	 * @param instanceSupplier a supplier used to create the instance if it doesn't
-	 * already exist
-	 * @return the registered instance
+	 * @param registration the registration
+	 * @return a supplier equivalent to {@link #get(Class) get(type)}
 	 */
-	<T> T get(Class<T> type, Supplier<T> instanceSupplier);
+	<T> Supplier<T> register(Class<T> type, Registration<T> registration);
 
 	/**
-	 * Get an instance from the registry, creating one if it does not already exist.
+	 * Register a specific type with the registry if one is not already present.
 	 * @param <T> the instance type
 	 * @param type the instance type
-	 * @param instanceSupplier a supplier used to create the instance if it doesn't
-	 * already exist
-	 * @param onApplicationContextPreparedAction the action that should be called when the
-	 * application context is prepared. This action is ignored if the registration already
-	 * exists.
-	 * @return the registered instance
+	 * @param registration the registration
+	 * @return a supplier equivalent to {@link #get(Class) get(type)}
 	 */
-	<T> T get(Class<T> type, Supplier<T> instanceSupplier,
-			BiConsumer<ConfigurableApplicationContext, T> onApplicationContextPreparedAction);
-
-	/**
-	 * Register an instance with the registry and return a {@link Registration} that can
-	 * be used to provide further configuration. This method will replace any existing
-	 * registration.
-	 * @param <T> the instance type
-	 * @param type the instance type
-	 * @param instanceSupplier a supplier used to create the instance if it doesn't
-	 * already exist
-	 * @return an instance registration
-	 */
-	<T> Registration<T> register(Class<T> type, Supplier<T> instanceSupplier);
+	<T> Supplier<T> registerIfAbsent(Class<T> type, Registration<T> registration);
 
 	/**
 	 * Return if a registration exists for the given type.
@@ -99,24 +80,65 @@ public interface BootstrapRegistry {
 	<T> Registration<T> getRegistration(Class<T> type);
 
 	/**
+	 * Get an in instance from the registry or throw an {@link IllegalStateException} if
+	 * no instance has not been registered.
+	 * @param <T> the instance type
+	 * @param type the instance type
+	 * @return the registered instance
+	 */
+	<T> T get(Class<T> type);
+
+	/**
+	 * Add an action that should run when the {@link ApplicationContext} has been
+	 * prepared.
+	 * @param action the action to run
+	 */
+	void addApplicationContextPreparedListener(ApplicationContextPreparedListener listener);
+
+	/**
 	 * A single registration contained in the registry.
 	 *
 	 * @param <T> the instance type
 	 */
+	@FunctionalInterface
 	interface Registration<T> {
 
 		/**
-		 * Get or crearte the registered object instance.
-		 * @return the object instance
+		 * Factory method used to create the instance when needed.
+		 * @param registry the source registry which may be used to obtain other
+		 * registered instances.
+		 * @return the instance
 		 */
-		T get();
+		T createInstance(BootstrapRegistry registry);
 
 		/**
-		 * Add an action that should run when the {@link ApplicationContext} has been
-		 * prepared.
-		 * @param action the action to run
+		 * Factory method that can be used to create a {@link Registration} for a given
+		 * instance.
+		 * @param <T> the instance type
+		 * @param instance the instance
+		 * @return a new {@link Registration}
 		 */
-		void onApplicationContextPrepared(BiConsumer<ConfigurableApplicationContext, T> action);
+		static <T> Registration<T> of(T instance) {
+			return (registry) -> instance;
+		}
+
+		/**
+		 * Factory method that can be used to create a {@link Registration} for a supplied
+		 * instance.
+		 * @param <T> the instance type
+		 * @param supplier the supplier that will provide the instance
+		 * @return a new {@link Registration}
+		 */
+		static <T> Registration<T> suppliedBy(Supplier<T> supplier) {
+			return (registry) -> (supplier != null) ? supplier.get() : null;
+		}
+
+	}
+
+	@FunctionalInterface
+	interface ApplicationContextPreparedListener {
+
+		void run(BootstrapRegistry bootstrapRegistry, ConfigurableApplicationContext applicationContext);
 
 	}
 

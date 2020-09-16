@@ -44,7 +44,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	private final DeferredLogs deferredLogs;
 
-	private final DefaultBootstrapRegisty bootstrapRegistry;
+	private final DefaultBootstrapRegistry bootstrapRegistry;
 
 	private int order = DEFAULT_ORDER;
 
@@ -65,11 +65,11 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * @param postProcessorsFactory the post processors factory
 	 */
 	public EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory) {
-		this(postProcessorsFactory, new DeferredLogs(), new DefaultBootstrapRegisty());
+		this(postProcessorsFactory, new DeferredLogs(), new DefaultBootstrapRegistry());
 	}
 
 	EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory,
-			DeferredLogs deferredLogs, DefaultBootstrapRegisty bootstrapRegistry) {
+			DeferredLogs deferredLogs, DefaultBootstrapRegistry bootstrapRegistry) {
 		this.postProcessorsFactory = postProcessorsFactory;
 		this.deferredLogs = deferredLogs;
 		this.bootstrapRegistry = bootstrapRegistry;

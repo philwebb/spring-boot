@@ -30,7 +30,7 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
+import org.springframework.boot.env.DefaultBootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -52,7 +52,7 @@ class ConfigDataEnvironmentTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
-	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 
 	private MockEnvironment environment = new MockEnvironment();
 

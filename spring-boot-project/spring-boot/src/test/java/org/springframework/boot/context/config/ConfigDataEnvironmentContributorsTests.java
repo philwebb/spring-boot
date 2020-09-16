@@ -36,7 +36,7 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentContributors
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
+import org.springframework.boot.env.DefaultBootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
@@ -60,7 +60,7 @@ class ConfigDataEnvironmentContributorsTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
-	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 
 	private MockEnvironment environment;
 

@@ -46,6 +46,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.env.BootstrapRegistryInitializer;
 import org.springframework.boot.env.DefaultPropertiesPropertySource;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
@@ -1212,6 +1213,10 @@ public class SpringApplication {
 	 */
 	public Set<ApplicationContextInitializer<?>> getInitializers() {
 		return asUnmodifiableOrderedSet(this.initializers);
+	}
+
+	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer initializer) {
+
 	}
 
 	/**
