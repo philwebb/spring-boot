@@ -21,6 +21,8 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,7 +38,7 @@ class EnvironmentPostProcessorsFactoryTests {
 
 	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private final BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private final BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 
 	@Test
 	void fromSpringFactoriesReturnsFactory() {

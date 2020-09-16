@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -32,8 +34,6 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultPropertiesPropertySource;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -128,15 +128,18 @@ class ConfigDataEnvironment {
 		this.logger = logFactory.getLog(getClass());
 		this.bootstrapRegistry = bootstrapRegistry;
 		this.environment = environment;
-		this.resolvers = createConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
+		this.resolvers = createConfigDataLocationResolvers(logFactory, bootstrapRegistry, locationNotFoundAction,
+				binder, resourceLoader);
 		this.additionalProfiles = additionalProfiles;
-		this.loaders = new ConfigDataLoaders(logFactory, locationNotFoundAction);
+		this.loaders = new ConfigDataLoaders(logFactory, bootstrapRegistry, locationNotFoundAction);
 		this.contributors = createContributors(binder);
 	}
 
 	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-			ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader) {
-		return new ConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
+			BootstrapRegistry bootstrapRegistry, ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder,
+			ResourceLoader resourceLoader) {
+		return new ConfigDataLocationResolvers(logFactory, bootstrapRegistry, locationNotFoundAction, binder,
+				resourceLoader);
 	}
 
 	private ConfigDataEnvironmentContributors createContributors(Binder binder) {

@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import java.util.List;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 

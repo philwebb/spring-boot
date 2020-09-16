@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.event;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -30,6 +31,8 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("serial")
 public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
+	private final BootstrapRegistry bootstrapRegistry;
+
 	private final ConfigurableEnvironment environment;
 
 	/**
@@ -37,11 +40,36 @@ public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent 
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @param environment the environment that was just created
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #ApplicationEnvironmentPreparedEvent(BootstrapRegistry, SpringApplication, String[], ConfigurableEnvironment)}
 	 */
+	@Deprecated
 	public ApplicationEnvironmentPreparedEvent(SpringApplication application, String[] args,
 			ConfigurableEnvironment environment) {
+		this(null, application, args, environment);
+	}
+
+	/**
+	 * Create a new {@link ApplicationEnvironmentPreparedEvent} instance.
+	 * @param bootstrapRegistry the bootstrap registry
+	 * @param application the current application
+	 * @param args the arguments the application is running with
+	 * @param environment the environment that was just created
+	 */
+	public ApplicationEnvironmentPreparedEvent(BootstrapRegistry bootstrapRegistry, SpringApplication application,
+			String[] args, ConfigurableEnvironment environment) {
 		super(application, args);
+		this.bootstrapRegistry = bootstrapRegistry;
 		this.environment = environment;
+	}
+
+	/**
+	 * Return the bootstap registry.
+	 * @return the bootstrap registry
+	 * @since 2.4.0
+	 */
+	public BootstrapRegistry getBootstrapRegistry() {
+		return this.bootstrapRegistry;
 	}
 
 	/**

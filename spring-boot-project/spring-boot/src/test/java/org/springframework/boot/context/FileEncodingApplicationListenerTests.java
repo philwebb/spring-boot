@@ -18,6 +18,7 @@ package org.springframework.boot.context;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -40,7 +41,7 @@ class FileEncodingApplicationListenerTests {
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
-			new SpringApplication(), new String[0], this.environment);
+			new DefaultBootstrapRegistry(), new SpringApplication(), new String[0], this.environment);
 
 	@Test
 	void testIllegalState() {

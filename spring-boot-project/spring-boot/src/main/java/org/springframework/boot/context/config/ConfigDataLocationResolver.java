@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -36,6 +37,8 @@ import org.springframework.core.io.ResourceLoader;
  * <li>{@link Binder} - if the resolver needs to obtain values from the initial
  * {@link Environment}</li>
  * <li>{@link ResourceLoader} - if the resolver needs a resource loader</li>
+ * <li>{@link BootstrapRegistry} - if the resolver needs use or initialize a bootstrap
+ * registry regardless of a location being resolved.</li>
  * </ul>
  * <p>
  * Resolvers may implement {@link Ordered} or use the {@link Order @Order} annotation. The

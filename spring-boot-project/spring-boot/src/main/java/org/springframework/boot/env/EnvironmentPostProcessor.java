@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;

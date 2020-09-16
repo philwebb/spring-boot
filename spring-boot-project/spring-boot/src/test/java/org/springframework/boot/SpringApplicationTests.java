@@ -146,6 +146,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
 
+	// FIXME Bootstrappers are applied
+	// FIXME BootstrapRegistry is available
+	// FIXME BootstrapReg gets application context prepared event
+	// FIXME add bootstrapper
+	// FIXME add bootstrapper from fatories
+
 	private String headlessProperty;
 
 	private ConfigurableApplicationContext context;

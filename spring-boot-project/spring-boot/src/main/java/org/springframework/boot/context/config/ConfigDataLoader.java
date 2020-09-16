@@ -20,6 +20,8 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry;
+
 /**
  * Strategy class that can be used used to load {@link ConfigData} instances from a
  * {@link ConfigDataLocation location}. Implementations should be added as a
@@ -27,6 +29,8 @@ import org.apache.commons.logging.Log;
  * supported:
  * <ul>
  * <li>{@link Log} - if the resolver needs deferred logging</li>
+ * <li>{@link BootstrapRegistry} - if the resolver needs use or initialize a bootstrap
+ * registry regardless of a location being resolved.</li>
  * </ul>
  * <p>
  * Multiple loaders cannot claim the same location.

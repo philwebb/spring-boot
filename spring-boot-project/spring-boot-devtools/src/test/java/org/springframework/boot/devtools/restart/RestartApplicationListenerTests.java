@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -90,9 +92,10 @@ class RestartApplicationListenerTests {
 	private void testInitialize(boolean failed) {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
+		BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
-		listener.onApplicationEvent(new ApplicationStartingEvent(application, ARGS));
+		listener.onApplicationEvent(new ApplicationStartingEvent(bootstrapRegistry, application, ARGS));
 		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
 		listener.onApplicationEvent(new ApplicationPreparedEvent(application, ARGS, context));

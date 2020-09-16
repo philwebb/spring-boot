@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.event;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -35,13 +36,38 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("serial")
 public class ApplicationStartingEvent extends SpringApplicationEvent {
 
+	private final BootstrapRegistry bootstrapRegistry;
+
 	/**
 	 * Create a new {@link ApplicationStartingEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #ApplicationStartingEvent(BootstrapRegistry, SpringApplication, String[])}
 	 */
+	@Deprecated
 	public ApplicationStartingEvent(SpringApplication application, String[] args) {
+		this(null, application, args);
+	}
+
+	/**
+	 * Create a new {@link ApplicationStartingEvent} instance.
+	 * @param bootstrapRegistry the bootstrap registry
+	 * @param application the current application
+	 * @param args the arguments the application is running with
+	 */
+	public ApplicationStartingEvent(BootstrapRegistry bootstrapRegistry, SpringApplication application, String[] args) {
 		super(application, args);
+		this.bootstrapRegistry = bootstrapRegistry;
+	}
+
+	/**
+	 * Return the bootstap registry.
+	 * @return the bootstrap registry
+	 * @since 2.4.0
+	 */
+	public BootstrapRegistry getBootstrapRegistry() {
+		return this.bootstrapRegistry;
 	}
 
 }

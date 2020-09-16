@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -123,7 +124,8 @@ class ApplicationPidFileWriterTests {
 		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);
-		listener.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
+		listener.onApplicationEvent(
+				new ApplicationStartingEvent(new DefaultBootstrapRegistry(), new SpringApplication(), new String[] {}));
 		assertThat(contentOf(file)).isNotEmpty();
 	}
 
@@ -170,7 +172,8 @@ class ApplicationPidFileWriterTests {
 
 	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[] {}, environment);
+		return new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapRegistry(), new SpringApplication(),
+				new String[] {}, environment);
 	}
 
 	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {

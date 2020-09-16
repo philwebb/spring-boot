@@ -23,9 +23,9 @@ import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
@@ -147,7 +147,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			BootstrapRegistry bootstrapRegistry, Collection<String> additionalProfiles) {
 		DeferredLogFactory logFactory = Supplier::get;
-		bootstrapRegistry = (bootstrapRegistry != null) ? bootstrapRegistry : new DefaultBootstrapRegisty();
+		bootstrapRegistry = (bootstrapRegistry != null) ? bootstrapRegistry : new DefaultBootstrapRegistry();
 		ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(logFactory,
 				bootstrapRegistry);
 		postProcessor.postProcessEnvironment(environment, resourceLoader, additionalProfiles);

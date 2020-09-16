@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.BootstrapRegistry.ApplicationContextPreparedListener;
+import org.springframework.boot.BootstrapRegistry.Registration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 
@@ -42,8 +45,8 @@ class TestConfigDataBootstrap {
 
 		@Override
 		public List<Location> resolve(ConfigDataLocationResolverContext context, String location, boolean optional) {
-			ResolverHelper helper = context.getBootstrapRegistry().get(ResolverHelper.class,
-					() -> new ResolverHelper(location));
+			ResolverHelper helper = context.getBootstrapRegistry()
+					.registerIfAbsent(ResolverHelper.class, Registration.of(new ResolverHelper(location))).get();
 			return Collections.singletonList(new Location(helper));
 		}
 
@@ -53,8 +56,9 @@ class TestConfigDataBootstrap {
 
 		@Override
 		public ConfigData load(ConfigDataLoaderContext context, Location location) throws IOException {
-			context.getBootstrapRegistry().get(LoaderHelper.class, () -> new LoaderHelper(location),
-					LoaderHelper::addToContext);
+			LoaderHelper helper = context.getBootstrapRegistry()
+					.registerIfAbsent(LoaderHelper.class, Registration.of(new LoaderHelper(location))).get();
+			context.getBootstrapRegistry().addApplicationContextPreparedListener(helper);
 			return new ConfigData(
 					Collections.singleton(new MapPropertySource("loaded", Collections.singletonMap("test", "test"))));
 		}
@@ -94,7 +98,7 @@ class TestConfigDataBootstrap {
 
 	}
 
-	static class LoaderHelper {
+	static class LoaderHelper implements ApplicationContextPreparedListener {
 
 		private final Location location;
 
@@ -106,8 +110,10 @@ class TestConfigDataBootstrap {
 			return this.location;
 		}
 
-		static void addToContext(ConfigurableApplicationContext context, LoaderHelper loaderHelper) {
-			context.getBeanFactory().registerSingleton("loaderHelper", loaderHelper);
+		@Override
+		public void onApplicationContextPrepared(BootstrapRegistry bootstrapRegistry,
+				ConfigurableApplicationContext applicationContext) {
+			applicationContext.getBeanFactory().registerSingleton("loaderHelper", this);
 		}
 
 	}

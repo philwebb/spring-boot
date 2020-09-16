@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -52,7 +52,7 @@ class ConfigDataEnvironmentTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
-	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 
 	private MockEnvironment environment = new MockEnvironment();
 
@@ -214,9 +214,11 @@ class ConfigDataEnvironmentTests {
 
 		@Override
 		protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-				ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader) {
+				BootstrapRegistry bootstrapRegistry, ConfigDataLocationNotFoundAction locationNotFoundAction,
+				Binder binder, ResourceLoader resourceLoader) {
 			this.configDataLocationResolversBinder = binder;
-			return super.createConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
+			return super.createConfigDataLocationResolvers(logFactory, bootstrapRegistry, locationNotFoundAction,
+					binder, resourceLoader);
 		}
 
 		Binder getConfigDataLocationResolversBinder() {

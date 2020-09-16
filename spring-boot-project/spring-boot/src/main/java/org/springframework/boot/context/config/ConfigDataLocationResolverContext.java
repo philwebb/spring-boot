@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.config;
 
+import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.origin.Origin;
 

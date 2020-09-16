@@ -38,15 +38,38 @@ public interface SpringApplicationRunListener {
 	/**
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
+	 * @param bootstrapRegistry the bootstrap registry
 	 */
+	default void starting(BootstrapRegistry bootstrapRegistry) {
+		starting();
+	}
+
+	/**
+	 * Called immediately when the run method has first started. Can be used for very
+	 * early initialization.
+	 * @deprecated since 2.4.0 in favor of {@link #starting(BootstrapRegistry)}
+	 */
+	@Deprecated
 	default void starting() {
 	}
 
 	/**
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
+	 * @param bootstrapRegistry the bootstrap registry
 	 * @param environment the environment
 	 */
+	default void environmentPrepared(BootstrapRegistry bootstrapRegistry, ConfigurableEnvironment environment) {
+		environmentPrepared(environment);
+	}
+
+	/**
+	 * Called once the environment has been prepared, but before the
+	 * {@link ApplicationContext} has been created.
+	 * @param environment the environment
+	 * @deprecated since 2.4.0 in favor of {@link #starting(BootstrapRegistry)}
+	 */
+	@Deprecated
 	default void environmentPrepared(ConfigurableEnvironment environment) {
 	}
 

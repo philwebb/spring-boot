@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
@@ -53,8 +54,8 @@ class DelegatingApplicationListenerTests {
 	void orderedInitialize() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"context.listener.classes=" + MockInitB.class.getName() + "," + MockInitA.class.getName());
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapRegistry(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getSingleton("a")).isEqualTo("a");
@@ -63,15 +64,15 @@ class DelegatingApplicationListenerTests {
 
 	@Test
 	void noInitializers() {
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapRegistry(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Test
 	void emptyInitializers() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "context.listener.classes:");
-		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[0],
-				this.context.getEnvironment()));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapRegistry(),
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

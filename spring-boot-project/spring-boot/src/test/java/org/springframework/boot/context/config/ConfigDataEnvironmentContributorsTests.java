@@ -30,13 +30,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapRegistry;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.env.BootstrapRegistry;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.env.MockPropertySource;
@@ -60,7 +60,7 @@ class ConfigDataEnvironmentContributorsTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
-	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
 
 	private MockEnvironment environment;
 
@@ -80,9 +80,10 @@ class ConfigDataEnvironmentContributorsTests {
 	void setup() {
 		this.environment = new MockEnvironment();
 		this.binder = Binder.get(this.environment);
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapRegistry,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, null);
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL);
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapRegistry,
+				ConfigDataLocationNotFoundAction.FAIL);
 		this.importer = new ConfigDataImporter(resolvers, loaders);
 		this.activationContext = new ConfigDataActivationContext(CloudPlatform.KUBERNETES, null);
 	}
