@@ -17,20 +17,15 @@
 package org.springframework.boot;
 
 /**
- * Callback interface that can be used to initialize a {@link BootstrapRegistry} before it
- * is used.
+ * A {@link BootstrapContext} that also provides configuration methods via the
+ * {@link BootstrapRegistry} interface.
  *
  * @author Phillip Webb
  * @since 2.4.0
- * @see SpringApplication#addBootstrapper(Bootstrapper)
  * @see BootstrapRegistry
+ * @see BootstrapContext
+ * @see DefaultBootstrapContext
  */
-public interface Bootstrapper {
-
-	/**
-	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
-	 * @param registry the registry to initialize
-	 */
-	void intitialize(BootstrapRegistry registry);
+public interface ConfigurableBootstrapContext extends BootstrapRegistry, BootstrapContext {
 
 }

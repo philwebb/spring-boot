@@ -20,77 +20,75 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Supplier;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.Assert;
 
 /**
- * Default implementation of {@link BootstrapRegistry}.
+ * Default {@link ConfigurableBootstrapContext} implementation.
  *
  * @author Phillip Webb
  * @since 2.4.0
  */
-public class DefaultBootstrapRegistry implements BootstrapRegistry {
+public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 
-	private final Map<Class<?>, Registration<?>> registrations = new HashMap<>();
+	private final Map<Class<?>, InstanceSupplier<?>> instanceSuppliers = new HashMap<>();
 
 	private final Map<Class<?>, Object> instances = new HashMap<>();
 
 	private final Set<ApplicationContextPreparedListener> applicationContextPreparedListeners = new CopyOnWriteArraySet<>();
 
 	@Override
-	public <T> Supplier<T> register(Class<T> type, Registration<T> registration) {
-		return register(type, registration, true);
+	public <T> void register(Class<T> type, InstanceSupplier<T> instanceSupplier) {
+		register(type, instanceSupplier, true);
 	}
 
 	@Override
-	public <T> Supplier<T> registerIfAbsent(Class<T> type, Registration<T> registration) {
-		return register(type, registration, false);
+	public <T> void registerIfAbsent(Class<T> type, InstanceSupplier<T> instanceSupplier) {
+		register(type, instanceSupplier, false);
 	}
 
-	private <T> Supplier<T> register(Class<T> type, Registration<T> registration, boolean replaceExisting) {
+	private <T> void register(Class<T> type, InstanceSupplier<T> instanceSupplier, boolean replaceExisting) {
 		Assert.notNull(type, "Type must not be null");
-		Assert.notNull(registration, "Registration must not be null");
-		synchronized (this.registrations) {
-			boolean alreadyRegistered = this.registrations.containsKey(type);
+		Assert.notNull(instanceSupplier, "InstanceSupplier must not be null");
+		synchronized (this.instanceSuppliers) {
+			boolean alreadyRegistered = this.instanceSuppliers.containsKey(type);
 			if (replaceExisting || !alreadyRegistered) {
 				Assert.state(!this.instances.containsKey(type), () -> type.getName() + " has already been created");
-				this.registrations.put(type, registration);
+				this.instanceSuppliers.put(type, instanceSupplier);
 			}
 		}
-		return () -> get(type);
 	}
 
 	@Override
 	public <T> boolean isRegistered(Class<T> type) {
-		synchronized (this.registrations) {
-			return this.registrations.containsKey(type);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> Registration<T> getRegistration(Class<T> type) {
-		synchronized (this.registrations) {
-			return (Registration<T>) this.registrations.get(type);
+		synchronized (this.instanceSuppliers) {
+			return this.instanceSuppliers.containsKey(type);
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(Class<T> type) {
-		synchronized (this.registrations) {
-			Registration<?> registration = this.registrations.get(type);
-			Assert.state(registration != null, () -> type.getName() + " has not been registered");
-			return (T) this.instances.computeIfAbsent(type, (k) -> registration.createInstance(this));
+	public <T> InstanceSupplier<T> getRegisteredInstanceSupplier(Class<T> type) {
+		synchronized (this.instanceSuppliers) {
+			return (InstanceSupplier<T>) this.instanceSuppliers.get(type);
 		}
 	}
 
 	@Override
 	public void addApplicationContextPreparedListener(ApplicationContextPreparedListener listener) {
 		this.applicationContextPreparedListeners.add(listener);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T get(Class<T> type) throws IllegalStateException {
+		synchronized (this.instanceSuppliers) {
+			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
+			Assert.state(instanceSupplier != null, () -> type.getName() + " has not been registered");
+			return (T) this.instances.computeIfAbsent(type, (k) -> instanceSupplier.get(this));
+		}
 	}
 
 	/**

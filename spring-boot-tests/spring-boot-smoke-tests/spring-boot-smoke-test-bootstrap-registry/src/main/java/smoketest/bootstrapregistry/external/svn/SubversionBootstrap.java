@@ -18,7 +18,7 @@ package smoketest.bootstrapregistry.external.svn;
 
 import java.util.function.Function;
 
-import org.springframework.boot.BootstrapRegistry.Registration;
+import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.Bootstrapper;
 
 /**
@@ -38,12 +38,13 @@ public final class SubversionBootstrap {
 	 * @return a {@link Bootstrapper} instance
 	 */
 	public static Bootstrapper withCustomClient(Function<SubversionServerCertificate, SubversionClient> clientFactory) {
-		return (registry) -> {
-			registry.register(SubversionClient.class, Registration.suppliedBy(() -> {
-				SubversionServerCertificate certificate = registry.get(SubversionServerCertificate.class);
-				return clientFactory.apply(certificate);
-			}));
-		};
+		return (registry) -> registry.register(SubversionClient.class,
+				(bootstrapContext) -> createSubversionClient(bootstrapContext, clientFactory));
+	}
+
+	private static SubversionClient createSubversionClient(BootstrapContext bootstrapContext,
+			Function<SubversionServerCertificate, SubversionClient> clientFactory) {
+		return clientFactory.apply(bootstrapContext.get(SubversionServerCertificate.class));
 	}
 
 }

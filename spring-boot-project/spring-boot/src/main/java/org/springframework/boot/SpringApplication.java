@@ -310,23 +310,22 @@ public class SpringApplication {
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
-		DefaultBootstrapRegistry bootstrapRegistry = createBootstrapRegistry();
+		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.starting(bootstrapRegistry, this.mainApplicationClass);
+		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapRegistry,
-					applicationArguments);
+			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class<?>[] { ConfigurableApplicationContext.class }, context);
-			prepareContext(bootstrapRegistry, context, environment, listeners, applicationArguments, printedBanner);
+			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -351,19 +350,19 @@ public class SpringApplication {
 		return context;
 	}
 
-	private DefaultBootstrapRegistry createBootstrapRegistry() {
-		DefaultBootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegistry();
-		this.bootstrappers.forEach((initializer) -> initializer.intitialize(bootstrapRegistry));
-		return bootstrapRegistry;
+	private DefaultBootstrapContext createBootstrapContext() {
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+		this.bootstrappers.forEach((initializer) -> initializer.intitialize(bootstrapContext));
+		return bootstrapContext;
 	}
 
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
-			BootstrapRegistry bootstrapRegistry, ApplicationArguments applicationArguments) {
+			DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments) {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		ConfigurationPropertySources.attach(environment);
-		listeners.environmentPrepared(bootstrapRegistry, environment);
+		listeners.environmentPrepared(bootstrapContext, environment);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
 		configureAdditionalProfiles(environment);
 		bindToSpringApplication(environment);
@@ -386,14 +385,14 @@ public class SpringApplication {
 		}
 	}
 
-	private void prepareContext(DefaultBootstrapRegistry bootstrapRegistry, ConfigurableApplicationContext context,
+	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
 			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
-		bootstrapRegistry.applicationContextPrepared(context);
+		bootstrapContext.applicationContextPrepared(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);

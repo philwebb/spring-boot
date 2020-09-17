@@ -19,9 +19,10 @@ package smoketest.bootstrapregistry.external.svn;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.BootstrapRegistry.ApplicationContextPreparedListener;
-import org.springframework.boot.BootstrapRegistry.Registration;
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataLoader;
 import org.springframework.boot.context.config.ConfigDataLoaderContext;
@@ -44,25 +45,25 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 		bootstrapRegistry.addApplicationContextPreparedListener(applicationContextPreparedListener);
 	}
 
-	private SubversionClient createSubversionClient(BootstrapRegistry registry) {
-		return new SubversionClient(registry.get(SubversionServerCertificate.class));
+	private SubversionClient createSubversionClient(BootstrapContext bootstrapContext) {
+		return new SubversionClient(bootstrapContext.get(SubversionServerCertificate.class));
 	}
 
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, SubversionConfigDataLocation location)
 			throws IOException, ConfigDataLocationNotFoundException {
-		context.getBootstrapRegistry().registerIfAbsent(SubversionServerCertificate.class,
-				Registration.of(location.getServerCertificate()));
-		SubversionClient client = context.getBootstrapRegistry().get(SubversionClient.class);
+		context.getBootstrapContext().registerIfAbsent(SubversionServerCertificate.class,
+				InstanceSupplier.of(location.getServerCertificate()));
+		SubversionClient client = context.getBootstrapContext().get(SubversionClient.class);
 		String loaded = client.load(location.getLocation());
 		PropertySource<?> propertySource = new MapPropertySource("svn", Collections.singletonMap("svn", loaded));
 		return new ConfigData(Collections.singleton(propertySource));
 	}
 
-	private static void applicationContextPrepared(BootstrapRegistry bootstrapRegistry,
+	private static void applicationContextPrepared(BootstrapContext bootstrapContext,
 			ConfigurableApplicationContext applicationContext) {
 		applicationContext.getBeanFactory().registerSingleton("subversionClient",
-				bootstrapRegistry.get(SubversionClient.class));
+				bootstrapContext.get(SubversionClient.class));
 	}
 
 }

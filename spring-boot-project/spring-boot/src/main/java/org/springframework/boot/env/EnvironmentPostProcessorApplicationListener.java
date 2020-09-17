@@ -18,7 +18,7 @@ package org.springframework.boot.env;
 
 import java.util.List;
 
-import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -96,7 +96,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		SpringApplication application = event.getSpringApplication();
-		for (EnvironmentPostProcessor postProcessor : getEnvironmentPostProcessors(event.getBootstrapRegistry())) {
+		for (EnvironmentPostProcessor postProcessor : getEnvironmentPostProcessors(event.getBootstrapContext())) {
 			postProcessor.postProcessEnvironment(environment, application);
 		}
 	}
@@ -113,8 +113,8 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 		this.deferredLogs.switchOverAll();
 	}
 
-	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(BootstrapRegistry bootstrapRegistry) {
-		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs, bootstrapRegistry);
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(ConfigurableBootstrapContext bootstrapContext) {
+		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs, bootstrapContext);
 	}
 
 	@Override

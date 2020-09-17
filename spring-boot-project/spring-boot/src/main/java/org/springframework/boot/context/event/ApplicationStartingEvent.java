@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.event;
 
-import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -36,14 +36,14 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("serial")
 public class ApplicationStartingEvent extends SpringApplicationEvent {
 
-	private final BootstrapRegistry bootstrapRegistry;
+	private final ConfigurableBootstrapContext bootstrapContext;
 
 	/**
 	 * Create a new {@link ApplicationStartingEvent} instance.
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 * @deprecated since 2.4.0 in favor of
-	 * {@link #ApplicationStartingEvent(BootstrapRegistry, SpringApplication, String[])}
+	 * {@link #ApplicationStartingEvent(ConfigurableBootstrapContext, SpringApplication, String[])}
 	 */
 	@Deprecated
 	public ApplicationStartingEvent(SpringApplication application, String[] args) {
@@ -52,22 +52,23 @@ public class ApplicationStartingEvent extends SpringApplicationEvent {
 
 	/**
 	 * Create a new {@link ApplicationStartingEvent} instance.
-	 * @param bootstrapRegistry the bootstrap registry
+	 * @param bootstrapContext the bootstrap context
 	 * @param application the current application
 	 * @param args the arguments the application is running with
 	 */
-	public ApplicationStartingEvent(BootstrapRegistry bootstrapRegistry, SpringApplication application, String[] args) {
+	public ApplicationStartingEvent(ConfigurableBootstrapContext bootstrapContext, SpringApplication application,
+			String[] args) {
 		super(application, args);
-		this.bootstrapRegistry = bootstrapRegistry;
+		this.bootstrapContext = bootstrapContext;
 	}
 
 	/**
-	 * Return the bootstap registry.
-	 * @return the bootstrap registry
+	 * Return the bootstap context.
+	 * @return the bootstrap context
 	 * @since 2.4.0
 	 */
-	public BootstrapRegistry getBootstrapRegistry() {
-		return this.bootstrapRegistry;
+	public ConfigurableBootstrapContext getBootstrapContext() {
+		return this.bootstrapContext;
 	}
 
 }
