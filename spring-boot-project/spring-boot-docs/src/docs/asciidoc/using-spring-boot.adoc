@@ -630,9 +630,12 @@ The report shows the changes to your application's auto-configuration as you mak
 
 To disable the logging of the report, set the following property:
 
-[indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	spring.devtools.restart.log-condition-evaluation-delta=false
+	spring:
+	  devtools:
+	    restart:
+	      log-condition-evaluation-delta: false
 ----
 
 
