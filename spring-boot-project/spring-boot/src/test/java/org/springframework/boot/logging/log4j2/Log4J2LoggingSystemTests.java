@@ -29,10 +29,12 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -332,6 +334,38 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null, null, null);
 		verify(listener, times(4)).propertyChange(any(PropertyChangeEvent.class));
+	}
+
+	@Test
+	void getLoggingConfigurationWithResetLevelReturnsNull() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
+		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+		this.loggingSystem.setLogLevel("com.example.test", null);
+		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(updatedConfiguration).isNull();
+	}
+
+	@Test
+	void getLoggingConfigurationWithResetLevelWhenAlreadyConfiguredReturnsParentConfiguredLevel() {
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		loggerContext.getConfiguration().addLogger("com.example.test",
+				new LoggerConfig("com.example.test", Level.INFO, false));
+		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
+		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(configuration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+		this.loggingSystem.setLogLevel("com.example.test", null);
+		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
+		assertThat(updatedConfiguration)
+				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.WARN, LogLevel.WARN));
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {

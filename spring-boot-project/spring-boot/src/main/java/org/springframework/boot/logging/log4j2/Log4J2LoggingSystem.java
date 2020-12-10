@@ -211,16 +211,37 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public void setLogLevel(String loggerName, LogLevel logLevel) {
-		Level level = LEVELS.convertSystemToNative(logLevel);
+		setLogLevel(loggerName, LEVELS.convertSystemToNative(logLevel));
+	}
+
+	private void setLogLevel(String loggerName, Level level) {
 		LoggerConfig logger = getLogger(loggerName);
+		if (level == null) {
+			clearLogLevel(loggerName, logger);
+		}
+		else {
+			setLogLevel(loggerName, logger, level);
+		}
+		getLoggerContext().updateLoggers();
+	}
+
+	private void clearLogLevel(String loggerName, LoggerConfig logger) {
+		if (logger instanceof LevelSetLoggerConfig) {
+			getLoggerContext().getConfiguration().removeLogger(loggerName);
+		}
+		else {
+			logger.setLevel(null);
+		}
+	}
+
+	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
 		if (logger == null) {
-			logger = new LoggerConfig(loggerName, level, true);
-			getLoggerContext().getConfiguration().addLogger(loggerName, logger);
+			getLoggerContext().getConfiguration().addLogger(loggerName,
+					new LevelSetLoggerConfig(loggerName, level, true));
 		}
 		else {
 			logger.setLevel(level);
 		}
-		getLoggerContext().updateLoggers();
 	}
 
 	@Override
@@ -322,6 +343,17 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		@Override
 		public void run() {
 			getLoggerContext().stop();
+		}
+
+	}
+
+	/**
+	 * {@link LoggerConfig} used when the user has set a specific {@link Level}.
+	 */
+	private static class LevelSetLoggerConfig extends LoggerConfig {
+
+		LevelSetLoggerConfig(String name, Level level, boolean additive) {
+			super(name, level, additive);
 		}
 
 	}
