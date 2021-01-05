@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -162,8 +161,7 @@ class WelcomePageHandlerMappingTests {
 			return new WelcomePageHandlerMapping(
 					templateAvailabilityProviders
 							.getIfAvailable(() -> new TemplateAvailabilityProviders(applicationContext)),
-					applicationContext, Optional.ofNullable(staticIndexPage.getIfAvailable()), staticPathPattern);
-
+					applicationContext, staticIndexPage.getIfAvailable(), staticPathPattern);
 		}
 
 	}

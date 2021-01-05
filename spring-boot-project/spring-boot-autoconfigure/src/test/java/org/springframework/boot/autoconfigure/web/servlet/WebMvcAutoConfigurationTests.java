@@ -814,7 +814,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getResourceMappingLocations(ApplicationContext context) {
 		Object bean = context.getBean("resourceHandlerMapping");
 		if (bean instanceof HandlerMapping) {
-			return getMappingLocations(context.getBean("resourceHandlerMapping", HandlerMapping.class));
+			return getMappingLocations((HandlerMapping) bean);
 		}
 		assertThat(bean.toString()).isEqualTo("null");
 		return Collections.emptyMap();

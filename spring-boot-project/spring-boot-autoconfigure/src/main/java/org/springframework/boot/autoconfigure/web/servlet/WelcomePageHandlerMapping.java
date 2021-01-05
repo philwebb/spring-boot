@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,9 +48,9 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Optional<Resource> welcomePage, String staticPathPattern) {
-		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-			logger.info("Adding welcome page: " + welcomePage.get());
+			ApplicationContext applicationContext, Resource welcomePage, String staticPathPattern) {
+		if (welcomePage != null && "/**".equals(staticPathPattern)) {
+			logger.info("Adding welcome page: " + welcomePage);
 			setRootViewName("forward:index.html");
 		}
 		else if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
