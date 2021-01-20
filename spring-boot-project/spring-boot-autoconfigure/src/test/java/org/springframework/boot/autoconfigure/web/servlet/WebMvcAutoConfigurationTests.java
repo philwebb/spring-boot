@@ -850,7 +850,8 @@ class WebMvcAutoConfigurationTests {
 	@SuppressWarnings("deprecation")
 	void useSuffixPatternMatch() {
 		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
-				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
+				"spring.mvc.pathmatch.use-registered-suffix-pattern:true",
+				"spring.mvc.pathmatch.matching-strategy=ant-path-matcher").run((context) -> {
 					RequestMappingHandlerMapping handlerMapping = context.getBean(RequestMappingHandlerMapping.class);
 					assertThat(handlerMapping.useSuffixPatternMatch()).isTrue();
 					assertThat(handlerMapping.useRegisteredSuffixPatternMatch()).isTrue();
@@ -975,10 +976,11 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void urlPathHelperDoesNotUseFullPathWithServletMapping() {
-		this.contextRunner.withPropertyValues("spring.mvc.servlet.path=/test/").run((context) -> {
-			UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
-			assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
-		});
+		this.contextRunner.withPropertyValues("spring.mvc.servlet.path=/test/",
+				"spring.mvc.pathmatch.matching-strategy=ant-path-matcher").run((context) -> {
+					UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
+					assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
+				});
 	}
 
 	@Test
