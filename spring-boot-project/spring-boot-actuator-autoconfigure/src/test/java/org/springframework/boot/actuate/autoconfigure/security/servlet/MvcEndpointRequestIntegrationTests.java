@@ -40,25 +40,27 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 
 	@Test
 	void toLinksWhenServletPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin").run((context) -> {
-			WebTestClient webTestClient = getWebTestClient(context);
-			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
-		});
+		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
+				"spring.mvc.pathmatch.matching-strategy=ant-path-matcher").run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/").exchange().expectStatus().isOk();
+					webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
+				});
 	}
 
 	@Test
 	void toEndpointWhenServletPathSetShouldMatch() {
-		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin").run((context) -> {
-			WebTestClient webTestClient = getWebTestClient(context);
-			webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
-		});
+		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
+				"spring.mvc.pathmatch.matching-strategy=ant-path-matcher").run((context) -> {
+					WebTestClient webTestClient = getWebTestClient(context);
+					webTestClient.get().uri("/admin/actuator/e1").exchange().expectStatus().isOk();
+				});
 	}
 
 	@Test
 	void toAnyEndpointWhenServletPathSetShouldMatch() {
-		getContextRunner()
-				.withPropertyValues("spring.mvc.servlet.path=/admin", "spring.security.user.password=password")
+		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
+				"spring.mvc.pathmatch.matching-strategy=ant-path-matcher", "spring.security.user.password=password")
 				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
 					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
@@ -83,8 +85,10 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 
 	@Test
 	void toAnyEndpointWhenServletPathSetShouldMatchServletEndpoint() {
-		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
-				"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
+		getContextRunner()
+				.withPropertyValues("spring.mvc.servlet.path=/admin",
+						"spring.mvc.pathmatch.matching-strategy=ant-path-matcher",
+						"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
 				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
 					webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();

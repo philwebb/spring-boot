@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "spring.mvc.servlet.path=/example" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = { "management.server.port=0",
+		"spring.mvc.servlet.path=/example", "spring.mvc.pathmatch.matching-strategy=ant-path-matcher" })
 class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort

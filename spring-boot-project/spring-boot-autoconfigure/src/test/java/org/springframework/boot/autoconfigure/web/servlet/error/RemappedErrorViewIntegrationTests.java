@@ -44,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.mvc.servlet.path:/spring/")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "spring.mvc.servlet.path=/spring/", "spring.mvc.pathmatch.matching-strategy=ant-path-matcher" })
 @DirtiesContext
 class RemappedErrorViewIntegrationTests {
 

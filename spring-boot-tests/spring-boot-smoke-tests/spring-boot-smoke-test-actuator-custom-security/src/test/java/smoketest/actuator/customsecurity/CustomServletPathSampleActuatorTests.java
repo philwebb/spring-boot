@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "spring.mvc.servlet.path=/example")
+		properties = { "spring.mvc.servlet.path=/example", "spring.mvc.pathmatch.matching-strategy=ant-path-matcher" })
 class CustomServletPathSampleActuatorTests extends AbstractSampleActuatorCustomSecurityTests {
 
 	@LocalServerPort
