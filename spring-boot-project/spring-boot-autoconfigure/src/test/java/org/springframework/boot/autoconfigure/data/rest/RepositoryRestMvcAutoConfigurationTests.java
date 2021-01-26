@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.rest;
 import java.net.URI;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -54,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
+@Disabled
 class RepositoryRestMvcAutoConfigurationTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
