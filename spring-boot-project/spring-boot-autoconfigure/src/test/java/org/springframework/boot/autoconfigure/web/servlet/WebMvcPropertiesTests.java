@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.assertj.core.util.Throwables;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.IncompatibleConfigurationException;
@@ -81,6 +82,7 @@ class WebMvcPropertiesTests {
 	}
 
 	@Test
+	@Disabled
 	void incompatiblePathMatchServletPathConfig() {
 		this.properties.getPathmatch().setMatchingStrategy(WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER);
 		this.properties.getServlet().setPath("/test");
