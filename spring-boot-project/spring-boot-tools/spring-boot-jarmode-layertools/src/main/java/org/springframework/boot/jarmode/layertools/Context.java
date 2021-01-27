@@ -55,11 +55,16 @@ class Context {
 	 * @param workingDir the working directory
 	 */
 	Context(File jarFile, File workingDir) {
-		Assert.state(jarFile != null && jarFile.isFile() && jarFile.exists()
-				&& jarFile.getName().toLowerCase().endsWith(".jar"), "Unable to find source JAR");
+		Assert.state(jarFile != null && jarFile.isFile() && jarFile.exists() && isJarOrWar(jarFile),
+				"Unable to find source JAR");
 		this.jarFile = jarFile;
 		this.workingDir = workingDir;
 		this.relativeDir = deduceRelativeDir(jarFile.getParentFile(), this.workingDir);
+	}
+
+	private boolean isJarOrWar(File jarFile) {
+		String name = jarFile.getName().toLowerCase();
+		return name.endsWith(".jar") || name.endsWith(".war");
 	}
 
 	private static File getSourceJarFile() {

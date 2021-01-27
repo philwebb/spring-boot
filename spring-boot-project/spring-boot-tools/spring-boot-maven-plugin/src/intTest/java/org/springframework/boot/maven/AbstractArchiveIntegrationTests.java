@@ -16,15 +16,22 @@
 
 package org.springframework.boot.maven;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
@@ -58,6 +65,33 @@ abstract class AbstractArchiveIntegrationTests {
 			}
 
 		};
+	}
+
+	protected Map<String, List<String>> readLayerIndex(JarFile jarFile) throws IOException {
+		if (getLayersIndexLocation() == null) {
+			return Collections.emptyMap();
+		}
+		Map<String, List<String>> index = new LinkedHashMap<>();
+		ZipEntry indexEntry = jarFile.getEntry(getLayersIndexLocation());
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(indexEntry)))) {
+			String line = reader.readLine();
+			String layer = null;
+			while (line != null) {
+				if (line.startsWith("- ")) {
+					layer = line.substring(3, line.length() - 2);
+					index.put(layer, new ArrayList<>());
+				}
+				else if (line.startsWith("  - ")) {
+					index.computeIfAbsent(layer, (key) -> new ArrayList<>()).add(line.substring(5, line.length() - 1));
+				}
+				line = reader.readLine();
+			}
+			return index;
+		}
+	}
+
+	protected String getLayersIndexLocation() {
+		return null;
 	}
 
 	static final class JarAssert extends AbstractAssert<JarAssert, File> {

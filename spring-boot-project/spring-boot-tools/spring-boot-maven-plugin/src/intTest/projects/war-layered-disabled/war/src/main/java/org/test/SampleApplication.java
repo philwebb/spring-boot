@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools;
+package org.test;
 
-/**
- * A specialization of {@link Layout} that repackages an existing archive by moving its
- * content to a new location.
- *
- * @author Andy Wilkinson
- * @since 1.4.0
- */
-public interface RepackagingLayout extends Layout {
+public class SampleApplication {
 
-	/**
-	 * Returns the location to which classes should be moved.
-	 * @return the repackaged classes location
-	 */
-	String getRepackagedClassesLocation();
+	public static void main(String[] args) {
+	}
 
 }

@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -90,11 +91,11 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @throws IOException if the entries cannot be written
 	 */
 	public void writeEntries(JarFile jarFile) throws IOException {
-		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
+		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER, (name) -> false);
 	}
 
-	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
-			throws IOException {
+	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			Predicate<String> libraryPredicate) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
@@ -103,7 +104,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
 				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
-					writeEntry(transformedEntry, entryWriter, unpackHandler, true);
+					boolean updateLayerIndex = !libraryPredicate.test(entry.getName());
+					writeEntry(transformedEntry, entryWriter, unpackHandler, updateLayerIndex);
 				}
 			}
 		}

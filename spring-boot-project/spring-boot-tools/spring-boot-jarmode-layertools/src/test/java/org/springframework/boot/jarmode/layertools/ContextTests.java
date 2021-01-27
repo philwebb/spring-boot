@@ -51,14 +51,6 @@ class ContextTests {
 	}
 
 	@Test
-	void createWhenSourceIsNotJarThrowsException() throws Exception {
-		File zip = new File(this.temp, "test.zip");
-		Files.createFile(zip.toPath());
-		assertThatIllegalStateException().isThrownBy(() -> new Context(zip, this.temp))
-				.withMessage("Unable to find source JAR");
-	}
-
-	@Test
 	void getJarFileReturnsJar() throws Exception {
 		File jar = new File(this.temp, "test.jar");
 		Files.createFile(jar.toPath());
