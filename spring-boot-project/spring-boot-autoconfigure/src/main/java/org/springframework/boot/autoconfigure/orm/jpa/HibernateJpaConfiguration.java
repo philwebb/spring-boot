@@ -128,9 +128,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(this.hibernateProperties
-				.determineHibernateProperties(getProperties().getProperties(), new HibernateSettings()
-						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+		Map<String, String> properties = getProperties().getProperties();
+		HibernateSettings customizers = new HibernateSettings().ddlAuto(defaultDdlMode)
+				.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers);
+		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(properties, customizers));
 	}
 
 	@Override
@@ -141,6 +142,9 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT)) {
 			configureProviderDisablesAutocommit(vendorProperties);
+		}
+		if (!vendorProperties.containsKey(AvailableSettings.SCHEMA_MANAGEMENT_TOOL)) {
+			configureSchemaManagementTool(vendorProperties);
 		}
 	}
 
@@ -166,6 +170,10 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private boolean isDataSourceAutoCommitDisabled() {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(getDataSource());
 		return poolMetadata != null && Boolean.FALSE.equals(poolMetadata.getDefaultAutoCommit());
+	}
+
+	private void configureSchemaManagementTool(Map<String, Object> vendorProperties) {
+		vendorProperties.put(AvailableSettings.SCHEMA_MANAGEMENT_TOOL, new SpringBootSchemaManagementTool());
 	}
 
 	private boolean runningOnWebSphere() {
