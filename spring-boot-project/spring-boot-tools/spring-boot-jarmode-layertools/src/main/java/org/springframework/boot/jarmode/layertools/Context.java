@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  */
 class Context {
 
-	private final File jarFile;
+	private final File archiveFile;
 
 	private final File workingDir;
 
@@ -46,20 +46,23 @@ class Context {
 	 * Create a new {@link Context} instance.
 	 */
 	Context() {
-		this(getSourceJarFile(), Paths.get(".").toAbsolutePath().normalize().toFile());
+		this(getSourceArchiveFile(), Paths.get(".").toAbsolutePath().normalize().toFile());
 	}
 
 	/**
 	 * Create a new {@link Context} instance with the specified value.
-	 * @param jarFile the source jar file
+	 * @param archiveFile the source archive file
 	 * @param workingDir the working directory
 	 */
-	Context(File jarFile, File workingDir) {
-		Assert.state(jarFile != null && jarFile.isFile() && jarFile.exists() && isJarOrWar(jarFile),
-				"Unable to find source JAR");
-		this.jarFile = jarFile;
+	Context(File archiveFile, File workingDir) {
+		Assert.state(isExistingFile(archiveFile) && isJarOrWar(archiveFile), "Unable to find source archive");
+		this.archiveFile = archiveFile;
 		this.workingDir = workingDir;
-		this.relativeDir = deduceRelativeDir(jarFile.getParentFile(), this.workingDir);
+		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
+	}
+
+	private boolean isExistingFile(File archiveFile) {
+		return archiveFile != null && archiveFile.isFile() && archiveFile.exists();
 	}
 
 	private boolean isJarOrWar(File jarFile) {
@@ -67,7 +70,7 @@ class Context {
 		return name.endsWith(".jar") || name.endsWith(".war");
 	}
 
-	private static File getSourceJarFile() {
+	private static File getSourceArchiveFile() {
 		try {
 			ProtectionDomain domain = Context.class.getProtectionDomain();
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
@@ -114,8 +117,8 @@ class Context {
 	 * Return the source jar file that is running in tools mode.
 	 * @return the jar file
 	 */
-	File getJarFile() {
-		return this.jarFile;
+	File getArchiveFile() {
+		return this.archiveFile;
 	}
 
 	/**

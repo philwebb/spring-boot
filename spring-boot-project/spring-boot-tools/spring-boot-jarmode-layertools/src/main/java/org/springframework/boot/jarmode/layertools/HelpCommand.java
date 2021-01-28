@@ -99,7 +99,7 @@ class HelpCommand extends Command {
 	}
 
 	private String getJavaCommand() {
-		return "java -Djarmode=layertools -jar " + this.context.getJarFile().getName();
+		return "java -Djarmode=layertools -jar " + this.context.getArchiveFile().getName();
 	}
 
 }

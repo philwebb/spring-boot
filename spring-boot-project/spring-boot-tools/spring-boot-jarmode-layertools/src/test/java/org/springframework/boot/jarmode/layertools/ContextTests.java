@@ -55,7 +55,7 @@ class ContextTests {
 		File jar = new File(this.temp, "test.jar");
 		Files.createFile(jar.toPath());
 		Context context = new Context(jar, this.temp);
-		assertThat(context.getJarFile()).isEqualTo(jar);
+		assertThat(context.getArchiveFile()).isEqualTo(jar);
 	}
 
 	@Test

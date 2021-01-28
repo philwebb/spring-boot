@@ -65,9 +65,9 @@ class ExtractCommand extends Command {
 					mkDirs(new File(destination, layer));
 				}
 			}
-			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getJarFile()))) {
+			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getArchiveFile()))) {
 				ZipEntry entry = zip.getNextEntry();
-				Assert.state(entry != null, "File '" + this.context.getJarFile().toString()
+				Assert.state(entry != null, "File '" + this.context.getArchiveFile().toString()
 						+ "' is not compatible with layertools; ensure jar file is valid and launch script is not enabled");
 				while (entry != null) {
 					if (!entry.isDirectory()) {

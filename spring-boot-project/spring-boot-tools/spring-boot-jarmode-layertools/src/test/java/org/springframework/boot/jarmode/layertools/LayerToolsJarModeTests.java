@@ -55,7 +55,7 @@ class LayerToolsJarModeTests {
 	@BeforeEach
 	void setup() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(createJarFile("test.jar"));
+		given(context.getArchiveFile()).willReturn(createJarFile("test.jar"));
 		this.out = new TestPrintStream(this);
 		this.systemOut = System.out;
 		System.setOut(this.out);

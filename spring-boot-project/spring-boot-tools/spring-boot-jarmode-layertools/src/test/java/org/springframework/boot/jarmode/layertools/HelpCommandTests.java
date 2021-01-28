@@ -52,7 +52,7 @@ class HelpCommandTests {
 	@BeforeEach
 	void setup() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(createJarFile("test.jar"));
+		given(context.getArchiveFile()).willReturn(createJarFile("test.jar"));
 		this.command = new HelpCommand(context, LayerToolsJarMode.Runner.getCommands(context));
 		this.out = new TestPrintStream(this);
 	}

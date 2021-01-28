@@ -92,7 +92,7 @@ class IndexedLayersTests {
 	@Test
 	void getShouldReturnIndexedLayersFromContext() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(createWarFile("test.war"));
+		given(context.getArchiveFile()).willReturn(createWarFile("test.war"));
 		IndexedLayers layers = IndexedLayers.get(context);
 		assertThat(layers.getLayer(mockEntry("WEB-INF/lib/a.jar"))).isEqualTo("test");
 	}

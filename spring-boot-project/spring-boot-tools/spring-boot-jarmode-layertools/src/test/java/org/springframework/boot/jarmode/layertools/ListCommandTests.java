@@ -60,7 +60,7 @@ class ListCommandTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.jarFile = createJarFile("test.jar");
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		this.command = new ListCommand(this.context);
 		this.out = new TestPrintStream(this);
 	}

@@ -91,7 +91,7 @@ class IndexedLayers implements Layers {
 	 */
 	static IndexedLayers get(Context context) {
 		try {
-			try (JarFile jarFile = new JarFile(context.getJarFile())) {
+			try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
 				String name = jarFile.getName().toLowerCase();
 				String layersIndexLocation = (name.endsWith(".war")) ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx";
 				ZipEntry entry = jarFile.getEntry(layersIndexLocation);
