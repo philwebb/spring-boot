@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -463,7 +462,7 @@ public abstract class Packager {
 		}
 
 		boolean containsEntry(String name) {
-			return this.libraries.keySet().stream().anyMatch(Predicate.isEqual(name));
+			return this.libraries.containsKey(name);
 		}
 
 		private void write(AbstractJarWriter writer) throws IOException {
@@ -473,7 +472,7 @@ public abstract class Packager {
 				String location = path.substring(0, path.lastIndexOf('/') + 1);
 				writer.writeNestedLibrary(location, library);
 			}
-			if (layout instanceof RepackagingLayout) {
+			if (Packager.this.layout instanceof RepackagingLayout) {
 				writeClasspathIndex(getLayout(), writer);
 			}
 		}

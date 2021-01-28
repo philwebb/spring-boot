@@ -35,7 +35,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link Layers} implementation backed by a {@code BOOT-INF/layers.idx} file.
+ * {@link Layers} implementation backed by a {@code layers.idx} file.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
