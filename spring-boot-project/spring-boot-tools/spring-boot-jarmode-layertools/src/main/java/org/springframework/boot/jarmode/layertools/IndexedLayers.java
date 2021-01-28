@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.springframework.util.Assert;
@@ -92,9 +93,9 @@ class IndexedLayers implements Layers {
 	static IndexedLayers get(Context context) {
 		try {
 			try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
-				String name = jarFile.getName().toLowerCase();
-				String layersIndexLocation = (name.endsWith(".war")) ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx";
-				ZipEntry entry = jarFile.getEntry(layersIndexLocation);
+				Manifest manifest = jarFile.getManifest();
+				String location = (String) manifest.getMainAttributes().get("Spring-Boot-Layers-Index");
+				ZipEntry entry = (location != null) ? jarFile.getEntry(location) : null;
 				if (entry != null) {
 					String indexFile = StreamUtils.copyToString(jarFile.getInputStream(entry), StandardCharsets.UTF_8);
 					return new IndexedLayers(indexFile);
