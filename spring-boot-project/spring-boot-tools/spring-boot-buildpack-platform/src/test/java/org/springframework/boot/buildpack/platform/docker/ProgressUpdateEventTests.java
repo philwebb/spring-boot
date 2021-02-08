@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link ProgressUpdateEvent}.
  *
+ * @param <E> The event type
  * @author Phillip Webb
  * @author Scott Frederick
  */
