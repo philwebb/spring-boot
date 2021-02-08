@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
 
@@ -65,6 +66,7 @@ class ImageTests {
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
+		assertThat(request.getBuildpacks()).isNull();
 	}
 
 	@Test
@@ -121,6 +123,14 @@ class ImageTests {
 		image.publish = true;
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.isPublish()).isTrue();
+	}
+
+	@Test
+	void getBuildRequestWhenHasBuildpacksUsesBuildpacks() {
+		Image image = new Image();
+		image.buildpacks = Arrays.asList("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuildpacks()).containsExactly("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
 	}
 
 	private Artifact createArtifact() {

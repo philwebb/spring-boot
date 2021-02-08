@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import groovy.lang.Closure;
@@ -28,6 +29,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
@@ -83,6 +85,8 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean publish;
 
+	private ListProperty<String> buildpacks;
+
 	private DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
@@ -92,6 +96,7 @@ public class BootBuildImage extends DefaultTask {
 		this.projectVersion = getProject().getObjects().property(String.class);
 		Project project = getProject();
 		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
+		this.buildpacks = getProject().getObjects().listProperty(String.class);
 	}
 
 	/**
@@ -284,6 +289,40 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the buildpacks that will be used when building the image.
+	 * @return the buildpacks
+	 */
+	@Input
+	@Optional
+	public List<String> getBuildpacks() {
+		return this.buildpacks.getOrNull();
+	}
+
+	/**
+	 * Sets the buildpacks that will be used when building the image.
+	 * @param buildpacks the buildpacks
+	 */
+	public void setBuildpacks(List<String> buildpacks) {
+		this.buildpacks.set(buildpacks);
+	}
+
+	/**
+	 * Add an entry to the buildpacks that will be used when building the image.
+	 * @param buildpack the buildpack reference
+	 */
+	public void buildpack(String buildpack) {
+		this.buildpacks.add(buildpack);
+	}
+
+	/**
+	 * Adds entries to the environment that will be used when building the image.
+	 * @param buildpacks the buildpack references
+	 */
+	public void buildpacks(List<String> buildpacks) {
+		this.buildpacks.addAll(buildpacks);
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -316,9 +355,10 @@ public class BootBuildImage extends DefaultTask {
 		if (!this.jar.isPresent()) {
 			throw new GradleException("Executable jar file required for building image");
 		}
-		Builder builder = new Builder(this.docker.asDockerConfiguration());
 		BuildRequest request = createRequest();
-		builder.build(request);
+		Builder builder = new Builder().withDockerConfiguration(this.docker.asDockerConfiguration())
+				.withRequest(request);
+		builder.build();
 	}
 
 	BuildRequest createRequest() {
@@ -346,6 +386,7 @@ public class BootBuildImage extends DefaultTask {
 		request = request.withVerboseLogging(this.verboseLogging);
 		request = customizePullPolicy(request);
 		request = customizePublish(request);
+		request = customizeBuildpacks(request);
 		return request;
 	}
 
@@ -395,6 +436,14 @@ public class BootBuildImage extends DefaultTask {
 			throw new GradleException("Publishing an image requires docker.publishRegistry to be configured");
 		}
 		request = request.withPublish(this.publish);
+		return request;
+	}
+
+	private BuildRequest customizeBuildpacks(BuildRequest request) {
+		List<String> bps = this.buildpacks.getOrNull();
+		if (bps != null && !bps.isEmpty()) {
+			return request.withBuildpacks(bps);
+		}
 		return request;
 	}
 

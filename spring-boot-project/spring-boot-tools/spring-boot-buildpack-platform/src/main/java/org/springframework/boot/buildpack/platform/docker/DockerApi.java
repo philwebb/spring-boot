@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -241,6 +242,19 @@ public class DockerApi {
 			finally {
 				listener.onFinish();
 			}
+		}
+
+		/**
+		 * Export an image from Docker to an {@link InputStream}.
+		 * @param reference the reference the save
+		 * @return the image archive content
+		 * @throws IOException on IO error
+		 */
+		public InputStream export(ImageReference reference) throws IOException {
+			Assert.notNull(reference, "Reference must not be null");
+			URI saveUri = buildUrl("/images/" + reference + "/get");
+			Response response = http().get(saveUri);
+			return response.getContent();
 		}
 
 		/**

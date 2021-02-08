@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
@@ -49,10 +50,11 @@ class EphemeralBuilder {
 	 * @param builderMetadata the builder metadata
 	 * @param creator the builder creator
 	 * @param env the builder env
+	 * @param buildpacks the buildpacks to override the order specified in the builder
 	 * @throws IOException on IO error
 	 */
 	EphemeralBuilder(BuildOwner buildOwner, Image builderImage, BuilderMetadata builderMetadata, Creator creator,
-			Map<String, String> env) throws IOException {
+			Map<String, String> env, List<Buildpack> buildpacks) throws IOException {
 		ImageReference name = ImageReference.random("pack.local/builder/").inTaggedForm();
 		this.buildOwner = buildOwner;
 		this.creator = creator;
@@ -62,6 +64,14 @@ class EphemeralBuilder {
 			update.withTag(name);
 			if (env != null && !env.isEmpty()) {
 				update.withNewLayer(getEnvLayer(env));
+			}
+			if (buildpacks != null) {
+				for (Buildpack buildpack : buildpacks) {
+					for (Layer layer : buildpack.getLayers()) {
+						update.withNewLayer(layer);
+					}
+				}
+				update.withNewLayer(getBuildpackOrderLayer(buildpacks));
 			}
 		});
 	}
@@ -77,6 +87,13 @@ class EphemeralBuilder {
 				Content content = Content.of((entry.getValue() != null) ? entry.getValue() : "");
 				layout.file(name, Owner.ROOT, content);
 			}
+		});
+	}
+
+	private Layer getBuildpackOrderLayer(List<Buildpack> buildpacks) throws IOException {
+		return Layer.of((layout) -> {
+			Content content = Content.of(BuildpackOrder.of(buildpacks).toTomlString());
+			layout.file("/cnb/order.toml", Owner.ROOT, content);
 		});
 	}
 

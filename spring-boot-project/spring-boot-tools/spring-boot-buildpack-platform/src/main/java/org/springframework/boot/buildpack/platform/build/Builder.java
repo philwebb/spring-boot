@@ -17,6 +17,9 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
@@ -48,61 +51,41 @@ public class Builder {
 
 	private final DockerConfiguration dockerConfiguration;
 
+	private BuildRequest request;
+
 	/**
-	 * Create a new builder instance.
+	 * Create a new builder instance with defaults.
 	 */
 	public Builder() {
-		this(BuildLog.toSystemOut());
+		this(BuildLog.toSystemOut(), null, null);
 	}
 
-	/**
-	 * Create a new builder instance.
-	 * @param dockerConfiguration the docker configuration
-	 * @since 2.4.0
-	 */
-	public Builder(DockerConfiguration dockerConfiguration) {
-		this(BuildLog.toSystemOut(), dockerConfiguration);
+	private Builder(BuildLog log, DockerConfiguration dockerConfiguration, BuildRequest request) {
+		this(log, dockerConfiguration, request, new DockerApi(dockerConfiguration));
 	}
 
-	/**
-	 * Create a new builder instance.
-	 * @param log a logger used to record output
-	 */
-	public Builder(BuildLog log) {
-		this(log, new DockerApi(), null);
-	}
-
-	/**
-	 * Create a new builder instance.
-	 * @param log a logger used to record output
-	 * @param dockerConfiguration the docker configuration
-	 * @since 2.4.0
-	 */
-	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
-		this(log, new DockerApi(dockerConfiguration), dockerConfiguration);
-	}
-
-	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
-		Assert.notNull(log, "Log must not be null");
+	private Builder(BuildLog log, DockerConfiguration dockerConfiguration, BuildRequest request, DockerApi docker) {
 		this.log = log;
-		this.docker = docker;
 		this.dockerConfiguration = dockerConfiguration;
+		this.request = request;
+		this.docker = docker;
 	}
 
-	public void build(BuildRequest request) throws DockerEngineException, IOException {
-		Assert.notNull(request, "Request must not be null");
-		this.log.start(request);
-		Image builderImage = getImage(request, ImageType.BUILDER);
+	public void build() throws DockerEngineException, IOException {
+		Assert.notNull(this.request, "Request must not be null");
+		this.log.start(this.request);
+		Image builderImage = getImage(this.request.getBuilder(), ImageType.BUILDER);
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
-		request = determineRunImage(request, builderImage, builderMetadata.getStack());
-		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getCreator(),
-				request.getEnv());
+		determineRunImage(builderImage, builderMetadata.getStack());
+		List<Buildpack> buildpacks = processBuildpacks(builderMetadata);
+		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata,
+				this.request.getCreator(), this.request.getEnv(), buildpacks);
 		this.docker.image().load(builder.getArchive(), UpdateListener.none());
 		try {
-			executeLifecycle(request, builder);
-			if (request.isPublish()) {
-				pushImage(request.getName());
+			executeLifecycle(this.request, builder);
+			if (this.request.isPublish()) {
+				pushImage(this.request.getName());
 			}
 		}
 		finally {
@@ -110,16 +93,13 @@ public class Builder {
 		}
 	}
 
-	private BuildRequest determineRunImage(BuildRequest request, Image builderImage, Stack builderStack)
-			throws IOException {
-		if (request.getRunImage() == null) {
+	private void determineRunImage(Image builderImage, Stack builderStack) throws IOException {
+		if (this.request.getRunImage() == null) {
 			ImageReference runImage = getRunImageReferenceForStack(builderStack);
-			request = request.withRunImage(runImage);
+			this.request = this.request.withRunImage(runImage);
 		}
-		assertImageRegistriesMatch(request);
-		Image runImage = getImage(request, ImageType.RUNNER);
+		Image runImage = getImage(this.request.getRunImage(), ImageType.RUNNER);
 		assertStackIdsMatch(runImage, builderImage);
-		return request;
 	}
 
 	private ImageReference getRunImageReferenceForStack(Stack stack) {
@@ -128,10 +108,28 @@ public class Builder {
 		return ImageReference.of(name).inTaggedOrDigestForm();
 	}
 
-	private Image getImage(BuildRequest request, ImageType imageType) throws IOException {
-		ImageReference imageReference = (imageType == ImageType.BUILDER) ? request.getBuilder() : request.getRunImage();
+	private List<Buildpack> processBuildpacks(BuilderMetadata builderMetadata) {
+		if (this.request.getBuildpacks() == null) {
+			return null;
+		}
+		List<Buildpack> buildpacks = new ArrayList<>();
+		for (String buildpack : this.request.getBuildpacks()) {
+			buildpacks.add(BuildpackLocator.from(buildpack, builderMetadata.getBuildpacks(), this::getImage,
+					this::exportImage));
+		}
+		return buildpacks;
+	}
 
-		if (request.getPullPolicy() == PullPolicy.ALWAYS) {
+	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
+		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, request, builder)) {
+			lifecycle.execute();
+		}
+	}
+
+	Image getImage(ImageReference imageReference, ImageType imageType) throws IOException {
+		assertImageRegistriesMatch(imageReference, imageType);
+
+		if (this.request.getPullPolicy() == PullPolicy.ALWAYS) {
 			return pullImage(imageReference, imageType);
 		}
 
@@ -139,7 +137,7 @@ public class Builder {
 			return this.docker.image().inspect(imageReference);
 		}
 		catch (DockerEngineException exception) {
-			if (request.getPullPolicy() == PullPolicy.IF_NOT_PRESENT && exception.getStatusCode() == 404) {
+			if (this.request.getPullPolicy() == PullPolicy.IF_NOT_PRESENT && exception.getStatusCode() == 404) {
 				return pullImage(imageReference, imageType);
 			}
 			else {
@@ -156,11 +154,15 @@ public class Builder {
 		return image;
 	}
 
-	private void pushImage(ImageReference reference) throws IOException {
+	void pushImage(ImageReference reference) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
 		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
 		this.docker.image().push(reference, listener, getPublishAuthHeader());
 		this.log.pushedImage(reference);
+	}
+
+	InputStream exportImage(ImageReference reference) throws IOException {
+		return this.docker.image().export(reference);
 	}
 
 	private String getBuilderAuthHeader() {
@@ -173,14 +175,6 @@ public class Builder {
 				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
 	}
 
-	private void assertImageRegistriesMatch(BuildRequest request) {
-		if (getBuilderAuthHeader() != null) {
-			Assert.state(request.getRunImage().getDomain().equals(request.getBuilder().getDomain()),
-					"Builder image '" + request.getBuilder() + "' and run image '" + request.getRunImage()
-							+ "' must be pulled from the same authenticated registry");
-		}
-	}
-
 	private void assertStackIdsMatch(Image runImage, Image builderImage) {
 		StackId runImageStackId = StackId.fromImage(runImage);
 		StackId builderImageStackId = StackId.fromImage(builderImage);
@@ -188,10 +182,45 @@ public class Builder {
 				+ "' does not match builder stack '" + builderImageStackId + "'");
 	}
 
-	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
-		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, request, builder)) {
-			lifecycle.execute();
+	private void assertImageRegistriesMatch(ImageReference imageReference, ImageType imageType) {
+		if (getBuilderAuthHeader() != null) {
+			Assert.state(imageReference.getDomain().equals(this.request.getBuilder().getDomain()),
+					"Builder image '" + this.request.getBuilder() + "' and " + imageType + " '" + imageReference
+							+ "' must be pulled from the same authenticated registry");
 		}
+	}
+
+	/**
+	 * Create a new {@link Builder} with an updated {@link BuildLog}.
+	 * @param log the build log
+	 * @return an updated {@link Builder}
+	 */
+	public Builder withBuildLog(BuildLog log) {
+		Assert.notNull(log, "Log must not be null");
+		return new Builder(log, this.dockerConfiguration, this.request);
+	}
+
+	/**
+	 * Create a new {@link Builder} with an updated {@link DockerConfiguration}.
+	 * @param dockerConfiguration the Docker configuration
+	 * @return an updated {@link Builder}
+	 */
+	public Builder withDockerConfiguration(DockerConfiguration dockerConfiguration) {
+		return new Builder(this.log, dockerConfiguration, this.request);
+	}
+
+	/**
+	 * Create a new {@link Builder} with an updated {@link BuildRequest}.
+	 * @param request the build request
+	 * @return an updated {@link Builder}
+	 */
+	public Builder withRequest(BuildRequest request) {
+		Assert.notNull(request, "Request must not be null");
+		return new Builder(this.log, this.dockerConfiguration, request);
+	}
+
+	Builder withDockerApi(DockerApi api) {
+		return new Builder(this.log, this.dockerConfiguration, this.request, api);
 	}
 
 }
