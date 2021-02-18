@@ -32,6 +32,9 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,6 +64,7 @@ class DirectoryBuildpackTests {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void resolveWhenPath() throws Exception {
 		writeBuildpackDescriptor();
 		writeScripts();
@@ -72,6 +76,7 @@ class DirectoryBuildpackTests {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void resolveWhenFileUrl() throws Exception {
 		writeBuildpackDescriptor();
 		writeScripts();
@@ -83,6 +88,7 @@ class DirectoryBuildpackTests {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void resolveWhenDirectoryWithoutBuildpackTomlThrowsException() throws Exception {
 		Files.createDirectories(this.buildpackDir.toPath());
 		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
@@ -112,6 +118,17 @@ class DirectoryBuildpackTests {
 		BuildpackReference reference = BuildpackReference.of("file:///test/a/missing/buildpack");
 		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNull();
+	}
+
+	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void resolveWhenPathOnWindowsThrowsException() throws Exception {
+		writeBuildpackDescriptor();
+		writeScripts();
+		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
+				.withMessageContaining("Buildpack content in a directory is not supported on this operating system");
 	}
 
 	private void assertHasExpectedLayers(Buildpack buildpack) throws IOException {

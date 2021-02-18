@@ -36,6 +36,8 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -170,6 +172,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
 	void buildsImageWithBuildpackFromDirectory() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -184,6 +187,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
 	void buildsImageWithBuildpackFromTarGzip() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -202,8 +206,6 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithBuildpackFromImage() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		writeBuildpackContent();
-		tarGzipBuildpackContent();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
