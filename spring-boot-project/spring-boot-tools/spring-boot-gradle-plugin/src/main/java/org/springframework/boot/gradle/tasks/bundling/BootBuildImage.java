@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import groovy.lang.Closure;
 import org.gradle.api.Action;
@@ -40,6 +41,7 @@ import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
+import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
@@ -356,9 +358,8 @@ public class BootBuildImage extends DefaultTask {
 			throw new GradleException("Executable jar file required for building image");
 		}
 		BuildRequest request = createRequest();
-		Builder builder = new Builder().withDockerConfiguration(this.docker.asDockerConfiguration())
-				.withRequest(request);
-		builder.build();
+		Builder builder = new Builder(this.docker.asDockerConfiguration());
+		builder.build(request);
 	}
 
 	BuildRequest createRequest() {
@@ -440,9 +441,9 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeBuildpacks(BuildRequest request) {
-		List<String> bps = this.buildpacks.getOrNull();
-		if (bps != null && !bps.isEmpty()) {
-			return request.withBuildpacks(bps);
+		List<String> buildpacks = this.buildpacks.getOrNull();
+		if (buildpacks != null && !buildpacks.isEmpty()) {
+			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

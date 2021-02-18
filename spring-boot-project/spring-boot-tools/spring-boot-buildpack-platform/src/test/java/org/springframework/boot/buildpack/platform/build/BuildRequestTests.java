@@ -167,15 +167,17 @@ public class BuildRequestTests {
 	@Test
 	void withBuildpacksAddsBuildpacks() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
-		BuildRequest withBuildpacks = request.withBuildpacks("example/buildpack1", "example/buildpack2");
-		assertThat(request.getBuildpacks()).isNull();
-		assertThat(withBuildpacks.getBuildpacks()).containsExactly("example/buildpack1", "example/buildpack2");
+		BuildpackReference buildpackReference1 = BuildpackReference.of("example/buildpack1");
+		BuildpackReference buildpackReference2 = BuildpackReference.of("example/buildpack2");
+		BuildRequest withBuildpacks = request.withBuildpacks(buildpackReference1, buildpackReference2);
+		assertThat(request.getBuildpacks()).isEmpty();
+		assertThat(withBuildpacks.getBuildpacks()).containsExactly(buildpackReference1, buildpackReference2);
 	}
 
 	@Test
 	void withBuildpacksWhenBuildpacksIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
-		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<String>) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<BuildpackReference>) null))
 				.withMessage("Buildpacks must not be null");
 	}
 

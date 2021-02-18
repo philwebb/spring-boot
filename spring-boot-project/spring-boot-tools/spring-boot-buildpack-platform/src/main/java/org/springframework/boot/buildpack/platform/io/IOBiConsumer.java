@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.build;
+package org.springframework.boot.buildpack.platform.io;
 
 import java.io.IOException;
-import java.io.InputStream;
-
-import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 
 /**
- * Exports an image archive from the Docker daemon.
+ * BiConsumer that can safely throw {@link IOException IO exceptions}.
  *
- * @author Scott Frederick
+ * @param <T> the first consumed type
+ * @param <U> the second consumed type
+ * @author Phillip Webb
+ * @since 2.3.0
  */
 @FunctionalInterface
-interface ImageExporter {
+public interface IOBiConsumer<T, U> {
 
 	/**
-	 * Export an image.
-	 * @param reference the image reference
-	 * @return an input stream to read the contents of the image
+	 * Performs this operation on the given argument.
+	 * @param t the first instance to consume
+	 * @param u the second instance to consumer
+	 * @throws IOException on IO error
 	 */
-	InputStream exportImage(ImageReference reference) throws IOException;
+	void accept(T t, U u) throws IOException;
 
 }

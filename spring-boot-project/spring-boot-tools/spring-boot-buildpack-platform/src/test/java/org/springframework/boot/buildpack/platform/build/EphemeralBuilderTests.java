@@ -28,8 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +44,6 @@ import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.buildpack.platform.docker.type.Layer;
-import org.springframework.boot.buildpack.platform.io.Content;
-import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.FileCopyUtils;
 
@@ -72,7 +68,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	private Map<String, String> env;
 
-	private List<Buildpack> buildpacks;
+	private Buildpacks buildpacks;
 
 	private final Creator creator = Creator.withVersion("dev");
 
@@ -138,8 +134,11 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getArchiveContainsBuildpackLayers() throws Exception {
-		this.buildpacks = Arrays.asList(new TestBuildpack("example/buildpack1@0.0.1"),
-				new TestBuildpack("example/buildpack2@0.0.2"), new TestBuildpack("example/buildpack3@0.0.3"));
+		List<Buildpack> buildpackList = new ArrayList<>();
+		buildpackList.add(new TestBuildpack("example/buildpack1", "0.0.1"));
+		buildpackList.add(new TestBuildpack("example/buildpack2", "0.0.2"));
+		buildpackList.add(new TestBuildpack("example/buildpack3", "0.0.3"));
+		this.buildpacks = Buildpacks.of(buildpackList);
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, null,
 				this.buildpacks);
 		assertBuildpackLayerContent(builder, 0, "/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
@@ -188,22 +187,6 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	private String content(String fileName) throws IOException {
 		InputStream in = getClass().getResourceAsStream(fileName);
 		return FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
-	}
-
-	private static class TestBuildpack extends Buildpack {
-
-		TestBuildpack(String reference) {
-			this.descriptor = BuildpackDescriptor.from(reference);
-		}
-
-		@Override
-		List<Layer> getLayers() throws IOException {
-			String buildpackDir = "/cnb/buildpacks/" + this.descriptor.getSanitizedId() + "/"
-					+ this.descriptor.getVersion();
-			return Collections.singletonList(Layer
-					.of((layout) -> layout.file(buildpackDir + "/buildpack.toml", Owner.ROOT, Content.of("[test]"))));
-		}
-
 	}
 
 }

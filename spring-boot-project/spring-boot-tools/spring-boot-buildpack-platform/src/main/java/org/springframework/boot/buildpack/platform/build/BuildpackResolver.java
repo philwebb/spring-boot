@@ -16,30 +16,21 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
-import java.io.IOException;
-
-import org.springframework.boot.buildpack.platform.docker.type.Layer;
-import org.springframework.boot.buildpack.platform.io.IOConsumer;
-
 /**
- * A Buildpack that should be invoked by the builder during image building.
+ * Strategy inerface used to resolve a {@link BuildpackReference} to a {@link Buildpack}.
  *
  * @author Scott Frederick
- * @see BuildpackResolver
+ * @author Phillip Webb
+ * @see BuildpackResolvers
  */
-interface Buildpack {
+interface BuildpackResolver {
 
 	/**
-	 * Return the coordinates of the builder.
-	 * @return the builder coordinates
+	 * Attempt to resolve the given {@link BuildpackReference}.
+	 * @param context the resolver context
+	 * @param reference the reference to resolve
+	 * @return a resolved {@link Buildpack} instance or {@code null}
 	 */
-	BuildpackCoordinates getCoordinates();
-
-	/**
-	 * Apply the necessary buildpack layers.
-	 * @param layers a consumer that should accept the layers
-	 * @throws IOException on IO error
-	 */
-	void apply(IOConsumer<Layer> layers) throws IOException;
+	Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference);
 
 }

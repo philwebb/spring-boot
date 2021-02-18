@@ -37,103 +37,108 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link DirectoryBuildpackLocator}.
+ * Tests for {@link DirectoryBuildpack}.
  *
  * @author Scott Frederick
  */
-class DirectoryBuildpackLocatorTests {
+class DirectoryBuildpackTests {
 
 	@TempDir
 	File temp;
 
-	private File buildpackDirectory;
+	private File buildpackDir;
+
+	private BuildpackResolverContext resolverContext;
 
 	@BeforeEach
 	void setUp() {
-		this.buildpackDirectory = new File(this.temp, "buildpack");
-		this.buildpackDirectory.mkdirs();
+		this.buildpackDir = new File(this.temp, "buildpack");
+		this.buildpackDir.mkdirs();
+		this.resolverContext = mock(BuildpackResolverContext.class);
 	}
 
 	@Test
-	void locateDirectory() throws Exception {
+	void resolveWhenPath() throws Exception {
 		writeBuildpackDescriptor();
 		writeScripts();
-		Buildpack buildpack = DirectoryBuildpackLocator.locate(this.buildpackDirectory.toString());
+		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
+		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNotNull();
-		assertThat(buildpack.getDescriptor().toString()).isEqualTo("example/buildpack1@0.0.1");
-		assertThat(buildpack.getLayers()).hasSize(1);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		buildpack.getLayers().get(0).writeTo(outputStream);
-		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
-				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			TarArchiveEntry entry;
-			List<TarArchiveEntry> entries = new ArrayList<>();
-			while ((entry = tarStream.getNextTarEntry()) != null) {
-				entries.add(entry);
-			}
-			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
-		}
+		assertThat(buildpack.getCoordinates()).hasToString("example/buildpack1@0.0.1");
+		assertHasExpectedLayers(buildpack);
 	}
 
 	@Test
-	void locateDirectoryAsUrl() throws Exception {
+	void resolveWhenFileUrl() throws Exception {
 		writeBuildpackDescriptor();
 		writeScripts();
-		Buildpack buildpack = DirectoryBuildpackLocator.locate("file://" + this.buildpackDirectory.toString());
+		BuildpackReference reference = BuildpackReference.of("file://" + this.buildpackDir.toString());
+		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNotNull();
-		assertThat(buildpack.getDescriptor().toString()).isEqualTo("example/buildpack1@0.0.1");
-		assertThat(buildpack.getLayers()).hasSize(1);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		buildpack.getLayers().get(0).writeTo(outputStream);
-		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(
-				new ByteArrayInputStream(outputStream.toByteArray()))) {
-			TarArchiveEntry entry;
-			List<TarArchiveEntry> entries = new ArrayList<>();
-			while ((entry = tarStream.getNextTarEntry()) != null) {
-				entries.add(entry);
-			}
-			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
-					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
-		}
+		assertThat(buildpack.getCoordinates()).hasToString("example/buildpack1@0.0.1");
+		assertHasExpectedLayers(buildpack);
 	}
 
 	@Test
-	void locateDirectoryWithoutDescriptorThrowsException() throws Exception {
-		Files.createDirectories(this.buildpackDirectory.toPath());
+	void resolveWhenDirectoryWithoutBuildpackTomlThrowsException() throws Exception {
+		Files.createDirectories(this.buildpackDir.toPath());
+		BuildpackReference reference = BuildpackReference.of(this.buildpackDir.toString());
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> DirectoryBuildpackLocator.locate(this.buildpackDirectory.toString()))
+				.isThrownBy(() -> DirectoryBuildpack.resolve(this.resolverContext, reference))
 				.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
-				.withMessageContaining(this.buildpackDirectory.getAbsolutePath());
+				.withMessageContaining(this.buildpackDir.getAbsolutePath());
 	}
 
 	@Test
-	void locateDirectoryWithFileReturnsNull() throws Exception {
-		Path file = Files.createFile(Paths.get(this.buildpackDirectory.toString(), "test"));
-		Buildpack buildpack = DirectoryBuildpackLocator.locate(file.toString());
+	void resolveWhenFileReturnsNull() throws Exception {
+		Path file = Files.createFile(Paths.get(this.buildpackDir.toString(), "test"));
+		BuildpackReference reference = BuildpackReference.of(file.toString());
+		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNull();
 	}
 
 	@Test
-	void locateDirectoryThatDoesNotExistReturnsNull() {
-		Buildpack buildpack = DirectoryBuildpackLocator.locate("/test/buildpack");
+	void resolveWhenDirectoryDoesNotExistReturnsNull() {
+		BuildpackReference reference = BuildpackReference.of("/test/a/missing/buildpack");
+		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNull();
 	}
 
 	@Test
 	void locateDirectoryAsUrlThatDoesNotExistThrowsException() {
-		Buildpack buildpack = DirectoryBuildpackLocator.locate("file://test/buildpack");
+		BuildpackReference reference = BuildpackReference.of("file:///test/a/missing/buildpack");
+		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNull();
 	}
 
+	private void assertHasExpectedLayers(Buildpack buildpack) throws IOException {
+		List<ByteArrayOutputStream> layers = new ArrayList<>();
+		buildpack.apply((layer) -> {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			layer.writeTo(out);
+			layers.add(out);
+		});
+		assertThat(layers).hasSize(1);
+		byte[] content = layers.get(0).toByteArray();
+		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
+			List<TarArchiveEntry> entries = new ArrayList<>();
+			TarArchiveEntry entry = tar.getNextTarEntry();
+			while (entry != null) {
+				entries.add(entry);
+				entry = tar.getNextTarEntry();
+			}
+			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
+					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
+					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
+					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
+		}
+	}
+
 	private void writeBuildpackDescriptor() throws IOException {
-		File descriptor = new File(this.buildpackDirectory, "buildpack.toml");
+		File descriptor = new File(this.buildpackDir, "buildpack.toml");
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(descriptor.toPath()))) {
 			writer.println("[buildpack]");
 			writer.println("id = \"example/buildpack1\"");
@@ -146,9 +151,8 @@ class DirectoryBuildpackLocatorTests {
 	}
 
 	private void writeScripts() throws IOException {
-		File binDirectory = new File(this.buildpackDirectory, "bin");
+		File binDirectory = new File(this.buildpackDir, "bin");
 		binDirectory.mkdirs();
-
 		Path detect = Files.createFile(Paths.get(binDirectory.getAbsolutePath(), "detect"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(detect))) {

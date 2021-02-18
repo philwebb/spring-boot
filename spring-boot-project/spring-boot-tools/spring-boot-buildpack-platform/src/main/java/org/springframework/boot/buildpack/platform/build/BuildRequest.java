@@ -63,7 +63,7 @@ public class BuildRequest {
 
 	private final boolean publish;
 
-	private final List<String> buildpacks;
+	private final List<BuildpackReference> buildpacks;
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
@@ -78,12 +78,12 @@ public class BuildRequest {
 		this.pullPolicy = PullPolicy.ALWAYS;
 		this.publish = false;
 		this.creator = Creator.withVersion("");
-		this.buildpacks = null;
+		this.buildpacks = Collections.emptyList();
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
-			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<String> buildpacks) {
+			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -206,7 +206,7 @@ public class BuildRequest {
 	 * @param buildpacks a collection of buildpacks to use when building the image
 	 * @return an updated build request
 	 */
-	public BuildRequest withBuildpacks(String... buildpacks) {
+	public BuildRequest withBuildpacks(BuildpackReference... buildpacks) {
 		Assert.notEmpty(buildpacks, "Buildpacks must not be empty");
 		return withBuildpacks(Arrays.asList(buildpacks));
 	}
@@ -216,7 +216,7 @@ public class BuildRequest {
 	 * @param buildpacks a collection of buildpacks to use when building the image
 	 * @return an updated build request
 	 */
-	public BuildRequest withBuildpacks(List<String> buildpacks) {
+	public BuildRequest withBuildpacks(List<BuildpackReference> buildpacks) {
 		Assert.notNull(buildpacks, "Buildpacks must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks);
@@ -309,7 +309,7 @@ public class BuildRequest {
 	 * Return the collection of buildpacks to use when building the image, if provided.
 	 * @return the collection of buildpacks
 	 */
-	public List<String> getBuildpacks() {
+	public List<BuildpackReference> getBuildpacks() {
 		return this.buildpacks;
 	}
 

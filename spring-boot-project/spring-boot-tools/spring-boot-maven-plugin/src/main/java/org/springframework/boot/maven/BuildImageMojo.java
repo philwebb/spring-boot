@@ -177,9 +177,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
 					: null;
 			BuildRequest request = getBuildRequest(libraries);
-			Builder builder = new Builder().withBuildLog(new MojoBuildLog(this::getLog))
-					.withDockerConfiguration(dockerConfiguration).withRequest(request);
-			builder.build();
+			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
+			builder.build(request);
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);

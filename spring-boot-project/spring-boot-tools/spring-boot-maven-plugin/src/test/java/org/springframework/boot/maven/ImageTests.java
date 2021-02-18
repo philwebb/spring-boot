@@ -27,6 +27,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -66,7 +67,7 @@ class ImageTests {
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
-		assertThat(request.getBuildpacks()).isNull();
+		assertThat(request.getBuildpacks()).isEmpty();
 	}
 
 	@Test
@@ -130,7 +131,8 @@ class ImageTests {
 		Image image = new Image();
 		image.buildpacks = Arrays.asList("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
-		assertThat(request.getBuildpacks()).containsExactly("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
+		assertThat(request.getBuildpacks()).containsExactly(BuildpackReference.of("example/buildpack1@0.0.1"),
+				BuildpackReference.of("example/buildpack2@0.0.2"));
 	}
 
 	private Artifact createArtifact() {

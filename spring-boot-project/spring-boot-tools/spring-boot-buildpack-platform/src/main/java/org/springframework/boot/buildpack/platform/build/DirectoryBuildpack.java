@@ -17,8 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,18 +25,18 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFileAttributeView;
-import java.util.Collections;
-import java.util.List;
 
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.FilePermissions;
+import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Layout;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.util.Assert;
 
 /**
- * Locates buildpack in a directory on the local file system.
+ * A {@link Buildpack} that references a buildpack in a directory on the local file
+ * system.
  *
  * The file system must contain a buildpack descriptor named {@code buildpack.toml} in the
  * root of the directory. The contents of the directory tree will be provided as a single
@@ -45,61 +44,65 @@ import org.springframework.util.Assert;
  *
  * @author Scott Frederick
  */
-final class DirectoryBuildpackLocator {
+final class DirectoryBuildpack implements Buildpack {
 
-	private DirectoryBuildpackLocator() {
+	private final Path path;
+
+	private final BuildpackCoordinates coordinates;
+
+	private DirectoryBuildpack(Path path) {
+		this.path = path;
+		this.coordinates = findBuildpackCoordinates(path);
+	}
+
+	private BuildpackCoordinates findBuildpackCoordinates(Path path) {
+		Path buildpackToml = path.resolve("buildpack.toml");
+		Assert.isTrue(Files.exists(buildpackToml),
+				() -> "Buildpack descriptor 'buildpack.toml' is required in buildpack '" + path + "'");
+		try {
+			try (InputStream inputStream = Files.newInputStream(buildpackToml)) {
+				return BuildpackCoordinates.fromToml(inputStream, path);
+			}
+		}
+		catch (IOException ex) {
+			throw new IllegalArgumentException("Error parsing descriptor for buildpack '" + path + "'", ex);
+		}
+	}
+
+	@Override
+	public BuildpackCoordinates getCoordinates() {
+		return this.coordinates;
+	}
+
+	@Override
+	public void apply(IOConsumer<Layer> layers) throws IOException {
+		layers.accept(Layer.of(this::addLayerContent));
+	}
+
+	private void addLayerContent(Layout layout) throws IOException {
+		String id = this.coordinates.getSanitizedId();
+		Path cnbPath = Paths.get("/cnb/buildpacks/", id, this.coordinates.getVersion());
+		Files.walkFileTree(this.path, new LayoutFileVisitor(this.path, cnbPath, layout));
 	}
 
 	/**
-	 * Locate a buildpack as a directory on the local file system.
-	 * @param buildpackReference the buildpack reference
-	 * @return the buildpack or {@code null} if the reference is not a local directory
+	 * A {@link BuildpackResolver} compatible method to resolve directory buildpacks.
+	 * @param context the resolver context
+	 * @param reference the buildpack reference
+	 * @return the resolved {@link Buildpack} or {@code null}
 	 */
-	static Buildpack locate(String buildpackReference) {
-		Path path = Paths.get(buildpackReference);
-		try {
-			URL url = new URL(buildpackReference);
-			if (url.getProtocol().equals("file")) {
-				path = Paths.get(url.getPath());
-			}
-		}
-		catch (MalformedURLException ex) {
-			// not a URL, fall through to attempting to find a plain file path
-		}
+	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
+		Path path = reference.asPath();
 		if (Files.exists(path) && Files.isDirectory(path)) {
 			return new DirectoryBuildpack(path);
 		}
 		return null;
 	}
 
-	static final class DirectoryBuildpack extends Buildpack {
-
-		private final Path buildpackPath;
-
-		private DirectoryBuildpack(Path buildpackPath) {
-			this.descriptor = getBuildpackDescriptor(buildpackPath);
-			this.buildpackPath = buildpackPath;
-		}
-
-		private BuildpackDescriptor getBuildpackDescriptor(Path buildpackPath) {
-			Path descriptorPath = Paths.get(buildpackPath.toString(), "buildpack.toml");
-			Assert.isTrue(Files.exists(descriptorPath),
-					"Buildpack descriptor 'buildpack.toml' is required in buildpack '" + buildpackPath + "'");
-			return BuildpackDescriptor.fromToml(descriptorPath, buildpackPath);
-		}
-
-		@Override
-		List<Layer> getLayers() throws IOException {
-			return Collections.singletonList(Layer.of((layout) -> {
-				Path cnbPath = Paths.get("/cnb/buildpacks/", this.descriptor.getSanitizedId(),
-						this.descriptor.getVersion());
-				Files.walkFileTree(this.buildpackPath, new LayoutFileVisitor(this.buildpackPath, cnbPath, layout));
-			}));
-		}
-
-	}
-
-	static class LayoutFileVisitor extends SimpleFileVisitor<Path> {
+	/**
+	 * {@link SimpleFileVisitor} to used to create the {@link Layout}.
+	 */
+	private static class LayoutFileVisitor extends SimpleFileVisitor<Path> {
 
 		private final Path basePath;
 
@@ -116,10 +119,8 @@ final class DirectoryBuildpackLocator {
 		@Override
 		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 			PosixFileAttributeView attributeView = Files.getFileAttributeView(file, PosixFileAttributeView.class);
-			if (attributeView == null) {
-				throw new RuntimeException(
-						"Buildpack content in a directory is not supported on this operating system");
-			}
+			Assert.state(attributeView != null,
+					"Buildpack content in a directory is not supported on this operating system");
 			int mode = FilePermissions.posixPermissionsToUmask(attributeView.readAttributes().permissions());
 			this.layout.file(relocate(file), Owner.ROOT, mode, Content.of(file.toFile()));
 			return FileVisitResult.CONTINUE;

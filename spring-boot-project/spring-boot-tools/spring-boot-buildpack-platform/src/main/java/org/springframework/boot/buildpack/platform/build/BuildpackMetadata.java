@@ -113,7 +113,6 @@ final class BuildpackMetadata extends MappedObject {
 	 * Factory method create {@link BuildpackMetadata} from JSON.
 	 * @param node the source JSON
 	 * @return the builder metadata
-	 * @throws IOException on IO error
 	 */
 	static BuildpackMetadata fromJson(JsonNode node) {
 		return new BuildpackMetadata(node);
