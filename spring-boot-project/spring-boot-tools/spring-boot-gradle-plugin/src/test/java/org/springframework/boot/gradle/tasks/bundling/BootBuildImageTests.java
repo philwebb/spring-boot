@@ -225,7 +225,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenNoBuildpacksAreConfiguredThenRequestUsesDefaultBuildpacks() {
-		assertThat(this.buildImage.createRequest().getBuildpacks()).isNull();
+		assertThat(this.buildImage.createRequest().getBuildpacks()).isEmpty();
 	}
 
 	@Test

@@ -49,10 +49,12 @@ final class Buildpacks {
 	}
 
 	void apply(IOConsumer<Layer> layers) throws IOException {
-		for (Buildpack buildpack : this.buildpacks) {
-			buildpack.apply(layers);
+		if (!this.buildpacks.isEmpty()) {
+			for (Buildpack buildpack : this.buildpacks) {
+				buildpack.apply(layers);
+			}
+			layers.accept(Layer.of(this::addOrderLayerContent));
 		}
-		layers.accept(Layer.of(this::addOrderLayerContent));
 	}
 
 	void addOrderLayerContent(Layout layout) throws IOException {
