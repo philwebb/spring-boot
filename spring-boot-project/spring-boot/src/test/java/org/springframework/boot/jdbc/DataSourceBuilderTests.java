@@ -41,6 +41,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link DataSourceBuilder}.
@@ -179,6 +180,14 @@ class DataSourceBuilderTests {
 	void buildWhenCustomTypeSpecifiedAndNoSuitableSetterThrowsException() {
 		assertThatExceptionOfType(UnsupportedDataSourcePropertyException.class).isThrownBy(() -> DataSourceBuilder
 				.create().type(LimitedCustomDataSource.class).driverClassName("com.example").build());
+	}
+
+	@Test
+	void typeWhenDerivedThrowsException() {
+		HikariDataSource dataSource = new HikariDataSource();
+		DataSourceBuilder<HikariDataSource> builder = DataSourceBuilder.deriveFrom(dataSource);
+		assertThatIllegalStateException().isThrownBy(() -> builder.type(DataSource.class))
+				.withMessage("Type cannot be changed for derived builder");
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {

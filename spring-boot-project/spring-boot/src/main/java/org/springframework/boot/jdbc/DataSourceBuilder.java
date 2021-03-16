@@ -41,8 +41,6 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- *
- *
  * Convenience class for building a {@link DataSource} with common implementations and
  * properties. If HikariCP, Tomcat, Commons DBCP or Oracle UCP are on the classpath one of
  * them will be selected (in that order with Hikari first). In the interest of a uniform
@@ -51,7 +49,7 @@ import org.springframework.util.StringUtils;
  * supported. To inject additional properties into the result you can downcast it, or use
  * {@code @ConfigurationProperties}.
  *
- * @param <T> type of DataSource produced by the builder
+ * @param <T> the {@link DataSource} type being built
  * @author Dave Syer
  * @author Madhura Bhave
  * @author Fabio Grassi
@@ -66,8 +64,19 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private Class<T> type;
 
+	private final T deriveFrom;
+
 	private DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
+		this.deriveFrom = null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private DataSourceBuilder(T deriveFrom) {
+		Assert.notNull(deriveFrom, "DataSource must not be null");
+		this.classLoader = deriveFrom.getClass().getClassLoader();
+		this.type = (Class<T>) deriveFrom.getClass();
+		this.deriveFrom = deriveFrom;
 	}
 
 	/**
@@ -78,6 +87,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	@SuppressWarnings("unchecked")
 	public <D extends DataSource> DataSourceBuilder<D> type(Class<D> type) {
+		Assert.state(this.deriveFrom == null, "Type cannot be changed for derived builder");
 		this.type = (Class<T>) type;
 		return (DataSourceBuilder<D>) this;
 	}
@@ -133,8 +143,18 @@ public final class DataSourceBuilder<T extends DataSource> {
 	public T build() {
 		Class<T> type = this.type;
 		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, type);
+		DataSourceProperties<T> derriveFromProperties = (this.deriveFrom != null)
+				? DataSourceProperties.forType(this.classLoader, this.type) : null;
 		type = (type != null) ? type : properties.getDataSourceType();
 		T dataSource = BeanUtils.instantiateClass(type);
+		for (DataSourceProperty property : DataSourceProperty.values()) {
+			if (this.values.containsKey(property)) {
+				properties.set(dataSource, property, this.values.get(property));
+			}
+			else if (derriveFromProperties != null && properties.canSet(property)) {
+				properties.set(dataSource, property, derriveFromProperties.get(this.deriveFrom, property));
+			}
+		}
 		this.values.forEach((property, value) -> properties.set(dataSource, property, value));
 		if (!this.values.containsKey(DataSourceProperty.DRIVER_CLASS_NAME)
 				&& properties.canSet(DataSourceProperty.DRIVER_CLASS_NAME)
@@ -143,7 +163,6 @@ public final class DataSourceBuilder<T extends DataSource> {
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
 			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
 		}
-		// FIXME rethrow
 		return dataSource;
 	}
 
@@ -158,16 +177,30 @@ public final class DataSourceBuilder<T extends DataSource> {
 	/**
 	 * Create a new {@link DataSourceBuilder} instance.
 	 * @param classLoader the classloader used to discover preferred settings
-	 * @return a new datasource builder instance
+	 * @return a new {@link DataSource} builder instance
 	 */
 	public static DataSourceBuilder<?> create(ClassLoader classLoader) {
 		return new DataSourceBuilder<>(classLoader);
 	}
 
 	/**
+	 * Create a new {@link DataSourceBuilder} instance derived from the specified data
+	 * source. The returned builder can be used to build the same type of
+	 * {@link DataSource} with {@code username}, {@code password}, {@code url} and
+	 * {@code driverClassName} properties copied from the original when not specifically
+	 * set.
+	 * @param <T> the {@link DataSource} type
+	 * @param dataSource the source {@link DataSource}
+	 * @return a new {@link DataSource} builder
+	 */
+	public static <T extends DataSource> DataSourceBuilder<T> deriveFrom(T dataSource) {
+		return new DataSourceBuilder<>(dataSource);
+	}
+
+	/**
 	 * Find the {@link DataSource} type preferred for the given classloader.
 	 * @param classLoader the classloader used to discover preferred settings
-	 * @return the preferred datasource type
+	 * @return the preferred {@link DataSource} type
 	 */
 	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
 		MappedDataSourceProperties<?> mappings = MappedDataSourceProperties.forType(classLoader, null);
@@ -216,6 +249,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		void set(T dataSource, DataSourceProperty property, String value);
 
+		String get(T dataSource, DataSourceProperty property);
+
 		static <T extends DataSource> DataSourceProperties<T> forType(ClassLoader classLoader, Class<T> type) {
 			MappedDataSourceProperties<T> mapped = MappedDataSourceProperties.forType(classLoader, type);
 			return (mapped != null) ? mapped : new ReflectionDataSourceProperties<>(type);
@@ -255,10 +290,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
+			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
+			mappedProperty.set(dataSource, value);
+		}
+
+		@Override
+		public String get(T dataSource, DataSourceProperty property) {
+			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
+			mappedProperty.get(dataSource);
+
+		}
+
+		private MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = this.mappedProperties.get(property);
 			UnsupportedDataSourcePropertyException.throwIf(mappedProperty == null,
 					() -> "No mapping found for " + property);
-			mappedProperty.set(dataSource, value);
+			return mappedProperty;
 		}
 
 		static <T extends DataSource> MappedDataSourceProperties<T> forType(ClassLoader classLoader, Class<T> type) {
