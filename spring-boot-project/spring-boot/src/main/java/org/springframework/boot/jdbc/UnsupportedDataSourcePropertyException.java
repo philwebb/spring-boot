@@ -19,7 +19,11 @@ package org.springframework.boot.jdbc;
 import java.util.function.Supplier;
 
 /**
- * @author pwebb
+ * {@link RuntimeException} thrown from {@link DataSourceBuilder} when an unsupported
+ * property is used.
+ *
+ * @author Phillip Webb
+ * @since 2.5.0
  */
 public class UnsupportedDataSourcePropertyException extends RuntimeException {
 

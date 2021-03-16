@@ -27,6 +27,7 @@ import java.util.Arrays;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import oracle.jdbc.internal.OpaqueString;
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -185,9 +186,58 @@ class DataSourceBuilderTests {
 	@Test
 	void typeWhenDerivedThrowsException() {
 		HikariDataSource dataSource = new HikariDataSource();
-		DataSourceBuilder<HikariDataSource> builder = DataSourceBuilder.deriveFrom(dataSource);
+		DataSourceBuilder<HikariDataSource> builder = DataSourceBuilder.derivedFrom(dataSource);
 		assertThatIllegalStateException().isThrownBy(() -> builder.type(DataSource.class))
 				.withMessage("Type cannot be changed for derived builder");
+	}
+
+	@Test
+	void buildWhenDerivedWithNewUrlReturnsNewDataSource() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setJdbcUrl("jdbc:h2:test");
+		HikariDataSource built = DataSourceBuilder.derivedFrom(dataSource).url("jdbc:h2:test2").build();
+		assertThat(built.getUsername()).isEqualTo("test");
+		assertThat(built.getPassword()).isEqualTo("secret");
+		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test2");
+	}
+
+	@Test
+	void buildWhenDerivedWithNewUsernameAndPasswordReturnsNewDataSource() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setJdbcUrl("jdbc:h2:test");
+		HikariDataSource built = DataSourceBuilder.derivedFrom(dataSource).username("test2").password("secret2")
+				.build();
+		assertThat(built.getUsername()).isEqualTo("test2");
+		assertThat(built.getPassword()).isEqualTo("secret2");
+		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test");
+	}
+
+	@Test
+	void buildWhenDerivedFromOracleDataSourceWithPasswordNotSetThrowsException() throws Exception {
+		oracle.jdbc.datasource.impl.OracleDataSource dataSource = new oracle.jdbc.datasource.impl.OracleDataSource();
+		dataSource.setUser("test");
+		dataSource.setPassword("secret");
+		dataSource.setURL("example.com");
+		assertThatExceptionOfType(UnsupportedDataSourcePropertyException.class)
+				.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
+	}
+
+	@Test
+	void buildWhenDerivedFromOracleDataSourceWithPasswordSetReturnsDataSource() throws Exception {
+		oracle.jdbc.datasource.impl.OracleDataSource dataSource = new oracle.jdbc.datasource.impl.OracleDataSource();
+		dataSource.setUser("test");
+		dataSource.setPassword("secret");
+		dataSource.setURL("example.com");
+		oracle.jdbc.datasource.impl.OracleDataSource built = DataSourceBuilder.derivedFrom(dataSource).username("test2")
+				.password("secret2").build();
+		assertThat(built.getUser()).isEqualTo("test2");
+		assertThat(built).extracting("password").extracting((opaque) -> ((OpaqueString) opaque).get())
+				.isEqualTo("secret2");
+		assertThat(built.getURL()).isEqualTo("example.com");
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {
@@ -217,27 +267,27 @@ class DataSourceBuilderTests {
 
 		private String driverClass;
 
-		public String getJdbcUrl() {
+		String getJdbcUrl() {
 			return this.jdbcUrl;
 		}
 
-		public void setJdbcUrl(String jdbcUrl) {
+		void setJdbcUrl(String jdbcUrl) {
 			this.jdbcUrl = jdbcUrl;
 		}
 
-		public String getUser() {
+		String getUser() {
 			return this.user;
 		}
 
-		public void setUser(String user) {
+		void setUser(String user) {
 			this.user = user;
 		}
 
-		public String getDriverClass() {
+		String getDriverClass() {
 			return this.driverClass;
 		}
 
-		public void setDriverClass(String driverClass) {
+		void setDriverClass(String driverClass) {
 			this.driverClass = driverClass;
 		}
 

@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.datasource.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.jdbcx.JdbcDataSource;
@@ -41,12 +42,32 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Convenience class for building a {@link DataSource} with common implementations and
- * properties. If HikariCP, Tomcat, Commons DBCP or Oracle UCP are on the classpath one of
- * them will be selected (in that order with Hikari first). In the interest of a uniform
- * interface, and so that there can be a fallback to an embedded database if one can be
- * detected on the classpath, only a small set of common configuration properties are
- * supported. To inject additional properties into the result you can downcast it, or use
+ * Convenience class for building a {@link DataSource}. Provides a limited subset of the
+ * properties supported by a typical {@link DataSource} as well as detection logic to pick
+ * the most suitable pooling {@link DataSource} implementation.
+ * <p>
+ * The following pooling {@link DataSource} implementations are supported by this builder.
+ * When no {@link #type(Class) type} has been explicitly set, the first available pool
+ * implementation will be picked:
+ * <ul>
+ * <li>Hikari ({@code com.zaxxer.hikari.HikariDataSource})</li>
+ * <li>Tomcat JDBC Pool ({@code org.apache.tomcat.jdbc.pool.DataSource})</li>
+ * <li>Apache DBCP2 ({@code org.apache.commons.dbcp2.BasicDataSource})</li>
+ * <li>Oracle UCP ({@code oracle.ucp.jdbc.PoolDataSourceImpl})</li>
+ * </ul>
+ * <p>
+ * The following non-pooling {@link DataSource} implementations can be used when
+ * explicitly set as a {@link #type(Class) type}:
+ * <ul>
+ * <li>Spring's {@code SimpleDriverDataSource}
+ * ({@code org.springframework.jdbc.datasource.SimpleDriverDataSource})</li>
+ * <li>Oracle ({@code oracle.jdbc.datasource.OracleDataSource})</li>
+ * <li>H2 ({@code org.h2.jdbcx.JdbcDataSource})</li>
+ * <li>Postgres ({@code org.postgresql.ds.PGSimpleDataSource})</li>
+ * <li>Any {@code DataSource} implementation with appropriately named methods</li>
+ * </ul>
+ * <p>
+ * This class is commonly used in an {@code @Bean} method and often combined with
  * {@code @ConfigurationProperties}.
  *
  * @param <T> the {@link DataSource} type being built
@@ -55,6 +76,9 @@ import org.springframework.util.StringUtils;
  * @author Fabio Grassi
  * @author Phillip Webb
  * @since 2.0.0
+ * @see #create()
+ * @see #create(ClassLoader)
+ * @see #derivedFrom(DataSource)
  */
 public final class DataSourceBuilder<T extends DataSource> {
 
@@ -141,18 +165,20 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @return the built datasource
 	 */
 	public T build() {
-		Class<T> type = this.type;
-		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, type);
+		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, this.type);
 		DataSourceProperties<T> derriveFromProperties = (this.deriveFrom != null)
 				? DataSourceProperties.forType(this.classLoader, this.type) : null;
-		type = (type != null) ? type : properties.getDataSourceType();
-		T dataSource = BeanUtils.instantiateClass(type);
+		Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
+		T dataSource = BeanUtils.instantiateClass(instanceType);
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			if (this.values.containsKey(property)) {
 				properties.set(dataSource, property, this.values.get(property));
 			}
 			else if (derriveFromProperties != null && properties.canSet(property)) {
-				properties.set(dataSource, property, derriveFromProperties.get(this.deriveFrom, property));
+				String value = derriveFromProperties.get(this.deriveFrom, property);
+				if (value != null) {
+					properties.set(dataSource, property, value);
+				}
 			}
 		}
 		this.values.forEach((property, value) -> properties.set(dataSource, property, value));
@@ -193,7 +219,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * @param dataSource the source {@link DataSource}
 	 * @return a new {@link DataSource} builder
 	 */
-	public static <T extends DataSource> DataSourceBuilder<T> deriveFrom(T dataSource) {
+	public static <T extends DataSource> DataSourceBuilder<T> derivedFrom(T dataSource) {
 		return new DataSourceBuilder<>(dataSource);
 	}
 
@@ -204,7 +230,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
 		MappedDataSourceProperties<?> mappings = MappedDataSourceProperties.forType(classLoader, null);
-		return (mappings != null) ? mappings.getDataSourceType() : null;
+		return (mappings != null) ? mappings.getDataSourceInstanceType() : null;
 	}
 
 	/**
@@ -243,7 +269,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private interface DataSourceProperties<T extends DataSource> {
 
-		Class<T> getDataSourceType();
+		Class<? extends T> getDataSourceInstanceType();
 
 		boolean canSet(DataSourceProperty property);
 
@@ -265,13 +291,13 @@ public final class DataSourceBuilder<T extends DataSource> {
 		private final Class<T> dataSourceType;
 
 		@SuppressWarnings("unchecked")
-		public MappedDataSourceProperties() {
+		MappedDataSourceProperties() {
 			this.dataSourceType = (Class<T>) ResolvableType.forClass(MappedDataSourceProperties.class, getClass())
 					.resolveGeneric();
 		}
 
 		@Override
-		public Class<T> getDataSourceType() {
+		public Class<? extends T> getDataSourceInstanceType() {
 			return this.dataSourceType;
 		}
 
@@ -297,8 +323,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@Override
 		public String get(T dataSource, DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
-			mappedProperty.get(dataSource);
-
+			return mappedProperty.get(dataSource);
 		}
 
 		private MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
@@ -353,8 +378,9 @@ public final class DataSourceBuilder<T extends DataSource> {
 				return existing;
 			}
 			MappedDataSourceProperties<?> propertyMappings = propertyMappingsSupplier.get();
-			return (dataSourceType == null || propertyMappings.getDataSourceType().isAssignableFrom(dataSourceType))
-					? (MappedDataSourceProperties<T>) propertyMappings : null;
+			return (dataSourceType == null
+					|| propertyMappings.getDataSourceInstanceType().isAssignableFrom(dataSourceType))
+							? (MappedDataSourceProperties<T>) propertyMappings : null;
 		}
 
 		private static boolean allPresent(ClassLoader classLoader, String dataSourceClassName,
@@ -388,8 +414,19 @@ public final class DataSourceBuilder<T extends DataSource> {
 		void set(T dataSource, String value) {
 			try {
 				UnsupportedDataSourcePropertyException.throwIf(this.setter == null,
-						() -> "No setter mapped for " + this.property);
+						() -> "No setter mapped for '" + this.property + "' property");
 				this.setter.set(dataSource, convertFromString(value));
+			}
+			catch (SQLException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		String get(T dataSource) {
+			try {
+				UnsupportedDataSourcePropertyException.throwIf(this.getter == null,
+						() -> "No getter mapped for '" + this.property + "' property");
+				return convertToString(this.getter.get(dataSource));
 			}
 			catch (SQLException ex) {
 				throw new IllegalStateException(ex);
@@ -407,6 +444,16 @@ public final class DataSourceBuilder<T extends DataSource> {
 			throw new IllegalStateException("Unsupported value type " + this.type);
 		}
 
+		private String convertToString(V value) {
+			if (String.class.equals(this.type)) {
+				return (String) value;
+			}
+			if (Class.class.equals(this.type)) {
+				return ((Class<?>) value).getName();
+			}
+			throw new IllegalStateException("Unsupported value type " + this.type);
+		}
+
 	}
 
 	private static class ReflectionDataSourceProperties<T extends DataSource> implements DataSourceProperties<T> {
@@ -417,7 +464,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		private Class<T> dataSourceType;
 
-		public ReflectionDataSourceProperties(Class<T> dataSourceType) {
+		ReflectionDataSourceProperties(Class<T> dataSourceType) {
 			Assert.state(dataSourceType != null, "No supported DataSource type found");
 			Map<DataSourceProperty, Method> getters = new HashMap<>();
 			Map<DataSourceProperty, Method> setters = new HashMap<>();
@@ -437,7 +484,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 
 		@Override
-		public Class<T> getDataSourceType() {
+		public Class<T> getDataSourceInstanceType() {
 			return this.dataSourceType;
 		}
 
@@ -448,11 +495,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
-			Method method = this.setters.get(property);
+			Method method = getMethod(property, this.setters);
+			ReflectionUtils.invokeMethod(method, dataSource, value);
+		}
+
+		@Override
+		public String get(T dataSource, DataSourceProperty property) {
+			Method method = getMethod(property, this.getters);
+			return (String) ReflectionUtils.invokeMethod(method, dataSource);
+		}
+
+		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> setters2) {
+			Method method = setters2.get(property);
 			UnsupportedDataSourcePropertyException.throwIf(method == null,
 					() -> "Unable to find sutable method for " + property);
 			ReflectionUtils.makeAccessible(method);
-			ReflectionUtils.invokeMethod(method, dataSource, value);
+			return method;
 		}
 
 	}
@@ -523,14 +581,19 @@ public final class DataSourceBuilder<T extends DataSource> {
 	/**
 	 * {@link MappedDataSource} for Oracle Pool.
 	 */
-	private static class OraclePoolDataSourceProperties extends MappedDataSourceProperties<PoolDataSourceImpl> {
+	private static class OraclePoolDataSourceProperties extends MappedDataSourceProperties<PoolDataSource> {
+
+		@Override
+		public Class<? extends PoolDataSource> getDataSourceInstanceType() {
+			return PoolDataSourceImpl.class;
+		}
 
 		OraclePoolDataSourceProperties() {
-			add(DataSourceProperty.URL, PoolDataSourceImpl::getURL, PoolDataSourceImpl::setURL);
-			add(DataSourceProperty.DRIVER_CLASS_NAME, PoolDataSourceImpl::getConnectionFactoryClassName,
-					PoolDataSourceImpl::setConnectionFactoryClassName);
-			add(DataSourceProperty.USERNAME, PoolDataSourceImpl::getUser, PoolDataSourceImpl::setUser);
-			add(DataSourceProperty.PASSWORD, PoolDataSourceImpl::getPassword, PoolDataSourceImpl::setPassword);
+			add(DataSourceProperty.URL, PoolDataSource::getURL, PoolDataSource::setURL);
+			add(DataSourceProperty.DRIVER_CLASS_NAME, PoolDataSource::getConnectionFactoryClassName,
+					PoolDataSource::setConnectionFactoryClassName);
+			add(DataSourceProperty.USERNAME, PoolDataSource::getUser, PoolDataSource::setUser);
+			add(DataSourceProperty.PASSWORD, PoolDataSource::getPassword, PoolDataSource::setPassword);
 		}
 
 	}
@@ -540,10 +603,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	private static class SimpleDataSourceProperties extends MappedDataSourceProperties<SimpleDriverDataSource> {
 
+		@SuppressWarnings("unchecked")
 		SimpleDataSourceProperties() {
 			add(DataSourceProperty.URL, SimpleDriverDataSource::getUrl, SimpleDriverDataSource::setUrl);
 			add(DataSourceProperty.DRIVER_CLASS_NAME, Class.class, (dataSource) -> dataSource.getDriver().getClass(),
-					SimpleDriverDataSource::setDriverClass);
+					(dataSource, driverClass) -> dataSource.setDriverClass(driverClass));
 			add(DataSourceProperty.USERNAME, SimpleDriverDataSource::getUsername, SimpleDriverDataSource::setUsername);
 			add(DataSourceProperty.PASSWORD, SimpleDriverDataSource::getPassword, SimpleDriverDataSource::setPassword);
 		}
