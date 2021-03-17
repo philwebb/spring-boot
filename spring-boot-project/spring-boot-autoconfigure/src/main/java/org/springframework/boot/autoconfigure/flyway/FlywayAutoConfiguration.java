@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -44,12 +43,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -103,19 +102,17 @@ public class FlywayAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Flyway.class)
-	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
+	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {
 
 		@Bean
-		public Flyway flyway(FlywayProperties properties, DataSourceProperties dataSourceProperties,
-				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
-				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+		public Flyway flyway(FlywayProperties properties, ResourceLoader resourceLoader,
+				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			FluentConfiguration configuration = new FluentConfiguration(resourceLoader.getClassLoader());
-			DataSource dataSourceToMigrate = configureDataSource(configuration, properties, dataSourceProperties,
-					flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
-			checkLocationExists(dataSourceToMigrate, properties, resourceLoader);
+			configureDataSource(configuration, properties, flywayDataSource.getIfAvailable(), dataSource.getIfUnique());
+			checkLocationExists(configuration.getDataSource(), properties, resourceLoader);
 			configureProperties(configuration, properties);
 			List<Callback> orderedCallbacks = callbacks.orderedStream().collect(Collectors.toList());
 			configureCallbacks(configuration, orderedCallbacks);
@@ -126,21 +123,22 @@ public class FlywayAutoConfiguration {
 			return configuration.load();
 		}
 
-		private DataSource configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
-				DataSourceProperties dataSourceProperties, DataSource flywayDataSource, DataSource dataSource) {
+		private void configureDataSource(FluentConfiguration configuration, FlywayProperties properties,
+				DataSource flywayDataSource, DataSource dataSource) {
+			DataSource configuredDataSource = (flywayDataSource != null) ? flywayDataSource : dataSource;
 			if (properties.isCreateDataSource()) {
-				String url = getProperty(properties::getUrl, dataSourceProperties::determineUrl);
-				String user = getProperty(properties::getUser, dataSourceProperties::determineUsername);
-				String password = getProperty(properties::getPassword, dataSourceProperties::determinePassword);
-				configuration.dataSource(url, user, password);
+				DataSourceBuilder<?> builder = (configuredDataSource != null)
+						? DataSourceBuilder.derivedFrom(configuredDataSource) : DataSourceBuilder.create();
+				if (properties.getUser() != null) {
+					builder.username(properties.getUser());
+					builder.password(properties.getPassword());
+				}
+				if (properties.getUrl() != null) {
+					builder.url(properties.getUrl());
+				}
+				configuredDataSource = builder.build();
 			}
-			else if (flywayDataSource != null) {
-				configuration.dataSource(flywayDataSource);
-			}
-			else {
-				configuration.dataSource(dataSource);
-			}
-			return configuration.getDataSource();
+			configuration.dataSource(configuredDataSource);
 		}
 
 		@SuppressWarnings("deprecation")
@@ -277,11 +275,6 @@ public class FlywayAutoConfiguration {
 					// Flyway 5.x
 				}
 			}
-		}
-
-		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
-			String value = property.get();
-			return (value != null) ? value : defaultValue.get();
 		}
 
 		private boolean hasAtLeastOneLocation(ResourceLoader resourceLoader, Collection<String> locations) {
