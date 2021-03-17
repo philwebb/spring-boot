@@ -36,6 +36,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -215,11 +216,19 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 * {@link DataSource} with {@code username}, {@code password}, {@code url} and
 	 * {@code driverClassName} properties copied from the original when not specifically
 	 * set.
-	 * @param <T> the {@link DataSource} type
 	 * @param dataSource the source {@link DataSource}
 	 * @return a new {@link DataSource} builder
+	 * @since 2.5.0
 	 */
-	public static <T extends DataSource> DataSourceBuilder<T> derivedFrom(T dataSource) {
+	public static DataSourceBuilder<?> derivedFrom(DataSource dataSource) {
+		if (dataSource instanceof EmbeddedDatabase) {
+			try {
+				dataSource = dataSource.unwrap(DataSource.class);
+			}
+			catch (SQLException ex) {
+				throw new IllegalStateException("Unable to unwap embedded database", ex);
+			}
+		}
 		return new DataSourceBuilder<>(dataSource);
 	}
 

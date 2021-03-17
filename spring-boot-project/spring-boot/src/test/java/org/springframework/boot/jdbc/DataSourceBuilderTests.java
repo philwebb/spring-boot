@@ -39,6 +39,9 @@ import org.postgresql.ds.PGSimpleDataSource;
 
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -186,7 +189,7 @@ class DataSourceBuilderTests {
 	@Test
 	void typeWhenDerivedThrowsException() {
 		HikariDataSource dataSource = new HikariDataSource();
-		DataSourceBuilder<HikariDataSource> builder = DataSourceBuilder.derivedFrom(dataSource);
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
 		assertThatIllegalStateException().isThrownBy(() -> builder.type(DataSource.class))
 				.withMessage("Type cannot be changed for derived builder");
 	}
@@ -197,7 +200,8 @@ class DataSourceBuilderTests {
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
 		dataSource.setJdbcUrl("jdbc:h2:test");
-		HikariDataSource built = DataSourceBuilder.derivedFrom(dataSource).url("jdbc:h2:test2").build();
+		HikariDataSource built = (HikariDataSource) DataSourceBuilder.derivedFrom(dataSource).url("jdbc:h2:test2")
+				.build();
 		assertThat(built.getUsername()).isEqualTo("test");
 		assertThat(built.getPassword()).isEqualTo("secret");
 		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test2");
@@ -209,8 +213,8 @@ class DataSourceBuilderTests {
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
 		dataSource.setJdbcUrl("jdbc:h2:test");
-		HikariDataSource built = DataSourceBuilder.derivedFrom(dataSource).username("test2").password("secret2")
-				.build();
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
+		HikariDataSource built = (HikariDataSource) builder.username("test2").password("secret2").build();
 		assertThat(built.getUsername()).isEqualTo("test2");
 		assertThat(built.getPassword()).isEqualTo("secret2");
 		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test");
@@ -232,12 +236,23 @@ class DataSourceBuilderTests {
 		dataSource.setUser("test");
 		dataSource.setPassword("secret");
 		dataSource.setURL("example.com");
-		oracle.jdbc.datasource.impl.OracleDataSource built = DataSourceBuilder.derivedFrom(dataSource).username("test2")
-				.password("secret2").build();
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
+		oracle.jdbc.datasource.impl.OracleDataSource built = (oracle.jdbc.datasource.impl.OracleDataSource) builder
+				.username("test2").password("secret2").build();
 		assertThat(built.getUser()).isEqualTo("test2");
 		assertThat(built).extracting("password").extracting((opaque) -> ((OpaqueString) opaque).get())
 				.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
+	}
+
+	@Test
+	void buildWhenDerivedFromEmbeddedDatabase() {
+		EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
+		SimpleDriverDataSource built = (SimpleDriverDataSource) DataSourceBuilder.derivedFrom(database).username("test")
+				.password("secret").build();
+		assertThat(built.getUsername()).isEqualTo("test");
+		assertThat(built.getPassword()).isEqualTo("secret");
+		assertThat(built.getUrl()).startsWith("jdbc:hsqldb:mem");
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {
