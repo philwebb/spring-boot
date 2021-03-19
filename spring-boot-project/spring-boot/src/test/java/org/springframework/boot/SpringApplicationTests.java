@@ -1222,7 +1222,7 @@ class SpringApplicationTests {
 	void addBootstrapper() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addBootstrapper(
+		application.addBootstrappers(
 				(bootstrapContext) -> bootstrapContext.register(String.class, InstanceSupplier.of("boot")));
 		TestApplicationListener listener = new TestApplicationListener();
 		application.addListeners(listener);
@@ -1238,7 +1238,7 @@ class SpringApplicationTests {
 	void addBootstrapperCanRegisterBeans() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addBootstrapper((bootstrapContext) -> {
+		application.addBootstrappers((bootstrapContext) -> {
 			bootstrapContext.register(String.class, InstanceSupplier.of("boot"));
 			bootstrapContext.addCloseListener((event) -> event.getApplicationContext().getBeanFactory()
 					.registerSingleton("test", event.getBootstrapContext().get(String.class)));
@@ -1252,7 +1252,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		OnlyOldMethodTestBootstrapper bootstrapper = new OnlyOldMethodTestBootstrapper();
-		application.addBootstrapper(bootstrapper);
+		application.addBootstrappers(bootstrapper);
 		try (ConfigurableApplicationContext applicationContext = application.run()) {
 			assertThat(bootstrapper.intitialized).isTrue();
 		}
@@ -1263,7 +1263,7 @@ class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		BothMethodsTestBootstrapper bootstrapper = new BothMethodsTestBootstrapper();
-		application.addBootstrapper(bootstrapper);
+		application.addBootstrappers(bootstrapper);
 		try (ConfigurableApplicationContext applicationContext = application.run()) {
 			assertThat(bootstrapper.intitialized).isFalse();
 			assertThat(bootstrapper.initialized).isTrue();
@@ -1758,29 +1758,22 @@ class SpringApplicationTests {
 
 	}
 
-	static class OnlyOldMethodTestBootstrapper implements Bootstrapper {
+	static class OnlyOldMethodTestBootstrapper implements BootstrapRegistryInitializer {
 
 		private boolean intitialized;
 
 		@Override
-		@SuppressWarnings("deprecation")
-		public void intitialize(BootstrapRegistry registry) {
+		public void initialize(BootstrapRegistry registry) {
 			this.intitialized = true;
 		}
 
 	}
 
-	static class BothMethodsTestBootstrapper implements Bootstrapper {
+	static class BothMethodsTestBootstrapper implements BootstrapRegistryInitializer {
 
 		private boolean intitialized;
 
 		private boolean initialized;
-
-		@Override
-		@SuppressWarnings("deprecation")
-		public void intitialize(BootstrapRegistry registry) {
-			this.intitialized = true;
-		}
 
 		@Override
 		public void initialize(BootstrapRegistry registry) {

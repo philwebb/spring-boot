@@ -236,7 +236,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private List<Bootstrapper> bootstrappers;
+	private List<BootstrapRegistryInitializer> bootstrapRegistryInitializers;
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
@@ -282,10 +282,18 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		this.bootstrappers = new ArrayList<>(getSpringFactoriesInstances(Bootstrapper.class));
+		this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
+	}
+
+	@SuppressWarnings("deprecation")
+	private List<BootstrapRegistryInitializer> getBootstrapRegistryInitializersFromSpringFactories() {
+		ArrayList<BootstrapRegistryInitializer> bootstrappers = new ArrayList<>(
+				getSpringFactoriesInstances(Bootstrapper.class));
+		bootstrappers.addAll(getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
+		return bootstrappers;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -351,7 +359,7 @@ public class SpringApplication {
 
 	private DefaultBootstrapContext createBootstrapContext() {
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
-		this.bootstrappers.forEach((initializer) -> initializer.initialize(bootstrapContext));
+		this.bootstrapRegistryInitializers.forEach((initializer) -> initializer.initialize(bootstrapContext));
 		return bootstrapContext;
 	}
 
@@ -1046,10 +1054,24 @@ public class SpringApplication {
 	 * {@link BootstrapRegistry}.
 	 * @param bootstrapper the bootstraper
 	 * @since 2.4.0
+	 * @deprecated since 2.4.5 in favor of
+	 * {@link #addBootstrappers(BootstrapRegistryInitializer...)}
 	 */
+	@Deprecated
 	public void addBootstrapper(Bootstrapper bootstrapper) {
 		Assert.notNull(bootstrapper, "Bootstrapper must not be null");
-		this.bootstrappers.add(bootstrapper);
+		this.bootstrapRegistryInitializers.add(bootstrapper);
+	}
+
+	/**
+	 * Adds {@link BootstrapRegistryInitializer} instances that can be used to initialize
+	 * the {@link BootstrapRegistry}.
+	 * @param bootstrapRegistryInitializers the bootstraper registry initializers to add
+	 * @since 2.4.5
+	 */
+	public void addBootstrappers(BootstrapRegistryInitializer... bootstrapRegistryInitializers) {
+		Assert.notNull(bootstrapRegistryInitializers, "BootstrapRegistryInitializers must not be null");
+		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializers));
 	}
 
 	/**

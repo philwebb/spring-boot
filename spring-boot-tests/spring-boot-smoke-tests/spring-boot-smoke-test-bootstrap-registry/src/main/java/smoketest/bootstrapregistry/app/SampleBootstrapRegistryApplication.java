@@ -29,7 +29,7 @@ public class SampleBootstrapRegistryApplication {
 		// SubversionClient that still has access to data provided in the
 		// application.properties file
 		SpringApplication application = new SpringApplication(SampleBootstrapRegistryApplication.class);
-		application.addBootstrapper(SubversionBootstrap.withCustomClient(MySubversionClient::new));
+		application.addBootstrappers(SubversionBootstrap.withCustomClient(MySubversionClient::new));
 		application.run(args);
 	}
 
