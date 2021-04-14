@@ -116,6 +116,11 @@ prepareMavenBinaries {
 	versions "3.6.2", "3.5.4"
 }
 
+components.java.addVariantsFromConfiguration(configurations.optional) {
+	it.mapToOptional()
+	print it.configurationVariant.attributes
+}
+
 artifacts {
 	"documentation" zip
 }

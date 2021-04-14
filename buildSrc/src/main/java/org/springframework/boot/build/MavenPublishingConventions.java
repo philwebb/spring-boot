@@ -49,8 +49,6 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * </ul>
  * </ul>
  *
- * <p/>
- *
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
