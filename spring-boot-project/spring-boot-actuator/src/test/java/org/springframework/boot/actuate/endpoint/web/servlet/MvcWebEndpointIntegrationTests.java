@@ -46,7 +46,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -55,7 +54,6 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.handler.RequestMatchResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,33 +100,6 @@ class MvcWebEndpointIntegrationTests
 					.getResponseBodyContent();
 			assertThat(responseBody).containsExactly(0, 1, 2, 3);
 		});
-	}
-
-	@Test
-	void matchWhenRequestHasTrailingSlashShouldNotBeNull() {
-		assertThat(getMatchResult("/spring/")).isNotNull();
-	}
-
-	@Test
-	void matchWhenRequestHasSuffixShouldBeNull() {
-		assertThat(getMatchResult("/spring.do")).isNull();
-	}
-
-	private RequestMatchResult getMatchResult(String servletPath) {
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setServletPath(servletPath);
-		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext();
-		context.register(TestEndpointConfiguration.class);
-		context.refresh();
-		WebMvcEndpointHandlerMapping bean = context.getBean(WebMvcEndpointHandlerMapping.class);
-		try {
-			// Trigger initLookupPath
-			bean.getHandler(request);
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return bean.match(request, "/spring");
 	}
 
 	@Override

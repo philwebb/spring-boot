@@ -62,7 +62,7 @@ import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
-import org.springframework.web.util.UrlPathHelper;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes {@link ExposableWebEndpoint web endpoints}
@@ -91,6 +91,12 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			HttpServletRequest.class, Map.class);
 
 	private static final RequestMappingInfo.BuilderConfiguration builderConfig = getBuilderConfig();
+
+	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
+		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
+		config.setPatternParser(PathPatternParser.defaultInstance);
+		return config;
+	}
 
 	/**
 	 * Creates a new {@code WebEndpointHandlerMapping} that provides mappings for the
@@ -156,15 +162,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
 	}
 
-	@SuppressWarnings("deprecation")
-	private static RequestMappingInfo.BuilderConfiguration getBuilderConfig() {
-		RequestMappingInfo.BuilderConfiguration config = new RequestMappingInfo.BuilderConfiguration();
-		config.setPathMatcher(null);
-		config.setSuffixPatternMatch(false);
-		config.setTrailingSlashMatch(true);
-		return config;
-	}
-
 	private void registerMappingForOperation(ExposableWebEndpoint endpoint, WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = predicate.getPath();
@@ -195,7 +192,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path))
 				.methods(RequestMethod.valueOf(predicate.getHttpMethod().name()))
 				.consumes(predicate.getConsumes().toArray(new String[0]))
-				.produces(predicate.getProduces().toArray(new String[0])).build();
+				.produces(predicate.getProduces().toArray(new String[0])).options(builderConfig).build();
 	}
 
 	private void registerLinksMapping() {
@@ -230,6 +227,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	@Override
 	protected void extendInterceptors(List<Object> interceptors) {
 		interceptors.add(new SkipPathExtensionContentNegotiation());
+	}
+
+	@Override
+	public boolean usesPathPatterns() {
+		return true;
 	}
 
 	/**
@@ -316,7 +318,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		private Object getRemainingPathSegments(HttpServletRequest request) {
-			String[] pathTokens = tokenize(request, UrlPathHelper.PATH_ATTRIBUTE, true);
+			String[] pathTokens = tokenize(request, HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, true);
 			String[] patternTokens = tokenize(request, HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, false);
 			int numberOfRemainingPathSegments = pathTokens.length - patternTokens.length + 1;
 			Assert.state(numberOfRemainingPathSegments >= 0, "Unable to extract remaining path segments");

@@ -136,9 +136,10 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	@Test
 	void matchAllRemainingPathsSelectorShouldDecodePath() {
-		load(MatchAllRemainingEndpointConfiguration.class,
-				(client) -> client.get().uri("/matchallremaining/one/two%20three/").exchange().expectStatus().isOk()
-						.expectBody().jsonPath("selection").isEqualTo("one|two three"));
+		// Space is encoded to %20 by WebTestClient
+		String uri = "/matchallremaining/one/two three/";
+		load(MatchAllRemainingEndpointConfiguration.class, (client) -> client.get().uri(uri).exchange().expectStatus()
+				.isOk().expectBody().jsonPath("selection").isEqualTo("one|two three"));
 	}
 
 	@Test

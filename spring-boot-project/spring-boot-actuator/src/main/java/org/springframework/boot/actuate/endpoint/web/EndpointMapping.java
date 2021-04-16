@@ -50,7 +50,7 @@ public class EndpointMapping {
 
 	private static String normalizePath(String path) {
 		if (!StringUtils.hasText(path)) {
-			return path;
+			return "";
 		}
 		String normalizedPath = path;
 		if (!normalizedPath.startsWith("/")) {
