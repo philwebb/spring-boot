@@ -118,6 +118,8 @@ public final class ConfigData {
 	@FunctionalInterface
 	public interface PropertySourceOptions {
 
+		PropertySourceOptions ALWAYS_NONE = new AlwaysPropertySourceOptions(Options.NONE);
+
 		/**
 		 * Return the options that should apply for the given property source.
 		 * @param propertySource the property source
@@ -142,6 +144,9 @@ public final class ConfigData {
 		 * @return a new {@link PropertySourceOptions} instance
 		 */
 		static PropertySourceOptions always(Options options) {
+			if (options == Options.NONE) {
+				return ALWAYS_NONE;
+			}
 			return new AlwaysPropertySourceOptions(options);
 		}
 
@@ -175,7 +180,7 @@ public final class ConfigData {
 		/**
 		 * No options.
 		 */
-		public static final Options NONE = Options.of();
+		public static final Options NONE = new Options(Collections.emptySet());
 
 		private final Set<Option> options;
 
@@ -238,8 +243,10 @@ public final class ConfigData {
 		 */
 		public static Options of(Option... options) {
 			Assert.notNull(options, "Options must not be null");
-			return new Options(
-					(options.length != 0) ? EnumSet.copyOf(Arrays.asList(options)) : EnumSet.noneOf(Option.class));
+			if (options.length == 0) {
+				return NONE;
+			}
+			return new Options(EnumSet.copyOf(Arrays.asList(options)));
 		}
 
 	}
