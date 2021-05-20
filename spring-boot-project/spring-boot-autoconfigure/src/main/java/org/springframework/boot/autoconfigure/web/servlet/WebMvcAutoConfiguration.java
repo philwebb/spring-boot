@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -77,6 +78,7 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
@@ -184,6 +186,10 @@ public class WebMvcAutoConfiguration {
 	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
+		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
+
+		private final ResourceProperties resourceProperties;
+
 		private final WebMvcProperties mvcProperties;
 
 		private final ListableBeanFactory beanFactory;
@@ -194,13 +200,16 @@ public class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<ServletRegistrationBean<?>> servletRegistrations;
 
-		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		public WebMvcAutoConfigurationAdapter(WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HttpMessageConverters> messageConvertersProvider,
+		private final Set<String> autoConfiguredResourceHandlers = new HashSet<>();
+
+		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
+			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
@@ -321,11 +330,48 @@ public class WebMvcAutoConfiguration {
 			ApplicationConversionService.addBeans(registry, this.beanFactory);
 		}
 
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			if (!this.resourceProperties.isAddMappings()) {
+				logger.debug("Default resource handling disabled");
+				return;
+			}
+			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
+			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(),
+					this.resourceProperties.getStaticLocations());
+		}
+
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
+			if (registry.hasMappingForPattern(pattern)) {
+				return;
+			}
+			ResourceHandlerRegistration registration = registry.addResourceHandler(pattern);
+			registration.addResourceLocations(locations);
+			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
+			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
+			customizeResourceHandlerRegistration(registration);
+			this.autoConfiguredResourceHandlers.add(pattern);
+		}
+
+		private Integer getSeconds(Duration cachePeriod) {
+			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
+		}
+
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
+			if (this.resourceHandlerRegistrationCustomizer != null) {
+				this.resourceHandlerRegistrationCustomizer.customize(registration);
+			}
+		}
+
 		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 		@ConditionalOnMissingFilterBean(RequestContextFilter.class)
 		public static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
+		}
+
+		Set<String> getAutoConfiguredResourceHandlers() {
+			return this.autoConfiguredResourceHandlers;
 		}
 
 	}
@@ -336,32 +382,38 @@ public class WebMvcAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
-		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
-
 		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
 		private final WebMvcRegistrations mvcRegistrations;
 
-		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
-
 		private ResourceLoader resourceLoader;
 
 		private final ListableBeanFactory beanFactory;
 
-		private final Set<String> autoConfiguredResourceHandlers = new HashSet<>();
+		private final Set<WebMvcAutoConfigurationAdapter> autoConfigurers = new LinkedHashSet<>();
 
 		public EnableWebMvcConfiguration(ResourceProperties resourceProperties,
 				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
-				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
-				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
-				ListableBeanFactory beanFactory) {
+				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
 			this.resourceProperties = resourceProperties;
 			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
 			this.beanFactory = beanFactory;
+		}
+
+		@Override
+		@Autowired(required = false)
+		public void setConfigurers(List<WebMvcConfigurer> configurers) {
+			super.setConfigurers(configurers);
+			if (!CollectionUtils.isEmpty(configurers)) {
+				for (WebMvcConfigurer configurer : configurers) {
+					if (configurer instanceof WebMvcAutoConfigurationAdapter) {
+						this.autoConfigurers.add((WebMvcAutoConfigurationAdapter) configurer);
+					}
+				}
+			}
 		}
 
 		@Bean
@@ -417,10 +469,18 @@ public class WebMvcAutoConfiguration {
 			Map<String, ?> urlMap = mapping.getUrlMap();
 			String pattern = this.mvcProperties.getStaticPathPattern();
 			Object handler = urlMap.get(pattern);
-			if (handler instanceof ResourceHttpRequestHandler
-					&& this.autoConfiguredResourceHandlers.contains(pattern)) {
+			if (handler instanceof ResourceHttpRequestHandler && isAutoConfiguredResourcePattern(pattern)) {
 				addServletContextResourceHandlerMapping((ResourceHttpRequestHandler) handler);
 			}
+		}
+
+		private boolean isAutoConfiguredResourcePattern(String pattern) {
+			for (WebMvcAutoConfigurationAdapter autoConfigurer : this.autoConfigurers) {
+				if (autoConfigurer.getAutoConfiguredResourceHandlers().contains(pattern)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private void addServletContextResourceHandlerMapping(ResourceHttpRequestHandler handler) {
@@ -428,41 +488,6 @@ public class WebMvcAutoConfiguration {
 			if (servletContext != null) {
 				List<Resource> locations = handler.getLocations();
 				locations.add(new ServletContextResource(servletContext, SERVLET_LOCATION));
-			}
-		}
-
-		@Override
-		protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-			super.addResourceHandlers(registry);
-			if (!this.resourceProperties.isAddMappings()) {
-				logger.debug("Default resource handling disabled");
-				return;
-			}
-			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
-			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(),
-					this.resourceProperties.getStaticLocations());
-
-		}
-
-		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
-			if (registry.hasMappingForPattern(pattern)) {
-				return;
-			}
-			ResourceHandlerRegistration registration = registry.addResourceHandler(pattern);
-			registration.addResourceLocations(locations);
-			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
-			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
-			customizeResourceHandlerRegistration(registration);
-			this.autoConfiguredResourceHandlers.add(pattern);
-		}
-
-		private Integer getSeconds(Duration cachePeriod) {
-			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
-		}
-
-		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
-			if (this.resourceHandlerRegistrationCustomizer != null) {
-				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
 		}
 
