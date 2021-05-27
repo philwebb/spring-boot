@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -47,6 +47,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -126,6 +127,7 @@ class LoggingApplicationListenerTests {
 		new File(this.tempDir.toFile(), "spring.log").delete();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		ConfigurationPropertySources.attach(environment);
+		this.context.refresh();
 	}
 
 	@AfterEach
@@ -408,9 +410,7 @@ class LoggingApplicationListenerTests {
 	@Test
 	void shutdownHookIsRegisteredByDefault() throws Exception {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
-		Object registered = ReflectionTestUtils.getField(listener, TestLoggingApplicationListener.class,
-				"shutdownHookRegistered");
-		((AtomicBoolean) registered).set(false);
+		clearShutdownHook(listener);
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
 		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
@@ -422,14 +422,46 @@ class LoggingApplicationListenerTests {
 	@Test
 	void shutdownHookRegistrationCanBeDisabled() {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
-		Object registered = ReflectionTestUtils.getField(listener, TestLoggingApplicationListener.class,
-				"shutdownHookRegistered");
-		((AtomicBoolean) registered).set(false);
+		clearShutdownHook(listener);
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
 		addPropertiesToEnvironment(this.context, "logging.register_shutdown_hook=false");
 		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNull();
+	}
+
+	@Test
+	void shutdownHookRunsAfterContextClose() throws InterruptedException {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
+		clearShutdownHook(listener);
+		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
+		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		multicastEvent(listener, new ApplicationPreparedEvent(this.springApplication, NO_ARGS, this.context));
+		assertThat(listener.shutdownHook).isNotNull();
+		listener.shutdownHook.start();
+		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(10, TimeUnit.MILLISECONDS)).isFalse();
+		Thread.sleep(100);
+		this.context.close();
+		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30, TimeUnit.SECONDS)).isTrue();
+	}
+
+	@Test
+	void shutdownHookRunsDelayWhenContextIsNotClosed() throws InterruptedException {
+		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
+		clearShutdownHook(listener);
+		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
+		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
+		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
+		multicastEvent(listener, new ApplicationPreparedEvent(this.springApplication, NO_ARGS, this.context));
+		assertThat(listener.shutdownHook).isNotNull();
+		listener.shutdownHook.start();
+		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30, TimeUnit.SECONDS)).isTrue();
+	}
+
+	private void clearShutdownHook(TestLoggingApplicationListener listener) {
+		((AtomicReference<?>) ReflectionTestUtils.getField(listener, LoggingApplicationListener.class, "shutdownHook"))
+				.set(null);
 	}
 
 	@Test

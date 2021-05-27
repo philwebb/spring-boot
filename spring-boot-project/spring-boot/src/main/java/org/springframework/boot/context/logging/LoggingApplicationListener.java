@@ -18,9 +18,12 @@ package org.springframework.boot.context.logging;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +48,7 @@ import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
@@ -170,7 +174,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class, ApplicationContext.class };
 
-	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean();
+	private static final AtomicReference<ShutdownHook> shutdownHook = new AtomicReference<>();
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -218,12 +222,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		else if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
 		}
-		else if (event instanceof ContextClosedEvent
-				&& ((ContextClosedEvent) event).getApplicationContext().getParent() == null) {
-			onContextClosedEvent();
+		else if (event instanceof ContextClosedEvent) {
+			onContextClosedEvent((ContextClosedEvent) event);
 		}
 		else if (event instanceof ApplicationFailedEvent) {
-			onApplicationFailedEvent();
+			onApplicationFailedEvent((ApplicationFailedEvent) event);
 		}
 	}
 
@@ -240,7 +243,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		ConfigurableListableBeanFactory beanFactory = event.getApplicationContext().getBeanFactory();
+		ConfigurableApplicationContext applicationContext = event.getApplicationContext();
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		if (!beanFactory.containsBean(LOGGING_SYSTEM_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGING_SYSTEM_BEAN_NAME, this.loggingSystem);
 		}
@@ -250,15 +254,16 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (this.loggerGroups != null && !beanFactory.containsBean(LOGGER_GROUPS_BEAN_NAME)) {
 			beanFactory.registerSingleton(LOGGER_GROUPS_BEAN_NAME, this.loggerGroups);
 		}
+		addShutdownTracking(applicationContext);
 	}
 
-	private void onContextClosedEvent() {
-		if (this.loggingSystem != null) {
+	private void onContextClosedEvent(ContextClosedEvent event) {
+		if (event.getApplicationContext().getParent() == null && this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
 		}
 	}
 
-	private void onApplicationFailedEvent() {
+	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
 		if (this.loggingSystem != null) {
 			this.loggingSystem.cleanUp();
 		}
@@ -400,9 +405,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	private void registerShutdownHookIfNecessary(Environment environment, LoggingSystem loggingSystem) {
 		boolean registerShutdownHook = environment.getProperty(REGISTER_SHUTDOWN_HOOK_PROPERTY, Boolean.class, true);
 		if (registerShutdownHook) {
-			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
-			if (shutdownHandler != null && shutdownHookRegistered.compareAndSet(false, true)) {
-				registerShutdownHook(new Thread(shutdownHandler));
+			ShutdownHook current = shutdownHook.get();
+			while (current == null) {
+				ShutdownHook update = new ShutdownHook(loggingSystem.getShutdownHandler());
+				if (shutdownHook.compareAndSet(current, update)) {
+					registerShutdownHook(update);
+				}
+				current = shutdownHook.get();
 			}
 		}
 	}
@@ -436,6 +445,90 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 */
 	public void setParseArgs(boolean parseArgs) {
 		this.parseArgs = parseArgs;
+	}
+
+	private static void addShutdownTracking(ApplicationContext applicationContext) {
+		if (applicationContext != null && applicationContext.getParent() == null) {
+			ShutdownHook hook = shutdownHook.get();
+			if (hook != null) {
+				hook.addShutdownTracking(applicationContext);
+			}
+		}
+	}
+
+	/**
+	 * Shutdown hook for the logging system. Attempts to wait for all
+	 * {@link ApplicationContext} instances to become inactive before trigger the actual
+	 * logging system specific shutdown hook.
+	 */
+	private static class ShutdownHook extends Thread {
+
+		private static final Log logger = LogFactory.getLog(ShutdownHook.class);
+
+		private static final int SLEEP = 50;
+
+		private static final int TIMEOUT = 600;
+
+		private final Runnable shutdownHandler;
+
+		private final Map<ApplicationContext, Boolean> applicationContexts = new WeakHashMap<>();
+
+		ShutdownHook(Runnable shutdownHandler) {
+			this.shutdownHandler = shutdownHandler;
+		}
+
+		@Override
+		public void run() {
+			int waited = 0;
+			boolean waiting = false;
+			do {
+				waiting = isWaitingForApplicationContextClose();
+				if (waiting) {
+					logger.trace("Waiting for application contexts before shutting down logging");
+					waited += SLEEP;
+					try {
+						Thread.sleep(SLEEP);
+					}
+					catch (InterruptedException ex) {
+						waited += TIMEOUT;
+					}
+				}
+			}
+			while (waiting && waited < TIMEOUT);
+			logger.trace("Shutting down logging system");
+			synchronized (this.applicationContexts) {
+				this.applicationContexts.clear();
+			}
+			if (this.shutdownHandler != null) {
+				this.shutdownHandler.run();
+			}
+		}
+
+		boolean isWaitingForApplicationContextClose() {
+			synchronized (this.applicationContexts) {
+				try {
+					Iterator<ApplicationContext> iterator = this.applicationContexts.keySet().iterator();
+					while (iterator.hasNext()) {
+						ApplicationContext applicationContext = iterator.next();
+						if (!(applicationContext instanceof ConfigurableApplicationContext)
+								|| !((ConfigurableApplicationContext) applicationContext).isActive()) {
+							iterator.remove();
+						}
+					}
+				}
+				catch (ConcurrentModificationException ex) {
+				}
+				return !this.applicationContexts.isEmpty();
+			}
+
+		}
+
+		void addShutdownTracking(ApplicationContext applicationContext) {
+			synchronized (this.applicationContexts) {
+				this.applicationContexts.put(applicationContext, Boolean.TRUE);
+			}
+		}
+
 	}
 
 }
