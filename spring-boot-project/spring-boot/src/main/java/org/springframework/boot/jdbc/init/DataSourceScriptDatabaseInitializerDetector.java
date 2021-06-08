@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
+import org.springframework.core.Ordered;
 
 /**
  * A {@link DatabaseInitializerDetector} for {@link DataSourceScriptDatabaseInitializer}.
@@ -32,6 +33,11 @@ class DataSourceScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDat
 	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(DataSourceScriptDatabaseInitializer.class);
+	}
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 }
