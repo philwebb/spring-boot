@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.ShutdownHook;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -402,13 +403,13 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		if (registerShutdownHook) {
 			Runnable shutdownHandler = loggingSystem.getShutdownHandler();
 			if (shutdownHandler != null && shutdownHookRegistered.compareAndSet(false, true)) {
-				registerShutdownHook(new Thread(shutdownHandler));
+				registerShutdownHook(shutdownHandler);
 			}
 		}
 	}
 
-	void registerShutdownHook(Thread shutdownHook) {
-		Runtime.getRuntime().addShutdownHook(shutdownHook);
+	void registerShutdownHook(Runnable shutdownHandler) {
+		ShutdownHook.register(shutdownHandler);
 	}
 
 	public void setOrder(int order) {
