@@ -86,7 +86,18 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
+		customizeResourceDatabasePopulator(populator);
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
+	}
+
+	/**
+	 * Called to customize the {@link ResourceDatabasePopulator} prior to using it to
+	 * initialize the database. The default implementation does nothing.
+	 * @param populator populator to customize
+	 * @since 2.6.0
+	 */
+	protected void customizeResourceDatabasePopulator(ResourceDatabasePopulator populator) {
+
 	}
 
 }

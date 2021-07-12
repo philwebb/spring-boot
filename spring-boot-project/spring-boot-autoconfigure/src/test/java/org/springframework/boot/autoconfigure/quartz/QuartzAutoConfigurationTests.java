@@ -61,6 +61,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
@@ -78,6 +79,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Vedran Pavic
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
 class QuartzAutoConfigurationTests {
@@ -151,16 +153,20 @@ class QuartzAutoConfigurationTests {
 				});
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String datasourceName) {
+	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String dataSourceName) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
 			Scheduler scheduler = context.getBean(Scheduler.class);
 			assertThat(scheduler.getMetaData().getJobStoreClass()).isAssignableFrom(LocalDataSourceJobStore.class);
-			JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(datasourceName, DataSource.class));
+			JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(dataSourceName, DataSource.class));
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_JOB_DETAILS", Integer.class))
 					.isEqualTo(2);
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class))
 					.isEqualTo(0);
+			assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class);
+			QuartzDataSourceScriptDatabaseInitializer initializer = context
+					.getBean(QuartzDataSourceScriptDatabaseInitializer.class);
+			assertThat(initializer).hasFieldOrPropertyWithValue("dataSource", context.getBean(dataSourceName));
 		};
 	}
 
@@ -311,6 +317,29 @@ class QuartzAutoConfigurationTests {
 	@Test
 	void schedulerNameUseBeanNameByDefault() {
 		this.contextRunner.withPropertyValues().run(assertSchedulerName("quartzScheduler"));
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnQuartzDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+					assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
+							.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer").hasBean("customInitializer");
+				});
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	void whenTheUserDefinesTheirOwnQuartzDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomDataSourceInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+					assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
+							.hasSingleBean(QuartzDataSourceInitializer.class).hasBean("customInitializer");
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSchedulerName(String schedulerName) {
@@ -487,6 +516,29 @@ class QuartzAutoConfigurationTests {
 				throw new RuntimeException(ex);
 			}
 			return properties.initializeDataSourceBuilder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDatabaseInitializerConfiguration {
+
+		@Bean
+		QuartzDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
+				QuartzProperties properties) {
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDataSourceInitializerConfiguration {
+
+		@Bean
+		@SuppressWarnings("deprecation")
+		QuartzDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+				QuartzProperties properties) {
+			return new QuartzDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

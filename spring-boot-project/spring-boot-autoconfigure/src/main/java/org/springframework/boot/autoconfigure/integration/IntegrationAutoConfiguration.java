@@ -189,10 +189,12 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public IntegrationDataSourceInitializer integrationDataSourceInitializer(DataSource dataSource,
+		@SuppressWarnings("deprecation")
+		@ConditionalOnMissingBean({ IntegrationDataSourceScriptDatabaseInitializer.class,
+				IntegrationDataSourceInitializer.class })
+		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
 				ResourceLoader resourceLoader, IntegrationProperties properties) {
-			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties);
 		}
 
 	}

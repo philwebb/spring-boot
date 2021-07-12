@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.Assert;
@@ -29,7 +30,10 @@ import org.springframework.util.Assert;
  *
  * @author Vedran Pavic
  * @since 2.0.0
+ * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+ * {@link QuartzDataSourceScriptDatabaseInitializer}
  */
+@Deprecated
 public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	private final QuartzProperties properties;
@@ -48,7 +52,16 @@ public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
 
 	@Override
 	protected DataSourceInitializationMode getMode() {
-		return this.properties.getJdbc().getInitializeSchema();
+		DatabaseInitializationMode mode = this.properties.getJdbc().getInitializeSchema();
+		switch (mode) {
+		case ALWAYS:
+			return DataSourceInitializationMode.ALWAYS;
+		case EMBEDDED:
+			return DataSourceInitializationMode.EMBEDDED;
+		case NEVER:
+		default:
+			return DataSourceInitializationMode.NEVER;
+		}
 	}
 
 	@Override

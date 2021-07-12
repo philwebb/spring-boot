@@ -132,12 +132,14 @@ public class QuartzAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public QuartzDataSourceInitializer quartzDataSourceInitializer(DataSource dataSource,
-				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource, ResourceLoader resourceLoader,
-				QuartzProperties properties) {
+		@SuppressWarnings("deprecation")
+		@ConditionalOnMissingBean({ QuartzDataSourceScriptDatabaseInitializer.class,
+				QuartzDataSourceInitializer.class })
+		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
+				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
+				ResourceLoader resourceLoader, QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader, properties);
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
 		}
 
 	}
