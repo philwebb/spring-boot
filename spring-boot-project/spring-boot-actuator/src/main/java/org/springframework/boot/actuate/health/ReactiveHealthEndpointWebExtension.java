@@ -69,7 +69,8 @@ public class ReactiveHealthEndpointWebExtension
 
 	public Mono<WebEndpointResponse<? extends HealthComponent>> health(ApiVersion apiVersion,
 			SecurityContext securityContext, boolean showAll, String... path) {
-		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, securityContext, showAll, path);
+		HealthResult<Mono<? extends HealthComponent>> result = getHealth(apiVersion, securityContext,
+				ServerContext.EMPTY, showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
 					? Mono.just(new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK))

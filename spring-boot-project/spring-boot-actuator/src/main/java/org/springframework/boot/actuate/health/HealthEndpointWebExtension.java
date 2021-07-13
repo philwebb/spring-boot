@@ -55,20 +55,26 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 		super(registry, groups);
 	}
 
-	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext) {
-		return health(apiVersion, securityContext, false, NO_PATH);
+	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups,
+			HealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
+		super(registry, groups, groupsWithAdditionalPath);
 	}
 
 	@ReadOperation
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
-			@Selector(match = Match.ALL_REMAINING) String... path) {
-		return health(apiVersion, securityContext, false, path);
+			ServerContext serverContext) {
+		return health(apiVersion, securityContext, serverContext, false, NO_PATH);
+	}
+
+	@ReadOperation
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
+			ServerContext serverContext, @Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(apiVersion, securityContext, serverContext, false, path);
 	}
 
 	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, SecurityContext securityContext,
-			boolean showAll, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, showAll, path);
+			ServerContext serverContext, boolean showAll, String... path) {
+		HealthResult<HealthComponent> result = getHealth(apiVersion, securityContext, serverContext, showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, NO_PATH))
 					? new WebEndpointResponse<>(DEFAULT_HEALTH, WebEndpointResponse.STATUS_OK)

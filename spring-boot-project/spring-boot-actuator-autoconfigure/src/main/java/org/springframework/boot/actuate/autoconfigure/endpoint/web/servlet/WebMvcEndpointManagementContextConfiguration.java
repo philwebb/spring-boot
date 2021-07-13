@@ -20,10 +20,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.health.DefaultHealthEndpointGroupsWithAdditionalPath;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebMvcHandlerMapping;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -35,6 +41,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoi
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -78,6 +85,36 @@ public class WebMvcEndpointManagementContextConfiguration {
 		return new WebMvcEndpointHandlerMapping(endpointMapping, webEndpoints, endpointMediaTypes,
 				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
 				shouldRegisterLinksMapping);
+	}
+
+	@Bean
+	// @ConditionalOnAdditionalHealthGroupPath(prefix =
+	// HealthEndpointProperties.Group.MANAGEMENT_PREFIX)
+	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
+	public HealthEndpointWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
+			WebEndpointsSupplier webEndpointsSupplier,
+			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
+		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+		ExposableWebEndpoint health = webEndpoints.stream()
+				.filter((e) -> e.getEndpointId().equals(EndpointId.of("health"))).findFirst().get();
+		return new HealthEndpointWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
+				groupsWithAdditionalPath.getAll(HealthEndpointProperties.Group.MANAGEMENT_PREFIX));
+	}
+
+	@Bean
+	// @ConditionalOnAdditionalHealthGroupPath(prefix =
+	// HealthEndpointProperties.Group.SERVER_PREFIX)
+	@ConditionalOnManagementPort(ManagementPortType.SAME)
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
+	public HealthEndpointWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
+			WebEndpointsSupplier webEndpointsSupplier,
+			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
+		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
+		ExposableWebEndpoint health = webEndpoints.stream()
+				.filter((e) -> e.getEndpointId().equals(EndpointId.of("health"))).findFirst().get();
+		return new HealthEndpointWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
+				groupsWithAdditionalPath.getAll(HealthEndpointProperties.Group.SERVER_PREFIX));
 	}
 
 	private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment,

@@ -22,6 +22,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -34,7 +35,8 @@ import static org.mockito.Mockito.mock;
  */
 class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 
-	private AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor();
+	private AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
+			new MockEnvironment());
 
 	@Test
 	void postProcessHealthEndpointGroupsWhenGroupsAlreadyContainedReturnsOriginal() {

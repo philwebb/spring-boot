@@ -41,6 +41,8 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.health.ServerContext;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -172,6 +176,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		if (matchAllRemainingPathSegmentsVariable != null) {
 			path = path.replace("{*" + matchAllRemainingPathSegmentsVariable + "}", "**");
 		}
+		registerMapping(endpoint, predicate, operation, path);
+	}
+
+	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
+			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
 				new ServletWebOperationAdapter(operation));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
@@ -283,10 +292,11 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		@Override
 		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
+			ServletServerContext dunnoContext = new ServletServerContext(request);
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+				InvocationContext invocationContext = new InvocationContext(securityContext, dunnoContext, arguments,
 						new ProducibleOperationArgumentResolver(() -> headers.get("Accept")));
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
@@ -432,6 +442,23 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		@Override
 		public boolean isUserInRole(String role) {
 			return this.request.isUserInRole(role);
+		}
+
+	}
+
+	private static final class ServletServerContext implements ServerContext {
+
+		private final WebApplicationContext webApplicationContext;
+
+		private ServletServerContext(HttpServletRequest request) {
+			this.webApplicationContext = WebApplicationContextUtils
+					.getRequiredWebApplicationContext(request.getServletContext());
+		}
+
+		@Override
+		public String getName() {
+			return WebServerApplicationContext.hasServerNamespace(this.webApplicationContext, "management")
+					? "management" : "server";
 		}
 
 	}

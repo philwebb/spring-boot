@@ -35,8 +35,11 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Set<String> members;
 
-	AvailabilityProbesHealthEndpointGroup(String... members) {
+	private final String additionalPath;
+
+	AvailabilityProbesHealthEndpointGroup(String additionalPath, String... members) {
 		this.members = new HashSet<>(Arrays.asList(members));
+		this.additionalPath = additionalPath;
 	}
 
 	@Override
@@ -62,6 +65,11 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return HttpCodeStatusMapper.DEFAULT;
+	}
+
+	@Override
+	public String getAdditionalPath() {
+		return this.additionalPath;
 	}
 
 }

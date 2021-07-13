@@ -164,6 +164,11 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			return this.httpCodeStatusMapper;
 		}
 
+		@Override
+		public String getAdditionalPath() {
+			return null;
+		}
+
 	}
 
 }

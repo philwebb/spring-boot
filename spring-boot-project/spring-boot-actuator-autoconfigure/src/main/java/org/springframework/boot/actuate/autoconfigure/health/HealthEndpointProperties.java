@@ -61,6 +61,10 @@ public class HealthEndpointProperties extends HealthProperties {
 	 */
 	public static class Group extends HealthProperties {
 
+		public static final String SERVER_PREFIX = "server:";
+
+		public static final String MANAGEMENT_PREFIX = "management:";
+
 		/**
 		 * Health indicator IDs that should be included or '*' for all.
 		 */
@@ -76,6 +80,8 @@ public class HealthEndpointProperties extends HealthProperties {
 		 * 'management.endpoint.health.show-details'.
 		 */
 		private Show showDetails;
+
+		private String additionalPath;
 
 		public Set<String> getInclude() {
 			return this.include;
@@ -100,6 +106,14 @@ public class HealthEndpointProperties extends HealthProperties {
 
 		public void setShowDetails(Show showDetails) {
 			this.showDetails = showDetails;
+		}
+
+		public String getAdditionalPath() {
+			return this.additionalPath;
+		}
+
+		public void setAdditionalPath(String additionalPath) {
+			this.additionalPath = additionalPath;
 		}
 
 	}

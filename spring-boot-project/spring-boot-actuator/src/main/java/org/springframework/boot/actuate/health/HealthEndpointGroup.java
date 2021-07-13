@@ -62,4 +62,6 @@ public interface HealthEndpointGroup {
 	 */
 	HttpCodeStatusMapper getHttpCodeStatusMapper();
 
+	String getAdditionalPath();
+
 }

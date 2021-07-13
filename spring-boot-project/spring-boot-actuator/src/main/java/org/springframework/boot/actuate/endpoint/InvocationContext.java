@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
+import org.springframework.boot.actuate.health.ServerContext;
 import org.springframework.util.Assert;
 
 /**
@@ -75,6 +76,20 @@ public class InvocationContext {
 	 */
 	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments,
 			OperationArgumentResolver... argumentResolvers) {
+		this(securityContext, ServerContext.EMPTY, arguments, argumentResolvers);
+	}
+
+	/**
+	 * Creates a new context for an operation being invoked by the given
+	 * {@code securityContext} with the given available {@code arguments}.
+	 * @param securityContext the current security context. Never {@code null}
+	 * @param serverContext the current dunno context. Never {@code null}
+	 * @param arguments the arguments available to the operation. Never {@code null}
+	 * @param argumentResolvers resolvers for additional arguments should be available to
+	 * the operation.
+	 */
+	public InvocationContext(SecurityContext securityContext, ServerContext serverContext, Map<String, Object> arguments,
+			OperationArgumentResolver... argumentResolvers) {
 		Assert.notNull(securityContext, "SecurityContext must not be null");
 		Assert.notNull(arguments, "Arguments must not be null");
 		this.arguments = arguments;
@@ -83,6 +98,7 @@ public class InvocationContext {
 			this.argumentResolvers.addAll(Arrays.asList(argumentResolvers));
 		}
 		this.argumentResolvers.add(OperationArgumentResolver.of(SecurityContext.class, () -> securityContext));
+		this.argumentResolvers.add(OperationArgumentResolver.of(ServerContext.class, () -> serverContext));
 		this.argumentResolvers.add(OperationArgumentResolver.of(Principal.class, securityContext::getPrincipal));
 		this.argumentResolvers.add(OperationArgumentResolver.of(ApiVersion.class, () -> ApiVersion.LATEST));
 	}

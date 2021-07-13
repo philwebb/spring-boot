@@ -34,29 +34,45 @@ import org.springframework.util.Assert;
  */
 class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
-	private static final Map<String, AvailabilityProbesHealthEndpointGroup> GROUPS;
+	private final Map<String, AvailabilityProbesHealthEndpointGroup> groups;
+
+	private static final Map<String, String> GROUPS;
+
 	static {
-		Map<String, AvailabilityProbesHealthEndpointGroup> groups = new LinkedHashMap<>();
-		groups.put("liveness", new AvailabilityProbesHealthEndpointGroup("livenessState"));
-		groups.put("readiness", new AvailabilityProbesHealthEndpointGroup("readinessState"));
+		Map<String, String> groups = new LinkedHashMap<>();
+		groups.put("liveness", "/livez");
+		groups.put("readiness", "/readyz");
 		GROUPS = Collections.unmodifiableMap(groups);
 	}
 
-	private final HealthEndpointGroups groups;
+	private final HealthEndpointGroups additionalGroups;
 
 	private final Set<String> names;
 
-	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups) {
-		Assert.notNull(groups, "Groups must not be null");
-		this.groups = groups;
-		Set<String> names = new LinkedHashSet<>(groups.getNames());
-		names.addAll(GROUPS.keySet());
+	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups additionalGroups, boolean additionalPathsEnabled) {
+		Assert.notNull(additionalGroups, "Groups must not be null");
+		this.additionalGroups = additionalGroups;
+		this.groups = setupGroups(additionalPathsEnabled);
+		Set<String> names = new LinkedHashSet<>(additionalGroups.getNames());
+		names.addAll(this.groups.keySet());
 		this.names = Collections.unmodifiableSet(names);
+	}
+
+	private Map<String, AvailabilityProbesHealthEndpointGroup> setupGroups(boolean additionalPathsEnabled) {
+		Map<String, AvailabilityProbesHealthEndpointGroup> groups = new LinkedHashMap<>();
+		for (Map.Entry<String, String> group : GROUPS.entrySet())
+			groups.put(group.getKey(), new AvailabilityProbesHealthEndpointGroup(
+					getAdditionalPath(additionalPathsEnabled, group.getValue()), group.getKey()));
+		return Collections.unmodifiableMap(groups);
+	}
+
+	private String getAdditionalPath(boolean additionalPathsEnabled, String path) {
+		return (additionalPathsEnabled) ? "server:" + path : null;
 	}
 
 	@Override
 	public HealthEndpointGroup getPrimary() {
-		return this.groups.getPrimary();
+		return this.additionalGroups.getPrimary();
 	}
 
 	@Override
@@ -66,9 +82,9 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
 	@Override
 	public HealthEndpointGroup get(String name) {
-		HealthEndpointGroup group = this.groups.get(name);
+		HealthEndpointGroup group = this.additionalGroups.get(name);
 		if (group == null) {
-			group = GROUPS.get(name);
+			group = this.groups.get(name);
 		}
 		return group;
 	}

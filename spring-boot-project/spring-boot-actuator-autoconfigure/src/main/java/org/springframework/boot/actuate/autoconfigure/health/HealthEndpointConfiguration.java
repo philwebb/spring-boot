@@ -76,6 +76,12 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath(HealthEndpointGroups healthEndpointGroups) {
+		return new DefaultHealthEndpointGroupsWithAdditionalPath(healthEndpointGroups);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	HealthContributorRegistry healthContributorRegistry(ApplicationContext applicationContext,
 			HealthEndpointGroups groups) {
 		Map<String, HealthContributor> healthContributors = new LinkedHashMap<>(

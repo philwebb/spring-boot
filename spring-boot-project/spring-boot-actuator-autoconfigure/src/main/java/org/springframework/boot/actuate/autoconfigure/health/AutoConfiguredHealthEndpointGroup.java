@@ -50,6 +50,8 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Collection<String> roles;
 
+	private final String additionalPath;
+
 	/**
 	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
 	 * @param members a predicate used to test for group membership
@@ -60,14 +62,15 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param roles the roles to match
 	 */
 	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
-			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails,
-			Collection<String> roles) {
+			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails, Collection<String> roles,
+			String additionalPath) {
 		this.members = members;
 		this.statusAggregator = statusAggregator;
 		this.httpCodeStatusMapper = httpCodeStatusMapper;
 		this.showComponents = showComponents;
 		this.showDetails = showDetails;
 		this.roles = roles;
+		this.additionalPath = additionalPath;
 	}
 
 	@Override
@@ -139,6 +142,11 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return this.httpCodeStatusMapper;
+	}
+
+	@Override
+	public String getAdditionalPath() {
+		return this.additionalPath;
 	}
 
 }

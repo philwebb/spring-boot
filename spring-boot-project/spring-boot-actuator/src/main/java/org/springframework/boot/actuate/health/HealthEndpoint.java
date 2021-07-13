@@ -62,7 +62,8 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 	}
 
 	private HealthComponent health(ApiVersion apiVersion, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, SecurityContext.NONE, true, path);
+		HealthResult<HealthComponent> result = getHealth(apiVersion, SecurityContext.NONE, ServerContext.EMPTY, true,
+				path);
 		return (result != null) ? result.getHealth() : null;
 	}
 
