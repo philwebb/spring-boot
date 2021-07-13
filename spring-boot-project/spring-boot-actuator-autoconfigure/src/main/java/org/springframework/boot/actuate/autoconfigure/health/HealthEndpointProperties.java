@@ -61,6 +61,10 @@ public class HealthEndpointProperties extends HealthProperties {
 	 */
 	public static class Group extends HealthProperties {
 
+		public static final String SERVER_PREFIX = "server:";
+
+		public static final String MANAGEMENT_PREFIX = "management:";
+
 		/**
 		 * Health indicator IDs that should be included or '*' for all.
 		 */
@@ -76,6 +80,14 @@ public class HealthEndpointProperties extends HealthProperties {
 		 * 'management.endpoint.health.show-details'.
 		 */
 		private Show showDetails;
+
+		/**
+		 * Additional path that this group can be made available on. The additional path
+		 * must start with a valid prefix, either `server` or `management` to indicate if
+		 * it will be available on the main port or the management port. For instance,
+		 * `server:/healthz` will configure the group on the main port at `/healthz`.
+		 */
+		private String additionalPath;
 
 		public Set<String> getInclude() {
 			return this.include;
@@ -100,6 +112,14 @@ public class HealthEndpointProperties extends HealthProperties {
 
 		public void setShowDetails(Show showDetails) {
 			this.showDetails = showDetails;
+		}
+
+		public String getAdditionalPath() {
+			return this.additionalPath;
+		}
+
+		public void setAdditionalPath(String additionalPath) {
+			this.additionalPath = additionalPath;
 		}
 
 	}

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
  */
 class AvailabilityProbesHealthEndpointGroupTests {
 
-	private AvailabilityProbesHealthEndpointGroup group = new AvailabilityProbesHealthEndpointGroup("a", "b");
+	private AvailabilityProbesHealthEndpointGroup group = new AvailabilityProbesHealthEndpointGroup(null, "a", "b");
 
 	@Test
 	void isMemberWhenMemberReturnsTrue() {

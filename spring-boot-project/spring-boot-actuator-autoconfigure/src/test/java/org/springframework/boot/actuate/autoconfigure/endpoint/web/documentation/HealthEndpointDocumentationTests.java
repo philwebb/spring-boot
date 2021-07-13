@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.Health;
@@ -162,6 +163,11 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		@Override
 		public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 			return this.httpCodeStatusMapper;
+		}
+
+		@Override
+		public AdditionalHealthEndpointPath getAdditionalPath() {
+			return null;
 		}
 
 	}

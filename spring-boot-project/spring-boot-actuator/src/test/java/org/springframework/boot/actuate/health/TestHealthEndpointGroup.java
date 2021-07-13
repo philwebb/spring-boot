@@ -37,6 +37,8 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 	private boolean showDetails = true;
 
+	private AdditionalHealthEndpointPath additionalPath;
+
 	TestHealthEndpointGroup() {
 		this((name) -> true);
 	}
@@ -76,6 +78,15 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 	@Override
 	public HttpCodeStatusMapper getHttpCodeStatusMapper() {
 		return this.httpCodeStatusMapper;
+	}
+
+	@Override
+	public AdditionalHealthEndpointPath getAdditionalPath() {
+		return this.additionalPath;
+	}
+
+	void setAdditionalPath(AdditionalHealthEndpointPath additionalPath) {
+		this.additionalPath = additionalPath;
 	}
 
 }

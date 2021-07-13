@@ -61,8 +61,9 @@ public class AvailabilityProbesAutoConfiguration {
 	}
 
 	@Bean
-	public AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor() {
-		return new AvailabilityProbesHealthEndpointGroupsPostProcessor();
+	public AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor(
+			Environment environment) {
+		return new AvailabilityProbesHealthEndpointGroupsPostProcessor(environment);
 	}
 
 	/**

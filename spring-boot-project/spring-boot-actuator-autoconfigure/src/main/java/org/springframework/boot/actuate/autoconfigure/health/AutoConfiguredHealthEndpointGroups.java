@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties.Group;
 import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status;
+import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -48,6 +49,7 @@ import org.springframework.util.ObjectUtils;
  * Auto-configured {@link HealthEndpointGroups}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 
@@ -77,7 +79,7 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 			httpCodeStatusMapper = new SimpleHttpCodeStatusMapper(properties.getStatus().getHttpMapping());
 		}
 		this.primaryGroup = new AutoConfiguredHealthEndpointGroup(ALL, statusAggregator, httpCodeStatusMapper,
-				showComponents, showDetails, roles);
+				showComponents, showDetails, roles, null);
 		this.groups = createGroups(properties.getGroup(), beanFactory, statusAggregator, httpCodeStatusMapper,
 				showComponents, showDetails, roles);
 	}
@@ -106,8 +108,10 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 						return defaultHttpCodeStatusMapper;
 					});
 			Predicate<String> members = new IncludeExcludeGroupMemberPredicate(group.getInclude(), group.getExclude());
+			AdditionalHealthEndpointPath additionalPath = (group.getAdditionalPath() != null)
+					? AdditionalHealthEndpointPath.from(group.getAdditionalPath()) : null;
 			groups.put(groupName, new AutoConfiguredHealthEndpointGroup(members, statusAggregator, httpCodeStatusMapper,
-					showComponents, showDetails, roles));
+					showComponents, showDetails, roles, additionalPath));
 		});
 		return Collections.unmodifiableMap(groups);
 	}

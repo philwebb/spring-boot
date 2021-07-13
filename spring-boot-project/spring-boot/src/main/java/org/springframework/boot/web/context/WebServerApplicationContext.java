@@ -58,4 +58,18 @@ public interface WebServerApplicationContext extends ApplicationContext {
 				.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
 	}
 
+	/**
+	 * Returns the server namespace if the specified context is a
+	 * {@link WebServerApplicationContext}.
+	 * @param context the context
+	 * @return the server namespace or {@code null} if the context is not a
+	 * {@link WebServerApplicationContext}
+	 * @since 2.6.0
+	 */
+	static String getServerNamepace(ApplicationContext context) {
+		return (context instanceof WebServerApplicationContext)
+				? ((WebServerApplicationContext) context).getServerNamespace() : null;
+
+	}
+
 }
