@@ -49,7 +49,7 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 	 * Creates a new {@link DataSourceScriptDatabaseInitializer} that will initialize the
 	 * given {@code DataSource} using the given settings.
 	 * @param dataSource data source to initialize
-	 * @param settings initialization settings
+	 * @param settings the initialization settings
 	 */
 	public DataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
 		super(settings);
@@ -86,18 +86,7 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
-		customizeResourceDatabasePopulator(populator);
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
-	}
-
-	/**
-	 * Called to customize the {@link ResourceDatabasePopulator} prior to using it to
-	 * initialize the database. The default implementation does nothing.
-	 * @param populator populator to customize
-	 * @since 2.6.0
-	 */
-	protected void customizeResourceDatabasePopulator(ResourceDatabasePopulator populator) {
-
 	}
 
 }

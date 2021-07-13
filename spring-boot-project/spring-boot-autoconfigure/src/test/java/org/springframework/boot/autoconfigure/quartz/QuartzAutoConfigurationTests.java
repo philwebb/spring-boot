@@ -324,10 +324,9 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
-					assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
-							.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer").hasBean("customInitializer");
-				});
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer").hasBean("customInitializer"));
 	}
 
 	@Test
@@ -336,10 +335,9 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDataSourceInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
-					assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
-							.hasSingleBean(QuartzDataSourceInitializer.class).hasBean("customInitializer");
-				});
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> assertThat(context).doesNotHaveBean(QuartzDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(QuartzDataSourceInitializer.class).hasBean("customInitializer"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSchedulerName(String schedulerName) {

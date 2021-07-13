@@ -355,10 +355,8 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
-							.doesNotHaveBean("batchDataSourceScriptDatabaseInitializer").hasBean("customInitializer");
-				});
+				.run((context) -> assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("batchDataSourceScriptDatabaseInitializer").hasBean("customInitializer"));
 	}
 
 	@Test
@@ -368,10 +366,8 @@ class BatchAutoConfigurationTests {
 				.withUserConfiguration(TestConfiguration.class, CustomDataSourceInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class)
-							.hasSingleBean(BatchDataSourceInitializer.class).hasBean("customInitializer");
-				});
+				.run((context) -> assertThat(context).doesNotHaveBean(BatchDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(BatchDataSourceInitializer.class).hasBean("customInitializer"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -523,7 +519,7 @@ class BatchAutoConfigurationTests {
 
 		@Bean
 		BatchDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource, BatchProperties properties) {
-			return new BatchDataSourceScriptDatabaseInitializer(dataSource, properties);
+			return new BatchDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
 		}
 
 	}

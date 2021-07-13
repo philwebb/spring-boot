@@ -167,8 +167,8 @@ public class SqlInitializationAutoConfigurationTests {
 	static class DatabaseInitializerConfiguration {
 
 		@Bean
-		AbstractScriptDatabaseInitializer customInitializer() {
-			return new AbstractScriptDatabaseInitializer(new DatabaseInitializationSettings()) {
+		SqlDataSourceScriptDatabaseInitializer customInitializer() {
+			return new SqlDataSourceScriptDatabaseInitializer(null, new DatabaseInitializationSettings()) {
 
 				@Override
 				protected void runScripts(List<Resource> resources, boolean continueOnError, String separator,

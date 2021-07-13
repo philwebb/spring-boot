@@ -16,66 +16,63 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.Arrays;
-
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.jdbc.init.PlaformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
- * {@link DataSourceScriptDatabaseInitializer Initializer} for the Spring Batch database
- * schema.
+ * {@link DataSourceScriptDatabaseInitializer} for the Spring Batch database. May be
+ * registered as a bean to override auto-configuration.
  *
  * @author Dave Syer
  * @author Vedran Pavic
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.6.0
  */
 public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
-
-	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchProperties properties) {
-		super(dataSource, createSettings(dataSource, properties.getJdbc()));
+	/**
+	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Batch data source
+	 * @param properties the Spring Batch JDBC properties
+	 * @see #getSettings
+	 */
+	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchProperties.Jdbc properties) {
+		this(dataSource, getSettings(dataSource, properties));
 	}
 
-	private static DatabaseInitializationSettings createSettings(DataSource dataSource, Jdbc properties) {
+	/**
+	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Batch data source
+	 * @param settings the database initialization settings
+	 * @see #getSettings
+	 */
+	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
+		super(dataSource, settings);
+	}
+
+	/**
+	 * Adapts {@link BatchProperties.Jdbc Spring Batch JDBC properties} to
+	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
+	 * placeholders.
+	 * @param dataSource the Spring Batch data source
+	 * @param properties batch JDBC properties
+	 * @return a new {@link DatabaseInitializationSettings} instance
+	 * @see #BatchDataSourceScriptDatabaseInitializer(DataSource,
+	 * DatabaseInitializationSettings)
+	 */
+	public static DatabaseInitializationSettings getSettings(DataSource dataSource, BatchProperties.Jdbc properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(Arrays.asList(determineSchemaLocation(dataSource, properties)));
+		PlaformPlaceholderDatabaseDriverResolver plaformResolver = new PlaformPlaceholderDatabaseDriverResolver();
+		plaformResolver = plaformResolver.withDriverIdMapping("oracle", "oracle10g");
+		plaformResolver = plaformResolver.withDriverIdMapping("mariadb", "mysql");
+		settings.setSchemaLocations(plaformResolver.resolveAll(dataSource, properties.getSchema()));
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
-	}
-
-	private static String determineSchemaLocation(DataSource dataSource, Jdbc properties) {
-		String schema = properties.getSchema();
-		if (schema.contains(PLATFORM_PLACEHOLDER)) {
-			String platform = determinePlatform(dataSource);
-			schema = schema.replace(PLATFORM_PLACEHOLDER, platform);
-		}
-		return schema;
-	}
-
-	private static String determinePlatform(DataSource dataSource) {
-		String driverId = determineDriverId(dataSource);
-		if ("oracle".equals(driverId)) {
-			return "oracle10g";
-		}
-		if ("mariadb".equals(driverId)) {
-			return "mysql";
-		}
-		return driverId;
-	}
-
-	private static String determineDriverId(DataSource dataSource) {
-		DatabaseDriver databaseDriver = DatabaseDriver.fromDataSource(dataSource);
-		if (databaseDriver == DatabaseDriver.UNKNOWN) {
-			throw new IllegalStateException("Unable to detect database type");
-		}
-		return databaseDriver.getId();
 	}
 
 }

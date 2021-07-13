@@ -37,8 +37,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration.InitializationSpecificCredentialsDataSourceInitializationConfiguration.DifferentCredentialsCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration.SharedCredentialsDataSourceInitializationConfiguration.DataSourceInitializationCondition;
+import org.springframework.boot.autoconfigure.sql.init.SqlDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -78,7 +78,7 @@ class DataSourceInitializationConfiguration {
 		return fallbackLocations;
 	}
 
-	private static DatabaseInitializationMode mapMode(DataSourceInitializationMode mode) {
+	private static DatabaseInitializationMode mapMode(org.springframework.boot.jdbc.DataSourceInitializationMode mode) {
 		switch (mode) {
 		case ALWAYS:
 			return DatabaseInitializationMode.ALWAYS;
@@ -157,7 +157,7 @@ class DataSourceInitializationConfiguration {
 	static class SharedCredentialsDataSourceInitializationConfiguration {
 
 		@Bean
-		DataSourceScriptDatabaseInitializer scriptDataSourceInitializer(DataSource dataSource,
+		SqlDataSourceScriptDatabaseInitializer scriptDataSourceInitializer(DataSource dataSource,
 				DataSourceProperties properties) {
 			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 			settings.setSchemaLocations(scriptLocations(properties.getSchema(), "schema", properties.getPlatform()));
@@ -166,7 +166,7 @@ class DataSourceInitializationConfiguration {
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
 			settings.setMode(mapMode(properties.getInitializationMode()));
-			return new DataSourceScriptDatabaseInitializer(dataSource, settings);
+			return new SqlDataSourceScriptDatabaseInitializer(dataSource, settings);
 		}
 
 		static class DataSourceInitializationCondition extends SpringBootCondition {

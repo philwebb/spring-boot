@@ -16,55 +16,63 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.util.Arrays;
-
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.autoconfigure.batch.BatchDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.jdbc.init.PlaformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
- * {@link DataSourceScriptDatabaseInitializer Initializer} for the Spring Session JDBC
- * database schema.
+ * {@link DataSourceScriptDatabaseInitializer} for the Spring Session JDBC database. May
+ * be registered as a bean to override auto-configuration.
  *
  * @author Dave Syer
  * @author Vedran Pavic
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.6.0
  */
 public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
-
+	/**
+	 * Create a new {@link JdbcSessionDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Session JDBC data source
+	 * @param properties the Spring Session JDBC properties
+	 * @see #getSettings
+	 */
 	public JdbcSessionDataSourceScriptDatabaseInitializer(DataSource dataSource, JdbcSessionProperties properties) {
-		super(dataSource, createSettings(dataSource, properties));
+		this(dataSource, getSettings(dataSource, properties));
 	}
 
-	private static DatabaseInitializationSettings createSettings(DataSource dataSource,
-			JdbcSessionProperties properties) {
+	/**
+	 * Create a new {@link BatchDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Session JDBC data source
+	 * @param settings the database initialization settings
+	 * @see #getSettings
+	 */
+	public JdbcSessionDataSourceScriptDatabaseInitializer(DataSource dataSource,
+			DatabaseInitializationSettings settings) {
+		super(dataSource, settings);
+	}
+
+	/**
+	 * Adapts {@link JdbcSessionProperties Spring Session JDBC properties} to
+	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
+	 * placeholders.
+	 * @param dataSource the Spring Session JDBC data source
+	 * @param properties the Spring Session JDBC properties
+	 * @return a new {@link DatabaseInitializationSettings} instance
+	 * @see #JdbcSessionDataSourceScriptDatabaseInitializer(DataSource,
+	 * DatabaseInitializationSettings)
+	 */
+	static DatabaseInitializationSettings getSettings(DataSource dataSource, JdbcSessionProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(Arrays.asList(determineSchemaLocation(dataSource, properties)));
+		PlaformPlaceholderDatabaseDriverResolver plaformResolver = new PlaformPlaceholderDatabaseDriverResolver();
+		settings.setSchemaLocations(plaformResolver.resolveAll(dataSource, properties.getSchema()));
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
-	}
-
-	private static String determineSchemaLocation(DataSource dataSource, JdbcSessionProperties properties) {
-		String schema = properties.getSchema();
-		if (schema.contains(PLATFORM_PLACEHOLDER)) {
-			String platform = determineDriverId(dataSource);
-			schema = schema.replace(PLATFORM_PLACEHOLDER, platform);
-		}
-		return schema;
-	}
-
-	private static String determineDriverId(DataSource dataSource) {
-		DatabaseDriver databaseDriver = DatabaseDriver.fromDataSource(dataSource);
-		if (databaseDriver == DatabaseDriver.UNKNOWN) {
-			throw new IllegalStateException("Unable to detect database type");
-		}
-		return databaseDriver.getId();
 	}
 
 }

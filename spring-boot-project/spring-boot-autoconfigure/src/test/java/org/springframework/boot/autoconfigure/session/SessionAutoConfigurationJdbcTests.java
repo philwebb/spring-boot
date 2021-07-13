@@ -247,11 +247,11 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
-					assertThat(context).hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
-							.doesNotHaveBean("jdbcSessionDataSourceScriptDatabaseInitializer")
-							.hasBean("customInitializer");
-				});
+				.withPropertyValues("spring.session.store-type=jdbc")
+				.run((context) -> assertThat(context)
+						.hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("jdbcSessionDataSourceScriptDatabaseInitializer")
+						.hasBean("customInitializer"));
 	}
 
 	@Test
@@ -260,10 +260,10 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		this.contextRunner.withUserConfiguration(CustomDataSourceInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
-					assertThat(context).doesNotHaveBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
-							.hasSingleBean(JdbcSessionDataSourceInitializer.class).hasBean("customInitializer");
-				});
+				.withPropertyValues("spring.session.store-type=jdbc")
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(JdbcSessionDataSourceInitializer.class).hasBean("customInitializer"));
 	}
 
 	@Configuration

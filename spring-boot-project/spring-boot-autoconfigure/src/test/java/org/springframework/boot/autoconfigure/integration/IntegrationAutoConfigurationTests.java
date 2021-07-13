@@ -342,11 +342,10 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-							.doesNotHaveBean("integrationDataSourceScriptDatabaseInitializer")
-							.hasBean("customInitializer");
-				});
+				.run((context) -> assertThat(context)
+						.hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("integrationDataSourceScriptDatabaseInitializer")
+						.hasBean("customInitializer"));
 	}
 
 	@Test
@@ -355,10 +354,9 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDataSourceInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-							.hasSingleBean(IntegrationDataSourceInitializer.class).hasBean("customInitializer");
-				});
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(IntegrationDataSourceInitializer.class).hasBean("customInitializer"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -421,7 +419,7 @@ class IntegrationAutoConfigurationTests {
 		@Bean
 		IntegrationDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
 				IntegrationProperties properties) {
-			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties);
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
 		}
 
 	}

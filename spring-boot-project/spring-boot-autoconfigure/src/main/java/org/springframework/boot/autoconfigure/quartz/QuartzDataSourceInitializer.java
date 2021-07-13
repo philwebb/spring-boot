@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.quartz;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -34,7 +32,7 @@ import org.springframework.util.Assert;
  * {@link QuartzDataSourceScriptDatabaseInitializer}
  */
 @Deprecated
-public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
+public class QuartzDataSourceInitializer extends org.springframework.boot.jdbc.AbstractDataSourceInitializer {
 
 	private final QuartzProperties properties;
 
@@ -51,16 +49,16 @@ public class QuartzDataSourceInitializer extends AbstractDataSourceInitializer {
 	}
 
 	@Override
-	protected DataSourceInitializationMode getMode() {
+	protected org.springframework.boot.jdbc.DataSourceInitializationMode getMode() {
 		DatabaseInitializationMode mode = this.properties.getJdbc().getInitializeSchema();
 		switch (mode) {
 		case ALWAYS:
-			return DataSourceInitializationMode.ALWAYS;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
 		case EMBEDDED:
-			return DataSourceInitializationMode.EMBEDDED;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
 		case NEVER:
 		default:
-			return DataSourceInitializationMode.NEVER;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
 		}
 	}
 

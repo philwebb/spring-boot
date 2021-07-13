@@ -113,7 +113,7 @@ public class BatchAutoConfiguration {
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,
 				BatchProperties properties) {
 			DataSource dataSourceToInitialize = batchDataSource.getIfAvailable(() -> dataSource);
-			return new BatchDataSourceScriptDatabaseInitializer(dataSourceToInitialize, properties);
+			return new BatchDataSourceScriptDatabaseInitializer(dataSourceToInitialize, properties.getJdbc());
 		}
 
 	}

@@ -16,18 +16,15 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import java.util.Arrays;
-
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.integration.IntegrationProperties.Jdbc;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.jdbc.init.PlaformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
- * {@link DataSourceScriptDatabaseInitializer Initializer} for the Spring Integration
- * database schema.
+ * {@link DataSourceScriptDatabaseInitializer} for the Spring Integration database. May be
+ * registered as a bean to override auto-configuration.
  *
  * @author Vedran Pavic
  * @author Andy Wilkinson
@@ -35,35 +32,45 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
  */
 public class IntegrationDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
-
-	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource, IntegrationProperties properties) {
-		super(dataSource, createSettings(dataSource, properties.getJdbc()));
+	/**
+	 * Create a new {@link IntegrationDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Integration data source
+	 * @param properties the Spring Integration JDBC properties
+	 * @see #getSettings
+	 */
+	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource,
+			IntegrationProperties.Jdbc properties) {
+		this(dataSource, getSettings(dataSource, properties));
 	}
 
-	private static DatabaseInitializationSettings createSettings(DataSource dataSource, Jdbc properties) {
+	/**
+	 * Create a new {@link IntegrationDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Spring Integration data source
+	 * @param settings the database initialization settings
+	 * @see #getSettings
+	 */
+	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource,
+			DatabaseInitializationSettings settings) {
+		super(dataSource, settings);
+	}
+
+	/**
+	 * Adapts {@link IntegrationProperties.Jdbc Spring Integration JDBC properties} to
+	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
+	 * placeholders.
+	 * @param dataSource the Spring Integration data source
+	 * @param properties the Spring Integration JDBC properties
+	 * @return a new {@link DatabaseInitializationSettings} instance
+	 * @see #IntegrationDataSourceScriptDatabaseInitializer(DataSource,
+	 * DatabaseInitializationSettings)
+	 */
+	static DatabaseInitializationSettings getSettings(DataSource dataSource, IntegrationProperties.Jdbc properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(Arrays.asList(determineSchemaLocation(dataSource, properties)));
+		PlaformPlaceholderDatabaseDriverResolver plaformResolver = new PlaformPlaceholderDatabaseDriverResolver();
+		settings.setSchemaLocations(plaformResolver.resolveAll(dataSource, properties.getSchema()));
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
-	}
-
-	private static String determineSchemaLocation(DataSource dataSource, Jdbc properties) {
-		String schema = properties.getSchema();
-		if (schema.contains(PLATFORM_PLACEHOLDER)) {
-			String platform = determineDriverId(dataSource);
-			schema = schema.replace(PLATFORM_PLACEHOLDER, platform);
-		}
-		return schema;
-	}
-
-	private static String determineDriverId(DataSource dataSource) {
-		DatabaseDriver databaseDriver = DatabaseDriver.fromDataSource(dataSource);
-		if (databaseDriver == DatabaseDriver.UNKNOWN) {
-			throw new IllegalStateException("Unable to detect database type");
-		}
-		return databaseDriver.getId();
 	}
 
 }

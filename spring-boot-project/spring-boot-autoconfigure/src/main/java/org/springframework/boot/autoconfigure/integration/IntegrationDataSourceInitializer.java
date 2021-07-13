@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.integration;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -33,7 +31,7 @@ import org.springframework.util.Assert;
  * {@link IntegrationDataSourceScriptDatabaseInitializer}
  */
 @Deprecated
-public class IntegrationDataSourceInitializer extends AbstractDataSourceInitializer {
+public class IntegrationDataSourceInitializer extends org.springframework.boot.jdbc.AbstractDataSourceInitializer {
 
 	private final IntegrationProperties.Jdbc properties;
 
@@ -45,16 +43,16 @@ public class IntegrationDataSourceInitializer extends AbstractDataSourceInitiali
 	}
 
 	@Override
-	protected DataSourceInitializationMode getMode() {
+	protected org.springframework.boot.jdbc.DataSourceInitializationMode getMode() {
 		DatabaseInitializationMode mode = this.properties.getInitializeSchema();
 		switch (mode) {
 		case ALWAYS:
-			return DataSourceInitializationMode.ALWAYS;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
 		case EMBEDDED:
-			return DataSourceInitializationMode.EMBEDDED;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
 		case NEVER:
 		default:
-			return DataSourceInitializationMode.NEVER;
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
 		}
 	}
 

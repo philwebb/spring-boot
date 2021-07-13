@@ -16,70 +16,65 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.Arrays;
-
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.jdbc.init.PlaformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
- * {@link DataSourceScriptDatabaseInitializer Initializer} for the Quartz Scheduler
- * database schema.
+ * {@link DataSourceScriptDatabaseInitializer} for the Quartz Scheduler database. May be
+ * registered as a bean to override auto-configuration.
  *
  * @author Vedran Pavic
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.6.0
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
-
+	/**
+	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Quartz Scheduler data source
+	 * @param properties the Quartz properties
+	 * @see #getSettings
+	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzProperties properties) {
-		super(dataSource, createSettings(dataSource, properties));
+		this(dataSource, getSettings(dataSource, properties));
 	}
 
-	private static DatabaseInitializationSettings createSettings(DataSource dataSource, QuartzProperties properties) {
+	/**
+	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
+	 * @param dataSource the Quartz Scheduler data source
+	 * @param settings the database initialization settings
+	 * @see #getSettings
+	 */
+	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
+		super(dataSource, settings);
+	}
+
+	/**
+	 * Adapts {@link QuartzProperties Quartz properties} to
+	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
+	 * placeholders.
+	 * @param dataSource the Quartz Scheduler data source
+	 * @param properties the Quartz properties
+	 * @return a new {@link DatabaseInitializationSettings} instance
+	 * @see #QuartzDataSourceScriptDatabaseInitializer(DataSource,
+	 * DatabaseInitializationSettings)
+	 */
+	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(Arrays.asList(determineSchemaLocation(dataSource, properties)));
+		PlaformPlaceholderDatabaseDriverResolver plaformResolver = new PlaformPlaceholderDatabaseDriverResolver();
+		plaformResolver = plaformResolver.withDriverIdMapping("db2", "db2_v95");
+		plaformResolver = plaformResolver.withDriverIdMapping("mysql", "mysql_innodb");
+		plaformResolver = plaformResolver.withDriverIdMapping("mariadb", "mysql_innodb");
+		plaformResolver = plaformResolver.withDriverIdMapping("postgresql", "postgres");
+		plaformResolver = plaformResolver.withDriverIdMapping("sqlserver", "sqlServer");
+		settings.setSchemaLocations(plaformResolver.resolveAll(dataSource, properties.getJdbc().getSchema()));
 		settings.setMode(properties.getJdbc().getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
-	}
-
-	private static String determineSchemaLocation(DataSource dataSource, QuartzProperties properties) {
-		String schema = properties.getJdbc().getSchema();
-		if (schema.contains(PLATFORM_PLACEHOLDER)) {
-			String platform = determinePlatform(dataSource);
-			schema = schema.replace(PLATFORM_PLACEHOLDER, platform);
-		}
-		return schema;
-	}
-
-	private static String determinePlatform(DataSource dataSource) {
-		String platform = determineDriverId(dataSource);
-		if ("db2".equals(platform)) {
-			return "db2_v95";
-		}
-		if ("mysql".equals(platform) || "mariadb".equals(platform)) {
-			return "mysql_innodb";
-		}
-		if ("postgresql".equals(platform)) {
-			return "postgres";
-		}
-		if ("sqlserver".equals(platform)) {
-			return "sqlServer";
-		}
-		return platform;
-	}
-
-	private static String determineDriverId(DataSource dataSource) {
-		DatabaseDriver databaseDriver = DatabaseDriver.fromDataSource(dataSource);
-		if (databaseDriver == DatabaseDriver.UNKNOWN) {
-			throw new IllegalStateException("Unable to detect database type");
-		}
-		return databaseDriver.getId();
 	}
 
 }

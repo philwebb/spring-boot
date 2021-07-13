@@ -43,7 +43,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
@@ -193,8 +192,8 @@ public class IntegrationAutoConfiguration {
 		@ConditionalOnMissingBean({ IntegrationDataSourceScriptDatabaseInitializer.class,
 				IntegrationDataSourceInitializer.class })
 		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
-				ResourceLoader resourceLoader, IntegrationProperties properties) {
-			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties);
+				IntegrationProperties properties) {
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
 		}
 
 	}
