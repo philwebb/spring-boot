@@ -24,7 +24,7 @@ import java.util.Set;
  * configured.
  *
  * @author Madhura Bhave
- **/
+ */
 public interface HealthEndpointGroupsWithAdditionalPath {
 
 	HealthEndpointGroupsWithAdditionalPath EMPTY = (prefix) -> Collections.emptySet();

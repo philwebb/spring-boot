@@ -31,11 +31,11 @@ import org.springframework.core.env.Environment;
 @Order(Ordered.LOWEST_PRECEDENCE)
 class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpointGroupsPostProcessor {
 
-	private final boolean additionalPathsEnabled;
+	private final boolean addAdditionalPaths;
 
 	AvailabilityProbesHealthEndpointGroupsPostProcessor(Environment environment) {
-		String enabled = environment.getProperty("management.endpoint.health.probes.additional-path.enabled");
-		this.additionalPathsEnabled = "true".equalsIgnoreCase(enabled);
+		this.addAdditionalPaths = "true"
+				.equalsIgnoreCase(environment.getProperty("management.endpoint.health.probes.add-additional-paths"));
 	}
 
 	@Override
@@ -43,7 +43,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessor implements HealthEndpo
 		if (AvailabilityProbesHealthEndpointGroups.containsAllProbeGroups(groups)) {
 			return groups;
 		}
-		return new AvailabilityProbesHealthEndpointGroups(groups, this.additionalPathsEnabled);
+		return new AvailabilityProbesHealthEndpointGroups(groups, this.addAdditionalPaths);
 	}
 
 }

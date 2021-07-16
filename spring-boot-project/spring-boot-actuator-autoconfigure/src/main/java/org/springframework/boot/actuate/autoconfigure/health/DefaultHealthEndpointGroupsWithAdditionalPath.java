@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.health.HealthEndpointGroupsWithAdditiona
  * getting additional paths for health groups on the main and management server.
  *
  * @author Madhura Bhave
- **/
+ */
 public class DefaultHealthEndpointGroupsWithAdditionalPath implements HealthEndpointGroupsWithAdditionalPath {
 
 	private final Map<String, Set<HealthEndpointGroup>> groupsWithAdditionaPath = new LinkedHashMap<>();
@@ -48,6 +48,7 @@ public class DefaultHealthEndpointGroupsWithAdditionalPath implements HealthEndp
 				.collect(Collectors.toSet());
 	}
 
+	@Override
 	public Set<HealthEndpointGroup> getAll(String prefix) {
 		return this.groupsWithAdditionaPath.get(prefix);
 	}

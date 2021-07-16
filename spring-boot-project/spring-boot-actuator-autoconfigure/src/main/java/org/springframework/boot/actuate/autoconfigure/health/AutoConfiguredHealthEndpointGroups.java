@@ -48,6 +48,7 @@ import org.springframework.util.ObjectUtils;
  * Auto-configured {@link HealthEndpointGroups}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 

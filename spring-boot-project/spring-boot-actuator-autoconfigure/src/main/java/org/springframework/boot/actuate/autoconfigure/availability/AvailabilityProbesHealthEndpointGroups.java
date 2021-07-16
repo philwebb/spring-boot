@@ -31,48 +31,41 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
-	private final Map<String, AvailabilityProbesHealthEndpointGroup> groups;
+	private final HealthEndpointGroups groups;
 
-	private static final Map<String, String> GROUPS;
-
-	static {
-		Map<String, String> groups = new LinkedHashMap<>();
-		groups.put("liveness", "/livez");
-		groups.put("readiness", "/readyz");
-		GROUPS = Collections.unmodifiableMap(groups);
-	}
-
-	private final HealthEndpointGroups additionalGroups;
+	private final Map<String, HealthEndpointGroup> probeGroups;
 
 	private final Set<String> names;
 
-	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups additionalGroups, boolean additionalPathsEnabled) {
-		Assert.notNull(additionalGroups, "Groups must not be null");
-		this.additionalGroups = additionalGroups;
-		this.groups = setupGroups(additionalPathsEnabled);
-		Set<String> names = new LinkedHashSet<>(additionalGroups.getNames());
-		names.addAll(this.groups.keySet());
+	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups, boolean addAdditionalPaths) {
+		Assert.notNull(groups, "Groups must not be null");
+		this.groups = groups;
+		this.probeGroups = setupProbeGroups(addAdditionalPaths);
+		Set<String> names = new LinkedHashSet<>(groups.getNames());
+		names.addAll(this.probeGroups.keySet());
 		this.names = Collections.unmodifiableSet(names);
 	}
 
-	private Map<String, AvailabilityProbesHealthEndpointGroup> setupGroups(boolean additionalPathsEnabled) {
-		Map<String, AvailabilityProbesHealthEndpointGroup> groups = new LinkedHashMap<>();
-		for (Map.Entry<String, String> group : GROUPS.entrySet())
-			groups.put(group.getKey(), new AvailabilityProbesHealthEndpointGroup(
-					getAdditionalPath(additionalPathsEnabled, group.getValue()), group.getKey()));
-		return Collections.unmodifiableMap(groups);
+	private Map<String, HealthEndpointGroup> setupProbeGroups(boolean addAdditionalPaths) {
+		Map<String, HealthEndpointGroup> probeGroups = new LinkedHashMap<>();
+		probeGroups.put("liveness", createProbeGroup(addAdditionalPaths, "/livez", "livenessState"));
+		probeGroups.put("readiness", createProbeGroup(addAdditionalPaths, "/readyz", "readinessState"));
+		return Collections.unmodifiableMap(probeGroups);
 	}
 
-	private String getAdditionalPath(boolean additionalPathsEnabled, String path) {
-		return (additionalPathsEnabled) ? "server:" + path : null;
+	private AvailabilityProbesHealthEndpointGroup createProbeGroup(boolean addAdditionalPath, String additionalPath,
+			String string2) {
+		additionalPath = (!addAdditionalPath) ? null : "server:" + additionalPath;
+		return new AvailabilityProbesHealthEndpointGroup(additionalPath, "livenessState");
 	}
 
 	@Override
 	public HealthEndpointGroup getPrimary() {
-		return this.additionalGroups.getPrimary();
+		return this.groups.getPrimary();
 	}
 
 	@Override
@@ -82,15 +75,16 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 
 	@Override
 	public HealthEndpointGroup get(String name) {
-		HealthEndpointGroup group = this.additionalGroups.get(name);
+		HealthEndpointGroup group = this.groups.get(name);
 		if (group == null) {
-			group = this.groups.get(name);
+			group = this.probeGroups.get(name);
 		}
 		return group;
 	}
 
 	static boolean containsAllProbeGroups(HealthEndpointGroups groups) {
-		return groups.getNames().containsAll(GROUPS.keySet());
+		Set<String> names = groups.getNames();
+		return names.contains("liveness") && names.contains("readiness");
 	}
 
 }

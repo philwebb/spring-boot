@@ -68,6 +68,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
 
+	private static final EndpointId HEALTH_ENDPOINT_ID = EndpointId.of("health");
+
 	@Bean
 	@ConditionalOnMissingBean
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
@@ -88,33 +90,36 @@ public class WebMvcEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	// @ConditionalOnAdditionalHealthGroupPath(prefix =
-	// HealthEndpointProperties.Group.MANAGEMENT_PREFIX)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
 	public HealthEndpointWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier,
 			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
-		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((e) -> e.getEndpointId().equals(EndpointId.of("health"))).findFirst().get();
-		return new HealthEndpointWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
-				groupsWithAdditionalPath.getAll(HealthEndpointProperties.Group.MANAGEMENT_PREFIX));
+		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
+				HealthEndpointProperties.Group.MANAGEMENT_PREFIX);
 	}
 
 	@Bean
-	// @ConditionalOnAdditionalHealthGroupPath(prefix =
-	// HealthEndpointProperties.Group.SERVER_PREFIX)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
-	public HealthEndpointWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
+	public HealthEndpointWebMvcHandlerMapping serverHealthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier,
 			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
+		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
+				HealthEndpointProperties.Group.SERVER_PREFIX);
+	}
+
+	private HealthEndpointWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
+			WebEndpointsSupplier webEndpointsSupplier,
+			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath, String prefix) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((e) -> e.getEndpointId().equals(EndpointId.of("health"))).findFirst().get();
+		ExposableWebEndpoint health = webEndpoints.stream().filter(this::isHealthEndpoint).findFirst().get();
 		return new HealthEndpointWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
-				groupsWithAdditionalPath.getAll(HealthEndpointProperties.Group.SERVER_PREFIX));
+				groupsWithAdditionalPath.getAll(prefix));
+	}
+
+	private boolean isHealthEndpoint(ExposableWebEndpoint endpoint) {
+		return endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID);
 	}
 
 	private boolean shouldRegisterLinksMapping(WebEndpointProperties webEndpointProperties, Environment environment,

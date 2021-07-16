@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * @author Madhura Bhave
- **/
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented

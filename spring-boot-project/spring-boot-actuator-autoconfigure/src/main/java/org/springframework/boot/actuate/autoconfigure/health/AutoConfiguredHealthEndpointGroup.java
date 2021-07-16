@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
@@ -60,6 +61,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param showComponents the show components setting
 	 * @param showDetails the show details setting
 	 * @param roles the roles to match
+	 * @param additionalPath the additional path to use for this group
 	 */
 	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
 			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails, Collection<String> roles,
