@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
+import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -34,14 +35,14 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author Madhura Bhave
  **/
-public class HealthEndpointWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
+public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private final Set<HealthEndpointGroup> groups;
 
 	private ExposableWebEndpoint endpoint;
 
-	public HealthEndpointWebMvcHandlerMapping(EndpointMapping endpointMapping, ExposableWebEndpoint endpoint,
-			EndpointMediaTypes endpointMediaTypes, boolean shouldRegisterLinksMapping,
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(EndpointMapping endpointMapping,
+			ExposableWebEndpoint endpoint, EndpointMediaTypes endpointMediaTypes, boolean shouldRegisterLinksMapping,
 			Set<HealthEndpointGroup> groups) {
 		super(endpointMapping, Collections.singletonList(endpoint), endpointMediaTypes, shouldRegisterLinksMapping);
 		this.endpoint = endpoint;
@@ -55,8 +56,8 @@ public class HealthEndpointWebMvcHandlerMapping extends AbstractWebMvcEndpointHa
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				for (HealthEndpointGroup group : this.groups) {
-					String path = group.getAdditionalPath();
-					registerMapping(this.endpoint, predicate, operation, path.substring(path.indexOf(":") + 1));
+					AdditionalHealthEndpointPath path = group.getAdditionalPath();
+					registerMapping(this.endpoint, predicate, operation, path.getPath());
 				}
 			}
 		}

@@ -69,6 +69,6 @@ public interface HealthEndpointGroup {
 	 * @return the additional health path or {@code null}
 	 * @since 2.6.0
 	 */
-	String getAdditionalPath(); // FIXME Type?
+	AdditionalHealthEndpointPath getAdditionalPath();
 
 }

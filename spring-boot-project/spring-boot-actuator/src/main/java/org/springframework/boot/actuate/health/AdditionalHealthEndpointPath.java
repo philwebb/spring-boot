@@ -17,12 +17,20 @@
 package org.springframework.boot.actuate.health;
 
 /**
- * @author Madhura Bhave
- **/
-public interface ServerContext {
+ * @author Phillip Webb
+ * @since 2.6.0
+ */
+public class AdditionalHealthEndpointPath {
 
-	ServerContext EMPTY = () -> "";
+	/**
+	 * @return
+	 */
+	public String getPath() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
-	String getName();
+	// FIXME thing to do the split / parse logic
+	// probably got ServerNamespace and String[] parts
 
 }

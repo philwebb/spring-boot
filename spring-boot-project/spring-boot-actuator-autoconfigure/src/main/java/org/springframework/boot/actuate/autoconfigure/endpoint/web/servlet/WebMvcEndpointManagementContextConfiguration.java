@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointP
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.health.DefaultHealthEndpointGroupsWithAdditionalPath;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointWebMvcHandlerMapping;
+import org.springframework.boot.actuate.autoconfigure.health.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
@@ -92,7 +92,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
-	public HealthEndpointWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier,
 			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
 		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
@@ -102,19 +102,19 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
-	public HealthEndpointWebMvcHandlerMapping serverHealthEndpointWebMvcHandlerMapping(
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping serverHealthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier,
 			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
 		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
 				HealthEndpointProperties.Group.SERVER_PREFIX);
 	}
 
-	private HealthEndpointWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
+	private AdditionalHealthEndpointPathsWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier,
 			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath, String prefix) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		ExposableWebEndpoint health = webEndpoints.stream().filter(this::isHealthEndpoint).findFirst().get();
-		return new HealthEndpointWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
+		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
 				groupsWithAdditionalPath.getAll(prefix));
 	}
 

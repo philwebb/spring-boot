@@ -32,17 +32,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.ServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
-import org.springframework.boot.actuate.health.ServerContext;
-import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -56,8 +56,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -80,6 +78,8 @@ import org.springframework.web.util.UrlPathHelper;
  */
 public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements InitializingBean, MatchableHandlerMapping {
+
+	private final ServerNamespace serverNamespace;
 
 	private final EndpointMapping endpointMapping;
 
@@ -122,6 +122,23 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
+		this(null, endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
+	}
+
+	/**
+	 * Creates a new {@code AbstractWebMvcEndpointHandlerMapping} that provides mappings
+	 * for the operations of the given endpoints.
+	 * @param serverNamespace the server namespace
+	 * @param endpointMapping the base mapping for all endpoints
+	 * @param endpoints the web endpoints
+	 * @param endpointMediaTypes media types consumed and produced by the endpoints
+	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
+	 */
+	public AbstractWebMvcEndpointHandlerMapping(ServerNamespace serverNamespace, EndpointMapping endpointMapping,
+			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
+			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
+		this.serverNamespace = serverNamespace;
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
@@ -182,7 +199,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
 			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
-				new ServletWebOperationAdapter(operation));
+				new ServletWebOperationAdapter(this.serverNamespace, operation));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
@@ -283,21 +300,26 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
+		private final OperationArgumentResolver serverNamespaceArgumentResolver;
+
 		private final WebOperation operation;
 
-		ServletWebOperationAdapter(WebOperation operation) {
+		ServletWebOperationAdapter(ServerNamespace serverNamespace, WebOperation operation) {
+			this.serverNamespaceArgumentResolver = OperationArgumentResolver.of(ServerNamespace.class,
+					() -> serverNamespace);
 			this.operation = operation;
 		}
 
 		@Override
 		public Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
-			ServletServerContext dunnoContext = new ServletServerContext(request);
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				InvocationContext invocationContext = new InvocationContext(securityContext, dunnoContext, arguments,
-						new ProducibleOperationArgumentResolver(() -> headers.get("Accept")));
+				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
+						() -> headers.get("Accept"));
+				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+						this.serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -442,23 +464,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		@Override
 		public boolean isUserInRole(String role) {
 			return this.request.isUserInRole(role);
-		}
-
-	}
-
-	private static final class ServletServerContext implements ServerContext {
-
-		private final WebApplicationContext webApplicationContext;
-
-		private ServletServerContext(HttpServletRequest request) {
-			this.webApplicationContext = WebApplicationContextUtils
-					.getRequiredWebApplicationContext(request.getServletContext());
-		}
-
-		@Override
-		public String getName() {
-			return WebServerApplicationContext.hasServerNamespace(this.webApplicationContext, "management")
-					? "management" : "server";
 		}
 
 	}

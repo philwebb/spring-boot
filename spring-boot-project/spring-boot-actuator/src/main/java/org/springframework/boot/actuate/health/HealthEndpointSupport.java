@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.web.ServerNamespace;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Base class for health endpoints and health endpoint extensions.
@@ -62,11 +62,11 @@ abstract class HealthEndpointSupport<C, T> {
 		this.groupsWithAdditionalPath = groupsWithAdditionalPath;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, SecurityContext securityContext, ServerContext serverContext,
+	HealthResult<T> getHealth(ApiVersion apiVersion, ServerNamespace serverNamespace, SecurityContext securityContext,
 			boolean showAll, String... path) {
 		if (path.length > 0) {
 			HealthEndpointGroup group = this.groups.get(path[0]) != null ? this.groups.get(path[0])
-					: getGroupForAdditionalPath(path[0], serverContext);
+					: getGroupForAdditionalPath(serverNamespace, path[0]);
 			if (group != null) {
 				return getHealth(apiVersion, group, securityContext, showAll, path, 1);
 			}
@@ -74,11 +74,12 @@ abstract class HealthEndpointSupport<C, T> {
 		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	HealthEndpointGroup getGroupForAdditionalPath(String path, ServerContext context) {
-		if (!StringUtils.hasLength(context.getName())) {
+	private HealthEndpointGroup getGroupForAdditionalPath(ServerNamespace serverNamespace, String... path) {
+		if (serverNamespace == null) {
 			return null;
 		}
-		String prefix = context.getName() + ":";
+		// FIXME
+		String prefix = serverNamespace + ":";
 		for (HealthEndpointGroup group : this.groupsWithAdditionalPath.getAll(prefix)) {
 			if (group != null) {
 				String localServerPath = group.getAdditionalPath();
