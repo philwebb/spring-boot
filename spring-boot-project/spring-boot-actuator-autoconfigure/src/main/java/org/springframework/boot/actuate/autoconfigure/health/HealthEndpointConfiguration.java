@@ -74,11 +74,6 @@ class HealthEndpointConfiguration {
 		return new AutoConfiguredHealthEndpointGroups(applicationContext, properties);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath(HealthEndpointGroups healthEndpointGroups) {
-		return new DefaultHealthEndpointGroupsWithAdditionalPath(healthEndpointGroups);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

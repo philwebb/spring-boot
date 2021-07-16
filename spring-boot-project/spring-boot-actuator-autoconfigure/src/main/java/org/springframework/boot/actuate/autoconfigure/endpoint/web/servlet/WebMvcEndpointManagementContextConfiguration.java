@@ -23,8 +23,6 @@ import java.util.List;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.health.DefaultHealthEndpointGroupsWithAdditionalPath;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.health.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
@@ -37,11 +35,13 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -93,29 +93,25 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
 	public AdditionalHealthEndpointPathsWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
-		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
-				HealthEndpointProperties.Group.MANAGEMENT_PREFIX);
+			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
+		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groups, WebServerNamespace.MANAGEMENT);
 	}
 
 	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.SAME)
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
 	public AdditionalHealthEndpointPathsWebMvcHandlerMapping serverHealthEndpointWebMvcHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
-		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groupsWithAdditionalPath,
-				HealthEndpointProperties.Group.SERVER_PREFIX);
+			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
+		return healthEndpointWebMvcHandlerMapping(webEndpointsSupplier, groups, WebServerNamespace.SERVER);
 	}
 
 	private AdditionalHealthEndpointPathsWebMvcHandlerMapping healthEndpointWebMvcHandlerMapping(
-			WebEndpointsSupplier webEndpointsSupplier,
-			DefaultHealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath, String prefix) {
+			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups,
+			WebServerNamespace webServerNamespace) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		ExposableWebEndpoint health = webEndpoints.stream().filter(this::isHealthEndpoint).findFirst().get();
-		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(new EndpointMapping(""), health, null, false,
-				groupsWithAdditionalPath.getAll(prefix));
+		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
+				groups.getForAdditionalPathOnNamespace(webServerNamespace));
 	}
 
 	private boolean isHealthEndpoint(ExposableWebEndpoint endpoint) {

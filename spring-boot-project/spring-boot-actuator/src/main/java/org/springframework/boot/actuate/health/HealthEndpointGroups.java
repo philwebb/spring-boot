@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.health;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
 
 /**
@@ -47,6 +48,31 @@ public interface HealthEndpointGroups {
 	 * @return the {@link HealthEndpointGroup} or {@code null}
 	 */
 	HealthEndpointGroup get(String name);
+
+	// FIXME DC
+	default HealthEndpointGroup get(AdditionalHealthEndpointPath path) {
+		Assert.notNull(path, "Path must not be null");
+		for (String name : getNames()) {
+			HealthEndpointGroup group = get(name);
+			if (path.equals(group.getAdditionalPath())) {
+				return group;
+			}
+		}
+		return null;
+	}
+
+	default Set<HealthEndpointGroup> getForAdditionalPathOnNamespace(WebServerNamespace namespace) {
+		Assert.notNull(namespace, "Namespace must not be null");
+		// FIXME
+		for (String name : getNames()) {
+			HealthEndpointGroup group = get(name);
+			AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
+			if (additionalPath != null && additionalPath.hasNamespace(namespace)) {
+				return null;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Factory method to create a {@link HealthEndpointGroups} instance.

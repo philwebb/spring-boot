@@ -25,8 +25,8 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
-import org.springframework.boot.actuate.endpoint.web.ServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 
 /**
@@ -56,24 +56,19 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 		super(registry, groups);
 	}
 
-	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			HealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
-		super(registry, groups, groupsWithAdditionalPath);
-	}
-
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, ServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, NO_PATH);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, ServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, @Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, ServerNamespace serverNamespace,
+	public WebEndpointResponse<HealthComponent> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
 			SecurityContext securityContext, boolean showAll, String... path) {
 		HealthResult<HealthComponent> result = getHealth(apiVersion, serverNamespace, securityContext, showAll, path);
 		if (result == null) {

@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
-
-import java.util.Collections;
-import java.util.Set;
+package org.springframework.boot.actuate.endpoint.web;
 
 /**
- * Strategy used to get all {@link HealthEndpointGroup}s that have an additional path
- * configured.
- *
- * @author Madhura Bhave
+ * @author Phillip Webb
  */
-public interface HealthEndpointGroupsWithAdditionalPath {
+public final class WebServerNamespace {
 
-	// FIXME can we drop and move into HealthEndpointGroups?
-	// Perhaps HealthEndpointGroups.get(HealthEndpointGroupAdditionalPath additionalPath)
+	public static final WebServerNamespace SERVER = null;
 
-	HealthEndpointGroupsWithAdditionalPath EMPTY = (prefix) -> Collections.emptySet();
+	public static final WebServerNamespace MANAGEMENT = null;
 
-	Set<HealthEndpointGroup> getAll(String prefix);
+	private final String value;
+
+	private WebServerNamespace(String value) {
+		this.value = value;
+	}
+
+	public static WebServerNamespace of(String value) {
+		return (value != null) ? new WebServerNamespace(value) : null;
+	}
 
 }

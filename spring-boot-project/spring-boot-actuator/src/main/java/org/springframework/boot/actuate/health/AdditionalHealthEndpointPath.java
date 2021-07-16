@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+
 /**
  * @author Phillip Webb
  * @since 2.6.0
@@ -32,5 +34,27 @@ public class AdditionalHealthEndpointPath {
 
 	// FIXME thing to do the split / parse logic
 	// probably got ServerNamespace and String[] parts
+
+	/**
+	 * @param webServerNamespace
+	 * @param path
+	 * @return
+	 */
+	public static AdditionalHealthEndpointPath of(WebServerNamespace webServerNamespace, String[] path) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
+
+	public static AdditionalHealthEndpointPath parse(String value) {
+		return null;
+	}
+
+	/**
+	 * @param namespace
+	 * @return
+	 */
+	public boolean hasNamespace(WebServerNamespace namespace) {
+		throw new UnsupportedOperationException("Auto-generated method stub");
+	}
 
 }

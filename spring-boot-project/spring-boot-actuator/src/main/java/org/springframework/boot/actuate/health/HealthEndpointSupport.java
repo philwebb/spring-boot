@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.web.ServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
 
 /**
@@ -42,31 +42,22 @@ abstract class HealthEndpointSupport<C, T> {
 
 	private final HealthEndpointGroups groups;
 
-	private final HealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath;
-
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
 	 */
 	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups) {
-		this(registry, groups, HealthEndpointGroupsWithAdditionalPath.EMPTY);
-	}
-
-	HealthEndpointSupport(ContributorRegistry<C> registry, HealthEndpointGroups groups,
-			HealthEndpointGroupsWithAdditionalPath groupsWithAdditionalPath) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(groups, "Groups must not be null");
 		this.registry = registry;
 		this.groups = groups;
-		this.groupsWithAdditionalPath = groupsWithAdditionalPath;
 	}
 
-	HealthResult<T> getHealth(ApiVersion apiVersion, ServerNamespace serverNamespace, SecurityContext securityContext,
-			boolean showAll, String... path) {
+	HealthResult<T> getHealth(ApiVersion apiVersion, WebServerNamespace serverNamespace,
+			SecurityContext securityContext, boolean showAll, String... path) {
 		if (path.length > 0) {
-			HealthEndpointGroup group = this.groups.get(path[0]) != null ? this.groups.get(path[0])
-					: getGroupForAdditionalPath(serverNamespace, path[0]);
+			HealthEndpointGroup group = getHealthGroup(serverNamespace, path);
 			if (group != null) {
 				return getHealth(apiVersion, group, securityContext, showAll, path, 1);
 			}
@@ -74,22 +65,14 @@ abstract class HealthEndpointSupport<C, T> {
 		return getHealth(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	private HealthEndpointGroup getGroupForAdditionalPath(ServerNamespace serverNamespace, String... path) {
+	private HealthEndpointGroup getHealthGroup(WebServerNamespace serverNamespace, String... path) {
+		if (this.groups.get(path[0]) != null) {
+			return this.groups.get(path[0]);
+		}
 		if (serverNamespace == null) {
 			return null;
 		}
-		// FIXME
-		String prefix = serverNamespace + ":";
-		for (HealthEndpointGroup group : this.groupsWithAdditionalPath.getAll(prefix)) {
-			if (group != null) {
-				String localServerPath = group.getAdditionalPath();
-				String toMatch = prefix + "/" + path;
-				if (toMatch.equals(localServerPath)) {
-					return group;
-				}
-			}
-		}
-		return null;
+		return this.groups.get(AdditionalHealthEndpointPath.of(serverNamespace, path));
 	}
 
 	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
@@ -102,8 +85,8 @@ abstract class HealthEndpointSupport<C, T> {
 			return null;
 		}
 		Object contributor = getContributor(path, pathOffset);
-		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails,
-				isSystemHealth ? this.groups.getNames() : null, false);
+		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
+		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails, groupNames, false);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 

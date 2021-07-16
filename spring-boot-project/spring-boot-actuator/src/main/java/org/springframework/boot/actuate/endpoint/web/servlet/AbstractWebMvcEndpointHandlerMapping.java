@@ -39,10 +39,11 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
-import org.springframework.boot.actuate.endpoint.web.ServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -78,8 +81,6 @@ import org.springframework.web.util.UrlPathHelper;
  */
 public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements InitializingBean, MatchableHandlerMapping {
-
-	private final ServerNamespace serverNamespace;
 
 	private final EndpointMapping endpointMapping;
 
@@ -122,23 +123,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	public AbstractWebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
-		this(null, endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
-	}
-
-	/**
-	 * Creates a new {@code AbstractWebMvcEndpointHandlerMapping} that provides mappings
-	 * for the operations of the given endpoints.
-	 * @param serverNamespace the server namespace
-	 * @param endpointMapping the base mapping for all endpoints
-	 * @param endpoints the web endpoints
-	 * @param endpointMediaTypes media types consumed and produced by the endpoints
-	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
-	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
-	 */
-	public AbstractWebMvcEndpointHandlerMapping(ServerNamespace serverNamespace, EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
-			CorsConfiguration corsConfiguration, boolean shouldRegisterLinksMapping) {
-		this.serverNamespace = serverNamespace;
 		this.endpointMapping = endpointMapping;
 		this.endpoints = endpoints;
 		this.endpointMediaTypes = endpointMediaTypes;
@@ -199,7 +183,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	protected void registerMapping(ExposableWebEndpoint endpoint, WebOperationRequestPredicate predicate,
 			WebOperation operation, String path) {
 		ServletWebOperation servletWebOperation = wrapServletWebOperation(endpoint, operation,
-				new ServletWebOperationAdapter(this.serverNamespace, operation));
+				new ServletWebOperationAdapter(operation));
 		registerMapping(createRequestMappingInfo(predicate, path), new OperationHandler(servletWebOperation),
 				this.handleMethod);
 	}
@@ -300,13 +284,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 		private static final String PATH_SEPARATOR = AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
-		private final OperationArgumentResolver serverNamespaceArgumentResolver;
-
 		private final WebOperation operation;
 
-		ServletWebOperationAdapter(ServerNamespace serverNamespace, WebOperation operation) {
-			this.serverNamespaceArgumentResolver = OperationArgumentResolver.of(ServerNamespace.class,
-					() -> serverNamespace);
+		ServletWebOperationAdapter(WebOperation operation) {
 			this.operation = operation;
 		}
 
@@ -318,8 +298,15 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
 				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
 						() -> headers.get("Accept"));
+				OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
+						.of(WebServerNamespace.class, () -> {
+							WebApplicationContext applicationContext = WebApplicationContextUtils
+									.getRequiredWebApplicationContext(request.getServletContext());
+							return WebServerNamespace
+									.of(WebServerApplicationContext.getServerNamepace(applicationContext));
+						});
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						this.serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
+						serverNamespaceArgumentResolver, producibleOperationArgumentResolver);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {

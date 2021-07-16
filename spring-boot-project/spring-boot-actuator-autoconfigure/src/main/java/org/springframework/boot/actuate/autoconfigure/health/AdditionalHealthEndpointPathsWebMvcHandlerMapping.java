@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
-import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
@@ -41,10 +40,9 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 
 	private ExposableWebEndpoint endpoint;
 
-	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(EndpointMapping endpointMapping,
-			ExposableWebEndpoint endpoint, EndpointMediaTypes endpointMediaTypes, boolean shouldRegisterLinksMapping,
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
 			Set<HealthEndpointGroup> groups) {
-		super(endpointMapping, Collections.singletonList(endpoint), endpointMediaTypes, shouldRegisterLinksMapping);
+		super(new EndpointMapping(""), Collections.singletonList(endpoint), null, false);
 		this.endpoint = endpoint;
 		this.groups = groups;
 	}

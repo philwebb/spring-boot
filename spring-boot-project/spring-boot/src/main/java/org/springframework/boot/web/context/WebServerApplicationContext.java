@@ -58,4 +58,11 @@ public interface WebServerApplicationContext extends ApplicationContext {
 				.nullSafeEquals(((WebServerApplicationContext) context).getServerNamespace(), serverNamespace);
 	}
 
+	// FIXME DC
+	static String getServerNamepace(ApplicationContext context) {
+		return (context instanceof WebServerApplicationContext)
+				? ((WebServerApplicationContext) context).getServerNamespace() : null;
+
+	}
+
 }
