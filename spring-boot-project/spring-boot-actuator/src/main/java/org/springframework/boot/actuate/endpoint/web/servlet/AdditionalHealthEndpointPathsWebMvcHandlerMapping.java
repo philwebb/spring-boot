@@ -33,12 +33,12 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author Madhura Bhave
  * @since 2.6.0
- **/
+ */
 public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
-	private final Set<HealthEndpointGroup> groups;
+	private final ExposableWebEndpoint endpoint;
 
-	private ExposableWebEndpoint endpoint;
+	private final Set<HealthEndpointGroup> groups;
 
 	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
 			Set<HealthEndpointGroup> groups) {
@@ -54,8 +54,10 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				for (HealthEndpointGroup group : this.groups) {
-					AdditionalHealthEndpointPath path = group.getAdditionalPath();
-					registerMapping(this.endpoint, predicate, operation, path.getValue());
+					AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
+					if (additionalPath != null) {
+						registerMapping(this.endpoint, predicate, operation, additionalPath.getValue());
+					}
 				}
 			}
 		}

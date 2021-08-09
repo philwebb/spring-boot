@@ -69,10 +69,11 @@ abstract class HealthEndpointSupport<C, T> {
 		if (this.groups.get(path[0]) != null) {
 			return this.groups.get(path[0]);
 		}
-		if (serverNamespace == null) {
-			return null;
+		if (serverNamespace != null) {
+			AdditionalHealthEndpointPath additionalPath = AdditionalHealthEndpointPath.of(serverNamespace, path[0]);
+			return this.groups.get(additionalPath);
 		}
-		return this.groups.get(AdditionalHealthEndpointPath.of(serverNamespace, path[0]));
+		return null;
 	}
 
 	private HealthResult<T> getHealth(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,

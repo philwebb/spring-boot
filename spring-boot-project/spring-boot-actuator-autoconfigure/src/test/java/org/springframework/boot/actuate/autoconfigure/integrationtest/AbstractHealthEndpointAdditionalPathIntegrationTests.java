@@ -32,7 +32,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * Abstract base class for health groups with an additional path.
  *
  * @author Madhura Bhave
- **/
+ * @param <T> the runner
+ * @param <C> the application context type
+ * @param <A> the assertions
+ */
 abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends AbstractApplicationContextRunner<T, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
 	private final T runner;

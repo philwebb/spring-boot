@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.springframework.util.Assert;
+
 /**
  * Enumeration of server namespaces.
  *
@@ -41,12 +43,18 @@ public enum WebServerNamespace {
 		this.value = value;
 	}
 
-	public static WebServerNamespace from(String value) {
-		return (!"management".equals(value)) ? SERVER : MANAGEMENT;
-	}
-
 	public String getValue() {
 		return this.value;
+	}
+
+	public static WebServerNamespace from(String value) {
+		Assert.hasText(value, "WebServerNamespace must not be empty");
+		for (WebServerNamespace candidate : values()) {
+			if (candidate.value.equals(value.toLowerCase())) {
+				return candidate;
+			}
+		}
+		throw new IllegalArgumentException("WebServerNamespace must contain a valid namespace.");
 	}
 
 }

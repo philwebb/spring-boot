@@ -98,7 +98,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 		ExposableWebEndpoint health = webEndpoints.stream()
 				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().get();
 		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
-				groups.getForAdditionalPathOnNamespace(WebServerNamespace.MANAGEMENT));
+				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
 
 	@Bean

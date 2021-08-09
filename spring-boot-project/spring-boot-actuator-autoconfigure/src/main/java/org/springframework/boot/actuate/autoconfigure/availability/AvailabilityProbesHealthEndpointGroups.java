@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups {
 	AvailabilityProbesHealthEndpointGroups(HealthEndpointGroups groups, boolean addAdditionalPaths) {
 		Assert.notNull(groups, "Groups must not be null");
 		this.groups = groups;
-		this.probeGroups = setupProbeGroups(addAdditionalPaths);
+		this.probeGroups = createProbeGroups(addAdditionalPaths);
 		Set<String> names = new LinkedHashSet<>(groups.getNames());
 		names.addAll(this.probeGroups.keySet());
 		this.names = Collections.unmodifiableSet(names);
 	}
 
-	private Map<String, HealthEndpointGroup> setupProbeGroups(boolean addAdditionalPaths) {
+	private Map<String, HealthEndpointGroup> createProbeGroups(boolean addAdditionalPaths) {
 		Map<String, HealthEndpointGroup> probeGroups = new LinkedHashMap<>();
 		probeGroups.put("liveness", createProbeGroup(addAdditionalPaths, "/livez", "livenessState"));
 		probeGroups.put("readiness", createProbeGroup(addAdditionalPaths, "/readyz", "readinessState"));

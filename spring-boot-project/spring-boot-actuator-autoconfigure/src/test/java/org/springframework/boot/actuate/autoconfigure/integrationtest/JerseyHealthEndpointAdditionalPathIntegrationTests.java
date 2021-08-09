@@ -38,7 +38,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * Integration tests for health groups on an additional path on Jersey.
  *
  * @author Madhura Bhave
- **/
+ */
 class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 

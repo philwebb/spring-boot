@@ -29,31 +29,16 @@ import org.springframework.util.StringUtils;
  */
 public final class AdditionalHealthEndpointPath {
 
-	private final String value;
-
 	private final WebServerNamespace namespace;
+
+	private final String value;
 
 	private final String canonicalValue;
 
 	private AdditionalHealthEndpointPath(WebServerNamespace namespace, String value) {
 		this.namespace = namespace;
 		this.value = value;
-		this.canonicalValue = getCanonicalValue();
-	}
-
-	private String getCanonicalValue() {
-		if (this.value.startsWith("/")) {
-			return this.value;
-		}
-		return "/" + this.value;
-	}
-
-	/**
-	 * Returns the value corresponding to this path.
-	 * @return the path
-	 */
-	public String getValue() {
-		return this.value;
+		this.canonicalValue = (!value.startsWith("/")) ? "/" + value : value;
 	}
 
 	/**
@@ -65,48 +50,11 @@ public final class AdditionalHealthEndpointPath {
 	}
 
 	/**
-	 * Creates an {@link AdditionalHealthEndpointPath} from the given input. The input
-	 * must contain a prefix and value separated by a `:`. The value must be limited to
-	 * one path segment. For example, `server:/healthz`.
-	 * @param value the value to parse
-	 * @return the new instance
+	 * Returns the value corresponding to this path.
+	 * @return the path
 	 */
-	public static AdditionalHealthEndpointPath from(String value) {
-		Assert.hasText(value, "Value must not be null");
-		String[] values = value.split(":");
-		validate(values);
-		WebServerNamespace namespace = WebServerNamespace.from(values[0]);
-		return new AdditionalHealthEndpointPath(namespace, values[1]);
-	}
-
-	private static void validate(String[] values) {
-		if (values.length < 2) {
-			throw new IllegalArgumentException("Value must contain a valid namespace and value separated by ':'.");
-		}
-		if (!StringUtils.hasText(values[0])) {
-			throw new IllegalArgumentException("Value must contain a valid namespace.");
-		}
-		validateValue(values[1]);
-	}
-
-	private static void validateValue(String value) {
-		if (StringUtils.countOccurrencesOf(value, "/") > 1 || value.indexOf("/") > 0) {
-			throw new IllegalArgumentException("Value must contain only one segment.");
-		}
-	}
-
-	/**
-	 * Creates an {@link AdditionalHealthEndpointPath} from the given
-	 * {@link WebServerNamespace} and value.
-	 * @param webServerNamespace the server namespace
-	 * @param value the value
-	 * @return the new instance
-	 */
-	public static AdditionalHealthEndpointPath of(WebServerNamespace webServerNamespace, String value) {
-		Assert.notNull(webServerNamespace, "The server namespace must not be null.");
-		Assert.notNull(value, "The value must not be null.");
-		validateValue(value);
-		return new AdditionalHealthEndpointPath(webServerNamespace, value);
+	public String getValue() {
+		return this.value;
 	}
 
 	/**
@@ -145,6 +93,41 @@ public final class AdditionalHealthEndpointPath {
 	@Override
 	public String toString() {
 		return this.namespace.getValue() + ":" + this.value;
+	}
+
+	/**
+	 * Creates an {@link AdditionalHealthEndpointPath} from the given input. The input
+	 * must contain a prefix and value separated by a `:`. The value must be limited to
+	 * one path segment. For example, `server:/healthz`.
+	 * @param value the value to parse
+	 * @return the new instance
+	 */
+	public static AdditionalHealthEndpointPath from(String value) {
+		Assert.hasText(value, "Value must not be null");
+		String[] values = value.split(":");
+		Assert.isTrue(values.length == 2, "Value must contain a valid namespace and value separated by ':'.");
+		WebServerNamespace namespace = WebServerNamespace.from(values[0]);
+		validateValue(values[1]);
+		return new AdditionalHealthEndpointPath(namespace, values[1]);
+	}
+
+	/**
+	 * Creates an {@link AdditionalHealthEndpointPath} from the given
+	 * {@link WebServerNamespace} and value.
+	 * @param webServerNamespace the server namespace
+	 * @param value the value
+	 * @return the new instance
+	 */
+	public static AdditionalHealthEndpointPath of(WebServerNamespace webServerNamespace, String value) {
+		Assert.notNull(webServerNamespace, "The server namespace must not be null.");
+		Assert.notNull(value, "The value must not be null.");
+		validateValue(value);
+		return new AdditionalHealthEndpointPath(webServerNamespace, value);
+	}
+
+	private static void validateValue(String value) {
+		Assert.isTrue(StringUtils.countOccurrencesOf(value, "/") == 1 || value.indexOf("/") == 0,
+				"Value must contain only one segment.");
 	}
 
 }

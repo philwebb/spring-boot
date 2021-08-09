@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link AdditionalHealthEndpointPath}.
  *
  * @author Madhura Bhave
- **/
+ */
 class AdditionalHealthEndpointPathTests {
 
 	@Test

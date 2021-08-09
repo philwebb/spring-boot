@@ -38,7 +38,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * Integration tests for MVC health groups on an additional path.
  *
  * @author Madhura Bhave
- **/
+ */
 class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<WebApplicationContextRunner, ConfigurableWebApplicationContext, AssertableWebApplicationContext> {
 

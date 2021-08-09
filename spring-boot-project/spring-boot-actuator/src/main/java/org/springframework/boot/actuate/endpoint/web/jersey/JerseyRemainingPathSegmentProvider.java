@@ -23,7 +23,7 @@ import javax.ws.rs.container.ContainerRequestContext;
  * endpoint.
  *
  * @author Madhura Bhave
- **/
+ */
 interface JerseyRemainingPathSegmentProvider {
 
 	String get(ContainerRequestContext requestContext, String matchAllRemainingPathSegmentsVariable);

@@ -81,6 +81,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 			EndpointMediaTypes endpointMediaTypes, WebEndpointProperties webEndpointProperties) {
 		String basePath = webEndpointProperties.getBasePath();
 		boolean shouldRegisterLinks = shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
+		// FIXME serverNamespace is not used
 		WebServerNamespace serverNamespace = (ManagementPortType.get(environment) != ManagementPortType.DIFFERENT)
 				? WebServerNamespace.SERVER : WebServerNamespace.MANAGEMENT;
 		return new JerseyWebEndpointsResourcesRegistrar(webEndpointsSupplier, servletEndpointsSupplier,

@@ -100,7 +100,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 		ExposableWebEndpoint health = webEndpoints.stream()
 				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().get();
 		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
-				groups.getForAdditionalPathOnNamespace(WebServerNamespace.MANAGEMENT));
+				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
 
 	@Bean

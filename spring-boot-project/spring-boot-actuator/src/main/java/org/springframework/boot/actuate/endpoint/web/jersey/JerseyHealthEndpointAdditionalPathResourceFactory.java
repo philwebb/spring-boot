@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.health.HealthEndpointGroups;
  *
  * @author Madhura Bhave
  * @since 2.6.0
- **/
+ */
 public class JerseyHealthEndpointAdditionalPathResourceFactory extends JerseyEndpointResourceFactory {
 
 	private final Set<HealthEndpointGroup> groups;
@@ -44,7 +44,7 @@ public class JerseyHealthEndpointAdditionalPathResourceFactory extends JerseyEnd
 	public JerseyHealthEndpointAdditionalPathResourceFactory(WebServerNamespace serverNamespace,
 			HealthEndpointGroups groups) {
 		this.serverNamespace = serverNamespace;
-		this.groups = groups.getForAdditionalPathOnNamespace(serverNamespace);
+		this.groups = groups.getAllWithAdditionalPath(serverNamespace);
 	}
 
 	@Override
@@ -53,9 +53,11 @@ public class JerseyHealthEndpointAdditionalPathResourceFactory extends JerseyEnd
 		String matchAllRemainingPathSegmentsVariable = requestPredicate.getMatchAllRemainingPathSegmentsVariable();
 		if (matchAllRemainingPathSegmentsVariable != null) {
 			for (HealthEndpointGroup group : this.groups) {
-				AdditionalHealthEndpointPath path = group.getAdditionalPath();
-				return getResource(endpointMapping, operation, requestPredicate, path.getValue(), this.serverNamespace,
-						(data, pathSegmentsVariable) -> data.getUriInfo().getPath());
+				AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
+				if (additionalPath != null) {
+					return getResource(endpointMapping, operation, requestPredicate, additionalPath.getValue(),
+							this.serverNamespace, (data, pathSegmentsVariable) -> data.getUriInfo().getPath());
+				}
 			}
 		}
 		return null;

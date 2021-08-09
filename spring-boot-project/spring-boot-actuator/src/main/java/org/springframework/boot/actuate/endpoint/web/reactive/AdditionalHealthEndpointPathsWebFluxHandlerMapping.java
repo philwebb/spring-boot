@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
+import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,14 +36,14 @@ import org.springframework.web.reactive.result.method.RequestMappingInfo;
  *
  * @author Madhura Bhave
  * @since 2.6.0
- **/
+ */
 public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends AbstractWebFluxEndpointHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
 
-	private final Set<HealthEndpointGroup> groups;
-
 	private final ExposableWebEndpoint endpoint;
+
+	private final Set<HealthEndpointGroup> groups;
 
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
 			ExposableWebEndpoint endpoint, Set<HealthEndpointGroup> groups) {
@@ -59,9 +60,12 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				for (HealthEndpointGroup group : this.groups) {
-					RequestMappingInfo requestMappingInfo = getRequestMappingInfo(operation,
-							group.getAdditionalPath().getValue());
-					registerReadMapping(requestMappingInfo, this.endpoint, operation);
+					AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
+					if (additionalPath != null) {
+						RequestMappingInfo requestMappingInfo = getRequestMappingInfo(operation,
+								additionalPath.getValue());
+						registerReadMapping(requestMappingInfo, this.endpoint, operation);
+					}
 				}
 			}
 		}

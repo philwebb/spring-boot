@@ -39,7 +39,7 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
  * Integration tests for Webflux health groups on an additional path.
  *
  * @author Madhura Bhave
- **/
+ */
 class WebfluxHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
