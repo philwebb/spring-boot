@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class for health endpoints and health endpoint extensions.
@@ -87,7 +89,7 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 		Object contributor = getContributor(path, pathOffset);
 		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
-		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails, groupNames, false);
+		T health = getContribution(apiVersion, group, contributor, showComponents, showDetails, groupNames, "");
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
@@ -106,24 +108,36 @@ abstract class HealthEndpointSupport<C, T> {
 
 	@SuppressWarnings("unchecked")
 	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, Object contributor,
-			boolean showComponents, boolean showDetails, Set<String> groupNames, boolean isNested) {
+			boolean showComponents, boolean showDetails, Set<String> groupNames, String parent) {
 		if (contributor instanceof NamedContributors) {
-			return getAggregateHealth(apiVersion, group, (NamedContributors<C>) contributor, showComponents,
-					showDetails, groupNames, isNested);
+			Iterable<NamedContributor<C>> contributors = determineContributors(parent,
+					(NamedContributors<C>) contributor, group);
+			return getAggregateHealth(apiVersion, group, contributors, showComponents, showDetails, groupNames, parent);
 		}
 		return (contributor != null) ? getHealth((C) contributor, showDetails) : null;
 	}
 
+	private Iterable<NamedContributor<C>> determineContributors(String parent, NamedContributors<C> contributor,
+			HealthEndpointGroup group) {
+		if (!StringUtils.hasText(parent)) {
+			Set<NamedContributor<C>> members = new LinkedHashSet<>();
+			addTopLevelMembers(contributor, group, members, "");
+			return members;
+		}
+		return contributor;
+	}
+
 	private T getAggregateHealth(ApiVersion apiVersion, HealthEndpointGroup group,
-			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails, Set<String> groupNames,
-			boolean isNested) {
+			Iterable<NamedContributor<C>> namedContributors, boolean showComponents, boolean showDetails,
+			Set<String> groupNames, String parent) {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> namedContributor : namedContributors) {
 			String name = namedContributor.getName();
 			C contributor = namedContributor.getContributor();
-			if (group.isMember(name) || isNested) {
+			String chainedName = getChainedName(parent, namedContributor);
+			if (!StringUtils.hasText(parent) || group.isMember(chainedName)) {
 				T contribution = getContribution(apiVersion, group, contributor, showComponents, showDetails, null,
-						true);
+						chainedName);
 				if (contribution != null) {
 					contributions.put(name, contribution);
 				}
@@ -134,6 +148,28 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 		return aggregateContributions(apiVersion, contributions, group.getStatusAggregator(), showComponents,
 				groupNames);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addTopLevelMembers(NamedContributors<C> namedContributors, HealthEndpointGroup group,
+			Set<NamedContributor<C>> members, String parent) {
+		for (NamedContributor<C> namedContributor : namedContributors) {
+			String chainedName = getChainedName(parent, namedContributor);
+			if (group.isMember(chainedName)) {
+				members.add(namedContributor);
+			}
+			else {
+				C contributor = namedContributor.getContributor();
+				if (contributor instanceof NamedContributors) {
+					addTopLevelMembers((NamedContributors<C>) contributor, group, members, chainedName);
+				}
+			}
+		}
+	}
+
+	private String getChainedName(String parent, NamedContributor<C> namedContributor) {
+		String name = namedContributor.getName();
+		return (StringUtils.hasText(parent)) ? parent + "/" + name : name;
 	}
 
 	protected abstract T getHealth(C contributor, boolean includeDetails);

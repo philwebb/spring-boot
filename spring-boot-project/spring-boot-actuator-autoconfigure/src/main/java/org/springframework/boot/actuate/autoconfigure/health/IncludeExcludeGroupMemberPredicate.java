@@ -44,7 +44,15 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	private boolean isIncluded(String name) {
-		return this.include.isEmpty() || this.include.contains("*") || this.include.contains(clean(name));
+		return this.include.isEmpty() || this.include.contains("*") || this.include.contains(clean(name))
+				|| isNestedMember(clean(name));
+	}
+
+	private boolean isNestedMember(String name) {
+		if (name.contains("/")) {
+			return isNestedMember(name.substring(0, name.lastIndexOf("/")));
+		}
+		return this.include.contains(name);
 	}
 
 	private boolean isExcluded(String name) {
