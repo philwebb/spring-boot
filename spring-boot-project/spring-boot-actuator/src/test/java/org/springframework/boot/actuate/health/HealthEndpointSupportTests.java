@@ -228,14 +228,17 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 	@Test
 	void getHealthWhenGroupContainsComponentOfCompositeContributorReturnsHealth() {
 		CompositeHealth health = getCompositeHealth((name) -> name.equals("test/spring-1"));
-		assertThat(health.getComponents()).containsKey("spring-1");
-		assertThat(health.getComponents()).doesNotContainKey("spring-2");
-		assertThat(health.getComponents()).doesNotContainKey("test");
+		assertThat(health.getComponents()).containsKey("test");
+		CompositeHealth test = (CompositeHealth) health.getComponents().get("test");
+		assertThat(test.getComponents()).containsKey("spring-1");
+		assertThat(test.getComponents()).doesNotContainKey("spring-2");
+		assertThat(test.getComponents()).doesNotContainKey("test");
 	}
 
 	@Test
 	void getHealthWhenGroupExcludesComponentOfCompositeContributorReturnsHealth() {
-		CompositeHealth health = getCompositeHealth((name) -> name.startsWith("test") && !name.equals("test/spring-2"));
+		CompositeHealth health = getCompositeHealth(
+				(name) -> name.startsWith("test/") && !name.equals("test/spring-2"));
 		assertThat(health.getComponents()).containsKey("test");
 		CompositeHealth test = (CompositeHealth) health.getComponents().get("test");
 		assertThat(test.getComponents()).containsKey("spring-1");
