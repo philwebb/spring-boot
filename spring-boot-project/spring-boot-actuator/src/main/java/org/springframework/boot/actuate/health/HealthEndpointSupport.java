@@ -92,8 +92,7 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 		String name = getName(path, pathOffset);
 		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
-		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, false, false,
-				groupNames);
+		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, groupNames);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
 
@@ -122,16 +121,12 @@ abstract class HealthEndpointSupport<C, T> {
 
 	@SuppressWarnings("unchecked")
 	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
-			boolean showComponents, boolean showDetails, boolean addContribution, boolean isNested,
-			Set<String> groupNames) {
-		if (isNested) {
-			addContribution = group.isMember(name);
-		}
+			boolean showComponents, boolean showDetails, Set<String> groupNames) {
 		if (contributor instanceof NamedContributors) {
 			return getAggregateContribution(apiVersion, group, name, (NamedContributors<C>) contributor, showComponents,
-					showDetails, addContribution, groupNames);
+					showDetails, groupNames);
 		}
-		if (contributor != null && (addContribution || (!isNested && group.isMember(name)))) {
+		if (contributor != null && (name.isEmpty() || group.isMember(name))) {
 			return getHealth((C) contributor, showDetails);
 		}
 		return null;
@@ -139,12 +134,12 @@ abstract class HealthEndpointSupport<C, T> {
 
 	private T getAggregateContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name,
 			NamedContributors<C> namedContributors, boolean showComponents, boolean showDetails,
-			boolean addContribution, Set<String> groupNames) {
+			Set<String> groupNames) {
 		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> child : namedContributors) {
 			T contribution = getContribution(apiVersion, group, prefix + child.getName(), child.getContributor(),
-					showComponents, showDetails, addContribution, true, null);
+					showComponents, showDetails, null);
 			if (contribution != null) {
 				contributions.put(child.getName(), contribution);
 			}
