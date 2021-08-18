@@ -245,6 +245,48 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		assertThat(test.getComponents()).doesNotContainKey("spring-2");
 	}
 
+	@Test
+	void getHealthForPathWhenGroupContainsComponentOfCompositeContributorReturnsHealth() {
+		Map<String, C> contributors = new LinkedHashMap<>();
+		contributors.put("spring-1", createNestedHealthContributor("spring-1"));
+		contributors.put("spring-2", createNestedHealthContributor("spring-2"));
+		C compositeContributor = createCompositeContributor(contributors);
+		this.registry.registerContributor("test", compositeContributor);
+		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup(
+				(name) -> name.startsWith("test") && !name.equals("test/spring-1/b"));
+		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup,
+				Collections.singletonMap("testGroup", testGroup));
+		HealthResult<T> result = create(this.registry, groups).getHealth(ApiVersion.V3, null, SecurityContext.NONE,
+				false, "testGroup", "test");
+		CompositeHealth health = (CompositeHealth) getHealth(result);
+		assertThat(health.getComponents()).containsKey("spring-1");
+		assertThat(health.getComponents()).containsKey("spring-2");
+		CompositeHealth spring1 = (CompositeHealth) health.getComponents().get("spring-1");
+		CompositeHealth spring2 = (CompositeHealth) health.getComponents().get("spring-2");
+		assertThat(spring1.getComponents()).containsKey("a");
+		assertThat(spring1.getComponents()).containsKey("c");
+		assertThat(spring1.getComponents()).doesNotContainKey("b");
+		assertThat(spring2.getComponents()).containsKey("a");
+		assertThat(spring2.getComponents()).containsKey("c");
+		assertThat(spring2.getComponents()).containsKey("b");
+	}
+
+	@Test
+	void getHealthForComponentPathWhenNotPartOfGroup() {
+		Map<String, C> contributors = new LinkedHashMap<>();
+		contributors.put("spring-1", createNestedHealthContributor("spring-1"));
+		contributors.put("spring-2", createNestedHealthContributor("spring-2"));
+		C compositeContributor = createCompositeContributor(contributors);
+		this.registry.registerContributor("test", compositeContributor);
+		TestHealthEndpointGroup testGroup = new TestHealthEndpointGroup(
+				(name) -> name.startsWith("test") && !name.equals("test/spring-1/b"));
+		HealthEndpointGroups groups = HealthEndpointGroups.of(this.primaryGroup,
+				Collections.singletonMap("testGroup", testGroup));
+		HealthResult<T> result = create(this.registry, groups).getHealth(ApiVersion.V3, null, SecurityContext.NONE,
+				false, "testGroup", "test", "spring-1", "b");
+		assertThat(result).isNull();
+	}
+
 	private CompositeHealth getCompositeHealth(Predicate<String> memberPredicate) {
 		C contributor1 = createContributor(this.up);
 		C contributor2 = createContributor(this.down);
@@ -259,6 +301,14 @@ abstract class HealthEndpointSupportTests<R extends ContributorRegistry<C>, C, T
 		HealthResult<T> result = create(this.registry, groups).getHealth(ApiVersion.V3, null, SecurityContext.NONE,
 				false, "testGroup");
 		return (CompositeHealth) getHealth(result);
+	}
+
+	private C createNestedHealthContributor(String name) {
+		Map<String, C> map = new LinkedHashMap<>();
+		map.put("a", createContributor(Health.up().withDetail("hello", name + "-a").build()));
+		map.put("b", createContributor(Health.up().withDetail("hello", name + "-b").build()));
+		map.put("c", createContributor(Health.up().withDetail("hello", name + "-c").build()));
+		return createCompositeContributor(map);
 	}
 
 	@Test

@@ -92,7 +92,7 @@ abstract class HealthEndpointSupport<C, T> {
 		}
 		String name = getName(path, pathOffset);
 		Set<String> groupNames = isSystemHealth ? this.groups.getNames() : null;
-		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, false,
+		T health = getContribution(apiVersion, group, name, contributor, showComponents, showDetails, false, false,
 				groupNames);
 		return (health != null) ? new HealthResult<>(health, group) : null;
 	}
@@ -122,13 +122,16 @@ abstract class HealthEndpointSupport<C, T> {
 
 	@SuppressWarnings("unchecked")
 	private T getContribution(ApiVersion apiVersion, HealthEndpointGroup group, String name, Object contributor,
-			boolean showComponents, boolean showDetails, boolean addContribution, Set<String> groupNames) {
-		addContribution = addContribution || (!name.isEmpty() && group.isMember(name));
+			boolean showComponents, boolean showDetails, boolean addContribution, boolean isNested,
+			Set<String> groupNames) {
+		if (isNested) {
+			addContribution = group.isMember(name);
+		}
 		if (contributor instanceof NamedContributors) {
 			return getAggregateContribution(apiVersion, group, name, (NamedContributors<C>) contributor, showComponents,
 					showDetails, addContribution, groupNames);
 		}
-		if (contributor != null && (addContribution || name.isEmpty())) {
+		if (contributor != null && (addContribution || (!isNested && group.isMember(name)))) {
 			return getHealth((C) contributor, showDetails);
 		}
 		return null;
@@ -141,7 +144,7 @@ abstract class HealthEndpointSupport<C, T> {
 		Map<String, T> contributions = new LinkedHashMap<>();
 		for (NamedContributor<C> child : namedContributors) {
 			T contribution = getContribution(apiVersion, group, prefix + child.getName(), child.getContributor(),
-					showComponents, showDetails, addContribution, null);
+					showComponents, showDetails, addContribution, true, null);
 			if (contribution != null) {
 				contributions.put(child.getName(), contribution);
 			}
