@@ -40,23 +40,30 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	@Override
 	public boolean test(String name) {
+		return testCleanName(clean(name));
+	}
+
+	private boolean testCleanName(String name) {
 		return isIncluded(name) && !isExcluded(name);
 	}
 
 	private boolean isIncluded(String name) {
-		return this.include.isEmpty() || this.include.contains("*") || this.include.contains(clean(name))
-				|| isNestedMember(clean(name));
+		return this.include.isEmpty() || this.include.contains("*") || isIncludedName(name);
 	}
 
-	private boolean isNestedMember(String name) {
-		if (name.contains("/")) {
-			return isNestedMember(name.substring(0, name.lastIndexOf("/")));
+	private boolean isIncludedName(String name) {
+		if (this.include.contains(name)) {
+			return true;
 		}
-		return this.include.contains(name);
+		if (name.contains("/")) {
+			String parent = name.substring(0, name.lastIndexOf("/"));
+			return isIncludedName(parent);
+		}
+		return false;
 	}
 
 	private boolean isExcluded(String name) {
-		return this.exclude.contains("*") || this.exclude.contains(clean(name));
+		return this.exclude.contains("*") || this.exclude.contains(name);
 	}
 
 	private Set<String> clean(Set<String> names) {
@@ -68,7 +75,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	private String clean(String name) {
-		return name.trim();
+		return (name != null) ? name.trim() : null;
 	}
 
 }
