@@ -67,7 +67,7 @@ abstract class AbstractManagementPortAndPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
 				.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\",\"groups\":[\"live\",\"ready\"]}");
+		assertThat(entity.getBody()).isEqualTo("{\"status\":\"UP\",\"groups\":[\"comp\",\"live\",\"ready\"]}");
 	}
 
 	@Test
