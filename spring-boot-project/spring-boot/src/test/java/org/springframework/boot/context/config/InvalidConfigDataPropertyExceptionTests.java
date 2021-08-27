@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.origin.MockOrigin;
+import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,10 @@ class InvalidConfigDataPropertyExceptionTests {
 
 	private ConfigurationPropertyName invalid = ConfigurationPropertyName.of("invalid");
 
-	private ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", MockOrigin.of("origin"));
+	private final PropertySource<?> propertySource = mock(PropertySource.class);
+
+	private ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", MockOrigin.of("origin"),
+			this.propertySource);
 
 	private Log logger = mock(Log.class);
 
@@ -72,14 +76,14 @@ class InvalidConfigDataPropertyExceptionTests {
 
 	@Test
 	void createWhenNoOriginHasCorrectMessage() {
-		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null);
+		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null, this.propertySource);
 		assertThat(new InvalidConfigDataPropertyException(property, false, this.replacement, this.resource)).hasMessage(
 				"Property 'invalid' imported from location 'test' is invalid and should be replaced with 'replacement'");
 	}
 
 	@Test
 	void createWhenProfileSpecificHasCorrectMessage() {
-		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null);
+		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null, this.propertySource);
 		assertThat(new InvalidConfigDataPropertyException(property, true, null, this.resource)).hasMessage(
 				"Property 'invalid' imported from location 'test' is invalid in a profile specific resource");
 	}

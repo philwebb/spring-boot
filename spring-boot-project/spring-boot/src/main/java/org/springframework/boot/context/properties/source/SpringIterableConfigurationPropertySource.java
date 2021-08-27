@@ -102,10 +102,11 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 			return configurationProperty;
 		}
 		for (String candidate : getMappings().getMapped(name)) {
-			Object value = getPropertySource().getProperty(candidate);
+			EnumerablePropertySource<?> propertySource = getPropertySource();
+			Object value = propertySource.getProperty(candidate);
 			if (value != null) {
-				Origin origin = PropertySourceOrigin.get(getPropertySource(), candidate);
-				return ConfigurationProperty.of(name, value, origin);
+				Origin origin = PropertySourceOrigin.get(propertySource, candidate);
+				return ConfigurationProperty.of(name, value, origin, propertySource);
 			}
 		}
 		return null;
