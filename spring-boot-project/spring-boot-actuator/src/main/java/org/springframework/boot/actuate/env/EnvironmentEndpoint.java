@@ -75,7 +75,7 @@ public class EnvironmentEndpoint {
 		this(environment, Collections.emptyList());
 	}
 
-	public EnvironmentEndpoint(Environment environment, List<SanitizingFunction> sanitizingFunctions) {
+	public EnvironmentEndpoint(Environment environment, Iterable<SanitizingFunction> sanitizingFunctions) {
 		this.environment = environment;
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
 	}
@@ -193,9 +193,17 @@ public class EnvironmentEndpoint {
 		}
 	}
 
-	// FIXME
-	public Object sanitize(String name, Object object) {
-		return this.sanitizer.sanitize(name, object);
+	/**
+	 * Apply sanitiation to the given name and value.
+	 * @param key the name to sanitize
+	 * @param value the value to sanitize
+	 * @return the sanitized value
+	 * @deprecated since 2.6.0 for removal in 2.8.0 as sanitization should be internal to
+	 * the class
+	 */
+	@Deprecated
+	public Object sanitize(String key, Object value) {
+		return this.sanitizer.sanitize(key, value);
 	}
 
 	private Object sanitize(PropertySource<?> source, String name, Object value) {
@@ -237,7 +245,8 @@ public class EnvironmentEndpoint {
 					Object value = source.getProperty(placeholder);
 					if (value != null) {
 						SanitizableData data = new SanitizableData(source, placeholder, value);
-						return (String) this.sanitizer.sanitize(data);
+						Object sanitized = this.sanitizer.sanitize(data);
+						return (sanitized != null) ? String.valueOf(sanitized) : null;
 					}
 				}
 			}

@@ -112,7 +112,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		this(Collections.emptyList());
 	}
 
-	public ConfigurationPropertiesReportEndpoint(List<SanitizingFunction> sanitizingFunctions) {
+	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions) {
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
 	}
 

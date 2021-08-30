@@ -46,8 +46,8 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 		if (configurationProperty == null) {
 			return null;
 		}
-		return ConfigurationProperty.of(name, configurationProperty.getValue(), configurationProperty.getOrigin(),
-				configurationProperty.getPropertySource());
+		return ConfigurationProperty.of(configurationProperty.getSource(), name, configurationProperty.getValue(),
+				configurationProperty.getOrigin());
 	}
 
 	private ConfigurationPropertyName getPrefixedName(ConfigurationPropertyName name) {

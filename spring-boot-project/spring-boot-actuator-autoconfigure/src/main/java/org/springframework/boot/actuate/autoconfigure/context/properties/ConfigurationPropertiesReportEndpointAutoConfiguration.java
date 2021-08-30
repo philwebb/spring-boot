@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
@@ -49,9 +46,8 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
 			ConfigurationPropertiesReportEndpointProperties properties,
-			ObjectProvider<List<SanitizingFunction>> sanitizingFunctions) {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
-				sanitizingFunctions.getIfAvailable(Collections::emptyList));
+			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
+		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(sanitizingFunctions);
 		String[] keysToSanitize = properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);

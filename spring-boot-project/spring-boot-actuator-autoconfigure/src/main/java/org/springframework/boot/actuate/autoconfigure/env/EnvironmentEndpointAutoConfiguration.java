@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -47,9 +44,8 @@ public class EnvironmentEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
-			ObjectProvider<List<SanitizingFunction>> sanitizingFunctions) {
-		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment,
-				sanitizingFunctions.getIfAvailable(Collections::emptyList));
+			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
+		EnvironmentEndpoint endpoint = new EnvironmentEndpoint(environment, sanitizingFunctions);
 		String[] keysToSanitize = properties.getKeysToSanitize();
 		if (keysToSanitize != null) {
 			endpoint.setKeysToSanitize(keysToSanitize);

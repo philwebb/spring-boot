@@ -73,12 +73,12 @@ public class Sanitizer {
 		this(Collections.emptyList(), keysToSanitize);
 	}
 
-	public Sanitizer(List<SanitizingFunction> sanitizingFunctions) {
+	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions) {
 		this(sanitizingFunctions, DEFAULT_KEYS_TO_SANITIZE.toArray(new String[0]));
 	}
 
-	public Sanitizer(List<SanitizingFunction> sanitizingFunctions, String... keysToSanitize) {
-		this.sanitizingFunctions.addAll(sanitizingFunctions);
+	public Sanitizer(Iterable<SanitizingFunction> sanitizingFunctions, String... keysToSanitize) {
+		sanitizingFunctions.forEach(this.sanitizingFunctions::add);
 		this.sanitizingFunctions.add(getDefaultSanitizingFunction());
 		setKeysToSanitize(keysToSanitize);
 	}
@@ -166,8 +166,8 @@ public class Sanitizer {
 		if (data.getValue() == null) {
 			return null;
 		}
-		for (SanitizingFunction transformer : this.sanitizingFunctions) {
-			data = transformer.apply(data);
+		for (SanitizingFunction sanitizingFunction : this.sanitizingFunctions) {
+			data = sanitizingFunction.apply(data);
 		}
 		return data.getValue();
 	}

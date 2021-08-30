@@ -22,10 +22,15 @@ package org.springframework.boot.actuate.endpoint;
  *
  * @author Madhura Bhave
  * @since 2.6.0
- *
  */
+@FunctionalInterface
 public interface SanitizingFunction {
 
+	/**
+	 * Apply the sanitiing function to the given data.
+	 * @param data the data to sanitize
+	 * @return the sanitized data or the original instance is no sanitization is applied
+	 */
 	SanitizableData apply(SanitizableData data);
 
 }

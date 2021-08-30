@@ -37,24 +37,48 @@ public final class SanitizableData {
 
 	private final Object value;
 
+	/**
+	 * Create a new {@link SanitizableData} instance.
+	 * @param propertySource the property source that provided the data or {@code null}.
+	 * @param key the data key
+	 * @param value the data value
+	 */
 	public SanitizableData(PropertySource<?> propertySource, String key, Object value) {
 		this.propertySource = propertySource;
 		this.key = key;
 		this.value = value;
 	}
 
+	/**
+	 * Return the property source that provided the data or {@code null} If the data was
+	 * not from a {@link PropertySource}.
+	 * @return the property source that provided the data
+	 */
 	public PropertySource<?> getPropertySource() {
 		return this.propertySource;
 	}
 
+	/**
+	 * Return the key of the data.
+	 * @return the data key
+	 */
 	public String getKey() {
 		return this.key;
 	}
 
+	/**
+	 * Return the value of the data.
+	 * @return the data value
+	 */
 	public Object getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Return a new {@link SanitizableData} instance with a different value.
+	 * @param value the new value (often {@link #SANITIZED_VALUE}
+	 * @return a new sanitizable data instance
+	 */
 	public SanitizableData withValue(Object value) {
 		return new SanitizableData(this.propertySource, this.key, value);
 	}

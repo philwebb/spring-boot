@@ -19,7 +19,6 @@ package org.springframework.boot.context.properties.source;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.boot.origin.OriginTrackedValue;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -39,29 +38,46 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 
 	private final Object value;
 
+	private final ConfigurationPropertySource source;
+
 	private final Origin origin;
 
-	private final PropertySource<?> propertySource;
-
-	@Deprecated
 	public ConfigurationProperty(ConfigurationPropertyName name, Object value, Origin origin) {
-		this(name, value, origin, null);
+		this(null, name, value, origin);
 	}
 
-	public ConfigurationProperty(ConfigurationPropertyName name, Object value, Origin origin,
-			PropertySource<?> propertySource) {
+	private ConfigurationProperty(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
+			Origin origin) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(value, "Value must not be null");
+		this.source = source;
 		this.name = name;
 		this.value = value;
 		this.origin = origin;
-		this.propertySource = propertySource;
 	}
 
+	/**
+	 * Return the {@link ConfigurationPropertySource} that provided the property or
+	 * {@code null} if the source is unknown.
+	 * @return the configuration property source
+	 * @since 2.6.0
+	 */
+	public ConfigurationPropertySource getSource() {
+		return this.source;
+	}
+
+	/**
+	 * Return the name of the configuration property.
+	 * @return the configuration property name
+	 */
 	public ConfigurationPropertyName getName() {
 		return this.name;
 	}
 
+	/**
+	 * Return the value of the configuration property.
+	 * @return the configuration property value
+	 */
 	public Object getValue() {
 		return this.value;
 	}
@@ -111,16 +127,12 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 		return new ConfigurationProperty(name, value.getValue(), value.getOrigin());
 	}
 
-	static ConfigurationProperty of(ConfigurationPropertyName name, Object value, Origin origin,
-			PropertySource<?> propertySource) {
+	static ConfigurationProperty of(ConfigurationPropertySource source, ConfigurationPropertyName name, Object value,
+			Origin origin) {
 		if (value == null) {
 			return null;
 		}
-		return new ConfigurationProperty(name, value, origin, propertySource);
-	}
-
-	public PropertySource<?> getPropertySource() {
-		return this.propertySource;
+		return new ConfigurationProperty(source, name, value, origin);
 	}
 
 }
