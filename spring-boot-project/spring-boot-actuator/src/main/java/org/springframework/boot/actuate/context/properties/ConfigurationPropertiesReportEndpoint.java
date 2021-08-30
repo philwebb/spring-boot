@@ -66,6 +66,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -75,6 +76,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -256,7 +258,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		if (candidate != null) {
-			SanitizableData data = new SanitizableData(candidate.getPropertySource(), qualifiedKey, value);
+			SanitizableData data = new SanitizableData(getPropertySource(candidate), qualifiedKey, value);
 			return this.sanitizer.sanitize(data);
 		}
 		SanitizableData data = new SanitizableData(null, qualifiedKey, value);
@@ -340,10 +342,16 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		ConfigurationProperty candidate = getCandidate(currentName);
 		if (candidate != null) {
 			Object value = stringifyIfNecessary(candidate.getValue());
-			SanitizableData data = new SanitizableData(candidate.getPropertySource(), currentName.toString(), value);
+			SanitizableData data = new SanitizableData(getPropertySource(candidate), currentName.toString(), value);
 			return getInput(candidate, this.sanitizer.sanitize(data));
 		}
 		return Collections.emptyMap();
+	}
+
+	private PropertySource<?> getPropertySource(ConfigurationProperty configurationProperty) {
+		ConfigurationPropertySource source = configurationProperty.getSource();
+		Object underlyingSource = (source != null) ? source.getUnderlyingSource() : null;
+		return (underlyingSource instanceof PropertySource<?>) ? (PropertySource<?>) underlyingSource : null;
 	}
 
 	private Map<String, Object> getInput(ConfigurationProperty candidate, Object sanitizedValue) {
