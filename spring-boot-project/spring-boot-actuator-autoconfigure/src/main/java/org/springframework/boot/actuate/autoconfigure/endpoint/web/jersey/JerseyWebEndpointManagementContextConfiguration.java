@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.jersey.ManagementContextResourceConfigCustomizer;
@@ -86,8 +87,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean(HealthEndpoint.class)
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposures = "web")
 	JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar jerseyDifferentPortAdditionalHealthEndpointPathsResourcesRegistrar(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();

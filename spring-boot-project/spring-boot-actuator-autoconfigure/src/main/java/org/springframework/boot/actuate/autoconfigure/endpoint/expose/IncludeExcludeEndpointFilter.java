@@ -146,8 +146,9 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 	 * Return {@code true} if the filter matches.
 	 * @param endpointId the endpoint ID to check
 	 * @return {@code true} if the filter matches
+	 * @since 2.6.0
 	 */
-	protected final boolean match(EndpointId endpointId) {
+	public final boolean match(EndpointId endpointId) {
 		return isIncluded(endpointId) && !isExcluded(endpointId);
 	}
 

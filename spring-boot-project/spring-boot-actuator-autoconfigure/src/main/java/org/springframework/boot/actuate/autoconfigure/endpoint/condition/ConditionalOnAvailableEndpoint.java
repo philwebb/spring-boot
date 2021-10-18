@@ -29,8 +29,9 @@ import org.springframework.core.env.Environment;
 
 /**
  * {@link Conditional @Conditional} that checks whether an endpoint is available. An
- * endpoint is considered available if it is both enabled and exposed. Matches enablement
- * according to the endpoints specific {@link Environment} property, falling back to
+ * endpoint is considered available if it is both enabled and exposed on the specified
+ * technologies. Matches enablement according to the endpoints specific
+ * {@link Environment} property, falling back to
  * {@code management.endpoints.enabled-by-default} or failing that
  * {@link Endpoint#enableByDefault()}. Matches exposure according to any of the
  * {@code management.endpoints.web.exposure.<id>} or
@@ -111,5 +112,13 @@ public @interface ConditionalOnAvailableEndpoint {
 	 * @return the endpoint type to check
 	 */
 	Class<?> endpoint() default Void.class;
+
+	/**
+	 * Technologies to check the exposure of the endpoint on while considering it to be
+	 * available.
+	 * @return the technologies to check
+	 * @since 2.6.0
+	 */
+	String[] exposures() default { "web", "jmx" };
 
 }

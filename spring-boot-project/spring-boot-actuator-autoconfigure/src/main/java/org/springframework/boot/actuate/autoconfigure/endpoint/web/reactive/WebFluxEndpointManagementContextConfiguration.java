@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
@@ -91,6 +92,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 	@Bean
 	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposures = "web")
 	@ConditionalOnBean(HealthEndpoint.class)
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping managementHealthEndpointWebFluxHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {

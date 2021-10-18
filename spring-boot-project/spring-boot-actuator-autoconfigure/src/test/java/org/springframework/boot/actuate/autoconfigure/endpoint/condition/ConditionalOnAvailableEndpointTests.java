@@ -196,6 +196,14 @@ class ConditionalOnAvailableEndpointTests {
 				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));
 	}
 
+	@Test
+	void outcomeWhenEndpointNotExposedOnSpecifiedTechnology() {
+		this.contextRunner.withUserConfiguration(ExposureEndpointConfiguration.class)
+				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=test",
+						"management.endpoints.web.exposure.exclude=test")
+				.run((context) -> assertThat(context).doesNotHaveBean("unexposed"));
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
@@ -310,6 +318,17 @@ class ConditionalOnAvailableEndpointTests {
 		@ConditionalOnAvailableEndpoint
 		DashedEndpoint dashedEndpoint() {
 			return new DashedEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ExposureEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposures = "web")
+		String unexposed() {
+			return "unexposed";
 		}
 
 	}

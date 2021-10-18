@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
@@ -61,9 +65,12 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 		}
 		EndpointId id = EndpointId.of(environment,
 				getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context, metadata).getString("id"));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(metadata.getAnnotationAttributes(ConditionalOnAvailableEndpoint.class.getName()));
+		List<String> exposuresAttribute = new ArrayList<>(Arrays.asList(attributes.getStringArray("exposures")));
 		Set<Exposure> exposures = getExposures(environment);
 		for (Exposure exposure : exposures) {
-			if (exposure.isExposed(id)) {
+			if (exposuresAttribute.contains(exposure.getPrefix()) && exposure.isExposed(id)) {
 				return new ConditionOutcome(true,
 						message.andCondition(ConditionalOnAvailableEndpoint.class)
 								.because("marked as exposed by a 'management.endpoints." + exposure.getPrefix()
