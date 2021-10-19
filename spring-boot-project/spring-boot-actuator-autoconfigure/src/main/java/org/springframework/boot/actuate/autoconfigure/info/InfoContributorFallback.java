@@ -26,16 +26,17 @@ import org.springframework.boot.actuate.autoconfigure.OnEndpointElementCondition
  * @since 2.6.0
  * @see OnEndpointElementCondition
  */
-public enum Fallback {
+public enum InfoContributorFallback {
 
 	/**
-	 * Fall back to the defaults property.
+	 * Fall back to the {@code management.info.defaults.enabled} property, matching if it
+	 * is {@code true} or if it is not configured.
 	 */
-	DEFAULTS,
+	USE_DEFAULTS_PROPERTY,
 
 	/**
 	 * Do not fall back.
 	 */
-	NONE;
+	DISABLE;
 
 }

@@ -80,7 +80,7 @@ public class InfoContributorAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnEnabledInfoContributor(value = "java", fallback = Fallback.NONE)
+	@ConditionalOnEnabledInfoContributor(value = "java", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public JavaInfoContributor javaInfoContributor() {
 		return new JavaInfoContributor();

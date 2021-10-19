@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
-import org.springframework.boot.actuate.autoconfigure.info.Fallback;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -55,15 +54,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		if (outcome != null) {
 			return outcome;
 		}
-		Fallback fallback = annotationAttributes.containsKey("fallback") ? annotationAttributes.getEnum("fallback")
-				: Fallback.DEFAULTS;
-		if (fallback.equals(Fallback.DEFAULTS)) {
-			return getDefaultEndpointsOutcome(context);
-		}
-		else {
-			return new ConditionOutcome(false, ConditionMessage.forCondition(this.annotationType)
-					.because(this.prefix + endpointName + ".enabled is not true"));
-		}
+		return getDefaultOutcome(context, annotationAttributes);
 	}
 
 	protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
@@ -77,6 +68,27 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		return null;
 	}
 
+	/**
+	 * Return the default outcome that should be used if not property is set. By default
+	 * this method will use the {@code <prefix>.defaults.enabled} property, matching if it
+	 * is {@code true} or if it is not configured.
+	 * @param context the condition context
+	 * @param annotationAttributes the annotation attributes
+	 * @return the default outcome
+	 * @since 2.6.0
+	 */
+	protected ConditionOutcome getDefaultOutcome(ConditionContext context, AnnotationAttributes annotationAttributes) {
+		return getDefaultEndpointsOutcome(context);
+	}
+
+	/**
+	 * Return the default outcome that should be used.
+	 * @param context the condition context
+	 * @return the default outcome
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #getDefaultOutcome(ConditionContext, AnnotationAttributes)}
+	 */
+	@Deprecated
 	protected ConditionOutcome getDefaultEndpointsOutcome(ConditionContext context) {
 		boolean match = Boolean
 				.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
