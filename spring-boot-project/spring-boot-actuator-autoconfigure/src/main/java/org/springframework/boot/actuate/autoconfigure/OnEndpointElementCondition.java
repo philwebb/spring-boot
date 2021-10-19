@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.boot.actuate.autoconfigure.info.Fallback;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -54,7 +55,15 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		if (outcome != null) {
 			return outcome;
 		}
-		return getDefaultEndpointsOutcome(context);
+		Fallback fallback = annotationAttributes.containsKey("fallback") ? annotationAttributes.getEnum("fallback")
+				: Fallback.DEFAULTS;
+		if (fallback.equals(Fallback.DEFAULTS)) {
+			return getDefaultEndpointsOutcome(context);
+		}
+		else {
+			return new ConditionOutcome(false, ConditionMessage.forCondition(this.annotationType)
+					.because(this.prefix + endpointName + ".enabled is not true"));
+		}
 	}
 
 	protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
