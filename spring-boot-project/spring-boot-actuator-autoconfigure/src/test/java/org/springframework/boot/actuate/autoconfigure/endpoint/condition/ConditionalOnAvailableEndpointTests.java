@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -326,7 +327,7 @@ class ConditionalOnAvailableEndpointTests {
 	static class ExposureEndpointConfiguration {
 
 		@Bean
-		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposures = "web")
+		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposure = EndpointExposure.WEB)
 		String unexposed() {
 			return "unexposed";
 		}

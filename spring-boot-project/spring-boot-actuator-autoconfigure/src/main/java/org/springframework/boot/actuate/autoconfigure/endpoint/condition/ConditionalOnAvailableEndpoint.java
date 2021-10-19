@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.context.annotation.Conditional;
@@ -119,6 +120,6 @@ public @interface ConditionalOnAvailableEndpoint {
 	 * @return the technologies to check
 	 * @since 2.6.0
 	 */
-	String[] exposures() default { "web", "jmx" };
+	EndpointExposure[] exposure() default {};
 
 }
