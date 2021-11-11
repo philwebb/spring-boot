@@ -377,11 +377,15 @@ public class SpringApplication {
 				"Environment prefix cannot be set via properties.");
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
-			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
-					deduceEnvironmentClass());
+			environment = convertEnvironment(environment);
 		}
 		ConfigurationPropertySources.attach(environment);
 		return environment;
+	}
+
+	public StandardEnvironment convertEnvironment(ConfigurableEnvironment environment) {
+		return new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
+				deduceEnvironmentClass());
 	}
 
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
