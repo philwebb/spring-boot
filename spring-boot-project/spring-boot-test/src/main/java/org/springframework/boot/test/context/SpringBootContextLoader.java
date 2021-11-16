@@ -109,7 +109,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
 		application.setInitializers(initializers);
-		ConfigurableEnvironment environment = getEnvironment(config, application);
+		ConfigurableEnvironment environment = getEnvironment(application, config.getActiveProfiles());
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
@@ -120,18 +120,27 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		return application.run(args);
 	}
 
-	private ConfigurableEnvironment getEnvironment(MergedContextConfiguration config, SpringApplication application) {
+	private ConfigurableEnvironment getEnvironment(SpringApplication application, String[] activeProfiles) {
 		ConfigurableEnvironment environment = getEnvironment();
-		boolean convertEnvironment = convertEnvironment(environment);
-		if (convertEnvironment) {
+		boolean applicationEnvironment = false;
+		if (environment.getClass() == StandardEnvironment.class) {
 			environment = application.convertEnvironment(environment);
+			applicationEnvironment = true;
 		}
-		setActiveProfiles(environment, config.getActiveProfiles(), !convertEnvironment);
+		setActiveProfiles(environment, activeProfiles, applicationEnvironment);
 		return environment;
 	}
 
-	private boolean convertEnvironment(ConfigurableEnvironment environment) {
-		return environment.getClass() == StandardEnvironment.class;
+	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
+			boolean applicationEnvironment) {
+		if (!applicationEnvironment) {
+			environment.setActiveProfiles(profiles);
+		}
+		String[] pairs = new String[profiles.length];
+		for (int i = 0; i < profiles.length; i++) {
+			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
+		}
+		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
 	/**
@@ -150,18 +159,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	protected ConfigurableEnvironment getEnvironment() {
 		return new StandardEnvironment();
-	}
-
-	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles, boolean callSetter) {
-		if (callSetter) {
-			environment.setActiveProfiles(profiles);
-		}
-		// Also add as properties to override any application.properties
-		String[] pairs = new String[profiles.length];
-		for (int i = 0; i < profiles.length; i++) {
-			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
-		}
-		TestPropertyValues.of(pairs).applyTo(environment);
 	}
 
 	protected String[] getInlinedProperties(MergedContextConfiguration config) {

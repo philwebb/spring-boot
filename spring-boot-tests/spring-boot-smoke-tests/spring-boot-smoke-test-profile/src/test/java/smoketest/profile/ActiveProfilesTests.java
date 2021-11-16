@@ -19,6 +19,7 @@ package smoketest.profile;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,9 +27,12 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Tests that profiles are activited in the correct order from an
+ * {@link EnvironmentPostProcessor}.
+ *
  * @author Madhura Bhave
  */
-@SpringBootTest
+@SpringBootTest // gh-28530
 @ActiveProfiles("hello")
 class ActiveProfilesTests {
 

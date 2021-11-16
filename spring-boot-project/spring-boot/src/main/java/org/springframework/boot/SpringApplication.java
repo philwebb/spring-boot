@@ -383,6 +383,13 @@ public class SpringApplication {
 		return environment;
 	}
 
+	/**
+	 * Convert the given {@link ConfigurableEnvironment environment} to an application
+	 * environment that doesn't attempt to resolve profile properties directly.
+	 * @param environment the environment to convert
+	 * @return the converted environment
+	 * @since 2.5.7
+	 */
 	public StandardEnvironment convertEnvironment(ConfigurableEnvironment environment) {
 		return new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
 				deduceEnvironmentClass());
