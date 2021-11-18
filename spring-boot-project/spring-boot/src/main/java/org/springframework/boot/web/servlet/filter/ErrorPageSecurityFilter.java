@@ -37,37 +37,60 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
  *
  * @author Madhura Bhave
  * @author Andy Wilkinson
- * @since 2.5.7
+ * @since 2.6.0
  */
 public class ErrorPageSecurityFilter extends HttpFilter {
 
+	private final ApplicationContext context;
+
 	private WebInvocationPrivilegeEvaluator privilegeEvaluator;
 
+	private static final WebInvocationPrivilegeEvaluator ALWAYS = new AlwaysAllowWebInvocationPrivilegeEvaluator();
+
 	public ErrorPageSecurityFilter(ApplicationContext context) {
-		try {
-			this.privilegeEvaluator = context.getBean(WebInvocationPrivilegeEvaluator.class);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			this.privilegeEvaluator = null;
-		}
+		this.context = context;
 	}
 
 	@Override
 	public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (this.privilegeEvaluator != null) {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if (!this.privilegeEvaluator.isAllowed(request.getRequestURI(), authentication)) {
-				sendError(request, response);
-				return;
-			}
+		setupPrivilegeEvaluatorIfNecessary();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (!this.privilegeEvaluator.isAllowed(request.getRequestURI(), authentication)) {
+			sendError(request, response);
+			return;
 		}
 		chain.doFilter(request, response);
+	}
+
+	private void setupPrivilegeEvaluatorIfNecessary() {
+		if (this.privilegeEvaluator == null) {
+			try {
+				this.privilegeEvaluator = this.context.getBean(WebInvocationPrivilegeEvaluator.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				this.privilegeEvaluator = ALWAYS;
+			}
+		}
 	}
 
 	private void sendError(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Integer errorCode = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		response.sendError((errorCode != null) ? errorCode : 401);
+	}
+
+	private static class AlwaysAllowWebInvocationPrivilegeEvaluator implements WebInvocationPrivilegeEvaluator {
+
+		@Override
+		public boolean isAllowed(String uri, Authentication authentication) {
+			return true;
+		}
+
+		@Override
+		public boolean isAllowed(String contextPath, String uri, String method, Authentication authentication) {
+			return true;
+		}
+
 	}
 
 }

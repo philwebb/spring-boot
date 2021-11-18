@@ -22,6 +22,7 @@ import javax.servlet.RequestDispatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,38 +54,45 @@ class ErrorPageSecurityFilterTests {
 
 	private final FilterChain filterChain = mock(FilterChain.class);
 
-	private ErrorPageSecurityFilter securityInterceptor;
+	private ErrorPageSecurityFilter securityFilter;
 
 	@BeforeEach
 	void setup() {
 		given(this.context.getBean(WebInvocationPrivilegeEvaluator.class)).willReturn(this.privilegeEvaluator);
-		this.securityInterceptor = new ErrorPageSecurityFilter(this.context);
+		this.securityFilter = new ErrorPageSecurityFilter(this.context);
 	}
 
 	@Test
 	void whenAccessIsAllowedShouldContinueDownFilterChain() throws Exception {
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(true);
-		this.securityInterceptor.doFilter(this.request, this.response, this.filterChain);
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		verify(this.filterChain).doFilter(this.request, this.response);
 	}
 
 	@Test
 	void whenAccessIsDeniedShouldCallSendError() throws Exception {
-		given(this.context.getBean(WebInvocationPrivilegeEvaluator.class)).willReturn(this.privilegeEvaluator);
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
 		this.request.setAttribute(RequestDispatcher.ERROR_STATUS_CODE, 403);
-		this.securityInterceptor.doFilter(this.request, this.response, this.filterChain);
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		verifyNoInteractions(this.filterChain);
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
 	@Test
 	void whenAccessIsDeniedAndNoErrorCodeAttributeOnRequest() throws Exception {
-		given(this.context.getBean(WebInvocationPrivilegeEvaluator.class)).willReturn(this.privilegeEvaluator);
 		given(this.privilegeEvaluator.isAllowed(anyString(), any())).willReturn(false);
-		this.securityInterceptor.doFilter(this.request, this.response, this.filterChain);
+		this.securityFilter.doFilter(this.request, this.response, this.filterChain);
 		verifyNoInteractions(this.filterChain);
 		assertThat(this.response.getStatus()).isEqualTo(401);
+	}
+
+	@Test
+	void whenPrivilegeEvaluatorIsNotPresentAccessIsAllowed() throws Exception {
+		ApplicationContext context = mock(ApplicationContext.class);
+		willThrow(NoSuchBeanDefinitionException.class).given(context).getBean(WebInvocationPrivilegeEvaluator.class);
+		ErrorPageSecurityFilter securityFilter = new ErrorPageSecurityFilter(context);
+		securityFilter.doFilter(this.request, this.response, this.filterChain);
+		verify(this.filterChain).doFilter(this.request, this.response);
 	}
 
 }
