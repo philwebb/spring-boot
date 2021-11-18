@@ -41,11 +41,11 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
  */
 public class ErrorPageSecurityFilter extends HttpFilter {
 
+	private static final WebInvocationPrivilegeEvaluator ALWAYS = new AlwaysAllowWebInvocationPrivilegeEvaluator();
+
 	private final ApplicationContext context;
 
-	private WebInvocationPrivilegeEvaluator privilegeEvaluator;
-
-	private static final WebInvocationPrivilegeEvaluator ALWAYS = new AlwaysAllowWebInvocationPrivilegeEvaluator();
+	private volatile WebInvocationPrivilegeEvaluator privilegeEvaluator;
 
 	public ErrorPageSecurityFilter(ApplicationContext context) {
 		this.context = context;
@@ -54,23 +54,29 @@ public class ErrorPageSecurityFilter extends HttpFilter {
 	@Override
 	public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		setupPrivilegeEvaluatorIfNecessary();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (!this.privilegeEvaluator.isAllowed(request.getRequestURI(), authentication)) {
+		if (!getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication)) {
 			sendError(request, response);
 			return;
 		}
 		chain.doFilter(request, response);
 	}
 
-	private void setupPrivilegeEvaluatorIfNecessary() {
-		if (this.privilegeEvaluator == null) {
-			try {
-				this.privilegeEvaluator = this.context.getBean(WebInvocationPrivilegeEvaluator.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				this.privilegeEvaluator = ALWAYS;
-			}
+	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
+		WebInvocationPrivilegeEvaluator privilegeEvaluator = this.privilegeEvaluator;
+		if (privilegeEvaluator == null) {
+			privilegeEvaluator = getPrivilegeEvaluatorBean();
+			this.privilegeEvaluator = privilegeEvaluator;
+		}
+		return privilegeEvaluator;
+	}
+
+	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluatorBean() {
+		try {
+			return this.context.getBean(WebInvocationPrivilegeEvaluator.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return ALWAYS;
 		}
 	}
 
@@ -79,6 +85,9 @@ public class ErrorPageSecurityFilter extends HttpFilter {
 		response.sendError((errorCode != null) ? errorCode : 401);
 	}
 
+	/**
+	 * {@link WebInvocationPrivilegeEvaluator} that always allows access.
+	 */
 	private static class AlwaysAllowWebInvocationPrivilegeEvaluator implements WebInvocationPrivilegeEvaluator {
 
 		@Override
