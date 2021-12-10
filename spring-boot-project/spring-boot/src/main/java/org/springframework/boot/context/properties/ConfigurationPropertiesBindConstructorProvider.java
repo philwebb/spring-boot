@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 package org.springframework.boot.context.properties;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 
@@ -45,33 +46,56 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 		if (type == null) {
 			return null;
 		}
-		Constructor<?> constructor = findConstructorBindingAnnotatedConstructor(type);
-		if (constructor == null && (isConstructorBindingType(type) || isNestedConstructorBinding)) {
-			constructor = deduceBindConstructor(type);
+		Constructors constructors = getConstructors(type);
+		if (constructors.getBind() != null || isConstructorBindingType(type) || isNestedConstructorBinding) {
+			Assert.state(constructors.getAutowired() == null,
+					() -> type.getName() + " declares @ConstructorBinding and @Autowired constructor");
 		}
-		return constructor;
+		return constructors.getBind();
 	}
 
-	private Constructor<?> findConstructorBindingAnnotatedConstructor(Class<?> type) {
-		if (isKotlinType(type)) {
-			Constructor<?> constructor = BeanUtils.findPrimaryConstructor(type);
-			if (constructor != null) {
-				return findAnnotatedConstructor(type, constructor);
-			}
-		}
-		return findAnnotatedConstructor(type, type.getDeclaredConstructors());
-	}
-
-	private Constructor<?> findAnnotatedConstructor(Class<?> type, Constructor<?>... candidates) {
+	private Constructors getConstructors(Class<?> type) {
 		Constructor<?> constructor = null;
+		Constructor<?> autowiredConstructor = null;
+		Constructor<?>[] candidates = Arrays.stream(type.getDeclaredConstructors())
+				.filter((candidate) -> !isSynthetic(candidate, type)).toArray(Constructor[]::new);
+		Constructor<?> bindConstructor = deduceBindConstructor(candidates);
+		if (bindConstructor != null) {
+			return new Constructors(null, bindConstructor);
+		}
 		for (Constructor<?> candidate : candidates) {
-			if (MergedAnnotations.from(candidate).isPresent(ConstructorBinding.class)) {
-				Assert.state(candidate.getParameterCount() > 0,
-						() -> type.getName() + " declares @ConstructorBinding on a no-args constructor");
-				Assert.state(constructor == null,
-						() -> type.getName() + " has more than one @ConstructorBinding constructor");
-				constructor = candidate;
+			if (MergedAnnotations.from(candidate).isPresent(Autowired.class)) {
+				autowiredConstructor = candidate;
+				continue;
 			}
+			constructor = findAnnotatedConstructor(type, constructor, candidate);
+		}
+		return new Constructors(autowiredConstructor, constructor);
+	}
+
+	private boolean isSynthetic(Constructor<?> candidate, Class<?> type) {
+		if (candidate.isSynthetic()) {
+			return true;
+		}
+		try {
+			Field field = type.getDeclaredField("this$0");
+			if (field.isSynthetic()) {
+				return true;
+			}
+		}
+		catch (NoSuchFieldException ex) {
+		}
+		return false;
+	}
+
+	private Constructor<?> findAnnotatedConstructor(Class<?> type, Constructor<?> constructor,
+			Constructor<?> candidate) {
+		if (MergedAnnotations.from(candidate).isPresent(ConstructorBinding.class)) {
+			Assert.state(candidate.getParameterCount() > 0,
+					() -> type.getName() + " declares @ConstructorBinding on a no-args constructor");
+			Assert.state(constructor == null,
+					() -> type.getName() + " has more than one @ConstructorBinding constructor");
+			constructor = candidate;
 		}
 		return constructor;
 	}
@@ -90,27 +114,36 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 				.isPresent(ConstructorBinding.class);
 	}
 
-	private Constructor<?> deduceBindConstructor(Class<?> type) {
-		if (isKotlinType(type)) {
-			return deducedKotlinBindConstructor(type);
-		}
-		Constructor<?>[] constructors = type.getDeclaredConstructors();
-		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
+	private Constructor<?> deduceBindConstructor(Constructor<?>[] constructors) {
+		if (constructors.length == 1 && constructors[0].getParameterCount() > 0
+				&& !MergedAnnotations.from(constructors[0]).isPresent(Autowired.class)) {
 			return constructors[0];
 		}
 		return null;
 	}
 
-	private Constructor<?> deducedKotlinBindConstructor(Class<?> type) {
-		Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-		if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
-			return primaryConstructor;
-		}
-		return null;
-	}
+	/**
+	 * Data holder for autowired and bind constructors.
+	 */
+	static class Constructors {
 
-	private boolean isKotlinType(Class<?> type) {
-		return KotlinDetector.isKotlinPresent() && KotlinDetector.isKotlinType(type);
+		private final Constructor<?> autowired;
+
+		private final Constructor<?> bind;
+
+		Constructors(Constructor<?> autowired, Constructor<?> bind) {
+			this.autowired = autowired;
+			this.bind = bind;
+		}
+
+		Constructor<?> getAutowired() {
+			return this.autowired;
+		}
+
+		Constructor<?> getBind() {
+			return this.bind;
+		}
+
 	}
 
 }

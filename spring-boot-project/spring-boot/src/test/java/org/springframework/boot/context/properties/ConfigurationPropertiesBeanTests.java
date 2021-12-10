@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -266,14 +267,20 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForTypeWhenNoConstructorBindingOnTypeReturnsValueObject() {
+	void bindTypeForTypeWhenConstructorBindingOnTypeReturnsValueObject() {
 		BindMethod bindType = BindMethod.forType(ConstructorBindingOnType.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForTypeWhenNoConstructorBindingOnConstructorReturnsValueObject() {
+	void bindTypeForTypeWhenConstructorBindingOnConstructorReturnsValueObject() {
 		BindMethod bindType = BindMethod.forType(ConstructorBindingOnConstructor.class);
+		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
+	}
+
+	@Test
+	void bindTypeForTypeWhenNoConstructorBindingAnnotationOnSingleParameterizedConstructorReturnsValueObject() {
+		BindMethod bindType = BindMethod.forType(ConstructorBindingNoAnnotation.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
@@ -283,6 +290,36 @@ class ConfigurationPropertiesBeanTests {
 				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
 				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 						+ " has more than one @ConstructorBinding constructor");
+	}
+
+	@Test
+	void bindTypeForTypeWithMultipleConstructorsReturnJavaBean() {
+		BindMethod bindType = BindMethod.forType(NoConstructorBindingOnMultipleConstructors.class);
+		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
+	}
+
+	@Test
+	void bindTypeForTypeWithNoArgConstructorReturnsJavaBean() {
+		BindMethod bindType = BindMethod.forType(JavaBeanWithNoArgConstructor.class);
+		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
+	}
+
+	@Test
+	void bindTypeForTypeWithSingleArgAutowiredConstructorReturnsJavaBean() {
+		BindMethod bindType = BindMethod.forType(JavaBeanWithAutowiredConstructor.class);
+		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
+	}
+
+	@Test
+	void typeWithConstructorBindingAndAutowiredConstructorShouldThrowException() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnTypeWithAutowired.class));
+	}
+
+	@Test
+	void constructorBindingAndAutowiredConstructorsShouldThrowException() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> BindMethod.forType(ConstructorBindingAndAutowiredConstructors.class));
 	}
 
 	private void get(Class<?> configuration, String beanName, ThrowingConsumer<ConfigurationPropertiesBean> consumer)
@@ -479,6 +516,14 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@ConfigurationProperties
+	static class ConstructorBindingNoAnnotation {
+
+		ConstructorBindingNoAnnotation(String name) {
+		}
+
+	}
+
+	@ConfigurationProperties
 	static class ConstructorBindingOnConstructor {
 
 		ConstructorBindingOnConstructor(String name) {
@@ -501,6 +546,58 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnMultipleConstructors(String name, int age) {
+		}
+
+	}
+
+	@ConfigurationProperties
+	static class NoConstructorBindingOnMultipleConstructors {
+
+		NoConstructorBindingOnMultipleConstructors(String name) {
+			this(name, -1);
+		}
+
+		NoConstructorBindingOnMultipleConstructors(String name, int age) {
+		}
+
+	}
+
+	@ConfigurationProperties
+	static class JavaBeanWithAutowiredConstructor {
+
+		@Autowired
+		JavaBeanWithAutowiredConstructor(String name) {
+		}
+
+	}
+
+	@ConfigurationProperties
+	static class JavaBeanWithNoArgConstructor {
+
+		JavaBeanWithNoArgConstructor() {
+		}
+
+	}
+
+	@ConfigurationProperties
+	@ConstructorBinding
+	static class ConstructorBindingOnTypeWithAutowired {
+
+		@Autowired
+		ConstructorBindingOnTypeWithAutowired(String name) {
+		}
+
+	}
+
+	@ConfigurationProperties
+	static class ConstructorBindingAndAutowiredConstructors {
+
+		@Autowired
+		ConstructorBindingAndAutowiredConstructors(String name) {
+		}
+
+		@ConstructorBinding
+		ConstructorBindingAndAutowiredConstructors(Integer age) {
 		}
 
 	}
