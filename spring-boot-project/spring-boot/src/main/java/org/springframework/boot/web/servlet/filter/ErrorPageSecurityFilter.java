@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
@@ -67,17 +68,31 @@ public class ErrorPageSecurityFilter implements Filter {
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request)) {
+		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request, response)) {
 			sendError(request, response);
 			return;
 		}
 		chain.doFilter(request, response);
 	}
 
-	private boolean isAllowed(HttpServletRequest request) {
+	private boolean isAllowed(HttpServletRequest request, HttpServletResponse response) {
+		int statusCode = response.getStatus();
 		String uri = request.getRequestURI();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authenticationUnavailable(authentication)) {
+			if (!authFailureOnOriginalRequest(statusCode)) {
+				return true;
+			}
+		}
 		return getPrivilegeEvaluator().isAllowed(uri, authentication);
+	}
+
+	private boolean authFailureOnOriginalRequest(int statusCode) {
+		return (statusCode == 401 || statusCode == 403);
+	}
+
+	private boolean authenticationUnavailable(Authentication authentication) {
+		return (authentication == null || authentication instanceof AnonymousAuthenticationToken);
 	}
 
 	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
