@@ -18,7 +18,6 @@ package org.springframework.boot.web.servlet.filter;
 
 import java.io.IOException;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -46,6 +45,9 @@ import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
  */
 public class ErrorPageSecurityFilter implements Filter {
 
+	private static final String ORIGINAL_REQUEST_AUTHENTICATION = ErrorPageSecurityFilter.class.getName()
+			+ ".ORIGINAL_REQUEST_AUTHENTICATION";
+
 	private static final WebInvocationPrivilegeEvaluator ALWAYS = new AlwaysAllowWebInvocationPrivilegeEvaluator();
 
 	private final ApplicationContext context;
@@ -68,28 +70,38 @@ public class ErrorPageSecurityFilter implements Filter {
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (DispatcherType.ERROR.equals(request.getDispatcherType()) && !isAllowed(request, response)) {
-			sendError(request, response);
+		switch (request.getDispatcherType()) {
+		case REQUEST:
+			doRequestFilter(request, response, chain);
 			return;
+		case ERROR:
+			doErrorFilter(request, response, chain);
+			return;
+		default:
+			chain.doFilter(request, response);
 		}
+	}
+
+	private void doRequestFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		request.setAttribute(ORIGINAL_REQUEST_AUTHENTICATION, authentication);
 		chain.doFilter(request, response);
 	}
 
-	private boolean isAllowed(HttpServletRequest request, HttpServletResponse response) {
+	private void doErrorFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (isUnauthenticated(authentication) && isNotAuthenticationError(response)) {
-			return true;
+		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+			Authentication originalRequestAuthentication = (Authentication) request
+					.getAttribute(ORIGINAL_REQUEST_AUTHENTICATION);
+			authentication = (originalRequestAuthentication != null) ? originalRequestAuthentication : authentication;
 		}
-		return getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication);
-	}
-
-	private boolean isUnauthenticated(Authentication authentication) {
-		return (authentication == null || authentication instanceof AnonymousAuthenticationToken);
-	}
-
-	private boolean isNotAuthenticationError(HttpServletResponse response) {
-		int statusCode = response.getStatus();
-		return statusCode != 401 && statusCode != 403;
+		if (getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication)) {
+			chain.doFilter(request, response);
+			return;
+		}
+		sendError(request, response);
 	}
 
 	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {

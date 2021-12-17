@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -67,9 +65,20 @@ abstract class AbstractErrorPageTests {
 				null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse).isNull(); // FIXME: This test now fails because error
-											// page can be accessed since the original
-											// request was not a 401/403.
+		assertThat(jsonResponse).isNull();
+		// FIXME: This test now fails because error page can be accessed since the
+		// original request was not a 401/403.
+	}
+
+	@Test
+	void testPublicNotFoundPageWithCorrectCredentials() {
+		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "password")
+				.exchange("/public/notfound", HttpMethod.GET, null, JsonNode.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
+		// FIXME: This test now fails because error page can be accessed since the
+		// original request was not a 401/403.
 	}
 
 	@Test

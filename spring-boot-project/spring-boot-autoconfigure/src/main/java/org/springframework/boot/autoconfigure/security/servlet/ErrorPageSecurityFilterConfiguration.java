@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import java.util.EnumSet;
-
 import javax.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,7 +43,8 @@ class ErrorPageSecurityFilterConfiguration {
 	FilterRegistrationBean<ErrorPageSecurityFilter> errorPageSecurityInterceptor(ApplicationContext context) {
 		FilterRegistrationBean<ErrorPageSecurityFilter> registration = new FilterRegistrationBean<>(
 				new ErrorPageSecurityFilter(context));
-		registration.setDispatcherTypes(EnumSet.of(DispatcherType.ERROR));
+		registration.setDispatcherTypes(DispatcherType.ERROR, DispatcherType.REQUEST);
+		// registration.setDispatcherTypes(EnumSet.of(DispatcherType.ERROR));
 		return registration;
 	}
 
