@@ -85,8 +85,16 @@ public class ErrorPageSecurityFilter implements Filter {
 	private void doRequestFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		request.setAttribute(ORIGINAL_REQUEST_AUTHENTICATION, authentication);
-		chain.doFilter(request, response);
+		try {
+			chain.doFilter(request, response);
+		}
+		catch (IOException | ServletException ex) {
+			request.setAttribute(ORIGINAL_REQUEST_AUTHENTICATION, authentication);
+			throw ex;
+		}
+		if (response.getStatus() >= 400) {
+			request.setAttribute(ORIGINAL_REQUEST_AUTHENTICATION, authentication);
+		}
 	}
 
 	private void doErrorFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
