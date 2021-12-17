@@ -76,23 +76,20 @@ public class ErrorPageSecurityFilter implements Filter {
 	}
 
 	private boolean isAllowed(HttpServletRequest request, HttpServletResponse response) {
-		int statusCode = response.getStatus();
-		String uri = request.getRequestURI();
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authenticationUnavailable(authentication)) {
-			if (!authFailureOnOriginalRequest(statusCode)) {
-				return true;
-			}
+		if (isUnauthenticated(authentication) && isNotAuthenticationError(response)) {
+			return true;
 		}
-		return getPrivilegeEvaluator().isAllowed(uri, authentication);
+		return getPrivilegeEvaluator().isAllowed(request.getRequestURI(), authentication);
 	}
 
-	private boolean authFailureOnOriginalRequest(int statusCode) {
-		return (statusCode == 401 || statusCode == 403);
-	}
-
-	private boolean authenticationUnavailable(Authentication authentication) {
+	private boolean isUnauthenticated(Authentication authentication) {
 		return (authentication == null || authentication instanceof AnonymousAuthenticationToken);
+	}
+
+	private boolean isNotAuthenticationError(HttpServletResponse response) {
+		int statusCode = response.getStatus();
+		return statusCode != 401 && statusCode != 403;
 	}
 
 	private WebInvocationPrivilegeEvaluator getPrivilegeEvaluator() {
