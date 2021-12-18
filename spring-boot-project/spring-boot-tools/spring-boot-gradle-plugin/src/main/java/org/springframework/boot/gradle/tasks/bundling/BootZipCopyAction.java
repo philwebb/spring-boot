@@ -270,11 +270,17 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		void finish() throws IOException {
+			writeEmptySignatureFile();
 			writeLoaderEntriesIfNecessary(null);
 			writeJarToolsIfNecessary();
 			writeClassPathIndexIfNecessary();
 			// We must write the layer index last
 			writeLayersIndexIfNecessary();
+		}
+
+		private void writeEmptySignatureFile() throws IOException {
+			writeEntry("META-INF/BOOT.SF", (out) -> {
+			}, false);
 		}
 
 		private void writeLoaderEntriesIfNecessary(FileCopyDetails details) throws IOException {
