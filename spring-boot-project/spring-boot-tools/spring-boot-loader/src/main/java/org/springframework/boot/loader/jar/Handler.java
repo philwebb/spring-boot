@@ -89,7 +89,8 @@ public class Handler extends URLStreamHandler {
 			return JarURLConnection.get(url, this.jarFile);
 		}
 		try {
-			return JarURLConnection.get(url, getRootJarFileFromUrl(url));
+			JarFile rootJarFile = getRootJarFileFromUrl(url);
+			return JarURLConnection.get(url, rootJarFile);
 		}
 		catch (Exception ex) {
 			return openFallbackConnection(url, ex);

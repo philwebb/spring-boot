@@ -63,7 +63,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private static final AsciiBytes META_INF = new AsciiBytes("META-INF/");
 
-	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
+	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".DSA");
 
 	private static final String READ_ACTION = "read";
 
@@ -128,9 +128,6 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
 			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
-		if (System.getSecurityManager() == null) {
-			super.close();
-		}
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -142,8 +139,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 		}
 		catch (RuntimeException ex) {
 			try {
-				this.rootFile.close();
-				super.close();
+				close();
 			}
 			catch (IOException ioex) {
 			}
