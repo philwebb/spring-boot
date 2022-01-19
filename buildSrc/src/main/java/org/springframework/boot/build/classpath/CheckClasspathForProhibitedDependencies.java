@@ -57,14 +57,15 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	@TaskAction
 	public void checkForProhibitedDependencies() throws IOException {
 		try {
-			System.out.println("One");
+			System.out.println("One " + getName());
 			ResolvedConfiguration resolvedConfiguration = this.classpath.getResolvedConfiguration();
 			System.out.println("Two");
 			Set<ResolvedArtifact> resolvedArtifacts = resolvedConfiguration.getResolvedArtifacts();
-			System.out.println("three");
+			System.out.println("Three");
 			TreeSet<String> prohibited = resolvedArtifacts.stream()
 					.map((artifact) -> artifact.getModuleVersion().getId()).filter(this::prohibited)
 					.map((id) -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
+			System.out.println("Four");
 			if (!prohibited.isEmpty()) {
 				StringBuilder message = new StringBuilder(String.format("Found prohibited dependencies:%n"));
 				for (String dependency : prohibited) {
