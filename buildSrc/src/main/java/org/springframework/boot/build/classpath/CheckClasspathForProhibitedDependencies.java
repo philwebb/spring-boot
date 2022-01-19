@@ -24,7 +24,9 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.LenientConfiguration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.TaskAction;
@@ -53,7 +55,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	@TaskAction
 	public void checkForProhibitedDependencies() throws IOException {
-		TreeSet<String> prohibited = this.classpath.getResolvedConfiguration().getResolvedArtifacts().stream()
+		ResolvedConfiguration resolvedConfiguration = this.classpath.getResolvedConfiguration();
+		LenientConfiguration lenientConfiguration = resolvedConfiguration.getLenientConfiguration();
+		TreeSet<String> prohibited = lenientConfiguration.getArtifacts().stream()
 				.map((artifact) -> artifact.getModuleVersion().getId()).filter(this::prohibited)
 				.map((id) -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
 		if (!prohibited.isEmpty()) {
