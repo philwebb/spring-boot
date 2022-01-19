@@ -29,6 +29,7 @@ public class LoaderSignedJarTestApplication {
 	public static void main(String[] args) throws Exception {
 		Security.addProvider(new BouncyCastleProvider());
 		Cipher.getInstance("AES/CBC/PKCS5Padding","BC");
+		System.out.println("Legion of the Bouncy Castle");
 		SpringApplication.run(LoaderSignedJarTestApplication.class, args);
 	}
 
