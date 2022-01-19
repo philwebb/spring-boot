@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
@@ -51,7 +50,6 @@ class LoaderIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("javaRuntimes")
-	@Disabled
 	void readUrlsWithoutWarning(JavaRuntime javaRuntime) {
 		try (GenericContainer<?> container = createContainer(javaRuntime, "spring-boot-loader-tests-app")) {
 			container.start();
