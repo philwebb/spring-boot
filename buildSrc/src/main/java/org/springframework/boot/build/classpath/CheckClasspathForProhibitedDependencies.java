@@ -17,6 +17,7 @@
 package org.springframework.boot.build.classpath;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -24,8 +25,8 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.LenientConfiguration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Classpath;
@@ -55,17 +56,26 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	@TaskAction
 	public void checkForProhibitedDependencies() throws IOException {
-		ResolvedConfiguration resolvedConfiguration = this.classpath.getResolvedConfiguration();
-		LenientConfiguration lenientConfiguration = resolvedConfiguration.getLenientConfiguration();
-		TreeSet<String> prohibited = lenientConfiguration.getArtifacts().stream()
-				.map((artifact) -> artifact.getModuleVersion().getId()).filter(this::prohibited)
-				.map((id) -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
-		if (!prohibited.isEmpty()) {
-			StringBuilder message = new StringBuilder(String.format("Found prohibited dependencies:%n"));
-			for (String dependency : prohibited) {
-				message.append(String.format("    %s%n", dependency));
+		try {
+			System.out.println("One");
+			ResolvedConfiguration resolvedConfiguration = this.classpath.getResolvedConfiguration();
+			System.out.println("Two");
+			Set<ResolvedArtifact> resolvedArtifacts = resolvedConfiguration.getResolvedArtifacts();
+			System.out.println("three");
+			TreeSet<String> prohibited = resolvedArtifacts.stream()
+					.map((artifact) -> artifact.getModuleVersion().getId()).filter(this::prohibited)
+					.map((id) -> id.getGroup() + ":" + id.getName()).collect(Collectors.toCollection(TreeSet::new));
+			if (!prohibited.isEmpty()) {
+				StringBuilder message = new StringBuilder(String.format("Found prohibited dependencies:%n"));
+				for (String dependency : prohibited) {
+					message.append(String.format("    %s%n", dependency));
+				}
+				throw new GradleException(message.toString());
 			}
-			throw new GradleException(message.toString());
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
 		}
 	}
 
