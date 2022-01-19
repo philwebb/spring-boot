@@ -228,8 +228,8 @@ class ConventionsPluginTests {
 	}
 
 	private BuildResult runGradle(Map<String, String> environment, String... args) {
-		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
-				.withPluginClasspath().build();
+		return GradleRunner.create().withProjectDir(this.projectDir).withDebug(true).withEnvironment(environment)
+				.withArguments(args).withPluginClasspath().build();
 	}
 
 }
