@@ -147,7 +147,7 @@ class ConventionsPluginTests {
 			out.println("    implementation(platform(\"org.junit:junit-bom:5.6.0\"))");
 			out.println("}");
 		}
-		runGradle("build");
+		runGradle("build", "--debug");
 		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-javadoc.jar");
 		assertThat(file).exists();
 		try (JarFile jar = new JarFile(file)) {
@@ -229,7 +229,7 @@ class ConventionsPluginTests {
 
 	private BuildResult runGradle(Map<String, String> environment, String... args) {
 		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
-				.withPluginClasspath().build();
+				.withPluginClasspath().forwardOutput().build();
 	}
 
 }
