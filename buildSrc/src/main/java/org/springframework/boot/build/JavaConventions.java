@@ -113,8 +113,8 @@ class JavaConventions {
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
-			configureToolchain(project);
 			configureProhibitedDependencyChecks(project);
+			configureToolchain(project);
 		});
 	}
 
