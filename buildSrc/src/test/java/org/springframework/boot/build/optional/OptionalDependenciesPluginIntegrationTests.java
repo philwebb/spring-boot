@@ -104,7 +104,8 @@ class OptionalDependenciesPluginIntegrationTests {
 	}
 
 	private BuildResult runGradle(String... args) {
-		return GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withPluginClasspath().build();
+		return GradleRunner.create().withProjectDir(this.projectDir).withArguments(args).withDebug(true)
+				.withPluginClasspath().build();
 	}
 
 }
