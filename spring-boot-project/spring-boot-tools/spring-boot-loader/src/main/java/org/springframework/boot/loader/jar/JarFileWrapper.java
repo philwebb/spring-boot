@@ -43,6 +43,12 @@ class JarFileWrapper extends AbstractJarFile {
 		// if (System.getSecurityManager() == null) {
 		// super.close();
 		// }
+		System.err.println("OPEN " + parent.getRootJarFile().getFile());
+	}
+
+	@Override
+	public void close() throws IOException {
+		System.err.println("CLOSE");
 	}
 
 	@Override
