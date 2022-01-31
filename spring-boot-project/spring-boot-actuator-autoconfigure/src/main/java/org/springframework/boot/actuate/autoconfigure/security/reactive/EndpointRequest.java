@@ -74,7 +74,7 @@ public final class EndpointRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public static EndpointServerWebExchangeMatcher toAnyEndpoint() {
-		return new EndpointServerWebExchangeMatcher(true);
+		return new EndpointServerWebExchangeMatcher(Collections.emptyList(), Collections.emptyList(), true, null);
 	}
 
 	/**
@@ -86,7 +86,8 @@ public final class EndpointRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public static EndpointServerWebExchangeMatcher to(Class<?>... endpoints) {
-		return new EndpointServerWebExchangeMatcher(endpoints, false);
+		return new EndpointServerWebExchangeMatcher(Arrays.asList((Object[]) endpoints), Collections.emptyList(), false,
+				null);
 	}
 
 	/**
@@ -98,7 +99,8 @@ public final class EndpointRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public static EndpointServerWebExchangeMatcher to(String... endpoints) {
-		return new EndpointServerWebExchangeMatcher(endpoints, false);
+		return new EndpointServerWebExchangeMatcher(Arrays.asList((Object[]) endpoints), Collections.emptyList(), false,
+				null);
 	}
 
 	/**
@@ -163,18 +165,6 @@ public final class EndpointRequest {
 
 		private volatile ServerWebExchangeMatcher delegate;
 
-		private EndpointServerWebExchangeMatcher(boolean includeLinks) {
-			this(Collections.emptyList(), Collections.emptyList(), includeLinks, null);
-		}
-
-		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, null);
-		}
-
-		private EndpointServerWebExchangeMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks, null);
-		}
-
 		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks,
 				HttpMethod httpMethod) {
 			super(PathMappedEndpoints.class);
@@ -187,27 +177,28 @@ public final class EndpointRequest {
 		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
 			excludes.addAll(Arrays.asList((Object[]) endpoints));
-			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks, this.httpMethod);
 		}
 
 		public EndpointServerWebExchangeMatcher excludingLinks() {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, null);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, this.httpMethod);
 		}
 
 		/**
 		 * Restricts the matcher to only consider requests with a particular http method.
-		 * @param httpMethod the http method to include
+		 * @param httpMethod the HTTP method to include
 		 * @return a copy of the matcher further restricted to only match requests with
-		 * the specified http method
+		 * the specified HTTP method
+		 * @since 2.7.0
 		 */
 		public EndpointServerWebExchangeMatcher withHttpMethod(HttpMethod httpMethod) {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, httpMethod);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, this.includeLinks, httpMethod);
 		}
 
 		@Override

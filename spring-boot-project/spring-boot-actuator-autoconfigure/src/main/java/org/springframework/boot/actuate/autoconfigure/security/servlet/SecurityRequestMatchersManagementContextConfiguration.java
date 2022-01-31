@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.servlet.AntPathRequestMatcherProvider;
-import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link ManagementContextConfiguration} that configures the appropriate
- * {@link RequestMatcherProvider}.
+ * {@link EndpointRequestMatcherProvider}.
  *
  * @author Madhura Bhave
  * @since 2.1.8
@@ -53,8 +52,9 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnClass(DispatcherServlet.class)
-		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
-			return new AntPathRequestMatcherProvider(servletPath::getRelativePath);
+		public EndpointRequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
+			return (path, httpMethod) -> new AntPathRequestMatcher(servletPath.getRelativePath(path),
+					(httpMethod != null) ? httpMethod.name() : null);
 		}
 
 	}
@@ -66,8 +66,9 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 	public static class JerseyRequestMatcherConfiguration {
 
 		@Bean
-		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
-			return new AntPathRequestMatcherProvider(applicationPath::getRelativePath);
+		public EndpointRequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
+			return (path, httpMethod) -> new AntPathRequestMatcher(applicationPath.getRelativePath(path),
+					(httpMethod != null) ? httpMethod.name() : null);
 		}
 
 	}

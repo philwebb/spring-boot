@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.function.Function;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.lang.Nullable;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -29,7 +27,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * @author Madhura Bhave
  * @author Chris Bono
  * @since 2.1.8
+ * @deprecated since 2.7.0 for removal in 2.9.0 along with {@link RequestMatcherProvider}
  */
+@Deprecated
 public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 
 	private final Function<String, String> pathFactory;
@@ -39,9 +39,8 @@ public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 	}
 
 	@Override
-	public RequestMatcher getRequestMatcher(String pattern, @Nullable HttpMethod httpMethod) {
-		return new AntPathRequestMatcher(this.pathFactory.apply(pattern),
-				(httpMethod != null) ? httpMethod.name() : null);
+	public RequestMatcher getRequestMatcher(String pattern) {
+		return new AntPathRequestMatcher(this.pathFactory.apply(pattern));
 	}
 
 }

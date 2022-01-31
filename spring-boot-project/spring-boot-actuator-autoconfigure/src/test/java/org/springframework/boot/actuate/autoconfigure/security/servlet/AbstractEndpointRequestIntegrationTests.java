@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.function.Supplier;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jolokia.http.AgentServlet;
 import org.junit.jupiter.api.Test;
@@ -209,14 +205,6 @@ abstract class AbstractEndpointRequestIntegrationTests {
 				}
 
 			};
-		}
-
-	}
-
-	static class ExampleServlet extends HttpServlet {
-
-		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 		}
 
 	}

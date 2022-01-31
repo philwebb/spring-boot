@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.servlet;
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * Interface that can be used to provide a {@link RequestMatcher} that can be used with
- * Spring Security.
+ * Interface that can be used to provide a {@link RequestMatcher} that can be used to
+ * match actuator endpoints.
  *
  * @author Madhura Bhave
- * @since 2.0.5
- * @deprecated since 2.7.0 in favor of
- * {@code org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequestMatcherProvider}
+ * @author Chris Bono
+ * @since 2.7.0
  */
-@FunctionalInterface
-@Deprecated
-public interface RequestMatcherProvider {
+public interface EndpointRequestMatcherProvider {
 
 	/**
 	 * Return the {@link RequestMatcher} to be used for the specified pattern.
 	 * @param pattern the request pattern
+	 * @param httpMethod the HTTP method to match or {@code null}
 	 * @return a request matcher
 	 */
-	RequestMatcher getRequestMatcher(String pattern);
+	RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod);
 
 }

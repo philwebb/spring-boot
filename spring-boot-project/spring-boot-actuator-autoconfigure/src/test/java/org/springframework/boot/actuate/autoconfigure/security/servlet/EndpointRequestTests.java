@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -253,7 +252,7 @@ class EndpointRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints,
-			RequestMatcherProvider matcherProvider) {
+			EndpointRequestMatcherProvider requestMatcherProvider) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
@@ -263,8 +262,8 @@ class EndpointRequestTests {
 				properties.setBasePath(pathMappedEndpoints.getBasePath());
 			}
 		}
-		if (matcherProvider != null) {
-			context.registerBean(RequestMatcherProvider.class, () -> matcherProvider);
+		if (requestMatcherProvider != null) {
+			context.registerBean(EndpointRequestMatcherProvider.class, () -> requestMatcherProvider);
 		}
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
