@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.data.sql.jpaandspringdata.repositories
+package org.springframework.boot.docs.web.security.oauth2.client
 
-import org.springframework.boot.docs.data.sql.jpaandspringdata.entityclasses.Country
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.Repository
-import org.springframework.data.repository.history.RevisionRepository
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.SecurityFilterChain
 
-interface CountryRepository :
-	RevisionRepository<Country?, Long?, Int>,
-	Repository<Country?, Long?> {
-	fun findAll(pageable: Pageable?): Page<Country?>?
+@Configuration(proxyBeanMethods = false)
+class MyOAuthClientConfiguration {
+	@Bean
+	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+		http.authorizeRequests().anyRequest().authenticated()
+		http.oauth2Login().redirectionEndpoint().baseUri("custom-callback")
+		return http.build()
+	}
 }

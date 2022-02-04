@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.security.springwebflux
+package org.springframework.boot.docs.web.security.springwebflux
 
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest
 import org.springframework.context.annotation.Bean
