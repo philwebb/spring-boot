@@ -321,8 +321,14 @@ syncDocumentationSourceForAsciidoctor {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/groovy") {
 		into "main/groovy"
+	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
 	}
 	from("src/main/resources") {
 		into "main/resources"
@@ -345,8 +351,14 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/groovy") {
 		into "main/groovy"
+	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
 	}
 	from("src/main/resources") {
 		into "main/resources"
@@ -369,8 +381,14 @@ syncDocumentationSourceForAsciidoctorPdf {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
+	}
 	from("src/main/groovy") {
 		into "main/groovy"
+	}
+	from("src/main/kotlin") {
+		into "main/kotlin"
 	}
 	from("src/main/resources") {
 		into "main/resources"
