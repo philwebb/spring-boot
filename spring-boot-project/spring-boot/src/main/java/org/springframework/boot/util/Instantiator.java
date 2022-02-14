@@ -40,6 +40,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @param <T> the type to instantiate
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.4.0
  */
 public class Instantiator<T> {
@@ -51,13 +52,28 @@ public class Instantiator<T> {
 
 	private final Map<Class<?>, Function<Class<?>, Object>> availableParameters;
 
+	private final InstantiationFailureHandler failureHandler;
+
 	/**
 	 * Create a new {@link Instantiator} instance for the given type.
 	 * @param type the type to instantiate
 	 * @param availableParameters consumer used to register available parameters
 	 */
 	public Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters) {
+		this(type, new ThrowingInstantiationFailureHandler(), availableParameters);
+	}
+
+	/**
+	 * Create a new {@link Instantiator} instance for the given type.
+	 * @param type the type to instantiate
+	 * @param failureHandler a {@link InstantiationFailureHandler} that will be called in
+	 * case of failure when instantiating objects
+	 * @param availableParameters consumer used to register available parameters
+	 */
+	public Instantiator(Class<?> type, InstantiationFailureHandler failureHandler,
+			Consumer<AvailableParameters> availableParameters) {
 		this.type = type;
+		this.failureHandler = failureHandler;
 		this.availableParameters = getAvailableParameters(availableParameters);
 	}
 
@@ -127,9 +143,9 @@ public class Instantiator<T> {
 			return instantiate(type);
 		}
 		catch (Throwable ex) {
-			throw new IllegalArgumentException(
-					"Unable to instantiate " + this.type.getName() + " [" + typeSupplier.getName() + "]", ex);
+			this.failureHandler.handleFailure(ex, this.type.getName(), typeSupplier.getName());
 		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -227,6 +243,36 @@ public class Instantiator<T> {
 				}
 
 			};
+		}
+
+	}
+
+	/**
+	 * Strategy for handling a failure that occurs when instantiating a type.
+	 */
+	public interface InstantiationFailureHandler {
+
+		/**
+		 * Handle the {@code failure} that occurred when instantiating the {@code type}
+		 * that was expected to be of the given {@code typeSupplier}.
+		 * @param failure the failure that occurred
+		 * @param implementationName the name of the implementation type
+		 * @param typeName the name of the type
+		 */
+		void handleFailure(Throwable failure, String implementationName, String typeName);
+
+	}
+
+	/**
+	 * A {@link InstantiationFailureHandler} that throws an
+	 * {@link IllegalArgumentException} describing the failure.
+	 */
+	public static class ThrowingInstantiationFailureHandler implements InstantiationFailureHandler {
+
+		@Override
+		public void handleFailure(Throwable failure, String implementationName, String typeName) {
+			throw new IllegalArgumentException("Unable to instantiate " + implementationName + " [" + typeName + "]",
+					failure);
 		}
 
 	}

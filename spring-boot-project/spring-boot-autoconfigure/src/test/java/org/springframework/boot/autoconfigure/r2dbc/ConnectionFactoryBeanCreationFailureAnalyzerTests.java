@@ -58,8 +58,8 @@ class ConnectionFactoryBeanCreationFailureAnalyzerTests {
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
-		ConnectionFactoryBeanCreationFailureAnalyzer failureAnalyzer = new ConnectionFactoryBeanCreationFailureAnalyzer();
-		failureAnalyzer.setEnvironment(this.environment);
+		ConnectionFactoryBeanCreationFailureAnalyzer failureAnalyzer = new ConnectionFactoryBeanCreationFailureAnalyzer(
+				this.environment);
 		return failureAnalyzer.analyze(failure);
 	}
 

@@ -22,23 +22,26 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.util.Instantiator.InstantiationFailureHandler;
 import org.springframework.core.Ordered;
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link Instantiator}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class InstantiatorTests {
 
-	private ParamA paramA = new ParamA();
+	private final ParamA paramA = new ParamA();
 
-	private ParamB paramB = new ParamB();
+	private final ParamB paramB = new ParamB();
 
 	private ParamC paramC;
 
@@ -106,6 +109,14 @@ class InstantiatorTests {
 				.isThrownBy(() -> createInstantiator(WithDefaultConstructor.class)
 						.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
 				.withMessageContaining("Unable to instantiate");
+	}
+
+	@Test
+	void createWithFailureHandlerInvokesFailureHandler() {
+		assertThatIllegalStateException().isThrownBy(() -> new Instantiator<>(WithDefaultConstructor.class,
+				new CustomFailureHandler(), (availableParameters) -> {
+				}).instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
+				.withMessageContaining("custom failure handler message");
 	}
 
 	private <T> T createInstance(Class<T> type) {
@@ -178,6 +189,15 @@ class InstantiatorTests {
 
 		ParamC(Class<?> type) {
 			InstantiatorTests.this.paramC = this;
+		}
+
+	}
+
+	class CustomFailureHandler implements InstantiationFailureHandler {
+
+		@Override
+		public void handleFailure(Throwable failure, String implementationName, String typeName) {
+			throw new IllegalStateException("custom failure handler message");
 		}
 
 	}

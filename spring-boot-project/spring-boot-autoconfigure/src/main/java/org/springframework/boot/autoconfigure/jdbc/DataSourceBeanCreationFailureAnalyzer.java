@@ -20,7 +20,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSour
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -33,13 +32,11 @@ import org.springframework.util.StringUtils;
  * @author Patryk Kostrzewa
  * @author Stephane Nicoll
  */
-class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<DataSourceBeanCreationException>
-		implements EnvironmentAware {
+class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<DataSourceBeanCreationException> {
 
-	private Environment environment;
+	private final Environment environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
+	DataSourceBeanCreationFailureAnalyzer(Environment environment) {
 		this.environment = environment;
 	}
 

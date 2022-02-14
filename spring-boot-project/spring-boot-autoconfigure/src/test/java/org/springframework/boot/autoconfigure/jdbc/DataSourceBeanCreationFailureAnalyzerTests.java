@@ -60,8 +60,8 @@ class DataSourceBeanCreationFailureAnalyzerTests {
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
-		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer();
-		failureAnalyzer.setEnvironment(this.environment);
+		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer(
+				this.environment);
 		return failureAnalyzer.analyze(failure);
 	}
 
