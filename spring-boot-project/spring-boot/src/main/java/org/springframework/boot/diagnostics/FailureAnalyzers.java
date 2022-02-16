@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.boot.util.Instantiator;
-import org.springframework.boot.util.Instantiator.InstantiationFailureHandler;
+import org.springframework.boot.util.Instantiator.FailureHandler;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -56,10 +56,10 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	private final List<FailureAnalyzer> analyzers;
 
 	FailureAnalyzers(ConfigurableApplicationContext context) {
-		this(SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, getClassLoader(context)), context);
+		this(context, SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, getClassLoader(context)));
 	}
 
-	FailureAnalyzers(List<String> classNames, ConfigurableApplicationContext context) {
+	FailureAnalyzers(ConfigurableApplicationContext context, List<String> classNames) {
 		this.classLoader = getClassLoader(context);
 		this.analyzers = loadFailureAnalyzers(classNames, context);
 	}
@@ -71,18 +71,18 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	private List<FailureAnalyzer> loadFailureAnalyzers(List<String> classNames,
 			ConfigurableApplicationContext context) {
 		Instantiator<FailureAnalyzer> instantiator = new Instantiator<>(FailureAnalyzer.class,
-				new IgnoringInstantiationFailureHandler(), (availableParameters) -> {
+				(availableParameters) -> {
 					if (context != null) {
 						availableParameters.add(BeanFactory.class, context.getBeanFactory());
 						availableParameters.add(Environment.class, context.getEnvironment());
 					}
-				});
+				}, new IgnoringInstantiationFailureHandler());
 		List<FailureAnalyzer> candidates = instantiator.instantiate(this.classLoader, classNames);
-		return candidates.stream().map((analyzer) -> populateAnalyzer(analyzer, context)).filter(Objects::nonNull)
+		return candidates.stream().map((analyzer) -> invokeAwareMethods(analyzer, context)).filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 
-	private FailureAnalyzer populateAnalyzer(FailureAnalyzer analyzer, ConfigurableApplicationContext context) {
+	private FailureAnalyzer invokeAwareMethods(FailureAnalyzer analyzer, ConfigurableApplicationContext context) {
 		if (analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware) {
 			if (context == null) {
 				logger.trace(LogMessage.format("Skipping %s due to missing context", analyzer.getClass().getName()));
@@ -131,10 +131,10 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		return true;
 	}
 
-	static class IgnoringInstantiationFailureHandler implements InstantiationFailureHandler {
+	static class IgnoringInstantiationFailureHandler implements FailureHandler {
 
 		@Override
-		public void handleFailure(Throwable failure, String implementationName, String typeName) {
+		public void handleFailure(Class<?> type, String implementationName, Throwable failure) {
 			if (failure instanceof IllegalAccessException) {
 				logger.trace(LogMessage.format("Skipping %s due to no suitable constructor found", implementationName));
 			}

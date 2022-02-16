@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.util.Instantiator.InstantiationFailureHandler;
+import org.springframework.boot.util.Instantiator.FailureHandler;
 import org.springframework.core.Ordered;
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.core.annotation.Order;
@@ -113,9 +113,10 @@ class InstantiatorTests {
 
 	@Test
 	void createWithFailureHandlerInvokesFailureHandler() {
-		assertThatIllegalStateException().isThrownBy(() -> new Instantiator<>(WithDefaultConstructor.class,
-				new CustomFailureHandler(), (availableParameters) -> {
-				}).instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
+		assertThatIllegalStateException()
+				.isThrownBy(() -> new Instantiator<>(WithDefaultConstructor.class, (availableParameters) -> {
+				}, new CustomFailureHandler())
+						.instantiate(Collections.singleton(WithAdditionalConstructor.class.getName())))
 				.withMessageContaining("custom failure handler message");
 	}
 
@@ -193,10 +194,10 @@ class InstantiatorTests {
 
 	}
 
-	class CustomFailureHandler implements InstantiationFailureHandler {
+	class CustomFailureHandler implements FailureHandler {
 
 		@Override
-		public void handleFailure(Throwable failure, String implementationName, String typeName) {
+		public void handleFailure(Class<?> type, String implementationName, Throwable failure) {
 			throw new IllegalStateException("custom failure handler message");
 		}
 

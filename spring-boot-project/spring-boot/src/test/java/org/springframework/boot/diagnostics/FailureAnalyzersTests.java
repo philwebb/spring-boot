@@ -118,7 +118,7 @@ class FailureAnalyzersTests {
 
 	private void analyzeAndReport(Throwable failure, AnnotationConfigApplicationContext context,
 			String... factoryNames) {
-		new FailureAnalyzers(Arrays.asList(factoryNames), context).reportException(failure);
+		new FailureAnalyzers(context, Arrays.asList(factoryNames)).reportException(failure);
 	}
 
 	static class BasicFailureAnalyzer implements FailureAnalyzer {
