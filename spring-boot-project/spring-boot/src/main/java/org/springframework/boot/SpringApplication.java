@@ -61,6 +61,7 @@ import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.Order;
@@ -225,7 +226,8 @@ public class SpringApplication {
 
 	private String environmentPrefix;
 
-	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
+	private ApplicationContextFactory applicationContextFactory = (NativeDetector.inNativeImage())
+			? ApplicationContextFactory.AOT : ApplicationContextFactory.DEFAULT;
 
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
 
@@ -373,6 +375,18 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
+		if (NativeDetector.inNativeImage()) {
+			try {
+				Class<?> aClass = Class.forName(this.mainApplicationClass.getName() + "__ApplicationContextInitializer",
+						true, getClassLoader());
+				ApplicationContextInitializer<?> initializer = (ApplicationContextInitializer<?>) aClass
+						.getDeclaredConstructor().newInstance();
+				this.initializers.add(0, initializer);
+			}
+			catch (Exception ex) {
+				throw new IllegalArgumentException("Failed to configure AOT context", ex);
+			}
+		}
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		bootstrapContext.close(context);
@@ -396,10 +410,12 @@ public class SpringApplication {
 		if (this.lazyInitialization) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
-		// Load the sources
-		Set<Object> sources = getAllSources();
-		Assert.notEmpty(sources, "Sources must not be empty");
-		load(context, sources.toArray(new Object[0]));
+		if (!NativeDetector.inNativeImage()) {
+			// Load the sources
+			Set<Object> sources = getAllSources();
+			Assert.notEmpty(sources, "Sources must not be empty");
+			load(context, sources.toArray(new Object[0]));
+		}
 		listeners.contextLoaded(context);
 	}
 

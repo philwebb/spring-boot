@@ -20,9 +20,12 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 /**
  * Strategy interface for creating the {@link ConfigurableApplicationContext} used by a
@@ -54,6 +57,28 @@ public interface ApplicationContextFactory {
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable create a default ApplicationContext instance, "
+					+ "you may need a custom ApplicationContextFactory", ex);
+		}
+	};
+
+	/**
+	 * A default {@link ApplicationContextFactory} implementation that will create an
+	 * appropriate context for a context that has been optimized by AOT processing,
+	 * according to the {@link WebApplicationType}.
+	 */
+	ApplicationContextFactory AOT = (webApplicationType) -> {
+		try {
+			switch (webApplicationType) {
+			case SERVLET:
+				return new ServletWebServerApplicationContext();
+			case REACTIVE:
+				return new ReactiveWebServerApplicationContext();
+			default:
+				return new GenericApplicationContext();
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Unable create an AOT ApplicationContext instance, "
 					+ "you may need a custom ApplicationContextFactory", ex);
 		}
 	};
