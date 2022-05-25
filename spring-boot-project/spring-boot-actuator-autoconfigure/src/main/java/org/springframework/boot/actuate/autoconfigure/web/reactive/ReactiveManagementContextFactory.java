@@ -25,28 +25,27 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
-import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.ObjectUtils;
 
 /**
  * A {@link ManagementContextFactory} for reactive web applications.
  *
  * @author Andy Wilkinson
  */
-class ReactiveManagementContextFactory implements ManagementContextFactory {
+class ReactiveManagementContextFactory
+		implements ManagementContextFactory<AnnotationConfigReactiveWebServerApplicationContext> {
 
 	@Override
-	public ConfigurableWebServerApplicationContext createManagementContext(ApplicationContext parent,
-			Class<?>... configClasses) {
+	public AnnotationConfigReactiveWebServerApplicationContext createManagementContext(ApplicationContext parent,
+			boolean registerWebServerFactoryBeans) {
 		AnnotationConfigReactiveWebServerApplicationContext child = new AnnotationConfigReactiveWebServerApplicationContext();
 		child.setParent(parent);
-		Class<?>[] combinedClasses = ObjectUtils.addObjectToArray(configClasses,
-				ReactiveWebServerFactoryAutoConfiguration.class);
-		child.register(combinedClasses);
-		registerReactiveWebServerFactory(parent, child);
+		if (registerWebServerFactoryBeans) {
+			child.register(ReactiveWebServerFactoryAutoConfiguration.class);
+			registerReactiveWebServerFactory(parent, child);
+		}
 		return child;
 	}
 

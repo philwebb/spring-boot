@@ -18,24 +18,27 @@ package org.springframework.boot.actuate.autoconfigure.web;
 
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 
 /**
  * Factory for creating a separate management context when the management web server is
  * running on a different port to the main application.
  *
  * @author Andy Wilkinson
- * @since 2.0.0
+ * @author Phillip Webb
+ * @param <C> the context type
+ * @since 3.0.0
  */
 @FunctionalInterface
-public interface ManagementContextFactory {
+public interface ManagementContextFactory<C extends ConfigurableWebServerApplicationContext & AnnotationConfigRegistry> {
 
 	/**
 	 * Create the management application context.
 	 * @param parent the parent context
-	 * @param configurationClasses the configuration classes
+	 * @param registerWebServerFactoryBeans if web server factory beans should be
+	 * registered
 	 * @return a configured application context
 	 */
-	ConfigurableWebServerApplicationContext createManagementContext(ApplicationContext parent,
-			Class<?>... configurationClasses);
+	C createManagementContext(ApplicationContext parent, boolean registerWebServerFactoryBeans);
 
 }

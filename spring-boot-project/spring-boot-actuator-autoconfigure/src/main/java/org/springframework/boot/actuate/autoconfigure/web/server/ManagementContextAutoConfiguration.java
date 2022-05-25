@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -98,7 +99,7 @@ public class ManagementContextAutoConfiguration {
 		 * @param environment the environment
 		 */
 		private void addLocalManagementPortPropertyAlias(ConfigurableEnvironment environment) {
-			environment.getPropertySources().addLast(new PropertySource<Object>("Management Server") {
+			environment.getPropertySources().addLast(new PropertySource<>("Management Server") {
 
 				@Override
 				public Object getProperty(String name) {
@@ -125,10 +126,10 @@ public class ManagementContextAutoConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		private final ManagementContextFactory managementContextFactory;
+		private final ManagementContextFactory<?> managementContextFactory;
 
 		DifferentManagementContextConfiguration(ApplicationContext applicationContext,
-				ManagementContextFactory managementContextFactory) {
+				ManagementContextFactory<?> managementContextFactory) {
 			this.applicationContext = applicationContext;
 			this.managementContextFactory = managementContextFactory;
 		}
@@ -137,9 +138,9 @@ public class ManagementContextAutoConfiguration {
 		public void onApplicationEvent(WebServerInitializedEvent event) {
 			if (event.getApplicationContext().equals(this.applicationContext)) {
 				ConfigurableWebServerApplicationContext managementContext = this.managementContextFactory
-						.createManagementContext(this.applicationContext,
-								EnableChildManagementContextConfiguration.class,
-								PropertyPlaceholderAutoConfiguration.class);
+						.createManagementContext(this.applicationContext, true);
+				((AnnotationConfigRegistry) managementContext).register(EnableChildManagementContextConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class);
 				if (isLazyInitialization()) {
 					managementContext.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 				}
