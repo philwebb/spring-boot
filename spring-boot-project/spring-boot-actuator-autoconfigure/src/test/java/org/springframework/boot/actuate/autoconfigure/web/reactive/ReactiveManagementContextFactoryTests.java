@@ -44,13 +44,13 @@ class ReactiveManagementContextFactoryTests {
 	void createManagementContextShouldCreateChildContextWithConfigClasses() {
 		this.parent.register(ParentConfiguration.class);
 		this.parent.refresh();
-		AnnotationConfigReactiveWebServerApplicationContext childContext = (AnnotationConfigReactiveWebServerApplicationContext) this.factory
-				.createManagementContext(this.parent, TestConfiguration1.class, TestConfiguration2.class);
+		AnnotationConfigReactiveWebServerApplicationContext childContext = this.factory
+				.createManagementContext(this.parent, true);
+		childContext.register(TestConfiguration1.class, TestConfiguration2.class);
 		childContext.refresh();
 		assertThat(childContext.getBean(TestConfiguration1.class)).isNotNull();
 		assertThat(childContext.getBean(TestConfiguration2.class)).isNotNull();
 		assertThat(childContext.getBean(ReactiveWebServerFactoryAutoConfiguration.class)).isNotNull();
-
 		childContext.close();
 		this.parent.close();
 	}

@@ -24,9 +24,9 @@ import org.springframework.context.annotation.AnnotationConfigRegistry;
  * Factory for creating a separate management context when the management web server is
  * running on a different port to the main application.
  *
+ * @param <C> the context type
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @param <C> the context type
  * @since 3.0.0
  */
 @FunctionalInterface
