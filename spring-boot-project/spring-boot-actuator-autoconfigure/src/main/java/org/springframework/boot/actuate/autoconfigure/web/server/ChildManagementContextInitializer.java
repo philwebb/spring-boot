@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 import java.util.List;
 
 import org.springframework.aot.generate.GenerationContext;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
@@ -31,6 +32,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -44,66 +46,108 @@ import org.springframework.util.Assert;
  * {@link ApplicationListener} used to initialize the management context when it's running
  * on a different port.
  *
- * @param <C> the context type
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ChildManagementContextInitializer<C extends ConfigurableWebServerApplicationContext & AnnotationConfigRegistry>
+class ChildManagementContextInitializer
 		implements ApplicationListener<WebServerInitializedEvent>, BeanRegistrationAotProcessor {
 
-	private final ApplicationContext applicationContext;
+	private final ManagementContextFactory managementContextFactory;
 
-	private final ManagementContextFactory<C> managementContextFactory;
+	private final ApplicationContext parentContext;
 
-	ChildManagementContextInitializer(ApplicationContext applicationContext,
-			ManagementContextFactory<C> managementContextFactory) {
-		this.applicationContext = applicationContext;
+	ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
+			ApplicationContext parentContext) {
 		this.managementContextFactory = managementContextFactory;
+		this.parentContext = parentContext;
 	}
 
 	@Override
 	public void onApplicationEvent(WebServerInitializedEvent event) {
-		if (event.getApplicationContext().equals(this.applicationContext)) {
-			createAndInitializeManagementContext();
+		if (event.getApplicationContext().equals(this.parentContext)) {
+			ConfigurableApplicationContext managementContext = createManagementContext();
+			registerBeans(managementContext);
+			managementContext.refresh();
 		}
-	}
-
-	protected void createAndInitializeManagementContext() {
-		createManagementContext(true).refresh();
 	}
 
 	@Override
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
-		Assert.isInstanceOf(ConfigurableApplicationContext.class, this.applicationContext);
-		if (registeredBean.getBeanClass().equals(getClass()) && registeredBean.getBeanFactory()
-				.equals(((ConfigurableApplicationContext) this.applicationContext).getBeanFactory())) {
-			return new AotContribution(createManagementContext(true));
+		Assert.isInstanceOf(ConfigurableApplicationContext.class, this.parentContext);
+		BeanFactory parentBeanFactory = ((ConfigurableApplicationContext) this.parentContext).getBeanFactory();
+		if (registeredBean.getBeanClass().equals(getClass())
+				&& registeredBean.getBeanFactory().equals(parentBeanFactory)) {
+			ConfigurableApplicationContext managementContext = createManagementContext();
+			registerBeans(managementContext);
+			return new AotContribution(managementContext);
 		}
 		return null;
 	}
 
-	protected final C createManagementContext(boolean registerBeans) {
-		ApplicationContext parent = this.applicationContext;
-		C child = this.managementContextFactory.createManagementContext(parent, registerBeans);
-		if (registerBeans) {
-			child.register(EnableChildManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
-			if (isLazyInitialization()) {
-				child.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
-			}
+	protected void registerBeans(ConfigurableApplicationContext managementContext) {
+		Assert.isInstanceOf(AnnotationConfigRegistry.class, managementContext);
+		AnnotationConfigRegistry registry = (AnnotationConfigRegistry) managementContext;
+		this.managementContextFactory.registerWebServerFactoryBeans(this.parentContext, managementContext, registry);
+		registry.register(EnableChildManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		if (isLazyInitialization()) {
+			managementContext.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
-		child.setServerNamespace("management");
-		child.setId(parent.getId() + ":management");
-		if (child instanceof DefaultResourceLoader) {
-			((DefaultResourceLoader) child).setClassLoader(parent.getClassLoader());
+	}
+
+	protected final ConfigurableApplicationContext createManagementContext() {
+		ConfigurableApplicationContext managementContext = this.managementContextFactory
+				.createManagementContext(this.parentContext);
+		managementContext.setId(this.parentContext.getId() + ":management");
+		if (managementContext instanceof ConfigurableWebServerApplicationContext webServerApplicationContext) {
+			webServerApplicationContext.setServerNamespace("management");
 		}
-		CloseManagementContextListener.addIfPossible(parent, child);
-		return child;
+		if (managementContext instanceof DefaultResourceLoader resourceLoader) {
+			resourceLoader.setClassLoader(this.parentContext.getClassLoader());
+		}
+		CloseManagementContextListener.addIfPossible(this.parentContext, managementContext);
+		return managementContext;
 	}
 
 	private boolean isLazyInitialization() {
-		AbstractApplicationContext context = (AbstractApplicationContext) this.applicationContext;
+		AbstractApplicationContext context = (AbstractApplicationContext) this.parentContext;
 		List<BeanFactoryPostProcessor> postProcessors = context.getBeanFactoryPostProcessors();
 		return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
+	}
+
+	/**
+	 * {@link BeanRegistrationAotContribution} for
+	 * {@link ChildManagementContextInitializer}.
+	 */
+	private static class AotContribution implements BeanRegistrationAotContribution {
+
+		AotContribution(ConfigurableApplicationContext managementContext) {
+		}
+
+		@Override
+		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
+		}
+
+	}
+
+	/**
+	 * {@link ChildManagementContextInitializer} used for AOT processed applications.
+	 */
+	static class AotChildManagementContextInitializer extends ChildManagementContextInitializer {
+
+		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
+
+		AotChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
+				ApplicationContext parentContext,
+				ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
+			super(managementContextFactory, parentContext);
+			this.initializer = initializer;
+		}
+
+		@Override
+		protected void registerBeans(ConfigurableApplicationContext managementContext) {
+			this.initializer.initialize(managementContext);
+		}
+
 	}
 
 	/**
@@ -154,17 +198,6 @@ class ChildManagementContextInitializer<C extends ConfigurableWebServerApplicati
 		private static void add(ConfigurableApplicationContext parentContext,
 				ConfigurableApplicationContext childContext) {
 			parentContext.addApplicationListener(new CloseManagementContextListener(parentContext, childContext));
-		}
-
-	}
-
-	private static class AotContribution implements BeanRegistrationAotContribution {
-
-		AotContribution(ConfigurableWebServerApplicationContext managementContext) {
-		}
-
-		@Override
-		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
 		}
 
 	}
