@@ -23,6 +23,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
+import org.springframework.beans.factory.aot.BeanRegistrationCodeFragments;
+import org.springframework.beans.factory.aot.BeanRegistrationCodeFragmentsCustomizer;
+import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
@@ -37,9 +40,12 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.javapoet.ClassName;
 import org.springframework.util.Assert;
 
 /**
@@ -49,8 +55,8 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ChildManagementContextInitializer
-		implements ApplicationListener<WebServerInitializedEvent>, BeanRegistrationAotProcessor {
+class ChildManagementContextInitializer implements ApplicationListener<WebServerInitializedEvent>,
+		BeanRegistrationAotProcessor, BeanRegistrationExcludeFilter, BeanRegistrationCodeFragmentsCustomizer {
 
 	private final ManagementContextFactory managementContextFactory;
 
@@ -82,6 +88,17 @@ class ChildManagementContextInitializer
 			return new AotContribution(managementContext);
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isExcluded(RegisteredBean registeredBean) {
+		return false; // Don't filter ourself
+	}
+
+	@Override
+	public BeanRegistrationCodeFragments customizeBeanRegistrationCodeFragments(RegisteredBean registeredBean,
+			BeanRegistrationCodeFragments codeFragments) {
+		return codeFragments;
 	}
 
 	protected void registerBeans(ConfigurableApplicationContext managementContext) {
@@ -120,11 +137,19 @@ class ChildManagementContextInitializer
 	 */
 	private static class AotContribution implements BeanRegistrationAotContribution {
 
+		private final GenericApplicationContext managementContext;
+
 		AotContribution(ConfigurableApplicationContext managementContext) {
+			Assert.isInstanceOf(GenericApplicationContext.class, managementContext);
+			this.managementContext = (GenericApplicationContext) managementContext;
 		}
 
 		@Override
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
+			ClassName generatedInitializerClassName = generationContext.getClassNameGenerator().generateClassName("",
+					"test");
+			new ApplicationContextAotGenerator().generateApplicationContext(this.managementContext, generationContext,
+					generatedInitializerClassName);
 		}
 
 	}
