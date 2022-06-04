@@ -24,7 +24,6 @@ import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
 import org.springframework.beans.factory.aot.BeanRegistrationCodeFragments;
-import org.springframework.beans.factory.aot.BeanRegistrationCodeFragmentsCustomizer;
 import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
@@ -56,7 +55,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 class ChildManagementContextInitializer implements ApplicationListener<WebServerInitializedEvent>,
-		BeanRegistrationAotProcessor, BeanRegistrationExcludeFilter, BeanRegistrationCodeFragmentsCustomizer {
+		BeanRegistrationAotProcessor, BeanRegistrationExcludeFilter {
 
 	private final ManagementContextFactory managementContextFactory;
 
@@ -92,13 +91,7 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 
 	@Override
 	public boolean isExcluded(RegisteredBean registeredBean) {
-		return false; // Don't filter ourself
-	}
-
-	@Override
-	public BeanRegistrationCodeFragments customizeBeanRegistrationCodeFragments(RegisteredBean registeredBean,
-			BeanRegistrationCodeFragments codeFragments) {
-		return codeFragments;
+		return false;
 	}
 
 	protected void registerBeans(ConfigurableApplicationContext managementContext) {
@@ -145,9 +138,15 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 		}
 
 		@Override
+		public BeanRegistrationCodeFragments customizeBeanRegistrationCodeFragments(
+				BeanRegistrationCodeFragments codeFragments) {
+			return codeFragments;
+		}
+
+		@Override
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
-			ClassName generatedInitializerClassName = generationContext.getClassNameGenerator().generateClassName("",
-					"test");
+			ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
+					.generateClassName("ManagementContext", "registrations");
 			new ApplicationContextAotGenerator().generateApplicationContext(this.managementContext, generationContext,
 					generatedInitializerClassName);
 		}

@@ -165,7 +165,19 @@ public final class TestPropertyValues {
 
 	/**
 	 * Add the properties to the {@link System#getProperties() system properties} for the
-	 * duration of the {@code call}, restoring previous values when the call completes.
+	 * duration of the {@code action}, restoring previous values when it completes.
+	 * @param action the action to take
+	 */
+	public void applyToSystemProperties(Runnable action) {
+		applyToSystemProperties(() -> {
+			action.run();
+			return null;
+		});
+	}
+
+	/**
+	 * Add the properties to the {@link System#getProperties() system properties} for the
+	 * duration of the {@code call}, restoring previous values when it completes.
 	 * @param <T> the result type
 	 * @param call the call to make
 	 * @return the result of the call
