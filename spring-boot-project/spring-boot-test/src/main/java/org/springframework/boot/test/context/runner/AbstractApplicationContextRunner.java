@@ -338,7 +338,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
 		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
-				.applyToSystemProperties(() -> consumeAssertableContext(false, consumer)));
+				.applyToSystemProperties(() -> consumeAssertableContext(true, consumer)));
 		return (SELF) this;
 	}
 
@@ -353,12 +353,12 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	@SuppressWarnings("unchecked")
 	public SELF prepare(ContextConsumer<? super A> consumer) {
 		withContextClassLoader(this.runnerConfiguration.classLoader, () -> this.runnerConfiguration.systemProperties
-				.applyToSystemProperties(() -> consumeAssertableContext(true, consumer)));
+				.applyToSystemProperties(() -> consumeAssertableContext(false, consumer)));
 		return (SELF) this;
 	}
 
 	private void consumeAssertableContext(boolean refresh, ContextConsumer<? super A> consumer) {
-		try (A context = createAssertableContext(true)) {
+		try (A context = createAssertableContext(refresh)) {
 			accept(consumer, context);
 		}
 	}

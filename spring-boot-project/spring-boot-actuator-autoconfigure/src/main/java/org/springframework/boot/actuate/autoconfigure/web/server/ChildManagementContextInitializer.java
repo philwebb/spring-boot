@@ -18,12 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.util.List;
 
+import javax.lang.model.element.Modifier;
+
+import org.springframework.aot.generate.GeneratedMethod;
 import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.generate.MethodReference;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
-import org.springframework.beans.factory.aot.BeanRegistrationCodeFragments;
 import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.RegisteredBean;
@@ -61,10 +64,20 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 
 	private final ApplicationContext parentContext;
 
+	private final ApplicationContextInitializer<ConfigurableApplicationContext> applicationContextInitializer;
+
 	ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
 			ApplicationContext parentContext) {
+		this(managementContextFactory, parentContext, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	private ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
+			ApplicationContext parentContext,
+			ApplicationContextInitializer<? extends ConfigurableApplicationContext> applicationContextInitializer) {
 		this.managementContextFactory = managementContextFactory;
 		this.parentContext = parentContext;
+		this.applicationContextInitializer = (ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContextInitializer;
 	}
 
 	@Override
@@ -94,7 +107,11 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 		return false;
 	}
 
-	protected void registerBeans(ConfigurableApplicationContext managementContext) {
+	private void registerBeans(ConfigurableApplicationContext managementContext) {
+		if (this.applicationContextInitializer != null) {
+			this.applicationContextInitializer.initialize(managementContext);
+			return;
+		}
 		Assert.isInstanceOf(AnnotationConfigRegistry.class, managementContext);
 		AnnotationConfigRegistry registry = (AnnotationConfigRegistry) managementContext;
 		this.managementContextFactory.registerWebServerFactoryBeans(this.parentContext, managementContext, registry);
@@ -124,6 +141,12 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 		return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 	}
 
+	ChildManagementContextInitializer withApplicationContextInitializer(
+			ApplicationContextInitializer<? extends ConfigurableApplicationContext> applicationContextInitializer) {
+		return new ChildManagementContextInitializer(this.managementContextFactory, this.parentContext,
+				applicationContextInitializer);
+	}
+
 	/**
 	 * {@link BeanRegistrationAotContribution} for
 	 * {@link ChildManagementContextInitializer}.
@@ -138,38 +161,24 @@ class ChildManagementContextInitializer implements ApplicationListener<WebServer
 		}
 
 		@Override
-		public BeanRegistrationCodeFragments customizeBeanRegistrationCodeFragments(
-				BeanRegistrationCodeFragments codeFragments) {
-			return codeFragments;
-		}
-
-		@Override
 		public void applyTo(GenerationContext generationContext, BeanRegistrationCode beanRegistrationCode) {
+			Class<ManagementContextAutoConfiguration> target = ManagementContextAutoConfiguration.class;
 			ClassName generatedInitializerClassName = generationContext.getClassNameGenerator()
-					.generateClassName("ManagementContext", "registrations");
-			new ApplicationContextAotGenerator().generateApplicationContext(this.managementContext, generationContext,
-					generatedInitializerClassName);
-		}
-
-	}
-
-	/**
-	 * {@link ChildManagementContextInitializer} used for AOT processed applications.
-	 */
-	static class AotChildManagementContextInitializer extends ChildManagementContextInitializer {
-
-		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
-
-		AotChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
-				ApplicationContext parentContext,
-				ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
-			super(managementContextFactory, parentContext);
-			this.initializer = initializer;
-		}
-
-		@Override
-		protected void registerBeans(ConfigurableApplicationContext managementContext) {
-			this.initializer.initialize(managementContext);
+					.generateClassName(target, "ManagementContextRegistrations");
+			new ApplicationContextAotGenerator().generateApplicationContext(this.managementContext, target,
+					"Management", generationContext, generatedInitializerClassName);
+			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethodGenerator()
+					.generateMethod("addManagementInitializer").using((builder) -> {
+						builder.addJavadoc("Use AOT management context initialization");
+						builder.addModifiers(Modifier.PRIVATE, Modifier.STATIC);
+						builder.addParameter(RegisteredBean.class, "registeredBean");
+						builder.addParameter(ChildManagementContextInitializer.class, "instance");
+						builder.returns(ChildManagementContextInitializer.class);
+						builder.addStatement("return instance.withApplicationContextInitializer(new $L())",
+								generatedInitializerClassName);
+					});
+			beanRegistrationCode.addInstancePostProcessor(
+					MethodReference.ofStatic(beanRegistrationCode.getClassName(), postProcessorMethod.getName()));
 		}
 
 	}

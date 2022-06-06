@@ -16,29 +16,41 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.generate.DefaultGenerationContext;
-import org.springframework.aot.generate.GeneratedFiles.Kind;
-import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
 import org.springframework.aot.generate.MethodGenerator;
 import org.springframework.aot.generate.MethodReference;
+import org.springframework.aot.test.generator.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generator.compile.DynamicClassLoader;
 import org.springframework.aot.test.generator.compile.TestCompiler;
-import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
 import org.springframework.beans.factory.aot.BeanRegistrationCode;
-import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.SecurityRequestMatchersManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.validation.beanvalidation.MethodValidationExcludeFilter;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.core.io.InputStreamSource;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
+import org.springframework.context.event.EventListenerMethodProcessor;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.javapoet.ClassName;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 /**
  * AOT tests for {@link ChildManagementContextInitializer}.
@@ -48,6 +60,14 @@ import org.springframework.javapoet.ClassName;
 class ManagementContextAutoConfigurationAotTests {
 
 	@Test
+	@CompileWithTargetClassAccess(classes = { ChildManagementContextInitializer.class,
+			ServletWebServerFactoryAutoConfiguration.class, ConfigurationProperties.class,
+			WebEndpointAutoConfiguration.class, EventListenerMethodProcessor.class, TomcatServletWebServerFactory.class,
+			PropertyPlaceholderAutoConfiguration.class, MethodValidationExcludeFilter.class,
+			WebServerFactoryCustomizerBeanPostProcessor.class,
+			SecurityRequestMatchersManagementContextConfiguration.class,
+			ServletManagementContextAutoConfiguration.class, DelegatingWebMvcConfiguration.class })
+	@SuppressWarnings("unchecked")
 	void test() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
@@ -56,22 +76,35 @@ class ManagementContextAutoConfigurationAotTests {
 								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").prepare((context) -> {
-			String beanName = context.getBeanNamesForType(ChildManagementContextInitializer.class)[0];
-			ChildManagementContextInitializer initializer = context.getBean(beanName,
-					ChildManagementContextInitializer.class);
-			RegisteredBean registeredBean = RegisteredBean.of(context.getBeanFactory(), beanName);
-			BeanRegistrationAotContribution contribution = initializer.processAheadOfTime(registeredBean);
 			InMemoryGeneratedFiles generatedFiles = new InMemoryGeneratedFiles();
-			GenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
-			BeanRegistrationCode beanRegistrationsCode = new MockBeanRegistrationCode();
-			contribution.applyTo(generationContext, beanRegistrationsCode);
-			Map<String, InputStreamSource> map = generatedFiles.getGeneratedFiles(Kind.SOURCE);
-			map.forEach((name, content) -> {
-				System.out.println(name);
-				System.out.println(content);
+			DefaultGenerationContext generationContext = new DefaultGenerationContext(generatedFiles);
+			ClassName className = ClassName.get("com.example", "TestInitializer");
+			new ApplicationContextAotGenerator().generateApplicationContext(
+					(GenericApplicationContext) context.getSourceApplicationContext(), generationContext, className);
+			generationContext.writeGeneratedContent();
+			TestCompiler compiler = TestCompiler.forSystem();
+			compiler.withFiles(generatedFiles).printFiles(System.out).compile((compiled) -> {
+				try {
+					ClassLoader classLoader = compiled.getClassLoader();
+					Field field = DynamicClassLoader.class.getDeclaredField("classFiles");
+					ReflectionUtils.makeAccessible(field);
+					Map<String, ?> map = (Map<String, ?>) ReflectionUtils.getField(field, classLoader);
+					for (String name : map.keySet()) {
+						System.err.println(name);
+						compiled.getInstance(Object.class, name);
+					}
+				}
+				catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				ServletWebServerApplicationContext freshApplicationContext = new ServletWebServerApplicationContext();
+				TestPropertyValues.of("server.port=0", "management.server.port=0").applyTo(freshApplicationContext);
+				ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+						.getInstance(ApplicationContextInitializer.class, className.toString());
+				initializer.initialize(freshApplicationContext);
+				freshApplicationContext.refresh();
 			});
 		});
-		TestCompiler compiler = TestCompiler.forSystem();
 	}
 
 	static class MockBeanRegistrationCode implements BeanRegistrationCode {
