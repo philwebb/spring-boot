@@ -16,17 +16,22 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.aot.test.generate.compile.TestCompiler;
+import org.springframework.aot.test.generate.file.SourceFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.linesOf;
 
 /**
  * Tests for {@link AutoConfigurationImportsAnnotationProcessor}.
@@ -36,35 +41,40 @@ import static org.assertj.core.api.Assertions.linesOf;
  */
 class AutoConfigurationImportsAnnotationProcessorTests {
 
-	@TempDir
-	File tempDir;
+	@Test
+	void annotatedClasses() throws Exception {
+		compile(Arrays.asList(TestAutoConfigurationOnlyConfiguration.class, TestAutoConfigurationConfiguration.class),
+				(classes) -> {
+					assertThat(classes).hasSize(2);
+					assertThat(classes).containsExactly(
+							"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration",
+							"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration");
 
-	private TestCompiler compiler;
-
-	@BeforeEach
-	void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.tempDir);
+				});
 	}
 
 	@Test
-	void annotatedClasses() {
-		File generatedFile = generateAnnotatedClasses(TestAutoConfigurationOnlyConfiguration.class,
-				TestAutoConfigurationConfiguration.class);
-		assertThat(generatedFile).exists().isFile();
-		assertThat(linesOf(generatedFile)).containsExactly(
-				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration",
-				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationOnlyConfiguration");
+	void notAnnotatedClasses() throws Exception {
+		compile(Collections.singletonList(TestAutoConfigurationImportsAnnotationProcessor.class),
+				(classes) -> assertThat(classes).isNull());
 	}
 
-	@Test
-	void notAnnotatedClasses() {
-		assertThat(generateAnnotatedClasses(TestAutoConfigurationImportsAnnotationProcessor.class)).doesNotExist();
-	}
-
-	private File generateAnnotatedClasses(Class<?>... types) {
+	private void compile(Collection<Class<?>> types, Consumer<List<String>> consumer) {
 		TestAutoConfigurationImportsAnnotationProcessor processor = new TestAutoConfigurationImportsAnnotationProcessor();
-		this.compiler.getTask(types).call(processor);
-		return new File(this.tempDir, processor.getImportsFilePath());
+		List<SourceFile> sources = types.stream().map(SourceFile::forTestClass).toList();
+		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor).withSources(sources);
+		compiler.compile((compiled) -> {
+			InputStream importsFile = compiled.getClassLoader().getResourceAsStream(processor.getImportsFilePath());
+			consumer.accept(getWrittenImports(importsFile));
+		});
+	}
+
+	private List<String> getWrittenImports(InputStream inputStream) {
+		if (inputStream == null) {
+			return null;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		return reader.lines().collect(Collectors.toList());
 	}
 
 }

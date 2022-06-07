@@ -16,8 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.function.BiConsumer;
 
 import javax.lang.model.element.Element;
@@ -26,12 +24,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 
-import org.junit.jupiter.api.io.TempDir;
-
+import org.springframework.aot.test.generate.compile.TestCompiler;
+import org.springframework.aot.test.generate.file.SourceFile;
 import org.springframework.boot.configurationprocessor.test.ItemMetadataAssert;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
 
 /**
  * Base test infrastructure to test {@link PropertyDescriptor} implementations.
@@ -39,9 +36,6 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
  * @author Stephane Nicoll
  */
 public abstract class PropertyDescriptorTests {
-
-	@TempDir
-	File tempDir;
 
 	protected String createAccessorMethodName(String prefix, String name) {
 		char[] chars = name.toCharArray();
@@ -66,12 +60,14 @@ public abstract class PropertyDescriptorTests {
 		return new ItemMetadataAssert(property.resolveItemMetadata("test", metadataEnv));
 	}
 
-	protected void process(Class<?> target, BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> consumer)
-			throws IOException {
+	protected void process(Class<?> target,
+			BiConsumer<RoundEnvironmentTester, MetadataGenerationEnvironment> consumer) {
 		TestableAnnotationProcessor<MetadataGenerationEnvironment> processor = new TestableAnnotationProcessor<>(
 				consumer, new MetadataGenerationEnvironmentFactory());
-		TestCompiler compiler = new TestCompiler(this.tempDir);
-		compiler.getTask(target).call(processor);
+		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
+				.withSources(SourceFile.forTestClass(target));
+		compiler.compile((compiled) -> {
+		});
 	}
 
 }

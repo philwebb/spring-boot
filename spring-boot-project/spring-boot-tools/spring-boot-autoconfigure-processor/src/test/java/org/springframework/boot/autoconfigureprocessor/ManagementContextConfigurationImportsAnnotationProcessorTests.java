@@ -16,17 +16,22 @@
 
 package org.springframework.boot.autoconfigureprocessor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.aot.test.generate.compile.TestCompiler;
+import org.springframework.aot.test.generate.file.SourceFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.linesOf;
 
 /**
  * Tests for {@link ManagementContextConfigurationImportsAnnotationProcessor}.
@@ -36,35 +41,40 @@ import static org.assertj.core.api.Assertions.linesOf;
  */
 class ManagementContextConfigurationImportsAnnotationProcessorTests {
 
-	@TempDir
-	File tempDir;
-
-	private TestCompiler compiler;
-
-	@BeforeEach
-	void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.tempDir);
+	@Test
+	void annotatedClasses() throws Exception {
+		compile(Arrays.asList(TestManagementContextConfigurationTwo.class, TestManagementContextConfigurationOne.class),
+				(classes) -> {
+					assertThat(classes).hasSize(2);
+					assertThat(classes).containsExactly(
+							"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationOne",
+							"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationTwo");
+				});
 	}
 
 	@Test
-	void annotatedClasses() {
-		File generatedFile = generateAnnotatedClasses(TestManagementContextConfigurationTwo.class,
-				TestManagementContextConfigurationOne.class);
-		assertThat(generatedFile).exists().isFile();
-		assertThat(linesOf(generatedFile)).containsExactly(
-				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationOne",
-				"org.springframework.boot.autoconfigureprocessor.TestManagementContextConfigurationTwo");
+	void notAnnotatedClasses() throws Exception {
+		compile(Collections.singletonList(TestAutoConfigurationConfiguration.class),
+				(classes) -> assertThat(classes).isNull());
 	}
 
-	@Test
-	void notAnnotatedClasses() {
-		assertThat(generateAnnotatedClasses(TestAutoConfigurationImportsAnnotationProcessor.class)).doesNotExist();
-	}
-
-	private File generateAnnotatedClasses(Class<?>... types) {
+	private void compile(Collection<Class<?>> types, Consumer<List<String>> consumer) {
 		TestManagementContextConfigurationImportsAnnotationProcessor processor = new TestManagementContextConfigurationImportsAnnotationProcessor();
-		this.compiler.getTask(types).call(processor);
-		return new File(this.tempDir, processor.getImportsFilePath());
+		List<SourceFile> sources = types.stream().map(SourceFile::forTestClass).toList();
+		org.springframework.aot.test.generate.compile.TestCompiler compiler = TestCompiler.forSystem()
+				.withProcessors(processor).withSources(sources);
+		compiler.compile((compiled) -> {
+			InputStream importsFile = compiled.getClassLoader().getResourceAsStream(processor.getImportsFilePath());
+			consumer.accept(getWrittenImports(importsFile));
+		});
+	}
+
+	private List<String> getWrittenImports(InputStream inputStream) {
+		if (inputStream == null) {
+			return null;
+		}
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+		return reader.lines().collect(Collectors.toList());
 	}
 
 }

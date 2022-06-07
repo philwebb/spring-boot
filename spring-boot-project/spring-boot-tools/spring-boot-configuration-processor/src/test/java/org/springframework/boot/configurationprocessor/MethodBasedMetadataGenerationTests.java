@@ -65,7 +65,7 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 	@Test
 	void privateMethodConfig() {
 		ConfigurationMetadata metadata = compile(PrivateMethodConfig.class);
-		assertThat(metadata).doesNotHave(Metadata.withGroup("foo"));
+		assertThat(metadata).isNull();
 	}
 
 	@Test
