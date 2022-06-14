@@ -65,6 +65,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -487,34 +488,37 @@ class BatchAutoConfigurationTests {
 	@EnableBatchProcessing
 	static class NamedJobConfigurationWithRegisteredJob {
 
-		@Autowired
-		private JobRepository jobRepository;
-
 		@Bean
-		BeanPostProcessor registryProcessor() {
-			return getBeanPostProcessor();
+		static BeanPostProcessor registryProcessor(ApplicationContext applicationContext) {
+			return new NamedJobJobRegistryBeanPostProcessor(applicationContext);
 		}
 
-		private BeanPostProcessor getBeanPostProcessor() {
-			return new BeanPostProcessor() {
-				@Override
-				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-					if (bean instanceof JobRegistry) {
-						JobRegistry registry = (JobRegistry) bean;
-						try {
-							registry.register(getJobFactory());
-						}
-						catch (DuplicateJobException ex) {
+	}
 
-						}
-					}
-					return bean;
+	static class NamedJobJobRegistryBeanPostProcessor implements BeanPostProcessor {
+
+		private final ApplicationContext applicationContext;
+
+		NamedJobJobRegistryBeanPostProcessor(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof JobRegistry jobRegistry) {
+				try {
+					jobRegistry.register(getJobFactory());
 				}
-			};
+				catch (DuplicateJobException ex) {
+				}
+			}
+			return bean;
 		}
 
 		private JobFactory getJobFactory() {
+			JobRepository jobRepository = this.applicationContext.getBean(JobRepository.class);
 			return new JobFactory() {
+
 				@Override
 				public Job createJob() {
 					AbstractJob job = new AbstractJob("discreteRegisteredJob") {
@@ -533,6 +537,7 @@ class BatchAutoConfigurationTests {
 						protected void doExecute(JobExecution execution) {
 							execution.setStatus(BatchStatus.COMPLETED);
 						}
+
 					};
 					job.setJobRepository(jobRepository);
 					return job;
@@ -542,6 +547,7 @@ class BatchAutoConfigurationTests {
 				public String getJobName() {
 					return "discreteRegisteredJob";
 				}
+
 			};
 		}
 
