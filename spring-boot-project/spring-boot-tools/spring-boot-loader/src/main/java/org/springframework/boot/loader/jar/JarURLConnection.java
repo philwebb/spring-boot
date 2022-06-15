@@ -18,6 +18,7 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -165,7 +166,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
 		}
-		return inputStream;
+		return new ConnectionInputStream(inputStream);
 	}
 
 	private void throwFileNotFound(Object entry, AbstractJarFile jarFile) throws FileNotFoundException {
@@ -288,6 +289,19 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return NOT_FOUND_CONNECTION;
 		}
 		return new JarURLConnection(null, jarFile, jarEntryName);
+	}
+
+	private class ConnectionInputStream extends FilterInputStream {
+
+		ConnectionInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+			JarURLConnection.this.jarFile.close();
+		}
+
 	}
 
 	/**
