@@ -24,7 +24,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
@@ -303,31 +302,38 @@ public final class PropertyMapper {
 		 * @throws NoSuchElementException if the value has been filtered
 		 */
 		public <R> R toInstance(Function<T, R> factory) {
-			return toInstance(factory, true);
-		}
-
-		/**
-		 * Complete the mapping by creating a new instance from the non-filtered value.
-		 * @param <R> the resulting type
-		 * @param factory the factory used to create the instance
-		 * @param failIfFiltered whether to throw exception or return {@code null} if the
-		 * value has been filtered
-		 * @return the instance or {@code null} if the value has been filtered and
-		 * {@code failIfFiltered} is {@code false}
-		 * @throws NoSuchElementException if the value has been filtered and
-		 * {@code failIfFiltered} is {@code true}
-		 */
-		@Nullable
-		public <R> R toInstance(Function<T, R> factory, boolean failIfFiltered) {
 			Assert.notNull(factory, "Factory must not be null");
 			T value = this.supplier.get();
 			if (!this.predicate.test(value)) {
-				if (failIfFiltered) {
-					throw new NoSuchElementException("No value present");
-				}
-				return null;
+				throw new NoSuchElementException("No value present");
 			}
 			return factory.apply(value);
+		}
+
+		/**
+		 * Complete the mapping by returning an {@link Optional} of the non-filtered
+		 * value. {@link Optional#empty()} will be returned for filtered values.
+		 * @return the optional value
+		 * @see #toOptional(Function)
+		 * @since 3.0.0
+		 */
+		public Optional<T> toOptional() {
+			return Optional.ofNullable(this.supplier.get()).filter(this.predicate);
+		}
+
+		/**
+		 * Complete the mapping by returning an {@link Optional} of the non-filtered
+		 * value, applying the given mapping function. {@link Optional#empty()} will be
+		 * returned for filtered values.
+		 * @param <R> the result type
+		 * @param mapper a mapping function to apply to the result
+		 * @return the optional value
+		 * @see #toOptional(Function)
+		 * @since 3.0.0
+		 */
+		public <R> Optional<R> toOptional(Function<T, R> mapper) {
+			Assert.notNull(mapper, "Factory must not be null");
+			return toOptional().map(mapper);
 		}
 
 		/**

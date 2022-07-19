@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
@@ -209,21 +210,33 @@ class PropertyMapperTests {
 	}
 
 	@Test
-	void toInstanceWithoutFailFlagWithNonFilteredValueShouldReturnFactoryValue() {
-		String result = this.map.from("123").whenEqualTo("123").toInstance(String::new, false);
-		assertThat(result).isEqualTo("123");
+	void toOptionalWhenNonFilteredReturnsValue() {
+		Optional<String> result = this.map.from("123").whenEqualTo("123").toOptional();
+		assertThat(result).isNotEmpty().hasValue("123");
 	}
 
 	@Test
-	void toInstanceWithoutFailFlagWithNonFilteredValueShouldTolerateNullFactoryValue() {
-		String result = this.map.from("123").whenEqualTo("123").toInstance((s) -> null, false);
-		assertThat(result).isNull();
+	void toOptionalWhenFilteredReturnsEmpty() {
+		Optional<String> result = this.map.from("123").whenEqualTo("foo").toOptional();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
-	void toInstanceWithoutFailFlagWithFilteredValueShouldReturnNull() {
-		String result = this.map.from("123").whenEqualTo("foo").toInstance(String::new, false);
-		assertThat(result).isNull();
+	void toOptionalWithFactoryWhenNonFilteredReturnsValue() {
+		Optional<String> result = this.map.from("123").whenEqualTo("123").toOptional(String::new);
+		assertThat(result).isNotEmpty().hasValue("123");
+	}
+
+	@Test
+	void toOptionaWithFactoryWhenNonFilteredAndNullFactoryResultReturnsEmpty() {
+		Optional<String> result = this.map.from("123").whenEqualTo("123").toOptional((s) -> null);
+		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void toOptionalWithFactoryWhenFilteredReturnsEmpty() {
+		Optional<String> result = this.map.from("123").whenEqualTo("foo").toOptional(String::new);
+		assertThat(result).isEmpty();
 	}
 
 	static class Count<T> implements Supplier<T> {
