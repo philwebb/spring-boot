@@ -16,11 +16,17 @@
 
 package org.springframework.boot.actuate.env;
 
+import java.util.Set;
+
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
+import org.springframework.lang.Nullable;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link EnvironmentEndpoint}.
@@ -34,13 +40,27 @@ public class EnvironmentEndpointWebExtension {
 
 	private final EnvironmentEndpoint delegate;
 
-	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate) {
+	private final Show showValues;
+
+	private final Set<String> roles;
+
+	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate, Show showValues, Set<String> roles) {
 		this.delegate = delegate;
+		this.showValues = showValues;
+		this.roles = roles;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(@Selector String toMatch) {
-		EnvironmentEntryDescriptor descriptor = this.delegate.environmentEntry(toMatch);
+	public EnvironmentDescriptor environment(SecurityContext securityContext, @Nullable String pattern) {
+		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		return this.delegate.getEnvironmentDescriptor(pattern, showUnsanitized);
+	}
+
+	@ReadOperation
+	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(SecurityContext securityContext,
+			@Selector String toMatch) {
+		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		EnvironmentEntryDescriptor descriptor = this.delegate.getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
 		return (descriptor.getProperty() != null) ? new WebEndpointResponse<>(descriptor, WebEndpointResponse.STATUS_OK)
 				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}

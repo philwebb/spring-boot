@@ -51,6 +51,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.OperableTrigger;
 
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -456,12 +457,12 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 		@Bean
 		QuartzEndpoint endpoint(Scheduler scheduler) {
-			return new QuartzEndpoint(scheduler);
+			return new QuartzEndpoint(scheduler, Collections.emptyList());
 		}
 
 		@Bean
 		QuartzEndpointWebExtension endpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint);
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
 		}
 
 	}
