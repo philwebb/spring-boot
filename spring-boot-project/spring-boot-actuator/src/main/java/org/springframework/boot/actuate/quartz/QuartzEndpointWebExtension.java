@@ -74,7 +74,7 @@ public class QuartzEndpointWebExtension {
 	@ReadOperation
 	public WebEndpointResponse<Object> quartzJobOrTrigger(SecurityContext securityContext,
 			@Selector String jobsOrTriggers, @Selector String group, @Selector String name) throws SchedulerException {
-		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name, showUnsanitized),
 				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,15 +52,16 @@ public class EnvironmentEndpointWebExtension {
 
 	@ReadOperation
 	public EnvironmentDescriptor environment(SecurityContext securityContext, @Nullable String pattern) {
-		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
 	@ReadOperation
 	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(SecurityContext securityContext,
 			@Selector String toMatch) {
-		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
-		EnvironmentEntryDescriptor descriptor = this.delegate.getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
+		EnvironmentEntryDescriptor descriptor = this.delegate.getEnvironmentEntryDescriptor(toMatch,
+				showUnsanitized);
 		return (descriptor.getProperty() != null) ? new WebEndpointResponse<>(descriptor, WebEndpointResponse.STATUS_OK)
 				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}

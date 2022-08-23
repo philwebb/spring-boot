@@ -78,15 +78,13 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	@Override
 	public boolean showComponents(SecurityContext securityContext) {
-		if (this.showComponents == null) {
-			return this.showDetails.getResult(securityContext, this.roles);
-		}
-		return this.showComponents.getResult(securityContext, this.roles);
+		Show show = (this.showComponents != null) ? this.showComponents : this.showDetails;
+		return show.isShown(securityContext, this.roles);
 	}
 
 	@Override
 	public boolean showDetails(SecurityContext securityContext) {
-		return this.showDetails.getResult(securityContext, this.roles);
+		return this.showDetails.isShown(securityContext, this.roles);
 	}
 
 	@Override

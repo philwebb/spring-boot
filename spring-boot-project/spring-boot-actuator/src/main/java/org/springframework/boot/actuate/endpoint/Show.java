@@ -19,14 +19,13 @@ package org.springframework.boot.actuate.endpoint;
 import java.security.Principal;
 import java.util.Collection;
 
-import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Options for showing items in responses from the {@link HealthEndpoint} web extensions.
+ * Options for showing data in endpoint responses.
  *
  * @author Madhura Bhave
  * @since 3.0.0
@@ -48,11 +47,30 @@ public enum Show {
 	 */
 	ALWAYS;
 
-	public boolean getResult(SecurityContext securityContext, Collection<String> roles) {
+	/**
+	 * Return if data should be shown when no {@link SecurityContext} is available.
+	 * @param unauthorizedResult the result to used for an unauthorized user
+	 * @return if data should be shown
+	 */
+	public boolean isShown(boolean unauthorizedResult) {
 		return switch (this) {
-			case NEVER -> false;
-			case ALWAYS -> true;
-			case WHEN_AUTHORIZED -> isAuthorized(securityContext, roles);
+		case NEVER -> false;
+		case ALWAYS -> true;
+		case WHEN_AUTHORIZED -> unauthorizedResult;
+		};
+	}
+
+	/**
+	 * Return if data should be shown.
+	 * @param securityContext the security context
+	 * @param roles the required roles
+	 * @return if data should be shown
+	 */
+	public boolean isShown(SecurityContext securityContext, Collection<String> roles) {
+		return switch (this) {
+		case NEVER -> false;
+		case ALWAYS -> true;
+		case WHEN_AUTHORIZED -> isAuthorized(securityContext, roles);
 		};
 	}
 

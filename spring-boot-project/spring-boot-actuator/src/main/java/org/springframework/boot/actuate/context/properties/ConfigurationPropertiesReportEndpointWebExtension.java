@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,14 +51,14 @@ public class ConfigurationPropertiesReportEndpointWebExtension {
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties(SecurityContext securityContext) {
-		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getConfigurationProperties(showUnsanitized);
 	}
 
 	@ReadOperation
 	public WebEndpointResponse<ApplicationConfigurationProperties> configurationPropertiesWithPrefix(
 			SecurityContext securityContext, @Selector String prefix) {
-		boolean showUnsanitized = this.showValues.getResult(securityContext, this.roles);
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		ApplicationConfigurationProperties configurationProperties = this.delegate.getConfigurationProperties(prefix,
 				showUnsanitized);
 		boolean foundMatchingBeans = configurationProperties.getContexts().values().stream()

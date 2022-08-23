@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.quartz;
 
-import java.util.stream.Collectors;
-
 import org.quartz.Scheduler;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -52,7 +50,7 @@ public class QuartzEndpointAutoConfiguration {
 	@ConditionalOnBean(Scheduler.class)
 	@ConditionalOnMissingBean
 	public QuartzEndpoint quartzEndpoint(Scheduler scheduler, ObjectProvider<SanitizingFunction> sanitizingFunctions) {
-		return new QuartzEndpoint(scheduler, sanitizingFunctions.orderedStream().collect(Collectors.toList()));
+		return new QuartzEndpoint(scheduler, sanitizingFunctions.orderedStream().toList());
 	}
 
 	@Bean

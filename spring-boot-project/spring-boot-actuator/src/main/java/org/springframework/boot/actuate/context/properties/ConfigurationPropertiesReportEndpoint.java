@@ -123,7 +123,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties() {
-		boolean showUnsanitized = !this.showValues.equals(Show.NEVER);
+		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(showUnsanitized);
 	}
 
@@ -133,7 +133,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationPropertiesWithPrefix(@Selector String prefix) {
-		boolean showUnsanitized = !this.showValues.equals(Show.NEVER);
+		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(prefix, showUnsanitized);
 	}
 

@@ -680,25 +680,6 @@ class QuartzEndpointTests {
 				entry("url", "******"));
 	}
 
-	// @Test
-	// void quartzJobWithSensitiveDataMapAndCustomSanitizer() throws SchedulerException {
-	// JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello",
-	// "samples").usingJobData("test", "value")
-	// .usingJobData("secret", "value").build();
-	// mockJobs(job);
-	// Sanitizer sanitizer = mock(Sanitizer.class);
-	// given(sanitizer.sanitize("test", "value")).willReturn("value");
-	// given(sanitizer.sanitize("secret", "value")).willReturn("----");
-	// QuartzJobDetails jobDetails = new QuartzEndpoint(this.scheduler,
-	// sanitizer).quartzJob("samples", "hello");
-	// assertThat(jobDetails.getData()).containsOnly(entry("test", "value"),
-	// entry("secret",
-	// "----"));
-	// then(sanitizer).should().sanitize("test", "value");
-	// then(sanitizer).should().sanitize("secret", "value");
-	// then(sanitizer).shouldHaveNoMoreInteractions();
-	// }
-
 	private void mockJobs(JobDetail... jobs) throws SchedulerException {
 		MultiValueMap<String, JobKey> jobKeys = new LinkedMultiValueMap<>();
 		for (JobDetail jobDetail : jobs) {

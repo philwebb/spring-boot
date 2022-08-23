@@ -80,7 +80,7 @@ public class EnvironmentEndpoint {
 
 	@ReadOperation
 	public EnvironmentDescriptor environment(@Nullable String pattern) {
-		boolean showUnsanitized = !this.showValues.equals(Show.NEVER);
+		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
@@ -105,7 +105,7 @@ public class EnvironmentEndpoint {
 
 	@ReadOperation
 	public EnvironmentEntryDescriptor environmentEntry(@Selector String toMatch) {
-		boolean showUnsanitized = !this.showValues.equals(Show.NEVER);
+		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
 	}
 
