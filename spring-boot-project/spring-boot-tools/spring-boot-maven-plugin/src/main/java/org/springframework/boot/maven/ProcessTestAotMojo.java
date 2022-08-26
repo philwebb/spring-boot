@@ -17,84 +17,64 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.nio.file.Paths;
 import java.util.Map;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.ToolchainManager;
-
-import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Invoke the AOT engine on tests.
  *
  * @author Phillip Webb
+ * @since 3.0.0
  */
-@Mojo(name = "process-test-aot", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, threadSafe = true,
-		requiresDependencyResolution = ResolutionScope.TEST, requiresDependencyCollection = ResolutionScope.TEST)
+// @Mojo(name = "process-test-aot", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES,
+// threadSafe = true,
+// requiresDependencyResolution = ResolutionScope.TEST, requiresDependencyCollection =
+// ResolutionScope.TEST)
 public class ProcessTestAotMojo extends AbstractAotMojo {
-
-	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
 
 	/**
 	 * The current Maven session. This is used for toolchain manager API calls.
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true)
-	private MavenSession session;
+	private MavenSession session; // FIXME pull up?
 
 	/**
 	 * The toolchain manager to use to locate a custom JDK.
 	 */
 	@Component
-	private ToolchainManager toolchainManager;
+	private ToolchainManager toolchainManager; // FIXME pull up?
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
 	 * the archive.
 	 */
-	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
 	private File classesDirectory;
 
 	/**
 	 * Directory containing the generated sources.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/sources", required = true)
+	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/sources", required = true)
 	private File generatedSources;
 
 	/**
 	 * Directory containing the generated resources.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/resources", required = true)
+	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/resources", required = true)
 	private File generatedResources;
 
 	/**
 	 * Directory containing the generated classes.
 	 */
-	@Parameter(defaultValue = "${project.build.directory}/spring-aot/main/classes", required = true)
+	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/classes", required = true)
 	private File generatedClasses;
 
 	/**
@@ -110,125 +90,27 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	@Parameter(property = "spring-boot.aot.jvmArguments")
 	private String jvmArguments;
 
-	/**
-	 * Name of the main class to use as the source for the AOT process. If not specified
-	 * the first compiled class found that contains a 'main' method will be used.
-	 */
-	@Parameter(property = "spring-boot.aot.main-class")
-	private String mainClass;
-
-	/**
-	 * Spring profiles to take into account for AOT processing.
-	 */
-	@Parameter
-	private String[] profiles;
-
 	@Override
-	protected void executeAot() throws MojoExecutionException, IOException {
-		generateAotAssets();
-		compileSourceFiles();
-		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
-				this.classesDirectory.toPath().resolve("META-INF/native-image"));
-		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
-	}
-
-	private void generateAotAssets() throws MojoExecutionException {
-		String applicationClass = (this.mainClass != null) ? this.mainClass
-				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
-		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
-				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPathUrls())
-				.withArguments(getAotArguments(applicationClass)).build();
-		if (getLog().isDebugEnabled()) {
-			getLog().debug("Generating AOT assets using command: " + command);
-		}
-		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
-		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
-	}
-
-	private String[] getAotArguments(String applicationClass) {
-		List<String> aotArguments = new ArrayList<>();
-		aotArguments.add(applicationClass);
-		aotArguments.add(this.generatedSources.toString());
-		aotArguments.add(this.generatedResources.toString());
-		aotArguments.add(this.generatedClasses.toString());
-		aotArguments.add(this.project.getGroupId());
-		aotArguments.add(this.project.getArtifactId());
-		if (!ObjectUtils.isEmpty(this.profiles)) {
-			aotArguments.add("--spring.profiles.active=" + String.join(",", this.profiles));
-		}
-		return aotArguments.toArray(String[]::new);
-	}
-
-	private URL[] getClassPathUrls() throws MojoExecutionException {
-		List<URL> urls = new ArrayList<>();
-		urls.add(toURL(this.classesDirectory));
-		urls.addAll(getDependencyURLs(new TestScopeArtifactFilter()));
-		return urls.toArray(URL[]::new);
-	}
-
-	private void compileSourceFiles() throws IOException, MojoExecutionException {
-		List<Path> sourceFiles = Files.walk(this.generatedSources.toPath()).filter(Files::isRegularFile).toList();
-		if (sourceFiles.isEmpty()) {
+	protected void executeAot() throws Exception {
+		if (Boolean.getBoolean("skipTests") || Boolean.getBoolean("maven.test.skip")) {
+			getLog().info("Skipping AOT test processing since tests are skipped");
 			return;
 		}
-		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		try (StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null)) {
-			List<String> options = new ArrayList<>();
-			options.add("-cp");
-			options.add(ClasspathBuilder.build(Arrays.asList(getClassPathUrls())));
-			options.add("-d");
-			options.add(this.classesDirectory.toPath().toAbsolutePath().toString());
-			Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromPaths(sourceFiles);
-			Errors errors = new Errors();
-			CompilationTask task = compiler.getTask(null, fm, errors, options, null, compilationUnits);
-			boolean result = task.call();
-			if (!result || errors.hasReportedErrors()) {
-				throw new IllegalStateException("Unable to compile generated source" + errors);
-			}
+		Path testOutputDirectory = Paths.get(this.project.getBuild().getTestOutputDirectory());
+		if (Files.notExists(testOutputDirectory)) {
+			getLog().info("Skipping AOT test processing since no tests have been detected");
+			return;
 		}
+		generateAotAssets();
+		compileSourceFiles(this.generatedSources, this.classesDirectory);
 	}
 
-	private void copyAll(Path from, Path to) throws IOException {
-		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
-				: Collections.emptyList();
-		for (Path file : files) {
-			String relativeFileName = file.subpath(from.getNameCount(), file.getNameCount()).toString();
-			getLog().debug("Copying '" + relativeFileName + "' to " + to);
-			Path target = to.resolve(relativeFileName);
-			Files.createDirectories(target.getParent());
-			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
-		}
+	private void generateAotAssets() {
 	}
 
-	/**
-	 * {@link DiagnosticListener} used to collect errors.
-	 */
-	static class Errors implements DiagnosticListener<JavaFileObject> {
-
-		private final StringBuilder message = new StringBuilder();
-
-		@Override
-		public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
-			if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
-				this.message.append("\n");
-				this.message.append(diagnostic.getMessage(Locale.getDefault()));
-				this.message.append(" ");
-				this.message.append(diagnostic.getSource().getName());
-				this.message.append(" ");
-				this.message.append(diagnostic.getLineNumber()).append(":").append(diagnostic.getColumnNumber());
-			}
-		}
-
-		boolean hasReportedErrors() {
-			return this.message.length() > 0;
-		}
-
-		@Override
-		public String toString() {
-			return this.message.toString();
-		}
-
+	@Override
+	protected URL[] getClassPath() throws Exception {
+		return getClassPath(this.classesDirectory);
 	}
 
 }

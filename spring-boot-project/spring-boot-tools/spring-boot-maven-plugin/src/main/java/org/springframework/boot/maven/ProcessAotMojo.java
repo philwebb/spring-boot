@@ -23,22 +23,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -46,7 +35,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.ToolchainManager;
 
-import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -129,24 +117,29 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	@Override
 	protected void executeAot() throws Exception {
 		generateAotAssets();
-		compileSourceFiles();
+		compileSourceFiles(this.generatedSources, this.classesDirectory);
 		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
 				this.classesDirectory.toPath().resolve("META-INF/native-image"));
 		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
 	}
 
-	private void generateAotAssets() throws MojoExecutionException {
+	private void generateAotAssets() throws Exception {
 		String applicationClass = (this.mainClass != null) ? this.mainClass
 				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
 		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
 				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPathUrls())
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPath())
 				.withArguments(getAotArguments(applicationClass)).build();
 		if (getLog().isDebugEnabled()) {
 			getLog().debug("Generating AOT assets using command: " + command);
 		}
 		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
 		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
+	}
+
+	@Override
+	protected URL[] getClassPath() throws Exception {
+		return getClassPath(this.classesDirectory, new TestScopeArtifactFilter());
 	}
 
 	private String[] getAotArguments(String applicationClass) {
@@ -163,35 +156,6 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		return aotArguments.toArray(String[]::new);
 	}
 
-	private URL[] getClassPathUrls() throws MojoExecutionException {
-		List<URL> urls = new ArrayList<>();
-		urls.add(toURL(this.classesDirectory));
-		urls.addAll(getDependencyURLs(new TestScopeArtifactFilter()));
-		return urls.toArray(URL[]::new);
-	}
-
-	private void compileSourceFiles() throws IOException, MojoExecutionException {
-		List<Path> sourceFiles = Files.walk(this.generatedSources.toPath()).filter(Files::isRegularFile).toList();
-		if (sourceFiles.isEmpty()) {
-			return;
-		}
-		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		try (StandardJavaFileManager fm = compiler.getStandardFileManager(null, null, null)) {
-			List<String> options = new ArrayList<>();
-			options.add("-cp");
-			options.add(ClasspathBuilder.build(Arrays.asList(getClassPathUrls())));
-			options.add("-d");
-			options.add(this.classesDirectory.toPath().toAbsolutePath().toString());
-			Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromPaths(sourceFiles);
-			Errors errors = new Errors();
-			CompilationTask task = compiler.getTask(null, fm, errors, options, null, compilationUnits);
-			boolean result = task.call();
-			if (!result || errors.hasReportedErrors()) {
-				throw new IllegalStateException("Unable to compile generated source" + errors);
-			}
-		}
-	}
-
 	private void copyAll(Path from, Path to) throws IOException {
 		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
 				: Collections.emptyList();
@@ -202,36 +166,6 @@ public class ProcessAotMojo extends AbstractAotMojo {
 			Files.createDirectories(target.getParent());
 			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
 		}
-	}
-
-	/**
-	 * {@link DiagnosticListener} used to collect errors.
-	 */
-	static class Errors implements DiagnosticListener<JavaFileObject> {
-
-		private final StringBuilder message = new StringBuilder();
-
-		@Override
-		public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
-			if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
-				this.message.append("\n");
-				this.message.append(diagnostic.getMessage(Locale.getDefault()));
-				this.message.append(" ");
-				this.message.append(diagnostic.getSource().getName());
-				this.message.append(" ");
-				this.message.append(diagnostic.getLineNumber()).append(":").append(diagnostic.getColumnNumber());
-			}
-		}
-
-		boolean hasReportedErrors() {
-			return this.message.length() > 0;
-		}
-
-		@Override
-		public String toString() {
-			return this.message.toString();
-		}
-
 	}
 
 }
