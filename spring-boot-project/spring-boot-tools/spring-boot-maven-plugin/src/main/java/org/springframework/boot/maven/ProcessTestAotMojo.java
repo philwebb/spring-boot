@@ -50,16 +50,13 @@ import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Invoke the AOT engine on the application.
+ * Invoke the AOT engine on tests.
  *
- * @author Stephane Nicoll
- * @author Andy Wilkinson
- * @since 3.0.0
+ * @author Phillip Webb
  */
-@Mojo(name = "process-aot", defaultPhase = LifecyclePhase.PREPARE_PACKAGE, threadSafe = true,
-		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class ProcessAotMojo extends AbstractAotMojo {
+@Mojo(name = "process-test-aot", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, threadSafe = true,
+		requiresDependencyResolution = ResolutionScope.TEST, requiresDependencyCollection = ResolutionScope.TEST)
+public class ProcessTestAotMojo extends AbstractAotMojo {
 
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
 
@@ -127,7 +124,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	private String[] profiles;
 
 	@Override
-	protected void executeAot() throws Exception {
+	protected void executeAot() throws MojoExecutionException, IOException {
 		generateAotAssets();
 		compileSourceFiles();
 		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
