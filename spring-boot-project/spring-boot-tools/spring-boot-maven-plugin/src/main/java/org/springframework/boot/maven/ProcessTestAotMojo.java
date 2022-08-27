@@ -21,11 +21,17 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.ToolchainManager;
 
 /**
@@ -34,11 +40,11 @@ import org.apache.maven.toolchain.ToolchainManager;
  * @author Phillip Webb
  * @since 3.0.0
  */
-// @Mojo(name = "process-test-aot", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES,
-// threadSafe = true,
-// requiresDependencyResolution = ResolutionScope.TEST, requiresDependencyCollection =
-// ResolutionScope.TEST)
+@Mojo(name = "process-test-aot", defaultPhase = LifecyclePhase.PROCESS_TEST_CLASSES, threadSafe = true,
+		requiresDependencyResolution = ResolutionScope.TEST, requiresDependencyCollection = ResolutionScope.TEST)
 public class ProcessTestAotMojo extends AbstractAotMojo {
+
+	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.test.context.aot.TestAotProcessor";
 
 	/**
 	 * The current Maven session. This is used for toolchain manager API calls.
@@ -105,7 +111,27 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		compileSourceFiles(this.generatedSources, this.classesDirectory);
 	}
 
-	private void generateAotAssets() {
+	private void generateAotAssets() throws Exception {
+		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
+				.withSystemProperties(this.systemPropertyVariables)
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPath())
+				.withArguments(getAotArguments()).build();
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Generating AOT assets using command: " + command);
+		}
+		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
+		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
+	}
+
+	private String[] getAotArguments() {
+		List<String> aotArguments = new ArrayList<>();
+		aotArguments.add(this.classesDirectory.toPath().toAbsolutePath().normalize().toString());
+		aotArguments.add(this.generatedSources.toString());
+		aotArguments.add(this.generatedResources.toString());
+		aotArguments.add(this.generatedClasses.toString());
+		aotArguments.add(this.project.getGroupId());
+		aotArguments.add(this.project.getArtifactId());
+		return aotArguments.toArray(String[]::new);
 	}
 
 	@Override
