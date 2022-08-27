@@ -17,13 +17,17 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -33,10 +37,13 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
+import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 
@@ -49,10 +56,35 @@ import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 
 	/**
+	 * The current Maven session. This is used for toolchain manager API calls.
+	 */
+	@Parameter(defaultValue = "${session}", readonly = true)
+	private MavenSession session;
+
+	/**
+	 * The toolchain manager to use to locate a custom JDK.
+	 */
+	@Component
+	private ToolchainManager toolchainManager;
+
+	/**
 	 * Skip the execution.
 	 */
 	@Parameter(property = "spring-boot.aot.skip", defaultValue = "false")
 	private boolean skip;
+
+	/**
+	 * List of JVM system properties to pass to the AOT process.
+	 */
+	@Parameter
+	private Map<String, String> systemPropertyVariables;
+
+	/**
+	 * JVM arguments that should be associated with the AOT process. On command line, make
+	 * sure to wrap multiple values between quotes.
+	 */
+	@Parameter(property = "spring-boot.aot.jvmArguments")
+	private String jvmArguments;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -69,6 +101,18 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	}
 
 	protected abstract void executeAot() throws Exception;
+
+	protected void generateAotAssets(String processorClassName, String... arguments) throws Exception {
+		List<String> command = CommandLineBuilder.forMainClass(processorClassName)
+				.withSystemProperties(this.systemPropertyVariables)
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPath())
+				.withArguments(arguments).build();
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Generating AOT assets using command: " + command);
+		}
+		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
+		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
+	}
 
 	protected final void compileSourceFiles(File sourcesDirectory, File outputDirectory) throws Exception {
 		List<Path> sourceFiles = Files.walk(sourcesDirectory.toPath()).filter(Files::isRegularFile).toList();
@@ -100,6 +144,18 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		urls.add(toURL(classesDirectory));
 		urls.addAll(getDependencyURLs(artifactFilters));
 		return urls.toArray(URL[]::new);
+	}
+
+	protected final void copyAll(Path from, Path to) throws IOException {
+		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
+				: Collections.emptyList();
+		for (Path file : files) {
+			String relativeFileName = file.subpath(from.getNameCount(), file.getNameCount()).toString();
+			getLog().debug("Copying '" + relativeFileName + "' to " + to);
+			Path target = to.resolve(relativeFileName);
+			Files.createDirectories(target.getParent());
+			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
+		}
 	}
 
 	/**

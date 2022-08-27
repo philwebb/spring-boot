@@ -17,23 +17,14 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.util.ObjectUtils;
 
@@ -50,18 +41,6 @@ import org.springframework.util.ObjectUtils;
 public class ProcessAotMojo extends AbstractAotMojo {
 
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.boot.AotProcessor";
-
-	/**
-	 * The current Maven session. This is used for toolchain manager API calls.
-	 */
-	@Parameter(defaultValue = "${session}", readonly = true)
-	private MavenSession session;
-
-	/**
-	 * The toolchain manager to use to locate a custom JDK.
-	 */
-	@Component
-	private ToolchainManager toolchainManager;
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
@@ -89,19 +68,6 @@ public class ProcessAotMojo extends AbstractAotMojo {
 	private File generatedClasses;
 
 	/**
-	 * List of JVM system properties to pass to the AOT process.
-	 */
-	@Parameter
-	private Map<String, String> systemPropertyVariables;
-
-	/**
-	 * JVM arguments that should be associated with the AOT process. On command line, make
-	 * sure to wrap multiple values between quotes.
-	 */
-	@Parameter(property = "spring-boot.aot.jvmArguments")
-	private String jvmArguments;
-
-	/**
 	 * Name of the main class to use as the source for the AOT process. If not specified
 	 * the first compiled class found that contains a 'main' method will be used.
 	 */
@@ -116,30 +82,13 @@ public class ProcessAotMojo extends AbstractAotMojo {
 
 	@Override
 	protected void executeAot() throws Exception {
-		generateAotAssets();
+		String applicationClass = (this.mainClass != null) ? this.mainClass
+				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
+		generateAotAssets(AOT_PROCESSOR_CLASS_NAME, getAotArguments(applicationClass));
 		compileSourceFiles(this.generatedSources, this.classesDirectory);
 		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
 				this.classesDirectory.toPath().resolve("META-INF/native-image"));
 		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
-	}
-
-	private void generateAotAssets() throws Exception {
-		String applicationClass = (this.mainClass != null) ? this.mainClass
-				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
-		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
-				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPath())
-				.withArguments(getAotArguments(applicationClass)).build();
-		if (getLog().isDebugEnabled()) {
-			getLog().debug("Generating AOT assets using command: " + command);
-		}
-		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
-		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
-	}
-
-	@Override
-	protected URL[] getClassPath() throws Exception {
-		return getClassPath(this.classesDirectory, new TestScopeArtifactFilter());
 	}
 
 	private String[] getAotArguments(String applicationClass) {
@@ -156,16 +105,9 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		return aotArguments.toArray(String[]::new);
 	}
 
-	private void copyAll(Path from, Path to) throws IOException {
-		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
-				: Collections.emptyList();
-		for (Path file : files) {
-			String relativeFileName = file.subpath(from.getNameCount(), file.getNameCount()).toString();
-			getLog().debug("Copying '" + relativeFileName + "' to " + to);
-			Path target = to.resolve(relativeFileName);
-			Files.createDirectories(target.getParent());
-			Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
-		}
+	@Override
+	protected URL[] getClassPath() throws Exception {
+		return getClassPath(this.classesDirectory, new TestScopeArtifactFilter());
 	}
 
 }

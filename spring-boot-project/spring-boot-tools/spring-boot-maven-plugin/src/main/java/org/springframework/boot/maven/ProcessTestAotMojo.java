@@ -22,17 +22,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.toolchain.ToolchainManager;
 
 /**
  * Invoke the AOT engine on tests.
@@ -45,18 +40,6 @@ import org.apache.maven.toolchain.ToolchainManager;
 public class ProcessTestAotMojo extends AbstractAotMojo {
 
 	private static final String AOT_PROCESSOR_CLASS_NAME = "org.springframework.test.context.aot.TestAotProcessor";
-
-	/**
-	 * The current Maven session. This is used for toolchain manager API calls.
-	 */
-	@Parameter(defaultValue = "${session}", readonly = true)
-	private MavenSession session; // FIXME pull up?
-
-	/**
-	 * The toolchain manager to use to locate a custom JDK.
-	 */
-	@Component
-	private ToolchainManager toolchainManager; // FIXME pull up?
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
@@ -83,19 +66,6 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 	@Parameter(defaultValue = "${project.build.directory}/spring-aot/test/classes", required = true)
 	private File generatedClasses;
 
-	/**
-	 * List of JVM system properties to pass to the AOT process.
-	 */
-	@Parameter
-	private Map<String, String> systemPropertyVariables;
-
-	/**
-	 * JVM arguments that should be associated with the AOT process. On command line, make
-	 * sure to wrap multiple values between quotes.
-	 */
-	@Parameter(property = "spring-boot.aot.jvmArguments")
-	private String jvmArguments;
-
 	@Override
 	protected void executeAot() throws Exception {
 		if (Boolean.getBoolean("skipTests") || Boolean.getBoolean("maven.test.skip")) {
@@ -107,20 +77,8 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 			getLog().info("Skipping AOT test processing since no tests have been detected");
 			return;
 		}
-		generateAotAssets();
+		generateAotAssets(AOT_PROCESSOR_CLASS_NAME, getAotArguments());
 		compileSourceFiles(this.generatedSources, this.classesDirectory);
-	}
-
-	private void generateAotAssets() throws Exception {
-		List<String> command = CommandLineBuilder.forMainClass(AOT_PROCESSOR_CLASS_NAME)
-				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(getClassPath())
-				.withArguments(getAotArguments()).build();
-		if (getLog().isDebugEnabled()) {
-			getLog().debug("Generating AOT assets using command: " + command);
-		}
-		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
-		processExecutor.run(this.project.getBasedir(), command, Collections.emptyMap());
 	}
 
 	private String[] getAotArguments() {
