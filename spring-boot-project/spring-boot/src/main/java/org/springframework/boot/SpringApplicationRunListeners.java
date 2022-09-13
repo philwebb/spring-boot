@@ -17,8 +17,6 @@
 package org.springframework.boot;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -45,10 +43,10 @@ class SpringApplicationRunListeners {
 
 	private final ApplicationStartup applicationStartup;
 
-	SpringApplicationRunListeners(Log log, Collection<? extends SpringApplicationRunListener> listeners,
+	SpringApplicationRunListeners(Log log, List<SpringApplicationRunListener> listeners,
 			ApplicationStartup applicationStartup) {
 		this.log = log;
-		this.listeners = new ArrayList<>(listeners);
+		this.listeners = List.copyOf(listeners);
 		this.applicationStartup = applicationStartup;
 	}
 
