@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.test.generate.TestGenerationContext;
-import org.springframework.aot.test.generate.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generate.compile.CompileWithForkedClassLoader;
 import org.springframework.aot.test.generate.compile.TestCompiler;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
@@ -90,7 +90,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	}
 
 	@Test
-	@CompileWithTargetClassAccess
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsValueObject() {
 		compile(createContext(ValueObjectSampleBeanConfiguration.class), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
@@ -101,7 +101,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	}
 
 	@Test
-	@CompileWithTargetClassAccess
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsJavaBean() {
 		compile(createContext(JavaBeanSampleBeanConfiguration.class), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
@@ -112,7 +112,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	}
 
 	@Test
-	@CompileWithTargetClassAccess
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsScannedValueObject() {
 		compile(createContext(ScanTestConfiguration.class), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "b.first.name=Hello");
@@ -123,7 +123,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	}
 
 	@Test
-	@CompileWithTargetClassAccess
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsScannedJavaBean() {
 		compile(createContext(ScanTestConfiguration.class), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "b.second.number=42");

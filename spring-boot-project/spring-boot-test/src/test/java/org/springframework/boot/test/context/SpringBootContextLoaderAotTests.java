@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.aot.generate.InMemoryGeneratedFiles;
-import org.springframework.aot.test.generate.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generate.compile.CompileWithForkedClassLoader;
 import org.springframework.aot.test.generate.compile.TestCompiler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-@CompileWithTargetClassAccess
+@CompileWithForkedClassLoader
 class SpringBootContextLoaderAotTests {
 
 	@Test

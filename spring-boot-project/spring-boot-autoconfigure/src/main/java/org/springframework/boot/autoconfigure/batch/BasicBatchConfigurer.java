@@ -151,7 +151,7 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 		return transactionManager;
 	}
 
-	PlatformTransactionManager getTransactionManager() {
+	public PlatformTransactionManager getTransactionManager() {
 		return this.transactionManager;
 	}
 

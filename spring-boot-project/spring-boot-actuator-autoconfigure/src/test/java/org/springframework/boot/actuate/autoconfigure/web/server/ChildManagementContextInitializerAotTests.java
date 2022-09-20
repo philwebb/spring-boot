@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.aot.test.generate.TestGenerationContext;
-import org.springframework.aot.test.generate.compile.CompileWithTargetClassAccess;
+import org.springframework.aot.test.generate.compile.CompileWithForkedClassLoader;
 import org.springframework.aot.test.generate.compile.TestCompiler;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -65,7 +65,7 @@ class ChildManagementContextInitializerAotTests {
 	}
 
 	@Test
-	@CompileWithTargetClassAccess
+	@CompileWithForkedClassLoader
 	@SuppressWarnings("unchecked")
 	void aotContributedInitializerStartsManagementContext(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
