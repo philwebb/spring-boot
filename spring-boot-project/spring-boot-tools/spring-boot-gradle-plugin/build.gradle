@@ -11,6 +11,9 @@ description = "Spring Boot Gradle Plugins"
 
 configurations {
 	documentation
+	"testCompileClasspath" {
+		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
+	}
 }
 
 dependencies {
