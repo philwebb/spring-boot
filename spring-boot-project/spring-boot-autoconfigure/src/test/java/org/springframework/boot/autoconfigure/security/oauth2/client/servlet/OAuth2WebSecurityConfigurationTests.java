@@ -114,20 +114,9 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityFilterChainConfigBacksOffWhenOtherWebSecurityAdapterPresent() {
-		this.contextRunner
-				.withUserConfiguration(TestWebSecurityConfigurerConfig.class, OAuth2WebSecurityConfiguration.class)
-				.run((context) -> {
-					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
-					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
-					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
-				});
-	}
-
-	@Test
 	void securityFilterChainConfigBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner
-				.withUserConfiguration(TestSecurityFilterChainConfig.class, OAuth2WebSecurityConfiguration.class)
+				.withUserConfiguration(TestSecurityFilterChainConfiguration.class, OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
 					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
 					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
@@ -228,20 +217,12 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(ClientRegistrationRepositoryConfiguration.class)
-	@SuppressWarnings("deprecation")
-	static class TestWebSecurityConfigurerConfig
-			extends org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(ClientRegistrationRepositoryConfiguration.class)
-	static class TestSecurityFilterChainConfig {
+	static class TestSecurityFilterChainConfiguration {
 
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
-			return http.antMatcher("/**").authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-					.build();
+			return http.securityMatcher("/**")
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
 
 		}
 

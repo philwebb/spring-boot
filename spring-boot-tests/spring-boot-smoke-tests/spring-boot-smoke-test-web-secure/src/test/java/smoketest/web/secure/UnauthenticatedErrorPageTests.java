@@ -44,8 +44,8 @@ class UnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTest
 		@Bean
 		SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/error").permitAll();
-				requests.antMatchers("/public/**").permitAll();
+				requests.requestMatchers("/error").permitAll();
+				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().authenticated();
 			});
 			http.httpBasic();

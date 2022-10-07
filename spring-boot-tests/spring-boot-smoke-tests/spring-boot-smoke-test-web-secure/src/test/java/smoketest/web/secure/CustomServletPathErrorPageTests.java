@@ -45,7 +45,7 @@ class CustomServletPathErrorPageTests extends AbstractErrorPageTests {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> {
-				requests.antMatchers("/custom/servlet/path/public/**").permitAll();
+				requests.requestMatchers("/custom/servlet/path/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 				requests.shouldFilterAllDispatcherTypes(false);
 			});
