@@ -61,6 +61,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();
+			requests.shouldFilterAllDispatcherTypes(false);
 		});
 		if (ClassUtils.isPresent("org.springframework.web.servlet.DispatcherServlet", null)) {
 			http.cors();
