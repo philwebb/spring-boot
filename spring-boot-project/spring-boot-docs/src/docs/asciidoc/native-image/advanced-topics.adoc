@@ -1,0 +1,44 @@
+[[native-image.advanced]]
+== Advanced Native Images Topics
+
+
+
+[[native-image.advanced.nested-configuration-properties]]
+=== Nested Configuration Properties
+_this section of the documentation has not yet been completed_
+
+// https://github.com/spring-projects/spring-boot/issues/31708
+
+
+
+[[native-image.advanced.converting-executable-jars]]
+=== Converting a Spring Boot Executable JAR
+_this section of the documentation has not yet been completed_
+
+// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#executable-jar-to-native
+
+
+
+[[native-image.advanced.using-the-tracing-agent]]
+=== Using the Tracing Agent
+_this section of the documentation has not yet been completed_
+
+// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#tracing-agent
+
+
+
+[[native-image.advanced.debugging-source-generation]]
+=== Debugging Source Generation
+_this section of the documentation has not yet been completed_
+
+// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_debugging_the_source_generation
+
+
+
+[[native-image.advanced.known-limitations]]
+=== Known Limitations
+GraalVM Native Images are an evolving technology and not all libraries provide support.
+The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.
+
+If you encounter problems when generating native images for Spring Boot applications, please check the {github-wiki}/Known-GraalVM-Native-Image-Limitations[Known GraalVM Native Image Limitations] of the Spring Boot wiki.
+You can also contribute issues to the https://github.com/spring-projects/spring-aot-smoke-tests[spring-aot-smoke-tests] project on GitHub which is used to confirm that common application types are working as expected.

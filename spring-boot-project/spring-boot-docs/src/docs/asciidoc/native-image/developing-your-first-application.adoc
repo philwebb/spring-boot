@@ -1,0 +1,61 @@
+[[native-image.developing-your-first-application]]
+== Developing Your First GraalVM Native Application
+Now that we have a good overview of GraalVM Native Images and how Spring's ahead-of-time engine works, we can look at how to actually create them.
+
+There are two main ways to build a Spring Boot native image application:
+
+* Using Spring Boot Buildpacks support to generate a lightweight container containing a native executable.
+* Using GraalVM Native Build Tools to generate a native executable.
+
+TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io[start.spring.io], add the "`GraalVM Native Support`" dependency and generate the project.
+The included `HELP.md` file will provide getting started hints.
+
+
+
+[[native-image.developing-your-first-application.sample-application]]
+=== Sample Application
+We need an example application that we can use to create our native image.
+For our purposes, the simple "`Hello World!`" web application that's covered in the <<getting-started#getting-started.first-application>> section will suffice.
+
+To recap, our main application code looks like this:
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RestController;
+
+	@RestController
+	@EnableAutoConfiguration
+	public class MyApplication {
+
+		@RequestMapping("/")
+		String home() {
+			return "Hello World!";
+		}
+
+		public static void main(String[] args) {
+			SpringApplication.run(MyApplication.class, args);
+		}
+
+	}
+----
+
+This application uses Spring MVC and embedded Tomcat, both of which have been tested and verified to work with GraalVM native images.
+
+
+
+[[native-image.developing-your-first-application.buildpacks]]
+=== Building a Native Image Using Buildpacks
+_this section of the documentation has not yet been completed_
+
+
+
+[[native-image.developing-your-first-application.native-build-tools]]
+=== Building a Native Image using Native Build Tools
+_this section of the documentation has not yet been completed_
+
+
+
+
