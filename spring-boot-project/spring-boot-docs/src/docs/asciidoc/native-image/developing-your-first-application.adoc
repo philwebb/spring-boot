@@ -76,7 +76,7 @@ mvn spring-boot:build-image -Pnative
 ----
 
 NOTE: Currently, you need a local GraalVM installation to build an image with Maven.
-This will be solved in the future, see https://github.com/graalvm/native-build-tools/issues/342[native-build-tools#342] for details.
+This will be solved in the future, see https://github.com/graalvm/native-build-tools/issues/342[native-build-tools#327] for details.
 
 [[native-image.developing-your-first-application.buildpacks.gradle]]
 ==== Using Gradle
