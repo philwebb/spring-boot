@@ -27,7 +27,7 @@ To recap, our main application code looks like this:
 	import org.springframework.web.bind.annotation.RestController;
 
 	@RestController
-	@EnableAutoConfiguration
+	@SpringBootApplication
 	public class MyApplication {
 
 		@RequestMapping("/")
@@ -44,18 +44,51 @@ To recap, our main application code looks like this:
 
 This application uses Spring MVC and embedded Tomcat, both of which have been tested and verified to work with GraalVM native images.
 
-
-
 [[native-image.developing-your-first-application.buildpacks]]
 === Building a Native Image Using Buildpacks
+
 _this section of the documentation has not yet been completed_
-
-
 
 [[native-image.developing-your-first-application.native-build-tools]]
 === Building a Native Image using Native Build Tools
-_this section of the documentation has not yet been completed_
 
+[[native-image.developing-your-first-application.native-build-tools.prerequisites]]
+==== Prerequisites
 
+To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
+You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKman!.
+Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution by using the following commands:
 
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ sdk install java 22.2.r17-nik
+	$ sdk use java 22.2.r17-nik
+	$ java -version
+	openjdk version "17.0.4" 2022-07-19 LTS
+	OpenJDK Runtime Environment GraalVM 22.2.0 (build 17.0.4+8-LTS)
+	OpenJDK 64-Bit Server VM GraalVM 22.2.0 (build 17.0.4+8-LTS, mixed mode)
+----
 
+[[native-image.developing-your-first-application.native-build-tools.prerequisites-maven]]
+==== Using Maven
+
+You can build a native image by running:
+
+[indent=0,subs="verbatim"]
+----
+	$ mvn native:compile -Pnative
+----
+
+The native image executable can be found in the `target` directory.
+
+[[native-image.developing-your-first-application.native-build-tools.prerequisites-gradle]]
+==== Using Gradle
+
+You can build a native image by running:
+
+[indent=0,subs="verbatim"]
+----
+	$ gradle nativeCompile
+----
+
+The native image executable can be found in the `build/native/nativeCompile` directory.
