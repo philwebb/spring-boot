@@ -34,14 +34,32 @@ _this section of the documentation has not yet been completed_
 
 [[native-image.advanced.debugging-source-generation]]
 === Debugging Source Generation
+
 _this section of the documentation has not yet been completed_
 
 // https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_debugging_the_source_generation
 
 
 
+[[native-image.advanced.custom-hints]]
+=== Custom hints
+
+If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use a Spring provided API for that:
+
+include::code:MyRuntimeHints[]
+
+You can then use `@ImportRuntimeHints` on any `@Configuration` class (for example your `@SpringBootApplication` annotated application class) to activate those hints.
+
+[[native-image.advanced.custom-hints.testing]]
+==== Testing custom hints
+
+`RuntimeHintsPredicates` can be used to test your hints:
+
+include::code:MyRuntimeHintsTests[]
+
 [[native-image.advanced.known-limitations]]
 === Known Limitations
+
 GraalVM Native Images are an evolving technology and not all libraries provide support.
 The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.
 
