@@ -76,7 +76,7 @@ _this section of the documentation has not yet been completed_
 [[native-image.advanced.custom-hints]]
 === Custom hints
 
-If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use a Spring provided API for that:
+If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API for that:
 
 include::code:MyRuntimeHints[]
 
