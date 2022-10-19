@@ -14,7 +14,7 @@ include::code:MyProperties[]
 The preceding example produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
 Without the `@NestedConfigurationProperty` annotation on the `nested` field the `my.properties.nested.number` property would not be bindable in a native image.
 
-
+NOTE: Please use public getters / setters, otherwise the properties won't be bindable.
 
 [[native-image.advanced.converting-executable-jars]]
 === Converting a Spring Boot Executable JAR
