@@ -49,6 +49,22 @@ This application uses Spring MVC and embedded Tomcat, both of which have been te
 
 _this section of the documentation has not yet been completed_
 
+[[native-image.developing-your-first-application.buildpacks.maven]]
+==== Using Maven
+
+[indent=0,subs="verbatim"]
+----
+mvn spring-boot:build-image -Pnative
+----
+
+[[native-image.developing-your-first-application.buildpacks.gradle]]
+==== Using Gradle
+
+[indent=0,subs="verbatim"]
+----
+gradle bootBuildImage
+----
+
 [[native-image.developing-your-first-application.native-build-tools]]
 === Building a Native Image using Native Build Tools
 
@@ -69,7 +85,7 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 	OpenJDK 64-Bit Server VM GraalVM 22.2.0 (build 17.0.4+8-LTS, mixed mode)
 ----
 
-[[native-image.developing-your-first-application.native-build-tools.prerequisites-maven]]
+[[native-image.developing-your-first-application.native-build-tools.maven]]
 ==== Using Maven
 
 You can build a native image by running:
@@ -81,7 +97,7 @@ You can build a native image by running:
 
 The native image executable can be found in the `target` directory.
 
-[[native-image.developing-your-first-application.native-build-tools.prerequisites-gradle]]
+[[native-image.developing-your-first-application.native-build-tools.gradle]]
 ==== Using Gradle
 
 You can build a native image by running:
@@ -93,10 +109,11 @@ You can build a native image by running:
 
 The native image executable can be found in the `build/native/nativeCompile` directory.
 
-[[native-image.developing-your-first-application.running]]
-=== Running the example
+[[native-image.developing-your-first-application.native-build-tools.running]]
+==== Running the example
 
 At this point, your application should work, you can now start the application.
+
 When using Maven:
 
 [indent=0,subs="verbatim"]
