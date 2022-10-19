@@ -26,11 +26,38 @@ _this section of the documentation has not yet been completed_
 
 [[native-image.advanced.using-the-tracing-agent]]
 === Using the Tracing Agent
-_this section of the documentation has not yet been completed_
 
-// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#tracing-agent
+The GraalVM native image https://www.graalvm.org/reference-manual/native-image/Agent/[tracing agent] allows to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
+Spring should generate most of these hints automatically, but the tracing agent can be used to quickly identify the missing entries.
 
+When using the agent to generate hints for a native image, there are a couple of approaches:
 
+* Launch the app directly and exercise it.
+* Run application tests to exercise the application.
+
+The first option is interesting for identifying the missing hints when a library or a pattern is not recognized by Spring.
+
+The second option sounds more appealing for a repeatable setup but by default the generated hints will include anything required by the test infrastructure, which is unnecessary when the application runs for real.
+To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
+
+[[native-image.advanced.using-the-tracing-agent.launch]]
+==== Launch the app directly
+
+To launch the application with the native image tracing agent attached:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-output-dir=/path/to/config-dir/ -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+Now you can exercise the codepaths you want to have hints for and then stop the application with `ctrl-c`.
+
+On application shutdown the native image tracing agent will write the hint files to the given config output directory.
+If you want to not only look at these files but use them as input to the native image build process, copy them into the `src/main/resources/META-INF/native-image/` folder.
+The next time you build the native image, GraalVM will take these files into consideration.
+
+There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
+For further reading, please see https://www.graalvm.org/reference-manual/native-image/Agent/[the official documentation].
 
 [[native-image.advanced.debugging-source-generation]]
 === Debugging Source Generation
