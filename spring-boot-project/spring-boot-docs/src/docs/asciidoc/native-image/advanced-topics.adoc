@@ -5,7 +5,6 @@
 
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
-
 Reflection hints are automatically created for configuration properties.
 Nested configuration properties however *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
@@ -15,6 +14,8 @@ The preceding example produces configuration properties for `my.properties.name`
 Without the `@NestedConfigurationProperty` annotation on the `nested` field the `my.properties.nested.number` property would not be bindable in a native image.
 
 NOTE: Please use public getters / setters, otherwise the properties won't be bindable.
+
+
 
 [[native-image.advanced.converting-executable-jars]]
 === Converting a Spring Boot Executable JAR
@@ -26,7 +27,6 @@ _this section of the documentation has not yet been completed_
 
 [[native-image.advanced.using-the-tracing-agent]]
 === Using the Tracing Agent
-
 The GraalVM native image https://www.graalvm.org/reference-manual/native-image/Agent/[tracing agent] allows to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
 Spring should generate most of these hints automatically, but the tracing agent can be used to quickly identify the missing entries.
 
@@ -40,9 +40,10 @@ The first option is interesting for identifying the missing hints when a library
 The second option sounds more appealing for a repeatable setup but by default the generated hints will include anything required by the test infrastructure, which is unnecessary when the application runs for real.
 To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
 
+
+
 [[native-image.advanced.using-the-tracing-agent.launch]]
 ==== Launch the app directly
-
 To launch the application with the native image tracing agent attached:
 
 [source,shell,indent=0,subs="verbatim,attributes"]
@@ -59,10 +60,14 @@ The next time you build the native image, GraalVM will take these files into con
 There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
 For further reading, please see https://www.graalvm.org/reference-manual/native-image/Agent/[the official documentation].
 
+
+
 [[native-image.advanced.using-the-tracing-agent.tests]]
 ==== Run application tests to exercise the application
 
 _this section of the documentation has not yet been completed_
+
+
 
 [[native-image.advanced.debugging-source-generation]]
 === Debugging Source Generation
@@ -75,23 +80,24 @@ _this section of the documentation has not yet been completed_
 
 [[native-image.advanced.custom-hints]]
 === Custom hints
-
 If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API for that:
 
 include::code:MyRuntimeHints[]
 
 You can then use `@ImportRuntimeHints` on any `@Configuration` class (for example your `@SpringBootApplication` annotated application class) to activate those hints.
 
+
+
 [[native-image.advanced.custom-hints.testing]]
 ==== Testing custom hints
-
 The `RuntimeHintsPredicates` API can be used to test your hints:
 
 include::code:MyRuntimeHintsTests[]
 
+
+
 [[native-image.advanced.known-limitations]]
 === Known Limitations
-
 GraalVM native images are an evolving technology and not all libraries provide support.
 The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.
 Spring itself doesn't contain hints for 3rd party libraries and instead relies on the reachability metadata project.
