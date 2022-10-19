@@ -5,9 +5,14 @@
 
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
-_this section of the documentation has not yet been completed_
 
-// https://github.com/spring-projects/spring-boot/issues/31708
+Reflection hints are automatically created for configuration properties.
+Nested configuration properties however *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+
+include::code:MyProperties[]
+
+The preceding example produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
+Without the `@NestedConfigurationProperty` annotation on the `nested` field the `my.properties.nested.number` property would not be bindable in a native image.
 
 
 
