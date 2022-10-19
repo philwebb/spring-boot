@@ -59,6 +59,11 @@ The next time you build the native image, GraalVM will take these files into con
 There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
 For further reading, please see https://www.graalvm.org/reference-manual/native-image/Agent/[the official documentation].
 
+[[native-image.advanced.using-the-tracing-agent.tests]]
+==== Run application tests to exercise the application
+
+_this section of the documentation has not yet been completed_
+
 [[native-image.advanced.debugging-source-generation]]
 === Debugging Source Generation
 
