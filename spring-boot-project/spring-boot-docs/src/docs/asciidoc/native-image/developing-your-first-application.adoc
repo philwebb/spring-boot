@@ -153,7 +153,7 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 ===== Windows
 
 On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[those instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK], Visual Studio Build Tools and Windows SDK.
-Due to a https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows limitation related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
+Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
 
 [[native-image.developing-your-first-application.native-build-tools.maven]]
 ==== Using Maven
