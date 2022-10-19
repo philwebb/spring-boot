@@ -85,7 +85,7 @@ You can then use `@ImportRuntimeHints` on any `@Configuration` class (for exampl
 [[native-image.advanced.custom-hints.testing]]
 ==== Testing custom hints
 
-`RuntimeHintsPredicates` can be used to test your hints:
+The `RuntimeHintsPredicates` API can be used to test your hints:
 
 include::code:MyRuntimeHintsTests[]
 
