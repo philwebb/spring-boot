@@ -69,18 +69,7 @@ There are also "`bean definitions`" which are used to define attributes of a bea
 
 If we take a typical `@Configuration` class:
 
-[source,java,indent=0]
-----
-	@Configuration(proxyBeanMethods = false)
-	public class MyConfiguration {
-
-		@Bean
-		public MyBean myBean() {
-			return new MyBean();
-		}
-
-	}
-----
+include::code:MyConfiguration[]
 
 The "`bean definition`" is created by parsing the `@Configuration` class and finding the `@Bean` methods.
 In the above example, we're defining a `BeanDefinition` for a singleton bean named "`myBean`".
@@ -95,50 +84,7 @@ Once the bean definitions have been discovered, they are processed and converted
 
 The Spring AOT process would convert the configuration class above to code like this:
 
-[source,java,inject=0]
-----
-package com.example.aottestdemo;
-
-import java.lang.Class;
-import org.springframework.beans.factory.aot.BeanInstanceSupplier;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-
-/**
- * Bean definitions for {@link MyConfiguration}
- */
-public class MyConfiguration__BeanDefinitions {
-
-	/**
-	 * Get the bean definition for 'myConfiguration'
-	*/
-	public static BeanDefinition getMyConfigurationBeanDefinition() {
-		Class<?> beanType = MyConfiguration.class;
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType);
-		beanDefinition.setInstanceSupplier(MyConfiguration::new);
-		return beanDefinition;
-	}
-
-	/**
-	 * Get the bean instance supplier for 'myBean'.
-	*/
-	private static BeanInstanceSupplier<MyBean> getMyBeanInstanceSupplier() {
-		return BeanInstanceSupplier.<MyBean>forFactoryMethod(MyConfiguration.class, "myBean")
-			.withGenerator((registeredBean) -> registeredBean.getBeanFactory().getBean(MyConfiguration.class).myBean());
-  }
-
-	/**
-	 * Get the bean definition for 'myBean'
-	*/
-	public static BeanDefinition getMyBeanBeanDefinition() {
-		Class<?> beanType = MyBean.class;
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType);
-		beanDefinition.setInstanceSupplier(getMyBeanInstanceSupplier());
-		return beanDefinition;
-	}
-
-}
-----
+include::code:MyConfiguration__BeanDefinitions[]
 
 NOTE: The exact code generated may differ depending on the exact nature of your bean definitions.
 
