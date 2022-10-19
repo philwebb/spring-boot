@@ -76,7 +76,7 @@ mvn spring-boot:build-image -Pnative
 ----
 
 NOTE: Currently, you need a local GraalVM installation to build an image with Maven.
-This will be solved in the future.
+This will be solved in the future, see https://github.com/graalvm/native-build-tools/issues/342[native-build-tools#342] for details.
 
 [[native-image.developing-your-first-application.buildpacks.gradle]]
 ==== Using Gradle
@@ -131,12 +131,12 @@ To gracefully exit the application, press `ctrl-c`.
 ==== Prerequisites
 
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
-You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKman!.
+You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKMAN!.
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
 ===== Linux and MacOS
 
-To install the native image compiler on MacOS or Linux, we recommend using SDKMAN.
+To install the native image compiler on MacOS or Linux, we recommend using SDKMAN!.
 Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution by using the following commands:
 
 [source,shell,indent=0,subs="verbatim,attributes"]
