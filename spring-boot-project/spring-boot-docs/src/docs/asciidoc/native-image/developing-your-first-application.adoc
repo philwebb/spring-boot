@@ -27,7 +27,7 @@ To recap, our main application code looks like this:
 	import org.springframework.web.bind.annotation.RestController;
 
 	@RestController
-	@EnableAutoConfiguration
+	@SpringBootApplication
 	public class MyApplication {
 
 		@RequestMapping("/")
@@ -44,18 +44,184 @@ To recap, our main application code looks like this:
 
 This application uses Spring MVC and embedded Tomcat, both of which have been tested and verified to work with GraalVM native images.
 
-
-
 [[native-image.developing-your-first-application.buildpacks]]
 === Building a Native Image Using Buildpacks
-_this section of the documentation has not yet been completed_
 
+Spring Boot includes buildpack support for native image directly for both Maven and Gradle.
+This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
+The resulting image doesn't contain a JVM, instead the native image is compiled statically, which leads to smaller images.
 
+NOTE: The builder used for the images is `builder:tiny`.
+It has small footprint and reduced surface attack, but you can also use `builder:base` or `builder:full` to have more tools available in the image for an improved developer experience.
+
+[[native-image.developing-your-first-application.buildpacks.system-requirements]]
+==== System Requirements
+
+Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details.
+https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
+
+NOTE: You can run `docker run hello-world` (without `sudo`) to check the Docker daemon is reachable as expected.
+Check the {spring-boot-maven-plugin-docs}/#build-image-docker-daemon[Maven] or {spring-boot-gradle-plugin-docs}/#build-image-docker-daemon[Gradle] Spring Boot plugin documentation for more details.
+
+TIP: On MacOS, it is recommended to increase the memory allocated to Docker to at least `8GB`, and potentially add more CPUs as well.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
+On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performance.
+
+[[native-image.developing-your-first-application.buildpacks.maven]]
+==== Using Maven
+
+[indent=0,subs="verbatim"]
+----
+mvn spring-boot:build-image -Pnative
+----
+
+NOTE: Currently, you need a local GraalVM installation to build an image with Maven.
+This will be solved in the future, see https://github.com/graalvm/native-build-tools/issues/342[native-build-tools#327] for details.
+
+[[native-image.developing-your-first-application.buildpacks.gradle]]
+==== Using Gradle
+
+[indent=0,subs="verbatim"]
+----
+gradle bootBuildImage
+----
+
+[[native-image.developing-your-first-application.buildpacks.running]]
+==== Running the example
+
+At this point, your application should work, you can now start the application.
+
+[indent=0,subs="verbatim"]
+----
+	$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
+----
+
+You should see output similar to the following:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started MyApplication in 0.08 seconds (process running for 0.095)
+----
+
+NOTE: The startup time differs from machine to machine, but it should be much faster than a Spring Boot application running on a JVM.
+
+If you open a web browser to `http://localhost:8080`, you should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+To gracefully exit the application, press `ctrl-c`.
 
 [[native-image.developing-your-first-application.native-build-tools]]
 === Building a Native Image using Native Build Tools
-_this section of the documentation has not yet been completed_
 
+[[native-image.developing-your-first-application.native-build-tools.prerequisites]]
+==== Prerequisites
 
+To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
+You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKMAN!.
 
+[[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
+===== Linux and MacOS
 
+To install the native image compiler on MacOS or Linux, we recommend using SDKMAN!.
+Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution by using the following commands:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ sdk install java 22.2.r17-nik
+	$ sdk use java 22.2.r17-nik
+	$ java -version
+	openjdk version "17.0.4" 2022-07-19 LTS
+	OpenJDK Runtime Environment GraalVM 22.2.0 (build 17.0.4+8-LTS)
+	OpenJDK 64-Bit Server VM GraalVM 22.2.0 (build 17.0.4+8-LTS, mixed mode)
+----
+
+[[native-image.developing-your-first-application.native-build-tools.prerequisites.windows]]
+===== Windows
+
+On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[those instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK], Visual Studio Build Tools and Windows SDK.
+Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
+
+[[native-image.developing-your-first-application.native-build-tools.maven]]
+==== Using Maven
+
+You can build a native image by running:
+
+[indent=0,subs="verbatim"]
+----
+	$ mvn native:compile -Pnative
+----
+
+The native image executable can be found in the `target` directory.
+
+[[native-image.developing-your-first-application.native-build-tools.gradle]]
+==== Using Gradle
+
+You can build a native image by running:
+
+[indent=0,subs="verbatim"]
+----
+	$ gradle nativeCompile
+----
+
+The native image executable can be found in the `build/native/nativeCompile` directory.
+
+[[native-image.developing-your-first-application.native-build-tools.running]]
+==== Running the example
+
+At this point, your application should work, you can now start the application.
+
+When using Maven:
+
+[indent=0,subs="verbatim"]
+----
+	$ target/myproject
+----
+
+When using Gradle:
+
+[indent=0,subs="verbatim"]
+----
+	$ build/native/nativeCompile/myproject
+----
+
+You should see output similar to the following:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	  .   ____          _            __ _ _
+	 /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+	( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+	 \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+	  '  |____| .__|_| |_|_| |_\__, | / / / /
+	 =========|_|==============|___/=/_/_/_/
+	 :: Spring Boot ::  (v{spring-boot-version})
+	....... . . .
+	....... . . . (log output here)
+	....... . . .
+	........ Started MyApplication in 0.08 seconds (process running for 0.095)
+----
+
+NOTE: The startup time differs from machine to machine, but it should be much faster than a Spring Boot application running on a JVM.
+
+If you open a web browser to `http://localhost:8080`, you should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+To gracefully exit the application, press `ctrl-c`.

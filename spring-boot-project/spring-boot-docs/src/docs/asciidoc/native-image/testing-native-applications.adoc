@@ -1,15 +1,29 @@
 [[native-image.testing]]
 == Testing GraalVM Native Images
-_this section of the documentation has not yet been completed_
 
-
+To ensure that your application is working correctly when using native images, your test suite can be executed inside a native image, too.
+All the usual features work, like `@SpringBootTest`, test slices, etc.
 
 [[native-image.testing.with-the-jvm]]
 === Testing with the JVM
+
 _this section of the documentation has not yet been completed_
-
-
 
 [[native-image.testing.with-native-build-tools]]
 === Testing with Native Build Tools
-_this section of the documentation has not yet been completed_
+
+[[native-image.testing.with-native-build-tools.maven]]
+==== Using Maven
+
+[indent=0,subs="verbatim"]
+----
+	$ mvn test -PnativeTest
+----
+
+[[native-image.testing.with-native-build-tools.gradle]]
+==== Using Gradle
+
+[indent=0,subs="verbatim"]
+----
+	$ gradle nativeTest
+----
