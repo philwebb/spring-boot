@@ -50,7 +50,7 @@ To launch the application with the native image tracing agent attached:
 	$ java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-output-dir=/path/to/config-dir/ -jar target/myproject-0.0.1-SNAPSHOT.jar
 ----
 
-Now you can exercise the codepaths you want to have hints for and then stop the application with `ctrl-c`.
+Now you can exercise the code paths you want to have hints for and then stop the application with `ctrl-c`.
 
 On application shutdown the native image tracing agent will write the hint files to the given config output directory.
 If you want to not only look at these files but use them as input to the native image build process, copy them into the `src/main/resources/META-INF/native-image/` folder.
