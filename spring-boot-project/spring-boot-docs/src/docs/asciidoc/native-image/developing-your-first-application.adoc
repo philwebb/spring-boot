@@ -120,8 +120,8 @@ You can run the task using:
 
 [[native-image.developing-your-first-application.buildpacks.running]]
 ==== Running the example
-One you have run the appropriate build command, your application should work.
-You can now start the application:
+One you have run the appropriate build command, your a Docker image should be available.
+You can start your application using `docker run`:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -160,6 +160,9 @@ To gracefully exit the application, press `ctrl-c`.
 
 [[native-image.developing-your-first-application.native-build-tools]]
 === Building a Native Image using Native Build Tools
+If you want to generate a native executable directly without using Docker you can use GraalVM native build tools.
+Native build tools are plugins shipped by GraalVM for both Maven and Gradle.
+You can use them to perform a variety of GraalVM tasks, including generating a native image.
 
 
 
@@ -197,11 +200,13 @@ Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-ex
 
 [[native-image.developing-your-first-application.native-build-tools.maven]]
 ==== Using Maven
-You can build a native image by running:
+As with the <<native-image#native-image.developing-your-first-application.buildpacks.maven, buildpack support>>, you need to make sure that you're using `spring-boot-starter-parent` in order to inherit the `native` profile.
+
+With the `native` profile active, you can invoke the `native:compile` goal to trigger `native-image` compilation:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ mvn native:compile -Pnative
+	$ $ mvn -Pnative native:compile
 ----
 
 The native image executable can be found in the `target` directory.
@@ -210,7 +215,8 @@ The native image executable can be found in the `target` directory.
 
 [[native-image.developing-your-first-application.native-build-tools.gradle]]
 ==== Using Gradle
-You can build a native image by running:
+When the native build tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger Spring's AOT engine.
+Task dependencies are automatically configured, so you can just run the standard `nativeCompile` to generate a native image:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -223,18 +229,16 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 [[native-image.developing-your-first-application.native-build-tools.running]]
 ==== Running the example
-At this point, your application should work, you can now start the application.
+At this point, your application should work, you can now start the application by running it directly:
 
-When using Maven:
-
-[source,shell,indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim",role="primary"]
+.Maven
 ----
 	$ target/myproject
 ----
 
-When using Gradle:
-
-[source,shell,indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim",role="secondary"]
+.Gradle
 ----
 	$ build/native/nativeCompile/myproject
 ----
