@@ -72,7 +72,7 @@ At this point, your application should work, you can now start the application.
 
 [indent=0,subs="verbatim"]
 ----
-	$ TODO
+	$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
 ----
 
 You should see output similar to the following:
