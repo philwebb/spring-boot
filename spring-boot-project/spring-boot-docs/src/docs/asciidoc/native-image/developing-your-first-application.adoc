@@ -47,7 +47,11 @@ This application uses Spring MVC and embedded Tomcat, both of which have been te
 [[native-image.developing-your-first-application.buildpacks]]
 === Building a Native Image Using Buildpacks
 
-_this section of the documentation has not yet been completed_
+Spring Boot includes buildpack support for native image directly for both Maven and Gradle.
+This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
+The resulting image doesn't contain a JVM, instead the native image is compiled statically, which leads to smaller images.
+
+NOTE: The builder used for the image is `builder:tiny`
 
 [[native-image.developing-your-first-application.buildpacks.maven]]
 ==== Using Maven
@@ -56,6 +60,9 @@ _this section of the documentation has not yet been completed_
 ----
 mvn spring-boot:build-image -Pnative
 ----
+
+NOTE: Currently, you need a local GraalVM installation to build an image with Maven.
+This will be solved in the future.
 
 [[native-image.developing-your-first-application.buildpacks.gradle]]
 ==== Using Gradle
