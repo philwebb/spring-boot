@@ -185,7 +185,7 @@ With the `native` profile active, you can invoke the `native:compile` goal to tr
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ $ mvn -Pnative native:compile
+	$ mvn -Pnative native:compile
 ----
 
 The native image executable can be found in the `target` directory.

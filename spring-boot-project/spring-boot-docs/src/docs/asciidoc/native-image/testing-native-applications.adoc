@@ -1,13 +1,46 @@
 [[native-image.testing]]
 == Testing GraalVM Native Images
+When writing native image application we recommend that you continue to use the JVM whenever possible to run the majority of your unit and integration tests.
+This will help keep build times down and allow you to use existing IDE integrations.
+With broad test coverage on the JVM, you can then focus native image testing on the areas that are likely to be different.
 
-To ensure that your application is working correctly when using native images, your test suite can be executed inside a native image, too.
-All the usual features work, like `@SpringBootTest`, test slices, etc.
+For native image testing you're generally looking to ensure that the following aspects work:
+
+* Is Spring's AOT engine able to process your application and will it run in an AOT-processed mode?
+* Does GraalVM have enough hints to ensure that the a valid native image can be produced?
+
+
+
 
 [[native-image.testing.with-the-jvm]]
-=== Testing with the JVM
+=== Testing Ahead-of-time Processing with the JVM
+When a Spring Boot application runs, it attempts to detect if it's running as a native executable.
+If it is running as a native executable, it will initialize the application using the code that was generated during at build-time by Spring's AOT engine.
 
-_this section of the documentation has not yet been completed_
+If the application is running on a regular JVM, then any AOT generated code is ignored.
+
+Since the `native-image` compilation phase can take a while to complete, it's sometimes useful to run your application on the JVM but have it use the AOT generated initialization code.
+Doing so helps you to quickly validate that there are no errors in the AOT generated code and nothing is missing when your application is eventually converted to a native image.
+
+To run a Spring Boot application on the JVM and have it use AOT generated code you can set the `spring.aot.enabled` system property to `true`.
+For example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+$ java -Dspring.aot.enabled=true -jar myapplication.jar
+----
+
+NOTE: You need to ensure that the jar you're testing includes AOT generated code.
+For Maven, this means that you should build with `-Pnative` to active the `native` profile.
+For Gradle, you need to ensure that you're build includes the `org.graalvm.buildtools.native` plugin.
+
+If your application starts with the `spring.aot.enabled` property active, then you have higher confidence that it will work when converted to a native image.
+
+You can also consider running integration tests against your running application.
+For example, you could use Spring's `WebClient` to call your application REST endpoints.
+Or you might consider using a project like Selenium to check your applications HTML responses.
+
+
 
 [[native-image.testing.with-native-build-tools]]
 === Testing with Native Build Tools
