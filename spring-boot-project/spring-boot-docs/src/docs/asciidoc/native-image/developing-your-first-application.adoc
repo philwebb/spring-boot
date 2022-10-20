@@ -15,7 +15,7 @@ The included `HELP.md` file will provide getting started hints.
 [[native-image.developing-your-first-application.sample-application]]
 === Sample Application
 We need an example application that we can use to create our native image.
-For our purposes, the simple "`Hello World!`" web application that's covered in the <<getting-started#getting-started.first-application>> section will suffice.
+For our purposes, the simple "`Hello World!`" web application that's covered in the "`<<getting-started#getting-started.first-application>>`" section will suffice.
 
 To recap, our main application code looks like this:
 
@@ -27,9 +27,10 @@ This application uses Spring MVC and embedded Tomcat, both of which have been te
 
 [[native-image.developing-your-first-application.buildpacks]]
 === Building a Native Image Using Buildpacks
-Spring Boot includes buildpack support for native image directly for both Maven and Gradle.
+Spring Boot includes buildpack support for native images directly for both Maven and Gradle.
 This means you can just type a single command and quickly get a sensible image into your locally running Docker daemon.
-The resulting image doesn't contain a JVM, instead the native image is compiled statically, which leads to smaller images.
+The resulting image doesn't contain a JVM, instead the native image is compiled statically.
+This leads to smaller images.
 
 NOTE: The builder used for the images is `builder:tiny`.
 It has small footprint and reduced surface attack, but you can also use `builder:base` or `builder:full` to have more tools available in the image for an improved developer experience.
@@ -67,7 +68,7 @@ You should have a `<parent>` section that looks like this:
 The `spring-boot-starter-parent` declares a `native` profile that configures the executions that need to run in order to create a native image.
 You can activate profiles using the `-P` flag on the command line.
 
-TIP: If you don't want to use `spring-boot-starter-parent` you'll need to configure executions for the `process-aot` goal from Spring Boot's plugin and the `add-reachability-metadata` goal from the native build tools plugin.
+TIP: If you don't want to use `spring-boot-starter-parent` you'll need to configure executions for the `process-aot` goal from Spring Boot's plugin and the `add-reachability-metadata` goal from the Native Build Tools plugin.
 
 To build the image, you can run the `spring-boot:build-image` goal with the `native` profile active:
 
@@ -86,7 +87,7 @@ This will be solved in the future, see https://github.com/graalvm/native-build-t
 The Spring Boot Gradle plugin automatically configures AOT tasks when the GraalVM Native Image plugin is applied.
 You should check that your gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
 
-As long as `org.graalvm.buildtools.native` plugin is applied, the `bootBuildImage` task will generate a native image rather than a JVM one.
+As long as the `org.graalvm.buildtools.native` plugin is applied, the `bootBuildImage` task will generate a native image rather than a JVM one.
 You can run the task using:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -138,8 +139,8 @@ To gracefully exit the application, press `ctrl-c`.
 
 [[native-image.developing-your-first-application.native-build-tools]]
 === Building a Native Image using Native Build Tools
-If you want to generate a native executable directly without using Docker you can use GraalVM native build tools.
-Native build tools are plugins shipped by GraalVM for both Maven and Gradle.
+If you want to generate a native executable directly without using Docker, you can use GraalVM Native Build Tools.
+Native Build Tools are plugins shipped by GraalVM for both Maven and Gradle.
 You can use them to perform a variety of GraalVM tasks, including generating a native image.
 
 
@@ -147,7 +148,7 @@ You can use them to perform a variety of GraalVM tasks, including generating a n
 [[native-image.developing-your-first-application.native-build-tools.prerequisites]]
 ==== Prerequisites
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
-You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKMAN!.
+You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
 
 
@@ -161,6 +162,12 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 ----
 	$ sdk install java 22.2.r17-nik
 	$ sdk use java 22.2.r17-nik
+----
+
+Verify that the correct version has been configured by checking the output of `java -version`:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
 	$ java -version
 	openjdk version "17.0.4" 2022-07-19 LTS
 	OpenJDK Runtime Environment GraalVM 22.2.0 (build 17.0.4+8-LTS)
@@ -171,7 +178,7 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.windows]]
 ===== Windows
-On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[those instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica NIK], Visual Studio Build Tools and Windows SDK.
+On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[these instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica Native Image Kit], Visual Studio Build Tools and Windows SDK.
 Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
 
 
@@ -193,8 +200,8 @@ The native image executable can be found in the `target` directory.
 
 [[native-image.developing-your-first-application.native-build-tools.gradle]]
 ==== Using Gradle
-When the native build tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger Spring's AOT engine.
-Task dependencies are automatically configured, so you can just run the standard `nativeCompile` to generate a native image:
+When the Native Build Tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger Spring's AOT engine.
+Task dependencies are automatically configured, so you can just run the standard `nativeCompile` task to generate a native image:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -206,7 +213,7 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 
 [[native-image.developing-your-first-application.native-build-tools.running]]
-==== Running the example
+==== Running the Example
 At this point, your application should work, you can now start the application by running it directly:
 
 [source,shell,indent=0,subs="verbatim",role="primary"]

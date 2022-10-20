@@ -32,7 +32,7 @@ NOTE: Your executable JAR must include AOT generated assets such as generated cl
 
 
 [[native-image.advanced.converting-executable-jars.buildpacks]]
-==== Converting an Executable JAR with Buildpacks
+==== Using Buildpacks
 Spring Boot applications usually use Buildpacks via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integration.
 You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable JAR into native container image.
 
@@ -61,10 +61,10 @@ Once `pack` has finished, you can launch the application using `docker run`:
 
 
 [[native-image.advanced.converting-executable-jars.native-image]]
-==== Converting an Executable JAR with native-image
+==== Using GraalVM native-image
 Another option is to turn an AOT processed Spring Boot executable JAR into a native executable is to use the GraalVM `native-image` tool.
 For this to work, you'll need a GraalVM distribution on your machine.
-You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKMAN!.
+You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page] or you can use a download manager like SDKMAN!.
 
 Assuming a Spring Boot executable JAR built as `myproject-0.0.1-SNAPSHOT.jar` in the `target` directory:
 
