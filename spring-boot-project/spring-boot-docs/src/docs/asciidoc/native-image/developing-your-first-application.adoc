@@ -64,9 +64,8 @@ You should have a `<parent>` section that looks like this:
 	</parent>
 ----
 
-The `spring-boot-starter-parent` declares a `maven` profile that configures the executions that need to run in order to create a native image.
+The `spring-boot-starter-parent` declares a `native` profile that configures the executions that need to run in order to create a native image.
 You can activate profiles using the `-P` flag on the command line.
-So to active the native profile you need to add `-Pnative`.
 
 TIP: If you don't want to use `spring-boot-starter-parent` you'll need to configure executions for the `process-aot` goal from Spring Boot's plugin and the `add-reachability-metadata` goal from the native build tools plugin.
 

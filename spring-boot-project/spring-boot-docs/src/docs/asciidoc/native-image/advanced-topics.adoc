@@ -5,8 +5,8 @@
 
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
-Reflection hints are automatically created for configuration properties.
-Nested configuration properties however *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+Reflection hints are automatically created for configuration properties by Spring's ahead-of-time engine.
+Nested configuration properties, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
 include::code:MyProperties[]
 
@@ -19,9 +19,72 @@ NOTE: Please use public getters / setters, otherwise the properties won't be bin
 
 [[native-image.advanced.converting-executable-jars]]
 === Converting a Spring Boot Executable JAR
-_this section of the documentation has not yet been completed_
+It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable JAR>> into a native image as long at the jar contains the AOT generated assets.
+This can be useful for a number of reasons, including:
 
-// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#executable-jar-to-native
+* You can keeping your regular JVM pipeline and turn the JVM application into a native image on your CI/CD platform.
+* As `native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation], you can keep an OS neutral deployment artifact which you convert later to different OS architectures.
+
+You can convert a Spring Boot executable jar into a native image using buildpacks, or the `native-image` tool that is shipped with GraalVM.
+
+NOTE: Your executable JAR must include AOT generated assets such as generated classes and JSON hint files.
+
+
+
+[[native-image.advanced.converting-executable-jars.buildpacks]]
+==== Converting an Executable JAR with Buildpacks
+Spring Boot applications usually use Buildpacks via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integration.
+You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable JAR into native container image.
+
+
+First, make sure that a Docker daemon is available (see https://docs.docker.com/installation/#installation[Get Docker] for more details).
+https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
+
+You also need to install `pack` by following https://buildpacks.io//docs/tools/pack/#install[the installation guide on buildpacks.io].
+
+Assuming a Spring Boot executable JAR built as `myproject-0.0.1-SNAPSHOT.jar` in the `target` directory, run:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ pack build --builder paketobuildpacks/builder:tiny --path target/myproject-0.0.1-SNAPSHOT.jar --env 'BP_NATIVE_IMAGE=true' my-application:0.0.1-SNAPSHOT
+----
+
+NOTE: You do not need to have a local GraalVM installation to generate an image in this way.
+
+Once `pack` has finished, you can launch the application using `docker run`:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
+----
+
+
+
+[[native-image.advanced.converting-executable-jars.native-image]]
+==== Converting an Executable JAR with native-image
+Another option is to turn an AOT processed Spring Boot executable JAR into a native executable is to use the GraalVM `native-image` tool.
+For this to work, you'll need a GraalVM distribution on your machine.
+You can either download it manually on the {liberica-nik-download}[Liberica NIK page] or you can use a download manager like SDKMAN!.
+
+Assuming a Spring Boot executable JAR built as `myproject-0.0.1-SNAPSHOT.jar` in the `target` directory:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ rm -rf target/native
+	$ mkdir -p target/native
+	$ cd target/native
+	$ jar -xvf ../myproject-0.0.1-SNAPSHOT.jar
+	$ native-image -H:Name=myproject @META-INF/native-image/argfile -cp .:BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
+	$ mv my-app ../
+----
+
+NOTE: These commands work on Linux or MacOS machines, you might need to adapt them for Windows.
+
+TIP: The `@META-INF/native-image/argfile` might not be packaged in your jar.
+It is only included when reachability metadata overrides are needed.
+
+WARNING: The `native-image` `-cp` flag does not not accept wildcards.
+You need to ensure that all jars are listed (the command above uses `find` and `tr` to do this).
 
 
 
@@ -59,22 +122,6 @@ The next time you build the native image, GraalVM will take these files into con
 
 There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
 For further reading, please see https://www.graalvm.org/reference-manual/native-image/Agent/[the official documentation].
-
-
-
-[[native-image.advanced.using-the-tracing-agent.tests]]
-==== Run application tests to exercise the application
-
-_this section of the documentation has not yet been completed_
-
-
-
-[[native-image.advanced.debugging-source-generation]]
-=== Debugging Source Generation
-
-_this section of the documentation has not yet been completed_
-
-// https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_debugging_the_source_generation
 
 
 
