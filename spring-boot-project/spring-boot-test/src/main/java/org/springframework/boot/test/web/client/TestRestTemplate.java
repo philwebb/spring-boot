@@ -18,10 +18,12 @@ package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -29,16 +31,17 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
 import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 
+import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier.Settings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -138,8 +141,8 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder
-						.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+				builder = builder.requestFactory(
+						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
 		}
 		if (username != null || password != null) {
@@ -1000,30 +1003,46 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions) {
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions, Settings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
-			if (options.contains(HttpClientOption.SSL)) {
-				setHttpClient(createSslHttpClient());
+			// TODO Apply settings to HTTP client
+			boolean ssl = options.contains(HttpClientOption.SSL);
+			if (settings.readTimeout() != null || ssl) {
+				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
+			}
+			if (settings.connectTimeout() != null) {
+				setConnectTimeout((int) settings.connectTimeout().toMillis());
+			}
+			if (settings.bufferRequestBody() != null) {
+				setBufferRequestBody(settings.bufferRequestBody());
 			}
 		}
 
-		private HttpClient createSslHttpClient() {
+		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
+			PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
+					.create();
 			try {
-				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
-						.build();
-				SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
-						.setSslContext(sslContext).setTlsVersions(TLS.V_1_3, TLS.V_1_2).build();
-				PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder
-						.create().setSSLSocketFactory(socketFactory).build();
-
-				return HttpClients.custom().setConnectionManager(connectionManager)
+				if (ssl) {
+					SSLContext sslContext = new SSLContextBuilder()
+							.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+					SSLConnectionSocketFactory socketFactory = SSLConnectionSocketFactoryBuilder.create()
+							.setSslContext(sslContext).setTlsVersions(TLS.V_1_3, TLS.V_1_2).build();
+					connectionManagerBuilder.setSSLSocketFactory(socketFactory);
+				}
+				if (readTimeout != null) {
+					SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
+					socketConfigBuilder = socketConfigBuilder.setSoTimeout((int) readTimeout.toMillis(),
+							TimeUnit.MILLISECONDS);
+					connectionManagerBuilder.setDefaultSocketConfig(socketConfigBuilder.build());
+				}
+				return HttpClients.custom().setConnectionManager(connectionManagerBuilder.build())
 						.setDefaultRequestConfig(getRequestConfig()).build();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Unable to create SSL HttpClient", ex);
+				throw new IllegalStateException("Unable to create customized HttpClient", ex);
 			}
 		}
 

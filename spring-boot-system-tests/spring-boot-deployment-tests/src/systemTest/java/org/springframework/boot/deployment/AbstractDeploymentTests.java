@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ abstract class AbstractDeploymentTests {
 			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
 					.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
 							+ "/spring-boot")
-					.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+					.requestFactory((settings) -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 							.setRetryStrategy(
 									new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
 							.build())));

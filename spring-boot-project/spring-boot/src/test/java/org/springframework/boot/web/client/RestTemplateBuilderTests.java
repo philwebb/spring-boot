@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import okhttp3.OkHttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.core5.http.io.SocketConfig;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.web.client.RestTemplateBuilder.RestTemplateBuilderRuntimeHints;
+import org.springframework.boot.web.client.RestTemplateBuilder.ReflectiveClientHttpRequestFactorySupplierRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -271,7 +273,9 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void requestFactoryWhenSupplierIsNullShouldThrowException() {
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	void requestFactoryWhenDeprecatedSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.requestFactory((Supplier<ClientHttpRequestFactory>) null))
 				.withMessageContaining("RequestFactory Supplier must not be null");
@@ -280,7 +284,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void requestFactoryShouldApply() {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
-		RestTemplate template = this.builder.requestFactory(() -> requestFactory).build();
+		RestTemplate template = this.builder.requestFactory((settings) -> requestFactory).build();
 		assertThat(template.getRequestFactory()).isSameAs(requestFactory);
 	}
 
@@ -428,7 +432,7 @@ class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		this.builder.interceptors(this.interceptor).messageConverters(this.messageConverter)
 				.rootUri("http://localhost:8080").errorHandler(errorHandler).basicAuthentication("spring", "boot")
-				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
+				.requestFactory((settings) -> requestFactory).customizers((restTemplate) -> {
 					assertThat(restTemplate.getInterceptors()).hasSize(1);
 					assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
 					assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
@@ -486,6 +490,17 @@ class RestTemplateBuilderTests {
 		assertThatThrownBy(() -> this.builder.requestFactory(HttpComponentsClientHttpRequestFactory.class)
 				.setReadTimeout(Duration.ofMillis(1234)).build()).isInstanceOf(IllegalStateException.class)
 						.hasMessageContaining("setReadTimeout method marked as deprecated");
+	}
+
+	@Test
+	void readTimeoutCanBeConfiguredOnDetectedRequestFactory() {
+		RestTemplate restTemplate = this.builder.setReadTimeout(Duration.ofMillis(1234)).build();
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		HttpClient httpClient = ((HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory())
+				.getHttpClient();
+		assertThat(httpClient)
+				.extracting("connManager.defaultSocketConfig", InstanceOfAssertFactories.type(SocketConfig.class))
+				.satisfies((socketConfig) -> assertThat(socketConfig.getSoTimeout().toMilliseconds()).isEqualTo(1234));
 	}
 
 	@Test
@@ -555,7 +570,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void connectTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setConnectTimeout(Duration.ofMillis(1234)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
@@ -563,7 +578,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void readTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setReadTimeout(Duration.ofMillis(1234)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
@@ -571,28 +586,28 @@ class RestTemplateBuilderTests {
 	@Test
 	void bufferRequestBodyCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setBufferRequestBody(false).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", false);
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setBufferRequestBody(true).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
-		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory)).build();
+		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
 	}
 
 	@Test
 	void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.build();
+		RestTemplate template = this.builder
+				.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory)).build();
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints hints = new RuntimeHints();
-		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		new ReflectiveClientHttpRequestFactorySupplierRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection
 				.onField(ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory")))
@@ -602,7 +617,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void shouldRegisterHttpComponentHints() {
 		RuntimeHints hints = new RuntimeHints();
-		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		new ReflectiveClientHttpRequestFactorySupplierRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onMethod(ReflectionUtils.findMethod(HttpComponentsClientHttpRequestFactory.class,
 				"setConnectTimeout", int.class))).accepts(hints);
@@ -616,7 +631,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void shouldRegisterOkHttpHints() {
 		RuntimeHints hints = new RuntimeHints();
-		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		new ReflectiveClientHttpRequestFactorySupplierRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onMethod(
 				ReflectionUtils.findMethod(OkHttp3ClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
@@ -629,7 +644,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void shouldRegisterSimpleHttpHints() {
 		RuntimeHints hints = new RuntimeHints();
-		new RestTemplateBuilderRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		new ReflectiveClientHttpRequestFactorySupplierRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection.onMethod(
 				ReflectionUtils.findMethod(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))

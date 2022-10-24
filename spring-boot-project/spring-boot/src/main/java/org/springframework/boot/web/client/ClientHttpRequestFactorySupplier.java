@@ -16,60 +16,76 @@
 
 package org.springframework.boot.web.client;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.time.Duration;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.TypeHint.Builder;
-import org.springframework.aot.hint.TypeReference;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.util.ClassUtils;
 
 /**
- * A supplier for {@link ClientHttpRequestFactory} that detects the preferred candidate
- * based on the available implementations on the classpath.
+ * A supplier for {@link ClientHttpRequestFactory}.
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @since 2.1.0
  */
-public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
+public interface ClientHttpRequestFactorySupplier {
 
-	private static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.hc.client5.http.impl.classic.HttpClients";
-
-	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, null);
-
-	private static final String OKHTTP_CLIENT_CLASS = "okhttp3.OkHttpClient";
-
-	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, null);
-
-	@Override
-	public ClientHttpRequestFactory get() {
-		if (APACHE_HTTP_CLIENT_PRESENT) {
-			return new HttpComponentsClientHttpRequestFactory();
-		}
-		if (OKHTTP_CLIENT_PRESENT) {
-			return new OkHttp3ClientHttpRequestFactory();
-		}
-		return new SimpleClientHttpRequestFactory();
+	/**
+	 * Returns a {@link ClientHttpRequestFactorySupplier} that will supply a
+	 * {@link ClientHttpRequestFactorySupplier} for one of the known
+	 * {@link ClientHttpRequestFactory} implementations.
+	 * @return the supplier
+	 * @since 3.0.0
+	 */
+	static ClientHttpRequestFactorySupplier fromKnownFactories() {
+		return new KnownFactoriesClientHttpRequestFactorySupplier();
 	}
 
-	static class ClientHttpRequestFactorySupplierRuntimeHints {
+	static ClientHttpRequestFactorySupplier forFactory(Class<? extends ClientHttpRequestFactory> factoryType) {
+		return KnownFactoriesClientHttpRequestFactorySupplier.forFactoryType(factoryType);
+	}
 
-		static void registerHints(RuntimeHints hints, ClassLoader classLoader, Consumer<Builder> callback) {
-			if (ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, classLoader)) {
-				hints.reflection().registerType(HttpComponentsClientHttpRequestFactory.class, (typeHint) -> callback
-						.accept(typeHint.onReachableType(TypeReference.of(APACHE_HTTP_CLIENT_CLASS))));
-			}
-			if (ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, classLoader)) {
-				hints.reflection().registerType(OkHttp3ClientHttpRequestFactory.class,
-						(typeHint) -> callback.accept(typeHint.onReachableType(TypeReference.of(OKHTTP_CLIENT_CLASS))));
-			}
-			hints.reflection().registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> callback
-					.accept(typeHint.onReachableType(TypeReference.of(SimpleClientHttpRequestFactory.class))));
+	ClientHttpRequestFactory get(Settings settings);
+
+	static class Settings {
+
+		private final Duration connectTimeout;
+
+		private final Duration readTimeout;
+
+		private final Boolean bufferRequestBody;
+
+		public Settings() {
+			this(null, null, null);
+		}
+
+		private Settings(Duration connectTimeout, Duration readTimeout, Boolean bufferRequestBody) {
+			this.connectTimeout = connectTimeout;
+			this.readTimeout = readTimeout;
+			this.bufferRequestBody = bufferRequestBody;
+		}
+
+		public Settings connectTimeout(Duration connectTimeout) {
+			return new Settings(connectTimeout, this.readTimeout, this.bufferRequestBody);
+		}
+
+		public Settings readTimeout(Duration readTimeout) {
+			return new Settings(this.connectTimeout, readTimeout, this.bufferRequestBody);
+		}
+
+		public Settings bufferRequestBody(Boolean bufferRequestBody) {
+			return new Settings(this.connectTimeout, this.readTimeout, bufferRequestBody);
+		}
+
+		public Duration connectTimeout() {
+			return this.connectTimeout;
+		}
+
+		public Duration readTimeout() {
+			return this.readTimeout;
+		}
+
+		public Boolean bufferRequestBody() {
+			return this.bufferRequestBody;
 		}
 
 	}

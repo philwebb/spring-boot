@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,13 +76,20 @@ public class HttpWebServiceMessageSenderBuilder {
 	}
 
 	public WebServiceMessageSender build() {
-		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null)
-				? this.requestFactorySupplier.get() : new ClientHttpRequestFactorySupplier().get();
-		if (this.connectTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout").customize(requestFactory);
+		ClientHttpRequestFactory requestFactory;
+		if (this.requestFactorySupplier == null) {
+			requestFactory = ClientHttpRequestFactorySupplier.fromKnownFactories()
+					.get(new ClientHttpRequestFactorySupplier.Settings().connectTimeout(this.connectTimeout)
+							.readTimeout(this.readTimeout));
 		}
-		if (this.readTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout").customize(requestFactory);
+		else {
+			requestFactory = this.requestFactorySupplier.get();
+			if (this.connectTimeout != null) {
+				new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout").customize(requestFactory);
+			}
+			if (this.readTimeout != null) {
+				new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout").customize(requestFactory);
+			}
 		}
 		return new ClientHttpRequestMessageSender(requestFactory);
 	}

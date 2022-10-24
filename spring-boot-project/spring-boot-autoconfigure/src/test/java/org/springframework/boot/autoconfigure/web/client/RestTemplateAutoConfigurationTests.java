@@ -154,7 +154,7 @@ class RestTemplateAutoConfigurationTests {
 			MockClientHttpRequest request = new MockClientHttpRequest();
 			request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
 			given(requestFactory.createRequest(any(), any())).willReturn(request);
-			RestTemplate restTemplate = builder.requestFactory(() -> requestFactory).build();
+			RestTemplate restTemplate = builder.requestFactory((settings) -> requestFactory).build();
 			restTemplate.getForEntity("http://localhost:8080/test", String.class);
 			assertThat(request.getHeaders()).containsEntry("spring", Collections.singletonList("boot"));
 		});

@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
 	private final TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder()
-			.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+			.requestFactory((settings) -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
 					.build())));
 
