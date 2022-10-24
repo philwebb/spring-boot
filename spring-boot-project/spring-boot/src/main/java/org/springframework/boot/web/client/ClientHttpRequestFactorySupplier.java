@@ -16,78 +16,26 @@
 
 package org.springframework.boot.web.client;
 
-import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
- * A supplier for {@link ClientHttpRequestFactory}.
+ * A supplier for {@link ClientHttpRequestFactory} that detects the preferred candidate
+ * based on the available implementations on the classpath.
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @since 2.1.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link ClientHttpRequestFactories}
  */
-public interface ClientHttpRequestFactorySupplier {
+@Deprecated(since = "3.0.0", forRemoval = true)
+public class ClientHttpRequestFactorySupplier implements Supplier<ClientHttpRequestFactory> {
 
-	/**
-	 * Returns a {@link ClientHttpRequestFactorySupplier} that will supply a
-	 * {@link ClientHttpRequestFactorySupplier} for one of the known
-	 * {@link ClientHttpRequestFactory} implementations.
-	 * @return the supplier
-	 * @since 3.0.0
-	 */
-	static ClientHttpRequestFactorySupplier fromKnownFactories() {
-		return new KnownFactoriesClientHttpRequestFactorySupplier();
-	}
-
-	static ClientHttpRequestFactorySupplier forFactory(Class<? extends ClientHttpRequestFactory> factoryType) {
-		return KnownFactoriesClientHttpRequestFactorySupplier.forFactoryType(factoryType);
-	}
-
-	ClientHttpRequestFactory get(Settings settings);
-
-	static class Settings {
-
-		private final Duration connectTimeout;
-
-		private final Duration readTimeout;
-
-		private final Boolean bufferRequestBody;
-
-		public Settings() {
-			this(null, null, null);
-		}
-
-		private Settings(Duration connectTimeout, Duration readTimeout, Boolean bufferRequestBody) {
-			this.connectTimeout = connectTimeout;
-			this.readTimeout = readTimeout;
-			this.bufferRequestBody = bufferRequestBody;
-		}
-
-		public Settings connectTimeout(Duration connectTimeout) {
-			return new Settings(connectTimeout, this.readTimeout, this.bufferRequestBody);
-		}
-
-		public Settings readTimeout(Duration readTimeout) {
-			return new Settings(this.connectTimeout, readTimeout, this.bufferRequestBody);
-		}
-
-		public Settings bufferRequestBody(Boolean bufferRequestBody) {
-			return new Settings(this.connectTimeout, this.readTimeout, bufferRequestBody);
-		}
-
-		public Duration connectTimeout() {
-			return this.connectTimeout;
-		}
-
-		public Duration readTimeout() {
-			return this.readTimeout;
-		}
-
-		public Boolean bufferRequestBody() {
-			return this.bufferRequestBody;
-		}
-
+	@Override
+	public ClientHttpRequestFactory get() {
+		return ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS);
 	}
 
 }

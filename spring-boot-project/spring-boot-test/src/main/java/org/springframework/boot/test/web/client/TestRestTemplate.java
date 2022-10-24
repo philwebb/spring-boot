@@ -41,7 +41,7 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier.Settings;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -1003,7 +1003,8 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions, Settings settings) {
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				ClientHttpRequestFactorySettings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);

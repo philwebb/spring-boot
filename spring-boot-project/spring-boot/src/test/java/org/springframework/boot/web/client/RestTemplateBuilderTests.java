@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import okhttp3.OkHttpClient;
@@ -37,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.boot.web.client.RestTemplateBuilder.ReflectiveClientHttpRequestFactorySupplierRuntimeHints;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -64,7 +64,6 @@ import org.springframework.web.util.UriTemplateHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -257,7 +256,7 @@ class RestTemplateBuilderTests {
 	void requestFactoryClassWhenFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.requestFactory((Class<ClientHttpRequestFactory>) null))
-				.withMessageContaining("RequestFactory must not be null");
+				.withMessageContaining("RequestFactoryType must not be null");
 	}
 
 	@Test
@@ -273,18 +272,24 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	void requestFactoryWhenDeprecatedSupplierIsNullShouldThrowException() {
+	void requestFactoryWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.builder.requestFactory((Supplier<ClientHttpRequestFactory>) null))
-				.withMessageContaining("RequestFactory Supplier must not be null");
+				.withMessageContaining("RequestFactorySupplier must not be null");
+	}
+
+	@Test
+	void requestFactoryWhenFunctionIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.builder
+						.requestFactory((Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
+				.withMessageContaining("RequestFactoryFunction must not be null");
 	}
 
 	@Test
 	void requestFactoryShouldApply() {
 		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
-		RestTemplate template = this.builder.requestFactory((settings) -> requestFactory).build();
+		RestTemplate template = this.builder.requestFactory(() -> requestFactory).build();
 		assertThat(template.getRequestFactory()).isSameAs(requestFactory);
 	}
 
@@ -432,7 +437,7 @@ class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		this.builder.interceptors(this.interceptor).messageConverters(this.messageConverter)
 				.rootUri("http://localhost:8080").errorHandler(errorHandler).basicAuthentication("spring", "boot")
-				.requestFactory((settings) -> requestFactory).customizers((restTemplate) -> {
+				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
 					assertThat(restTemplate.getInterceptors()).hasSize(1);
 					assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
 					assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
@@ -486,10 +491,11 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void readTimeoutConfigurationFailsOnHttpComponentsRequestFactory() {
-		assertThatThrownBy(() -> this.builder.requestFactory(HttpComponentsClientHttpRequestFactory.class)
-				.setReadTimeout(Duration.ofMillis(1234)).build()).isInstanceOf(IllegalStateException.class)
-						.hasMessageContaining("setReadTimeout method marked as deprecated");
+	void deprecatedCallFailsOnRequestFactory() {
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.builder.requestFactory(TestHttpComponentsClientHttpRequestFactory.class)
+						.setReadTimeout(Duration.ofMillis(1234)).build())
+				.withMessageContaining("setReadTimeout method marked as deprecated");
 	}
 
 	@Test
@@ -564,13 +570,13 @@ class RestTemplateBuilderTests {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
 						.setBufferRequestBody(false).build().getRequestFactory())
-				.withMessageContaining(OkHttp3ClientHttpRequestFactory.class.getName());
+				.withMessageContaining("OkHttp3ClientHttpRequestFactory does not support request body buffering");
 	}
 
 	@Test
 	void connectTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setConnectTimeout(Duration.ofMillis(1234)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 1234);
 	}
@@ -578,7 +584,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void readTimeoutCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setReadTimeout(Duration.ofMillis(1234)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 1234);
 	}
@@ -586,21 +592,21 @@ class RestTemplateBuilderTests {
 	@Test
 	void bufferRequestBodyCanBeConfiguredOnAWrappedRequestFactory() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setBufferRequestBody(false).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", false);
-		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory))
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 				.setBufferRequestBody(true).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
-		this.builder.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory)).build();
+		this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory)).build();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("bufferRequestBody", true);
 	}
 
 	@Test
 	void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-		RestTemplate template = this.builder
-				.requestFactory((settings) -> new BufferingClientHttpRequestFactory(requestFactory)).build();
+		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
+				.build();
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
@@ -666,6 +672,10 @@ class RestTemplateBuilderTests {
 	}
 
 	static class TestClientHttpRequestFactory extends SimpleClientHttpRequestFactory {
+
+	}
+
+	static class TestHttpComponentsClientHttpRequestFactory extends HttpComponentsClientHttpRequestFactory {
 
 	}
 
