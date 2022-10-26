@@ -25,13 +25,13 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.trace.http.HttpExchangeTracer;
-import org.springframework.boot.actuate.trace.http.HttpTrace;
-import org.springframework.boot.actuate.trace.http.HttpTraceEndpoint;
-import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.boot.actuate.trace.http.Include;
-import org.springframework.boot.actuate.trace.http.TraceableRequest;
-import org.springframework.boot.actuate.trace.http.TraceableResponse;
+import org.springframework.boot.actuate.web.exchanges.XHttpExchangesDunno;
+import org.springframework.boot.actuate.web.exchanges.HttpExchange;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangesRepository;
+import org.springframework.boot.actuate.web.exchanges.Include;
+import org.springframework.boot.actuate.web.exchanges.SourceHttpRequest;
+import org.springframework.boot.actuate.web.exchanges.SourceHttpResponse;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,30 +48,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for generating documentation describing {@link HttpTraceEndpoint}.
+ * Tests for generating documentation describing {@link HttpExchangesEndpoint}.
  *
  * @author Andy Wilkinson
  */
 class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@MockBean
-	private HttpTraceRepository repository;
+	private HttpExchangesRepository repository;
 
 	@Test
 	void traces() throws Exception {
-		TraceableRequest request = mock(TraceableRequest.class);
+		SourceHttpRequest request = mock(SourceHttpRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
 		given(request.getHeaders())
 				.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
-		TraceableResponse response = mock(TraceableResponse.class);
+		SourceHttpResponse response = mock(SourceHttpResponse.class);
 		given(response.getStatus()).willReturn(200);
 		given(response.getHeaders())
 				.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
-		HttpExchangeTracer tracer = new HttpExchangeTracer(EnumSet.allOf(Include.class));
-		HttpTrace trace = tracer.receivedRequest(request);
+		XHttpExchangesDunno tracer = new XHttpExchangesDunno(EnumSet.allOf(Include.class));
+		HttpExchange trace = tracer.receivedRequest(request);
 		tracer.sendingResponse(trace, response, () -> principal, () -> UUID.randomUUID().toString());
 		given(this.repository.findAll()).willReturn(Arrays.asList(trace));
 		this.mockMvc.perform(get("/actuator/httptrace")).andExpect(status().isOk())
@@ -106,8 +106,8 @@ class HttpTraceEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	static class TestConfiguration {
 
 		@Bean
-		HttpTraceEndpoint httpTraceEndpoint(HttpTraceRepository repository) {
-			return new HttpTraceEndpoint(repository);
+		HttpExchangesEndpoint httpTraceEndpoint(HttpExchangesRepository repository) {
+			return new HttpExchangesEndpoint(repository);
 		}
 
 	}

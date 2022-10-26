@@ -30,13 +30,13 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangesRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -74,7 +74,7 @@ class WebMvcEndpointExposureIntegrationTests {
 							EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
 							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-							HttpTraceAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+							HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
 					.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 					.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
 							HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
@@ -215,8 +215,8 @@ class WebMvcEndpointExposureIntegrationTests {
 	static class HttpTraceRepositoryConfiguration {
 
 		@Bean
-		InMemoryHttpTraceRepository httpTraceRepository() {
-			return new InMemoryHttpTraceRepository();
+		InMemoryHttpExchangesRepository httpTraceRepository() {
+			return new InMemoryHttpExchangesRepository();
 		}
 
 	}
