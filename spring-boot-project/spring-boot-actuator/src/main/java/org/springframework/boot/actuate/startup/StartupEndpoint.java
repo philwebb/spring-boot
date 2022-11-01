@@ -16,12 +16,26 @@
 
 package org.springframework.boot.actuate.startup;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import com.fasterxml.jackson.databind.ser.SerializerFactory;
+
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.metrics.buffering.StartupTimeline;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * {@link Endpoint @Endpoint} to expose the timeline of the
@@ -62,6 +76,7 @@ public class StartupEndpoint {
 	 * A description of an application startup, primarily intended for serialization to
 	 * JSON.
 	 */
+	@JsonSerialize(using = ActuatorJsonSerializer.class)
 	public static final class StartupResponse {
 
 		private final String springBootVersion;
@@ -79,6 +94,49 @@ public class StartupEndpoint {
 
 		public StartupTimeline getTimeline() {
 			return this.timeline;
+		}
+
+	}
+
+	static class ActuatorJsonSerializer extends JsonSerializer<Object> {
+
+		private static final ObjectMapper objectMapper;
+
+		static {
+			Jackson2ObjectMapperBuilder objectMapperBuilder = new Jackson2ObjectMapperBuilder() {
+
+				@Override
+				public void configure(ObjectMapper objectMapper) {
+					objectMapper.setSerializerFactory(new AnnotationIgnoringBeanSerializerFactory(null));
+					super.configure(objectMapper);
+				}
+
+			};
+			objectMapper = objectMapperBuilder.build();
+		}
+
+		@Override
+		public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+			objectMapper.writer().writeValue(gen, value);
+		}
+
+		static class AnnotationIgnoringBeanSerializerFactory extends BeanSerializerFactory {
+
+			protected AnnotationIgnoringBeanSerializerFactory(SerializerFactoryConfig config) {
+				super(config);
+			}
+
+			@Override
+			public SerializerFactory withConfig(SerializerFactoryConfig config) {
+				return (getFactoryConfig() != config) ? new AnnotationIgnoringBeanSerializerFactory(config) : this;
+			}
+
+			@Override
+			protected JsonSerializer<Object> findSerializerFromAnnotation(SerializerProvider prov, Annotated a)
+					throws JsonMappingException {
+				return null;
+			}
+
 		}
 
 	}

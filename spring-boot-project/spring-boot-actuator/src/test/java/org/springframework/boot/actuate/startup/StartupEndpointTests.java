@@ -18,6 +18,10 @@ package org.springframework.boot.actuate.startup;
 
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootVersion;
@@ -27,6 +31,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.metrics.ApplicationStartup;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,6 +71,24 @@ class StartupEndpointTests {
 			StartupResponse startup = startupEndpoint.startup();
 			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
 			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
+		});
+	}
+
+	@Test // gh-32297
+	void serializeJsonWithFieldVisabilityAny() {
+		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
+		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
+			Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+			builder.visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+			ObjectMapper objectMapper = builder.build();
+			StartupResponse startup = startupEndpoint.startup();
+			try {
+				String json = objectMapper.writeValueAsString(startup);
+				assertThat(json).contains("\"springBootVersion\"");
+			}
+			catch (JsonProcessingException ex) {
+				throw new IllegalStateException(ex);
+			}
 		});
 	}
 
