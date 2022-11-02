@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
+import org.springframework.boot.actuate.endpoint.jackson.JsonEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
@@ -417,8 +418,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			this.operation = operation;
 		}
 
-		@ResponseBody
 		@Reflective
+		@ResponseBody
+		@JsonEndpointResponse
 		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(request, body);
 		}

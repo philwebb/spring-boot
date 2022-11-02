@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
@@ -29,6 +33,8 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnMa
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.jackson.JsonEndpointObjectMapper;
+import org.springframework.boot.actuate.endpoint.jackson.JsonEndpointResponseBodyAdvice;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -52,6 +58,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
@@ -114,6 +121,41 @@ public class WebMvcEndpointManagementContextConfiguration {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JsonEndpointObjectMapper jsonEndpointObjectMapper() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		return () -> objectMapper;
+	}
+
+	@Bean
+	static JsonEndpointResponseBodyAdvicePostProcessor jsonEndpointResponseBodyAdvicePostProcessor(
+			JsonEndpointObjectMapper jsonEndpointObjectMapper) {
+		JsonEndpointResponseBodyAdvice advice = new JsonEndpointResponseBodyAdvice(jsonEndpointObjectMapper::get);
+		return new JsonEndpointResponseBodyAdvicePostProcessor(advice);
+	}
+
+	/**
+	 * {@link BeanPostProcessor} to apply {@link JsonEndpointResponseBodyAdvice}.
+	 */
+	static class JsonEndpointResponseBodyAdvicePostProcessor implements BeanPostProcessor {
+
+		private final JsonEndpointResponseBodyAdvice advice;
+
+		JsonEndpointResponseBodyAdvicePostProcessor(JsonEndpointResponseBodyAdvice advice) {
+			this.advice = advice;
+		}
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof RequestMappingHandlerAdapter requestMappingHandlerAdapter) {
+				requestMappingHandlerAdapter.setResponseBodyAdvice(List.of(this.advice));
+			}
+			return bean;
+		}
+
 	}
 
 }
