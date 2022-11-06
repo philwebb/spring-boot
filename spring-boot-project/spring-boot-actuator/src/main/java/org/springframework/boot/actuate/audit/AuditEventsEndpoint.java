@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.lang.Nullable;
@@ -42,8 +43,7 @@ public class AuditEventsEndpoint {
 	}
 
 	@ReadOperation
-	public AuditEventsDescriptor events(@Nullable String principal, @Nullable OffsetDateTime after,
-			@Nullable String type) {
+	public AuditEventsDescriptor events(@Nullable String principal, @Nullable OffsetDateTime after, @Nullable String type) {
 		List<AuditEvent> events = this.auditEventRepository.find(principal, getInstant(after), type);
 		return new AuditEventsDescriptor(events);
 	}
@@ -55,7 +55,7 @@ public class AuditEventsEndpoint {
 	/**
 	 * Description of an application's {@link AuditEvent audit events}.
 	 */
-	public static final class AuditEventsDescriptor {
+	public static final class AuditEventsDescriptor implements SerializableResponse {
 
 		private final List<AuditEvent> events;
 

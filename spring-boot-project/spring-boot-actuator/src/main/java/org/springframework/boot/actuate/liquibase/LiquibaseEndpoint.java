@@ -32,6 +32,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -86,8 +87,7 @@ public class LiquibaseEndpoint {
 				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
 				StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 				service.setDatabase(database);
-				return new LiquibaseBeanDescriptor(
-						service.getRanChangeSets().stream().map(ChangeSetDescriptor::new).toList());
+				return new LiquibaseBeanDescriptor(service.getRanChangeSets().stream().map(ChangeSetDescriptor::new).toList());
 			}
 			finally {
 				if (database != null) {
@@ -106,7 +106,7 @@ public class LiquibaseEndpoint {
 	/**
 	 * Description of an application's {@link SpringLiquibase} beans.
 	 */
-	public static final class LiquibaseBeansDescriptor {
+	public static final class LiquibaseBeansDescriptor implements SerializableResponse {
 
 		private final Map<String, ContextLiquibaseBeansDescriptor> contexts;
 

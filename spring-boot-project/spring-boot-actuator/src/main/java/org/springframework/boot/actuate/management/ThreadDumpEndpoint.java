@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
@@ -54,7 +55,7 @@ public class ThreadDumpEndpoint {
 	/**
 	 * Description of a thread dump.
 	 */
-	public static final class ThreadDumpDescriptor {
+	public static final class ThreadDumpDescriptor implements SerializableResponse {
 
 		private final List<ThreadInfo> threads;
 

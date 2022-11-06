@@ -57,6 +57,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -564,7 +565,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * Description of an application's
 	 * {@link ConfigurationProperties @ConfigurationProperties} beans.
 	 */
-	public static final class ConfigurationPropertiesDescriptor {
+	public static final class ConfigurationPropertiesDescriptor implements SerializableResponse {
 
 		private final Map<String, ContextConfigurationPropertiesDescriptor> contexts;
 

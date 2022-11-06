@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -121,7 +122,7 @@ public class LoggersEndpoint {
 	/**
 	 * Description of loggers.
 	 */
-	public static class LoggersDescriptor {
+	public static class LoggersDescriptor implements SerializableResponse {
 
 		/**
 		 * Empty description.
@@ -158,7 +159,7 @@ public class LoggersEndpoint {
 	/**
 	 * Description of levels configured for a given logger.
 	 */
-	public static class LoggerLevelsDescriptor {
+	public static class LoggerLevelsDescriptor implements SerializableResponse {
 
 		private String configuredLevel;
 

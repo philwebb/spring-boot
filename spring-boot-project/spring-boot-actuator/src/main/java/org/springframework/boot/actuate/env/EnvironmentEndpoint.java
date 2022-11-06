@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -203,7 +204,7 @@ public class EnvironmentEndpoint {
 	/**
 	 * Description of an {@link Environment}.
 	 */
-	public static final class EnvironmentDescriptor {
+	public static final class EnvironmentDescriptor implements SerializableResponse {
 
 		private final List<String> activeProfiles;
 

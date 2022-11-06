@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.info;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -51,7 +52,8 @@ public class InfoEndpoint {
 		for (InfoContributor contributor : this.infoContributors) {
 			contributor.contribute(builder);
 		}
-		return builder.build().getDetails();
+		Info build = builder.build();
+		return SerializableResponse.of(build.getDetails());
 	}
 
 }

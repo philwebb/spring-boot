@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
@@ -75,7 +76,7 @@ public class ScheduledTasksEndpoint {
 	/**
 	 * Description of an application's scheduled {@link Task Tasks}.
 	 */
-	public static final class ScheduledTasksDescriptor {
+	public static final class ScheduledTasksDescriptor implements SerializableResponse {
 
 		private final List<TaskDescriptor> cron;
 

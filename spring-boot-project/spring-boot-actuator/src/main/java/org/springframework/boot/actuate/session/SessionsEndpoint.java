@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -70,7 +71,7 @@ public class SessionsEndpoint {
 	/**
 	 * Description of user's {@link Session sessions}.
 	 */
-	public static final class SessionsDescriptor {
+	public static final class SessionsDescriptor implements SerializableResponse {
 
 		private final List<SessionDescriptor> sessions;
 
@@ -87,7 +88,7 @@ public class SessionsEndpoint {
 	/**
 	 * Description of user's {@link Session session}.
 	 */
-	public static final class SessionDescriptor {
+	public static final class SessionDescriptor implements SerializableResponse {
 
 		private final String id;
 

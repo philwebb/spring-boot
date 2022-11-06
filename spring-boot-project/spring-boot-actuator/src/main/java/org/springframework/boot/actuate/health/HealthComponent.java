@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
+
 /**
  * A component that contributes data to results returned from the {@link HealthEndpoint}.
  *
@@ -26,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * @see Health
  * @see CompositeHealth
  */
-public abstract class HealthComponent {
+public abstract class HealthComponent implements SerializableResponse {
 
 	HealthComponent() {
 	}

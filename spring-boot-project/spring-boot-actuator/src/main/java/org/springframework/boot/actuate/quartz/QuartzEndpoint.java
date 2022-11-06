@@ -50,6 +50,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.actuate.endpoint.SerializableResponse;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -236,8 +237,9 @@ public class QuartzEndpoint {
 			return null;
 		}
 		TriggerState triggerState = this.scheduler.getTriggerState(triggerKey);
-		return TriggerDescriptor.of(trigger).buildDetails(triggerState,
+		Map<String, Object> details = TriggerDescriptor.of(trigger).buildDetails(triggerState,
 				sanitizeJobDataMap(trigger.getJobDataMap(), showUnsanitized));
+		return SerializableResponse.of(details);
 	}
 
 	private static Duration getIntervalDuration(long amount, IntervalUnit unit) {
@@ -279,7 +281,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of available job and trigger group names.
 	 */
-	public static final class QuartzDescriptor {
+	public static final class QuartzDescriptor implements SerializableResponse {
 
 		private final GroupNamesDescriptor jobs;
 
@@ -320,7 +322,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of each group identified by name.
 	 */
-	public static class QuartzGroupsDescriptor {
+	public static class QuartzGroupsDescriptor implements SerializableResponse {
 
 		private final Map<String, Object> groups;
 
@@ -337,7 +339,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of the {@link JobDetail jobs} in a given group.
 	 */
-	public static final class QuartzJobGroupSummaryDescriptor {
+	public static final class QuartzJobGroupSummaryDescriptor implements SerializableResponse {
 
 		private final String group;
 
@@ -382,7 +384,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of a {@link Job Quartz Job}.
 	 */
-	public static final class QuartzJobDetailsDescriptor {
+	public static final class QuartzJobDetailsDescriptor implements SerializableResponse {
 
 		private final String group;
 
@@ -449,7 +451,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of the {@link Trigger triggers} in a given group.
 	 */
-	public static final class QuartzTriggerGroupSummaryDescriptor {
+	public static final class QuartzTriggerGroupSummaryDescriptor implements SerializableResponse {
 
 		private final String group;
 
