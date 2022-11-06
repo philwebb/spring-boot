@@ -26,6 +26,12 @@ allprojects {
 
 	repositories {
 		mavenCentral()
+		mavenLocal() {
+			content {
+				includeGroup("org.springframework")
+				includeGroup("org.springframework.session")
+			}
+		}
 		if (version.contains('-')) {
 			maven { url "https://repo.spring.io/milestone" }
 		}
