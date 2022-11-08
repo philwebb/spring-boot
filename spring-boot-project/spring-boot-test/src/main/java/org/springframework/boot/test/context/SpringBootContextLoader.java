@@ -55,6 +55,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.ContextLoadException;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
@@ -116,7 +117,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
-			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
@@ -125,7 +126,12 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (mainMethod != null) {
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
-			return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			try {
+				return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			}
+			catch (Exception ex) {
+				throw new ContextLoadException(hook.getFailedContext(), ex);
+			}
 		}
 		SpringApplication application = getSpringApplication();
 		configure(mergedConfig, application);
@@ -133,7 +139,13 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer, ALREADY_CONFIGURED);
 			return hook.run(() -> application.run(args));
 		}
-		return application.run(args);
+		ContextLoadFailedHook hook = new ContextLoadFailedHook();
+		try {
+			return hook.run(() -> application.run(args));
+		}
+		catch (Exception ex) {
+			throw new ContextLoadException(hook.getFailedContext(), ex);
+		}
 	}
 
 	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
@@ -465,18 +477,73 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
+	 * {@link SpringApplicationHook} used to capture any exceptions thrown during the
+	 * context loading.
+	 */
+	private static class ContextLoadFailedHook implements SpringApplicationHook {
+
+		private final List<ApplicationContext> contexts = Collections.synchronizedList(new ArrayList<>());
+
+		private ApplicationContext failedContext;
+
+		ContextLoadFailedHook() {
+		}
+
+		@Override
+		public SpringApplicationRunListener getRunListener(SpringApplication application) {
+			return new SpringApplicationRunListener() {
+
+				@Override
+				public void contextLoaded(ConfigurableApplicationContext context) {
+					ContextLoadFailedHook.this.addContext(context);
+				}
+
+				@Override
+				public void failed(ConfigurableApplicationContext context, Throwable exception) {
+					ContextLoadFailedHook.this.failedContext = context;
+				}
+
+			};
+		}
+
+		<T> ApplicationContext run(ThrowingSupplier<T> action) {
+			try {
+				SpringApplication.withHook(this, action);
+			}
+			catch (AbandonedRunException ex) {
+			}
+			List<ApplicationContext> rootContexts = this.contexts.stream()
+					.filter((context) -> context.getParent() == null).toList();
+			Assert.state(!rootContexts.isEmpty(), "No root application context located");
+			Assert.state(rootContexts.size() == 1, "No unique root application context located");
+			return rootContexts.get(0);
+		}
+
+		void addContext(ConfigurableApplicationContext context) {
+			this.contexts.add(context);
+		}
+
+		ApplicationContext getFailedContext() {
+			return this.failedContext;
+		}
+
+		void setFailedContext(ApplicationContext context) {
+			this.failedContext = context;
+		}
+
+	}
+
+	/**
 	 * {@link SpringApplicationHook} used to capture the {@link ApplicationContext} and to
 	 * trigger early exit for the {@link Mode#AOT_PROCESSING} mode.
 	 */
-	private class ContextLoaderHook implements SpringApplicationHook {
+	private static class ContextLoaderHook extends ContextLoadFailedHook {
 
 		private final Mode mode;
 
 		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
 
 		private final Consumer<SpringApplication> configurer;
-
-		private final List<ApplicationContext> contexts = Collections.synchronizedList(new ArrayList<>());
 
 		ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
 				Consumer<SpringApplication> configurer) {
@@ -500,26 +567,18 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 				@Override
 				public void contextLoaded(ConfigurableApplicationContext context) {
-					ContextLoaderHook.this.contexts.add(context);
+					ContextLoaderHook.this.addContext(context);
 					if (ContextLoaderHook.this.mode == Mode.AOT_PROCESSING) {
 						throw new AbandonedRunException(context);
 					}
 				}
 
-			};
-		}
+				@Override
+				public void failed(ConfigurableApplicationContext context, Throwable exception) {
+					ContextLoaderHook.this.setFailedContext(context);
+				}
 
-		private <T> ApplicationContext run(ThrowingSupplier<T> action) {
-			try {
-				SpringApplication.withHook(this, action);
-			}
-			catch (AbandonedRunException ex) {
-			}
-			List<ApplicationContext> rootContexts = this.contexts.stream()
-					.filter((context) -> context.getParent() == null).toList();
-			Assert.state(!rootContexts.isEmpty(), "No root application context located");
-			Assert.state(rootContexts.size() == 1, "No unique root application context located");
-			return rootContexts.get(0);
+			};
 		}
 
 	}
