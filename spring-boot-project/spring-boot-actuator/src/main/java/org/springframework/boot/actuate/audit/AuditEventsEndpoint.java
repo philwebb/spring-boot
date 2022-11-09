@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.lang.Nullable;
@@ -56,7 +57,7 @@ public class AuditEventsEndpoint {
 	 * A description of an application's {@link AuditEvent audit events}. Primarily
 	 * intended for serialization to JSON.
 	 */
-	public static final class AuditEventsDescriptor {
+	public static final class AuditEventsDescriptor implements OperationResponseBody {
 
 		private final List<AuditEvent> events;
 

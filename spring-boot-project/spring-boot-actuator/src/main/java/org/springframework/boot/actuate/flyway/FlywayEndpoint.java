@@ -29,6 +29,7 @@ import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 import org.flywaydb.core.api.MigrationType;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -71,7 +72,7 @@ public class FlywayEndpoint {
 	 * Description of an application's {@link Flyway} beans, primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class ApplicationFlywayBeans {
+	public static final class ApplicationFlywayBeans implements OperationResponseBody {
 
 		private final Map<String, ContextFlywayBeans> contexts;
 

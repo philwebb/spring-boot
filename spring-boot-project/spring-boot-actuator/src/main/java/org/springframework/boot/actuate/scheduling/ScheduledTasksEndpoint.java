@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.scheduling.Trigger;
@@ -70,7 +71,7 @@ public class ScheduledTasksEndpoint {
 	 * A report of an application's scheduled {@link Task Tasks}, primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class ScheduledTasksReport {
+	public static final class ScheduledTasksReport implements OperationResponseBody {
 
 		private final List<TaskDescription> cron;
 

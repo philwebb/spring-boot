@@ -56,6 +56,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -603,7 +604,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
 	 * for serialization to JSON.
 	 */
-	public static final class ApplicationConfigurationProperties {
+	public static final class ApplicationConfigurationProperties implements OperationResponseBody {
 
 		private final Map<String, ContextConfigurationProperties> contexts;
 

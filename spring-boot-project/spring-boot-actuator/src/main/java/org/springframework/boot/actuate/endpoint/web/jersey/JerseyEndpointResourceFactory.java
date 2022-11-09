@@ -44,6 +44,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
@@ -324,7 +325,8 @@ public class JerseyEndpointResourceFactory {
 		public Response apply(ContainerRequestContext request) {
 			Map<String, Link> links = this.linksResolver
 					.resolveLinks(request.getUriInfo().getAbsolutePath().toString());
-			return Response.ok(Collections.singletonMap("_links", links)).build();
+			Map<String, Map<String, Link>> entity = OperationResponseBody.of(Collections.singletonMap("_links", links));
+			return Response.ok(entity).build();
 		}
 
 	}

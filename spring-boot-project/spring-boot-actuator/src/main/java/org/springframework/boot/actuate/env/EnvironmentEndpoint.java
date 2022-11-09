@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -258,7 +259,7 @@ public class EnvironmentEndpoint {
 	/**
 	 * A description of an {@link Environment}.
 	 */
-	public static final class EnvironmentDescriptor {
+	public static final class EnvironmentDescriptor implements OperationResponseBody {
 
 		private final List<String> activeProfiles;
 

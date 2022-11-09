@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.integration;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -45,12 +46,23 @@ public class IntegrationGraphEndpoint {
 
 	@ReadOperation
 	public Graph graph() {
-		return this.graphServer.getGraph();
+		return new GraphDescriptor(this.graphServer.getGraph());
 	}
 
 	@WriteOperation
 	public void rebuild() {
 		this.graphServer.rebuild();
+	}
+
+	/**
+	 * Description of a {@link Graph}.
+	 */
+	private static class GraphDescriptor extends Graph implements OperationResponseBody {
+
+		GraphDescriptor(Graph graph) {
+			super(graph.getContentDescriptor(), graph.getNodes(), graph.getLinks());
+		}
+
 	}
 
 }

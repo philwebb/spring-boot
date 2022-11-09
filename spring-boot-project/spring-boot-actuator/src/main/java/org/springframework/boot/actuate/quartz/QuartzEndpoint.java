@@ -48,6 +48,7 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -242,8 +243,13 @@ public class QuartzEndpoint {
 	public Map<String, Object> quartzTrigger(String groupName, String triggerName) throws SchedulerException {
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, groupName);
 		Trigger trigger = this.scheduler.getTrigger(triggerKey);
-		return (trigger != null) ? TriggerDescription.of(trigger).buildDetails(
-				this.scheduler.getTriggerState(triggerKey), sanitizeJobDataMap(trigger.getJobDataMap())) : null;
+		if (trigger == null) {
+			return null;
+		}
+		TriggerState triggerState = this.scheduler.getTriggerState(triggerKey);
+		Map<String, Object> sanitizedJobDataMap = sanitizeJobDataMap(trigger.getJobDataMap());
+		Map<String, Object> details = TriggerDescription.of(trigger).buildDetails(triggerState, sanitizedJobDataMap);
+		return OperationResponseBody.of(details);
 	}
 
 	private static Duration getIntervalDuration(long amount, IntervalUnit unit) {
@@ -291,7 +297,7 @@ public class QuartzEndpoint {
 	 * A report of available job and trigger group names, primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class QuartzReport {
+	public static final class QuartzReport implements OperationResponseBody {
 
 		private final GroupNames jobs;
 
@@ -333,7 +339,7 @@ public class QuartzEndpoint {
 	 * A summary for each group identified by name, primarily intended for serialization
 	 * to JSON.
 	 */
-	public static class QuartzGroups {
+	public static class QuartzGroups implements OperationResponseBody {
 
 		private final Map<String, Object> groups;
 
@@ -350,7 +356,7 @@ public class QuartzEndpoint {
 	/**
 	 * A summary report of the {@link JobDetail jobs} in a given group.
 	 */
-	public static final class QuartzJobGroupSummary {
+	public static final class QuartzJobGroupSummary implements OperationResponseBody {
 
 		private final String group;
 
@@ -395,7 +401,7 @@ public class QuartzEndpoint {
 	/**
 	 * Details of a {@link Job Quartz Job}, primarily intended for serialization to JSON.
 	 */
-	public static final class QuartzJobDetails {
+	public static final class QuartzJobDetails implements OperationResponseBody {
 
 		private final String group;
 
@@ -462,7 +468,7 @@ public class QuartzEndpoint {
 	/**
 	 * A summary report of the {@link Trigger triggers} in a given group.
 	 */
-	public static final class QuartzTriggerGroupSummary {
+	public static final class QuartzTriggerGroupSummary implements OperationResponseBody {
 
 		private final String group;
 

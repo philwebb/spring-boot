@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
@@ -37,11 +38,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", enableByDefault = false)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private static final Map<String, String> NO_CONTEXT_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "No context to shutdown."));
+	private static final Map<String, String> NO_CONTEXT_MESSAGE = OperationResponseBody
+			.of(Collections.unmodifiableMap(Collections.singletonMap("message", "No context to shutdown.")));
 
-	private static final Map<String, String> SHUTDOWN_MESSAGE = Collections
-			.unmodifiableMap(Collections.singletonMap("message", "Shutting down, bye..."));
+	private static final Map<String, String> SHUTDOWN_MESSAGE = OperationResponseBody
+			.of(Collections.unmodifiableMap(Collections.singletonMap("message", "Shutting down, bye...")));
 
 	private ConfigurableApplicationContext context;
 

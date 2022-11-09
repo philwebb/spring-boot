@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.trace.http;
 
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -52,7 +53,7 @@ public class HttpTraceEndpoint {
 	 * A description of an application's {@link HttpTrace} entries. Primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class HttpTraceDescriptor {
+	public static final class HttpTraceDescriptor implements OperationResponseBody {
 
 		private final List<HttpTrace> traces;
 

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -78,8 +79,8 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
 			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
 					.toUriString();
-			return Collections.singletonMap("_links",
-					WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri));
+			Map<String, Link> links = WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri);
+			return OperationResponseBody.of(Collections.singletonMap("_links", links));
 		}
 
 		@Override

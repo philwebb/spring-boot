@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -82,7 +83,7 @@ public class ConditionsReportEndpoint {
 	 * A description of an application's condition evaluation, primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class ApplicationConditionEvaluation {
+	public static final class ApplicationConditionEvaluation implements OperationResponseBody {
 
 		private final Map<String, ContextConditionEvaluation> contexts;
 

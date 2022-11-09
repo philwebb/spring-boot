@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -65,7 +66,7 @@ public class MappingsEndpoint {
 	 * A description of an application's request mappings. Primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class ApplicationMappings {
+	public static final class ApplicationMappings implements OperationResponseBody {
 
 		private final Map<String, ContextMappings> contextMappings;
 

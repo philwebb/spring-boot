@@ -25,6 +25,7 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -122,7 +123,7 @@ public class LoggersEndpoint {
 	/**
 	 * Levels configured for a given logger exposed in a JSON friendly way.
 	 */
-	public static class LoggerLevels {
+	public static class LoggerLevels implements OperationResponseBody {
 
 		private String configuredLevel;
 

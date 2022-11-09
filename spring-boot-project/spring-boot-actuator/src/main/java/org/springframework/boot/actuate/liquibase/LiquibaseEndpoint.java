@@ -33,6 +33,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -108,7 +109,7 @@ public class LiquibaseEndpoint {
 	 * Description of an application's {@link SpringLiquibase} beans, primarily intended
 	 * for serialization to JSON.
 	 */
-	public static final class ApplicationLiquibaseBeans {
+	public static final class ApplicationLiquibaseBeans implements OperationResponseBody {
 
 		private final Map<String, ContextLiquibaseBeans> contexts;
 

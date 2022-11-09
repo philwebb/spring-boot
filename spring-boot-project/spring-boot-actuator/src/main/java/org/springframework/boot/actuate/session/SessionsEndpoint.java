@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -72,7 +73,7 @@ public class SessionsEndpoint {
 	 * A report of user's {@link Session sessions}. Primarily intended for serialization
 	 * to JSON.
 	 */
-	public static final class SessionsReport {
+	public static final class SessionsReport implements OperationResponseBody {
 
 		private final List<SessionDescriptor> sessions;
 
@@ -90,7 +91,7 @@ public class SessionsEndpoint {
 	 * A description of user's {@link Session session}. Primarily intended for
 	 * serialization to JSON.
 	 */
-	public static final class SessionDescriptor {
+	public static final class SessionDescriptor implements OperationResponseBody {
 
 		private final String id;
 

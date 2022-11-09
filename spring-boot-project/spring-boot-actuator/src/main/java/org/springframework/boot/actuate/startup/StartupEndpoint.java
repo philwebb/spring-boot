@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.startup;
 
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -62,7 +63,7 @@ public class StartupEndpoint {
 	 * A description of an application startup, primarily intended for serialization to
 	 * JSON.
 	 */
-	public static final class StartupResponse {
+	public static final class StartupResponse implements OperationResponseBody {
 
 		private final String springBootVersion;
 

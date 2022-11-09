@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -152,7 +153,7 @@ public class CachesEndpoint {
 	 * A report of available {@link Cache caches}, primarily intended for serialization to
 	 * JSON.
 	 */
-	public static final class CachesReport {
+	public static final class CachesReport implements OperationResponseBody {
 
 		private final Map<String, CacheManagerDescriptor> cacheManagers;
 
@@ -187,7 +188,7 @@ public class CachesEndpoint {
 	/**
 	 * Basic description of a {@link Cache}, primarily intended for serialization to JSON.
 	 */
-	public static class CacheDescriptor {
+	public static class CacheDescriptor implements OperationResponseBody {
 
 		private final String target;
 

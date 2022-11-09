@@ -16,10 +16,17 @@
 
 package org.springframework.boot.actuate.integration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationNode;
+import org.springframework.integration.graph.LinkNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -39,11 +46,19 @@ class IntegrationGraphEndpointTests {
 
 	@Test
 	void readOperationShouldReturnGraph() {
-		Graph mockedGraph = mock(Graph.class);
-		given(this.server.getGraph()).willReturn(mockedGraph);
-		Graph graph = this.endpoint.graph();
+		Graph graph = mock(Graph.class);
+		Map<String, Object> contentDescriptor = new LinkedHashMap<>();
+		Collection<IntegrationNode> nodes = new ArrayList<>();
+		Collection<LinkNode> links = new ArrayList<>();
+		given(graph.getContentDescriptor()).willReturn(contentDescriptor);
+		given(graph.getNodes()).willReturn(nodes);
+		given(graph.getLinks()).willReturn(links);
+		given(this.server.getGraph()).willReturn(graph);
+		Graph result = this.endpoint.graph();
 		then(this.server).should().getGraph();
-		assertThat(graph).isEqualTo(mockedGraph);
+		assertThat(result.getContentDescriptor()).isSameAs(contentDescriptor);
+		assertThat(result.getNodes()).isSameAs(nodes);
+		assertThat(result.getLinks()).isSameAs(links);
 	}
 
 	@Test
