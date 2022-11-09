@@ -32,7 +32,9 @@ public interface Operation {
 	OperationType getType();
 
 	/**
-	 * Invoke the underlying operation using the given {@code context}.
+	 * Invoke the underlying operation using the given {@code context}. Results intended
+	 * to be serialized to another form, for example JSON, should be instances of
+	 * {@link OperationResponseBody}.
 	 * @param context the context in to use when invoking the operation
 	 * @return the result of the operation, may be {@code null}
 	 */

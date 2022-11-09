@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -35,6 +37,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the WebFlux actuator endpoints.
@@ -66,6 +70,19 @@ class WebFluxEndpointIntegrationTests {
 			WebTestClient client = createWebTestClient(context);
 			client.get().uri("/actuator").exchange().expectStatus().isNotFound();
 		});
+	}
+
+	@Test
+	void endpointObjectMapperCanBeApplied() {
+		this.contextRunner.withUserConfiguration(EndpointObjectMapperConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
+					WebTestClient client = createWebTestClient(context);
+					client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody()
+							.consumeWith((result) -> {
+								String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+								assertThat(json).contains("\"scope\":\"notelgnis\"");
+							});
+				});
 	}
 
 	private WebTestClient createWebTestClient(ApplicationContext context) {

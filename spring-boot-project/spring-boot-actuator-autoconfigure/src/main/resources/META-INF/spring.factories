@@ -103,6 +103,7 @@ org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementCo
 org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration=\
+org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.ServletEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration,\
 org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration,\
