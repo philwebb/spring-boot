@@ -25,16 +25,13 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class SampleActuatorApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SampleActuatorApplication.class, args);
-	}
 
 	@Bean
 	public HealthIndicator helloHealthIndicator() {
@@ -59,6 +56,12 @@ public class SampleActuatorApplication {
 
 	private HealthIndicator createHealthIndicator(String value) {
 		return () -> Health.up().withDetail("hello", value).build();
+	}
+
+	public static void main(String[] args) {
+		SpringApplication application = new SpringApplication(SampleActuatorApplication.class);
+		application.setApplicationStartup(new BufferingApplicationStartup(1024));
+		application.run(args);
 	}
 
 }

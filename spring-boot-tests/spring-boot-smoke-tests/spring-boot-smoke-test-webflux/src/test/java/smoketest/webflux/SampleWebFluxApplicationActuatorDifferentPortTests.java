@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "management.server.port=0", "management.endpoints.web.base-path=/" })
-class WebFluxDifferentPortSampleActuatorApplicationTests {
+class SampleWebFluxApplicationActuatorDifferentPortTests {
 
 	@LocalManagementPort
 	private int managementPort;
