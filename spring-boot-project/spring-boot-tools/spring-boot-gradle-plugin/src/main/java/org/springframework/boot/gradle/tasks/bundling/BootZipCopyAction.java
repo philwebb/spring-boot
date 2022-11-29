@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -59,6 +58,7 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
+import org.springframework.boot.loader.tools.NativeImageUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -369,15 +369,8 @@ class BootZipCopyAction implements CopyAction {
 					}
 				}
 			}
-			if (excludes != null) {
-				List<String> args = new ArrayList<>();
-				for (String exclude : excludes) {
-					int lastSlash = exclude.lastIndexOf('/');
-					String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
-					args.add("--exclude-config");
-					args.add(Pattern.quote(jar));
-					args.add("^/META-INF/native-image/.*");
-				}
+			List<String> args = NativeImageUtils.createExcludeConfigArguments(excludes);
+			if (!args.isEmpty()) {
 				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, args);
 				writeEntry("META-INF/native-image/argfile", writer, true);
 			}

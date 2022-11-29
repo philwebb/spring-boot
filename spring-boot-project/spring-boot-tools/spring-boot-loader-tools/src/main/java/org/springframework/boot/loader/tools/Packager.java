@@ -37,8 +37,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
@@ -241,16 +239,9 @@ public abstract class Packager {
 				}
 			}
 		}
-		if (!excludes.isEmpty()) {
-			List<String> args = new ArrayList<>();
-			for (String exclude : excludes) {
-				int lastSlash = exclude.lastIndexOf('/');
-				String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
-				args.add("--exclude-config");
-				args.add(Pattern.quote(jar));
-				args.add("^/META-INF/native-image/.*");
-			}
-			String contents = args.stream().collect(Collectors.joining("\n")) + "\n";
+		List<String> args = NativeImageUtils.createExcludeConfigArguments(excludes);
+		if (!args.isEmpty()) {
+			String contents = String.join("\n", args) + "\n";
 			writer.writeEntry("META-INF/native-image/argfile",
 					new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)));
 		}
