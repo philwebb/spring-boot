@@ -239,12 +239,12 @@ public abstract class Packager {
 				}
 			}
 		}
-		List<String> args = NativeImageUtils.createExcludeConfigArguments(excludes);
-		if (!args.isEmpty()) {
-			String contents = String.join("\n", args) + "\n";
+		NativeImageArgFile argFile = new NativeImageArgFile(excludes);
+		argFile.writeIfNecessary((lines) -> {
+			String contents = String.join("\n", lines) + "\n";
 			writer.writeEntry("META-INF/native-image/argfile",
 					new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)));
-		}
+		});
 	}
 
 	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {

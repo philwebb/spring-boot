@@ -58,7 +58,7 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
-import org.springframework.boot.loader.tools.NativeImageUtils;
+import org.springframework.boot.loader.tools.NativeImageArgFile;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -369,11 +369,11 @@ class BootZipCopyAction implements CopyAction {
 					}
 				}
 			}
-			List<String> args = NativeImageUtils.createExcludeConfigArguments(excludes);
-			if (!args.isEmpty()) {
-				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, args);
+			NativeImageArgFile argFile = new NativeImageArgFile(excludes);
+			argFile.writeIfNecessary((lines) -> {
+				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines);
 				writeEntry("META-INF/native-image/argfile", writer, true);
-			}
+			});
 		}
 
 		private void writeLayersIndexIfNecessary() throws IOException {

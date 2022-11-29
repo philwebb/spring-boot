@@ -17,8 +17,11 @@
 package org.springframework.boot.loader.tools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Utilities for working with GraalVM native images.
@@ -26,27 +29,34 @@ import java.util.regex.Pattern;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-public final class NativeImageUtils {
+public final class NativeImageArgFile {
 
-	private NativeImageUtils() {
+	private final List<String> excludes;
+
+	/**
+	 * @param excludes dependencies for which the reachability metadata should be excluded
+	 */
+	public NativeImageArgFile(Collection<String> excludes) {
+		this.excludes = List.copyOf(excludes);
 	}
 
 	/**
-	 * Creates the arguments passed to native-image for the exclusion of reachability
-	 * metadata.
-	 * @param excludes dependencies for which the reachability metadata should be excluded
-	 * @return arguments for native-image
+	 * Write the arguments file if it is necessary.
+	 * @param writer consumer that should write the contents
 	 */
-	public static List<String> createExcludeConfigArguments(Iterable<String> excludes) {
-		List<String> args = new ArrayList<>();
-		for (String exclude : excludes) {
+	public void writeIfNecessary(ThrowingConsumer<List<String>> writer) {
+		if (this.excludes.isEmpty()) {
+			return;
+		}
+		List<String> lines = new ArrayList<>();
+		for (String exclude : this.excludes) {
 			int lastSlash = exclude.lastIndexOf('/');
 			String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
-			args.add("--exclude-config");
-			args.add(Pattern.quote(jar));
-			args.add("^/META-INF/native-image/.*");
+			lines.add("--exclude-config");
+			lines.add(Pattern.quote(jar));
+			lines.add("^/META-INF/native-image/.*");
 		}
-		return args;
+		writer.accept(lines);
 	}
 
 }
