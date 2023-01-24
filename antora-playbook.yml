@@ -1,0 +1,45 @@
+antora:
+  extensions:
+  - '@springio/antora-extensions/partial-build-extension'
+  - ./lib/antora/extensions/inject-collector-config.js
+  - '@antora/collector-extension'
+  - ./lib/antora/extensions/version-fix.js
+  - '@antora/atlas-extension'
+  - '@opendevise/antora-release-line-extension'
+  - require: '@springio/antora-extensions'
+    # uncomment this option to save the migrated content to the worktree
+    #save_result: true
+    unwrap_example_block: always
+  - require: ./lib/antora/extensions/publish-docsearch-config
+    template_path: ./.github/actions/docsearch-config.json.hbs
+site:
+  title: Spring Boot
+  url: https://docs.spring.io/spring-boot/reference
+  robots: allow
+git:
+  ensure_git_suffix: false
+content:
+  sources:
+  - url: https://github.com/rwinch/spring-boot
+    branches: antora
+    start_path: spring-boot-project/spring-boot-docs
+asciidoc:
+  attributes:
+    page-pagination: ''
+    hide-uri-scheme: '@'
+    tabs-sync-option: '@'
+    chomp: 'all'
+    include-java: 'ROOT:example$docs-src/main/java/org/springframework/boot/docs'
+    include-kotlin: 'ROOT:example$docs-src/main/kotlin/org/springframework/boot/docs'
+    docs-resources: 'example$docs-src/main/resources'
+  extensions:
+  - '@asciidoctor/tabs'
+  - '@springio/asciidoctor-extensions'
+urls:
+  latest_version_segment_strategy: redirect:to
+  latest_version_segment: ''
+  redirect_facility: httpd
+ui:
+  bundle:
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/latest/ui-bundle.zip
+    snapshot: true
