@@ -14,7 +14,7 @@ antora:
     template_path: ./.github/actions/docsearch-config.json.hbs
 site:
   title: Spring Boot
-  url: https://docs.spring.io/spring-boot/reference
+  url: https://rwinch.github.io/spring-boot/
   robots: allow
 git:
   ensure_git_suffix: false
