@@ -14,9 +14,9 @@ site:
   title: Spring Boot Reference
 content:
   sources:
-    - url: https://github.com/rwinch/spring-boot
-      branches: antora
-      start_path: ./spring-boot-project/spring-boot-docs
+    - url: ./../..
+      branches: HEAD
+      start_path: spring-boot-project/spring-boot-docs
 asciidoc:
   attributes:
     page-pagination: ''
