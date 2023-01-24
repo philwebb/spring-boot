@@ -1,5 +1,5 @@
 {
-  "index_name": "boot-docs",
+  "index_name": "spring-boot-docs",
   "start_urls": [
     "https://rwinch.github.io/spring-boot/boot/"
   ],
