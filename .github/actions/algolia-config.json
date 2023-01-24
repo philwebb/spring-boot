@@ -1,7 +1,7 @@
 {
   "index_name": "boot-docs",
   "start_urls": [
-    "https://rwinch.github.io/spring-boot/"
+    "https://rwinch.github.io/spring-boot/boot/"
   ],
   "selectors": {
     "lvl0": {
