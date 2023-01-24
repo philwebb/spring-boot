@@ -12,20 +12,34 @@ TIP: Spring Boot provides various conversion mechanism with advanced value forma
 NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
 Also, you can define your own properties.
 
+include::partial$application-properties/core.adoc[]
 
+include::partial$application-properties/cache.adoc[]
 
+include::partial$application-properties/mail.adoc[]
 
+include::partial$application-properties/json.adoc[]
 
+include::partial$application-properties/data.adoc[]
 
+include::partial$application-properties/transaction.adoc[]
 
+include::partial$application-properties/data-migration.adoc[]
 
+include::partial$application-properties/integration.adoc[]
 
+include::partial$application-properties/web.adoc[]
 
+include::partial$application-properties/templating.adoc[]
 
+include::partial$application-properties/server.adoc[]
 
+include::partial$application-properties/security.adoc[]
 
+include::partial$application-properties/rsocket.adoc[]
 
+include::partial$application-properties/actuator.adoc[]
 
+include::partial$application-properties/devtools.adoc[]
 
-
-
+include::partial$application-properties/testing.adoc[]
