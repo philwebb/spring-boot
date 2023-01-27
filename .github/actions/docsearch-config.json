@@ -1,0 +1,60 @@
+{
+  "index_name": "spring-boot-docs",
+  "start_urls": [
+    {
+      "url": "https://rwinch.github.io/spring-boot/(?:$|index.html$|[a-z].*)",
+      "extra_attributes": {
+        "component": "boot",
+        "version": "3.1.0",
+        "version_rank": 1
+      }
+    }
+  ],
+  "sitemap_urls": [
+    "https://rwinch.github.io/spring-boot/sitemap.xml"
+  ],
+  "scrape_start_urls": true,
+  "stop_urls": [],
+  "selectors": {
+    "default": {
+      "lvl0": {
+        "global": true,
+        "selector": ".nav-panel-explore .context .title, .nav-panel-explore .context .version"
+      },
+      "lvl1": ".doc > h1.page",
+      "lvl2": ".doc .sect1 > h2:first-child",
+      "lvl3": ".doc .sect2 > h3:first-child",
+      "lvl4": ".doc .sect3 > h4:first-child",
+      "text": ".doc p, .doc dt, .doc td.content, .doc th.tableblock"
+    }
+  },
+  "selectors_exclude": [
+    "#section-summary"
+  ],
+  "min_indexed_level": 1,
+  "custom_settings": {
+    "advancedSyntax": true,
+    "attributesForFaceting": [
+      "component",
+      "version"
+    ],
+    "attributesToRetrieve": [
+      "anchor",
+      "content",
+      "hierarchy",
+      "url",
+      "component",
+      "version"
+    ],
+    "attributesToSnippet": [
+      "content:25"
+    ],
+    "customRanking": [
+      "desc(weight.page_rank)",
+      "asc(version_rank)",
+      "desc(weight.level)",
+      "asc(weight.position)"
+    ]
+  },
+  "nb_hits": 13883
+}
