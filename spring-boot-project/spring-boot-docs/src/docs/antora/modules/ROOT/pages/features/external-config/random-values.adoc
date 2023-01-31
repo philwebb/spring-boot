@@ -5,7 +5,7 @@
 The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
 It can produce integers, longs, uuids, or strings, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  secret: "${random.value}"

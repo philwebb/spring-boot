@@ -36,7 +36,7 @@ Now we have to add the following dependencies:
 
 Add the following application properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management.tracing.sampling.probability: 1.0
 ----

@@ -5,7 +5,7 @@ Access logs can be configured for Tomcat, Undertow, and Jetty through their resp
 
 For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  tomcat:
@@ -21,7 +21,7 @@ In the preceding example, the logs are available in `my-tomcat/logs` relative to
 
 Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  undertow:
@@ -40,7 +40,7 @@ You can customize this location by setting the configprop:server.undertow.access
 
 Finally, access logging for Jetty can also be configured as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  jetty:

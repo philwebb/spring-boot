@@ -7,7 +7,7 @@ The "`discovery page`" is available on `/actuator` by default.
 
 To disable the "`discovery page`", add the following property to your application properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoints:

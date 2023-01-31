@@ -61,7 +61,7 @@ Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
 This means that all the xref:actuator/endpoints/health.adoc#actuator.endpoints.health.groups[health groups features] are available for them.
 You can, for example, configure additional Health Indicators:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:

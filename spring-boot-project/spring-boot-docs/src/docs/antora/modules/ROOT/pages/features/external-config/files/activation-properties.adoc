@@ -22,7 +22,7 @@ The following activation properties are available:
 
 For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	myprop:
 	  "always-set"

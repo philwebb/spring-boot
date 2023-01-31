@@ -50,7 +50,7 @@ For HTTP endpoints, a user is considered to be authorized if they have authentic
 By default, any authenticated user is authorized.
 For JMX endpoints, all users are always authorized.
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:

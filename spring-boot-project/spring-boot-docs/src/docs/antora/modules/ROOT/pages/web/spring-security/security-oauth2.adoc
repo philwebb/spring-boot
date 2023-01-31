@@ -13,7 +13,7 @@ The same properties are applicable to both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:
@@ -56,7 +56,7 @@ For example, if the `issuer-uri` provided is "https://example.com", then an "Ope
 The result is expected to be an "OpenID Provider Configuration Response".
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:
@@ -88,7 +88,7 @@ Also, if the key for the client registration matches a default supported provide
 
 In other words, the two configurations in the following example use the Google provider:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:
@@ -111,7 +111,7 @@ In other words, the two configurations in the following example use the Google p
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can set up an OAuth2 Resource Server.
 For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, as shown in the following examples:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:
@@ -121,7 +121,7 @@ For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, a
 	          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
 ----
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:
@@ -140,7 +140,7 @@ Alternatively, you can define your own `JwtDecoder` bean for servlet application
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:

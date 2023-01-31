@@ -8,7 +8,7 @@ Most registries share common features.
 For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
 The following example disables Datadog:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
       datadog:
@@ -19,7 +19,7 @@ The following example disables Datadog:
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as the following example shows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
       defaults:
@@ -30,7 +30,7 @@ You can also disable all registries unless stated otherwise by the registry-spec
 
 Spring Boot also adds any auto-configured registries to the global static composite registry on the `Metrics` class, unless you explicitly tell it not to:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  metrics:

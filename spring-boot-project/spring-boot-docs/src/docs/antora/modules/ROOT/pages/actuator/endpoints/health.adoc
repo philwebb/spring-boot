@@ -155,7 +155,7 @@ In such cases, you also need to provide a custom implementation of the {spring-b
 For example, assume a new `Status` with a code of `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:
@@ -172,7 +172,7 @@ Configuring a custom mapping disables the defaults mappings for `DOWN` and `OUT_
 If you want to retain the default mappings, you must explicitly configure them, alongside any custom mappings.
 For example, the following property maps `FATAL` to 503 (service unavailable) and retains the default mappings for `DOWN` and `OUT_OF_SERVICE`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:
@@ -270,7 +270,7 @@ It is sometimes useful to organize health indicators into groups that you can us
 To create a health indicator group, you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:
@@ -284,7 +284,7 @@ You can then check the result by hitting `http://localhost:8080/actuator/health/
 
 Similarly, to create a group that excludes the database indicators from the group and includes all the other indicators, you can define the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:
@@ -298,7 +298,7 @@ By default, groups inherit the same `StatusAggregator` and `HttpCodeStatusMapper
 However, you can also define these on a per-group basis.
 You can also override the `show-details` and `roles` properties if required:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoint:

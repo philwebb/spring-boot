@@ -10,7 +10,7 @@ include-code::./list/MyProperties[]
 
 Consider the following configuration:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  list:
@@ -33,7 +33,7 @@ This configuration _does not_ add a second `MyPojo` instance to the list, and it
 When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
 Consider the following example:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  list:
@@ -62,7 +62,7 @@ include-code::./map/MyProperties[]
 
 Consider the following configuration:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  map:

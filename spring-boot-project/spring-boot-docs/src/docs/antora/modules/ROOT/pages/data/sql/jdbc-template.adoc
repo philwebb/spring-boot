@@ -8,7 +8,7 @@ include-code::./MyBean[]
 
 You can customize some properties of the template by using the `spring.jdbc.template.*` properties, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  jdbc:

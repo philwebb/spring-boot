@@ -13,7 +13,7 @@ You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  cassandra:
@@ -24,7 +24,7 @@ Generally, you provide `keyspace-name` and `contact-points` as well the local da
 
 If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  cassandra:

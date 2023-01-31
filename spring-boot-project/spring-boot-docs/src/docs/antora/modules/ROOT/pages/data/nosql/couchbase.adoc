@@ -13,7 +13,7 @@ You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  couchbase:
@@ -25,7 +25,7 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 It is also possible to customize some of the `ClusterEnvironment` settings.
 For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  couchbase:
@@ -50,7 +50,7 @@ For complete details of Spring Data Couchbase, see the {spring-data-couchbase-do
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
 This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  data:

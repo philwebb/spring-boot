@@ -13,7 +13,7 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 == Connecting to an LDAP Server
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  ldap:
@@ -48,7 +48,7 @@ include-code::./MyBean[]
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  ldap:
@@ -62,7 +62,7 @@ It is possible to define multiple base-dn values, however, since distinguished n
 
 In yaml files, you can use the yaml list notation. In properties files, you must include the index as part of the property name:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring.ldap.embedded.base-dn:
 	  - "dc=spring,dc=io"

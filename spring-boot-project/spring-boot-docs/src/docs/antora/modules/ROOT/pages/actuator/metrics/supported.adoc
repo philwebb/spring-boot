@@ -210,7 +210,7 @@ Metrics are also tagged by the name of the `EntityManagerFactory`, which is deri
 To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
 You can enable that on the auto-configured `EntityManagerFactory`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  jpa:
@@ -309,7 +309,7 @@ include-code::./MyCommandTagsProviderConfiguration[]
 
 To disable the auto-configured command metrics, set the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  metrics:
@@ -347,7 +347,7 @@ include-code::./MyConnectionPoolTagsProviderConfiguration[]
 
 To disable the auto-configured connection pool metrics, set the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  metrics:

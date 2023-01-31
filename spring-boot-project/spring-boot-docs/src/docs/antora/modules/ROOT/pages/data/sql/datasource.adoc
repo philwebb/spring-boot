@@ -64,7 +64,7 @@ Production database connections can also be auto-configured by using a pooling `
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  datasource:
@@ -89,7 +89,7 @@ See the documentation of the connection pool implementation you are using for mo
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  datasource:
@@ -140,7 +140,7 @@ If you deploy your Spring Boot application to an Application Server, you might w
 The configprop:spring.datasource.jndi-name[] property can be used as an alternative to the configprop:spring.datasource.url[], configprop:spring.datasource.username[], and configprop:spring.datasource.password[] properties to access the `DataSource` from a specific JNDI location.
 For example, the following section in `application.properties` shows how you can access a JBoss AS defined `DataSource`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  datasource:

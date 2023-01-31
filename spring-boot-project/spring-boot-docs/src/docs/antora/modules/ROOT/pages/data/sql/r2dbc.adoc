@@ -8,7 +8,7 @@ Connections are provided by using a `ConnectionFactory`, similar to a `DataSourc
 `ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  r2dbc:

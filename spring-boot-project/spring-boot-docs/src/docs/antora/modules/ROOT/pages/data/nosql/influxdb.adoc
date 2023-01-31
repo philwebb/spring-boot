@@ -10,7 +10,7 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 == Connecting to InfluxDB
 Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  influx:

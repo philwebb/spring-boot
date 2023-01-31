@@ -21,7 +21,7 @@ Additionally, Spring Boot provides support for a reactive client from the `org.s
 By default, the clients will target `http://localhost:9200`.
 You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  elasticsearch:
@@ -42,7 +42,7 @@ To take full control over the clients' configuration, define a `RestClientBuilde
 Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the `RestClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  elasticsearch:
@@ -107,7 +107,7 @@ Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperat
 
 You can choose to disable the repositories support with the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
     spring:
       data:

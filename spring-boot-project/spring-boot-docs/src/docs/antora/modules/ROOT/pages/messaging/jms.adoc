@@ -21,7 +21,7 @@ Adding `org.apache.activemq:artemis-jakarta-server` to your application lets you
 ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  artemis:
@@ -36,7 +36,7 @@ These can be specified as a comma-separated list to create them with the default
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  jms:
@@ -46,7 +46,7 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 If you'd rather use native pooling, you can do so by adding a dependency on `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  artemis:
@@ -67,7 +67,7 @@ If you are running your application in an application server, Spring Boot tries 
 By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the configprop:spring.jms.jndi-name[] property if you need to specify an alternative location, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  jms:

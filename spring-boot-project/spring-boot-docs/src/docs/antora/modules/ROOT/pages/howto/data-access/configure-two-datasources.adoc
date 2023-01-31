@@ -14,7 +14,7 @@ TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the dat
 Both data sources are also bound for advanced customizations.
 For instance, you could configure them as follows:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  datasource:

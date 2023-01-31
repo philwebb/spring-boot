@@ -6,7 +6,7 @@ https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configura
 Kafka configuration is controlled by external configuration properties in `spring.kafka.*`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  kafka:
@@ -86,7 +86,7 @@ Spring Boot auto-configuration supports all HIGH importance properties, some sel
 Only a subset of the properties supported by Kafka are available directly through the `KafkaProperties` class.
 If you wish to configure the producer or consumer with additional properties that are not directly supported, use the following properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  kafka:
@@ -110,7 +110,7 @@ This sets the common `prop.one` Kafka property to `first` (applies to producers,
 
 You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  kafka:
@@ -123,7 +123,7 @@ You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  kafka:
@@ -156,7 +156,7 @@ include-code::./annotation/MyTest[]
 
 * Use a placeholder in configuration properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  kafka:

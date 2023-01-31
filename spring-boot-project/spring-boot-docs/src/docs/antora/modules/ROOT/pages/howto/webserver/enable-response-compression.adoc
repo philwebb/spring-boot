@@ -4,7 +4,7 @@
 HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  compression:

@@ -11,7 +11,7 @@ This configuration makes use of the properties under `Saml2RelyingPartyPropertie
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
 You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  security:

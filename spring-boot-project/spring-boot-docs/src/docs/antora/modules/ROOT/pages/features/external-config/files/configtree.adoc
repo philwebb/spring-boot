@@ -30,7 +30,7 @@ The contents of the `username` file would be a config value, and the contents of
 
 To import these properties, you can add the following to your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  config:
@@ -68,7 +68,7 @@ For example, given the following volume:
 
 You can use `configtree:/etc/config/*/` as the import location:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  config:
@@ -85,7 +85,7 @@ Configuration trees can also be used for Docker secrets.
 When a Docker swarm service is granted access to a secret, the secret gets mounted into the container.
 For example, if a secret named `db.password` is mounted at location `/run/secrets/`, you can make `db.password` available to the Spring environment using the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  config:

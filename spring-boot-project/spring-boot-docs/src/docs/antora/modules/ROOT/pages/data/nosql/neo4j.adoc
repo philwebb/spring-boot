@@ -17,7 +17,7 @@ include-code::./MyBean[]
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
 The following example shows how to configure the uri and credentials to use:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  neo4j:

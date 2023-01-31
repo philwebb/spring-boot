@@ -9,7 +9,7 @@ You can do this by putting an extension hint in square brackets.
 For example, suppose you have a `/etc/config/myconfig` file that you wish to import as yaml.
 You can import it from your `application.properties` using the following:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  config:

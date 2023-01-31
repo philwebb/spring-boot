@@ -13,7 +13,7 @@ If you prefer to set the dialect yourself, set the configprop:spring.jpa.databas
 
 The most common options to set are shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  jpa:

@@ -111,7 +111,7 @@ It is also used to configure Spring Session servlet based `SessionRepository` be
 
 For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  servlet:

@@ -59,7 +59,7 @@ When the `env` contributor is enabled, you can customize the data exposed by the
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	info:
 	  app:
@@ -75,7 +75,7 @@ Rather than hardcoding those values, you could also xref:howto/properties-and-co
 
 Assuming you use Maven, you could rewrite the preceding example as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	info:
 	  app:
@@ -100,7 +100,7 @@ By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
 If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  info:
@@ -110,7 +110,7 @@ If you want to display the full git information (that is, the full content of `g
 
 To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  info:

@@ -22,7 +22,7 @@ See the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoints:

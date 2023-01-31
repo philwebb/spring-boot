@@ -4,7 +4,7 @@
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
 The following example shows setting SSL properties using a Java KeyStore file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  port: 8443
@@ -16,7 +16,7 @@ The following example shows setting SSL properties using a Java KeyStore file:
 
 The following example shows setting SSL properties using PEM-encoded certificate and private key files:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	server:
 	  port: 8443

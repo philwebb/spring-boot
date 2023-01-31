@@ -91,7 +91,7 @@ Most of the time, this does not happen (unless you modify the default MVC config
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -119,7 +119,7 @@ Otherwise, all Webjars resolve as a `404`.
 
 To use cache busting, the following configuration configures a cache busting solution for all static resources, effectively adding a content hash, such as `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`, in URLs:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  web:
@@ -139,7 +139,7 @@ When loading resources dynamically with, for example, a JavaScript module loader
 That is why other strategies are also supported and can be combined.
 A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  web:
@@ -194,7 +194,7 @@ Nowadays, Content Negotiation is much more reliable.
 There are other ways to deal with HTTP clients that do not consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -204,7 +204,7 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 
 Or if you prefer to use a different parameter name:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -215,7 +215,7 @@ Or if you prefer to use a different parameter name:
 
 Most standard media types are supported out-of-the-box, but you can also define new ones:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:
@@ -230,7 +230,7 @@ As of Spring Framework 5.3, Spring MVC supports several implementation strategie
 It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
 Spring Boot now provides a configuration property to choose and opt in the new strategy:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  mvc:

@@ -30,7 +30,7 @@ You can configure both the `include` and the `exclude` properties with a list of
 
 For example, to only expose the `health` and `info` endpoints over JMX, use the following property:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoints:
@@ -42,7 +42,7 @@ For example, to only expose the `health` and `info` endpoints over JMX, use the 
 `*` can be used to select all endpoints.
 For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	management:
 	  endpoints:

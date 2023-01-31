@@ -11,7 +11,7 @@ include-code::./custom/MyDataSourceConfiguration[]
 
 The following example shows how to define a data source by setting properties:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  datasource:
@@ -36,7 +36,7 @@ Check the implementation that is going to be used at runtime for more details.
 
 The following example shows how to define a JDBC data source by setting properties:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  datasource:
@@ -51,7 +51,7 @@ Because the actual type of the connection pool is not exposed, no keys are gener
 Also, if you happen to have Hikari on the classpath, this basic setup does not work, because Hikari has no `url` property (but does have a `jdbcUrl` property).
 In that case, you must rewrite your configuration as follows:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  datasource:
@@ -78,7 +78,7 @@ include-code::./configurable/MyDataSourceConfiguration[]
 This setup puts you _in sync_ with what Spring Boot does for you by default, except that a dedicated connection pool is chosen (in code) and its settings are exposed in the `app.datasource.configuration` sub namespace.
 Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl` translation for you, you can configure it as follows:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	app:
 	  datasource:

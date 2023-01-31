@@ -9,7 +9,7 @@ The {spring-webservices-docs}[Spring Web Services features] can be easily access
 To do so, configure their location, as shown in the following example:
 
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  webservices:

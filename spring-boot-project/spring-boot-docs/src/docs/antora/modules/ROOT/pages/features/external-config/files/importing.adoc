@@ -6,7 +6,7 @@ Imports are processed as they are discovered, and are treated as additional docu
 
 For example, you might have the following in your classpath `application.properties` file:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops,yaml]
 ----
 	spring:
 	  application:
@@ -23,7 +23,7 @@ An import will only be imported once no matter how many times it is declared.
 The order an import is defined inside a single document within the properties/yaml file does not matter.
 For instance, the two examples below produce the same result:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	spring:
 	  config:
@@ -32,7 +32,7 @@ For instance, the two examples below produce the same result:
 	  property: "value"
 ----
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[configprops%novalidate,yaml]
 ----
 	my:
 	  property: "value"

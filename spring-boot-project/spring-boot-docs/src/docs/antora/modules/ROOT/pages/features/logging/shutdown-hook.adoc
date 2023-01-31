@@ -11,7 +11,7 @@ You can use the configprop:logging.register-shutdown-hook[] property to disable 
 Setting it to `false` will disable the registration.
 You can set the property in your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+[configprops,yaml]
 ----
 	logging:
 	  register-shutdown-hook: false
