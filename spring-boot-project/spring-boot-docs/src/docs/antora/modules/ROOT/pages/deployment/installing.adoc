@@ -2,7 +2,7 @@
 = Installing Spring Boot Applications
 
 In addition to running Spring Boot applications by using `java -jar`, it is also possible to make fully executable applications for Unix systems.
-A fully executable jar can be executed like any other executable binary or it can be <<deployment#deployment.installing.nix-services,registered with `init.d` or `systemd`>>.
+A fully executable jar can be executed like any other executable binary or it can be xref:deployment/installing/nix-services.adoc[registered with `init.d` or `systemd`].
 This helps when installing and managing Spring Boot applications in common production environments.
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.

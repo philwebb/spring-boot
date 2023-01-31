@@ -5,7 +5,7 @@ If you work in a company that develops shared libraries, or if you work on an op
 Auto-configuration classes can be bundled in external jars and still be picked up by Spring Boot.
 
 Auto-configuration can be associated to a "`starter`" that provides the auto-configuration code as well as the typical libraries that you would use with it.
-We first cover what you need to know to build your own auto-configuration and then we move on to the <<features#features.developing-auto-configuration.custom-starter,typical steps required to create a custom starter>>.
+We first cover what you need to know to build your own auto-configuration and then we move on to the xref:features/developing-auto-configuration/custom-starter.adoc[typical steps required to create a custom starter].
 
 
 

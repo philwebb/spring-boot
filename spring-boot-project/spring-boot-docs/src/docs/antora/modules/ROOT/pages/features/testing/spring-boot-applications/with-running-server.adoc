@@ -4,12 +4,12 @@
 If you need to start a full running server, we recommend that you use random ports.
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
-The `@LocalServerPort` annotation can be used to <<howto#howto.webserver.discover-port,inject the actual port used>> into your test.
+The `@LocalServerPort` annotation can be used to xref:howto/webserver/discover-port.adoc[inject the actual port used] into your test.
 For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
 include::code:MyRandomPortWebTestClientTests[]
 
-TIP: `WebTestClient` can be used against both live servers and <<features#features.testing.spring-boot-applications.with-mock-environment, mock environments>>.
+TIP: `WebTestClient` can be used against both live servers and xref:features/testing/spring-boot-applications/with-mock-environment.adoc[mock environments].
 
 This setup requires `spring-webflux` on the classpath.
 If you can not or will not add webflux, Spring Boot also provides a `TestRestTemplate` facility:

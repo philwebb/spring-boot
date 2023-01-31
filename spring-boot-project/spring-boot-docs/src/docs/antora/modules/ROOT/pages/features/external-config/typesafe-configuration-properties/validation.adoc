@@ -21,7 +21,7 @@ Doing so avoids any problems that may be caused by early instantiation.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all `@ConfigurationProperties` beans.
 Point your web browser to `/actuator/configprops` or use the equivalent JMX endpoint.
-See the "<<actuator#actuator.endpoints, Production ready features>>" section for details.
+See the "xref:actuator/endpoints.adoc[Production ready features]" section for details.
 
 
 

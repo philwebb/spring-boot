@@ -71,7 +71,7 @@ For example, you could add the following settings to your `application.propertie
 
 [TIP]
 ====
-Rather than hardcoding those values, you could also <<howto#howto.properties-and-configuration.expand-properties,expand info properties at build time>>.
+Rather than hardcoding those values, you could also xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.expand-properties[expand info properties at build time].
 
 Assuming you use Maven, you could rewrite the preceding example as follows:
 
@@ -94,7 +94,7 @@ Another useful feature of the `info` endpoint is its ability to publish informat
 If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
-See "<<howto#howto.build.generate-git-info,how to generate git information>>" for more detail.
+See "xref:howto/build.adoc#howto.build.generate-git-info[how to generate git information]" for more detail.
 
 By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
@@ -126,7 +126,7 @@ If a `BuildProperties` bean is available, the `info` endpoint can also publish i
 This happens if a `META-INF/build-info.properties` file is available in the classpath.
 
 TIP: The Maven and Gradle plugins can both generate that file.
-See "<<howto#howto.build.generate-info,how to generate build information>>" for more details.
+See "xref:howto/build.adoc#howto.build.generate-info[how to generate build information]" for more details.
 
 
 

@@ -3,25 +3,25 @@
 
 Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {micrometer-docs}[numerous monitoring systems], including:
 
-- <<actuator#actuator.metrics.export.appoptics,AppOptics>>
-- <<actuator#actuator.metrics.export.atlas,Atlas>>
-- <<actuator#actuator.metrics.export.datadog,Datadog>>
-- <<actuator#actuator.metrics.export.dynatrace,Dynatrace>>
-- <<actuator#actuator.metrics.export.elastic,Elastic>>
-- <<actuator#actuator.metrics.export.ganglia,Ganglia>>
-- <<actuator#actuator.metrics.export.graphite,Graphite>>
-- <<actuator#actuator.metrics.export.humio,Humio>>
-- <<actuator#actuator.metrics.export.influx,Influx>>
-- <<actuator#actuator.metrics.export.jmx,JMX>>
-- <<actuator#actuator.metrics.export.kairos,KairosDB>>
-- <<actuator#actuator.metrics.export.newrelic,New Relic>>
-- <<actuator#actuator.metrics.export.otlp,OpenTelemetry>>
-- <<actuator#actuator.metrics.export.prometheus,Prometheus>>
-- <<actuator#actuator.metrics.export.signalfx,SignalFx>>
-- <<actuator#actuator.metrics.export.simple,Simple (in-memory)>>
-- <<actuator#actuator.metrics.export.stackdriver,Stackdriver>>
-- <<actuator#actuator.metrics.export.statsd,StatsD>>
-- <<actuator#actuator.metrics.export.wavefront,Wavefront>>
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.appoptics[AppOptics]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.atlas[Atlas]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.datadog[Datadog]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.dynatrace[Dynatrace]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.elastic[Elastic]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.ganglia[Ganglia]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.graphite[Graphite]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.humio[Humio]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.influx[Influx]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.jmx[JMX]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.kairos[KairosDB]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.newrelic[New Relic]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.otlp[OpenTelemetry]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.prometheus[Prometheus]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.signalfx[SignalFx]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.simple[Simple (in-memory)]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.stackdriver[Stackdriver]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.statsd[StatsD]
+- xref:actuator/metrics/export.adoc#actuator.metrics.export.wavefront[Wavefront]
 
 TIP: To learn more about Micrometer's capabilities, see its https://micrometer.io/docs[reference documentation], in particular the {micrometer-concepts-docs}[concepts section].
 

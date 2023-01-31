@@ -6,14 +6,14 @@ By default, it configures an in-memory embedded database, a `JdbcTemplate`, and 
 Only `AbstractJdbcConfiguration` subclasses are scanned when the `@DataJdbcTest` annotation is used, regular `@Component` and `@ConfigurationProperties` beans are not scanned.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
-If that is not what you want, you can disable transaction management for a test or for the whole test class as <<features#features.testing.spring-boot-applications.autoconfigured-jdbc,shown in the JDBC example>>.
+If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:features/testing/spring-boot-applications/autoconfigured-jdbc.adoc[shown in the JDBC example].
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
-(See "<<features#features.testing.spring-boot-applications.autoconfigured-spring-data-jpa>>".)
+(See "xref:features/testing/spring-boot-applications/autoconfigured-spring-data-jpa.adoc[Auto-configured Data JPA Tests]".)
 
 
 

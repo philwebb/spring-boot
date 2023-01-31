@@ -5,20 +5,20 @@ The cache abstraction does not provide an actual store and relies on abstraction
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. <<io#io.caching.provider.generic,Generic>>
-. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
-. <<io#io.caching.provider.hazelcast,Hazelcast>>
-. <<io#io.caching.provider.infinispan,Infinispan>>
-. <<io#io.caching.provider.couchbase,Couchbase>>
-. <<io#io.caching.provider.redis,Redis>>
-. <<io#io.caching.provider.caffeine,Caffeine>>
-. <<io#io.caching.provider.cache2k,Cache2k>>
-. <<io#io.caching.provider.simple,Simple>>
+. xref:io/caching/provider.adoc#io.caching.provider.generic[Generic]
+. xref:io/caching/provider.adoc#io.caching.provider.jcache[JCache (JSR-107)] (EhCache 3, Hazelcast, Infinispan, and others)
+. xref:io/caching/provider.adoc#io.caching.provider.hazelcast[Hazelcast]
+. xref:io/caching/provider.adoc#io.caching.provider.infinispan[Infinispan]
+. xref:io/caching/provider.adoc#io.caching.provider.couchbase[Couchbase]
+. xref:io/caching/provider.adoc#io.caching.provider.redis[Redis]
+. xref:io/caching/provider.adoc#io.caching.provider.caffeine[Caffeine]
+. xref:io/caching/provider.adoc#io.caching.provider.cache2k[Cache2k]
+. xref:io/caching/provider.adoc#io.caching.provider.simple[Simple]
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 
 TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to <<io#io.caching.provider.none,disable caching altogether>> in certain environments (such as tests).
+Use this property if you need to xref:io/caching/provider.adoc#io.caching.provider.none[disable caching altogether] in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
@@ -63,7 +63,7 @@ Even if the JSR-107 standard does not enforce a standardized way to define the l
 
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
 
-TIP: Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
+TIP: Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
 If a single `HazelcastInstance` is available, it is automatically reused for the `CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
 
 There are two ways to customize the underlying `javax.cache.cacheManager`:
@@ -80,13 +80,13 @@ No further customization is applied to it.
 [[io.caching.provider.hazelcast]]
 == Hazelcast
 
-Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
+Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
 If a `HazelcastInstance` has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a `CacheManager`.
 
 NOTE: Hazelcast can be used as a JCache compliant cache or as a Spring `CacheManager` compliant cache.
 When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use the `CacheManager` based implementation.
 If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
-If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to <<io#io.caching.provider.jcache,explicitly set the JCache provider>>.
+If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to xref:io/caching/provider.adoc#io.caching.provider.jcache[explicitly set the JCache provider].
 
 [[io.caching.provider.infinispan]]
 == Infinispan
@@ -113,7 +113,7 @@ For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be 
 
 [[io.caching.provider.couchbase]]
 == Couchbase
-If Spring Data Couchbase is available and Couchbase is <<data#data.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
+If Spring Data Couchbase is available and Couchbase is xref:data/nosql/couchbase.adoc[configured], a `CouchbaseCacheManager` is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
 

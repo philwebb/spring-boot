@@ -15,7 +15,7 @@ Jackson is the preferred and default library.
 == Jackson
 Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
 When Jackson is on the classpath an `ObjectMapper` bean is automatically configured.
-Several configuration properties are provided for <<howto#howto.spring-mvc.customize-jackson-objectmapper,customizing the configuration of the `ObjectMapper`>>.
+Several configuration properties are provided for xref:howto/spring-mvc.adoc#howto.spring-mvc.customize-jackson-objectmapper[customizing the configuration of the `ObjectMapper`].
 
 
 

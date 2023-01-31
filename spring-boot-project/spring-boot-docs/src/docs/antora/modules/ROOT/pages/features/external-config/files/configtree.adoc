@@ -12,7 +12,7 @@ There are two common volume mount patterns that can be used:
 . A single file contains a complete set of properties (usually written as YAML).
 . Multiple files are written to a directory tree, with the filename becoming the '`key`' and the contents becoming the '`value`'.
 
-For the first case, you can import the YAML or Properties file directly using `spring.config.import` as described <<features#features.external-config.files.importing,above>>.
+For the first case, you can import the YAML or Properties file directly using `spring.config.import` as described xref:features/external-config/files/importing.adoc[above].
 For the second case, you need to use the `configtree:` prefix so that Spring Boot knows it needs to expose all the files as properties.
 
 As an example, let's imagine that Kubernetes has mounted the following volume:

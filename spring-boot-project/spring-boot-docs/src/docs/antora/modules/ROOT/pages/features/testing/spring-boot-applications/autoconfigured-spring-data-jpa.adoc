@@ -10,7 +10,7 @@ This can be disabled using the `showSql` attribute of the annotation.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 By default, data JPA tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.

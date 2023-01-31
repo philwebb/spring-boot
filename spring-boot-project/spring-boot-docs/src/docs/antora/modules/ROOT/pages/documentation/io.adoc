@@ -3,10 +3,10 @@
 
 If your application needs IO capabilities, see one or more of the following sections:
 
-* *Caching:* <<io#io.caching, Caching support with EhCache, Hazelcast, Infinispan, and more>>
-* *Quartz:* <<io#io.quartz, Quartz Scheduling>>
-* *Mail:* <<io#io.email, Sending Email>>
-* *Validation:* <<io#io.validation, JSR-303 Validation>>
-* *REST Clients:* <<io#io.rest-client, Calling REST Services with RestTemplate and WebClient>>
-* *Webservices:* <<io#io.webservices, Auto-configuration for Spring Web Services>>
-* *JTA:* <<io#io.jta, Distributed Transactions with JTA>>
+* *Caching:* xref:io/caching.adoc[Caching support with EhCache, Hazelcast, Infinispan, and more]
+* *Quartz:* xref:io/quartz.adoc[Quartz Scheduling]
+* *Mail:* xref:io/email.adoc[Sending Email]
+* *Validation:* xref:io/validation.adoc[JSR-303 Validation]
+* *REST Clients:* xref:io/rest-client.adoc[Calling REST Services with RestTemplate and WebClient]
+* *Webservices:* xref:io/webservices.adoc[Auto-configuration for Spring Web Services]
+* *JTA:* xref:io/jta.adoc[Distributed Transactions with JTA]

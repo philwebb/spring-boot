@@ -10,7 +10,7 @@ For example, if profiles `prod,live` are specified by the configprop:spring.prof
 
 [NOTE]
 ====
-The last-wins strategy applies at the <<features#features.external-config.files.location-groups,location group>> level.
+The last-wins strategy applies at the xref:features/external-config/files.adoc#features.external-config.files.location-groups[location group] level.
 A configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` will not have the same override rules as `classpath:/cfg/;classpath:/ext/`.
 
 For example, continuing our `prod,live` example above, we might have the following files:
@@ -41,7 +41,7 @@ The `Environment` has a set of default profiles (by default, `[default]`) that a
 In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
 
 NOTE: Properties files are only ever loaded once.
-If you have already directly <<features#features.external-config.files.importing,imported>> a profile specific property files then it will not be imported a second time.
+If you have already directly xref:features/external-config/files/importing.adoc[imported] a profile specific property files then it will not be imported a second time.
 
 
 

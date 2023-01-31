@@ -5,9 +5,9 @@ You can use `@DataElasticsearchTest` to test Elasticsearch applications.
 By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Elasticsearch with Spring Boot, see "<<data#data.nosql.elasticsearch>>", earlier in this chapter.)
+(For more about using Elasticsearch with Spring Boot, see "xref:data/nosql/elasticsearch.adoc[Elasticsearch]", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataElasticsearchTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataElasticsearchTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 The following example shows a typical setup for using Elasticsearch tests in Spring Boot:
 

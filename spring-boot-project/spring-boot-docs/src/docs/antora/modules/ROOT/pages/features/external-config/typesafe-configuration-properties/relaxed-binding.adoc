@@ -44,8 +44,8 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard YAML list syntax or comma-separated values
 
 | Environment Variables
-| Upper case format with underscore as the delimiter (see <<features#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables>>).
-| Numeric values surrounded by underscores (see <<features#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables>>)
+| Upper case format with underscore as the delimiter (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables]).
+| Numeric values surrounded by underscores (see xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables])
 
 | System properties
 | Camel case, kebab case, or underscore notation

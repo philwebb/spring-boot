@@ -75,7 +75,7 @@ To replace the default tags, provide a `@Bean` that implements `ServerRequestObs
 
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
-Applications can opt in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt in and record exceptions by xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.error-handling[setting handled exceptions as request attributes].
 
 By default, all requests are handled.
 To customize the filter, provide a `@Bean` that implements `FilterRegistrationBean<WebMvcMetricsFilter>`.
@@ -94,7 +94,7 @@ To add to the default tags, provide a `@Bean` that extends `DefaultServerRequest
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
-Applications can opt in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt in and record exceptions by xref:web/reactive/webflux.adoc#web.reactive.webflux.error-handling[setting handled exceptions as request attributes].
 
 
 

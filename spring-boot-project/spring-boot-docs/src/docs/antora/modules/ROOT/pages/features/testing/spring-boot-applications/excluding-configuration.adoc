@@ -3,7 +3,7 @@
 
 If your application uses component scanning (for example, if you use `@SpringBootApplication` or `@ComponentScan`), you may find top-level configuration classes that you created only for specific tests accidentally get picked up everywhere.
 
-As we <<features#features.testing.spring-boot-applications.detecting-configuration,have seen earlier>>, `@TestConfiguration` can be used on an inner class of a test to customize the primary configuration.
+As we xref:features/testing/spring-boot-applications/detecting-configuration.adoc[have seen earlier], `@TestConfiguration` can be used on an inner class of a test to customize the primary configuration.
 When placed on a top-level class, `@TestConfiguration` indicates that classes in `src/test/java` should not be picked up by scanning.
 You can then import that class explicitly where it is required, as shown in the following example:
 

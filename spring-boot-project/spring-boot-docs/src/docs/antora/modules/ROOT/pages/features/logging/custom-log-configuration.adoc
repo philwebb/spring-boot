@@ -121,7 +121,7 @@ See the default configurations in `spring-boot.jar` for examples:
 
 [TIP]
 ====
-If you want to use a placeholder in a logging property, you should use <<features#features.external-config.files.property-placeholders,Spring Boot's syntax>> and not the syntax of the underlying framework.
+If you want to use a placeholder in a logging property, you should use xref:features/external-config/files/property-placeholders.adoc[Spring Boot's syntax] and not the syntax of the underlying framework.
 Notably, if you use Logback, you should use `:` as the delimiter between a property name and its default value and not use `:-`.
 ====
 

@@ -29,7 +29,7 @@ For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springf
 
 NOTE: The above approach will only work for package level logging.
 Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
-If you need to configure logging for a class, you can use <<features#features.external-config.application-json, the `SPRING_APPLICATION_JSON`>> variable.
+If you need to configure logging for a class, you can use xref:features/external-config/application-json.adoc[the `SPRING_APPLICATION_JSON`] variable.
 
 
 

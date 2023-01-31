@@ -6,7 +6,7 @@ To test whether Spring MVC controllers are working as expected, use the `@WebMvc
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
 
@@ -35,9 +35,9 @@ If you define your own `webDriver` scope you may find it stops working when you 
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer` beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
-More details on how to use Spring Security's `MockMvc` support can be found in this _<<howto#howto.testing.with-spring-security>>_ how-to section.
+More details on how to use Spring Security's `MockMvc` support can be found in this _xref:howto/testing.adoc#howto.testing.with-spring-security[Testing With Spring Security]_ how-to section.
 
-TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
+TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run xref:features/testing/spring-boot-applications/with-running-server.adoc[full end-to-end tests with an actual server].
 
 
 

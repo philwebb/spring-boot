@@ -10,4 +10,4 @@ By default, those resources will be also shared with the Reactor Netty and Jetty
 
 Developers can override the resource configuration for Jetty and Reactor Netty by providing a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to both clients and servers.
 
-You can learn more about the resource configuration on the client side in the <<io#io.rest-client.webclient.runtime, WebClient Runtime section>>.
+You can learn more about the resource configuration on the client side in the xref:io/rest-client/webclient.adoc#io.rest-client.webclient.runtime[WebClient Runtime section].

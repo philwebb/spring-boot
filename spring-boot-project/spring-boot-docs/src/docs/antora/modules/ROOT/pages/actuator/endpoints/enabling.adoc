@@ -27,7 +27,7 @@ The following example enables the `info` endpoint and disables all other endpoin
 ----
 
 NOTE: Disabled endpoints are removed entirely from the application context.
-If you want to change only the technologies over which an endpoint is exposed, use the <<actuator#actuator.endpoints.exposing, `include` and `exclude` properties>> instead.
+If you want to change only the technologies over which an endpoint is exposed, use the xref:actuator/endpoints/exposing.adoc[`include` and `exclude` properties] instead.
 
 
 

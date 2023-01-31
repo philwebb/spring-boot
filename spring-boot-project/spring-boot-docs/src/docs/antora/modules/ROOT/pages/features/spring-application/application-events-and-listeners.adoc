@@ -25,7 +25,7 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
 . An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
-. An `ApplicationReadyEvent` is sent after any <<features#features.spring-application.command-line-runner,application and command-line runners>> have been called.
+. An `ApplicationReadyEvent` is sent after any xref:features/spring-application/command-line-runner.adoc[application and command-line runners] have been called.
 . An `AvailabilityChangeEvent` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
@@ -40,7 +40,7 @@ TIP: You often need not use application events, but it can be handy to know that
 Internally, Spring Boot uses events to handle a variety of tasks.
 
 NOTE: Event listeners should not run potentially lengthy tasks as they execute in the same thread by default.
-Consider using <<features#features.spring-application.command-line-runner,application and command-line runners>> instead.
+Consider using xref:features/spring-application/command-line-runner.adoc[application and command-line runners] instead.
 
 Application events are sent by using Spring Framework's event publishing mechanism.
 Part of this mechanism ensures that an event published to the listeners in a child context is also published to the listeners in any ancestor contexts.

@@ -6,8 +6,8 @@ A Spring Boot application is a Spring `ApplicationContext`, so nothing very spec
 NOTE: External properties, logging, and other features of Spring Boot are installed in the context by default only if you use `SpringApplication` to create it.
 
 Spring Boot provides a `@SpringBootTest` annotation, which can be used as an alternative to the standard `spring-test` `@ContextConfiguration` annotation when you need Spring Boot features.
-The annotation works by <<features#features.testing.spring-boot-applications.detecting-configuration,creating the `ApplicationContext` used in your tests through `SpringApplication`>>.
-In addition to `@SpringBootTest` a number of other annotations are also provided for <<features#features.testing.spring-boot-applications.autoconfigured-tests,testing more specific slices>> of an application.
+The annotation works by xref:features/testing/spring-boot-applications/detecting-configuration.adoc[creating the `ApplicationContext` used in your tests through `SpringApplication`].
+In addition to `@SpringBootTest` a number of other annotations are also provided for xref:features/testing/spring-boot-applications/autoconfigured-tests.adoc[testing more specific slices] of an application.
 
 TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
 If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
@@ -18,7 +18,7 @@ You can use the `webEnvironment` attribute of `@SpringBootTest` to further refin
 * `MOCK`(Default) : Loads a web `ApplicationContext` and provides a mock web environment.
   Embedded servers are not started when using this annotation.
 	If a web environment is not available on your classpath, this mode transparently falls back to creating a regular non-web `ApplicationContext`.
-	It can be used in conjunction with <<features#features.testing.spring-boot-applications.with-mock-environment, `@AutoConfigureMockMvc` or `@AutoConfigureWebTestClient`>> for mock-based testing of your web application.
+	It can be used in conjunction with xref:features/testing/spring-boot-applications/with-mock-environment.adoc[`@AutoConfigureMockMvc` or `@AutoConfigureWebTestClient`] for mock-based testing of your web application.
 * `RANDOM_PORT`: Loads a `WebServerApplicationContext` and provides a real web environment.
   Embedded servers are started and listen on a random port.
 * `DEFINED_PORT`: Loads a `WebServerApplicationContext` and provides a real web environment.

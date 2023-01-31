@@ -20,7 +20,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 include::code:MyService[]
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
-See the <<configuration-metadata#appendix.configuration-metadata,appendix>> for details.
+See the xref:configuration-metadata.adoc[appendix] for details.
 
 
 

@@ -4,7 +4,7 @@
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
 You can use a variety of external configuration sources including Java properties files, YAML files, environment variables, and command-line arguments.
 
-Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
+Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be xref:features/external-config/typesafe-configuration-properties.adoc[bound to structured objects] through `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
 Later property sources can override the values defined in earlier ones.
@@ -24,16 +24,16 @@ Sources are considered in the following order:
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
 . Command line arguments.
 . `properties` attribute on your tests.
-  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<features#features.testing.spring-boot-applications.autoconfigured-tests,test annotations for testing a particular slice of your application>>.
+  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the xref:features/testing/spring-boot-applications/autoconfigured-tests.adoc[test annotations for testing a particular slice of your application].
 . {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
-. <<using#using.devtools.globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
+. xref:using/devtools.adoc#using.devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.
 
 Config data files are considered in the following order:
 
-. <<features#features.external-config.files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
-. <<features#features.external-config.files.profile-specific,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
-. <<features#features.external-config.files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
-. <<features#features.external-config.files.profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
+. xref:features/external-config/files.adoc[Application properties] packaged inside your jar (`application.properties` and YAML variants).
+. xref:features/external-config/files/profile-specific.adoc[Profile-specific application properties] packaged inside your jar (`application-\{profile}.properties` and YAML variants).
+. xref:features/external-config/files.adoc[Application properties] outside of your packaged jar (`application.properties` and YAML variants).
+. xref:features/external-config/files/profile-specific.adoc[Profile-specific application properties] outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
 NOTE: It is recommended to stick with one format for your entire application.
 If you have configuration files with both `.properties` and `.yml` format in the same location, `.properties` takes precedence.
@@ -48,7 +48,7 @@ For one-off testing, you can launch with a specific command line switch (for exa
 
 TIP: The `env` and `configprops` endpoints can be useful in determining why a property has a particular value.
 You can use these two endpoints to diagnose unexpected property values.
-See the "<<actuator#actuator.endpoints, Production ready features>>" section for details.
+See the "xref:actuator/endpoints.adoc[Production ready features]" section for details.
 
 
 

@@ -6,7 +6,7 @@ To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controlle
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
 
@@ -27,7 +27,7 @@ For testing `RouterFunction` beans in the context, consider importing your `Rout
 NOTE: `@WebFluxTest` cannot detect custom security configuration registered as a `@Bean` of type `SecurityWebFilterChain`.
 To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.
 
-TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
+TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help you run xref:features/testing/spring-boot-applications/with-running-server.adoc[full end-to-end tests with an actual server].
 
 
 

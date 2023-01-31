@@ -19,14 +19,14 @@ Assuming that the `username` property has not been set elsewhere, `app.descripti
 [NOTE]
 ====
 You should always refer to property names in the placeholder using their canonical form (kebab-case using only lowercase letters).
-This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+This will allow Spring Boot to use the same logic as it does when xref:features/external-config/typesafe-configuration-properties/relaxed-binding.adoc[relaxed binding] `@ConfigurationProperties`.
 
 For example, `${demo.item-price}` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
 ====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
-See the _<<howto#howto.properties-and-configuration.short-command-line-arguments>>_ how-to for details.
+See the _xref:howto/properties-and-configuration.adoc#howto.properties-and-configuration.short-command-line-arguments[Use '`Short`' Command Line Arguments]_ how-to for details.
 
 
 

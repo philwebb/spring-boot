@@ -26,7 +26,7 @@ A typical entity class resembles the following example:
 include::code:City[]
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
-See the "`<<howto#howto.data-access.separate-entity-definitions-from-spring-configuration>>`" how-to.
+See the "`xref:howto/data-access/separate-entity-definitions-from-spring-configuration.adoc[Separate @Entity Definitions from Spring Configuration]`" how-to.
 
 
 

@@ -4,11 +4,11 @@
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
-(For more about using jOOQ with Spring Boot, see "<<data#data.sql.jooq>>".)
+(For more about using jOOQ with Spring Boot, see "xref:data/sql/jooq.adoc[Using jOOQ]".)
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
@@ -16,7 +16,7 @@ The following example shows the `@JooqTest` annotation in use:
 include::code:MyJooqTests[]
 
 JOOQ tests are transactional and roll back at the end of each test by default.
-If that is not what you want, you can disable transaction management for a test or for the whole test class as <<features#features.testing.spring-boot-applications.autoconfigured-jdbc,shown in the JDBC example>>.
+If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:features/testing/spring-boot-applications/autoconfigured-jdbc.adoc[shown in the JDBC example].
 
 
 

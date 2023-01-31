@@ -5,7 +5,7 @@ You can enable HTTP/2 support in your Spring Boot application with the configpro
 Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
 To use `h2`, SSL must also be enabled.
 When SSL is not enabled, `h2c` will be used.
-You may, for example, want to use `h2c` when your application is <<howto.webserver.use-behind-a-proxy-server,running behind a proxy server>> that is performing TLS termination.
+You may, for example, want to use `h2c` when your application is xref:howto/webserver/use-behind-a-proxy-server.adoc[running behind a proxy server] that is performing TLS termination.
 
 
 

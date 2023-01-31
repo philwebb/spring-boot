@@ -7,12 +7,12 @@ The `@ConditionalOnMissingBean` annotation is one common example that is used to
 Spring Boot includes a number of `@Conditional` annotations that you can reuse in your own code by annotating `@Configuration` classes or individual `@Bean` methods.
 These annotations include:
 
-* <<features#features.developing-auto-configuration.condition-annotations.class-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.bean-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.property-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.resource-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.web-application-conditions>>
-* <<features#features.developing-auto-configuration.condition-annotations.spel-conditions>>
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.class-conditions[Class Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.bean-conditions[Bean Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.property-conditions[Property Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.resource-conditions[Resource Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.web-application-conditions[Web Application Conditions]
+* xref:features/developing-auto-configuration/condition-annotations.adoc#features.developing-auto-configuration.condition-annotations.spel-conditions[SpEL Expression Conditions]
 
 
 

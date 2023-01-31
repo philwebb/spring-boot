@@ -10,7 +10,7 @@ The https://spring.io[spring.io] web site contains many "`Getting Started`" http
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
-Doing so generates a new project structure so that you can <<getting-started#getting-started.first-application.code,start coding right away>>.
+Doing so generates a new project structure so that you can xref:getting-started/first-application.adoc#getting-started.first-application.code[start coding right away].
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
@@ -102,7 +102,7 @@ For simplicity, we continue to use a plain text editor for this example.
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
 Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
-It also provides a <<using#using.build-systems.dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
+It also provides a xref:using/build-systems.adoc#using.build-systems.dependency-management[`dependency-management`] section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Other "`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
@@ -240,7 +240,7 @@ An uber jar packages all the classes from all the application's dependencies int
 The problem with this approach is that it becomes hard to see which libraries are in your application.
 It can also be problematic if the same filename is used (but with different content) in multiple jars.
 
-Spring Boot takes a <<executable-jar#appendix.executable-jar, different approach>> and lets you actually nest jars directly.
+Spring Boot takes a xref:executable-jar.adoc[different approach] and lets you actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.

@@ -425,7 +425,7 @@ You can provide the location of the https://opentelemetry.io/[OpenTelemtry metri
 {micrometer-registry-docs}/prometheus[Prometheus] expects to scrape or poll individual application instances for metrics.
 Spring Boot provides an actuator endpoint at `/actuator/prometheus` to present a https://prometheus.io[Prometheus scrape] with the appropriate format.
 
-TIP: By default, the endpoint is not available and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+TIP: By default, the endpoint is not available and must be exposed. See xref:actuator/endpoints/exposing.adoc[exposing endpoints] for more details.
 
 The following example `scrape_config` adds to `prometheus.yml`:
 
@@ -492,7 +492,7 @@ You can also change the interval at which metrics are sent to SignalFx:
 [[actuator.metrics.export.simple]]
 == Simple
 Micrometer ships with a simple, in-memory backend that is automatically used as a fallback if no other registry is configured.
-This lets you see what metrics are collected in the <<actuator#actuator.metrics.endpoint,metrics endpoint>>.
+This lets you see what metrics are collected in the xref:actuator/metrics/endpoint.adoc[metrics endpoint].
 
 The in-memory backend disables itself as soon as you use any other available backend.
 You can also disable it explicitly:

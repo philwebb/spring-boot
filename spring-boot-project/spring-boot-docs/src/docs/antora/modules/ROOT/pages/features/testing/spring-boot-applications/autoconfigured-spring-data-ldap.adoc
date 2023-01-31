@@ -5,9 +5,9 @@ You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using LDAP with Spring Boot, see "<<data#data.nosql.ldap>>".)
+(For more about using LDAP with Spring Boot, see "xref:data/nosql/ldap.adoc[LDAP]".)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be xref:test-auto-configuration.adoc[found in the appendix].
 
 The following example shows the `@DataLdapTest` annotation in use:
 

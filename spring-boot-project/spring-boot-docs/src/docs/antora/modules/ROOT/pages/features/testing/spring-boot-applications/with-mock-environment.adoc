@@ -7,7 +7,7 @@ With Spring MVC, we can query our web endpoints using {spring-framework-docs}/te
 
 include::code:MyMockMvcTests[]
 
-TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<features#features.testing.spring-boot-applications.spring-mvc-tests,using `@WebMvcTest` instead>>.
+TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider xref:features/testing/spring-boot-applications/spring-mvc-tests.adoc[using `@WebMvcTest` instead].
 
 With Spring WebFlux endpoints, you can use {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
@@ -19,7 +19,7 @@ Testing within a mocked environment is usually faster than running with a full s
 However, since mocking occurs at the Spring MVC layer, code that relies on lower-level servlet container behavior cannot be directly tested with MockMvc.
 
 For example, Spring Boot's error handling is based on the "`error page`" support provided by the servlet container.
-This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific <<web#web.servlet.spring-mvc.error-handling.error-pages, custom error page>> is rendered.
+This means that, whilst you can test your MVC layer throws and handles exceptions as expected, you cannot directly test that a specific xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.error-handling.error-pages[custom error page] is rendered.
 If you need to test these lower-level concerns, you can start a fully running server as described in the next section.
 ====
 

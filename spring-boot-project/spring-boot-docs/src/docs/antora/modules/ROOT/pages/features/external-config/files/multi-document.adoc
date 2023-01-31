@@ -38,7 +38,7 @@ NOTE: Property file separators must not have any leading whitespace and must hav
 The lines immediately before and after the separator must not be same comment prefix.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
-See the <<features#features.external-config.files.activation-properties, next section>> for details.
+See the xref:features/external-config/files/activation-properties.adoc[next section] for details.
 
 WARNING: Multi-document property files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
 

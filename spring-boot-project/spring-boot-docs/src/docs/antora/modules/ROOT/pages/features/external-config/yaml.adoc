@@ -55,7 +55,7 @@ The preceding example would be transformed into these properties:
 ----
 
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
-For more details see the "`<<features#features.external-config.typesafe-configuration-properties>>`" section below.
+For more details see the "`xref:features/external-config/typesafe-configuration-properties.adoc[Type-safe Configuration Properties]`" section below.
 
 WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
 So, in the case that you need to load values that way, you need to use a properties file.

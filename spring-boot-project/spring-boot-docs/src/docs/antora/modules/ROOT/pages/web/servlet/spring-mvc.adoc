@@ -30,12 +30,12 @@ Spring Boot provides auto-configuration for Spring MVC that works well with most
 The auto-configuration adds the following features on top of Spring's defaults:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
-* Support for serving static resources, including support for WebJars (covered <<features#web.servlet.spring-mvc.static-content,later in this document>>).
+* Support for serving static resources, including support for WebJars (covered xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.static-content[later in this document]).
 * Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
-* Support for `HttpMessageConverters` (covered <<features#web.servlet.spring-mvc.message-converters,later in this document>>).
-* Automatic registration of `MessageCodesResolver` (covered <<features#web.servlet.spring-mvc.message-codes,later in this document>>).
+* Support for `HttpMessageConverters` (covered xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.message-converters[later in this document]).
+* Automatic registration of `MessageCodesResolver` (covered xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.message-codes[later in this document]).
 * Static `index.html` support.
-* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<features#web.servlet.spring-mvc.binding-initializer,later in this document>>).
+* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.binding-initializer[later in this document]).
 
 If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
@@ -267,7 +267,7 @@ Spring Boot includes auto-configuration support for the following templating eng
 * https://mustache.github.io/[Mustache]
 
 TIP: If possible, JSPs should be avoided.
-There are several <<web#web.servlet.embedded-container.jsp-limitations, known limitations>> when using them with embedded servlet containers.
+There are several xref:web/servlet/embedded-container.adoc#web.servlet.embedded-container.jsp-limitations[known limitations] when using them with embedded servlet containers.
 
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
 
@@ -315,7 +315,7 @@ include::code:MyControllerAdvice[]
 
 In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
 
-In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
+In some cases, errors handled at the controller level are not recorded by the xref:actuator/metrics/supported.adoc#actuator.metrics.supported.spring-mvc[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
 include::code:MyController[]

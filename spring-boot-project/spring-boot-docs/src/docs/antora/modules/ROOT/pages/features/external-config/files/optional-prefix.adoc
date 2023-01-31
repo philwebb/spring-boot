@@ -4,7 +4,7 @@
 By default, when a specified config data location does not exist, Spring Boot will throw a `ConfigDataLocationNotFoundException` and your application will not start.
 
 If you want to specify a location, but you do not mind if it does not always exist, you can use the `optional:` prefix.
-You can use this prefix with the `spring.config.location` and `spring.config.additional-location` properties, as well as with <<features#features.external-config.files.importing, `spring.config.import`>> declarations.
+You can use this prefix with the `spring.config.location` and `spring.config.additional-location` properties, as well as with xref:features/external-config/files/importing.adoc[`spring.config.import`] declarations.
 
 For example, a `spring.config.import` value of `optional:file:./myconfig.properties` allows your application to start, even if the `myconfig.properties` file is missing.
 

@@ -3,5 +3,5 @@
 
 If your application deals with a datastore, you can see how to configure that here:
 
-* *SQL:* <<data#data.sql, Configuring a SQL Datastore, Embedded Database support, Connection pools, and more.>>
-* *NOSQL:* <<data#data.nosql, Auto-configuration for NOSQL stores such as Redis, MongoDB, Neo4j, and others.>>
+* *SQL:* xref:data/sql.adoc[Configuring a SQL Datastore, Embedded Database support, Connection pools, and more.]
+* *NOSQL:* xref:data/nosql.adoc[Auto-configuration for NOSQL stores such as Redis, MongoDB, Neo4j, and others.]

@@ -1,7 +1,7 @@
 [[features.testing.spring-boot-applications.using-application-arguments]]
 = Using Application Arguments
 
-If your application expects <<features#features.spring-application.application-arguments,arguments>>, you can
+If your application expects xref:features/spring-application/application-arguments.adoc[arguments], you can
 have `@SpringBootTest` inject them using the `args` attribute.
 
 include::code:MyApplicationArgumentTests[]

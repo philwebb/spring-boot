@@ -3,8 +3,8 @@
 
 In a servlet stack application, that is with the `spring-boot-starter-web`, there are two ways to add `Servlet`, `Filter`, `ServletContextListener`, and the other listeners supported by the Servlet API to your application:
 
-* <<howto#howto.webserver.add-servlet-filter-listener.spring-bean>>
-* <<howto#howto.webserver.add-servlet-filter-listener.using-scanning>>
+* xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[Add a Servlet, Filter, or Listener by Using a Spring Bean]
+* xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.using-scanning[Add Servlets, Filters, and Listeners by Using Classpath Scanning]
 
 
 
@@ -24,13 +24,13 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the servlet specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
+Like any other Spring bean, you can define the order of servlet filter beans; please make sure to check the "`xref:web/servlet/embedded-container.adoc#web.servlet.embedded-container.servlets-filters-listeners.beans[Registering Servlets, Filters, and Listeners as Spring Beans]`" section.
 
 
 
 [[howto.webserver.add-servlet-filter-listener.spring-bean.disable]]
 === Disable Registration of a Servlet or Filter
-As <<howto#howto.webserver.add-servlet-filter-listener.spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
+As xref:howto/webserver/add-servlet-filter-listener.adoc#howto.webserver.add-servlet-filter-listener.spring-bean[described earlier], any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
 include::code:MyFilterConfiguration[]

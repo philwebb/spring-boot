@@ -54,7 +54,7 @@ For example, to expose everything over HTTP except the `env` and `beans` endpoin
 
 NOTE: `*` has a special meaning in YAML, so be sure to add quotation marks if you want to include (or exclude) all endpoints.
 
-NOTE: If your application is exposed publicly, we strongly recommend that you also <<actuator#actuator.endpoints.security, secure your endpoints>>.
+NOTE: If your application is exposed publicly, we strongly recommend that you also xref:actuator/endpoints/security.adoc[secure your endpoints].
 
 TIP: If you want to implement your own strategy for when endpoints are exposed, you can register an `EndpointFilter` bean.
 

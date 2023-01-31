@@ -84,7 +84,7 @@ as shown in the following example:
 
 include::code:MyBean[]
 
-In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a <<features#data.nosql.elasticsearch.connecting-using-rest.reactiveclient,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
+In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql/elasticsearch.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[ReactiveElasticsearchClient] and a `ReactiveElasticsearchTemplate` as beans.
 They are the reactive equivalent of the other REST clients.
 
 

@@ -16,7 +16,7 @@ include::{spring-application-output}[]
 
 
 By default, `INFO` logging messages are shown, including some relevant startup details, such as the user that launched the application.
-If you need a log level other than `INFO`, you can set it, as described in <<features#features.logging.log-levels>>.
+If you need a log level other than `INFO`, you can set it, as described in xref:features/logging/log-levels.adoc[Log Levels].
 The application version is determined using the implementation version from the main application class's package.
 Startup information logging can be turned off by setting `spring.main.log-startup-info` to `false`.
 This will also turn off logging of the application's active profiles.

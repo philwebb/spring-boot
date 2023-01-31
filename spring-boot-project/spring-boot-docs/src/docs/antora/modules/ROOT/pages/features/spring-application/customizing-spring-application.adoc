@@ -10,7 +10,7 @@ NOTE: The constructor arguments passed to `SpringApplication` are configuration 
 In most cases, these are references to `@Configuration` classes, but they could also be direct references `@Component` classes.
 
 It is also possible to configure the `SpringApplication` by using an `application.properties` file.
-See _<<features#features.external-config>>_ for details.
+See _xref:features/external-config.adoc[Externalized Configuration]_ for details.
 
 For a complete list of the configuration options, see the {spring-boot-module-api}/SpringApplication.html[`SpringApplication` Javadoc].
 

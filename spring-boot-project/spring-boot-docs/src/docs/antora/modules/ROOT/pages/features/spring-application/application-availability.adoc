@@ -14,12 +14,12 @@ In addition, you can also obtain availability states by injecting the `Applicati
 The "`Liveness`" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it is currently failing.
 A broken "`Liveness`" state means that the application is in a state that it cannot recover from, and the infrastructure should restart the application.
 
-NOTE: In general, the "Liveness" state should not be based on external checks, such as <<actuator#actuator.endpoints.health, Health checks>>.
+NOTE: In general, the "Liveness" state should not be based on external checks, such as xref:actuator/endpoints/health.adoc[Health checks].
 If it did, a failing external system (a database, a Web API, an external cache) would trigger massive restarts and cascading failures across the platform.
 
 The internal state of Spring Boot applications is mostly represented by the Spring `ApplicationContext`.
 If the application context has started successfully, Spring Boot assumes that the application is in a valid state.
-An application is considered live as soon as the context has been refreshed, see <<features#features.spring-application.application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
+An application is considered live as soon as the context has been refreshed, see xref:features/spring-application/application-events-and-listeners.adoc[Spring Boot application lifecycle and related Application Events].
 
 
 
@@ -29,7 +29,7 @@ The "`Readiness`" state of an application tells whether the application is ready
 A failing "`Readiness`" state tells the platform that it should not route traffic to the application for now.
 This typically happens during startup, while `CommandLineRunner` and `ApplicationRunner` components are being processed, or at any time if the application decides that it is too busy for additional traffic.
 
-An application is considered ready as soon as application and command-line runners have been called, see <<features#features.spring-application.application-events-and-listeners, Spring Boot application lifecycle and related Application Events>>.
+An application is considered ready as soon as application and command-line runners have been called, see xref:features/spring-application/application-events-and-listeners.adoc[Spring Boot application lifecycle and related Application Events].
 
 TIP: Tasks expected to run during startup should be executed by `CommandLineRunner` and `ApplicationRunner` components instead of using Spring component lifecycle callbacks such as `@PostConstruct`.
 
@@ -48,8 +48,8 @@ We can also update the state of the application, when the application breaks and
 
 include::code:MyLocalCacheVerifier[]
 
-Spring Boot provides <<actuator#actuator.endpoints.kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
-You can get more guidance about <<deployment#deployment.cloud.kubernetes,deploying Spring Boot applications on Kubernetes in the dedicated section>>.
+Spring Boot provides xref:actuator/endpoints/kubernetes-probes.adoc[Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints].
+You can get more guidance about xref:deployment/cloud.adoc#deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
 
 
 

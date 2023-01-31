@@ -31,7 +31,7 @@ If you cannot change the `Filter` class to add `@Order` or implement `Ordered`, 
 Avoid configuring a filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
 If a servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
 
-TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<features#features.logging.log-groups,logging group>> (`logging.level.web=debug`).
+TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` xref:features/logging/log-groups.adoc[logging group] (`logging.level.web=debug`).
 Details of the registered filters, including their order and URL patterns, will then be logged at startup.
 
 WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifecycle.
@@ -89,12 +89,12 @@ Common server settings include:
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to `server.address`, and so on.
 * Session settings: Whether the session is persistent (`server.servlet.session.persistent`), session timeout (`server.servlet.session.timeout`), location of session data (`server.servlet.session.store-dir`), and session-cookie configuration (`server.servlet.session.cookie.*`).
 * Error management: Location of the error page (`server.error.path`) and so on.
-* <<howto#howto.webserver.configure-ssl,SSL>>
-* <<howto#howto.webserver.enable-response-compression,HTTP compression>>
+* xref:howto/webserver/configure-ssl.adoc[SSL]
+* xref:howto/webserver/enable-response-compression.adoc[HTTP compression]
 
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
 For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat` and `server.undertow`).
-For instance, <<howto#howto.webserver.configure-access-logs,access logs>> can be configured with specific features of the embedded servlet container.
+For instance, xref:howto/webserver/configure-access-logs.adoc[access logs] can be configured with specific features of the embedded servlet container.
 
 TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
 
@@ -167,5 +167,5 @@ JSPs are not supported when using an executable jar.
 
 * Undertow does not support JSPs.
 
-* Creating a custom `error.jsp` page does not override the default view for <<web#web.servlet.spring-mvc.error-handling,error handling>>.
-  <<web#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
+* Creating a custom `error.jsp` page does not override the default view for xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.error-handling[error handling].
+  xref:web/servlet/spring-mvc.adoc#web.servlet.spring-mvc.error-handling.error-pages[Custom error pages] should be used instead.

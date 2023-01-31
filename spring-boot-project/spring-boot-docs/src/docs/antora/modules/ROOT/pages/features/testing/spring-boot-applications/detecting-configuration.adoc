@@ -8,11 +8,11 @@ When testing Spring Boot applications, this is often not required.
 Spring Boot's `@*Test` annotations search for your primary configuration automatically whenever you do not explicitly define one.
 
 The search algorithm works up from the package that contains the test until it finds a class annotated with `@SpringBootApplication` or `@SpringBootConfiguration`.
-As long as you <<using#using.structuring-your-code, structured your code>> in a sensible way, your main configuration is usually found.
+As long as you xref:using/structuring-your-code.adoc[structured your code] in a sensible way, your main configuration is usually found.
 
 [NOTE]
 ====
-If you use a <<features#features.testing.spring-boot-applications.autoconfigured-tests, test annotation to test a more specific slice of your application>>, you should avoid adding configuration settings that are specific to a particular area on the <<features#features.testing.spring-boot-applications.user-configuration-and-slicing, main method's application class>>.
+If you use a xref:features/testing/spring-boot-applications/autoconfigured-tests.adoc[test annotation to test a more specific slice of your application], you should avoid adding configuration settings that are specific to a particular area on the xref:features/testing/spring-boot-applications/user-configuration-and-slicing.adoc[main method's application class].
 
 The underlying component scan configuration of `@SpringBootApplication` defines exclude filters that are used to make sure slicing works as expected.
 If you are using an explicit `@ComponentScan` directive on your `@SpringBootApplication`-annotated class, be aware that those filters will be disabled.
