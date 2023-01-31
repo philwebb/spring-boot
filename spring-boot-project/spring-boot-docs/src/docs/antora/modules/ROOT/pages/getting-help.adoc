@@ -1,5 +1,6 @@
 [[getting-help]]
 = Getting Help
+:page-section-summary-toc: 1
 
 If you have trouble with Spring Boot, we would like to help.
 

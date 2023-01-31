@@ -1,5 +1,6 @@
 [[actuator.endpoints.caching]]
 = Configuring Endpoints
+:page-section-summary-toc: 1
 
 Endpoints automatically cache responses to read operations that do not take any parameters.
 To configure the amount of time for which an endpoint caches a response, use its `cache.time-to-live` property.

@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
 = Auto-configured Data Cassandra Tests
+:page-section-summary-toc: 1
 
 You can use `@DataCassandraTest` to test Cassandra applications.
 By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.

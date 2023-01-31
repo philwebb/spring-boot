@@ -1,5 +1,6 @@
 [[web.whats-next]]
 = What to Read Next
+:page-section-summary-toc: 1
 
 You should now have a good understanding of how to develop  web applications with Spring Boot.
 The next few sections describe how Spring Boot integrates with various xref:documentation/data.adoc[data technologies], xref:messaging.adoc[messaging systems], and other IO capabilities.

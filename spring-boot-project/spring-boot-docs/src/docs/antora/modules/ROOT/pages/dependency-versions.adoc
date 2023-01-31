@@ -1,6 +1,7 @@
 [appendix]
 [[appendix.dependency-versions]]
 = Dependency Versions
+:page-section-summary-toc: 1
 
 
 

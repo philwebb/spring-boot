@@ -1,5 +1,6 @@
 [[features.external-config.files.optional-prefix]]
 = Optional Locations
+:page-section-summary-toc: 1
 
 By default, when a specified config data location does not exist, Spring Boot will throw a `ConfigDataLocationNotFoundException` and your application will not start.
 

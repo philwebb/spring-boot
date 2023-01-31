@@ -1,5 +1,6 @@
 [[features.spring-application.customizing-spring-application]]
 = Customizing SpringApplication
+:page-section-summary-toc: 1
 
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:

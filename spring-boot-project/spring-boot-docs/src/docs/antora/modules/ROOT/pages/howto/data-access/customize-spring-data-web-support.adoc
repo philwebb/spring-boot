@@ -1,5 +1,6 @@
 [[howto.data-access.customize-spring-data-web-support]]
 = Customize Spring Data's Web Support
+:page-section-summary-toc: 1
 
 Spring Data provides web support that simplifies the use of Spring Data repositories in a web application.
 Spring Boot provides properties in the `spring.data.web` namespace for customizing its configuration.

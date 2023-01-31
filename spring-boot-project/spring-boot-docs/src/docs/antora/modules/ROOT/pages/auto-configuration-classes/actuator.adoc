@@ -1,5 +1,6 @@
 [[appendix.auto-configuration-classes.actuator]]
 = spring-boot-actuator-autoconfigure
+:page-section-summary-toc: 1
 
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 

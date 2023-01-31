@@ -1,5 +1,6 @@
 [[howto.data-access.exposing-spring-data-repositories-as-rest]]
 = Expose Spring Data Repositories as REST Endpoint
+:page-section-summary-toc: 1
 
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
 provided Spring MVC has been enabled for the application.

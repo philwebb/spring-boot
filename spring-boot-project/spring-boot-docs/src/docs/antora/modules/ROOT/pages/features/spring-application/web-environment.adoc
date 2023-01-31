@@ -1,5 +1,6 @@
 [[features.spring-application.web-environment]]
 = Web Environment
+:page-section-summary-toc: 1
 
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your behalf.
 The algorithm used to determine a `WebApplicationType` is the following:

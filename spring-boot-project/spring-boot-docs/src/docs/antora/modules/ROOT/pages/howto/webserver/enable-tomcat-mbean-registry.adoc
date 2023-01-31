@@ -1,5 +1,6 @@
 [[howto.webserver.enable-tomcat-mbean-registry]]
 = Enable Tomcat's MBean Registry
+:page-section-summary-toc: 1
 
 Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.

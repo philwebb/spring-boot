@@ -1,5 +1,6 @@
 [[features.testing.test-scope-dependencies]]
 = Test Scope Dependencies
+:page-section-summary-toc: 1
 
 The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
 

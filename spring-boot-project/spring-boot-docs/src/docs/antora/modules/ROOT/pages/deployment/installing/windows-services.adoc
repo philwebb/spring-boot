@@ -1,5 +1,6 @@
 [[deployment.installing.windows-services]]
 = Microsoft Windows Services
+:page-section-summary-toc: 1
 
 A Spring Boot application can be started as a Windows service by using https://github.com/kohsuke/winsw[`winsw`].
 

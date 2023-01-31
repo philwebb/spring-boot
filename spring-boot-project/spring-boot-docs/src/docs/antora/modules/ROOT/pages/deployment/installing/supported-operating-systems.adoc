@@ -1,5 +1,6 @@
 [[deployment.installing.supported-operating-systems]]
 = Supported Operating Systems
+:page-section-summary-toc: 1
 
 The default script supports most Linux distributions and is tested on CentOS and Ubuntu.
 Other platforms, such as OS X and FreeBSD, require the use of a custom `embeddedLaunchScript`.

@@ -1,5 +1,6 @@
 [[web]]
 = Web
+:page-section-summary-toc: 1
 
 Spring Boot is well suited for web application development.
 You can create a self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty.

@@ -1,5 +1,6 @@
 [[documentation.using]]
 = Developing With Spring Boot
+:page-section-summary-toc: 1
 
 Ready to actually start using Spring Boot? xref:using.adoc[We have you covered]:
 

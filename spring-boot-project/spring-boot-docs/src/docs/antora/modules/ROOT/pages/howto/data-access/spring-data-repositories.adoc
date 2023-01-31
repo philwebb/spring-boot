@@ -1,5 +1,6 @@
 [[howto.data-access.spring-data-repositories]]
 = Use Spring Data Repositories
+:page-section-summary-toc: 1
 
 Spring Data can create implementations of `@Repository` interfaces of various flavors.
 Spring Boot handles all of that for you, as long as those `@Repositories` are included in the same package (or a sub-package) of your `@EnableAutoConfiguration` class.

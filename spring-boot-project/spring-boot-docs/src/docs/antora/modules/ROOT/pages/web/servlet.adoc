@@ -1,5 +1,6 @@
 [[web.servlet]]
 = Servlet Web Applications
+:page-section-summary-toc: 1
 
 If you want to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC or Jersey.
 

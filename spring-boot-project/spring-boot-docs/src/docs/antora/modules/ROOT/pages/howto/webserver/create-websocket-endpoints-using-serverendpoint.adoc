@@ -1,5 +1,6 @@
 [[howto.webserver.create-websocket-endpoints-using-serverendpoint]]
 = Create WebSocket Endpoints Using @ServerEndpoint
+:page-section-summary-toc: 1
 
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 

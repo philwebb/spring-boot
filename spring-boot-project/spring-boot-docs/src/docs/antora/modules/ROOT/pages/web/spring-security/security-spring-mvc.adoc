@@ -1,5 +1,6 @@
 [[web.security.spring-mvc]]
 = MVC Security
+:page-section-summary-toc: 1
 
 The default security configuration is implemented in `SecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
 `SecurityAutoConfiguration` imports `SpringBootWebSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.

@@ -1,5 +1,6 @@
 [[features]]
 = Core Features
+:page-section-summary-toc: 1
 
 
 

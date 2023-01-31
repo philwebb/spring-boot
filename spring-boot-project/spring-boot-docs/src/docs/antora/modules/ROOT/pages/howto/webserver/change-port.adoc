@@ -1,5 +1,6 @@
 [[howto.webserver.change-port]]
 = Change the HTTP Port
+:page-section-summary-toc: 1
 
 In a standalone application, the main HTTP port defaults to `8080` but can be set with configprop:server.port[] (for example, in `application.properties` or as a System property).
 Thanks to relaxed binding of `Environment` values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).

@@ -1,5 +1,6 @@
 [[features.external-config.typesafe-configuration-properties.third-party-configuration]]
 = Third-party Configuration
+:page-section-summary-toc: 1
 
 As well as using `@ConfigurationProperties` to annotate a class, you can also use it on public `@Bean` methods.
 Doing so can be particularly useful when you want to bind properties to third-party components that are outside of your control.

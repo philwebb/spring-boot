@@ -1,5 +1,6 @@
 [[upgrading.cli]]
 = Upgrading the Spring Boot CLI
+:page-section-summary-toc: 1
 
 To upgrade an existing CLI installation, use the appropriate package manager command (for example, `brew upgrade`).
 If you manually installed the CLI, follow the xref:getting-started/installing.adoc#getting-started.installing.cli.manual-installation[standard instructions], remembering to update your `PATH` environment variable to remove any older references.

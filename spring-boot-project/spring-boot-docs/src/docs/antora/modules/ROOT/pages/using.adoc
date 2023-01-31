@@ -1,5 +1,6 @@
 [[using]]
 = Developing with Spring Boot
+:page-section-summary-toc: 1
 
 
 

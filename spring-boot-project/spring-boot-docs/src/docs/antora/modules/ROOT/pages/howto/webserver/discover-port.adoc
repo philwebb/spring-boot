@@ -1,5 +1,6 @@
 [[howto.webserver.discover-port]]
 = Discover the HTTP Port at Runtime
+:page-section-summary-toc: 1
 
 You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `WebServer`.
 The best way to get that and be sure it has been initialized is to add a `@Bean` of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.

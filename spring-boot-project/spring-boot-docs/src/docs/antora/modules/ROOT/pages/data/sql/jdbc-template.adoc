@@ -1,5 +1,6 @@
 [[data.sql.jdbc-template]]
 = Using JdbcTemplate
+:page-section-summary-toc: 1
 
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
 

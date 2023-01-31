@@ -1,5 +1,6 @@
 [[io.rest-client]]
 = Calling REST Services
+:page-section-summary-toc: 1
 
 If your application calls remote REST services, Spring Boot makes that very convenient using a `RestTemplate` or a `WebClient`.
 

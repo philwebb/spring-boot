@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-elasticsearch]]
 = Auto-configured Data Elasticsearch Tests
+:page-section-summary-toc: 1
 
 You can use `@DataElasticsearchTest` to test Elasticsearch applications.
 By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.

@@ -1,5 +1,6 @@
 [[documentation.io]]
 = IO
+:page-section-summary-toc: 1
 
 If your application needs IO capabilities, see one or more of the following sections:
 

@@ -1,5 +1,6 @@
 [[actuator.whats-next]]
 = What to Read Next
+:page-section-summary-toc: 1
 
 You might want to read about graphing tools such as https://graphiteapp.org[Graphite].
 

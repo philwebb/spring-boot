@@ -1,5 +1,6 @@
 [[documentation.web]]
 = Web
+:page-section-summary-toc: 1
 
 If you develop Spring Boot web applications, take a look at the following content:
 

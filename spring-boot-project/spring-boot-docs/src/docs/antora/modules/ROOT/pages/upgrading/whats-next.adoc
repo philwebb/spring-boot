@@ -1,5 +1,6 @@
 [[upgrading.whats-next]]
 = What to Read Next
+:page-section-summary-toc: 1
 
 Once you've decided to upgrade your application, you can find detailed information regarding specific features in the rest of the document.
 

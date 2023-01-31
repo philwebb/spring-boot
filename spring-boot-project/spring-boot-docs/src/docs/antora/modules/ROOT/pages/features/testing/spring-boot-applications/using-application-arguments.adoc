@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.using-application-arguments]]
 = Using Application Arguments
+:page-section-summary-toc: 1
 
 If your application expects xref:features/spring-application/application-arguments.adoc[arguments], you can
 have `@SpringBootTest` inject them using the `args` attribute.

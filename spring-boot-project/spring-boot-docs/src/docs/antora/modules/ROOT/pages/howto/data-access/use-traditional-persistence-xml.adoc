@@ -1,5 +1,6 @@
 [[howto.data-access.use-traditional-persistence-xml]]
 = Use a Traditional persistence.xml File
+:page-section-summary-toc: 1
 
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with an ID of '`entityManagerFactory`') and set the persistence unit name there.

@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-couchbase]]
 = Auto-configured Data Couchbase Tests
+:page-section-summary-toc: 1
 
 You can use `@DataCouchbaseTest` to test Couchbase applications.
 By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.

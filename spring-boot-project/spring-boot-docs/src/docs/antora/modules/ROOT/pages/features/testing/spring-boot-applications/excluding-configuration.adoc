@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.excluding-configuration]]
 = Excluding Test Configuration
+:page-section-summary-toc: 1
 
 If your application uses component scanning (for example, if you use `@SpringBootApplication` or `@ComponentScan`), you may find top-level configuration classes that you created only for specific tests accidentally get picked up everywhere.
 

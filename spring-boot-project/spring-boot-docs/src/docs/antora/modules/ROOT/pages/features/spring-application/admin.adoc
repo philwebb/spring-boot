@@ -1,5 +1,6 @@
 [[features.spring-application.admin]]
 = Admin Features
+:page-section-summary-toc: 1
 
 It is possible to enable admin-related features for the application by specifying the configprop:spring.application.admin.enabled[] property.
 This exposes the {spring-boot-module-code}/admin/SpringApplicationAdminMXBean.java[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.

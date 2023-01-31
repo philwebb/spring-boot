@@ -1,5 +1,6 @@
 [[io]]
 = IO
+:page-section-summary-toc: 1
 
 Most applications will need to deal with input and output concerns at some point.
 Spring Boot provides utilities and integrations with a range of technologies to help when you need IO capabilities.

@@ -1,5 +1,6 @@
 [[features.logging.log-format]]
 = Log Format
+:page-section-summary-toc: 1
 
 The default log output from Spring Boot resembles the following example:
 

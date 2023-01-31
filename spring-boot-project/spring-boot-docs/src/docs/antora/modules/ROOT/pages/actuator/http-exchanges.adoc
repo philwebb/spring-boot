@@ -1,5 +1,6 @@
 [[actuator.http-exchanges]]
 = Recording HTTP Exchanges
+:page-section-summary-toc: 1
 
 You can enable recording of HTTP exchanges by providing a bean of type `HttpExchangeRepository` in your application's configuration.
 For convenience, Spring Boot offers `InMemoryHttpExchangeRepository`, which, by default, stores the last 100 request-response exchanges.

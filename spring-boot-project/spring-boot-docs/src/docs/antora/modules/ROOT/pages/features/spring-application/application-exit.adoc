@@ -1,5 +1,6 @@
 [[features.spring-application.application-exit]]
 = Application Exit
+:page-section-summary-toc: 1
 
 Each `SpringApplication` registers a shutdown hook with the JVM to ensure that the `ApplicationContext` closes gracefully on exit.
 All the standard Spring lifecycle callbacks (such as the `DisposableBean` interface or the `@PreDestroy` annotation) can be used.

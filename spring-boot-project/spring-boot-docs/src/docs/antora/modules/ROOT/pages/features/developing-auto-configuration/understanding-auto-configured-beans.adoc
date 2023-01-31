@@ -1,5 +1,6 @@
 [[features.developing-auto-configuration.understanding-auto-configured-beans]]
 = Understanding Auto-configured Beans
+:page-section-summary-toc: 1
 
 Classes that implement auto-configuration are annotated with `@AutoConfiguration`.
 This annotation itself is meta-annotated with `@Configuration`, making auto-configurations standard `@Configuration` classes.

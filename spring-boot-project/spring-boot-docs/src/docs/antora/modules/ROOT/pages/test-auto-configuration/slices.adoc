@@ -1,5 +1,6 @@
 [[appendix.test-auto-configuration.slices]]
 = Test Slices
+:page-section-summary-toc: 1
 
 The following table lists the various `@...Test` annotations that can be used to test slices of your application and the auto-configuration that they import by default:
 

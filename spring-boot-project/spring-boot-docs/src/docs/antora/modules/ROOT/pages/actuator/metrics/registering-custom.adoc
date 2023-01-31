@@ -1,5 +1,6 @@
 [[actuator.metrics.registering-custom]]
 = Registering Custom Metrics
+:page-section-summary-toc: 1
 
 To register custom metrics, inject `MeterRegistry` into your component:
 

@@ -1,5 +1,6 @@
 [[howto.webserver.enable-multiple-connectors-in-tomcat]]
 = Enable Multiple Connectors with Tomcat
+:page-section-summary-toc: 1
 
 You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 

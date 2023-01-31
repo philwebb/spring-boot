@@ -1,5 +1,6 @@
 [[documentation.features]]
 = Learning About Spring Boot Features
+:page-section-summary-toc: 1
 
 Need more details about Spring Boot's core features?
 xref:features.adoc[The following content is for you]:

@@ -1,5 +1,6 @@
 [[documentation.container-images]]
 = Container Images
+:page-section-summary-toc: 1
 
 Spring Boot provides first-class support for building efficient container images. You can read more about it here:
 

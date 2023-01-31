@@ -1,5 +1,6 @@
 [[actuator.endpoints.cors]]
 = CORS Support
+:page-section-summary-toc: 1
 
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a flexible way what kind of cross-domain requests are authorized.
 If you use Spring MVC or Spring WebFlux, you can configure Actuator's web endpoints to support such scenarios.

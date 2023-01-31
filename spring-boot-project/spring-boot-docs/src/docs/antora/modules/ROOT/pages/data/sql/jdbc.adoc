@@ -1,5 +1,6 @@
 [[data.sql.jdbc]]
 = Spring Data JDBC
+:page-section-summary-toc: 1
 
 Spring Data includes repository support for JDBC and will automatically generate SQL for the methods on `CrudRepository`.
 For more advanced queries, a `@Query` annotation is provided.

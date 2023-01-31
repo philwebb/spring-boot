@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.tracing]]
 = Using Tracing
+:page-section-summary-toc: 1
 
 Regardless of your classpath, tracing is not auto-configured when using `@SpringBootTest`.
 

@@ -1,5 +1,6 @@
 [[documentation.messaging]]
 = Messaging
+:page-section-summary-toc: 1
 
 If your application uses any messaging protocol, see one or more of the following sections:
 

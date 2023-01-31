@@ -1,6 +1,7 @@
 [appendix]
 [[appendix.auto-configuration-classes]]
 = Auto-configuration Classes
+:page-section-summary-toc: 1
 
 
 

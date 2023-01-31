@@ -1,5 +1,6 @@
 [[data.nosql]]
 = Working with NoSQL Technologies
+:page-section-summary-toc: 1
 
 Spring Data provides additional projects that help you access a variety of NoSQL technologies, including:
 

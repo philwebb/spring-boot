@@ -1,5 +1,6 @@
 [[web.reactive]]
 = Reactive Web Applications
+:page-section-summary-toc: 1
 
 Spring Boot simplifies development of reactive web applications by providing auto-configuration for Spring Webflux.
 

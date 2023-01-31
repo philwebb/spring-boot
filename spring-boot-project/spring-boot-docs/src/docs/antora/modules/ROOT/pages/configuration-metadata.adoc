@@ -1,6 +1,7 @@
 [appendix]
 [[appendix.configuration-metadata]]
 = Configuration Metadata
+:page-section-summary-toc: 1
 
 
 

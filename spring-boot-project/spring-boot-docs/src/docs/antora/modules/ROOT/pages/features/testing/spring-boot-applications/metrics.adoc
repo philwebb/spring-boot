@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.metrics]]
 = Using Metrics
+:page-section-summary-toc: 1
 
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
 

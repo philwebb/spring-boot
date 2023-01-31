@@ -1,5 +1,6 @@
 [[documentation.advanced]]
 = Advanced Topics
+:page-section-summary-toc: 1
 
 Finally, we have a few topics for more advanced users:
 

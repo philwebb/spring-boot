@@ -1,5 +1,6 @@
 [[howto.webserver]]
 = Embedded Web Servers
+:page-section-summary-toc: 1
 
 Each Spring Boot web application includes an embedded web server.
 This feature leads to a number of how-to questions, including how to change the embedded server and how to configure the embedded server.

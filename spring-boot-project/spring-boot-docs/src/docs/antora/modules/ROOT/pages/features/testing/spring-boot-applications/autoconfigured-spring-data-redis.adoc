@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-redis]]
 = Auto-configured Data Redis Tests
+:page-section-summary-toc: 1
 
 You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.

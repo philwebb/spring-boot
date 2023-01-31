@@ -1,5 +1,6 @@
 [[features.spring-application.fluent-builder-api]]
 = Fluent Builder API
+:page-section-summary-toc: 1
 
 If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a "`fluent`" builder API, you can use the `SpringApplicationBuilder`.
 

@@ -1,6 +1,7 @@
 
 [[actuator]]
 = Production-ready Features
+:page-section-summary-toc: 1
 
 
 

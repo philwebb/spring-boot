@@ -1,5 +1,6 @@
 [[documentation.actuator]]
 = Moving to Production
+:page-section-summary-toc: 1
 
 When you are ready to push your Spring Boot application to production, we have xref:howto/actuator.adoc[some tricks] that you might like:
 

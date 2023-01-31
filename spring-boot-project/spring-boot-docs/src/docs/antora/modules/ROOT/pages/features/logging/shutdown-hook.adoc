@@ -1,5 +1,6 @@
 [[features.logging.shutdown-hook]]
 = Using a Log Shutdown Hook
+:page-section-summary-toc: 1
 
 In order to release logging resources when your application terminates, a shutdown hook that will trigger log system cleanup when the JVM exits is provided.
 This shutdown hook is registered automatically unless your application is deployed as a war file.

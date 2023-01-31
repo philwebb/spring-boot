@@ -1,5 +1,6 @@
 [[deployment]]
 = Deploying Spring Boot Applications
+:page-section-summary-toc: 1
 
 
 

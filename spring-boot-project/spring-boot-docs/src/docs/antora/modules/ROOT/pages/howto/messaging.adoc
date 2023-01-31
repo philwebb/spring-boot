@@ -1,5 +1,6 @@
 [[howto.messaging]]
 = Messaging
+:page-section-summary-toc: 1
 
 Spring Boot offers a number of starters to support messaging.
 This section answers questions that arise from using messaging with Spring Boot.

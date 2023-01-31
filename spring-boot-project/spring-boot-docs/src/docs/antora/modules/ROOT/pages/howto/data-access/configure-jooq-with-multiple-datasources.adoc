@@ -1,5 +1,6 @@
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
 = Configure jOOQ with Two DataSources
+:page-section-summary-toc: 1
 
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
 See {spring-boot-autoconfigure-module-code}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.

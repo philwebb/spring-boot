@@ -1,5 +1,6 @@
 [[deployment.whats-next]]
 = What to Read Next
+:page-section-summary-toc: 1
 
 See the https://www.cloudfoundry.org/[Cloud Foundry], https://www.heroku.com/[Heroku], https://www.openshift.com[OpenShift], and https://boxfuse.com[Boxfuse] web sites for more information about the kinds of features that a PaaS can offer.
 These are just four of the most popular Java PaaS providers.

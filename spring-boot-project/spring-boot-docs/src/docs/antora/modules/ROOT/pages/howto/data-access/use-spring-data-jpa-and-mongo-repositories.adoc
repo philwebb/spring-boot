@@ -1,5 +1,6 @@
 [[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
 = Use Spring Data JPA and Mongo Repositories
+:page-section-summary-toc: 1
 
 Spring Data JPA and Spring Data Mongo can both automatically create `Repository` implementations for you.
 If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.

@@ -1,5 +1,6 @@
 [[web.security.spring-webflux]]
 = WebFlux Security
+:page-section-summary-toc: 1
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.

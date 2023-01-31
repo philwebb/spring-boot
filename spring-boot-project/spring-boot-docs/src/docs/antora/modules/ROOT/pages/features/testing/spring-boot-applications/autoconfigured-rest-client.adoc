@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-rest-client]]
 = Auto-configured REST Clients
+:page-section-summary-toc: 1
 
 You can use the `@RestClientTest` annotation to test REST clients.
 By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder`, and adds support for `MockRestServiceServer`.

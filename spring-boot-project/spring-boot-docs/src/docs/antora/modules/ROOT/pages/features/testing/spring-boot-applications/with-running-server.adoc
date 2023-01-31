@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.with-running-server]]
 = Testing With a Running Server
+:page-section-summary-toc: 1
 
 If you need to start a full running server, we recommend that you use random ports.
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.

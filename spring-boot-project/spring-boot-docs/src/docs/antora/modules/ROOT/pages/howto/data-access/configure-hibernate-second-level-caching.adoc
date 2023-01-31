@@ -1,5 +1,6 @@
 [[howto.data-access.configure-hibernate-second-level-caching]]
 = Configure Hibernate Second-Level Caching
+:page-section-summary-toc: 1
 
 Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.

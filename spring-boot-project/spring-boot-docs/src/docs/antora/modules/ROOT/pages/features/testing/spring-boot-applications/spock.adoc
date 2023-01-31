@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.spock]]
 = Using Spock to Test Spring Boot Applications
+:page-section-summary-toc: 1
 
 Spock 2.2 or later can be used to test a Spring Boot application.
 To do so, add a dependency on a `-groovy-4.0` version of Spock's `spock-spring` module to your application's build.

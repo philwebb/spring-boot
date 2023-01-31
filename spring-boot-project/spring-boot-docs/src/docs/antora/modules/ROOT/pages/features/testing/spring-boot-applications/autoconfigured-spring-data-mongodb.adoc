@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-mongodb]]
 = Auto-configured Data MongoDB Tests
+:page-section-summary-toc: 1
 
 You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.

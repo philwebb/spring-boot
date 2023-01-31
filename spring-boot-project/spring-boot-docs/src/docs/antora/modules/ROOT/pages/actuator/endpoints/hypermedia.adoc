@@ -1,5 +1,6 @@
 [[actuator.endpoints.hypermedia]]
 = Hypermedia for Actuator Web Endpoints
+:page-section-summary-toc: 1
 
 A "`discovery page`" is added with links to all the endpoints.
 The "`discovery page`" is available on `/actuator` by default.

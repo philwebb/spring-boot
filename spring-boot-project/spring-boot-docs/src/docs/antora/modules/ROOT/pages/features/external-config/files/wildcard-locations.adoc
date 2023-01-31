@@ -1,5 +1,6 @@
 [[features.external-config.files.wildcard-locations]]
 = Wildcard Locations
+:page-section-summary-toc: 1
 
 If a config file location includes the `{asterisk}` character for the last path segment, it is considered a wildcard location.
 Wildcards are expanded when the config is loaded so that immediate subdirectories are also checked.

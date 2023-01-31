@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-jdbc]]
 = Auto-configured JDBC Tests
+:page-section-summary-toc: 1
 
 `@JdbcTest` is similar to `@DataJpaTest` but is for tests that only require a `DataSource` and do not use Spring Data JDBC.
 By default, it configures an in-memory embedded database and a `JdbcTemplate`.

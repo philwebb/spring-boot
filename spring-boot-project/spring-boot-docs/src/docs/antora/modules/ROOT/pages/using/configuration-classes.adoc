@@ -1,5 +1,6 @@
 [[using.configuration-classes]]
 = Configuration Classes
+:page-section-summary-toc: 1
 
 Spring Boot favors Java-based configuration.
 Although it is possible to use `SpringApplication` with XML sources, we generally recommend that your primary source be a single `@Configuration` class.

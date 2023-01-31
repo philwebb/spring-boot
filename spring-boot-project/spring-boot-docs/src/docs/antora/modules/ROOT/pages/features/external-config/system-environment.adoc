@@ -1,5 +1,6 @@
 [[features.external-config.system-environment]]
 = Configuring System Environment Properties
+:page-section-summary-toc: 1
 
 Spring Boot supports setting a prefix for environment properties.
 This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.

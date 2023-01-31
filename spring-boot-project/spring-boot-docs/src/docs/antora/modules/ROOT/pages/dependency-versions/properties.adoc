@@ -1,5 +1,6 @@
 [[appendix.dependency-versions.properties]]
 = Version Properties
+:page-section-summary-toc: 1
 
 The following table provides all properties that can be used to override the versions managed by Spring Boot.
 Browse the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] for a complete list of dependencies.

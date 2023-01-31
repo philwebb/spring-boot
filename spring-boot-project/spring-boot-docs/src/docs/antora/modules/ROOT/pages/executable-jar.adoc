@@ -1,6 +1,7 @@
 [appendix]
 [[appendix.executable-jar]]
 = The Executable Jar Format
+:page-section-summary-toc: 1
 
 
 

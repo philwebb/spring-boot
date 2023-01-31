@@ -1,5 +1,6 @@
 [[features.spring-application.application-arguments]]
 = Accessing Application Arguments
+:page-section-summary-toc: 1
 
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:

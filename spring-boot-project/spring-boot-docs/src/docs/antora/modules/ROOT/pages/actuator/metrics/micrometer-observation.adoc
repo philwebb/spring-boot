@@ -1,4 +1,5 @@
 [[actuator.metrics.micrometer-observation]]
 = Integration with Micrometer Observation
+:page-section-summary-toc: 1
 
 A `DefaultMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates metrics for every completed observation.

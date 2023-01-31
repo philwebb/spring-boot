@@ -1,5 +1,6 @@
 [[documentation.data]]
 = Data
+:page-section-summary-toc: 1
 
 If your application deals with a datastore, you can see how to configure that here:
 

@@ -1,5 +1,6 @@
 [[features.testing.spring-boot-applications.autoconfigured-tests]]
 = Auto-configured Tests
+:page-section-summary-toc: 1
 
 Spring Boot's auto-configuration system works well for applications but can sometimes be a little too much for tests.
 It often helps to load only the parts of the configuration that are required to test a "`slice`" of your application.

@@ -1,5 +1,6 @@
 [[documentation.upgrading]]
 = Upgrading From an Earlier Version
+:page-section-summary-toc: 1
 
 You should always ensure that you are running a {github-wiki}/Supported-Versions[supported version] of Spring Boot.
 

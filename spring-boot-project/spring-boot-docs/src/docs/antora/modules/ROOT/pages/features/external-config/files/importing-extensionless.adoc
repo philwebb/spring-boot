@@ -1,5 +1,6 @@
 [[features.external-config.files.importing-extensionless]]
 = Importing Extensionless Files
+:page-section-summary-toc: 1
 
 Some cloud platforms cannot add a file extension to volume mounted files.
 To import these extensionless files, you need to give Spring Boot a hint so that it knows how to load them.

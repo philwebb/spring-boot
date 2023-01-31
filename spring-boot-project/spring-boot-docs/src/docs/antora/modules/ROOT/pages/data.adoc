@@ -1,5 +1,6 @@
 [[data]]
 = Data
+:page-section-summary-toc: 1
 
 Spring Boot integrates with a number of data technologies, both SQL and NoSQL.
 

@@ -1,5 +1,6 @@
 [[howto.webserver.enable-multiple-listeners-in-undertow]]
 = Enable Multiple Listeners with Undertow
+:page-section-summary-toc: 1
 
 Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `Builder`, as shown in the following example:
 

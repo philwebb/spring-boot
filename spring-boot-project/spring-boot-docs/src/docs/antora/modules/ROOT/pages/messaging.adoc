@@ -1,5 +1,6 @@
 [[messaging]]
 = Messaging
+:page-section-summary-toc: 1
 
 The Spring Framework provides extensive support for integrating with messaging systems, from simplified use of the JMS API using `JmsTemplate` to a complete infrastructure to receive messages asynchronously.
 Spring AMQP provides a similar feature set for the Advanced Message Queuing Protocol.

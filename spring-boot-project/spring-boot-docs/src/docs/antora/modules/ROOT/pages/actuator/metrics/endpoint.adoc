@@ -1,5 +1,6 @@
 [[actuator.metrics.endpoint]]
 = Metrics Endpoint
+:page-section-summary-toc: 1
 
 Spring Boot provides a `metrics` endpoint that you can use diagnostically to examine the metrics collected by an application.
 The endpoint is not available by default and must be exposed.

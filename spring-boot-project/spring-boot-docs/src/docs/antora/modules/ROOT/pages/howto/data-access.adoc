@@ -1,5 +1,6 @@
 [[howto.data-access]]
 = Data Access
+:page-section-summary-toc: 1
 
 Spring Boot includes a number of starters for working with data sources.
 This section answers questions related to doing so.
