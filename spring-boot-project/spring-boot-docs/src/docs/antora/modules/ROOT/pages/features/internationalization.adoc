@@ -1,5 +1,6 @@
 [[features.internationalization]]
-== Internationalization
+= Internationalization
+
 Spring Boot supports localized messages so that your application can cater to users of different language preferences.
 By default, Spring Boot looks for the presence of a `messages` resource bundle at the root of the classpath.
 

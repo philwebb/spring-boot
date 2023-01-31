@@ -1,5 +1,6 @@
 [[documentation.web]]
-== Web
+= Web
+
 If you develop Spring Boot web applications, take a look at the following content:
 
 * *Servlet Web Applications:* <<web#web.servlet, Spring MVC, Jersey, Embedded Servlet Containers>>

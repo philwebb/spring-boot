@@ -1,5 +1,6 @@
 [[actuator.enabling]]
-== Enabling Production-ready Features
+= Enabling Production-ready Features
+
 The {spring-boot-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
 The recommended way to enable the features is to add a dependency on the `spring-boot-starter-actuator` "`Starter`".
 

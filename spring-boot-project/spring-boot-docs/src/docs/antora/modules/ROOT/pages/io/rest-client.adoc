@@ -1,9 +1,10 @@
 [[io.rest-client]]
-== Calling REST Services
+= Calling REST Services
+
 If your application calls remote REST services, Spring Boot makes that very convenient using a `RestTemplate` or a `WebClient`.
 
 [[io.rest-client.resttemplate]]
-=== RestTemplate
+== RestTemplate
 If you need to call remote REST services from your application, you can use the Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class.
 Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.
 It does, however, auto-configure a `RestTemplateBuilder`, which can be used to create `RestTemplate` instances when needed.
@@ -19,7 +20,7 @@ For example, to add BASIC auth support, you can use `builder.basicAuthentication
 
 
 [[io.rest-client.resttemplate.customization]]
-==== RestTemplate Customization
+=== RestTemplate Customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured `RestTemplateBuilder` and then call its methods as required.
@@ -45,7 +46,7 @@ In addition to replacing the auto-configured builder, this also prevents any `Re
 
 
 [[io.rest-client.webclient]]
-=== WebClient
+== WebClient
 If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
 Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
@@ -61,7 +62,7 @@ include::code:MyService[]
 
 
 [[io.rest-client.webclient.runtime]]
-==== WebClient Runtime
+=== WebClient Runtime
 Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`, depending on the libraries available on the application classpath.
 For now, Reactor Netty, Jetty ReactiveStream client, Apache HttpClient, and the JDK's HttpClient are supported.
 
@@ -78,7 +79,7 @@ You can learn more about the {spring-framework-docs}/web-reactive.html#webflux-c
 
 
 [[io.rest-client.webclient.customization]]
-==== WebClient Customization
+=== WebClient Customization
 There are three main approaches to `WebClient` customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured `WebClient.Builder` and then call its methods as required.

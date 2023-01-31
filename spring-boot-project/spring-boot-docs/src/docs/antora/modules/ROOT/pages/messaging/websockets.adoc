@@ -1,5 +1,6 @@
 [[messaging.websockets]]
-== WebSockets
+= WebSockets
+
 Spring Boot provides WebSockets auto-configuration for embedded Tomcat, Jetty, and Undertow.
 If you deploy a war file to a standalone container, Spring Boot assumes that the container is responsible for the configuration of its WebSocket support.
 

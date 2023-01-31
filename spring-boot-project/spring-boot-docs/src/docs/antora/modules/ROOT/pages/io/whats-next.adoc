@@ -1,5 +1,6 @@
 [[io.whats-next]]
-== What to Read Next
+= What to Read Next
+
 You should now have a good understanding of Spring Boot's <<features#features, core features>> and the various technologies that Spring Boot provides support for through auto-configuration.
 
 The next few sections go into detail about deploying applications to cloud platforms.

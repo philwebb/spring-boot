@@ -1,5 +1,6 @@
 [[deployment.installing]]
-== Installing Spring Boot Applications
+= Installing Spring Boot Applications
+
 In addition to running Spring Boot applications by using `java -jar`, it is also possible to make fully executable applications for Unix systems.
 A fully executable jar can be executed like any other executable binary or it can be <<deployment#deployment.installing.nix-services,registered with `init.d` or `systemd`>>.
 This helps when installing and managing Spring Boot applications in common production environments.
@@ -41,20 +42,20 @@ The directory containing the jar is used as your application's working directory
 
 
 [[deployment.installing.supported-operating-systems]]
-=== Supported Operating Systems
+== Supported Operating Systems
 The default script supports most Linux distributions and is tested on CentOS and Ubuntu.
 Other platforms, such as OS X and FreeBSD, require the use of a custom `embeddedLaunchScript`.
 
 
 
 [[deployment.installing.nix-services]]
-=== Unix/Linux Services
+== Unix/Linux Services
 Spring Boot application can be easily started as Unix/Linux services by using either `init.d` or `systemd`.
 
 
 
 [[deployment.installing.nix-services.init-d]]
-==== Installation as an init.d Service (System V)
+=== Installation as an init.d Service (System V)
 If you configured Spring Boot's Maven or Gradle plugin to generate a <<deployment#deployment.installing, fully executable jar>>, and you do not use a custom `embeddedLaunchScript`, your application can be used as an `init.d` service.
 To do so, symlink the jar to `init.d` to support the standard `start`, `stop`, `restart`, and `status` commands.
 
@@ -92,7 +93,7 @@ For example, on Debian, you could use the following command:
 
 
 [[deployment.installing.nix-services.init-d.securing]]
-===== Securing an init.d Service
+==== Securing an init.d Service
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
@@ -143,7 +144,7 @@ Use `chmod` so that the file can only be read by the owner and use `chown` to ma
 
 
 [[deployment.installing.nix-services.system-d]]
-==== Installation as a systemd Service
+=== Installation as a systemd Service
 `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 Although you can continue to use `init.d` scripts with `systemd`, it is also possible to launch Spring Boot applications by using `systemd` '`service`' scripts.
 
@@ -184,7 +185,7 @@ Run `man systemctl` for more details.
 
 
 [[deployment.installing.nix-services.script-customization]]
-==== Customizing the Startup Script
+=== Customizing the Startup Script
 The default embedded startup script written by the Maven or Gradle plugin can be customized in a number of ways.
 For most people, using the default script along with a few customizations is usually enough.
 If you find you cannot customize something that you need to, use the `embeddedLaunchScript` option to write your own file entirely.
@@ -192,7 +193,7 @@ If you find you cannot customize something that you need to, use the `embeddedLa
 
 
 [[deployment.installing.nix-services.script-customization.when-written]]
-===== Customizing the Start Script When It Is Written
+==== Customizing the Start Script When It Is Written
 It often makes sense to customize elements of the start script as it is written into the jar file.
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
@@ -300,7 +301,7 @@ The following property substitutions are supported with the default script:
 
 
 [[deployment.installing.nix-services.script-customization.when-running]]
-===== Customizing a Script When It Runs
+==== Customizing a Script When It Runs
 For items of the script that need to be customized _after_ the jar has been written, you can use environment variables or a <<deployment#deployment.installing.nix-services.script-customization.when-running.conf-file, config file>>.
 
 The following environment properties are supported with the default script:
@@ -383,7 +384,7 @@ To learn about securing this file appropriately, see <<deployment#deployment.ins
 
 
 [[deployment.installing.windows-services]]
-=== Microsoft Windows Services
+== Microsoft Windows Services
 A Spring Boot application can be started as a Windows service by using https://github.com/kohsuke/winsw[`winsw`].
 
 A (https://github.com/snicoll/spring-boot-daemon[separately maintained sample]) describes step-by-step how you can create a Windows service for your Spring Boot application.

@@ -1,5 +1,6 @@
 [[using.packaging-for-production]]
-== Packaging Your Application for Production
+= Packaging Your Application for Production
+
 Executable jars can be used for production deployment.
 As they are self-contained, they are also ideally suited for cloud-based deployment.
 

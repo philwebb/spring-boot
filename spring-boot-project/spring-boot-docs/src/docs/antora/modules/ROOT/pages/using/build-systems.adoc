@@ -1,5 +1,6 @@
 [[using.build-systems]]
-== Build Systems
+= Build Systems
+
 It is strongly recommended that you choose a build system that supports <<using#using.build-systems.dependency-management,_dependency management_>> and that can consume artifacts published to the "`Maven Central`" repository.
 We would recommend that you choose Maven or Gradle.
 It is possible to get Spring Boot to work with other build systems (Ant, for example), but they are not particularly well supported.
@@ -7,7 +8,7 @@ It is possible to get Spring Boot to work with other build systems (Ant, for exa
 
 
 [[using.build-systems.dependency-management]]
-=== Dependency Management
+== Dependency Management
 Each release of Spring Boot provides a curated list of dependencies that it supports.
 In practice, you do not need to provide a version for any of these dependencies in your build configuration, as Spring Boot manages that for you.
 When you upgrade Spring Boot itself, these dependencies are upgraded as well in a consistent way.
@@ -23,7 +24,7 @@ We **highly** recommend that you do not specify its version.
 
 
 [[using.build-systems.maven]]
-=== Maven
+== Maven
 To learn about using Spring Boot with Maven, see the documentation for Spring Boot's Maven plugin:
 
 * Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
@@ -32,7 +33,7 @@ To learn about using Spring Boot with Maven, see the documentation for Spring Bo
 
 
 [[using.build-systems.gradle]]
-=== Gradle
+== Gradle
 To learn about using Spring Boot with Gradle, see the documentation for Spring Boot's Gradle plugin:
 
 * Reference ({spring-boot-gradle-plugin-docs}[HTML] and {spring-boot-gradle-plugin-pdfdocs}[PDF])
@@ -41,7 +42,7 @@ To learn about using Spring Boot with Gradle, see the documentation for Spring B
 
 
 [[using.build-systems.ant]]
-===  Ant
+==  Ant
 It is possible to build a Spring Boot project using Apache Ant+Ivy.
 The `spring-boot-antlib` "`AntLib`" module is also available to help Ant create executable jars.
 
@@ -106,7 +107,7 @@ TIP: If you do not want to use the `spring-boot-antlib` module, see the _<<howto
 
 
 [[using.build-systems.starters]]
-=== Starters
+== Starters
 Starters are a set of convenient dependency descriptors that you can include in your application.
 You get a one-stop shop for all the Spring and related technologies that you need without having to hunt through sample code and copy-paste loads of dependency descriptors.
 For example, if you want to get started using Spring and JPA for database access, include the `spring-boot-starter-data-jpa` dependency in your project.

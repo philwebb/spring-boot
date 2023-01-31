@@ -1,5 +1,6 @@
 [[deployment.cloud]]
-== Deploying to the Cloud
+= Deploying to the Cloud
+
 Spring Boot's executable jars are ready-made for most popular cloud PaaS (Platform-as-a-Service) providers.
 These providers tend to require that you "`bring your own container`".
 They manage application processes (not Java applications specifically), so they need an intermediary layer that adapts _your_ application to the _cloud's_ notion of a running process.
@@ -18,7 +19,7 @@ In this section, we look at what it takes to get the <<getting-started#getting-s
 
 
 [[deployment.cloud.cloud-foundry]]
-=== Cloud Foundry
+== Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is specified.
 The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack] has excellent support for Spring applications, including Spring Boot.
 You can deploy stand-alone executable jar applications as well as traditional `.war` packaged applications.
@@ -86,7 +87,7 @@ In the preceding example, you could find it at `\https://acloudyspringtime.cfapp
 
 
 [[deployment.cloud.cloud-foundry.binding-to-services]]
-==== Binding to Services
+=== Binding to Services
 By default, metadata about the running application as well as service connection information is exposed to the application as environment variables (for example: `$VCAP_SERVICES`).
 This architecture decision is due to Cloud Foundry's polyglot (any language and platform can be supported as a buildpack) nature.
 Process-scoped environment variables are language agnostic.
@@ -104,7 +105,7 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 
 
 [[deployment.cloud.kubernetes]]
-=== Kubernetes
+== Kubernetes
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
 You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
 
@@ -113,7 +114,7 @@ Spring Boot helps you to <<features#features.spring-application.application-avai
 
 
 [[deployment.cloud.kubernetes.container-lifecycle]]
-==== Kubernetes Container Lifecycle
+=== Kubernetes Container Lifecycle
 When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
 Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
 
@@ -142,7 +143,7 @@ If the pod takes longer than 30 seconds to shut down, which could be because you
 
 
 [[deployment.cloud.heroku]]
-=== Heroku
+== Heroku
 Heroku is another popular PaaS platform.
 To customize Heroku builds, you provide a `Procfile`, which provides the incantation required to deploy an application.
 Heroku assigns a `port` for the Java application to use and then ensures that routing to the external URI works.
@@ -216,7 +217,7 @@ For more details, see https://devcenter.heroku.com/articles/deploying-spring-boo
 
 
 [[deployment.cloud.openshift]]
-=== OpenShift
+== OpenShift
 https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
@@ -227,7 +228,7 @@ https://www.openshift.com/[OpenShift] has many resources describing how to deplo
 
 
 [[deployment.cloud.aws]]
-=== Amazon Web Services (AWS)
+== Amazon Web Services (AWS)
 Amazon Web Services offers multiple ways to install Spring Boot-based applications, either as traditional web applications (war) or as executable jar files with an embedded web server.
 The options include:
 
@@ -243,14 +244,14 @@ In this document, we describe to approach using AWS Elastic Beanstalk.
 
 
 [[deployment.cloud.aws.beanstalk]]
-==== AWS Elastic Beanstalk
+=== AWS Elastic Beanstalk
 As described in the official https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic Beanstalk Java guide], there are two main options to deploy a Java application.
 You can either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
 
 
 [[deployment.cloud.aws.beanstalk.tomcat-platform]]
-===== Using the Tomcat Platform
+==== Using the Tomcat Platform
 This option applies to Spring Boot projects that produce a war file.
 No special configuration is required.
 You need only follow the official guide.
@@ -258,7 +259,7 @@ You need only follow the official guide.
 
 
 [[deployment.cloud.aws.beanstalk.java-se-platform]]
-===== Using the Java SE Platform
+==== Using the Java SE Platform
 This option applies to Spring Boot projects that produce a jar file and run an embedded web container.
 Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual application, running on port 5000.
 To configure it, add the following line to your `application.properties` file:
@@ -300,14 +301,14 @@ You can also create single instance environments by using the CLI and the follow
 
 
 [[deployment.cloud.aws.summary]]
-==== Summary
+=== Summary
 This is one of the easiest ways to get to AWS, but there are more things to cover, such as how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven plugin instead of the CLI, and others.
 There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.
 
 
 
 [[deployment.cloud.boxfuse]]
-=== CloudCaptain and Amazon Web Services
+== CloudCaptain and Amazon Web Services
 https://cloudcaptain.sh/[CloudCaptain] works by turning your Spring Boot executable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
 CloudCaptain comes with deep integration for Spring Boot and uses the information from your Spring Boot configuration file to automatically configure ports and health check URLs.
 CloudCaptain leverages this information both for the images it produces as well as for all the resources it provisions (instances, security groups, elastic load balancers, and so on).
@@ -355,13 +356,13 @@ See the blog post on https://cloudcaptain.sh/blog/spring-boot-ec2.html[deploying
 
 
 [[deployment.cloud.azure]]
-=== Azure
+== Azure
 This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service].
 
 
 
 [[deployment.cloud.google]]
-=== Google Cloud
+== Google Cloud
 Google Cloud has several options that can be used to launch Spring Boot applications.
 The easiest to get started with is probably App Engine, but you could also find ways to run Spring Boot in a container with Container Engine or on a virtual machine with Compute Engine.
 
