@@ -1,7 +1,6 @@
 [appendix]
 [[appendix.executable-jar]]
 = The Executable Jar Format
-include::attributes.adoc[]
 
 
 
@@ -12,14 +11,8 @@ If you need to create executable jars from a different build system or if you ar
 
 
 
-include::executable-jar/nested-jars.adoc[]
 
-include::executable-jar/jarfile-class.adoc[]
 
-include::executable-jar/launching.adoc[]
 
-include::executable-jar/property-launcher.adoc[]
 
-include::executable-jar/restrictions.adoc[]
 
-include::executable-jar/alternatives.adoc[]

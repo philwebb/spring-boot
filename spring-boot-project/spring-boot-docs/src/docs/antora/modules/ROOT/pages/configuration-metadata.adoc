@@ -1,7 +1,6 @@
 [appendix]
 [[appendix.configuration-metadata]]
 = Configuration Metadata
-include::attributes.adoc[]
 
 
 
@@ -13,8 +12,5 @@ However, it is possible to <<configuration-metadata#appendix.configuration-metad
 
 
 
-include::configuration-metadata/format.adoc[]
 
-include::configuration-metadata/manual-hints.adoc[]
 
-include::configuration-metadata/annotation-processor.adoc[]

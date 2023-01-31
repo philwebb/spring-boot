@@ -1,6 +1,5 @@
 [[getting-started]]
 = Getting Started
-include::attributes.adoc[]
 
 
 
@@ -11,13 +10,8 @@ We then walk you through building your first Spring Boot application, discussing
 
 
 
-include::getting-started/introducing-spring-boot.adoc[]
 
-include::getting-started/system-requirements.adoc[]
 
-include::getting-started/installing.adoc[]
 
-include::getting-started/first-application.adoc[]
 
-include::getting-started/whats-next.adoc[]
 

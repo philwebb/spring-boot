@@ -1,6 +1,5 @@
 [[deployment]]
 = Deploying Spring Boot Applications
-include::attributes.adoc[]
 
 
 
@@ -10,8 +9,5 @@ You can deploy Spring Boot applications to a variety of cloud platforms, to virt
 This section covers some of the more common deployment scenarios.
 
 
-include::deployment/cloud.adoc[]
 
-include::deployment/installing.adoc[]
 
-include::deployment/whats-next.adoc[]

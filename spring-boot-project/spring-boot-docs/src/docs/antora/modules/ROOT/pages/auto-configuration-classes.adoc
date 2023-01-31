@@ -1,7 +1,6 @@
 [appendix]
 [[appendix.auto-configuration-classes]]
 = Auto-configuration Classes
-include::attributes.adoc[]
 
 
 
@@ -11,6 +10,4 @@ Remember to also look at the conditions report in your application for more deta
 
 
 
-include::auto-configuration-classes/core.adoc[]
 
-include::auto-configuration-classes/actuator.adoc[]

@@ -1,7 +1,6 @@
 [appendix]
 [[appendix.application-properties]]
 = Common Application Properties
-include::attributes.adoc[]
 
 
 
@@ -15,34 +14,18 @@ Also, you can define your own properties.
 
 
 
-include::application-properties/core.adoc[]
 
-include::application-properties/cache.adoc[]
 
-include::application-properties/mail.adoc[]
 
-include::application-properties/json.adoc[]
 
-include::application-properties/data.adoc[]
 
-include::application-properties/transaction.adoc[]
 
-include::application-properties/data-migration.adoc[]
 
-include::application-properties/integration.adoc[]
 
-include::application-properties/web.adoc[]
 
-include::application-properties/templating.adoc[]
 
-include::application-properties/server.adoc[]
 
-include::application-properties/security.adoc[]
 
-include::application-properties/rsocket.adoc[]
 
-include::application-properties/actuator.adoc[]
 
-include::application-properties/devtools.adoc[]
 
-include::application-properties/testing.adoc[]

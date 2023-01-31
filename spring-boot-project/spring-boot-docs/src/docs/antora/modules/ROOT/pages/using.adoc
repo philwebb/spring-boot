@@ -1,6 +1,5 @@
 [[using]]
 = Developing with Spring Boot
-include::attributes.adoc[]
 
 
 
@@ -13,22 +12,12 @@ If you are starting out with Spring Boot, you should probably read the _<<gettin
 
 
 
-include::using/build-systems.adoc[]
 
-include::using/structuring-your-code.adoc[]
 
-include::using/configuration-classes.adoc[]
 
-include::using/auto-configuration.adoc[]
 
-include::using/spring-beans-and-dependency-injection.adoc[]
 
-include::using/using-the-springbootapplication-annotation.adoc[]
 
-include::using/running-your-application.adoc[]
 
-include::using/devtools.adoc[]
 
-include::using/packaging-for-production.adoc[]
 
-include::using/whats-next.adoc[]

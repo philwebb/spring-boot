@@ -1,6 +1,5 @@
 [[build-tool-plugins]]
 = Build Tool Plugins
-include::attributes.adoc[]
 
 
 
@@ -11,12 +10,7 @@ If you are just getting started, you might want to read "`<<using#using.build-sy
 
 
 
-include::build-tool-plugins/maven.adoc[]
 
-include::build-tool-plugins/gradle.adoc[]
 
-include::build-tool-plugins/antlib.adoc[]
 
-include::build-tool-plugins/other-build-systems.adoc[]
 
-include::build-tool-plugins/whats-next.adoc[]

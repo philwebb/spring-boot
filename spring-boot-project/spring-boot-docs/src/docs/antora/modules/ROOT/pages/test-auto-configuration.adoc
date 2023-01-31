@@ -1,7 +1,6 @@
 [appendix]
 [[appendix.test-auto-configuration]]
 = Test Auto-configuration Annotations
-include::attributes.adoc[]
 
 
 
@@ -9,4 +8,3 @@ This appendix describes the `@...Test` auto-configuration annotations that Sprin
 
 
 
-include::test-auto-configuration/slices.adoc[]
