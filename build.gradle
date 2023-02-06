@@ -21,6 +21,6 @@ antora {
 		'@asciidoctor/tabs': '1.0.0-alpha.12',
 		'@opendevise/antora-release-line-extension': '1.0.0-alpha.2',
 		'@springio/antora-extensions': '1.0.0-alpha.2',
-		'@springio/asciidoctor-extensions': '1.0.0-alpha.8',
+		'@springio/asciidoctor-extensions': '1.0.0-alpha.9',
 	]
 }
