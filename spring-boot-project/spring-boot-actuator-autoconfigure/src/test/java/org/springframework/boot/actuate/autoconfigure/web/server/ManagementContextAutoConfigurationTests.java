@@ -48,9 +48,10 @@ class ManagementContextAutoConfigurationTests {
 	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
+					.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class,
+							ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
 			.run((context) -> assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2)));
 	}
@@ -59,10 +60,10 @@ class ManagementContextAutoConfigurationTests {
 	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-					DispatcherServletAutoConfiguration.class));
+					.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class,
+							ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.address=127.0.0.1")
 			.run((context) -> assertThat(context).getFailure()
 				.hasMessageStartingWith("Management-specific server address cannot be configured"));

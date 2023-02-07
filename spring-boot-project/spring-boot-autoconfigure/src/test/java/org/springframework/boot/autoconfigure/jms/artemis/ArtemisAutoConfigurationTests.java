@@ -242,7 +242,7 @@ class ArtemisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomArtemisConfiguration.class)
 			.run((context) -> assertThat(
 					context.getBean(org.apache.activemq.artemis.core.config.Configuration.class).getName())
-				.isEqualTo("customFooBar"));
+						.isEqualTo("customFooBar"));
 	}
 
 	@Test

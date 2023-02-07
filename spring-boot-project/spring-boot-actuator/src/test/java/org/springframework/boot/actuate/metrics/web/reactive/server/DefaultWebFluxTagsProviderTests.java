@@ -53,8 +53,7 @@ class DefaultWebFluxTagsProviderTests {
 		ServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test"));
 		Map<String, Tag> tags = asMap(
 				new DefaultWebFluxTagsProvider(Arrays.asList(new TestWebFluxTagsContributor("alpha"),
-						new TestWebFluxTagsContributor("bravo", "charlie")))
-					.httpRequestTags(exchange, null));
+						new TestWebFluxTagsContributor("bravo", "charlie"))).httpRequestTags(exchange, null));
 		assertThat(tags).containsOnlyKeys("exception", "method", "outcome", "status", "uri", "alpha", "bravo",
 				"charlie");
 	}

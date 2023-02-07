@@ -68,17 +68,17 @@ class WebMvcEndpointExposureIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
-		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
-		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
-				HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
-		.withPropertyValues("server.port:0");
+				.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
+						HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+						ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+						HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+				.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
+				.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
+						HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
+				.withPropertyValues("server.port:0");
 
 	@Test
 	void webEndpointsAreDisabledByDefault() {

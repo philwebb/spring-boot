@@ -107,8 +107,7 @@ class LoggersEndpointTests {
 		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
 			.willReturn(new LoggerConfiguration("ROOT", null, LogLevel.DEBUG));
 		SingleLoggerLevelsDescriptor levels = (SingleLoggerLevelsDescriptor) new LoggersEndpoint(this.loggingSystem,
-				this.loggerGroups)
-			.loggerLevels("ROOT");
+				this.loggerGroups).loggerLevels("ROOT");
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
 	}
@@ -116,8 +115,7 @@ class LoggersEndpointTests {
 	@Test
 	void groupNameSpecifiedShouldReturnConfiguredLevelAndMembers() {
 		GroupLoggerLevelsDescriptor levels = (GroupLoggerLevelsDescriptor) new LoggersEndpoint(this.loggingSystem,
-				this.loggerGroups)
-			.loggerLevels("test");
+				this.loggerGroups).loggerLevels("test");
 		assertThat(levels.getConfiguredLevel()).isEqualTo("DEBUG");
 		assertThat(levels.getMembers()).isEqualTo(Collections.singletonList("test.member"));
 	}

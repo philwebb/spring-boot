@@ -71,7 +71,7 @@ class DelimitedStringToArrayConverterTests {
 			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		assertThat(
 				new DelimitedStringToArrayConverter(new ApplicationConversionService()).matches(sourceType, targetType))
-			.isTrue();
+					.isTrue();
 	}
 
 	@Test

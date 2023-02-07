@@ -436,7 +436,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void shutdownHookIsDisabled() {
 		assertThat(
 				PropertiesUtil.getProperties().getBooleanProperty(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, true))
-			.isFalse();
+					.isFalse();
 	}
 
 	@Test

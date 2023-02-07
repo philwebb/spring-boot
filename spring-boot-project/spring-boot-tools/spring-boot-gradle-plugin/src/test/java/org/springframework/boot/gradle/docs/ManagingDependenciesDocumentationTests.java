@@ -62,8 +62,7 @@ class ManagingDependenciesDocumentationTests {
 				() -> assertThat(
 						this.gradleBuild.script("src/docs/gradle/managing-dependencies/configure-bom-with-plugins")
 							.build("dependencyManagement")
-							.getOutput())
-					.contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT"));
+							.getOutput()).contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT"));
 	}
 
 	@TestTemplate

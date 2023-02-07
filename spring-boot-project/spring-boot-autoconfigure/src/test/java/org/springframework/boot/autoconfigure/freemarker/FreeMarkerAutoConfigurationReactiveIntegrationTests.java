@@ -100,7 +100,7 @@ class FreeMarkerAutoConfigurationReactiveIntegrationTests {
 		this.contextRunner.withPropertyValues("spring.freemarker.settings.boolean_format:yup,nope")
 			.run((context) -> assertThat(
 					context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
-				.isEqualTo("yup,nope"));
+						.isEqualTo("yup,nope"));
 	}
 
 	@Test

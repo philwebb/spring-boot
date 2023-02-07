@@ -94,7 +94,7 @@ class CouchbaseDataAutoConfigurationTests {
 			CouchbaseTemplate template = context.getBean(CouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-				.isTrue();
+						.isTrue();
 		});
 	}
 

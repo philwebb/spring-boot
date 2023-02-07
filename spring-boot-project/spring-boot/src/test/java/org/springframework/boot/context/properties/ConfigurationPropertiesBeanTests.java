@@ -248,8 +248,7 @@ class ConfigurationPropertiesBeanTests {
 			.isEqualTo(ResolvableType.forClass(DeprecatedConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
 		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(DeprecatedConstructorBindingOnConstructor.class,
-				false))
-			.isNotNull();
+				false)).isNotNull();
 	}
 
 	@Test

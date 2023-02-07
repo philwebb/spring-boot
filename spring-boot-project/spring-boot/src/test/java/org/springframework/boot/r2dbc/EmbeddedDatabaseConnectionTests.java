@@ -73,14 +73,14 @@ class EmbeddedDatabaseConnectionTests {
 	void whenPoolIsBasedByH2InMemoryThenIsEmbeddedReturnsTrue() {
 		assertThat(EmbeddedDatabaseConnection
 			.isEmbedded(ConnectionFactoryBuilder.withUrl("r2dbc:pool:h2:mem:///" + UUID.randomUUID()).build()))
-			.isTrue();
+				.isTrue();
 	}
 
 	@Test
 	void whenPoolIsBasedByH2WithFileStorageThenIsEmbeddedReturnsFalse() {
 		assertThat(EmbeddedDatabaseConnection
 			.isEmbedded(ConnectionFactoryBuilder.withUrl("r2dbc:pool:h2:file:///" + UUID.randomUUID()).build()))
-			.isFalse();
+				.isFalse();
 	}
 
 	@Test

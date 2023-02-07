@@ -60,7 +60,7 @@ class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests 
 		ResponseFieldsSnippet responseFields = responseFields(
 				fieldWithPath("contexts").description("Application contexts keyed by id."), parentIdField(),
 				fieldWithPath("contexts.*.beans").description("Beans in the application context keyed by name."))
-			.andWithPrefix("contexts.*.beans.*.", beanFields);
+					.andWithPrefix("contexts.*.beans.*.", beanFields);
 		this.mockMvc.perform(get("/actuator/beans"))
 			.andExpect(status().isOk())
 			.andDo(document("beans",

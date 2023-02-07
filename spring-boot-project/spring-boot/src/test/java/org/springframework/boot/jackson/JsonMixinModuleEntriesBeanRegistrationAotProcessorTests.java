@@ -68,7 +68,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(RenameMixInClass.class)
 			.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(RenameMixInClass.class, "getName").introspect())
 			.accepts(runtimeHints);
 	}

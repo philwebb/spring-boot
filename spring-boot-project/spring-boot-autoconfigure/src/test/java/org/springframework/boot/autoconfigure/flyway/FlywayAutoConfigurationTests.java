@@ -229,7 +229,7 @@ class FlywayAutoConfigurationTests {
 					.isEqualTo(SchemaManagement.UNMANAGED);
 				assertThat(schemaManagementProvider
 					.getSchemaManagement(context.getBean("flywayDataSource", DataSource.class)))
-					.isEqualTo(SchemaManagement.MANAGED);
+						.isEqualTo(SchemaManagement.MANAGED);
 			});
 	}
 

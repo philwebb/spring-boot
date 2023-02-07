@@ -102,8 +102,7 @@ class DelimitedStringToCollectionConverterTests {
 		TypeDescriptor targetType = TypeDescriptor
 			.nested(ReflectionUtils.findField(Values.class, "convertibleElementType"), 0);
 		assertThat(new DelimitedStringToCollectionConverter(new ApplicationConversionService()).matches(sourceType,
-				targetType))
-			.isTrue();
+				targetType)).isTrue();
 	}
 
 	@Test

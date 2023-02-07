@@ -50,8 +50,7 @@ class CacheMetricsRegistrarTests {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
-				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build()))))
-			.isTrue();
+				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 

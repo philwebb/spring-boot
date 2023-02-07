@@ -39,7 +39,7 @@ class AbstractWebMvcEndpointHandlerMappingTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(TypeReference
 				.of("org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.OperationHandler")))
-			.accepts(runtimeHints);
+					.accepts(runtimeHints);
 	}
 
 }

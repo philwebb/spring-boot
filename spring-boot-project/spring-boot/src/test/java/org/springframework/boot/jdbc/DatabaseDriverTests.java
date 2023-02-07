@@ -100,7 +100,7 @@ class DatabaseDriverTests {
 			.isEqualTo(DatabaseDriver.POSTGRESQL);
 		assertThat(DatabaseDriver
 			.fromJdbcUrl("jdbc:redshift://examplecluster.abc123xyz789.us-west-2.redshift.amazonaws.com:5439/sample"))
-			.isEqualTo(DatabaseDriver.REDSHIFT);
+				.isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:jtds:sqlserver://127.0.0.1:1433/sample"))
 			.isEqualTo(DatabaseDriver.JTDS);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:sap:localhost")).isEqualTo(DatabaseDriver.HANA);

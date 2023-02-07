@@ -96,30 +96,26 @@ class HandlerTests {
 	@Test
 	void sameFileReturnsFalseForDifferentFileInSameJar() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/the/path/to/the/first/content.txt"),
-				new URL("jar:file:/foo.jar!/content.txt")))
-			.isFalse();
+				new URL("jar:file:/foo.jar!/content.txt"))).isFalse();
 	}
 
 	@Test
 	void sameFileReturnsFalseForSameFileInDifferentJars() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
-				new URL("jar:file:/second.jar!/content.txt")))
-			.isFalse();
+				new URL("jar:file:/second.jar!/content.txt"))).isFalse();
 	}
 
 	@Test
 	void sameFileReturnsTrueForSameFileInSameJar() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
-				new URL("jar:file:/the/path/to/the/first.jar!/content.txt")))
-			.isTrue();
+				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"))).isTrue();
 	}
 
 	@Test
 	void sameFileReturnsTrueForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
 			throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt"),
-				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")))
-			.isTrue();
+				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt"))).isTrue();
 	}
 
 	@Test
@@ -165,8 +161,7 @@ class HandlerTests {
 		assertThat(connection).isInstanceOf(JarURLConnection.class);
 		((JarURLConnection) connection).getJarFile().close();
 		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
-				this.handler)
-			.openConnection();
+				this.handler).openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
 		assertThat(jdkConnection.getClass().getName()).endsWith(".JarURLConnection");
 	}

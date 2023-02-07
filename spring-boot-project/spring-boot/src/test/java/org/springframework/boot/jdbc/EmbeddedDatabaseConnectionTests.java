@@ -128,7 +128,7 @@ class EmbeddedDatabaseConnectionTests {
 	void isEmbeddedWithH2File() throws SQLException {
 		assertThat(EmbeddedDatabaseConnection
 			.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test")))
-			.isFalse();
+				.isFalse();
 	}
 
 	@Test

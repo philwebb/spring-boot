@@ -149,9 +149,9 @@ class JavaPluginActionIntegrationTests {
 		assertThat(this.gradleBuild
 			.build("configurationAttributes", "-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin")
 			.getOutput()).contains("3 productionRuntimeClasspath attributes:")
-			.contains("org.gradle.usage: java-runtime")
-			.contains("org.gradle.libraryelements: jar")
-			.contains("org.gradle.dependency.bundling: external");
+				.contains("org.gradle.usage: java-runtime")
+				.contains("org.gradle.libraryelements: jar")
+				.contains("org.gradle.dependency.bundling: external");
 	}
 
 	@TestTemplate

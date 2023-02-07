@@ -484,8 +484,7 @@ class WebMvcAutoConfigurationTests {
 	void overrideMessageCodesFormat() {
 		this.contextRunner.withPropertyValues("spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE")
 			.run((context) -> assertThat(
-					context.getBean(WebMvcAutoConfigurationAdapter.class).getMessageCodesResolver())
-				.isNotNull());
+					context.getBean(WebMvcAutoConfigurationAdapter.class).getMessageCodesResolver()).isNotNull());
 	}
 
 	@Test
@@ -641,8 +640,7 @@ class WebMvcAutoConfigurationTests {
 	void customExceptionHandlerExceptionResolver() {
 		this.contextRunner.withUserConfiguration(CustomExceptionHandlerExceptionResolver.class)
 			.run((context) -> assertThat(
-					context.getBean(CustomExceptionHandlerExceptionResolver.class).exceptionResolvers)
-				.isOne());
+					context.getBean(CustomExceptionHandlerExceptionResolver.class).exceptionResolvers).isOne());
 	}
 
 	@Test

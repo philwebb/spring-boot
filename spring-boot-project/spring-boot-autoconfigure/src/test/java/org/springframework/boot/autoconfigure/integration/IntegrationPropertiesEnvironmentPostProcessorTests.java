@@ -71,9 +71,9 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 		ClassPathResource unknown = new ClassPathResource("does-not-exist.properties", getClass());
 		assertThatThrownBy(() -> new IntegrationPropertiesEnvironmentPostProcessor()
 			.registerIntegrationPropertiesPropertySource(environment, unknown))
-			.isInstanceOf(IllegalStateException.class)
-			.hasCauseInstanceOf(FileNotFoundException.class)
-			.hasMessageContaining(unknown.toString());
+				.isInstanceOf(IllegalStateException.class)
+				.hasCauseInstanceOf(FileNotFoundException.class)
+				.hasMessageContaining(unknown.toString());
 	}
 
 	@Test

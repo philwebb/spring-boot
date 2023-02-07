@@ -115,15 +115,13 @@ class ThymeleafServletAutoConfigurationTests {
 	void overrideDisableProducePartialOutputWhileProcessing() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.servlet.produce-partial-output-while-processing:false")
 			.run((context) -> assertThat(
-					context.getBean(ThymeleafViewResolver.class).getProducePartialOutputWhileProcessing())
-				.isFalse());
+					context.getBean(ThymeleafViewResolver.class).getProducePartialOutputWhileProcessing()).isFalse());
 	}
 
 	@Test
 	void disableProducePartialOutputWhileProcessingIsEnabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(
-				context.getBean(ThymeleafViewResolver.class).getProducePartialOutputWhileProcessing())
-			.isTrue());
+				context.getBean(ThymeleafViewResolver.class).getProducePartialOutputWhileProcessing()).isTrue());
 	}
 
 	@Test
@@ -158,15 +156,13 @@ class ThymeleafServletAutoConfigurationTests {
 	void overrideRenderHiddenMarkersBeforeCheckboxes() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.render-hidden-markers-before-checkboxes:true")
 			.run((context) -> assertThat(
-					context.getBean(SpringTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes())
-				.isTrue());
+					context.getBean(SpringTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes()).isTrue());
 	}
 
 	@Test
 	void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(
-				context.getBean(SpringTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes())
-			.isFalse());
+				context.getBean(SpringTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes()).isFalse());
 	}
 
 	@Test
@@ -324,7 +320,7 @@ class ThymeleafServletAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(LayoutDialectConfiguration.class)
 			.run((context) -> assertThat(
 					ReflectionTestUtils.getField(context.getBean(LayoutDialect.class), "sortingStrategy"))
-				.isInstanceOf(GroupingStrategy.class));
+						.isInstanceOf(GroupingStrategy.class));
 	}
 
 	@Test

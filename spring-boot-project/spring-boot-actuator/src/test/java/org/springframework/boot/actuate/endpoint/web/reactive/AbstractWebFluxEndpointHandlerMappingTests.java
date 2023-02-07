@@ -40,11 +40,11 @@ class AbstractWebFluxEndpointHandlerMappingTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(TypeReference
 				.of("org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.WriteOperationHandler")))
-			.accepts(runtimeHints);
+					.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(TypeReference
 				.of("org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.ReadOperationHandler")))
-			.accepts(runtimeHints);
+					.accepts(runtimeHints);
 	}
 
 }

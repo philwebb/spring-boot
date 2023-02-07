@@ -41,47 +41,41 @@ class FreeMarkerTemplateAvailabilityProviderTests {
 	@Test
 	void availabilityOfTemplateInDefaultLocation() {
 		assertThat(this.provider.isTemplateAvailable("home", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isTrue();
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateThatDoesNotExist() {
 		assertThat(this.provider.isTemplateAvailable("whatever", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isFalse();
+				this.resourceLoader)).isFalse();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomLoaderPath() {
 		this.environment.setProperty("spring.freemarker.template-loader-path", "classpath:/custom-templates/");
 		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isTrue();
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomLoaderPathConfiguredAsAList() {
 		this.environment.setProperty("spring.freemarker.template-loader-path[0]", "classpath:/custom-templates/");
 		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isTrue();
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.freemarker.prefix", "prefix/");
 		assertThat(this.provider.isTemplateAvailable("prefixed", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isTrue();
+				this.resourceLoader)).isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.freemarker.suffix", ".freemarker");
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),
-				this.resourceLoader))
-			.isTrue();
+				this.resourceLoader)).isTrue();
 	}
 
 }

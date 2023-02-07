@@ -53,8 +53,7 @@ class AbstractFailureAnalyzerTests {
 	void findCauseWitNestedAndExactMatch() {
 		TestException ex = new TestException();
 		assertThat(this.failureAnalyzer.findCause(new IllegalArgumentException(new IllegalStateException(ex)),
-				TestException.class))
-			.isEqualTo(ex);
+				TestException.class)).isEqualTo(ex);
 	}
 
 	@Test

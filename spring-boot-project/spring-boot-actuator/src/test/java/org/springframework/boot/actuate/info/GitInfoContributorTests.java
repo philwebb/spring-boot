@@ -91,7 +91,7 @@ class GitInfoContributorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(GitProperties.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 
 	}
 

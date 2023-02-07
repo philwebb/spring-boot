@@ -68,7 +68,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 					WebOperation operation = findMainReadOperation(endpoint);
 					assertThat(operation
 						.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
-						.isEqualTo("cf");
+							.isEqualTo("cf");
 				}
 			}
 		});

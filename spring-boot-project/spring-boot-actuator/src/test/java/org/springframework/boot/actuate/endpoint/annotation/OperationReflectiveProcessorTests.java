@@ -83,11 +83,11 @@ class OperationReflectiveProcessorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(Dto.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+				.accepts(this.runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(NestedDto.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(this.runtimeHints);
+				.accepts(this.runtimeHints);
 	}
 
 	private void runProcessor(Method method) {

@@ -61,8 +61,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
-			AnnotationConfigReactiveWebServerApplicationContext::new)
-		.withUserConfiguration(EndpointConfiguration.class, ExampleWebFluxEndpoint.class);
+			AnnotationConfigReactiveWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
+					ExampleWebFluxEndpoint.class);
 
 	@Test
 	void get() {

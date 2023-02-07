@@ -75,8 +75,8 @@ class PropertyDescriptorResolverTests {
 							"second", "first");
 					assertThat(resolver.resolve(type, null)
 						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
-						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
-								"HierarchicalPropertiesParent");
+							.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
+									"HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
 						.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
 						.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");

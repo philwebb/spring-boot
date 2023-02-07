@@ -61,8 +61,7 @@ class RestTemplateAutoConfigurationTests {
 	@Test
 	void restTemplateBuilderConfigurerShouldBeLazilyDefined() {
 		this.contextRunner.run((context) -> assertThat(
-				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer").isLazyInit())
-			.isTrue());
+				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer").isLazyInit()).isTrue());
 	}
 
 	@Test

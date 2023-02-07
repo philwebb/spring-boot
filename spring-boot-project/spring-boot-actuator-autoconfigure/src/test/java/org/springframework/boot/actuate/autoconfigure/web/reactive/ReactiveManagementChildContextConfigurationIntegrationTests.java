@@ -57,13 +57,15 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-				ReactiveWebServerFactoryAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
-				WebFluxAutoConfiguration.class))
-		.withUserConfiguration(SucceedingEndpoint.class)
-		.withInitializer(new ServerPortInfoApplicationContextInitializer())
-		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
+				.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+						ReactiveWebServerFactoryAutoConfiguration.class,
+						ReactiveManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						EndpointAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
+						WebFluxAutoConfiguration.class))
+				.withUserConfiguration(SucceedingEndpoint.class)
+				.withInitializer(new ServerPortInfoApplicationContextInitializer())
+				.withPropertyValues("server.port=0", "management.server.port=0",
+						"management.endpoints.web.exposure.include=*");
 
 	@TempDir
 	Path temp;

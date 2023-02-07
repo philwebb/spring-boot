@@ -50,7 +50,7 @@ class JavaInfoContributorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(JavaInfo.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 	}
 
 }

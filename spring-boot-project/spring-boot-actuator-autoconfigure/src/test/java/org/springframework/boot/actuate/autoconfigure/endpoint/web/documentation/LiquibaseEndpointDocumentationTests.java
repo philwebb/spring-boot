@@ -54,8 +54,9 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 			.andDo(MockMvcRestDocumentation.document("liquibase",
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 							changeSetsField)
-						.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].", getChangeSetFieldDescriptors())
-						.and(parentIdField())));
+								.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].",
+										getChangeSetFieldDescriptors())
+								.and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {

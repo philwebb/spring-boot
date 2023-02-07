@@ -838,7 +838,7 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CredentialsRefreshServiceConfiguration.class)
 			.run((context) -> assertThat(
 					getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
-				.isEqualTo(CredentialsRefreshServiceConfiguration.credentialsRefreshService));
+						.isEqualTo(CredentialsRefreshServiceConfiguration.credentialsRefreshService));
 	}
 
 	@Test
@@ -846,15 +846,14 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(PrimaryCredentialsRefreshServiceConfiguration.class)
 			.run((context) -> assertThat(
 					getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
-				.isEqualTo(PrimaryCredentialsRefreshServiceConfiguration.credentialsRefreshService));
+						.isEqualTo(PrimaryCredentialsRefreshServiceConfiguration.credentialsRefreshService));
 	}
 
 	@Test
 	void whenMultipleCredentialsRefreshServiceAreAvailableThenConnectionFactoryHasNoCredentialsRefreshService() {
 		this.contextRunner.withUserConfiguration(MultipleCredentialsRefreshServicesConfiguration.class)
 			.run((context) -> assertThat(
-					getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
-				.isNull());
+					getTargetConnectionFactory(context).params(null).getCredentialsRefreshService()).isNull());
 	}
 
 	@Test

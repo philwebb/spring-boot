@@ -165,7 +165,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(bindingType)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-				.accepts(runtimeHints);
+					.accepts(runtimeHints);
 		}
 	}
 

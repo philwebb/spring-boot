@@ -100,8 +100,7 @@ class ElasticsearchRestClientConfigurations {
 			}
 			try {
 				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
-						uri.getQuery(), uri.getFragment())
-					.toString());
+						uri.getQuery(), uri.getFragment()).toString());
 			}
 			catch (URISyntaxException ex) {
 				throw new IllegalStateException(ex);

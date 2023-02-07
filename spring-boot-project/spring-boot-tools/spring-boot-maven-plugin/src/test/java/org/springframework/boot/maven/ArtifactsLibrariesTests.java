@@ -194,8 +194,7 @@ class ArtifactsLibrariesTests {
 		given(mavenProject.getArtifact()).willReturn(artifact);
 		this.artifacts = Collections.singleton(artifact);
 		new ArtifactsLibraries(this.artifacts, Collections.emptySet(), Collections.singleton(mavenProject), null,
-				mock(Log.class))
-			.doWithLibraries((library) -> assertThat(library.isIncluded()).isFalse());
+				mock(Log.class)).doWithLibraries((library) -> assertThat(library.isIncluded()).isFalse());
 	}
 
 }

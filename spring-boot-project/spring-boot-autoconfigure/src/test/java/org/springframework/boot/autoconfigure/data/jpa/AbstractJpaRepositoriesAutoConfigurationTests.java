@@ -94,7 +94,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
 			.run((context) -> assertThat(
 					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isEqualTo(context.getBean("applicationTaskExecutor")));
+						.isEqualTo(context.getBean("applicationTaskExecutor")));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=lazy")
 			.run((context) -> assertThat(
 					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isEqualTo(context.getBean("testAsyncTaskExecutor")));
+						.isEqualTo(context.getBean("testAsyncTaskExecutor")));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=deferred")
 			.run((context) -> assertThat(
 					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isEqualTo(context.getBean("applicationTaskExecutor")));
+						.isEqualTo(context.getBean("applicationTaskExecutor")));
 	}
 
 	@Test
@@ -124,8 +124,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class))
 			.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=default")
 			.run((context) -> assertThat(
-					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isNull());
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor()).isNull());
 	}
 
 	@Test
@@ -134,8 +133,7 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 			.withConfiguration(
 					AutoConfigurations.of(TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class))
 			.run((context) -> assertThat(
-					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-				.isNull());
+					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor()).isNull());
 	}
 
 	@Configuration(proxyBeanMethods = false)

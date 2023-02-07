@@ -49,8 +49,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	@Test
 	void createRequestWhenHasBasicAuthAndNoAuthHeaderAddsHeader() {
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet())
-			.initialize(this.request);
+				Collections.emptyMap(), Collections.emptySet()).initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
@@ -58,8 +57,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	void createRequestWhenHasBasicAuthAndExistingAuthHeaderDoesNotAddHeader() {
 		this.request.getHeaders().setBasicAuth("boot", "spring");
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet())
-			.initialize(this.request);
+				Collections.emptyMap(), Collections.emptySet()).initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");
 	}
 

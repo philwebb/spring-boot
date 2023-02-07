@@ -78,7 +78,7 @@ class CouchbaseReactiveDataAutoConfigurationTests {
 			ReactiveCouchbaseTemplate template = context.getBean(ReactiveCouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-				.isTrue();
+						.isTrue();
 		});
 	}
 

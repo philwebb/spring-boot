@@ -85,7 +85,7 @@ class LogbackConfigurationAotContributionTests {
 		assertThat(serializationHints.javaSerializationHints()
 			.map(JavaSerializationHint::getType)
 			.map(TypeReference::getName))
-			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
+				.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
 		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
 		Properties patternRules = load(
 				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
@@ -121,8 +121,7 @@ class LogbackConfigurationAotContributionTests {
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileSize.class))
 			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(
-				TimeBasedFileNamingAndTriggeringPolicy.class))
-			.accepts(generationContext.getRuntimeHints());
+				TimeBasedFileNamingAndTriggeringPolicy.class)).accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test

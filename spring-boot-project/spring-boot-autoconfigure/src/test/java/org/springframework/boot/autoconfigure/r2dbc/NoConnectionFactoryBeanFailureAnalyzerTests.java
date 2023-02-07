@@ -41,7 +41,7 @@ class NoConnectionFactoryBeanFailureAnalyzerTests {
 	void analyzeWhenNoSuchBeanDefinitionExceptionForDifferentTypeShouldReturnNull() {
 		assertThat(
 				new NoConnectionFactoryBeanFailureAnalyzer().analyze(new NoSuchBeanDefinitionException(String.class)))
-			.isNull();
+					.isNull();
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class NoConnectionFactoryBeanFailureAnalyzerTests {
 	void analyzeWhenNoSuchBeanDefinitionExceptionAndNoProviderShouldAnalyze() {
 		assertThat(new NoConnectionFactoryBeanFailureAnalyzer(
 				new FilteredClassLoader(("META-INF/services/" + ConnectionFactoryProvider.class.getName())::equals))
-			.analyze(new NoSuchBeanDefinitionException(ConnectionFactory.class))).isNotNull();
+					.analyze(new NoSuchBeanDefinitionException(ConnectionFactory.class))).isNotNull();
 	}
 
 }

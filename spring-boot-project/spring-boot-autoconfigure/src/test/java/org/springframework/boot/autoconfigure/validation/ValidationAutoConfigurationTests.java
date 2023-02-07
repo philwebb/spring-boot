@@ -141,8 +141,8 @@ class ValidationAutoConfigurationTests {
 				assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
 					.containsExactly("defaultValidator");
 				assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
-						org.springframework.validation.Validator.class))
-					.containsExactly("defaultValidator", "customValidator", "anotherCustomValidator");
+						org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
+								"customValidator", "anotherCustomValidator");
 				assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 			});
 		});
@@ -157,8 +157,8 @@ class ValidationAutoConfigurationTests {
 					assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
 						.containsExactly("defaultValidator");
 					assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
-							org.springframework.validation.Validator.class))
-						.containsExactly("defaultValidator", "customValidator", "anotherCustomValidator");
+							org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
+									"customValidator", "anotherCustomValidator");
 					assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 				});
 			});

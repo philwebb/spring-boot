@@ -49,16 +49,14 @@ class ManagementContextConfigurationImportSelectorTests {
 	@Test
 	void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
-				A.class)
-			.selectImports(AnnotationMetadata.introspect(EnableSameContext.class));
+				A.class).selectImports(AnnotationMetadata.introspect(EnableSameContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(SameOnly.class.getName(), A.class.getName());
 	}
 
 	@Test
 	void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
-				A.class)
-			.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
+				A.class).selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(ChildOnly.class.getName(), A.class.getName());
 	}
 

@@ -62,13 +62,12 @@ class JerseyServerMetricsAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
 
 	private final WebApplicationContextRunner webContextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(
-				AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyServerMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
-						ObservationAutoConfiguration.class, MetricsAutoConfiguration.class))
-		.withUserConfiguration(ResourceConfiguration.class)
-		.withPropertyValues("server.port:0");
+			AnnotationConfigServletWebServerApplicationContext::new).withConfiguration(
+					AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyServerMetricsAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
+							ObservationAutoConfiguration.class, MetricsAutoConfiguration.class))
+				.withUserConfiguration(ResourceConfiguration.class)
+				.withPropertyValues("server.port:0");
 
 	@Test
 	void shouldOnlyBeActiveInWebApplicationContext() {

@@ -70,22 +70,19 @@ class TestTypeExcludeFilterTests {
 	@Test
 	void matchesNestedConfigurationClassWithoutTestMethodsIfItHasRunWith() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(AbstractTestWithConfigAndRunWith.Config.class),
-				this.metadataReaderFactory))
-			.isTrue();
+				this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
 	void matchesNestedConfigurationClassWithoutTestMethodsIfItHasExtendWith() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(AbstractJupiterTestWithConfigAndExtendWith.Config.class),
-				this.metadataReaderFactory))
-			.isTrue();
+				this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
 	void matchesNestedConfigurationClassWithoutTestMethodsIfItHasTestable() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(AbstractJupiterTestWithConfigAndTestable.Config.class),
-				this.metadataReaderFactory))
-			.isTrue();
+				this.metadataReaderFactory)).isTrue();
 	}
 
 	@Test
@@ -101,8 +98,7 @@ class TestTypeExcludeFilterTests {
 	@Test
 	void matchesNestedConfigurationClassWithoutTestNgAnnotation() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(AbstractTestNgTestWithConfig.Config.class),
-				this.metadataReaderFactory))
-			.isTrue();
+				this.metadataReaderFactory)).isTrue();
 	}
 
 	private MetadataReader getMetadataReader(Class<?> source) throws IOException {

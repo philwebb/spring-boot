@@ -128,7 +128,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.maxChunkSize:8KB")
 			.run((context) -> assertThat(
 					context.getBean(ThymeleafReactiveViewResolver.class).getResponseMaxChunkSizeBytes())
-				.isEqualTo(Integer.valueOf(8192)));
+						.isEqualTo(Integer.valueOf(8192)));
 	}
 
 	@Test
@@ -164,14 +164,13 @@ class ThymeleafReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.render-hidden-markers-before-checkboxes:true")
 			.run((context) -> assertThat(
 					context.getBean(SpringWebFluxTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes())
-				.isTrue());
+						.isTrue());
 	}
 
 	@Test
 	void enableRenderHiddenMarkersBeforeCheckboxesIsDisabledByDefault() {
 		this.contextRunner.run((context) -> assertThat(
-				context.getBean(SpringWebFluxTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes())
-			.isFalse());
+				context.getBean(SpringWebFluxTemplateEngine.class).getRenderHiddenMarkersBeforeCheckboxes()).isFalse());
 	}
 
 	@Test
@@ -243,7 +242,7 @@ class ThymeleafReactiveAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(LayoutDialectConfiguration.class)
 			.run((context) -> assertThat(
 					ReflectionTestUtils.getField(context.getBean(LayoutDialect.class), "sortingStrategy"))
-				.isInstanceOf(GroupingStrategy.class));
+						.isInstanceOf(GroupingStrategy.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -312,7 +312,7 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.buffer-length.spring.boot=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
-			.isEqualTo(3);
+					.isEqualTo(3);
 	}
 
 	@Test
@@ -321,7 +321,7 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.buffer-length.spring=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
-			.isEqualTo(3);
+					.isEqualTo(3);
 	}
 
 	@Test
@@ -330,7 +330,7 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.buffer-length.spring=2", "distribution.buffer-length.spring.boot=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
-			.isEqualTo(3);
+					.isEqualTo(3);
 	}
 
 	@Test
@@ -338,7 +338,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.buffer-length.all=3"));
 		assertThat(
 				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getBufferLength())
-			.isEqualTo(3);
+					.isEqualTo(3);
 	}
 
 	private Id createMeterId(String name) {

@@ -40,7 +40,7 @@ class DispatcherServletsMappingDescriptionProviderTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(DispatcherServletMappingDescription.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 	}
 
 }

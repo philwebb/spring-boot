@@ -124,7 +124,7 @@ public class UpgradeBom extends DefaultTask {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(new MavenMetadataVersionResolver(this.repositoryUrls),
 						this.bom.getUpgrade().getPolicy(), this.threads))
-			.resolveUpgrades(matchingLibraries(this.libraries), this.bom.getLibraries());
+							.resolveUpgrades(matchingLibraries(this.libraries), this.bom.getLibraries());
 		Path buildFile = getProject().getBuildFile().toPath();
 		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
 		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);

@@ -39,7 +39,7 @@ class ServletsMappingDescriptionProviderTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(ServletRegistrationMappingDescription.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 	}
 
 }

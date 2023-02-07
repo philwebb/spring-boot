@@ -120,8 +120,8 @@ class StartupTimeMetricsListenerTests {
 		assertThat(this.registry.find(metricName)
 			.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
 			.timeGauge()).isNotNull()
-			.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
-			.isEqualTo(expectedValueInMillis.doubleValue());
+				.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
+				.isEqualTo(expectedValueInMillis.doubleValue());
 	}
 
 	static class TestMainApplication {

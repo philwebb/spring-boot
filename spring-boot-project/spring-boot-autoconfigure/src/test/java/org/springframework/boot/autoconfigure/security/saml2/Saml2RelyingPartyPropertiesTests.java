@@ -45,7 +45,7 @@ class Saml2RelyingPartyPropertiesTests {
 				"https://simplesaml-for-spring-saml/SSOService.php");
 		assertThat(
 				this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon().getUrl())
-			.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
+					.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
 	}
 
 	@Test

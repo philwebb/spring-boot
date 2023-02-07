@@ -53,7 +53,7 @@ class MetadataStoreTests {
 		additionalMetadata.createNewFile();
 		assertThat(this.metadataStore.locateAdditionalMetadataFile(
 				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
-			.isEqualTo(additionalMetadata);
+					.isEqualTo(additionalMetadata);
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class MetadataStoreTests {
 		additionalMetadata.createNewFile();
 		assertThat(this.metadataStore.locateAdditionalMetadataFile(
 				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
-			.isEqualTo(additionalMetadata);
+					.isEqualTo(additionalMetadata);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class MetadataStoreTests {
 		additionalMetadata.createNewFile();
 		assertThat(this.metadataStore.locateAdditionalMetadataFile(
 				new File(classesLocation, "META-INF/additional-spring-configuration-metadata.json")))
-			.isEqualTo(additionalMetadata);
+					.isEqualTo(additionalMetadata);
 	}
 
 	@Test

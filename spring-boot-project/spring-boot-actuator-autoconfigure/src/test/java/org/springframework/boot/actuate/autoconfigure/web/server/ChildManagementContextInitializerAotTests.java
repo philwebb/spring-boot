@@ -60,9 +60,10 @@ class ChildManagementContextInitializerAotTests {
 	void aotContributedInitializerStartsManagementContext(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
+					.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class,
+							ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0").prepare((context) -> {
 			TestGenerationContext generationContext = new TestGenerationContext(TestTarget.class);
 			ClassName className = new ApplicationContextAotGenerator().processAheadOfTime(

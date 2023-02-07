@@ -262,13 +262,13 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 							fieldWithPath("triggers.calendarInterval")
 								.description("Calendar interval triggers keyed by name, if any."),
 							fieldWithPath("triggers.custom").description("Any other triggers keyed by name, if any."))
-						.andWithPrefix("triggers.cron.*.", concat(triggerSummary, cronTriggerSummary))
-						.andWithPrefix("triggers.simple.*.", concat(triggerSummary, simpleTriggerSummary))
-						.andWithPrefix("triggers.dailyTimeInterval.*.",
-								concat(triggerSummary, dailyTimeIntervalTriggerSummary))
-						.andWithPrefix("triggers.calendarInterval.*.",
-								concat(triggerSummary, calendarIntervalTriggerSummary))
-						.andWithPrefix("triggers.custom.*.", concat(triggerSummary, customTriggerSummary))));
+								.andWithPrefix("triggers.cron.*.", concat(triggerSummary, cronTriggerSummary))
+								.andWithPrefix("triggers.simple.*.", concat(triggerSummary, simpleTriggerSummary))
+								.andWithPrefix("triggers.dailyTimeInterval.*.",
+										concat(triggerSummary, dailyTimeIntervalTriggerSummary))
+								.andWithPrefix("triggers.calendarInterval.*.",
+										concat(triggerSummary, calendarIntervalTriggerSummary))
+								.andWithPrefix("triggers.custom.*.", concat(triggerSummary, customTriggerSummary))));
 	}
 
 	@Test
@@ -303,28 +303,27 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
 			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-common", responseFields(commonCronDetails).and(subsectionWithPath(
-					"calendarInterval")
-				.description(
-						"Calendar time interval trigger details, if any. Present when `type` is `calendarInterval`.")
-				.optional()
-				.type(JsonFieldType.OBJECT),
-					subsectionWithPath("custom")
-						.description("Custom trigger details, if any. Present when `type` is `custom`.")
+			.andDo(document("quartz/trigger-details-common",
+					responseFields(commonCronDetails).and(subsectionWithPath("calendarInterval").description(
+							"Calendar time interval trigger details, if any. Present when `type` is `calendarInterval`.")
 						.optional()
 						.type(JsonFieldType.OBJECT),
-					subsectionWithPath("cron")
-						.description("Cron trigger details, if any. Present when `type` is `cron`.")
-						.optional()
-						.type(JsonFieldType.OBJECT),
-					subsectionWithPath("dailyTimeInterval").description(
-							"Daily time interval trigger details, if any. Present when `type` is `dailyTimeInterval`.")
-						.optional()
-						.type(JsonFieldType.OBJECT),
-					subsectionWithPath("simple")
-						.description("Simple trigger details, if any. Present when `type` is `simple`.")
-						.optional()
-						.type(JsonFieldType.OBJECT))));
+							subsectionWithPath("custom")
+								.description("Custom trigger details, if any. Present when `type` is `custom`.")
+								.optional()
+								.type(JsonFieldType.OBJECT),
+							subsectionWithPath("cron")
+								.description("Cron trigger details, if any. Present when `type` is `cron`.")
+								.optional()
+								.type(JsonFieldType.OBJECT),
+							subsectionWithPath("dailyTimeInterval").description(
+									"Daily time interval trigger details, if any. Present when `type` is `dailyTimeInterval`.")
+								.optional()
+								.type(JsonFieldType.OBJECT),
+							subsectionWithPath("simple")
+								.description("Simple trigger details, if any. Present when `type` is `simple`.")
+								.optional()
+								.type(JsonFieldType.OBJECT))));
 	}
 
 	@Test
@@ -353,9 +352,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		setupTriggerDetails(calendarIntervalTrigger.getTriggerBuilder(), TriggerState.NORMAL);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
 			.andExpect(status().isOk())
-			.andDo(document("quartz/trigger-details-calendar-interval",
-					relaxedResponseFields(fieldWithPath("calendarInterval")
-						.description("Calendar interval trigger specific details."))
+			.andDo(document("quartz/trigger-details-calendar-interval", relaxedResponseFields(
+					fieldWithPath("calendarInterval").description("Calendar interval trigger specific details."))
 						.andWithPrefix("calendarInterval.", calendarIntervalTriggerSummary)
 						.and(timesTriggered("calendarInterval."),
 								fieldWithPath("calendarInterval.preserveHourOfDayAcrossDaylightSavings").description(
@@ -373,8 +371,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.andDo(document("quartz/trigger-details-daily-time-interval",
 					relaxedResponseFields(fieldWithPath("dailyTimeInterval")
 						.description("Daily time interval trigger specific details."))
-						.andWithPrefix("dailyTimeInterval.", dailyTimeIntervalTriggerSummary)
-						.and(repeatCount("dailyTimeInterval."), timesTriggered("dailyTimeInterval."))));
+							.andWithPrefix("dailyTimeInterval.", dailyTimeIntervalTriggerSummary)
+							.and(repeatCount("dailyTimeInterval."), timesTriggered("dailyTimeInterval."))));
 	}
 
 	@Test

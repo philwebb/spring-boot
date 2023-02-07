@@ -98,7 +98,7 @@ class TaskExecutorMetricsAutoConfigurationTests {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				assertThat(
 						registry.find("executor.completed").tags("name", "applicationTaskExecutor").functionCounter())
-					.isNull();
+							.isNull();
 			});
 	}
 

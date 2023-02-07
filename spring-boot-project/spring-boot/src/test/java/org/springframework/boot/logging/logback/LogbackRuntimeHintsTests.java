@@ -58,7 +58,7 @@ class LogbackRuntimeHintsTests {
 		ReflectionHints reflection = registerHints();
 		assertThat(List.of(ColorConverter.class, ExtendedWhitespaceThrowableProxyConverter.class,
 				WhitespaceThrowableProxyConverter.class))
-			.allSatisfy(registeredForPublicConstructorInvocation(reflection));
+					.allSatisfy(registeredForPublicConstructorInvocation(reflection));
 	}
 
 	@Test

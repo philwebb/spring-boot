@@ -94,7 +94,7 @@ class BatchAutoConfigurationWithoutJpaTests {
 					"spring.batch.jdbc.isolation-level-for-create=read_committed")
 			.run((context) -> assertThat(
 					context.getBean(SpringBootBatchConfiguration.class).getIsolationLevelForCreate())
-				.isEqualTo(Isolation.READ_COMMITTED));
+						.isEqualTo(Isolation.READ_COMMITTED));
 	}
 
 	@TestAutoConfigurationPackage(City.class)

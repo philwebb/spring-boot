@@ -48,8 +48,7 @@ class PackageTangleCheckTests {
 			assertThatExceptionOfType(GradleException.class).isThrownBy(packageTangleCheck::checkForPackageTangles);
 			assertThat(
 					new File(packageTangleCheck.getProject().getBuildDir(), "checkForPackageTangles/failure-report.txt")
-						.length())
-				.isGreaterThan(0);
+						.length()).isGreaterThan(0);
 		});
 	}
 
@@ -59,8 +58,7 @@ class PackageTangleCheckTests {
 			packageTangleCheck.checkForPackageTangles();
 			assertThat(
 					new File(packageTangleCheck.getProject().getBuildDir(), "checkForPackageTangles/failure-report.txt")
-						.length())
-				.isEqualTo(0);
+						.length()).isEqualTo(0);
 		});
 	}
 

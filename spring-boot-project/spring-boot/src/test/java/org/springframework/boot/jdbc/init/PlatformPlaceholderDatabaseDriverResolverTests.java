@@ -53,8 +53,8 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	@Test
 	void resolveAllWithPlatformWhenValuesContainPlaceholdersShouldReturnValuesWithPlaceholdersReplaced() {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll("postgresql", "schema.sql",
-				"schema-@@platform@@.sql", "data-@@platform@@.sql"))
-			.containsExactly("schema.sql", "schema-postgresql.sql", "data-postgresql.sql");
+				"schema-@@platform@@.sql", "data-@@platform@@.sql")).containsExactly("schema.sql",
+						"schema-postgresql.sql", "data-postgresql.sql");
 	}
 
 	@Test
@@ -72,8 +72,8 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	void resolveAllWithDataSourceWhenValuesContainPlaceholdersShouldReturnValuesWithPlaceholdersReplaced()
 			throws SQLException {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(dataSourceWithProductName("PostgreSQL"),
-				"schema.sql", "schema-@@platform@@.sql", "data-@@platform@@.sql"))
-			.containsExactly("schema.sql", "schema-postgresql.sql", "data-postgresql.sql");
+				"schema.sql", "schema-@@platform@@.sql", "data-@@platform@@.sql")).containsExactly("schema.sql",
+						"schema-postgresql.sql", "data-postgresql.sql");
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver()
 			.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres")
 			.resolveAll(dataSourceWithProductName("PostgreSQL"), "schema-@@platform@@.sql"))
-			.containsExactly("schema-postgres.sql");
+				.containsExactly("schema-postgres.sql");
 	}
 
 	@Test
@@ -101,7 +101,7 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	void resolveAllWithDataSourceWhenPlaceholderIsCustomizedShouldResolvePlaceholders() throws SQLException {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver("##platform##")
 			.resolveAll(dataSourceWithProductName("PostgreSQL"), "schema-##platform##.sql", "schema-@@platform@@.sql"))
-			.containsExactly("schema-postgresql.sql", "schema-@@platform@@.sql");
+				.containsExactly("schema-postgresql.sql", "schema-@@platform@@.sql");
 	}
 
 	private DataSource dataSourceWithProductName(String productName) throws SQLException {

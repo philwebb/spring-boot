@@ -53,16 +53,14 @@ class MongoAutoConfigurationTests {
 	void settingsAdded() {
 		this.contextRunner.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(
-					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
-				.isEqualTo(300));
+					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
 	}
 
 	@Test
 	void settingsAddedButNoHost() {
 		this.contextRunner.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(
-					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS))
-				.isEqualTo(300));
+					getSettings(context).getSocketSettings().getConnectTimeout(TimeUnit.MILLISECONDS)).isEqualTo(300));
 	}
 
 	@Test

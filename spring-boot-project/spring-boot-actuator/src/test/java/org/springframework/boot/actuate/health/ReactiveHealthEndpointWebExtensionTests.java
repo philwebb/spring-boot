@@ -57,8 +57,8 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		assertThat(this.registry).isEmpty();
 		WebEndpointResponse<? extends HealthComponent> response = create(this.registry,
 				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap()))
-			.health(ApiVersion.LATEST, null, SecurityContext.NONE)
-			.block();
+					.health(ApiVersion.LATEST, null, SecurityContext.NONE)
+					.block();
 		assertThat(response.getStatus()).isEqualTo(200);
 		HealthComponent health = response.getBody();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);

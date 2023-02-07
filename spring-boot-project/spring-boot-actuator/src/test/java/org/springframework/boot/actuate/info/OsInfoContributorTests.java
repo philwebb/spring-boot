@@ -50,7 +50,7 @@ class OsInfoContributorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(OsInfo.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 	}
 
 }

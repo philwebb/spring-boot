@@ -102,8 +102,7 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void resolveWhenExactTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(true);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
@@ -116,11 +115,9 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/503"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(false);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(true);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.SERVICE_UNAVAILABLE,
 				this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/5xx");
@@ -129,11 +126,9 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() {
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(false);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(true);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/4xx");
 	}
@@ -170,8 +165,7 @@ class DefaultErrorViewResolverTests {
 	void resolveWhenTemplateAndResourceMatchShouldFavorTemplate() {
 		setResourceLocation("/exact");
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(true);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
 	}
@@ -180,8 +174,7 @@ class DefaultErrorViewResolverTests {
 	void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource() throws Exception {
 		setResourceLocation("/exact");
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class)))
-			.willReturn(false);
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		then(this.templateAvailabilityProvider).shouldHaveNoMoreInteractions();
 		MockHttpServletResponse response = render(resolved);

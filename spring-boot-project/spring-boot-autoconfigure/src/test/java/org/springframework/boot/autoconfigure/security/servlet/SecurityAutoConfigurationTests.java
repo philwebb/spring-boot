@@ -126,8 +126,7 @@ class SecurityAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
 			.run((context) -> assertThat(
 					context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
-						.getOrder())
-				.isEqualTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
+						.getOrder()).isEqualTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
 	}
 
 	@Test
@@ -136,8 +135,7 @@ class SecurityAutoConfigurationTests {
 			.withPropertyValues("spring.security.filter.order:12345")
 			.run((context) -> assertThat(
 					context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
-						.getOrder())
-				.isEqualTo(12345));
+						.getOrder()).isEqualTo(12345));
 	}
 
 	@Test

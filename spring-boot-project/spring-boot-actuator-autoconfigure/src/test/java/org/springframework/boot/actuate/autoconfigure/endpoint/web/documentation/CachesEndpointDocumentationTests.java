@@ -68,8 +68,8 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 					responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
 							fieldWithPath("cacheManagers.*.caches")
 								.description("Caches in the application context keyed by name."))
-						.andWithPrefix("cacheManagers.*.caches.*.",
-								fieldWithPath("target").description("Fully qualified name of the native cache."))));
+									.andWithPrefix("cacheManagers.*.caches.*.", fieldWithPath("target")
+										.description("Fully qualified name of the native cache."))));
 	}
 
 	@Test

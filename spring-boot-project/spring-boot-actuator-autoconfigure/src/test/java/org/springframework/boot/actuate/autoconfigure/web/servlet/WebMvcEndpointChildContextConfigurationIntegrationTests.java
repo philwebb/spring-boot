@@ -71,15 +71,15 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-				ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class))
-		.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class, FailingControllerEndpoint.class)
-		.withInitializer(new ServerPortInfoApplicationContextInitializer())
-		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*",
-				"server.error.include-exception=true", "server.error.include-message=always",
-				"server.error.include-binding-errors=always");
+				.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+						WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class))
+				.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class, FailingControllerEndpoint.class)
+				.withInitializer(new ServerPortInfoApplicationContextInitializer())
+				.withPropertyValues("server.port=0", "management.server.port=0",
+						"management.endpoints.web.exposure.include=*", "server.error.include-exception=true",
+						"server.error.include-message=always", "server.error.include-binding-errors=always");
 
 	@TempDir
 	Path temp;

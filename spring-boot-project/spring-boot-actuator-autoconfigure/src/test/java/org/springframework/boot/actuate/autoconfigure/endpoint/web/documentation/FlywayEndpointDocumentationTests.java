@@ -56,8 +56,9 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 							fieldWithPath("contexts.*.flywayBeans.*.migrations")
 								.description("Migrations performed by the Flyway instance, keyed by Flyway bean name."))
-						.andWithPrefix("contexts.*.flywayBeans.*.migrations.[].", migrationFieldDescriptors())
-						.and(parentIdField())));
+									.andWithPrefix("contexts.*.flywayBeans.*.migrations.[].",
+											migrationFieldDescriptors())
+									.and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> migrationFieldDescriptors() {

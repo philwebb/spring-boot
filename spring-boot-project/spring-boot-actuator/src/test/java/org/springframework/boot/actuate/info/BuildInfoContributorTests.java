@@ -40,7 +40,7 @@ class BuildInfoContributorTests {
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(BuildProperties.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-			.accepts(runtimeHints);
+				.accepts(runtimeHints);
 	}
 
 }

@@ -58,13 +58,13 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection
 			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
-			.accepts(hints);
+				.accepts(hints);
 		assertThat(
 				reflection.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-			.accepts(hints);
+					.accepts(hints);
 		assertThat(reflection
 			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-			.accepts(hints);
+				.accepts(hints);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 			.accepts(hints);
 		assertThat(reflection
 			.onMethod(method(SimpleClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-			.accepts(hints);
+				.accepts(hints);
 	}
 
 	private static Method method(Class<?> target, String name, Class<?>... parameterTypes) {

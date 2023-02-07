@@ -86,8 +86,8 @@ class LoggersEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 					responseFields(fieldWithPath("levels").description("Levels support by the logging system."),
 							fieldWithPath("loggers").description("Loggers keyed by name."),
 							fieldWithPath("groups").description("Logger groups keyed by name"))
-						.andWithPrefix("loggers.*.", levelFields)
-						.andWithPrefix("groups.*.", groupLevelFields)));
+								.andWithPrefix("loggers.*.", levelFields)
+								.andWithPrefix("groups.*.", groupLevelFields)));
 	}
 
 	@Test

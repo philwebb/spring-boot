@@ -151,8 +151,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.groupId = option(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')")
 				.withRequiredArg();
 			this.artifactId = option(Arrays.asList("artifact-id", "a"),
-					"Project coordinates; infer archive name (for example 'test')")
-				.withRequiredArg();
+					"Project coordinates; infer archive name (for example 'test')").withRequiredArg();
 			this.version = option(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
 				.withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
@@ -161,25 +160,22 @@ public class InitCommand extends OptionParsingCommand {
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service (--list) for more details")
-				.withRequiredArg();
+								.withRequiredArg();
 			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
 				.withRequiredArg();
 			this.build = option("build", "Build system to use (for example 'maven' or 'gradle')").withRequiredArg()
 				.defaultsTo("maven");
 			this.format = option("format", "Format of the generated content (for example 'build' for a build file, "
-					+ "'project' for a project archive)")
-				.withRequiredArg()
-				.defaultsTo("project");
+					+ "'project' for a project archive)").withRequiredArg().defaultsTo("project");
 			this.javaVersion = option(Arrays.asList("java-version", "j"), "Language level (for example '1.8')")
 				.withRequiredArg();
 			this.language = option(Arrays.asList("language", "l"), "Programming language  (for example 'java')")
 				.withRequiredArg();
 			this.bootVersion = option(Arrays.asList("boot-version", "b"),
-					"Spring Boot version (for example '1.2.0.RELEASE')")
-				.withRequiredArg();
+					"Spring Boot version (for example '1.2.0.RELEASE')").withRequiredArg();
 			this.dependencies = option(Arrays.asList("dependencies", "d"),
 					"Comma-separated list of dependency identifiers to include in the generated project")
-				.withRequiredArg();
+						.withRequiredArg();
 		}
 
 		private void otherOptions() {

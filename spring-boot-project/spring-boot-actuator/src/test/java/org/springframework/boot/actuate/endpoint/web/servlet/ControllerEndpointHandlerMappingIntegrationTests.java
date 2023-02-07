@@ -60,8 +60,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
-			AnnotationConfigServletWebServerApplicationContext::new)
-		.withUserConfiguration(EndpointConfiguration.class, ExampleMvcEndpoint.class);
+			AnnotationConfigServletWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
+					ExampleMvcEndpoint.class);
 
 	@Test
 	void get() {

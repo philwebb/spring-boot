@@ -111,8 +111,7 @@ class HypermediaAutoConfigurationTests {
 					.filter(MappingJackson2HttpMessageConverter.class::isInstance)
 					.findFirst();
 				assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
-						converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
-					.isFalse());
+						converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON)).isFalse());
 			});
 	}
 
