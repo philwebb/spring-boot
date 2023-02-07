@@ -6,10 +6,7 @@ antora:
   - ./lib/antora/extensions/version-fix.js
   - '@antora/atlas-extension'
   - '@opendevise/antora-release-line-extension'
-  - require: '@springio/antora-extensions'
-    # uncomment this option to save the migrated content to the worktree
-    #save_result: true
-    unwrap_example_block: always
+  - '@springio/antora-extensions'
   - require: ./lib/antora/extensions/publish-docsearch-config
     template_path: ./.github/actions/docsearch-config.json.hbs
 site:
