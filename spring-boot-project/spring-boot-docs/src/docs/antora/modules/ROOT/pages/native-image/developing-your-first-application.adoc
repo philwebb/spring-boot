@@ -224,17 +224,22 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 === Running the Example
 At this point, your application should work. You can now start the application by running it directly:
 
+[tabs]
+======
+Maven::
++
 [source,shell,indent=0,subs="verbatim",role="primary"]
-.Maven
 ----
 	$ target/myproject
 ----
 
+Gradle::
++
 [source,shell,indent=0,subs="verbatim",role="secondary"]
-.Gradle
 ----
 	$ build/native/nativeCompile/myproject
 ----
+======
 
 You should see output similar to the following:
 

@@ -64,16 +64,20 @@ If the key is not surrounded by `[]`, any characters that are not alpha-numeric,
 For example, consider binding the following properties to a `Map<String,String>`:
 
 
+[tabs]
+======
+Properties::
++
 [source,properties,indent=0,subs="verbatim",role="primary"]
-.Properties
 ----
 	my.map.[/key1]=value1
 	my.map.[/key2]=value2
 	my.map./key3=value3
 ----
 
+Yaml::
++
 [source,yaml,indent=0,subs="verbatim",role="secondary"]
-.Yaml
 ----
 	my:
 	  map:
@@ -81,6 +85,7 @@ For example, consider binding the following properties to a `Map<String,String>`
 	    "[/key2]": "value2"
 	    "/key3": "value3"
 ----
+======
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
 

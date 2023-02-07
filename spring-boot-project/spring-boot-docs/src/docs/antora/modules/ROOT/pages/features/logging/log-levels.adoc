@@ -6,16 +6,20 @@ The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
+[tabs]
+======
+Properties::
++
 [source,properties,indent=0,subs="verbatim",configprops,role="primary"]
-.Properties
 ----
 	logging.level.root=warn
 	logging.level.org.springframework.web=debug
 	logging.level.org.hibernate=error
 ----
 
+Yaml::
++
 [source,properties,indent=0,subs="verbatim",role="secondary"]
-.Yaml
 ----
 	logging:
 	  level:
@@ -23,6 +27,7 @@ The following example shows potential logging settings in `application.propertie
 	    org.springframework.web: "debug"
 	    org.hibernate: "error"
 ----
+======
 
 It is also possible to set logging levels using environment variables.
 For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
