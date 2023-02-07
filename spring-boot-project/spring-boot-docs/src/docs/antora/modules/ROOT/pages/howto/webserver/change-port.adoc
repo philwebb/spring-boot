@@ -1,0 +1,12 @@
+[[howto.webserver.change-port]]
+= Change the HTTP Port
+
+In a standalone application, the main HTTP port defaults to `8080` but can be set with configprop:server.port[] (for example, in `application.properties` or as a System property).
+Thanks to relaxed binding of `Environment` values, you can also use configprop:server.port[format=envvar] (for example, as an OS environment variable).
+
+To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
+
+For more details, see "`<<web#web.servlet.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+
+
+

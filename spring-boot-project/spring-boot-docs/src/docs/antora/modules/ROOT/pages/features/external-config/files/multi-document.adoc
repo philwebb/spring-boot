@@ -1,0 +1,46 @@
+[[features.external-config.files.multi-document]]
+= Working With Multi-Document Files
+
+Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.
+Documents are processed in order, from top to bottom.
+Later documents can override the properties defined in earlier ones.
+
+For `application.yml` files, the standard YAML multi-document syntax is used.
+Three consecutive hyphens represent the end of one document, and the start of the next.
+
+For example, the following file has two logical documents:
+
+[source,yaml,indent=0,subs="verbatim"]
+----
+	spring:
+	  application:
+	    name: "MyApp"
+	---
+	spring:
+	  application:
+	    name: "MyCloudApp"
+	  config:
+	    activate:
+	      on-cloud-platform: "kubernetes"
+----
+
+For `application.properties` files a special `#---` or `!---` comment is used to mark the document splits:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	spring.application.name=MyApp
+	#---
+	spring.application.name=MyCloudApp
+	spring.config.activate.on-cloud-platform=kubernetes
+----
+
+NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
+The lines immediately before and after the separator must not be same comment prefix.
+
+TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
+See the <<features#features.external-config.files.activation-properties, next section>> for details.
+
+WARNING: Multi-document property files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
+
+
+

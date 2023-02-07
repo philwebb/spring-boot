@@ -1,0 +1,24 @@
+[[data.nosql.influxdb]]
+= InfluxDB
+
+https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
+
+
+
+[[data.nosql.influxdb.connecting]]
+== Connecting to InfluxDB
+Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  influx:
+	    url: "https://172.0.0.1:8086"
+----
+
+If the connection to InfluxDB requires a user and password, you can set the `spring.influx.user` and `spring.influx.password` properties accordingly.
+
+InfluxDB relies on OkHttp.
+If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
+
+If you need more control over the configuration, consider registering an `InfluxDbCustomizer` bean.

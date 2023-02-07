@@ -1,0 +1,79 @@
+[[features.logging.console-output]]
+= Console Output
+
+The default log configuration echoes messages to the console as they are written.
+By default, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged.
+You can also enable a "`debug`" mode by starting your application with a `--debug` flag.
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myapp.jar --debug
+----
+
+NOTE: You can also specify `debug=true` in your `application.properties`.
+
+When the debug mode is enabled, a selection of core loggers (embedded container, Hibernate, and Spring Boot) are configured to output more information.
+Enabling the debug mode does _not_ configure your application to log all messages with `DEBUG` level.
+
+Alternatively, you can enable a "`trace`" mode by starting your application with a `--trace` flag (or `trace=true` in your `application.properties`).
+Doing so enables trace logging for a selection of core loggers (embedded container, Hibernate schema generation, and the whole Spring portfolio).
+
+
+
+[[features.logging.console-output.color-coded]]
+== Color-coded Output
+If your terminal supports ANSI, color output is used to aid readability.
+You can set `spring.output.ansi.enabled` to a {spring-boot-module-api}/ansi/AnsiOutput.Enabled.html[supported value] to override the auto-detection.
+
+Color coding is configured by using the `%clr` conversion word.
+In its simplest form, the converter colors the output according to the log level, as shown in the following example:
+
+[source,indent=0,subs="verbatim"]
+----
+%clr(%5p)
+----
+
+The following table describes the mapping of log levels to colors:
+
+|===
+| Level | Color
+
+| `FATAL`
+| Red
+
+| `ERROR`
+| Red
+
+| `WARN`
+| Yellow
+
+| `INFO`
+| Green
+
+| `DEBUG`
+| Green
+
+| `TRACE`
+| Green
+|===
+
+Alternatively, you can specify the color or style that should be used by providing it as an option to the conversion.
+For example, to make the text yellow, use the following setting:
+
+[source,indent=0,subs="verbatim"]
+----
+	%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){yellow}
+----
+
+The following colors and styles are supported:
+
+* `blue`
+* `cyan`
+* `faint`
+* `green`
+* `magenta`
+* `red`
+* `yellow`
+
+
+

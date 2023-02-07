@@ -1,0 +1,19 @@
+[[features.external-config.files.importing-extensionless]]
+= Importing Extensionless Files
+
+Some cloud platforms cannot add a file extension to volume mounted files.
+To import these extensionless files, you need to give Spring Boot a hint so that it knows how to load them.
+You can do this by putting an extension hint in square brackets.
+
+For example, suppose you have a `/etc/config/myconfig` file that you wish to import as yaml.
+You can import it from your `application.properties` using the following:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "file:/etc/config/myconfig[.yaml]"
+----
+
+
+

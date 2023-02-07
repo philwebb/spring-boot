@@ -1,0 +1,14 @@
+[[features.external-config.typesafe-configuration-properties.third-party-configuration]]
+= Third-party Configuration
+
+As well as using `@ConfigurationProperties` to annotate a class, you can also use it on public `@Bean` methods.
+Doing so can be particularly useful when you want to bind properties to third-party components that are outside of your control.
+
+To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
+
+include::code:ThirdPartyConfiguration[]
+
+Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `SomeProperties` example.
+
+
+

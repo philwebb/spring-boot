@@ -1,0 +1,39 @@
+[[features.external-config.files.activation-properties]]
+= Activation Properties
+
+It is sometimes useful to only activate a given set of properties when certain conditions are met.
+For example, you might have properties that are only relevant when a specific profile is active.
+
+You can conditionally activate a properties document using `spring.config.activate.*`.
+
+The following activation properties are available:
+
+.activation properties
+[cols="1,4"]
+|===
+| Property | Note
+
+| `on-profile`
+| A profile expression that must match for the document to be active.
+
+| `on-cloud-platform`
+| The `CloudPlatform` that must be detected for the document to be active.
+|===
+
+For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	myprop:
+	  "always-set"
+	---
+	spring:
+	  config:
+	    activate:
+	      on-cloud-platform: "kubernetes"
+	      on-profile: "prod | staging"
+	myotherprop: "sometimes-set"
+----
+
+
+

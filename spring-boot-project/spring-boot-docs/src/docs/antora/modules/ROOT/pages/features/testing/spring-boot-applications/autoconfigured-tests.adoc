@@ -1,0 +1,22 @@
+[[features.testing.spring-boot-applications.autoconfigured-tests]]
+= Auto-configured Tests
+
+Spring Boot's auto-configuration system works well for applications but can sometimes be a little too much for tests.
+It often helps to load only the parts of the configuration that are required to test a "`slice`" of your application.
+For example, you might want to test that Spring MVC controllers are mapping URLs correctly, and you do not want to involve database calls in those tests, or you might want to test JPA entities, and you are not interested in the web layer when those tests run.
+
+The `spring-boot-test-autoconfigure` module includes a number of annotations that can be used to automatically configure such "`slices`".
+Each of them works in a similar way, providing a `@...Test` annotation that loads the `ApplicationContext` and one or more `@AutoConfigure...` annotations that can be used to customize auto-configuration settings.
+
+NOTE: Each slice restricts component scan to appropriate components and loads a very restricted set of auto-configuration classes.
+If you need to exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
+Alternatively, you can use `@ImportAutoConfiguration#exclude`.
+
+NOTE: Including multiple "`slices`" by using several `@...Test` annotations in one test is not supported.
+If you need multiple "`slices`", pick one of the `@...Test` annotations and include the `@AutoConfigure...` annotations of the other "`slices`" by hand.
+
+TIP: It is also possible to use the `@AutoConfigure...` annotations with the standard `@SpringBootTest` annotation.
+You can use this combination if you are not interested in "`slicing`" your application but you want some of the auto-configured test beans.
+
+
+

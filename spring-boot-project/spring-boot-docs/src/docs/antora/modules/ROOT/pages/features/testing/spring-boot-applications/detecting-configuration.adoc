@@ -1,0 +1,29 @@
+[[features.testing.spring-boot-applications.detecting-configuration]]
+= Detecting Test Configuration
+
+If you are familiar with the Spring Test Framework, you may be used to using `@ContextConfiguration(classes=...)` in order to specify which Spring `@Configuration` to load.
+Alternatively, you might have often used nested `@Configuration` classes within your test.
+
+When testing Spring Boot applications, this is often not required.
+Spring Boot's `@*Test` annotations search for your primary configuration automatically whenever you do not explicitly define one.
+
+The search algorithm works up from the package that contains the test until it finds a class annotated with `@SpringBootApplication` or `@SpringBootConfiguration`.
+As long as you <<using#using.structuring-your-code, structured your code>> in a sensible way, your main configuration is usually found.
+
+[NOTE]
+====
+If you use a <<features#features.testing.spring-boot-applications.autoconfigured-tests, test annotation to test a more specific slice of your application>>, you should avoid adding configuration settings that are specific to a particular area on the <<features#features.testing.spring-boot-applications.user-configuration-and-slicing, main method's application class>>.
+
+The underlying component scan configuration of `@SpringBootApplication` defines exclude filters that are used to make sure slicing works as expected.
+If you are using an explicit `@ComponentScan` directive on your `@SpringBootApplication`-annotated class, be aware that those filters will be disabled.
+If you are using slicing, you should define them again.
+====
+
+If you want to customize the primary configuration, you can use a nested `@TestConfiguration` class.
+Unlike a nested `@Configuration` class, which would be used instead of your application's primary configuration, a nested `@TestConfiguration` class is used in addition to your application's primary configuration.
+
+NOTE: Spring's test framework caches application contexts between tests.
+Therefore, as long as your tests share the same configuration (no matter how it is discovered), the potentially time-consuming process of loading the context happens only once.
+
+
+

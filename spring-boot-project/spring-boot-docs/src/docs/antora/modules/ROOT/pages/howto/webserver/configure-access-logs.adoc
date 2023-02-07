@@ -1,0 +1,56 @@
+[[howto.webserver.configure-access-logs]]
+= Configure Access Logging
+
+Access logs can be configured for Tomcat, Undertow, and Jetty through their respective namespaces.
+
+For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  tomcat:
+	    basedir: "my-tomcat"
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
+----
+
+NOTE: The default location for logs is a `logs` directory relative to the Tomcat base directory.
+By default, the `logs` directory is a temporary directory, so you may want to fix Tomcat's base directory or use an absolute path for the logs.
+In the preceding example, the logs are available in `my-tomcat/logs` relative to the working directory of the application.
+
+Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  undertow:
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
+	    options:
+	      server:
+	        record-request-start-time: true
+----
+
+Note that, in addition to enabling access logging and configuring its pattern, recording request start times has also been enabled.
+This is required when including the response time (`%D`) in the access log pattern.
+Logs are stored in a `logs` directory relative to the working directory of the application.
+You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
+
+Finally, access logging for Jetty can also be configured as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  jetty:
+	    accesslog:
+	      enabled: true
+	      filename: "/var/log/jetty-access.log"
+----
+
+By default, logs are redirected to `System.err`.
+For more details, see the Jetty documentation.
+
+
+

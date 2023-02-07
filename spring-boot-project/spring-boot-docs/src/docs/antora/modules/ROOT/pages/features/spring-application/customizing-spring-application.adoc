@@ -1,0 +1,18 @@
+[[features.spring-application.customizing-spring-application]]
+= Customizing SpringApplication
+
+If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
+For example, to turn off the banner, you could write:
+
+include::code:MyApplication[]
+
+NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
+In most cases, these are references to `@Configuration` classes, but they could also be direct references `@Component` classes.
+
+It is also possible to configure the `SpringApplication` by using an `application.properties` file.
+See _<<features#features.external-config>>_ for details.
+
+For a complete list of the configuration options, see the {spring-boot-module-api}/SpringApplication.html[`SpringApplication` Javadoc].
+
+
+

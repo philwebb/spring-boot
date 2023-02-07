@@ -1,0 +1,26 @@
+[[features.spring-application.startup-tracking]]
+= Application Startup tracking
+
+During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,
+the beans lifecycle or even processing application events.
+With {spring-framework-api}/core/metrics/ApplicationStartup.html[`ApplicationStartup`], Spring Framework  {spring-framework-docs}/core.html#context-functionality-startup[allows you to track the application startup sequence with `StartupStep` objects].
+This data can be collected for profiling purposes, or just to have a better understanding of an application startup process.
+
+You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
+For example, to use the `BufferingApplicationStartup`, you could write:
+
+include::code:MyApplication[]
+
+The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.
+It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).
+Once configured, you can record data by running the application with the Flight Recorder enabled:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
+----
+
+Spring Boot ships with the `BufferingApplicationStartup` variant; this implementation is meant for buffering the startup steps and draining them into an external metrics system.
+Applications can ask for the bean of type `BufferingApplicationStartup` in any component.
+
+Spring Boot can also be configured to expose a {spring-boot-actuator-restapi-docs}/#startup[`startup` endpoint] that provides this information as a JSON document.

@@ -1,0 +1,20 @@
+[[actuator.endpoints.caching]]
+= Configuring Endpoints
+
+Endpoints automatically cache responses to read operations that do not take any parameters.
+To configure the amount of time for which an endpoint caches a response, use its `cache.time-to-live` property.
+The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoint:
+	    beans:
+	      cache:
+	        time-to-live: "10s"
+----
+
+NOTE: The `management.endpoint.<name>` prefix uniquely identifies the endpoint that is being configured.
+
+
+

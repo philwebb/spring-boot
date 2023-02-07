@@ -1,0 +1,22 @@
+[[features.external-config.random-values]]
+= Configuring Random Values
+
+The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
+It can produce integers, longs, uuids, or strings, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	my:
+	  secret: "${random.value}"
+	  number: "${random.int}"
+	  bignumber: "${random.long}"
+	  uuid: "${random.uuid}"
+	  number-less-than-ten: "${random.int(10)}"
+	  number-in-range: "${random.int[1024,65536]}"
+----
+
+The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
+If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
+
+
+

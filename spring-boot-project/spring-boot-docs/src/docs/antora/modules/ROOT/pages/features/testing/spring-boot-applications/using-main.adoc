@@ -1,0 +1,31 @@
+[[features.testing.spring-boot-applications.using-main]]
+= Using the Test Configuration Main Method
+
+Typically the test configuration discovered by `@SpringBootTest` will be your main `@SpringBootApplication`.
+In most well structured applications, this configuration class will also include the `main` method used to launch the application.
+
+For example, the following is a very common code pattern for a typical Spring Boot application:
+
+include::code:typical/MyApplication[]
+
+In the example above, the `main` method doesn't do anything other than delegate to `SpringApplication.run`.
+It is, however, possible to have a more complex `main` method that applies customizations before calling `SpringApplication.run`.
+
+For example, here is an application that changes the banner mode and sets additional profiles:
+
+include::code:custom/MyApplication[]
+
+Since customizations in the `main` method can affect the resulting `ApplicationContext`, it's possible that you might also want to use the `main` method to create the `ApplicationContext` used in your tests.
+By default, `@SpringBootTest` will not call your `main` method, and instead the class itself is used directly to create the `ApplicationContext`
+
+If you want to change this behavior, you can change the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.ALWAYS` or `UseMainMethod.WHEN_AVAILABLE`.
+When set to `ALWAYS`, the test will fail if no `main` method can be found.
+When set to `WHEN_AVAILABLE` the `main` method will be used if it is available, otherwise the standard loading mechanism will be used.
+
+For example, the following test will invoke the `main` method of `MyApplication` in order to create the `ApplicationContext`.
+If the main method sets additional profiles then those will be active when the `ApplicationContext` starts.
+
+include::code:always/MyApplicationTests[]
+
+
+

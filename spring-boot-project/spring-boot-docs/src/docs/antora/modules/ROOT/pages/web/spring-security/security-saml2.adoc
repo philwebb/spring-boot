@@ -1,0 +1,66 @@
+[[web.security.saml2]]
+= SAML 2.0
+
+
+
+[[web.security.saml2.relying-party]]
+== Relying Party
+If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
+This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
+
+A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
+You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    saml2:
+	      relyingparty:
+	        registration:
+	          my-relying-party1:
+	            signing:
+                  credentials:
+                  - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+	            decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                singlelogout:
+                   url: "https://myapp/logout/saml2/slo"
+                   response-url: "https://remoteidp2.slo.url"
+                   binding: "POST"
+	            assertingparty:
+	              verification:
+	                credentials:
+	                - certificate-location: "path-to-verification-cert"
+	              entity-id: "remote-idp-entity-id1"
+	              sso-url: "https://remoteidp1.sso.url"
+
+	          my-relying-party2:
+	            signing:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                assertingparty:
+                  verification:
+                    credentials:
+                    - certificate-location: "path-to-other-verification-cert"
+                  entity-id: "remote-idp-entity-id2"
+                  sso-url: "https://remoteidp2.sso.url"
+                  singlelogout:
+                    url: "https://remoteidp2.slo.url"
+                    response-url: "https://myapp/logout/saml2/slo"
+                    binding: "POST"
+----
+
+For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `Saml2LogoutResponseFilter` only process URLs matching `/logout/saml2/slo`.
+If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
+For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
+
+include::code:MySamlRelyingPartyConfiguration[]

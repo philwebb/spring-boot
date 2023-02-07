@@ -1,0 +1,23 @@
+[[actuator.endpoints.cors]]
+= CORS Support
+
+https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] that lets you specify in a flexible way what kind of cross-domain requests are authorized.
+If you use Spring MVC or Spring WebFlux, you can configure Actuator's web endpoints to support such scenarios.
+
+CORS support is disabled by default and is only enabled once you have set the configprop:management.endpoints.web.cors.allowed-origins[] property.
+The following configuration permits `GET` and `POST` calls from the `example.com` domain:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    web:
+	      cors:
+	        allowed-origins: "https://example.com"
+	        allowed-methods: "GET,POST"
+----
+
+TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[`CorsEndpointProperties`] for a complete list of options.
+
+
+

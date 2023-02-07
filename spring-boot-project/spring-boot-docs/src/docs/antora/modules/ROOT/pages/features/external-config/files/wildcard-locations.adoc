@@ -1,0 +1,24 @@
+[[features.external-config.files.wildcard-locations]]
+= Wildcard Locations
+
+If a config file location includes the `{asterisk}` character for the last path segment, it is considered a wildcard location.
+Wildcards are expanded when the config is loaded so that immediate subdirectories are also checked.
+Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
+
+For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` file.
+This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
+In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
+
+By default, Spring Boot includes `config/*/` in the default search locations.
+It means that all subdirectories of the `/config` directory outside of your jar will be searched.
+
+You can use wildcard locations yourself with the `spring.config.location` and `spring.config.additional-location` properties.
+
+NOTE: A wildcard location must contain only one `{asterisk}` and end with `{asterisk}/` for search locations that are directories or `*/<filename>` for search locations that are files.
+Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
+
+TIP: Wildcard locations only work with external directories.
+You cannot use a wildcard in a `classpath:` location.
+
+
+

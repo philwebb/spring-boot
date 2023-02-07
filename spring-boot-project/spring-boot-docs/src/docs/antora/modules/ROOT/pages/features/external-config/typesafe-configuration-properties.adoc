@@ -1,0 +1,10 @@
+[[features.external-config.typesafe-configuration-properties]]
+= Type-safe Configuration Properties
+
+Using the `@Value("$\{property}")` annotation to inject configuration properties can sometimes be cumbersome, especially if you are working with multiple properties or your data is hierarchical in nature.
+Spring Boot provides an alternative method of working with properties that lets strongly typed beans govern and validate the configuration of your application.
+
+TIP: See also the <<features#features.external-config.typesafe-configuration-properties.vs-value-annotation,differences between `@Value` and type-safe configuration properties>>.
+
+
+

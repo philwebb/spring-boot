@@ -1,0 +1,62 @@
+[[actuator.endpoints.exposing]]
+= Exposing Endpoints
+
+By default, only the health endpoint is exposed over HTTP and JMX.
+Since Endpoints may contain sensitive information, you should carefully consider when to expose them.
+
+To change which endpoints are exposed, use the following technology-specific `include` and `exclude` properties:
+
+[cols="3,1"]
+|===
+| Property | Default
+
+| configprop:management.endpoints.jmx.exposure.exclude[]
+|
+
+| configprop:management.endpoints.jmx.exposure.include[]
+| `health`
+
+| configprop:management.endpoints.web.exposure.exclude[]
+|
+
+| configprop:management.endpoints.web.exposure.include[]
+| `health`
+|===
+
+The `include` property lists the IDs of the endpoints that are exposed.
+The `exclude` property lists the IDs of the endpoints that should not be exposed.
+The `exclude` property takes precedence over the `include` property.
+You can configure both the `include` and the `exclude` properties with a list of endpoint IDs.
+
+For example, to only expose the `health` and `info` endpoints over JMX, use the following property:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    jmx:
+	      exposure:
+	        include: "health,info"
+----
+
+`*` can be used to select all endpoints.
+For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
+	        exclude: "env,beans"
+----
+
+NOTE: `*` has a special meaning in YAML, so be sure to add quotation marks if you want to include (or exclude) all endpoints.
+
+NOTE: If your application is exposed publicly, we strongly recommend that you also <<actuator#actuator.endpoints.security, secure your endpoints>>.
+
+TIP: If you want to implement your own strategy for when endpoints are exposed, you can register an `EndpointFilter` bean.
+
+
+

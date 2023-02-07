@@ -1,0 +1,17 @@
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
+= Auto-configured Data Cassandra Tests
+
+You can use `@DataCassandraTest` to test Cassandra applications.
+By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using Cassandra with Spring Boot, see "<<data#data.nosql.cassandra>>".)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows a typical setup for using Cassandra tests in Spring Boot:
+
+include::code:MyDataCassandraTests[]
+
+
+

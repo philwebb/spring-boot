@@ -1,0 +1,50 @@
+[[howto.webserver.configure]]
+= Configure the Web Server
+
+Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` or `application.yml` file.
+See "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
+The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
+See the list of <<application-properties#appendix.application-properties>>.
+
+The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
+However, if a configuration key does not exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
+
+The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
+
+include::code:MyTomcatWebServerCustomizer[]
+
+NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
+Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
+
+Once you have got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+
+In addition Spring Boot provides:
+
+[[howto-configure-webserver-customizers]]
+[cols="1,2,2", options="header"]
+|===
+| Server | Servlet stack | Reactive stack
+
+| Tomcat
+| `TomcatServletWebServerFactory`
+| `TomcatReactiveWebServerFactory`
+
+| Jetty
+| `JettyServletWebServerFactory`
+| `JettyReactiveWebServerFactory`
+
+| Undertow
+| `UndertowServletWebServerFactory`
+| `UndertowReactiveWebServerFactory`
+
+| Reactor
+| N/A
+| `NettyReactiveWebServerFactory`
+|===
+
+As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
+
+
+

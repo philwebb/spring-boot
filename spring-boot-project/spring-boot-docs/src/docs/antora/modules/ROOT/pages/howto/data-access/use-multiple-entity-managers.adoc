@@ -1,0 +1,29 @@
+[[howto.data-access.use-multiple-entity-managers]]
+= Using Multiple EntityManagerFactories
+
+If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.
+The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
+You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
+
+include::code:MyEntityManagerFactoryConfiguration[]
+
+The example above creates an `EntityManagerFactory` using a `DataSource` bean named `firstDataSource`.
+It scans entities located in the same package as `Order`.
+It is possible to map additional JPA properties using the `app.first.jpa` namespace.
+
+NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
+For example, in case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
+If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the `LocalContainerEntityManagerFactoryBean` bean.
+
+You should provide a similar configuration for any additional data sources for which you need JPA access.
+To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
+Alternatively, you might be able to use a JTA transaction manager that spans both.
+
+If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following examples:
+
+include::code:OrderConfiguration[]
+
+include::code:CustomerConfiguration[]
+
+
+

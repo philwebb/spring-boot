@@ -1,0 +1,9 @@
+[[howto.data-access.use-custom-entity-manager]]
+= Use a Custom EntityManagerFactory
+
+To take full control of the configuration of the `EntityManagerFactory`, you need to add a `@Bean` named '`entityManagerFactory`'.
+Spring Boot auto-configuration switches off its entity manager in the presence of a bean of that type.
+
+
+
+[[howto.data-access.use-multiple-entity-managers]]

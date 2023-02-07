@@ -1,0 +1,171 @@
+[[web.servlet.embedded-container]]
+= Embedded Servlet Container Support
+
+For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
+Most developers use the appropriate "`Starter`" to obtain a fully configured instance.
+By default, the embedded server listens for HTTP requests on port `8080`.
+
+
+
+[[web.servlet.embedded-container.servlets-filters-listeners]]
+== Servlets, Filters, and Listeners
+When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the servlet spec, either by using Spring beans or by scanning for servlet components.
+
+
+
+[[web.servlet.embedded-container.servlets-filters-listeners.beans]]
+=== Registering Servlets, Filters, and Listeners as Spring Beans
+Any `Servlet`, `Filter`, or servlet `*Listener` instance that is a Spring bean is registered with the embedded container.
+This can be particularly convenient if you want to refer to a value from your `application.properties` during configuration.
+
+By default, if the context contains only a single Servlet, it is mapped to `/`.
+In the case of multiple servlet beans, the bean name is used as a path prefix.
+Filters map to `+/*+`.
+
+If convention-based mapping is not flexible enough, you can use the `ServletRegistrationBean`, `FilterRegistrationBean`, and `ServletListenerRegistrationBean` classes for complete control.
+
+It is usually safe to leave filter beans unordered.
+If a specific order is required, you should annotate the `Filter` with `@Order` or make it implement `Ordered`.
+You cannot configure the order of a `Filter` by annotating its bean method with `@Order`.
+If you cannot change the `Filter` class to add `@Order` or implement `Ordered`, you must define a `FilterRegistrationBean` for the `Filter` and set the registration bean's order using the `setOrder(int)` method.
+Avoid configuring a filter that reads the request body at `Ordered.HIGHEST_PRECEDENCE`, since it might go against the character encoding configuration of your application.
+If a servlet filter wraps the request, it should be configured with an order that is less than or equal to `OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER`.
+
+TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<features#features.logging.log-groups,logging group>> (`logging.level.web=debug`).
+Details of the registered filters, including their order and URL patterns, will then be logged at startup.
+
+WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifecycle.
+If you need to register a `Filter` that interacts with other beans, consider using a {spring-boot-module-api}/web/servlet/DelegatingFilterProxyRegistrationBean.html[`DelegatingFilterProxyRegistrationBean`] instead.
+
+
+
+[[web.servlet.embedded-container.context-initializer]]
+== Servlet Context Initialization
+Embedded servlet containers do not directly execute the `jakarta.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
+This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
+
+If you need to perform servlet context initialization in a Spring Boot application, you should register a bean that implements the `org.springframework.boot.web.servlet.ServletContextInitializer` interface.
+The single `onStartup` method provides access to the `ServletContext` and, if necessary, can easily be used as an adapter to an existing `WebApplicationInitializer`.
+
+
+
+[[web.servlet.embedded-container.context-initializer.scanning]]
+=== Scanning for Servlets, Filters, and listeners
+When using an embedded container, automatic registration of classes annotated with `@WebServlet`, `@WebFilter`, and `@WebListener` can be enabled by using `@ServletComponentScan`.
+
+TIP: `@ServletComponentScan` has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
+
+
+
+[[web.servlet.embedded-container.application-context]]
+== The ServletWebServerApplicationContext
+Under the hood, Spring Boot uses a different type of `ApplicationContext` for embedded servlet container support.
+The `ServletWebServerApplicationContext` is a special type of `WebApplicationContext` that bootstraps itself by searching for a single `ServletWebServerFactory` bean.
+Usually a `TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `UndertowServletWebServerFactory` has been auto-configured.
+
+NOTE: You usually do not need to be aware of these implementation classes.
+Most applications are auto-configured, and the appropriate `ApplicationContext` and `ServletWebServerFactory` are created on your behalf.
+
+In an embedded container setup, the `ServletContext` is set as part of server startup which happens during application context initialization.
+Because of this beans in the `ApplicationContext` cannot be reliably initialized with a `ServletContext`.
+One way to get around this is to inject `ApplicationContext` as a dependency of the bean and access the `ServletContext` only when it is needed.
+Another way is to use a callback once the server has started.
+This can be done using an `ApplicationListener` which listens for the `ApplicationStartedEvent` as follows:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include:../:{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
+----
+
+
+
+[[web.servlet.embedded-container.customizing]]
+== Customizing Embedded Servlet Containers
+Common servlet container settings can be configured by using Spring `Environment` properties.
+Usually, you would define the properties in your `application.properties` or `application.yaml` file.
+
+Common server settings include:
+
+* Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to `server.address`, and so on.
+* Session settings: Whether the session is persistent (`server.servlet.session.persistent`), session timeout (`server.servlet.session.timeout`), location of session data (`server.servlet.session.store-dir`), and session-cookie configuration (`server.servlet.session.cookie.*`).
+* Error management: Location of the error page (`server.error.path`) and so on.
+* <<howto#howto.webserver.configure-ssl,SSL>>
+* <<howto#howto.webserver.enable-response-compression,HTTP compression>>
+
+Spring Boot tries as much as possible to expose common settings, but this is not always possible.
+For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat` and `server.undertow`).
+For instance, <<howto#howto.webserver.configure-access-logs,access logs>> can be configured with specific features of the embedded servlet container.
+
+TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
+
+
+
+[[web.servlet.embedded-container.customizing.samesite]]
+=== SameSite Cookies
+The `SameSite` cookie attribute can be used by web browsers to control if and how cookies are submitted in cross-site requests.
+The attribute is particularly relevant for modern web browsers which have started to change the default value that is used when the attribute is missing.
+
+If you want to change the `SameSite` attribute of your session cookie, you can use the configprop:server.servlet.session.cookie.same-site[] property.
+This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
+It is also used to configure Spring Session servlet based `SessionRepository` beans.
+
+For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  servlet:
+	    session:
+	      cookie:
+	        same-site: "none"
+----
+
+If you want to change the `SameSite` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
+The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` value, or `null`.
+
+There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
+For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
+
+include::code:MySameSiteConfiguration[]
+
+
+
+[[web.servlet.embedded-container.customizing.programmatic]]
+=== Programmatic Customization
+If you need to programmatically configure your embedded servlet container, you can register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
+`WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
+The following example shows programmatically setting the port:
+
+include::code:MyWebServerFactoryCustomizer[]
+
+`TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
+The following example shows how to customize `TomcatServletWebServerFactory` that provides access to Tomcat-specific configuration options:
+
+include::code:MyTomcatWebServerFactoryCustomizer[]
+
+
+
+[[web.servlet.embedded-container.customizing.direct]]
+=== Customizing ConfigurableServletWebServerFactory Directly
+For more advanced use cases that require you to extend from `ServletWebServerFactory`, you can expose a bean of such type yourself.
+
+Setters are provided for many configuration options.
+Several protected method "`hooks`" are also provided should you need to do something more exotic.
+See the {spring-boot-module-api}/web/servlet/server/ConfigurableServletWebServerFactory.html[source code documentation] for details.
+
+NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
+
+
+
+[[web.servlet.embedded-container.jsp-limitations]]
+== JSP Limitations
+When running a Spring Boot application that uses an embedded servlet container (and is packaged as an executable archive), there are some limitations in the JSP support.
+
+* With Jetty and Tomcat, it should work if you use war packaging.
+An executable war will work when launched with `java -jar`, and will also be deployable to any standard container.
+JSPs are not supported when using an executable jar.
+
+* Undertow does not support JSPs.
+
+* Creating a custom `error.jsp` page does not override the default view for <<web#web.servlet.spring-mvc.error-handling,error handling>>.
+  <<web#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.

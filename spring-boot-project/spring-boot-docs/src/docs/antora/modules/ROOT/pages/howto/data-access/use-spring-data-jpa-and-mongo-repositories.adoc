@@ -1,0 +1,15 @@
+[[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
+= Use Spring Data JPA and Mongo Repositories
+
+Spring Data JPA and Spring Data Mongo can both automatically create `Repository` implementations for you.
+If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.
+The most explicit way to do that is to use the standard Spring Data `+@EnableJpaRepositories+` and `+@EnableMongoRepositories+` annotations and provide the location of your `Repository` interfaces.
+
+There are also flags (`+spring.data.*.repositories.enabled+` and `+spring.data.*.repositories.type+`) that you can use to switch the auto-configured repositories on and off in external configuration.
+Doing so is useful, for instance, in case you want to switch off the Mongo repositories and still use the auto-configured `MongoTemplate`.
+
+The same obstacle and the same features exist for other auto-configured Spring Data repository types (Elasticsearch, Redis, and others).
+To work with them, change the names of the annotations and flags accordingly.
+
+
+

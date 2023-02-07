@@ -1,0 +1,162 @@
+[[actuator.endpoints.info]]
+= Application Information
+
+Application information exposes various information collected from all {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
+Spring Boot includes a number of auto-configured `InfoContributor` beans, and you can write your own.
+
+
+
+[[actuator.endpoints.info.auto-configured-info-contributors]]
+== Auto-configured InfoContributors
+When appropriate, Spring auto-configures the following `InfoContributor` beans:
+
+[cols="1,4,8,4"]
+|===
+| ID | Name | Description | Prerequisites
+
+| `build`
+| {spring-boot-actuator-module-code}/info/BuildInfoContributor.java[`BuildInfoContributor`]
+| Exposes build information.
+| A `META-INF/build-info.properties` resource.
+
+| `env`
+| {spring-boot-actuator-module-code}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
+| Exposes any property from the `Environment` whose name starts with `info.`.
+| None.
+
+| `git`
+| {spring-boot-actuator-module-code}/info/GitInfoContributor.java[`GitInfoContributor`]
+| Exposes git information.
+| A `git.properties` resource.
+
+| `java`
+| {spring-boot-actuator-module-code}/info/JavaInfoContributor.java[`JavaInfoContributor`]
+| Exposes Java runtime information.
+| None.
+
+| `os`
+| {spring-boot-actuator-module-code}/info/OsInfoContributor.java[`OsInfoContributor`]
+| Exposes Operating System information.
+| None.
+
+|===
+
+Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
+Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
+
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, and `os` contributors are disabled by default.
+Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
+
+The `build` and `git` info contributors are enabled by default.
+Each can be disabled by setting its `management.info.<id>.enabled` property to `false`.
+Alternatively, to disable every contributor that is usually enabled by default, set the configprop:management.info.defaults.enabled[] property to `false`.
+
+
+
+[[actuator.endpoints.info.custom-application-information]]
+== Custom Application Information
+When the `env` contributor is enabled, you can customize the data exposed by the `info` endpoint by setting `+info.*+` Spring properties.
+All `Environment` properties under the `info` key are automatically exposed.
+For example, you could add the following settings to your `application.properties` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	info:
+	  app:
+	    encoding: "UTF-8"
+	    java:
+	      source: "17"
+	      target: "17"
+----
+
+[TIP]
+====
+Rather than hardcoding those values, you could also <<howto#howto.properties-and-configuration.expand-properties,expand info properties at build time>>.
+
+Assuming you use Maven, you could rewrite the preceding example as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	info:
+	  app:
+	    encoding: "@project.build.sourceEncoding@"
+	    java:
+	      source: "@java.version@"
+	      target: "@java.version@"
+----
+====
+
+
+
+[[actuator.endpoints.info.git-commit-information]]
+== Git Commit Information
+Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
+If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
+
+TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
+See "<<howto#howto.build.generate-git-info,how to generate git information>>" for more detail.
+
+By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
+If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
+If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  info:
+	    git:
+	      mode: "full"
+----
+
+To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  info:
+	    git:
+	      enabled: false
+----
+
+
+
+[[actuator.endpoints.info.build-information]]
+== Build Information
+If a `BuildProperties` bean is available, the `info` endpoint can also publish information about your build.
+This happens if a `META-INF/build-info.properties` file is available in the classpath.
+
+TIP: The Maven and Gradle plugins can both generate that file.
+See "<<howto#howto.build.generate-info,how to generate build information>>" for more details.
+
+
+
+[[actuator.endpoints.info.java-information]]
+== Java Information
+The `info` endpoint publishes information about your Java runtime environment, see {spring-boot-module-api}/info/JavaInfo.html[`JavaInfo`] for more details.
+
+
+
+[[actuator.endpoints.info.os-information]]
+== OS Information
+The `info` endpoint publishes information about your Operating System, see {spring-boot-module-api}/info/OsInfo.html[`OsInfo`] for more details.
+
+
+
+[[actuator.endpoints.info.writing-custom-info-contributors]]
+== Writing Custom InfoContributors
+To provide custom application information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/info/InfoContributor.java[`InfoContributor`] interface.
+
+The following example contributes an `example` entry with a single value:
+
+include::code:MyInfoContributor[]
+
+If you reach the `info` endpoint, you should see a response that contains the following additional entry:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{
+		"example": {
+			"key" : "value"
+		}
+	}
+----

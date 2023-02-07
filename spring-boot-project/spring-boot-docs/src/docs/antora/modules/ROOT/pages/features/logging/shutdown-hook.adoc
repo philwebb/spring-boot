@@ -1,0 +1,20 @@
+[[features.logging.shutdown-hook]]
+= Using a Log Shutdown Hook
+
+In order to release logging resources when your application terminates, a shutdown hook that will trigger log system cleanup when the JVM exits is provided.
+This shutdown hook is registered automatically unless your application is deployed as a war file.
+If your application has complex context hierarchies the shutdown hook may not meet your needs.
+If it does not, disable the shutdown hook and investigate the options provided directly by the underlying logging system.
+For example, Logback offers https://logback.qos.ch/manual/loggingSeparation.html[context selectors] which allow each Logger to be created in its own context.
+You can use the configprop:logging.register-shutdown-hook[] property to disable the shutdown hook.
+Setting it to `false` will disable the registration.
+You can set the property in your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	logging:
+	  register-shutdown-hook: false
+----
+
+
+

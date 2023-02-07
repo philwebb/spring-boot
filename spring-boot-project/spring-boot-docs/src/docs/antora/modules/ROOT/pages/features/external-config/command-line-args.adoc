@@ -1,0 +1,10 @@
+[[features.external-config.command-line-args]]
+= Accessing Command Line Properties
+
+By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
+As mentioned previously, command line properties always take precedence over file-based property sources.
+
+If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
+
+
+

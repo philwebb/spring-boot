@@ -1,0 +1,84 @@
+[[data.nosql.ldap]]
+= LDAP
+
+https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Lightweight Directory Access Protocol) is an open, vendor-neutral, industry standard application protocol for accessing and maintaining distributed directory information services over an IP network.
+Spring Boot offers auto-configuration for any compliant LDAP server as well as support for the embedded in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
+
+LDAP abstractions are provided by https://github.com/spring-projects/spring-data-ldap[Spring Data LDAP].
+There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the dependencies in a convenient way.
+
+
+
+[[data.nosql.ldap.connecting]]
+== Connecting to an LDAP Server
+To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  ldap:
+	    urls: "ldap://myserver:1235"
+	    username: "admin"
+	    password: "secret"
+----
+
+If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
+
+An `LdapContextSource` is auto-configured based on these settings.
+If a `DirContextAuthenticationStrategy` bean is available, it is associated to the auto-configured `LdapContextSource`.
+If you need to customize it, for instance to use a `PooledContextSource`, you can still inject the auto-configured `LdapContextSource`.
+Make sure to flag your customized `ContextSource` as `@Primary` so that the auto-configured `LdapTemplate` uses it.
+
+
+
+[[data.nosql.ldap.repositories]]
+== Spring Data LDAP Repositories
+Spring Data includes repository support for LDAP.
+For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+
+You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
+
+
+include::code:MyBean[]
+
+
+
+[[data.nosql.ldap.embedded]]
+== Embedded In-memory LDAP Server
+For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
+To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  ldap:
+	    embedded:
+	      base-dn: "dc=spring,dc=io"
+----
+
+[NOTE]
+====
+It is possible to define multiple base-dn values, however, since distinguished names usually contain commas, they must be defined using the correct notation.
+
+In yaml files, you can use the yaml list notation. In properties files, you must include the index as part of the property name:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring.ldap.embedded.base-dn:
+	  - "dc=spring,dc=io"
+	  - "dc=vmware,dc=com"
+----
+====
+
+By default, the server starts on a random port and triggers the regular LDAP support.
+There is no need to specify a configprop:spring.ldap.urls[] property.
+
+If there is a `schema.ldif` file on your classpath, it is used to initialize the server.
+If you want to load the initialization script from a different resource, you can also use the configprop:spring.ldap.embedded.ldif[] property.
+
+By default, a standard schema is used to validate `LDIF` files.
+You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
+If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
+
+
+

@@ -1,0 +1,82 @@
+[[actuator.metrics.customizing]]
+= Customizing Individual Metrics
+
+If you need to apply customizations to specific `Meter` instances, you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
+
+For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
+
+include::code:MyMetricsFilterConfiguration[]
+
+NOTE: By default, all `MeterFilter` beans are automatically bound to the Spring-managed `MeterRegistry`.
+Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.
+These use the global registry that is not Spring-managed.
+
+
+
+[[actuator.metrics.customizing.common-tags]]
+== Common Tags
+Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
+Commons tags are applied to all meters and can be configured, as the following example shows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  metrics:
+	    tags:
+	      region: "us-east-1"
+	      stack: "prod"
+----
+
+The preceding example adds `region` and `stack` tags to all meters with a value of `us-east-1` and `prod`, respectively.
+
+NOTE: The order of common tags is important if you use Graphite.
+As the order of common tags cannot be guaranteed by using this approach, Graphite users are advised to define a custom `MeterFilter` instead.
+
+
+
+[[actuator.metrics.customizing.per-meter-properties]]
+== Per-meter Properties
+In addition to `MeterFilter` beans, you can apply a limited set of customization on a per-meter basis using properties.
+Per-meter customizations are applied, using Spring Boot's `PropertiesMeterFilter`, to any meter IDs that start with the given name.
+The following example filters out any meters that have an ID starting with `example.remote`.
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  metrics:
+	    enable:
+	      example:
+	        remote: false
+----
+
+The following properties allow per-meter customization:
+
+.Per-meter customizations
+|===
+| Property | Description
+
+| configprop:management.metrics.enable[]
+| Whether to accept meters with certain IDs.
+  Meters that are not accepted are filtered from the `MeterRegistry`.
+
+| configprop:management.metrics.distribution.percentiles-histogram[]
+| Whether to publish a histogram suitable for computing aggregable (across dimension) percentile approximations.
+
+| configprop:management.metrics.distribution.minimum-expected-value[], configprop:management.metrics.distribution.maximum-expected-value[]
+| Publish fewer histogram buckets by clamping the range of expected values.
+
+| configprop:management.metrics.distribution.percentiles[]
+| Publish percentile values computed in your application
+
+| configprop:management.metrics.distribution.expiry[], configprop:management.metrics.distribution.buffer-length[]
+| Give greater weight to recent samples by accumulating them in ring buffers which rotate after a configurable expiry, with a
+configurable buffer length.
+
+| configprop:management.metrics.distribution.slo[]
+| Publish a cumulative histogram with buckets defined by your service-level objectives.
+|===
+
+For more details on the concepts behind `percentiles-histogram`, `percentiles`, and `slo`, see the {micrometer-concepts-docs}#_histograms_and_percentiles["`Histograms and percentiles`" section] of the Micrometer documentation.
+
+
+

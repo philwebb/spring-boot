@@ -1,0 +1,116 @@
+[[data.sql.jpa-and-spring-data]]
+= JPA and Spring Data JPA
+
+The Java Persistence API is a standard technology that lets you "`map`" objects to relational databases.
+The `spring-boot-starter-data-jpa` POM provides a quick way to get started.
+It provides the following key dependencies:
+
+* Hibernate: One of the most popular JPA implementations.
+* Spring Data JPA: Helps you to implement JPA-based repositories.
+* Spring ORM: Core ORM support from the Spring Framework.
+
+TIP: We do not go into too many details of JPA or {spring-data}[Spring Data] here.
+You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"] guide from https://spring.io and read the {spring-data-jpa}[Spring Data JPA] and https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
+
+
+
+[[data.sql.jpa-and-spring-data.entity-classes]]
+== Entity Classes
+Traditionally, JPA "`Entity`" classes are specified in a `persistence.xml` file.
+With Spring Boot, this file is not necessary and "`Entity Scanning`" is used instead.
+By default, all packages below your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) are searched.
+
+Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
+A typical entity class resembles the following example:
+
+include::code:City[]
+
+TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
+See the "`<<howto#howto.data-access.separate-entity-definitions-from-spring-configuration>>`" how-to.
+
+
+
+[[data.sql.jpa-and-spring-data.repositories]]
+== Spring Data JPA Repositories
+{spring-data-jpa}[Spring Data JPA] repositories are interfaces that you can define to access data.
+JPA queries are created automatically from your method names.
+For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
+
+For more complex queries, you can annotate your method with Spring Data's {spring-data-jpa-api}/repository/Query.html[`Query`] annotation.
+
+Spring Data repositories usually extend from the {spring-data-commons-api}/repository/Repository.html[`Repository`] or {spring-data-commons-api}/repository/CrudRepository.html[`CrudRepository`] interfaces.
+If you use auto-configuration, repositories are searched from the package containing your main configuration class (the one annotated with `@EnableAutoConfiguration` or `@SpringBootApplication`) down.
+
+The following example shows a typical Spring Data repository interface definition:
+
+include::code:CityRepository[]
+
+Spring Data JPA repositories support three different modes of bootstrapping: default, deferred, and lazy.
+To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.repositories.bootstrap-mode[] property to `deferred` or `lazy` respectively.
+When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
+If more than one exists, the one named `applicationTaskExecutor` will be used.
+
+[NOTE]
+====
+When using deferred or lazy bootstrapping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+You can use `SmartInitializingSingleton` to invoke any initialization that requires the JPA infrastructure.
+For JPA components (such as converters) that are created as Spring beans, use `ObjectProvider` to delay the resolution of dependencies, if any.
+====
+
+TIP: We have barely scratched the surface of Spring Data JPA.
+For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference documentation].
+
+
+
+[[data.sql.jpa-and-spring-data.envers-repositories]]
+== Spring Data Envers Repositories
+If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
+
+To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as shown in the following example:
+
+include::code:CountryRepository[]
+
+NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
+
+
+
+[[data.sql.jpa-and-spring-data.creating-and-dropping]]
+== Creating and Dropping JPA Databases
+By default, JPA databases are automatically created *only* if you use an embedded database (H2, HSQL, or Derby).
+You can explicitly configure JPA settings by using `+spring.jpa.*+` properties.
+For example, to create and drop tables you can add the following line to your `application.properties`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  jpa:
+	    hibernate.ddl-auto: "create-drop"
+----
+
+NOTE: Hibernate's own internal property name for this (if you happen to remember it better) is `hibernate.hbm2ddl.auto`.
+You can set it, along with other Hibernate native properties, by using `+spring.jpa.properties.*+` (the prefix is stripped before adding them to the entity manager).
+The following line shows an example of setting JPA properties for Hibernate:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  jpa:
+	    properties:
+	      hibernate:
+	        "globally_quoted_identifiers": "true"
+----
+
+The line in the preceding example passes a value of `true` for the `hibernate.globally_quoted_identifiers` property to the Hibernate entity manager.
+
+By default, the DDL execution (or validation) is deferred until the `ApplicationContext` has started.
+There is also a `spring.jpa.generate-ddl` flag, but it is not used if Hibernate auto-configuration is active, because the `ddl-auto` settings are more fine-grained.
+
+
+
+[[data.sql.jpa-and-spring-data.open-entity-manager-in-view]]
+== Open EntityManager in View
+If you are running a web application, Spring Boot by default registers {spring-framework-api}/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`] to apply the "`Open EntityManager in View`" pattern, to allow for lazy loading in web views.
+If you do not want this behavior, you should set `spring.jpa.open-in-view` to `false` in your `application.properties`.
+
+
+

@@ -1,0 +1,72 @@
+[[features.logging.logback-extensions]]
+= Logback Extensions
+
+Spring Boot includes a number of extensions to Logback that can help with advanced configuration.
+You can use these extensions in your `logback-spring.xml` configuration file.
+
+NOTE: Because the standard `logback.xml` configuration file is loaded too early, you cannot use extensions in it.
+You need to either use `logback-spring.xml` or define a configprop:logging.config[] property.
+
+WARNING: The extensions cannot be used with Logback's https://logback.qos.ch/manual/configuration.html#autoScan[configuration scanning].
+If you attempt to do so, making changes to the configuration file results in an error similar to one of the following being logged:
+
+[indent=0]
+----
+	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProperty], current ElementPath is [[configuration][springProperty]]
+	ERROR in ch.qos.logback.core.joran.spi.Interpreter@4:71 - no applicable action for [springProfile], current ElementPath is [[configuration][springProfile]]
+----
+
+
+
+[[features.logging.logback-extensions.profile-specific]]
+== Profile-specific Configuration
+The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
+Profile sections are supported anywhere within the `<configuration>` element.
+Use the `name` attribute to specify which profile accepts the configuration.
+The `<springProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
+A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
+Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
+The following listing shows three sample profiles:
+
+[source,xml,subs="verbatim",indent=0]
+----
+	<springProfile name="staging">
+		<!-- configuration to be enabled when the "staging" profile is active -->
+	</springProfile>
+
+	<springProfile name="dev | staging">
+		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+	</springProfile>
+
+	<springProfile name="!production">
+		<!-- configuration to be enabled when the "production" profile is not active -->
+	</springProfile>
+----
+
+
+
+[[features.logging.logback-extensions.environment-properties]]
+== Environment Properties
+The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
+Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.
+The tag works in a similar way to Logback's standard `<property>` tag.
+However, rather than specifying a direct `value`, you specify the `source` of the property (from the `Environment`).
+If you need to store the property somewhere other than in `local` scope, you can use the `scope` attribute.
+If you need a fallback value (in case the property is not set in the `Environment`), you can use the `defaultValue` attribute.
+The following example shows how to expose properties for use within Logback:
+
+[source,xml,subs="verbatim",indent=0]
+----
+	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
+			defaultValue="localhost"/>
+	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+		<remoteHost>${fluentHost}</remoteHost>
+		...
+	</appender>
+----
+
+NOTE: The `source` must be specified in kebab case (such as `my.property-name`).
+However, properties can be added to the `Environment` by using the relaxed rules.
+
+
+

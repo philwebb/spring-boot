@@ -1,0 +1,17 @@
+[[howto.data-access.configure-hibernate-second-level-caching]]
+= Configure Hibernate Second-Level Caching
+
+Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
+Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
+
+To do this with JCache, first make sure that `org.hibernate.orm:hibernate-jcache` is available on the classpath.
+Then, add a `HibernatePropertiesCustomizer` bean as shown in the following example:
+
+include::code:MyHibernateSecondLevelCacheConfiguration[]
+
+This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
+It is also possible to use separate `CacheManager` instances.
+For details, see {hibernate-docs}#caching-provider-jcache[the Hibernate user guide].
+
+
+

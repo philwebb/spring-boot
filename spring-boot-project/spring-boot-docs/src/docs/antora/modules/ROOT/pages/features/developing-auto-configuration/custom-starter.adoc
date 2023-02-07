@@ -1,0 +1,131 @@
+[[features.developing-auto-configuration.custom-starter]]
+= Creating Your Own Starter
+
+A typical Spring Boot starter contains code to auto-configure and customize the infrastructure of a given technology, let's call that "acme".
+To make it easily extensible, a number of configuration keys in a dedicated namespace can be exposed to the environment.
+Finally, a single "starter" dependency is provided to help users get started as easily as possible.
+
+Concretely, a custom starter can contain the following:
+
+* The `autoconfigure` module that contains the auto-configuration code for "acme".
+* The `starter` module that provides a dependency to the `autoconfigure` module as well as "acme" and any additional dependencies that are typically useful.
+In a nutshell, adding the starter should provide everything needed to start using that library.
+
+This separation in two modules is in no way necessary.
+If "acme" has several flavors, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
+Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
+At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
+
+If the auto-configuration is relatively straightforward and does not have optional features, merging the two modules in the starter is definitely an option.
+
+
+
+[[features.developing-auto-configuration.custom-starter.naming]]
+== Naming
+You should make sure to provide a proper namespace for your starter.
+Do not start your module names with `spring-boot`, even if you use a different Maven `groupId`.
+We may offer official support for the thing you auto-configure in the future.
+
+As a rule of thumb, you should name a combined module after the starter.
+For example, assume that you are creating a starter for "acme" and that you name the auto-configure module `acme-spring-boot` and the starter `acme-spring-boot-starter`.
+If you only have one module that combines the two, name it `acme-spring-boot-starter`.
+
+
+
+[[features.developing-auto-configuration.custom-starter.configuration-keys]]
+== Configuration keys
+If your starter provides configuration keys, use a unique namespace for them.
+In particular, do not include your keys in the namespaces that Spring Boot uses (such as `server`, `management`, `spring`, and so on).
+If you use the same namespace, we may modify these namespaces in the future in ways that break your modules.
+As a rule of thumb, prefix all your keys with a namespace that you own (for example `acme`).
+
+Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
+
+include::code:AcmeProperties[]
+
+NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+
+Here are some rules we follow internally to make sure descriptions are consistent:
+
+* Do not start the description by "The" or "A".
+* For `boolean` types, start the description with "Whether" or "Enable".
+* For collection-based types, start the description with "Comma-separated list"
+* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
+* Do not provide the default value in the description unless it has to be determined at runtime.
+
+Make sure to <<configuration-metadata#appendix.configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
+You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
+Using your own starter in a compatible IDE is also a good idea to validate that quality of the metadata.
+
+
+
+[[features.developing-auto-configuration.custom-starter.autoconfigure-module]]
+== The "`autoconfigure`" Module
+The `autoconfigure` module contains everything that is necessary to get started with the library.
+It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
+
+TIP: You should mark the dependencies to the library as optional so that you can include the `autoconfigure` module in your projects more easily.
+If you do it that way, the library is not provided and, by default, Spring Boot backs off.
+
+Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
+If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
+
+When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-autoconfigure-processor</artifactId>
+		<optional>true</optional>
+	</dependency>
+----
+
+If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the fat jar:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-autoconfigure-processor</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+	}
+----
+
+
+
+[[features.developing-auto-configuration.custom-starter.starter-module]]
+== Starter Module
+The starter is really an empty jar.
+Its only purpose is to provide the necessary dependencies to work with the library.
+You can think of it as an opinionated view of what is required to get started.
+
+Do not make assumptions about the project in which your starter is added.
+If the library you are auto-configuring typically requires other starters, mention them as well.
+Providing a proper set of _default_ dependencies may be hard if the number of optional dependencies is high, as you should avoid including dependencies that are unnecessary for a typical usage of the library.
+In other words, you should not include optional dependencies.
+
+NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (there is no need to add it if your starter relies on another starter).
+If a project is created with only your custom starter, Spring Boot's core features will be honoured by the presence of the core starter.

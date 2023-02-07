@@ -1,0 +1,7 @@
+[[features.testing.spring-boot-applications.tracing]]
+= Using Tracing
+
+Regardless of your classpath, tracing is not auto-configured when using `@SpringBootTest`.
+
+If you need tracing as part of an integration test, annotate it with `@AutoConfigureObservability`.
+

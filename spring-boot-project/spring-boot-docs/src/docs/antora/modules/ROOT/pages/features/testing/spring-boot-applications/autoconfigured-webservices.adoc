@@ -1,0 +1,35 @@
+[[features.testing.spring-boot-applications.autoconfigured-webservices]]
+= Auto-configured Spring Web Services Tests
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.client]]
+== Auto-configured Spring Web Services Client Tests
+You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
+By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>".)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceClientTest` annotation in use:
+
+include::code:MyWebServiceClientTests[]
+
+
+
+[[features.testing.spring-boot-applications.autoconfigured-webservices.server]]
+== Auto-configured Spring Web Services Server Tests
+You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
+By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
+(For more about using Web Services with Spring Boot, see "<<io#io.webservices>>".)
+
+
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@WebServiceServerTest` annotation in use:
+
+include::code:MyWebServiceServerTests[]
+
+
+

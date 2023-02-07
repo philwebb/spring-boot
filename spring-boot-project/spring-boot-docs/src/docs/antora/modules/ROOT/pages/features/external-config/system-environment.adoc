@@ -1,0 +1,11 @@
+[[features.external-config.system-environment]]
+= Configuring System Environment Properties
+
+Spring Boot supports setting a prefix for environment properties.
+This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.
+The prefix for system environment properties can be set directly on `SpringApplication`.
+
+For example, if you set the prefix to `input`, a property such as `remote.timeout` will also be resolved as `input.remote.timeout` in the system environment.
+
+
+

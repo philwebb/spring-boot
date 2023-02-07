@@ -1,0 +1,17 @@
+[[howto.webserver.enable-tomcat-mbean-registry]]
+= Enable Tomcat's MBean Registry
+
+Embedded Tomcat's MBean registry is disabled by default.
+This minimizes Tomcat's memory footprint.
+If you want to use Tomcat's MBeans, for example so that they can be used by Micrometer to expose metrics, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+----
+
+
+

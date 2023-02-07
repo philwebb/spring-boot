@@ -1,0 +1,37 @@
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-jpa]]
+= Auto-configured Data JPA Tests
+
+You can use the `@DataJpaTest` annotation to test JPA applications.
+By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
+If an embedded database is available on the classpath, it configures one as well.
+SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
+This can be disabled using the `showSql` attribute of the annotation.
+
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+By default, data JPA tests are transactional and roll back at the end of each test.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
+
+include::code:MyNonTransactionalTests[]
+
+Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
+
+TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
+When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.
+
+A `JdbcTemplate` is also available if you need that.
+The following example shows the `@DataJpaTest` annotation in use:
+
+include::code:withoutdb/MyRepositoryTests[]
+
+In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
+If, however, you prefer to run tests against a real database you can use the `@AutoConfigureTestDatabase` annotation, as shown in the following example:
+
+include::code:withdb/MyRepositoryTests[]
+
+
+

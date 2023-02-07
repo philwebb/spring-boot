@@ -1,0 +1,25 @@
+[[features.logging.log-format]]
+= Log Format
+
+The default log output from Spring Boot resembles the following example:
+
+[indent=0]
+----
+include:../:{logging-format-output}[]
+----
+
+The following items are output:
+
+* Date and Time: Millisecond precision and easily sortable.
+* Log Level: `ERROR`, `WARN`, `INFO`, `DEBUG`, or `TRACE`.
+* Process ID.
+* A `---` separator to distinguish the start of actual log messages.
+* Thread name: Enclosed in square brackets (may be truncated for console output).
+* Logger name: This is usually the source class name (often abbreviated).
+* The log message.
+
+NOTE: Logback does not have a `FATAL` level.
+It is mapped to `ERROR`.
+
+
+

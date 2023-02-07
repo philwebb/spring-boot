@@ -1,0 +1,44 @@
+[[data.nosql.redis]]
+= Redis
+
+https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
+Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
+
+There is a `spring-boot-starter-data-redis` "`Starter`" for collecting the dependencies in a convenient way.
+By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
+That starter handles both traditional and reactive applications.
+
+TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
+
+
+
+[[data.nosql.redis.connecting]]
+== Connecting to Redis
+You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
+The following listing shows an example of such a bean:
+
+include::code:MyBean[]
+
+By default, the instance tries to connect to a Redis server at `localhost:6379`.
+You can specify custom connection details using `spring.data.redis.*` properties, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      host: "localhost"
+	      port: 6379
+	      database: 0
+	      username: "user"
+	      password: "secret"
+----
+
+TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
+`ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
+If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
+Alternatively, you can register a bean of type `RedisStandaloneConfiguration`, `RedisSentinelConfiguration`, or `RedisClusterConfiguration` to take full control over the configuration.
+
+If you add your own `@Bean` of any of the auto-configured types, it replaces the default (except in the case of `RedisTemplate`, when the exclusion is based on the bean name, `redisTemplate`, not its type).
+
+By default, a pooled connection factory is auto-configured if `commons-pool2` is on the classpath.

@@ -1,0 +1,39 @@
+[[features.external-config.typesafe-configuration-properties.java-bean-binding]]
+= JavaBean Properties Binding
+
+It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
+
+include::code:MyProperties[]
+
+The preceding POJO defines the following properties:
+
+* `my.service.enabled`, with a value of `false` by default.
+* `my.service.remote-address`, with a type that can be coerced from `String`.
+* `my.service.security.username`, with a nested "security" object whose name is determined by the name of the property.
+  In particular, the type is not used at all there and could have been `SecurityProperties`.
+* `my.service.security.password`.
+* `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
+
+NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
+
+[NOTE]
+====
+Such arrangement relies on a default empty constructor and getters and setters are usually mandatory, since binding is through standard Java Beans property descriptors, just like in Spring MVC.
+A setter may be omitted in the following cases:
+
+* Maps, as long as they are initialized, need a getter but not necessarily a setter, since they can be mutated by the binder.
+* Collections and arrays can be accessed either through an index (typically with YAML) or by using a single comma-separated value (properties).
+  In the latter case, a setter is mandatory.
+  We recommend to always add a setter for such types.
+  If you initialize a collection, make sure it is not immutable (as in the preceding example).
+* If nested POJO properties are initialized (like the `Security` field in the preceding example), a setter is not required.
+  If you want the binder to create the instance on the fly by using its default constructor, you need a setter.
+
+Some people use Project Lombok to add getters and setters automatically.
+Make sure that Lombok does not generate any particular constructor for such a type, as it is used automatically by the container to instantiate the object.
+
+Finally, only standard Java Bean properties are considered and binding on static properties is not supported.
+====
+
+
+

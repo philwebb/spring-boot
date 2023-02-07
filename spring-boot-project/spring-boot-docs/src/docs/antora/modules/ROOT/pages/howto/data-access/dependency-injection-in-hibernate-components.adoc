@@ -1,0 +1,9 @@
+[[howto.data-access.dependency-injection-in-hibernate-components]]
+= Use Dependency Injection in Hibernate Components
+
+By default, Spring Boot registers a `BeanContainer` implementation that uses the `BeanFactory` so that converters and entity listeners can use regular dependency injection.
+
+You can disable or tune this behavior by registering a `HibernatePropertiesCustomizer` that removes or changes the `hibernate.resource.beans.container` property.
+
+
+

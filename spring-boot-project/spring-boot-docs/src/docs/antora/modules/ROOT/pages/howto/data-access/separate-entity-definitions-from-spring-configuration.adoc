@@ -1,0 +1,10 @@
+[[howto.data-access.separate-entity-definitions-from-spring-configuration]]
+= Separate @Entity Definitions from Spring Configuration
+
+Spring Boot tries to guess the location of your `@Entity` definitions, based on the `@EnableAutoConfiguration` it finds.
+To get more control, you can use the `@EntityScan` annotation, as shown in the following example:
+
+include::code:MyApplication[]
+
+
+

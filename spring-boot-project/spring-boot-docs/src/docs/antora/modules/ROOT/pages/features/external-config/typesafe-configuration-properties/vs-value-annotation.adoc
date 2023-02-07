@@ -1,0 +1,39 @@
+[[features.external-config.typesafe-configuration-properties.vs-value-annotation]]
+= @ConfigurationProperties vs. @Value
+
+The `@Value` annotation is a core container feature, and it does not provide the same features as type-safe configuration properties.
+The following table summarizes the features that are supported by `@ConfigurationProperties` and `@Value`:
+
+[cols="4,2,2"]
+|===
+| Feature |`@ConfigurationProperties` |`@Value`
+
+| <<features#features.external-config.typesafe-configuration-properties.relaxed-binding,Relaxed binding>>
+| Yes
+| Limited (see <<features#features.external-config.typesafe-configuration-properties.vs-value-annotation.note,note below>>)
+
+| <<configuration-metadata#appendix.configuration-metadata,Meta-data support>>
+| Yes
+| No
+
+| `SpEL` evaluation
+| No
+| Yes
+|===
+
+[[features.external-config.typesafe-configuration-properties.vs-value-annotation.note]]
+[NOTE]
+====
+If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+
+For example, `@Value("${demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
+If you used `@Value("${demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+====
+
+If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
+Doing so will provide you with structured, type-safe object that you can inject into your own beans.
+
+`SpEL` expressions from  <<features#features.external-config.files,application property files>> are not processed at time of parsing these files and populating the environment.
+However, it is possible to write a `SpEL` expression in `@Value`.
+If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed through `@Value`.

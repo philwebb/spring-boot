@@ -1,0 +1,84 @@
+[[features.external-config.files]]
+= External Application Properties
+
+Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
+
+. From the classpath
+.. The classpath root
+.. The classpath `/config` package
+. From the current directory
+.. The current directory
+.. The `config/` subdirectory in the current directory
+.. Immediate child directories of the `config/` subdirectory
+
+The list is ordered by precedence (with values from lower items overriding earlier ones).
+Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
+
+If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
+For example, to look for `myproject.properties` and `myproject.yaml` files you can run your application as follows:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myproject.jar --spring.config.name=myproject
+----
+
+You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
+This property accepts a comma-separated list of one or more locations to check.
+
+The following example shows how to specify two distinct files:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myproject.jar --spring.config.location=\
+		optional:classpath:/default.properties,\
+		optional:classpath:/override.properties
+----
+
+TIP: Use the prefix `optional:` if the <<features#features.external-config.files.optional-prefix,locations are optional>> and you do not mind if they do not exist.
+
+WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
+They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
+
+If `spring.config.location` contains directories (as opposed to files), they should end in `/`.
+At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
+Files specified in `spring.config.location` are imported directly.
+
+NOTE: Both directory and file location values are also expanded to check for <<features#features.external-config.files.profile-specific,profile-specific files>>.
+For example, if you have a `spring.config.location` of `classpath:myconfig.properties`, you will also find appropriate `classpath:myconfig-<profile>.properties` files are loaded.
+
+In most situations, each configprop:spring.config.location[] item you add will reference a single file or directory.
+Locations are processed in the order that they are defined and later ones can override the values of earlier ones.
+
+[[features.external-config.files.location-groups]]
+If you have a complex location setup, and you use profile-specific configuration files, you may need to provide further hints so that Spring Boot knows how they should be grouped.
+A location group is a collection of locations that are all considered at the same level.
+For example, you might want to group all classpath locations, then all external locations.
+Items within a location group should be separated with `;`.
+See the example in the "`<<features#features.external-config.files.profile-specific>>`" section for more details.
+
+Locations configured by using `spring.config.location` replace the default locations.
+For example, if `spring.config.location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
+
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
+
+If you prefer to add additional locations, rather than replacing them, you can use `spring.config.additional-location`.
+Properties loaded from additional locations can override those in the default locations.
+For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
+
+. `optional:classpath:/;optional:classpath:/config/`
+. `optional:file:./;optional:file:./config/;optional:file:./config/*/`
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
+
+This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
+You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
+These default values can then be overridden at runtime with a different file located in one of the custom locations.
+
+NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
+See <<features#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables>> for details.
+
+NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
+
+
+

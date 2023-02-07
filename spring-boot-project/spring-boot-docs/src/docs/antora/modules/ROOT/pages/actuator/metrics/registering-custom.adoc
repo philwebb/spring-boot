@@ -1,0 +1,18 @@
+[[actuator.metrics.registering-custom]]
+= Registering Custom Metrics
+
+To register custom metrics, inject `MeterRegistry` into your component:
+
+include::code:MyBean[]
+
+If your metrics depend on other beans, we recommend that you use a `MeterBinder` to register them:
+
+include::code:MyMeterBinderConfiguration[]
+
+Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
+A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
+
+NOTE: By default, metrics from all `MeterBinder` beans are automatically bound to the Spring-managed `MeterRegistry`.
+
+
+

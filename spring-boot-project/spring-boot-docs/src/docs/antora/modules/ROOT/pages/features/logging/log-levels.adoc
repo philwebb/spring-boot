@@ -1,0 +1,35 @@
+[[features.logging.log-levels]]
+= Log Levels
+
+All the supported logging systems can have the logger levels set in the Spring `Environment` (for example, in `application.properties`) by using `+logging.level.<logger-name>=<level>+` where `level` is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF.
+The `root` logger can be configured by using `logging.level.root`.
+
+The following example shows potential logging settings in `application.properties`:
+
+[source,properties,indent=0,subs="verbatim",configprops,role="primary"]
+.Properties
+----
+	logging.level.root=warn
+	logging.level.org.springframework.web=debug
+	logging.level.org.hibernate=error
+----
+
+[source,properties,indent=0,subs="verbatim",role="secondary"]
+.Yaml
+----
+	logging:
+	  level:
+	    root: "warn"
+	    org.springframework.web: "debug"
+	    org.hibernate: "error"
+----
+
+It is also possible to set logging levels using environment variables.
+For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
+
+NOTE: The above approach will only work for package level logging.
+Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
+If you need to configure logging for a class, you can use <<features#features.external-config.application-json, the `SPRING_APPLICATION_JSON`>> variable.
+
+
+

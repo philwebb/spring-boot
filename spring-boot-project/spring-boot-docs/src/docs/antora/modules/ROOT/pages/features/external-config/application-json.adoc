@@ -1,0 +1,38 @@
+[[features.external-config.application-json]]
+= JSON Application Properties
+
+Environment variables and system properties often have restrictions that mean some property names cannot be used.
+To help with this, Spring Boot allows you to encode a block of properties into a single JSON structure.
+
+When your application starts, any `spring.application.json` or `SPRING_APPLICATION_JSON` properties will be parsed and added to the `Environment`.
+
+For example, the `SPRING_APPLICATION_JSON` property can be supplied on the command line in a UN{asterisk}X shell as an environment variable:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ SPRING_APPLICATION_JSON='{"my":{"name":"test"}}' java -jar myapp.jar
+----
+
+In the preceding example, you end up with `my.name=test` in the Spring `Environment`.
+
+The same JSON can also be provided as a system property:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -Dspring.application.json='{"my":{"name":"test"}}' -jar myapp.jar
+----
+
+Or you could supply the JSON by using a command line argument:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ java -jar myapp.jar --spring.application.json='{"my":{"name":"test"}}'
+----
+
+If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
+
+NOTE: Although `null` values from the JSON will be added to the resulting property source, the `PropertySourcesPropertyResolver` treats `null` properties as missing values.
+This means that the JSON cannot override properties from lower order property sources with a `null` value.
+
+
+

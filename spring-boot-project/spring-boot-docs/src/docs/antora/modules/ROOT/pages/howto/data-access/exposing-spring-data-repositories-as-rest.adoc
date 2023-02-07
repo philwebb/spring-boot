@@ -1,0 +1,14 @@
+[[howto.data-access.exposing-spring-data-repositories-as-rest]]
+= Expose Spring Data Repositories as REST Endpoint
+
+Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
+provided Spring MVC has been enabled for the application.
+
+Spring Boot exposes a set of useful properties (from the `spring.data.rest` namespace) that customize the {spring-data-rest-api}/core/config/RepositoryRestConfiguration.html[`RepositoryRestConfiguration`].
+If you need to provide additional customization, you should use a {spring-data-rest-api}/webmvc/config/RepositoryRestConfigurer.html[`RepositoryRestConfigurer`] bean.
+
+NOTE: If you do not specify any order on your custom `RepositoryRestConfigurer`, it runs after the one Spring Boot uses internally.
+If you need to specify an order, make sure it is higher than 0.
+
+
+

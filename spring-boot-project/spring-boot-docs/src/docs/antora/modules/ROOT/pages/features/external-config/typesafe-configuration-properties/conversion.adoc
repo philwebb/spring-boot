@@ -1,0 +1,106 @@
+[[features.external-config.typesafe-configuration-properties.conversion]]
+= Properties Conversion
+
+Spring Boot attempts to coerce the external application properties to the right type when it binds to the `@ConfigurationProperties` beans.
+If you need custom type conversion, you can provide a `ConversionService` bean (with a bean named `conversionService`) or custom property editors (through a `CustomEditorConfigurer` bean) or custom `Converters` (with bean definitions annotated as `@ConfigurationPropertiesBinding`).
+
+NOTE: As this bean is requested very early during the application lifecycle, make sure to limit the dependencies that your `ConversionService` is using.
+Typically, any dependency that you require may not be fully initialized at creation time.
+You may want to rename your custom `ConversionService` if it is not required for configuration keys coercion and only rely on custom converters qualified with `@ConfigurationPropertiesBinding`.
+
+
+
+[[features.external-config.typesafe-configuration-properties.conversion.durations]]
+== Converting Durations
+Spring Boot has dedicated support for expressing durations.
+If you expose a `java.time.Duration` property, the following formats in application properties are available:
+
+* A regular `long` representation (using milliseconds as the default unit unless a `@DurationUnit` has been specified)
+* The standard ISO-8601 format {java-api}/java/time/Duration.html#parse-java.lang.CharSequence-[used by `java.time.Duration`]
+* A more readable format where the value and the unit are coupled (`10s` means 10 seconds)
+
+Consider the following example:
+
+include::code:javabeanbinding/MyProperties[]
+
+To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
+A read timeout of 500ms can be specified in any of the following form: `500`, `PT0.5S` and `500ms`.
+
+You can also use any of the supported units.
+These are:
+
+* `ns` for nanoseconds
+* `us` for microseconds
+* `ms` for milliseconds
+* `s` for seconds
+* `m` for minutes
+* `h` for hours
+* `d` for days
+
+The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+include::code:constructorbinding/MyProperties[]
+
+
+TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DurationUnit`) if it is not milliseconds.
+Doing so gives a transparent upgrade path while supporting a much richer format.
+
+
+
+[[features.external-config.typesafe-configuration-properties.conversion.periods]]
+== Converting Periods
+In addition to durations, Spring Boot can also work with `java.time.Period` type.
+The following formats can be used in application properties:
+
+* An regular `int` representation (using days as the default unit unless a `@PeriodUnit` has been specified)
+* The standard ISO-8601 format {java-api}/java/time/Period.html#parse-java.lang.CharSequence-[used by `java.time.Period`]
+* A simpler format where the value and the unit pairs are coupled (`1y3d` means 1 year and 3 days)
+
+The following units are supported with the simple format:
+
+* `y` for years
+* `m` for months
+* `w` for weeks
+* `d` for days
+
+NOTE: The `java.time.Period` type never actually stores the number of weeks, it is a shortcut that means "`7 days`".
+
+
+
+[[features.external-config.typesafe-configuration-properties.conversion.data-sizes]]
+== Converting Data Sizes
+Spring Framework has a `DataSize` value type that expresses a size in bytes.
+If you expose a `DataSize` property, the following formats in application properties are available:
+
+* A regular `long` representation (using bytes as the default unit unless a `@DataSizeUnit` has been specified)
+* A more readable format where the value and the unit are coupled (`10MB` means 10 megabytes)
+
+Consider the following example:
+
+include::code:javabeanbinding/MyProperties[]
+
+To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
+A size threshold of 256 bytes can be specified as `256` or `256B`.
+
+You can also use any of the supported units.
+These are:
+
+* `B` for bytes
+* `KB` for kilobytes
+* `MB` for megabytes
+* `GB` for gigabytes
+* `TB` for terabytes
+
+The default unit is bytes and can be overridden using `@DataSizeUnit` as illustrated in the sample above.
+
+If you prefer to use constructor binding, the same properties can be exposed, as shown in the following example:
+
+include::code:constructorbinding/MyProperties[]
+
+TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it is not bytes.
+Doing so gives a transparent upgrade path while supporting a much richer format.
+
+
+

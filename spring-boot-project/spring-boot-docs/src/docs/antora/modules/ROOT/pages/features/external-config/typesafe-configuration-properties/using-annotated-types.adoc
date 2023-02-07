@@ -1,0 +1,26 @@
+[[features.external-config.typesafe-configuration-properties.using-annotated-types]]
+= Using @ConfigurationProperties-annotated Types
+
+This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim"]
+----
+	my:
+	  service:
+	    remote-address: 192.168.1.1
+	    security:
+	      username: "admin"
+	      roles:
+	      - "USER"
+	      - "ADMIN"
+----
+
+To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
+
+include::code:MyService[]
+
+TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
+See the <<configuration-metadata#appendix.configuration-metadata,appendix>> for details.
+
+
+

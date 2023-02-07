@@ -1,0 +1,141 @@
+[[features.logging.custom-log-configuration]]
+= Custom Log Configuration
+
+The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: configprop:logging.config[].
+
+You can force Spring Boot to use a particular logging system by using the `org.springframework.boot.logging.LoggingSystem` system property.
+The value should be the fully qualified class name of a `LoggingSystem` implementation.
+You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
+
+NOTE: Since logging is initialized *before* the `ApplicationContext` is created, it is not possible to control logging from `@PropertySources` in Spring `@Configuration` files.
+The only way to change the logging system or disable it entirely is through System properties.
+
+Depending on your logging system, the following files are loaded:
+
+|===
+| Logging System | Customization
+
+| Logback
+| `logback-spring.xml`, `logback-spring.groovy`, `logback.xml`, or `logback.groovy`
+
+| Log4j2
+| `log4j2-spring.xml` or `log4j2.xml`
+
+| JDK (Java Util Logging)
+| `logging.properties`
+|===
+
+NOTE: When possible, we recommend that you use the `-spring` variants for your logging configuration (for example, `logback-spring.xml` rather than `logback.xml`).
+If you use standard configuration locations, Spring cannot completely control log initialization.
+
+WARNING: There are known classloading issues with Java Util Logging that cause problems when running from an 'executable jar'.
+We recommend that you avoid it when running from an 'executable jar' if at all possible.
+
+To help with the customization, some other properties are transferred from the Spring `Environment` to System properties, as described in the following table:
+
+|===
+| Spring Environment | System Property | Comments
+
+| configprop:logging.exception-conversion-word[]
+| `LOG_EXCEPTION_CONVERSION_WORD`
+| The conversion word used when logging exceptions.
+
+| configprop:logging.file.name[]
+| `LOG_FILE`
+| If defined, it is used in the default log configuration.
+
+| configprop:logging.file.path[]
+| `LOG_PATH`
+| If defined, it is used in the default log configuration.
+
+| configprop:logging.pattern.console[]
+| `CONSOLE_LOG_PATTERN`
+| The log pattern to use on the console (stdout).
+
+| configprop:logging.pattern.dateformat[]
+| `LOG_DATEFORMAT_PATTERN`
+| Appender pattern for log date format.
+
+| configprop:logging.charset.console[]
+| `CONSOLE_LOG_CHARSET`
+| The charset to use for console logging.
+
+| configprop:logging.threshold.console[]
+| `CONSOLE_LOG_THRESHOLD`
+| The log level threshold to use for console logging.
+
+| configprop:logging.pattern.file[]
+| `FILE_LOG_PATTERN`
+| The log pattern to use in a file (if `LOG_FILE` is enabled).
+
+| configprop:logging.charset.file[]
+| `FILE_LOG_CHARSET`
+| The charset to use for file logging (if `LOG_FILE` is enabled).
+
+| configprop:logging.threshold.file[]
+| `FILE_LOG_THRESHOLD`
+| The log level threshold to use for file logging.
+
+| configprop:logging.pattern.level[]
+| `LOG_LEVEL_PATTERN`
+| The format to use when rendering the log level (default `%5p`).
+
+| `PID`
+| `PID`
+| The current process ID (discovered if possible and when not already defined as an OS environment variable).
+|===
+
+If you use Logback, the following properties are also transferred:
+
+|===
+| Spring Environment | System Property | Comments
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| `LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN`
+| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| `LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START`
+| Whether to clean the archive log files on startup.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| `LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE`
+| Maximum log file size.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| `LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP`
+| Total size of log backups to be kept.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| `LOGBACK_ROLLINGPOLICY_MAX_HISTORY`
+| Maximum number of archive log files to keep.
+|===
+
+
+All the supported logging systems can consult System properties when parsing their configuration files.
+See the default configurations in `spring-boot.jar` for examples:
+
+* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
+* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
+* {spring-boot-code}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
+
+[TIP]
+====
+If you want to use a placeholder in a logging property, you should use <<features#features.external-config.files.property-placeholders,Spring Boot's syntax>> and not the syntax of the underlying framework.
+Notably, if you use Logback, you should use `:` as the delimiter between a property name and its default value and not use `:-`.
+====
+
+[TIP]
+====
+You can add MDC and other ad-hoc content to log lines by overriding only the `LOG_LEVEL_PATTERN` (or `logging.pattern.level` with Logback).
+For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the default log format contains an MDC entry for "user", if it exists, as shown in the following example.
+
+[indent=0]
+----
+	2019-08-30 12:30:04.031 user:someone INFO 22174 --- [  nio-8080-exec-0] demo.Controller
+	Handling authenticated request
+----
+====
+
+
+

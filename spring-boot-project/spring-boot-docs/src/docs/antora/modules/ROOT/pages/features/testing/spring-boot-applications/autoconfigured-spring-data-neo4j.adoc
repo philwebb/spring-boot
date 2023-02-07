@@ -1,0 +1,26 @@
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-neo4j]]
+= Auto-configured Data Neo4j Tests
+
+You can use `@DataNeo4jTest` to test Neo4j applications.
+By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using Neo4J with Spring Boot, see "<<data#data.nosql.neo4j>>".)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows a typical setup for using Neo4J tests in Spring Boot:
+
+include::code:propagation/MyDataNeo4jTests[]
+
+By default, Data Neo4j tests are transactional and roll back at the end of each test.
+See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
+If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
+
+include::code:nopropagation/MyDataNeo4jTests[]
+
+NOTE: Transactional tests are not supported with reactive access.
+If you are using this style, you must configure `@DataNeo4jTest` tests as described above.
+
+
+

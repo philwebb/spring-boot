@@ -1,0 +1,30 @@
+[[features.developing-auto-configuration.locating-auto-configuration-candidates]]
+= Locating Auto-configuration Candidates
+
+Spring Boot checks for the presence of a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` file within your published jar.
+The file should list your configuration classes, with one class name per line, as shown in the following example:
+
+[indent=0]
+----
+    com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+----
+
+TIP: You can add comments to the imports file using the `#` character.
+
+NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
+Make sure that they are defined in a specific package space and that they are never the target of component scanning.
+Furthermore, auto-configuration classes should not enable component scanning to find additional components.
+Specific `@Import` annotations should be used instead.
+
+If your configuration needs to be applied in a specific order, you can use the `before`, `beforeName`, `after` and `afterName` attributes on the {spring-boot-autoconfigure-module-code}/AutoConfiguration.java[`@AutoConfiguration`] annotation or the dedicated {spring-boot-autoconfigure-module-code}/AutoConfigureBefore.java[`@AutoConfigureBefore`] and {spring-boot-autoconfigure-module-code}/AutoConfigureAfter.java[`@AutoConfigureAfter`] annotations.
+For example, if you provide web-specific configuration, your class may need to be applied after `WebMvcAutoConfiguration`.
+
+If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
+That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
+
+As with standard `@Configuration` classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
+The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any `@DependsOn` relationships.
+
+
+

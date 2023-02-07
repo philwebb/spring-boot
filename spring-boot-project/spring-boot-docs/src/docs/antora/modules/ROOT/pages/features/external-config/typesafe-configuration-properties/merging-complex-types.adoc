@@ -1,0 +1,92 @@
+[[features.external-config.typesafe-configuration-properties.merging-complex-types]]
+= Merging Complex Types
+
+When lists are configured in more than one place, overriding works by replacing the entire list.
+
+For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
+The following example exposes a list of `MyPojo` objects from `MyProperties`:
+
+include::code:list/MyProperties[]
+
+Consider the following configuration:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	my:
+	  list:
+	  - name: "my name"
+	    description: "my description"
+	---
+	spring:
+	  config:
+	    activate:
+	      on-profile: "dev"
+	my:
+	  list:
+	  - name: "my another name"
+----
+
+If the `dev` profile is not active, `MyProperties.list` contains one `MyPojo` entry, as previously defined.
+If the `dev` profile is enabled, however, the `list` _still_ contains only one entry (with a name of `my another name` and a description of `null`).
+This configuration _does not_ add a second `MyPojo` instance to the list, and it does not merge the items.
+
+When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
+Consider the following example:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	my:
+	  list:
+	  - name: "my name"
+	    description: "my description"
+	  - name: "another name"
+	    description: "another description"
+	---
+	spring:
+	  config:
+	    activate:
+	      on-profile: "dev"
+	my:
+	  list:
+	  - name: "my another name"
+----
+
+In the preceding example, if the `dev` profile is active, `MyProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
+For YAML, both comma-separated lists and YAML lists can be used for completely overriding the contents of the list.
+
+For `Map` properties, you can bind with property values drawn from multiple sources.
+However, for the same property in multiple sources, the one with the highest priority is used.
+The following example exposes a `Map<String, MyPojo>` from `MyProperties`:
+
+include::code:map/MyProperties[]
+
+Consider the following configuration:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	my:
+	  map:
+	    key1:
+	      name: "my name 1"
+	      description: "my description 1"
+	---
+	spring:
+	  config:
+	    activate:
+	      on-profile: "dev"
+	my:
+	  map:
+	    key1:
+	      name: "dev name 1"
+	    key2:
+	      name: "dev name 2"
+	      description: "dev description 2"
+----
+
+If the `dev` profile is not active, `MyProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).
+If the `dev` profile is enabled, however, `map` contains two entries with keys `key1` (with a name of `dev name 1` and a description of `my description 1`) and `key2` (with a name of `dev name 2` and a description of `dev description 2`).
+
+NOTE: The preceding merging rules apply to properties from all property sources, and not just files.
+
+
+

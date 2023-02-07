@@ -1,0 +1,18 @@
+[[features.spring-application.command-line-runner]]
+= Using the ApplicationRunner or CommandLineRunner
+
+If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
+Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
+
+NOTE: This contract is well suited for tasks that should run after application startup but before it starts accepting traffic.
+
+
+The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
+The following example shows a `CommandLineRunner` with a `run` method:
+
+include::code:MyCommandLineRunner[]
+
+If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
+
+
+

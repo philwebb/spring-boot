@@ -1,0 +1,17 @@
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-redis]]
+= Auto-configured Data Redis Tests
+
+You can use `@DataRedisTest` to test Redis applications.
+By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using Redis with Spring Boot, see "<<data#data.nosql.redis>>".)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following example shows the `@DataRedisTest` annotation in use:
+
+include::code:MyDataRedisTests[]
+
+
+

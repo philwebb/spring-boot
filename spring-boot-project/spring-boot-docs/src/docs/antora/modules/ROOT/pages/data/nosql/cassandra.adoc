@@ -1,0 +1,68 @@
+[[data.nosql.cassandra]]
+= Cassandra
+
+https://cassandra.apache.org/[Cassandra] is an open source, distributed database management system designed to handle large amounts of data across many commodity servers.
+Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-cassandra[Spring Data Cassandra].
+There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the dependencies in a convenient way.
+
+
+
+[[data.nosql.cassandra.connecting]]
+== Connecting to Cassandra
+You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
+The `spring.cassandra.*` properties can be used to customize the connection.
+Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cassandra:
+	    keyspace-name: "mykeyspace"
+	    contact-points: "cassandrahost1:9042,cassandrahost2:9042"
+	    local-datacenter: "datacenter1"
+----
+
+If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cassandra:
+	    keyspace-name: "mykeyspace"
+	    contact-points: "cassandrahost1,cassandrahost2"
+	    local-datacenter: "datacenter1"
+----
+
+TIP: Those two examples are identical as the port default to `9042`.
+If you need to configure the port, use `spring.cassandra.port`.
+
+[NOTE]
+====
+The Cassandra driver has its own configuration infrastructure that loads an `application.conf` at the root of the classpath.
+
+Spring Boot does not look for such a file by default but can load one using `spring.cassandra.config`.
+If a property is both present in `+spring.cassandra.*+` and the configuration file, the value in `+spring.cassandra.*+` takes precedence.
+
+For more advanced driver customizations, you can register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer`.
+The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
+====
+
+NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
+
+The following code listing shows how to inject a Cassandra bean:
+
+include::code:MyBean[]
+
+If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
+
+
+
+[[data.nosql.cassandra.repositories]]
+== Spring Data Cassandra Repositories
+Spring Data includes basic repository support for Cassandra.
+Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
+
+TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+
+
+

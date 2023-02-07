@@ -1,0 +1,95 @@
+[[data.nosql.mongodb]]
+= MongoDB
+
+https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a JSON-like schema instead of traditional table-based relational data.
+Spring Boot offers several conveniences for working with MongoDB, including the `spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive` "`Starters`".
+
+
+
+[[data.nosql.mongodb.connecting]]
+== Connecting to a MongoDB Database
+To access MongoDB databases, you can inject an auto-configured `org.springframework.data.mongodb.MongoDatabaseFactory`.
+By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
+The following example shows how to connect to a MongoDB database:
+
+include::code:MyBean[]
+
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
+
+The auto-configured `MongoClient` is created using a `MongoClientSettings` bean.
+If you have defined your own `MongoClientSettings`, it will be used without modification and the `spring.data.mongodb` properties will be ignored.
+Otherwise a `MongoClientSettings` will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+In either case, you can declare one or more `MongoClientSettingsBuilderCustomizer` beans to fine-tune the `MongoClientSettings` configuration.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
+You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    mongodb:
+	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+----
+
+Alternatively, you can specify connection details using discrete properties.
+For example, you might declare the following settings in your `application.properties`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    mongodb:
+	      host: "mongoserver1.example.com"
+	      port: 27017
+	      additional-hosts:
+	      - "mongoserver2.example.com:23456"
+	      database: "test"
+	      username: "user"
+	      password: "secret"
+----
+
+[TIP]
+====
+If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
+You could delete this line from the example shown earlier.
+
+You can also specify the port as part of the host address by using the `host:port` syntax.
+This format should be used if you need to change the port of an `additional-hosts` entry.
+====
+
+TIP: If you do not use Spring Data MongoDB, you can inject a `MongoClient` bean instead of using `MongoDatabaseFactory`.
+If you want to take complete control of establishing the MongoDB connection, you can also declare your own `MongoDatabaseFactory` or `MongoClient` bean.
+
+NOTE: If you are using the reactive driver, Netty is required for SSL.
+The auto-configuration configures this factory automatically if Netty is available and the factory to use has not been customized already.
+
+
+
+[[data.nosql.mongodb.template]]
+== MongoTemplate
+{spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
+As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
+
+include::code:MyBean[]
+
+See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
+
+
+
+[[data.nosql.mongodb.repositories]]
+== Spring Data MongoDB Repositories
+Spring Data includes repository support for MongoDB.
+As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.
+
+In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
+You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
+
+include::code:CityRepository[]
+
+TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
+
+TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {spring-data-mongodb}[reference documentation].
+
+
+

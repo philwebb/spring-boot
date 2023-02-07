@@ -1,0 +1,33 @@
+[[actuator.endpoints.enabling]]
+= Enabling Endpoints
+
+By default, all endpoints except for `shutdown` are enabled.
+To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
+The following example enables the `shutdown` endpoint:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoint:
+	    shutdown:
+	      enabled: true
+----
+
+If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
+The following example enables the `info` endpoint and disables all other endpoints:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    enabled-by-default: false
+	  endpoint:
+	    info:
+	      enabled: true
+----
+
+NOTE: Disabled endpoints are removed entirely from the application context.
+If you want to change only the technologies over which an endpoint is exposed, use the <<actuator#actuator.endpoints.exposing, `include` and `exclude` properties>> instead.
+
+
+

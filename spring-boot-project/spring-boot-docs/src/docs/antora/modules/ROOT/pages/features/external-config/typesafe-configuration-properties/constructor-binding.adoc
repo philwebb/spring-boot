@@ -1,0 +1,36 @@
+[[features.external-config.typesafe-configuration-properties.constructor-binding]]
+= Constructor Binding
+
+The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
+
+include::code:MyProperties[]
+
+In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
+This means that the binder will find a constructor with the parameters that you wish to have bound.
+If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
+To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
+Constructor binding can be used with records.
+Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
+
+Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
+
+Default values can be specified using `@DefaultValue` on constructor parameters and record components.
+The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
+
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty `@DefaultValue` annotation:
+
+include::code:nonnull/MyProperties[tag=*]
+
+NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
+You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
+
+NOTE: To use constructor binding in a native image the class must be compiled with `-parameters`.
+This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
+
+NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
+As such, it is not well-suited to configuration property injection.
+For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.
+
+
+

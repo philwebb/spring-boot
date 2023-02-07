@@ -1,0 +1,15 @@
+[[features.spring-application.fluent-builder-api]]
+= Fluent Builder API
+
+If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a "`fluent`" builder API, you can use the `SpringApplicationBuilder`.
+
+The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
+
+include::code:MyApplication[tag=*]
+
+NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
+For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
+See the {spring-boot-module-api}/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder` Javadoc] for full details.
+
+
+

@@ -1,0 +1,43 @@
+[[howto.data-access.configure-two-datasources]]
+= Configure Two DataSources
+
+If you need to configure multiple data sources, you can apply the same tricks that are described in the previous section.
+You must, however, mark one of the `DataSource` instances as `@Primary`, because various auto-configurations down the road expect to be able to get one by type.
+
+If you create your own `DataSource`, the auto-configuration backs off.
+In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
+
+include::code:MyDataSourcesConfiguration[]
+
+TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
+
+Both data sources are also bound for advanced customizations.
+For instance, you could configure them as follows:
+
+[source,yaml,indent=0,subs="verbatim",configblocks]
+----
+	app:
+	  datasource:
+	    first:
+	      url: "jdbc:mysql://localhost/first"
+	      username: "dbuser"
+	      password: "dbpass"
+	      configuration:
+	        maximum-pool-size: 30
+
+	    second:
+	      url: "jdbc:mysql://localhost/second"
+	      username: "dbuser"
+	      password: "dbpass"
+	      max-total: 30
+----
+
+You can apply the same concept to the secondary `DataSource` as well, as shown in the following example:
+
+include::code:MyCompleteDataSourcesConfiguration[]
+
+The preceding example configures two data sources on custom namespaces with the same logic as Spring Boot would use in auto-configuration.
+Note that each `configuration` sub namespace provides advanced settings based on the chosen implementation.
+
+
+

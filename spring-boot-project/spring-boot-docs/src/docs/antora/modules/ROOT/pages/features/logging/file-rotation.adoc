@@ -1,0 +1,29 @@
+[[features.logging.file-rotation]]
+= File Rotation
+
+If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
+For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4j2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
+
+The following rotation policy properties are supported:
+
+|===
+| Name | Description
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| The filename pattern used to create log archives.
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| If log archive cleanup should occur when the application starts.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| The maximum size of log file before it is archived.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| The maximum amount of size log archives can take before being deleted.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| The maximum number of archive log files to keep (defaults to 7).
+|===
+
+
+

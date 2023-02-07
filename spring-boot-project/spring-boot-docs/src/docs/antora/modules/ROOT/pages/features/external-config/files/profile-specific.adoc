@@ -1,0 +1,47 @@
+[[features.external-config.files.profile-specific]]
+= Profile Specific Files
+
+As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
+For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yml` and `application-prod.yml` will be considered.
+
+Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones.
+If several profiles are specified, a last-wins strategy applies.
+For example, if profiles `prod,live` are specified by the configprop:spring.profiles.active[] property, values in `application-prod.properties` can be overridden by those in `application-live.properties`.
+
+[NOTE]
+====
+The last-wins strategy applies at the <<features#features.external-config.files.location-groups,location group>> level.
+A configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` will not have the same override rules as `classpath:/cfg/;classpath:/ext/`.
+
+For example, continuing our `prod,live` example above, we might have the following files:
+
+----
+/cfg
+  application-live.properties
+/ext
+  application-live.properties
+  application-prod.properties
+----
+
+When we have a configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` we process all `/cfg` files before all `/ext` files:
+
+. `/cfg/application-live.properties`
+. `/ext/application-prod.properties`
+. `/ext/application-live.properties`
+
+
+When we have `classpath:/cfg/;classpath:/ext/` instead (with a `;` delimiter) we process `/cfg` and `/ext` at the same level:
+
+. `/ext/application-prod.properties`
+. `/cfg/application-live.properties`
+. `/ext/application-live.properties`
+====
+
+The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
+In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
+
+NOTE: Properties files are only ever loaded once.
+If you have already directly <<features#features.external-config.files.importing,imported>> a profile specific property files then it will not be imported a second time.
+
+
+

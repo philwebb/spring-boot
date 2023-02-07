@@ -1,0 +1,162 @@
+[[actuator.endpoints.kubernetes-probes]]
+= Kubernetes Probes
+
+Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
+Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet calls those probes and reacts to the result.
+
+By default, Spring Boot manages your <<features#features.spring-application.application-availability,Application Availability State>>.
+If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the `ApplicationAvailability` interface and uses that information in dedicated <<actuator#actuator.endpoints.health.auto-configured-health-indicators,health indicators>>: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
+These indicators are shown on the global health endpoint (`"/actuator/health"`).
+They are also exposed as separate HTTP Probes by using <<actuator#actuator.endpoints.health.groups, health groups>>: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
+
+You can then configure your Kubernetes infrastructure with the following endpoint information:
+
+[source,yaml,indent=0,subs="verbatim"]
+----
+    livenessProbe:
+      httpGet:
+        path: "/actuator/health/liveness"
+        port: <actuator-port>
+      failureThreshold: ...
+      periodSeconds: ...
+
+    readinessProbe:
+      httpGet:
+        path: "/actuator/health/readiness"
+        port: <actuator-port>
+      failureThreshold: ...
+      periodSeconds: ...
+----
+
+NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
+It could be the main web server port or a separate management port if the `"management.server.port"` property has been set.
+
+These health groups are automatically enabled only if the application <<deployment#deployment.cloud.kubernetes,runs in a Kubernetes environment>>.
+You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
+
+NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
+Generally speaking, the `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done.
+This means your application will not receive traffic until it is ready.
+However, if your application takes a long time to start, consider using a `"startupProbe"` to make sure that Kubernetes won't kill your application while it is in the process of starting.
+See the section that describes <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,how probes behave during the application lifecycle>>.
+
+If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
+In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
+For this reason, is it a good idea to make the `liveness` and `readiness` health groups available on the main server port.
+This can be done by setting the following property:
+
+[source,properties,indent=0,subs="verbatim"]
+----
+	management.endpoint.health.probes.add-additional-paths=true
+----
+
+This would make `liveness` available at `/livez` and `readiness` at `readyz` on the main server port.
+
+
+
+
+[[actuator.endpoints.kubernetes-probes.external-state]]
+== Checking External State With Kubernetes Probes
+Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
+This means that all the <<actuator#actuator.endpoints.health.groups, health groups features>> are available for them.
+You can, for example, configure additional Health Indicators:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoint:
+	    health:
+	      group:
+	        readiness:
+	          include: "readinessState,customCheck"
+----
+
+By default, Spring Boot does not add other health indicators to these groups.
+
+The "`liveness`" probe should not depend on health checks for external systems.
+If the <<features#features.spring-application.application-availability.liveness,liveness state of an application>> is broken, Kubernetes tries to solve that problem by restarting the application instance.
+This means that if an external system (such as a database, a Web API, or an external cache) fails, Kubernetes might restart all application instances and create cascading failures.
+
+As for the "`readiness`" probe, the choice of checking external systems must be made carefully by the application developers.
+For this reason, Spring Boot does not include any additional health checks in the readiness probe.
+If the <<features#features.spring-application.application-availability.readiness,readiness state of an application instance>> is unready, Kubernetes does not route traffic to that instance.
+Some external systems might not be shared by application instances, in which case they could be included in a readiness probe.
+Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
+Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: Include it in the readiness probe and expect that the application is taken out of service when the external service is down or leave it out and deal with failures higher up the stack, perhaps by using a circuit breaker in the caller.
+
+NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `NodePort` does not accept any incoming connections.
+There is no HTTP error response (503 and so on), since there is no connection.
+A service with `type=LoadBalancer` might or might not accept connections, depending on the provider.
+A service that has an explicit https://kubernetes.io/docs/concepts/services-networking/ingress/[ingress] also responds in a way that depends on the implementation -- the ingress service itself has to decide how to handle the "`connection refused`" from downstream.
+HTTP 503 is quite likely in the case of both load balancer and ingress.
+
+Also, if an application uses Kubernetes https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/[autoscaling], it may react differently to applications being taken out of the load-balancer, depending on its autoscaler configuration.
+
+
+
+[[actuator.endpoints.kubernetes-probes.lifecycle]]
+== Application Lifecycle and Probe States
+An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
+There is a significant difference between the `AvailabilityState` (which is the in-memory, internal state of the application)
+and the actual probe (which exposes that state).
+Depending on the phase of application lifecycle, the probe might not be available.
+
+Spring Boot publishes <<features#features.spring-application.application-events-and-listeners,application events during startup and shutdown>>,
+and probes can listen to such events and expose the `AvailabilityState` information.
+
+The following tables show the `AvailabilityState` and the state of HTTP connectors at different stages.
+
+When a Spring Boot application starts:
+
+[cols="2,2,2,3,5"]
+|===
+|Startup phase |LivenessState |ReadinessState |HTTP server |Notes
+
+|Starting
+|`BROKEN`
+|`REFUSING_TRAFFIC`
+|Not started
+|Kubernetes checks the "liveness" Probe and restarts the application if it takes too long.
+
+|Started
+|`CORRECT`
+|`REFUSING_TRAFFIC`
+|Refuses requests
+|The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
+
+|Ready
+|`CORRECT`
+|`ACCEPTING_TRAFFIC`
+|Accepts requests
+|Startup tasks are finished. The application is receiving traffic.
+|===
+
+When a Spring Boot application shuts down:
+
+[cols="2,2,2,3,5"]
+|===
+|Shutdown phase |Liveness State |Readiness State |HTTP server |Notes
+
+|Running
+|`CORRECT`
+|`ACCEPTING_TRAFFIC`
+|Accepts requests
+|Shutdown has been requested.
+
+|Graceful shutdown
+|`CORRECT`
+|`REFUSING_TRAFFIC`
+|New requests are rejected
+|If enabled, <<web#web.graceful-shutdown,graceful shutdown processes in-flight requests>>.
+
+|Shutdown complete
+|N/A
+|N/A
+|Server is shut down
+|The application context is closed and the application is shut down.
+|===
+
+TIP: See <<deployment#deployment.cloud.kubernetes.container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
+
+
+

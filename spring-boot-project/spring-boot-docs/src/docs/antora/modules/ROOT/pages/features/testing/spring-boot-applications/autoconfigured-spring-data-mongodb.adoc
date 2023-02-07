@@ -1,0 +1,17 @@
+[[features.testing.spring-boot-applications.autoconfigured-spring-data-mongodb]]
+= Auto-configured Data MongoDB Tests
+
+You can use `@DataMongoTest` to test MongoDB applications.
+By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using MongoDB with Spring Boot, see "<<data#data.nosql.mongodb>>".)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+The following class shows the `@DataMongoTest` annotation in use:
+
+include::code:MyDataMongoDbTests[]
+
+
+

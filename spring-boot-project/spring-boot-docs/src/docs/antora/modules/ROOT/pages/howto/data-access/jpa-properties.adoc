@@ -1,0 +1,41 @@
+[[howto.data-access.jpa-properties]]
+= Configure JPA Properties
+
+Spring Data JPA already provides some vendor-independent configuration options (such as those for SQL logging), and Spring Boot exposes those options and a few more for Hibernate as external configuration properties.
+Some of them are automatically detected according to the context so you should not have to set them.
+
+The `spring.jpa.hibernate.ddl-auto` is a special case, because, depending on runtime conditions, it has different defaults.
+If an embedded database is used and no schema manager (such as Liquibase or Flyway) is handling the `DataSource`, it defaults to `create-drop`.
+In all other cases, it defaults to `none`.
+
+The dialect to use is detected by the JPA provider.
+If you prefer to set the dialect yourself, set the configprop:spring.jpa.database-platform[] property.
+
+The most common options to set are shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  jpa:
+	    hibernate:
+	      naming:
+	        physical-strategy: "com.example.MyPhysicalNamingStrategy"
+	    show-sql: true
+----
+
+In addition, all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
+
+[WARNING]
+====
+You need to ensure that names defined under `+spring.jpa.properties.*+` exactly match those expected by your JPA provider.
+Spring Boot will not attempt any kind of relaxed binding for these entries.
+
+For example, if you want to configure Hibernate's batch size you must use `+spring.jpa.properties.hibernate.jdbc.batch_size+`.
+If you use other forms, such as `batchSize` or `batch-size`, Hibernate will not apply the setting.
+====
+
+TIP: If you need to apply advanced customization to Hibernate properties, consider registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating the `EntityManagerFactory`.
+This takes precedence to anything that is applied by the auto-configuration.
+
+
+

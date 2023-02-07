@@ -1,0 +1,32 @@
+[[features.testing.spring-boot-applications.json-tests]]
+= Auto-configured JSON Tests
+
+To test that object JSON serialization and deserialization is working as expected, you can use the `@JsonTest` annotation.
+`@JsonTest` auto-configures the available supported JSON mapper, which can be one of the following libraries:
+
+* Jackson `ObjectMapper`, any `@JsonComponent` beans and any Jackson ``Module``s
+* `Gson`
+* `Jsonb`
+
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+If you need to configure elements of the auto-configuration, you can use the `@AutoConfigureJsonTesters` annotation.
+
+Spring Boot includes AssertJ-based helpers that work with the JSONAssert and JsonPath libraries to check that JSON appears as expected.
+The `JacksonTester`, `GsonTester`, `JsonbTester`, and `BasicJsonTester` classes can be used for Jackson, Gson, Jsonb, and Strings respectively.
+Any helper fields on the test class can be `@Autowired` when using `@JsonTest`.
+The following example shows a test class for Jackson:
+
+include::code:MyJsonTests[]
+
+NOTE: JSON helper classes can also be used directly in standard unit tests.
+To do so, call the `initFields` method of the helper in your `@Before` method if you do not use `@JsonTest`.
+
+If you use Spring Boot's AssertJ-based helpers to assert on a number value at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
+Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
+For instance, the following example asserts that the actual number is a float value close to `0.15` within an offset of `0.01`.
+
+include::code:MyJsonAssertJTests[tag=*]
+
+
+

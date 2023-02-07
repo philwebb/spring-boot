@@ -1,0 +1,53 @@
+[[actuator.endpoints.security]]
+= Security
+
+For security purposes, only the `/health` endpoint is exposed over HTTP by default.
+You can use the configprop:management.endpoints.web.exposure.include[] property to configure the endpoints that are exposed.
+
+NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information, are secured by placing them behind a firewall, or are secured by something like Spring Security.
+
+If Spring Security is on the classpath and no other `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
+If you define a custom `SecurityFilterChain` bean, Spring Boot auto-configuration backs off and lets you fully control the actuator access rules.
+
+If you wish to configure custom security for HTTP endpoints (for example, to allow only users with a certain role to access them), Spring Boot provides some convenient `RequestMatcher` objects that you can use in combination with Spring Security.
+
+A typical Spring Security configuration might look something like the following example:
+
+include::code:typical/MySecurityConfiguration[]
+
+The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
+Several other matcher methods are also available on `EndpointRequest`.
+See the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]) for details.
+
+If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
+You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
+----
+
+Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints, as the following example shows:
+
+include::code:exposeall/MySecurityConfiguration[]
+
+NOTE: In both of the preceding examples, the configuration applies only to the actuator endpoints.
+Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
+
+
+
+[[actuator.endpoints.security.csrf]]
+== Cross Site Request Forgery Protection
+Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
+This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), a `PUT`, or a `DELETE` get a 403 (forbidden) error when the default security configuration is in use.
+
+NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
+
+You can find additional information about CSRF protection in the {spring-security-docs}/features/exploits/csrf.html[Spring Security Reference Guide].
+
+
+

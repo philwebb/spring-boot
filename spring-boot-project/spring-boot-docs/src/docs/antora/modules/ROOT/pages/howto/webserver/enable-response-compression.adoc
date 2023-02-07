@@ -1,0 +1,31 @@
+[[howto.webserver.enable-response-compression]]
+= Enable HTTP Response Compression
+
+HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
+It can be enabled in `application.properties`, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  compression:
+	    enabled: true
+----
+
+By default, responses must be at least 2048 bytes in length for compression to be performed.
+You can configure this behavior by setting the configprop:server.compression.min-response-size[] property.
+
+By default, responses are compressed only if their content type is one of the following:
+
+* `text/html`
+* `text/xml`
+* `text/plain`
+* `text/css`
+* `text/javascript`
+* `application/javascript`
+* `application/json`
+* `application/xml`
+
+You can configure this behavior by setting the configprop:server.compression.mime-types[] property.
+
+
+

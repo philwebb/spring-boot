@@ -1,0 +1,8 @@
+[[features.testing.spring-boot-applications.customizing-web-test-client]]
+= Customizing WebTestClient
+
+To customize the `WebTestClient` bean, configure a `WebTestClientBuilderCustomizer` bean.
+Any such beans are called with the `WebTestClient.Builder` that is used to create the `WebTestClient`.
+
+
+
