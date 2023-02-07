@@ -144,7 +144,8 @@ public class EnvironmentEndpoint {
 	private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
 			Predicate<String> namePredicate, boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
-		Stream.of(source.getPropertyNames()).filter(namePredicate)
+		Stream.of(source.getPropertyNames())
+				.filter(namePredicate)
 				.forEach((name) -> properties.put(name, describeValueOf(name, source, showUnsanitized)));
 		return new PropertySourceDescriptor(sourceName, properties);
 	}

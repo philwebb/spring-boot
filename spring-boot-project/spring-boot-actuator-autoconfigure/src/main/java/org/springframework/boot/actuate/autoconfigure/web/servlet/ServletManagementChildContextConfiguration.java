@@ -111,8 +111,8 @@ class ServletManagementChildContextConfiguration {
 		@Bean
 		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
 		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
-			return beanFactory.getParentBeanFactory().getBean("securityFilterChainRegistration",
-					DelegatingFilterProxyRegistrationBean.class);
+			return beanFactory.getParentBeanFactory()
+					.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class);
 		}
 
 	}

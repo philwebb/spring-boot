@@ -87,7 +87,8 @@ class SslBuilderCustomizerTests {
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+				.withCauseInstanceOf(WebServerException.class)
+				.withMessageContaining("Could not load key store 'null'");
 	}
 
 	@Test

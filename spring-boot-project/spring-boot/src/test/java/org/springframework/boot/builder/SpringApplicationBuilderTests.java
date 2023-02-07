@@ -75,7 +75,8 @@ class SpringApplicationBuilderTests {
 	void profileAndProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
 				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
-				.profiles("foo").properties("foo=bar");
+				.profiles("foo")
+				.properties("foo=bar");
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
@@ -195,7 +196,9 @@ class SpringApplicationBuilderTests {
 	@Test
 	void parentFirstCreationWithProfileAndDefaultArgs() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).profiles("node")
-				.properties("transport=redis").child(ChildConfig.class).web(WebApplicationType.NONE);
+				.properties("transport=redis")
+				.child(ChildConfig.class)
+				.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("node"))).isTrue();
 		assertThat(this.context.getEnvironment().getProperty("transport")).isEqualTo("redis");
@@ -208,7 +211,10 @@ class SpringApplicationBuilderTests {
 	@Test
 	void parentFirstWithDifferentProfile() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).profiles("node")
-				.properties("transport=redis").child(ChildConfig.class).profiles("admin").web(WebApplicationType.NONE);
+				.properties("transport=redis")
+				.child(ChildConfig.class)
+				.profiles("admin")
+				.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("node", "admin"))).isTrue();
 		assertThat(this.context.getParent().getEnvironment().acceptsProfiles(Profiles.of("admin"))).isFalse();
@@ -218,7 +224,8 @@ class SpringApplicationBuilderTests {
 	void parentWithDifferentProfile() {
 		SpringApplicationBuilder shared = new SpringApplicationBuilder(ExampleConfig.class).profiles("node")
 				.properties("transport=redis");
-		SpringApplicationBuilder application = shared.child(ChildConfig.class).profiles("admin")
+		SpringApplicationBuilder application = shared.child(ChildConfig.class)
+				.profiles("admin")
 				.web(WebApplicationType.NONE);
 		shared.profiles("parent");
 		this.context = application.run();
@@ -230,8 +237,12 @@ class SpringApplicationBuilderTests {
 	@Test
 	void parentFirstWithDifferentProfileAndExplicitEnvironment() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.environment(new StandardEnvironment()).profiles("node").properties("transport=redis")
-				.child(ChildConfig.class).profiles("admin").web(WebApplicationType.NONE);
+				.environment(new StandardEnvironment())
+				.profiles("node")
+				.properties("transport=redis")
+				.child(ChildConfig.class)
+				.profiles("admin")
+				.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("node", "admin"))).isTrue();
 		// Now they share an Environment explicitly so there's no way to keep the profiles
@@ -260,7 +271,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void initializersCreatedOnceForChild() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.child(ChildConfig.class).web(WebApplicationType.NONE);
+				.child(ChildConfig.class)
+				.web(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(6);
 	}
@@ -268,7 +280,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void initializersIncludeDefaults() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.web(WebApplicationType.NONE).initializers((ConfigurableApplicationContext applicationContext) -> {
+				.web(WebApplicationType.NONE)
+				.initializers((ConfigurableApplicationContext applicationContext) -> {
 				});
 		this.context = application.run();
 		assertThat(application.application().getInitializers()).hasSize(6);
@@ -277,7 +290,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void sourcesWithBoundSources() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().web(WebApplicationType.NONE)
-				.sources(ExampleConfig.class).properties("spring.main.sources=" + ChildConfig.class.getName());
+				.sources(ExampleConfig.class)
+				.properties("spring.main.sources=" + ChildConfig.class.getName());
 		this.context = application.run();
 		this.context.getBean(ExampleConfig.class);
 		this.context.getBean(ChildConfig.class);
@@ -286,7 +300,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void addBootstrapRegistryInitializer() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.web(WebApplicationType.NONE).addBootstrapRegistryInitializer((context) -> context.addCloseListener(
+				.web(WebApplicationType.NONE)
+				.addBootstrapRegistryInitializer((context) -> context.addCloseListener(
 						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
 		this.context = application.run();
 		assertThat(this.context.getBean("test")).isEqualTo("spring");

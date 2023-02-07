@@ -83,8 +83,9 @@ abstract class AbstractManagementPortAndPathSampleActuatorApplicationTests {
 	void testEnvNotFound() {
 		String unknownProperty = "test-does-not-exist";
 		assertThat(this.environment.containsProperty(unknownProperty)).isFalse();
-		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password").getForEntity(
-				"http://localhost:" + this.managementPort + "/admin/env/" + unknownProperty, String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
+				.getForEntity("http://localhost:" + this.managementPort + "/admin/env/" + unknownProperty,
+						String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

@@ -29,8 +29,9 @@ public class TestServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.getWriter().print(((String) req.getServletContext().getAttribute("listenerAttribute")) + " "
-				+ req.getAttribute("filterAttribute") + " " + req.getAttribute("listenerAddedFilterAttribute"));
+		resp.getWriter()
+				.print(((String) req.getServletContext().getAttribute("listenerAttribute")) + " "
+						+ req.getAttribute("filterAttribute") + " " + req.getAttribute("listenerAddedFilterAttribute"));
 		resp.getWriter().flush();
 	}
 

@@ -91,7 +91,8 @@ class HazelcastJpaDependencyAutoConfigurationTests {
 
 	private List<String> entityManagerFactoryDependencies(AssertableApplicationContext context) {
 		String[] dependsOn = ((BeanDefinitionRegistry) context.getSourceApplicationContext())
-				.getBeanDefinition("entityManagerFactory").getDependsOn();
+				.getBeanDefinition("entityManagerFactory")
+				.getDependsOn();
 		return (dependsOn != null) ? Arrays.asList(dependsOn) : Collections.emptyList();
 	}
 

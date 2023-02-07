@@ -111,9 +111,16 @@ class PluginXmlParser {
 	}
 
 	private String format(String input) {
-		return input.replace("<code>", "`").replace("</code>", "`").replace("&lt;", "<").replace("&gt;", ">")
-				.replace("<br>", " ").replace("\n", " ").replace("&quot;", "\"").replaceAll("\\{@code (.*?)}", "`$1`")
-				.replaceAll("\\{@link (.*?)}", "`$1`").replaceAll("\\{@literal (.*?)}", "`$1`")
+		return input.replace("<code>", "`")
+				.replace("</code>", "`")
+				.replace("&lt;", "<")
+				.replace("&gt;", ">")
+				.replace("<br>", " ")
+				.replace("\n", " ")
+				.replace("&quot;", "\"")
+				.replaceAll("\\{@code (.*?)}", "`$1`")
+				.replaceAll("\\{@link (.*?)}", "`$1`")
+				.replaceAll("\\{@literal (.*?)}", "`$1`")
 				.replaceAll("<a href=.\"(.*?)\".>(.*?)</a>", "$1[$2]");
 	}
 

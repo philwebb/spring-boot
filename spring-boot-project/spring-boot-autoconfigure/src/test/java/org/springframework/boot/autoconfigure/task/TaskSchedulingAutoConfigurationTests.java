@@ -73,7 +73,8 @@ class TaskSchedulingAutoConfigurationTests {
 				.withPropertyValues("spring.task.scheduling.shutdown.await-termination=true",
 						"spring.task.scheduling.shutdown.await-termination-period=30s",
 						"spring.task.scheduling.thread-name-prefix=scheduling-test-")
-				.withUserConfiguration(SchedulingConfiguration.class).run((context) -> {
+				.withUserConfiguration(SchedulingConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TaskExecutor taskExecutor = context.getBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
@@ -141,7 +142,8 @@ class TaskSchedulingAutoConfigurationTests {
 				.withPropertyValues("spring.task.scheduling.thread-name-prefix=scheduling-test-")
 				.withBean(LazyTestBean.class, () -> new LazyTestBean(threadNames))
 				.withUserConfiguration(SchedulingConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.run((context) -> {
 					// No lazy lookup.
 					Awaitility.waitAtMost(Duration.ofSeconds(3)).until(() -> !threadNames.isEmpty());
 					assertThat(threadNames).allMatch((name) -> name.contains("scheduling-test-"));

@@ -239,8 +239,8 @@ class Lifecycle implements Closeable {
 		}
 		try {
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
-			return this.docker.container().create(config,
-					ContainerContent.of(applicationContent, Directory.APPLICATION));
+			return this.docker.container()
+					.create(config, ContainerContent.of(applicationContent, Directory.APPLICATION));
 		}
 		finally {
 			this.applicationVolumePopulated = true;

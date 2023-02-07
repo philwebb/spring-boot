@@ -402,8 +402,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		loggerContext.getConfiguration().addLogger("com.example.test",
-				new LoggerConfig("com.example.test", org.apache.logging.log4j.Level.INFO, false));
+		loggerContext.getConfiguration()
+				.addLogger("com.example.test",
+						new LoggerConfig("com.example.test", org.apache.logging.log4j.Level.INFO, false));
 		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
 		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
@@ -476,7 +477,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
 						"http://localhost:8080/shouldnotwork", null))
-				.havingCause().isInstanceOf(ProtocolException.class).withMessageContaining("http has not been enabled");
+				.havingCause()
+				.isInstanceOf(ProtocolException.class)
+				.withMessageContaining("http has not been enabled");
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {

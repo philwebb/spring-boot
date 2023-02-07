@@ -224,10 +224,11 @@ class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)),
-				any(), eq("bar"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(JavaBean.class));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)), any(),
+						eq("bar"));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(JavaBean.class));
 	}
 
 	@Test
@@ -238,10 +239,11 @@ class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		binder.bind("foo", target);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)),
-				any(), eq("bar"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(JavaBean.class));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)), any(),
+						eq("bar"));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(JavaBean.class));
 	}
 
 	@Test

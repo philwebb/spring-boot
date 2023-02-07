@@ -67,7 +67,8 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	void rolesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("management.endpoint.configprops.roles: test")
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops").run((context) -> {
+				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
 					ConfigurationPropertiesReportEndpointWebExtension endpoint = context
 							.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
@@ -80,7 +81,8 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("management.endpoint.configprops.show-values: WHEN_AUTHORIZED")
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops").run((context) -> {
+				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
 					ConfigurationPropertiesReportEndpointWebExtension webExtension = context
@@ -116,8 +118,11 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
-					.get("testProperties").getProperties();
+			Map<String, Object> nestedProperties = properties.getContexts()
+					.get(context.getId())
+					.getBeans()
+					.get("testProperties")
+					.getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
 			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);

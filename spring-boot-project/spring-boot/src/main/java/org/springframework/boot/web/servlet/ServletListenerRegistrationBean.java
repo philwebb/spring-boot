@@ -55,7 +55,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @since 1.4.0
  */
-public class ServletListenerRegistrationBean<T extends EventListener> extends RegistrationBean {
+public class ServletListenerRegistrationBean<T extends EventListener>extends RegistrationBean {
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 

@@ -30,8 +30,10 @@ class RestClientTestContextBootstrapper extends SpringBootTestContextBootstrappe
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(RestClientTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(RestClientTest.class)
+				.getValue("properties", String[].class)
+				.orElse(null);
 	}
 
 }

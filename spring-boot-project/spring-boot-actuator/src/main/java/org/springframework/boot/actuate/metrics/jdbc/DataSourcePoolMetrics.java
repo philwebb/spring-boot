@@ -88,7 +88,9 @@ public class DataSourcePoolMetrics implements MeterBinder {
 			Function<DataSource, N> function) {
 		if (function.apply(this.dataSource) != null) {
 			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> function.apply(m).doubleValue())
-					.tags(this.tags).description(description).register(registry);
+					.tags(this.tags)
+					.description(description)
+					.register(registry);
 		}
 	}
 

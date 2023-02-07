@@ -44,7 +44,8 @@ class LettuceMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsAMeterRegistryThenCommandLatencyRecorderIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run((context) -> {
 					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
 							.getClientResources();
 					assertThat(clientResources.commandLatencyRecorder())
@@ -55,7 +56,8 @@ class LettuceMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguredMicrometerOptionsUsesLettucesDefaults() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run((context) -> {
 					MicrometerOptions micrometerOptions = context.getBean(MicrometerOptions.class);
 					assertThat(micrometerOptions.isEnabled()).isTrue();
 					assertThat(micrometerOptions.isHistogram()).isFalse();
@@ -69,7 +71,8 @@ class LettuceMetricsAutoConfigurationTests {
 	void whenUserDefinesAMicrometerOptionsBeanThenCommandLatencyRecorderUsesIt() {
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withUserConfiguration(CustomMicrometerOptionsConfiguration.class).run((context) -> {
+				.withUserConfiguration(CustomMicrometerOptionsConfiguration.class)
+				.run((context) -> {
 					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
 							.getClientResources();
 					assertThat(clientResources.commandLatencyRecorder())

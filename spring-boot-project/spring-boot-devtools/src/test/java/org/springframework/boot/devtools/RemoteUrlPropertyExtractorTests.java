@@ -39,7 +39,8 @@ class RemoteUrlPropertyExtractorTests {
 	@AfterEach
 	void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
-				.getTurboFilterList().clear();
+				.getTurboFilterList()
+				.clear();
 	}
 
 	@Test

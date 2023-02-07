@@ -41,7 +41,8 @@ class CommandLineBuilderTests {
 
 	@Test
 	void buildWithNullIntermediateJvmArgumentIsIgnored() {
-		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withJvmArguments("-verbose:class", null, "-verbose:gc")
+		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME)
+				.withJvmArguments("-verbose:class", null, "-verbose:gc")
 				.build()).containsExactly("-verbose:class", "-verbose:gc", CLASS_NAME);
 	}
 

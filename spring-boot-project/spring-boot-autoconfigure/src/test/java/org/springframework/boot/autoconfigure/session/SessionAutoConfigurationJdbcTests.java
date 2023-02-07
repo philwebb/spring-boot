@@ -127,8 +127,10 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 
 	@Test
 	void customTableName() {
-		this.contextRunner.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
-				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
+						"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+				.run((context) -> {
 					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 							JdbcIndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("tableName", "FOO_BAR");
@@ -196,7 +198,8 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	@Test
 	void sessionRepositoryBeansDependOnFlyway() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-				.withPropertyValues("spring.session.jdbc.initialize-schema=never").run((context) -> {
+				.withPropertyValues("spring.session.jdbc.initialize-schema=never")
+				.run((context) -> {
 					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 					String[] sessionRepositoryNames = beanFactory
 							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
@@ -211,7 +214,8 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	@Test
 	void sessionRepositoryBeansDependOnLiquibase() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
-				.withPropertyValues("spring.session.jdbc.initialize-schema=never").run((context) -> {
+				.withPropertyValues("spring.session.jdbc.initialize-schema=never")
+				.run((context) -> {
 					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 					String[] sessionRepositoryNames = beanFactory
 							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
@@ -253,7 +257,8 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 				DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES
 				""";
 		this.contextRunner.withUserConfiguration(CustomJdbcIndexedSessionRepositoryCustomizerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class))
+				.run((context) -> {
 					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 							JdbcIndexedSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("createSessionAttributeQuery",

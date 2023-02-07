@@ -71,8 +71,9 @@ import static org.mockito.Mockito.mock;
 class HealthEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(HealthIndicatorsConfiguration.class).withConfiguration(AutoConfigurations
-					.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class));
+			.withUserConfiguration(HealthIndicatorsConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class));
 
 	private final ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 			.withUserConfiguration(HealthIndicatorsConfiguration.class)
@@ -105,7 +106,8 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runWhenHasStatusAggregatorBeanIgnoresProperties() {
 		this.contextRunner.withUserConfiguration(StatusAggregatorConfiguration.class)
-				.withPropertyValues("management.endpoint.health.status.order=up,down").run((context) -> {
+				.withPropertyValues("management.endpoint.health.status.order=up,down")
+				.run((context) -> {
 					StatusAggregator aggregator = context.getBean(StatusAggregator.class);
 					assertThat(aggregator.getAggregateStatus(Status.UP, Status.DOWN)).isEqualTo(Status.UNKNOWN);
 				});
@@ -123,7 +125,8 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runWhenHasHttpCodeStatusMapperBeanIgnoresProperties() {
 		this.contextRunner.withUserConfiguration(HttpCodeStatusMapperConfiguration.class)
-				.withPropertyValues("management.endpoint.health.status.http-mapping.up=123").run((context) -> {
+				.withPropertyValues("management.endpoint.health.status.http-mapping.up=123")
+				.run((context) -> {
 					HttpCodeStatusMapper mapper = context.getBean(HttpCodeStatusMapper.class);
 					assertThat(mapper.getStatusCode(Status.UP)).isEqualTo(456);
 				});
@@ -141,7 +144,8 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runWhenHasHealthEndpointGroupsBeanDoesNotCreateAdditionalHealthEndpointGroups() {
 		this.contextRunner.withUserConfiguration(HealthEndpointGroupsConfiguration.class)
-				.withPropertyValues("management.endpoint.health.group.ready.include=*").run((context) -> {
+				.withPropertyValues("management.endpoint.health.group.ready.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					assertThat(groups.getNames()).containsOnly("mock");
 				});
@@ -259,8 +263,10 @@ class HealthEndpointAutoConfigurationTests {
 
 	@Test
 	void runWhenHasHealthEndpointGroupsPostProcessorPerformsProcessing() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").withUserConfiguration(
-				HealthEndpointGroupsConfiguration.class, TestHealthEndpointGroupsPostProcessor.class).run((context) -> {
+		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*")
+				.withUserConfiguration(HealthEndpointGroupsConfiguration.class,
+						TestHealthEndpointGroupsPostProcessor.class)
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> groups.get("test"))
 							.withMessage("postprocessed");
@@ -270,9 +276,11 @@ class HealthEndpointAutoConfigurationTests {
 	@Test
 	void runWithIndicatorsInParentContextFindsIndicators() {
 		new ApplicationContextRunner().withUserConfiguration(HealthIndicatorsConfiguration.class)
-				.run((parent) -> new WebApplicationContextRunner().withConfiguration(AutoConfigurations
-						.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class))
-						.withParent(parent).run((context) -> {
+				.run((parent) -> new WebApplicationContextRunner()
+						.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+								HealthEndpointAutoConfiguration.class))
+						.withParent(parent)
+						.run((context) -> {
 							HealthComponent health = context.getBean(HealthEndpoint.class).health();
 							Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
 							assertThat(components).containsKeys("additional", "ping", "simple");
@@ -286,7 +294,8 @@ class HealthEndpointAutoConfigurationTests {
 						.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
 								HealthEndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class))
-						.withParent(parent).run((context) -> {
+						.withParent(parent)
+						.run((context) -> {
 							HealthComponent health = context.getBean(HealthEndpoint.class).health();
 							Map<String, HealthComponent> components = ((SystemHealth) health).getComponents();
 							assertThat(components).containsKeys("additional", "ping", "simple");

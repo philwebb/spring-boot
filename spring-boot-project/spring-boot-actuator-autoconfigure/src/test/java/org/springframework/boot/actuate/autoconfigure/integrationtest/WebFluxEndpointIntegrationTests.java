@@ -58,8 +58,17 @@ class WebFluxEndpointIntegrationTests {
 	void linksAreProvidedToAllEndpointTypes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
 			WebTestClient client = createWebTestClient(context);
-			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
-					.isNotEmpty().jsonPath("_links.restcontroller").isNotEmpty().jsonPath("_links.controller")
+			client.get()
+					.uri("/actuator")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("_links.beans")
+					.isNotEmpty()
+					.jsonPath("_links.restcontroller")
+					.isNotEmpty()
+					.jsonPath("_links.controller")
 					.isNotEmpty();
 		});
 	}
@@ -75,9 +84,15 @@ class WebFluxEndpointIntegrationTests {
 	@Test
 	void endpointObjectMapperCanBeApplied() {
 		this.contextRunner.withUserConfiguration(EndpointObjectMapperConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
+				.withPropertyValues("management.endpoints.web.exposure.include:*")
+				.run((context) -> {
 					WebTestClient client = createWebTestClient(context);
-					client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody()
+					client.get()
+							.uri("/actuator/beans")
+							.exchange()
+							.expectStatus()
+							.isOk()
+							.expectBody()
 							.consumeWith((result) -> {
 								String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
 								assertThat(json).contains("\"scope\":\"notelgnis\"");
@@ -86,7 +101,9 @@ class WebFluxEndpointIntegrationTests {
 	}
 
 	private WebTestClient createWebTestClient(ApplicationContext context) {
-		return WebTestClient.bindToApplicationContext(context).configureClient().baseUrl("https://spring.example.org")
+		return WebTestClient.bindToApplicationContext(context)
+				.configureClient()
+				.baseUrl("https://spring.example.org")
 				.build();
 	}
 

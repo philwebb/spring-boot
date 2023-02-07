@@ -155,15 +155,17 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default_domain=org.foo")
 				.run((context) -> {
 					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					assertThat(mBeanServer.getDomains()).contains("org.foo").doesNotContain(
-							"org.springframework.integration", "org.springframework.integration.monitor");
+					assertThat(mBeanServer.getDomains()).contains("org.foo")
+							.doesNotContain("org.springframework.integration",
+									"org.springframework.integration.monitor");
 				});
 	}
 
 	@Test
 	void primaryExporterIsAllowed() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
-				.withUserConfiguration(CustomMBeanExporter.class).run((context) -> {
+				.withUserConfiguration(CustomMBeanExporter.class)
+				.run((context) -> {
 					assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
 					assertThat(context.getBean(MBeanExporter.class)).isSameAs(context.getBean("myMBeanExporter"));
 				});
@@ -230,7 +232,8 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true").run((context) -> {
+				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema())
 							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
@@ -249,7 +252,8 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.rsocket.client.host=localhost",
 						"spring.integration.rsocket.server.message-mapping-enabled=true")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(ClientRSocketConnector.class).hasBean("clientRSocketConnector")
+					assertThat(context).hasSingleBean(ClientRSocketConnector.class)
+							.hasBean("clientRSocketConnector")
 							.hasSingleBean(ServerRSocketConnector.class)
 							.hasSingleBean(ServerRSocketMessageHandler.class)
 							.hasSingleBean(RSocketMessageHandler.class);
@@ -435,7 +439,8 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
 						"spring.integration.poller.fixed-delay=1s")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
 						.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
 						.rootCause()
 						.asInstanceOf(
@@ -453,7 +458,8 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void whenFixedDelayPollerPropertyIsSetThenItIsReflectedAsFixedDelayPropertyOfPeriodicTrigger() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
-				.withPropertyValues("spring.integration.poller.fixed-delay=5000").run((context) -> {
+				.withPropertyValues("spring.integration.poller.fixed-delay=5000")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(PollerMetadata.class);
 					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
 					assertThat(metadata.getTrigger())
@@ -468,7 +474,8 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void whenFixedRatePollerPropertyIsSetThenItIsReflectedAsFixedRatePropertyOfPeriodicTrigger() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
-				.withPropertyValues("spring.integration.poller.fixed-rate=5000").run((context) -> {
+				.withPropertyValues("spring.integration.poller.fixed-rate=5000")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(PollerMetadata.class);
 					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
 					assertThat(metadata.getTrigger())
@@ -482,15 +489,19 @@ class IntegrationAutoConfigurationTests {
 
 	@Test
 	void integrationManagementLoggingIsEnabledByDefault() {
-		this.contextRunner.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
-				.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(true));
+		this.contextRunner.withBean(DirectChannel.class, DirectChannel::new)
+				.run((context) -> assertThat(context).getBean(DirectChannel.class)
+						.extracting(DirectChannel::isLoggingEnabled)
+						.isEqualTo(true));
 	}
 
 	@Test
 	void integrationManagementLoggingCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.integration.management.defaultLoggingEnabled=false")
-				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
-						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
+				.withBean(DirectChannel.class, DirectChannel::new)
+				.run((context) -> assertThat(context).getBean(DirectChannel.class)
+						.extracting(DirectChannel::isLoggingEnabled)
+						.isEqualTo(false));
 
 	}
 
@@ -499,9 +510,11 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.integration.management.observation-patterns=testHandler")
 				.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
 				.withBean(ObservationRegistry.class, ObservationRegistry::create)
-				.withBean(BridgeHandler.class, BridgeHandler::new).run((context) -> {
+				.withBean(BridgeHandler.class, BridgeHandler::new)
+				.run((context) -> {
 					assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
-					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry")
+					assertThat(context).getBean(BridgeHandler.class)
+							.extracting("observationRegistry")
 							.isEqualTo(ObservationRegistry.NOOP);
 				});
 	}

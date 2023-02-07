@@ -56,20 +56,23 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 
 	@Test
 	void startupSnapshot() throws Exception {
-		this.mockMvc.perform(get("/actuator/startup")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/startup"))
+				.andExpect(status().isOk())
 				.andDo(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	@Test
 	void startup() throws Exception {
-		this.mockMvc.perform(post("/actuator/startup")).andExpect(status().isOk())
+		this.mockMvc.perform(post("/actuator/startup"))
+				.andExpect(status().isOk())
 				.andDo(document("startup", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	private FieldDescriptor[] responseFields() {
 		return new FieldDescriptor[] {
 				fieldWithPath("springBootVersion").type(JsonFieldType.STRING)
-						.description("Spring Boot version for this application.").optional(),
+						.description("Spring Boot version for this application.")
+						.optional(),
 				fieldWithPath("timeline.startTime").description("Start time of the application."),
 				fieldWithPath("timeline.events")
 						.description("An array of steps collected during application startup so far."),
@@ -79,7 +82,8 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				fieldWithPath("timeline.events.[].startupStep.name").description("The name of the StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.id").description("The id of this StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.parentId")
-						.description("The parent id for this StartupStep.").optional(),
+						.description("The parent id for this StartupStep.")
+						.optional(),
 				fieldWithPath("timeline.events.[].startupStep.tags")
 						.description("An array of key/value pairs with additional step info."),
 				fieldWithPath("timeline.events.[].startupStep.tags[].key")

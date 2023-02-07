@@ -63,8 +63,9 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 							EndpointAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
 							WebFluxAutoConfiguration.class))
 					.withUserConfiguration(SucceedingEndpoint.class)
-					.withInitializer(new ServerPortInfoApplicationContextInitializer()).withPropertyValues(
-							"server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
+					.withInitializer(new ServerPortInfoApplicationContextInitializer())
+					.withPropertyValues("server.port=0", "management.server.port=0",
+							"management.endpoints.web.exposure.include=*");
 
 	@TempDir
 	Path temp;
@@ -72,8 +73,11 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 	@Test
 	void endpointsAreBeneathActuatorByDefault() {
 		this.runner.withPropertyValues("management.server.port:0").run(withWebTestClient((client) -> {
-			String body = client.get().uri("actuator/success").accept(MediaType.APPLICATION_JSON)
-					.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+			String body = client.get()
+					.uri("actuator/success")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono((response) -> response.bodyToMono(String.class))
+					.block();
 			assertThat(body).isEqualTo("Success");
 		}));
 	}
@@ -82,8 +86,11 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 	void whenManagementServerBasePathIsConfiguredThenEndpointsAreBeneathThatPath() {
 		this.runner.withPropertyValues("management.server.port:0", "management.server.base-path:/manage")
 				.run(withWebTestClient((client) -> {
-					String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
-							.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+					String body = client.get()
+							.uri("manage/actuator/success")
+							.accept(MediaType.APPLICATION_JSON)
+							.exchangeToMono((response) -> response.bodyToMono(String.class))
+							.block();
 					assertThat(body).isEqualTo("Success");
 				}));
 	}
@@ -96,8 +103,9 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 
 	private void addConfigTreePropertySource(ConfigurableApplicationContext applicationContext) {
 		try {
-			applicationContext.getEnvironment().setConversionService(
-					(ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
+			applicationContext.getEnvironment()
+					.setConversionService(
+							(ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
 			Path configtree = this.temp.resolve("configtree");
 			Path file = configtree.resolve("management/server/port");
 			file.toFile().getParentFile().mkdirs();

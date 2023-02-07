@@ -185,7 +185,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, "classpath:logback-nondefault.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
-		assertThat(output).doesNotContain("DEBUG").contains("Hello world").contains(tmpDir() + "/tmp.log")
+		assertThat(output).doesNotContain("DEBUG")
+				.contains("Hello world")
+				.contains(tmpDir() + "/tmp.log")
 				.endsWith("BOOTBOOT");
 		assertThat(new File(tmpDir() + "/tmp.log")).doesNotExist();
 	}
@@ -623,7 +625,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			File file = new File(tmpDir(), "logback-test.log");
 			LogFile logFile = getLogFile(file.getPath(), null);
 			initialize(this.initializationContext, null, logFile);
-			assertThat(output).contains("LevelChangePropagator").contains("SizeAndTimeBasedFNATP")
+			assertThat(output).contains("LevelChangePropagator")
+					.contains("SizeAndTimeBasedFNATP")
 					.contains("DebugLogbackConfigurator");
 		}
 		finally {
@@ -746,8 +749,10 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private String getLineWithText(CharSequence output, CharSequence outputSearch) {
-		return Arrays.stream(output.toString().split("\\r?\\n")).filter((line) -> line.contains(outputSearch))
-				.findFirst().orElse(null);
+		return Arrays.stream(output.toString().split("\\r?\\n"))
+				.filter((line) -> line.contains(outputSearch))
+				.findFirst()
+				.orElse(null);
 	}
 
 }

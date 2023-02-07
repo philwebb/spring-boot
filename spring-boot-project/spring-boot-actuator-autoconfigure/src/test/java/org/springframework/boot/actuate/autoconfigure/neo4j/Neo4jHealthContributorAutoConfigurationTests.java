@@ -51,15 +51,17 @@ class Neo4jHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateHealthIndicator() {
-		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(Neo4jReactiveHealthIndicator.class).doesNotHaveBean(Neo4jHealthIndicator.class));
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jReactiveHealthIndicator.class)
+						.doesNotHaveBean(Neo4jHealthIndicator.class));
 	}
 
 	@Test
 	void runWithoutReactorShouldCreateHealthIndicator() {
 		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(Flux.class)).run((context) -> assertThat(context)
-						.hasSingleBean(Neo4jHealthIndicator.class).doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
+				.withClassLoader(new FilteredClassLoader(Flux.class))
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class)
+						.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Test

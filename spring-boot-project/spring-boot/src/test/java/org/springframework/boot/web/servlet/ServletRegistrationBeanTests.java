@@ -73,8 +73,9 @@ class ServletRegistrationBeanTests {
 			bean.setName("double-registration");
 			given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(null);
 			bean.onStartup(this.servletContext);
-		}).isInstanceOf(IllegalStateException.class).hasMessage(
-				"Failed to register 'servlet double-registration' on the servlet context. Possibly already registered?");
+		}).isInstanceOf(IllegalStateException.class)
+				.hasMessage(
+						"Failed to register 'servlet double-registration' on the servlet context. Possibly already registered?");
 	}
 
 	@Test

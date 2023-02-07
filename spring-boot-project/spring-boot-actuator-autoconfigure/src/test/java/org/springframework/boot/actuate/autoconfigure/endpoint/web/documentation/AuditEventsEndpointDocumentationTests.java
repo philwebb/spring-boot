@@ -57,7 +57,8 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any()))
 				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
-		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp)).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
+				.andExpect(status().isOk())
 				.andDo(document("auditevents/all", responseFields(
 						fieldWithPath("events").description("An array of audit events."),
 						fieldWithPath("events.[].timestamp").description("The timestamp of when the event occurred."),
@@ -72,8 +73,9 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 		given(this.repository.find("alice", now.toInstant(), "logout"))
 				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc
-				.perform(get("/actuator/auditevents")
-						.param("principal", "alice").param("after", queryTimestamp).param("type", "logout"))
+				.perform(get("/actuator/auditevents").param("principal", "alice")
+						.param("after", queryTimestamp)
+						.param("type", "logout"))
 				.andExpect(status().isOk())
 				.andDo(document("auditevents/filtered",
 						queryParameters(

@@ -43,8 +43,12 @@ class TaskExecutorBuilderTests {
 
 	@Test
 	void poolSettingsShouldApply() {
-		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
-				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1)).build();
+		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10)
+				.corePoolSize(4)
+				.maxPoolSize(8)
+				.allowCoreThreadTimeOut(true)
+				.keepAlive(Duration.ofMinutes(1))
+				.build();
 		assertThat(executor).hasFieldOrPropertyWithValue("queueCapacity", 10);
 		assertThat(executor.getCorePoolSize()).isEqualTo(4);
 		assertThat(executor.getMaxPoolSize()).isEqualTo(8);
@@ -102,9 +106,16 @@ class TaskExecutorBuilderTests {
 	void customizersShouldBeAppliedLast() {
 		TaskDecorator taskDecorator = mock(TaskDecorator.class);
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
-		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8).allowCoreThreadTimeOut(true)
-				.keepAlive(Duration.ofMinutes(1)).awaitTermination(true).awaitTerminationPeriod(Duration.ofSeconds(30))
-				.threadNamePrefix("test-").taskDecorator(taskDecorator).additionalCustomizers((taskExecutor) -> {
+		this.builder.queueCapacity(10)
+				.corePoolSize(4)
+				.maxPoolSize(8)
+				.allowCoreThreadTimeOut(true)
+				.keepAlive(Duration.ofMinutes(1))
+				.awaitTermination(true)
+				.awaitTerminationPeriod(Duration.ofSeconds(30))
+				.threadNamePrefix("test-")
+				.taskDecorator(taskDecorator)
+				.additionalCustomizers((taskExecutor) -> {
 					then(taskExecutor).should().setQueueCapacity(10);
 					then(taskExecutor).should().setCorePoolSize(4);
 					then(taskExecutor).should().setMaxPoolSize(8);
@@ -123,7 +134,8 @@ class TaskExecutorBuilderTests {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+				.customizers(Collections.singleton(customizer2))
+				.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(executor);
 	}
@@ -146,7 +158,8 @@ class TaskExecutorBuilderTests {
 	void additionalCustomizersShouldAddToExisting() {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
-		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
+		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
+				.additionalCustomizers(customizer2)
 				.build();
 		then(customizer1).should().customize(executor);
 		then(customizer2).should().customize(executor);

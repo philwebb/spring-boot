@@ -98,7 +98,9 @@ class NativeImageResourceProvider implements ResourceProvider {
 				.startsAndEndsWith(locatedResource.resource.getFilename(), prefix, suffixes);
 		List<LoadableResource> result = new ArrayList<>();
 		result.addAll(this.scanner.getResources(prefix, suffixes));
-		this.locatedResources.stream().filter(matchesPrefixAndSuffixes).map(this::asClassPathResource)
+		this.locatedResources.stream()
+				.filter(matchesPrefixAndSuffixes)
+				.map(this::asClassPathResource)
 				.forEach(result::add);
 		return result;
 	}

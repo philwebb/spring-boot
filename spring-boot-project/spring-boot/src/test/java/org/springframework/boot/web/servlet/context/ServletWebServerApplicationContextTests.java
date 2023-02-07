@@ -137,8 +137,9 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("listener", new RootBeanDefinition(TestApplicationListener.class));
 		this.context.refresh();
 		List<ApplicationEvent> events = this.context.getBean(TestApplicationListener.class).receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
-				ContextRefreshedEvent.class);
+		assertThat(events).hasSize(2)
+				.extracting("class")
+				.containsExactly(ServletWebServerInitializedEvent.class, ContextRefreshedEvent.class);
 		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
 		assertThat(initializedEvent.getSource().getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
@@ -170,8 +171,9 @@ class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		this.context.addApplicationListener(listener);
 		this.context.close();
-		assertThat(listener.receivedEvents()).hasSize(2).extracting("class").contains(AvailabilityChangeEvent.class,
-				ContextClosedEvent.class);
+		assertThat(listener.receivedEvents()).hasSize(2)
+				.extracting("class")
+				.contains(AvailabilityChangeEvent.class, ContextClosedEvent.class);
 	}
 
 	@Test
@@ -215,7 +217,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.havingRootCause().withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
+				.havingRootCause()
+				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
 						+ "multiple ServletWebServerFactory beans");
 
 	}
@@ -410,8 +413,8 @@ class ServletWebServerApplicationContextTests {
 		// the delegate proxy will trigger creation and an exception
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> {
 			this.filterCaptor.getValue().init(new MockFilterConfig());
-			this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
-					new MockFilterChain());
+			this.filterCaptor.getValue()
+					.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		}).withMessageContaining("Create FilterBean Failure");
 	}
 

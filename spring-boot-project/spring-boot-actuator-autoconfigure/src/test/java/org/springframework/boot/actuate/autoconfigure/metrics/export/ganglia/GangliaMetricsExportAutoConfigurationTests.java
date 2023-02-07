@@ -46,8 +46,9 @@ class GangliaMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(GangliaMeterRegistry.class).hasSingleBean(GangliaConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(GangliaMeterRegistry.class)
+						.hasSingleBean(GangliaConfig.class));
 	}
 
 	@Test
@@ -68,15 +69,18 @@ class GangliaMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(GangliaMeterRegistry.class).hasSingleBean(GangliaConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(GangliaMeterRegistry.class)
+						.hasSingleBean(GangliaConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GangliaMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(GangliaConfig.class));
+						.hasBean("customRegistry")
+						.hasSingleBean(GangliaConfig.class));
 	}
 
 	@Test

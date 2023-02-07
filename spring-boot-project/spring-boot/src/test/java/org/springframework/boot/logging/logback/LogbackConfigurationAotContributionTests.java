@@ -82,7 +82,8 @@ class LogbackConfigurationAotContributionTests {
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-model"));
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-pattern-rules"));
 		SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
-		assertThat(serializationHints.javaSerializationHints().map(JavaSerializationHint::getType)
+		assertThat(serializationHints.javaSerializationHints()
+				.map(JavaSerializationHint::getType)
 				.map(TypeReference::getName))
 						.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
 		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
@@ -99,8 +100,8 @@ class LogbackConfigurationAotContributionTests {
 		TestGenerationContext generationContext = applyContribution(new Model());
 		assertThat(invokePublicConstructorsOf("com.example.Alpha")).accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsOf("com.example.Bravo")).accepts(generationContext.getRuntimeHints());
-		Properties patternRules = load(generationContext.getGeneratedFiles().getGeneratedFile(Kind.RESOURCE,
-				"META-INF/spring/logback-pattern-rules"));
+		Properties patternRules = load(generationContext.getGeneratedFiles()
+				.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
 		assertThat(patternRules).hasSize(2);
 		assertThat(patternRules).containsEntry("a", "com.example.Alpha");
 		assertThat(patternRules).containsEntry("b", "com.example.Bravo");
@@ -189,14 +190,16 @@ class LogbackConfigurationAotContributionTests {
 	}
 
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
-		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(name))
+		return RuntimeHintsPredicates.reflection()
+				.onType(TypeReference.of(name))
 				.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 	}
 
 	private Predicate<RuntimeHints> invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Class<?> type) {
-		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(type)).withMemberCategories(
-				MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INTROSPECT_PUBLIC_METHODS,
-				MemberCategory.INVOKE_PUBLIC_METHODS);
+		return RuntimeHintsPredicates.reflection()
+				.onType(TypeReference.of(type))
+				.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+						MemberCategory.INTROSPECT_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS);
 	}
 
 	private Properties load(InputStreamSource source) {

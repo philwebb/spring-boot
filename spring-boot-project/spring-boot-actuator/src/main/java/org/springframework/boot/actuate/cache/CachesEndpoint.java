@@ -109,14 +109,22 @@ public class CachesEndpoint {
 
 	private List<CacheEntryDescriptor> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
-		return this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream()).toList();
+		return this.cacheManagers.keySet()
+				.stream()
+				.filter(cacheManagerNamePredicate)
+				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream())
+				.toList();
 	}
 
 	private List<CacheEntryDescriptor> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
-		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate).map(cacheManager::getCache)
-				.filter(Objects::nonNull).map((cache) -> new CacheEntryDescriptor(cache, cacheManagerName)).toList();
+		return cacheManager.getCacheNames()
+				.stream()
+				.filter(cacheNamePredicate)
+				.map(cacheManager::getCache)
+				.filter(Objects::nonNull)
+				.map((cache) -> new CacheEntryDescriptor(cache, cacheManagerName))
+				.toList();
 	}
 
 	private CacheEntryDescriptor extractUniqueCacheEntry(String cache, List<CacheEntryDescriptor> entries) {

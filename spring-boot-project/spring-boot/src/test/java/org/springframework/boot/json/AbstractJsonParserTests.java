@@ -194,7 +194,8 @@ abstract class AbstractJsonParserTests {
 	void listWithRepeatedOpenArray() throws IOException {
 		String input = StreamUtils.copyToString(
 				AbstractJsonParserTests.class.getResourceAsStream("repeated-open-array.txt"), StandardCharsets.UTF_8);
-		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input)).havingCause()
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input))
+				.havingCause()
 				.withMessageContaining("too deeply nested");
 	}
 

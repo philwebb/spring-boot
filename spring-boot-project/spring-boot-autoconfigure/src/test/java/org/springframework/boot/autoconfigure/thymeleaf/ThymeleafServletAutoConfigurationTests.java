@@ -182,8 +182,8 @@ class ThymeleafServletAutoConfigurationTests {
 	@Test
 	void createLayoutFromConfigClass() {
 		this.contextRunner.run((context) -> {
-			ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class).resolveViewName("view",
-					Locale.UK);
+			ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class)
+					.resolveViewName("view", Locale.UK);
 			MockHttpServletResponse response = new MockHttpServletResponse();
 			MockHttpServletRequest request = new MockHttpServletRequest(context.getBean(ServletContext.class));
 			request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
@@ -283,11 +283,15 @@ class ThymeleafServletAutoConfigurationTests {
 	void registerResourceHandlingFilterWithOtherRegistrationBean() {
 		// gh-14897
 		this.contextRunner.withUserConfiguration(FilterRegistrationOtherConfiguration.class)
-				.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
+				.withPropertyValues("spring.web.resources.chain.enabled:true")
+				.run((context) -> {
 					Map<String, FilterRegistrationBean> beans = context.getBeansOfType(FilterRegistrationBean.class);
 					assertThat(beans).hasSize(2);
-					FilterRegistrationBean registration = beans.values().stream()
-							.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+					FilterRegistrationBean registration = beans.values()
+							.stream()
+							.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+							.findFirst()
+							.get();
 					assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 							EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
 				});
@@ -298,11 +302,15 @@ class ThymeleafServletAutoConfigurationTests {
 	void registerResourceHandlingFilterWithResourceRegistrationBean() {
 		// gh-14926
 		this.contextRunner.withUserConfiguration(FilterRegistrationResourceConfiguration.class)
-				.withPropertyValues("spring.web.resources.chain.enabled:true").run((context) -> {
+				.withPropertyValues("spring.web.resources.chain.enabled:true")
+				.run((context) -> {
 					Map<String, FilterRegistrationBean> beans = context.getBeansOfType(FilterRegistrationBean.class);
 					assertThat(beans).hasSize(1);
-					FilterRegistrationBean registration = beans.values().stream()
-							.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+					FilterRegistrationBean registration = beans.values()
+							.stream()
+							.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+							.findFirst()
+							.get();
 					assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 							EnumSet.of(DispatcherType.INCLUDE));
 				});

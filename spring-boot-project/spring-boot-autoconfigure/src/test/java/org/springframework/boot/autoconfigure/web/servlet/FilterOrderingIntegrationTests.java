@@ -69,7 +69,8 @@ class FilterOrderingIntegrationTests {
 	void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
-				.getWebServer().getRegisteredFilters();
+				.getWebServer()
+				.getRegisteredFilters();
 		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());

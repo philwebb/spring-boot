@@ -38,8 +38,11 @@ class JsonConverter {
 
 	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
-				.sorted(ITEM_COMPARATOR).toList();
+		List<ItemMetadata> items = metadata.getItems()
+				.stream()
+				.filter((item) -> item.isOfItemType(itemType))
+				.sorted(ITEM_COMPARATOR)
+				.toList();
 		for (ItemMetadata item : items) {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));

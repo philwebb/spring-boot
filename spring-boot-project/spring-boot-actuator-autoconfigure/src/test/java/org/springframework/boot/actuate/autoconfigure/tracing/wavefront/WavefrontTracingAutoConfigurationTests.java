@@ -72,7 +72,8 @@ class WavefrontTracingAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfMicrometerReporterWavefrontIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.tracing.reporter.wavefront"))
-				.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
+				.withUserConfiguration(WavefrontSenderConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 					assertThat(context).doesNotHaveBean(SpanMetrics.class);
 					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
@@ -83,7 +84,8 @@ class WavefrontTracingAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-				.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
+				.withUserConfiguration(WavefrontSenderConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 					assertThat(context).doesNotHaveBean(SpanMetrics.class);
 					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
@@ -128,7 +130,8 @@ class WavefrontTracingAutoConfigurationTests {
 	@Test
 	void shouldUseSpringApplicationNameForServiceName() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class)
-				.withPropertyValues("spring.application.name=super-service").run((context) -> {
+				.withPropertyValues("spring.application.name=super-service")
+				.run((context) -> {
 					ApplicationTags applicationTags = context.getBean(ApplicationTags.class);
 					assertThat(applicationTags.getApplication()).isEqualTo("unnamed_application");
 					assertThat(applicationTags.getService()).isEqualTo("super-service");

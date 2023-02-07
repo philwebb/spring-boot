@@ -37,7 +37,8 @@ class DispatcherHandlersMappingDescriptionProviderTests {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new DispatcherHandlersMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints,
 				getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(DispatcherHandlerMappingDescription.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(DispatcherHandlerMappingDescription.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 						.accepts(runtimeHints);
 	}

@@ -48,8 +48,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SqlInitializationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class)).withPropertyValues(
-					"spring.datasource.generate-unique-name:true", "spring.r2dbc.generate-unique-name:true");
+			.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name:true",
+					"spring.r2dbc.generate-unique-name:true");
 
 	@Test
 	void whenNoDataSourceOrConnectionFactoryIsAvailableThenAutoConfigurationBacksOff() {
@@ -89,7 +90,8 @@ class SqlInitializationAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.withUserConfiguration(DataSourceAutoConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(ConnectionFactory.class)
-						.hasSingleBean(DataSource.class).hasSingleBean(R2dbcScriptDatabaseInitializer.class)
+						.hasSingleBean(DataSource.class)
+						.hasSingleBean(R2dbcScriptDatabaseInitializer.class)
 						.doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
 	}
 
@@ -104,16 +106,19 @@ class SqlInitializationAutoConfigurationTests {
 	@Test
 	void whenAnInitializerIsDefinedThenSqlInitializerIsStillAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withUserConfiguration(DatabaseInitializerConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(SqlDataSourceScriptDatabaseInitializer.class).hasBean("customInitializer"));
+				.withUserConfiguration(DatabaseInitializerConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(SqlDataSourceScriptDatabaseInitializer.class)
+						.hasBean("customInitializer"));
 	}
 
 	@Test
 	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnR2dbcScriptDatabaseInitializer() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory()
+							.getBeanDefinition(
+									"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
 					assertThat(beanDefinition.getDependsOn())
 							.containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
 				});
@@ -122,9 +127,11 @@ class SqlInitializationAutoConfigurationTests {
 	@Test
 	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnDataSourceScriptDatabaseInitializer() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
-							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory()
+							.getBeanDefinition(
+									"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
 					assertThat(beanDefinition.getDependsOn())
 							.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
 				});
@@ -133,7 +140,8 @@ class SqlInitializationAutoConfigurationTests {
 	@Test
 	void whenADataSourceIsAvailableAndSpringJdbcIsNotThenAutoConfigurationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(DatabasePopulator.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(DatabasePopulator.class))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
 					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
 				});

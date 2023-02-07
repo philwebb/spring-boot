@@ -93,15 +93,20 @@ public class PropertiesMeterFilter implements MeterFilter {
 				.maximumExpectedValue(
 						convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
 				.expiry(lookupWithFallbackToAll(distribution.getExpiry(), id, null))
-				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null)).build().merge(config);
+				.bufferLength(lookupWithFallbackToAll(distribution.getBufferLength(), id, null))
+				.build()
+				.merge(config);
 	}
 
 	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {
 		if (slo == null) {
 			return null;
 		}
-		double[] converted = Arrays.stream(slo).map((candidate) -> candidate.getValue(meterType))
-				.filter(Objects::nonNull).mapToDouble(Double::doubleValue).toArray();
+		double[] converted = Arrays.stream(slo)
+				.map((candidate) -> candidate.getValue(meterType))
+				.filter(Objects::nonNull)
+				.mapToDouble(Double::doubleValue)
+				.toArray();
 		return (converted.length != 0) ? converted : null;
 	}
 

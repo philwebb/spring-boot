@@ -32,10 +32,16 @@ public class SecurityConfiguration {
 	@Bean
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 		return new InMemoryUserDetailsManager(
-				User.withDefaultPasswordEncoder().username("user").password("password").authorities("ROLE_USER")
+				User.withDefaultPasswordEncoder()
+						.username("user")
+						.password("password")
+						.authorities("ROLE_USER")
 						.build(),
-				User.withDefaultPasswordEncoder().username("admin").password("admin")
-						.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
+				User.withDefaultPasswordEncoder()
+						.username("admin")
+						.password("admin")
+						.authorities("ROLE_ACTUATOR", "ROLE_USER")
+						.build());
 	}
 
 	@Bean

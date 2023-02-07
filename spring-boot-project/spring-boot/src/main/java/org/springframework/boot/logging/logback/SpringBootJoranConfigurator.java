@@ -188,9 +188,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			generationContext.getRuntimeHints().resources().registerPattern(MODEL_RESOURCE_LOCATION);
 			SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
 			serializationTypes(this.model).forEach(serializationHints::registerType);
-			reflectionTypes(this.model).forEach((type) -> generationContext.getRuntimeHints().reflection().registerType(
-					TypeReference.of(type), MemberCategory.INTROSPECT_PUBLIC_METHODS,
-					MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+			reflectionTypes(this.model).forEach((type) -> generationContext.getRuntimeHints()
+					.reflection()
+					.registerType(TypeReference.of(type), MemberCategory.INTROSPECT_PUBLIC_METHODS,
+							MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -307,9 +308,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			return methods.stream()
 					.filter((method) -> !method.getDeclaringClass().equals(ContextAware.class)
 							&& !method.getDeclaringClass().equals(ContextAwareBase.class))
-					.map(Method::getParameterTypes).flatMap(Stream::of)
+					.map(Method::getParameterTypes)
+					.flatMap(Stream::of)
 					.filter((type) -> !type.isPrimitive() && !type.equals(String.class))
-					.map((type) -> type.isArray() ? type.getComponentType() : type).map(Class::getName).toList();
+					.map((type) -> type.isArray() ? type.getComponentType() : type)
+					.map(Class::getName)
+					.toList();
 		}
 
 	}
@@ -377,8 +381,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			generationContext.getGeneratedFiles().addResourceFile(RESOURCE_LOCATION, () -> asInputStream(registryMap));
 			generationContext.getRuntimeHints().resources().registerPattern(RESOURCE_LOCATION);
 			for (String ruleClassName : registryMap.values()) {
-				generationContext.getRuntimeHints().reflection().registerType(TypeReference.of(ruleClassName),
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+				generationContext.getRuntimeHints()
+						.reflection()
+						.registerType(TypeReference.of(ruleClassName), MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 			}
 		}
 

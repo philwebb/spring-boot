@@ -159,8 +159,9 @@ class EndpointDiscovererTests {
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
-			operations.values().forEach(
-					(operation) -> assertThat(operation.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values()
+					.forEach((operation) -> assertThat(operation.getInvoker())
+							.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 
@@ -172,8 +173,9 @@ class EndpointDiscovererTests {
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
-			operations.values().forEach(
-					(operation) -> assertThat(operation.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values()
+					.forEach((operation) -> assertThat(operation.getInvoker())
+							.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 

@@ -77,8 +77,8 @@ class SampleIntegrationApplicationTests {
 	}
 
 	private void awaitOutputContaining(File outputDir, String requiredContents) {
-		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
-				containsString(requiredContents));
+		Awaitility.waitAtMost(Duration.ofSeconds(30))
+				.until(() -> outputIn(outputDir), containsString(requiredContents));
 	}
 
 	private String outputIn(File outputDir) throws IOException {

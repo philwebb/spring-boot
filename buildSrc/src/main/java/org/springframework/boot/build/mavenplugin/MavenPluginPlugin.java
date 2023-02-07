@@ -219,8 +219,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	private FormatHelpMojoSource createFormatHelpMojoSource(Project project, MavenExec generateHelpMojoTask,
 			File generatedHelpMojoDir) {
-		FormatHelpMojoSource formatHelpMojoSource = project.getTasks().create("formatHelpMojoSource",
-				FormatHelpMojoSource.class);
+		FormatHelpMojoSource formatHelpMojoSource = project.getTasks()
+				.create("formatHelpMojoSource", FormatHelpMojoSource.class);
 		formatHelpMojoSource.setGenerator(generateHelpMojoTask);
 		formatHelpMojoSource.setOutputDir(generatedHelpMojoDir);
 		return formatHelpMojoSource;
@@ -241,8 +241,10 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		MavenExec generatePluginDescriptor = project.getTasks().create("generatePluginDescriptor", MavenExec.class);
 		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:descriptor");
 		generatePluginDescriptor.getOutputs().dir(new File(mavenDir, "target/classes/META-INF/maven"));
-		generatePluginDescriptor.getInputs().dir(new File(mavenDir, "target/classes/org"))
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("plugin classes");
+		generatePluginDescriptor.getInputs()
+				.dir(new File(mavenDir, "target/classes/org"))
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("plugin classes");
 		generatePluginDescriptor.setProjectDir(mavenDir);
 		return generatePluginDescriptor;
 	}
@@ -267,11 +269,14 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void addExtractVersionPropertiesTask(Project project) {
-		ExtractVersionProperties extractVersionProperties = project.getTasks().create("extractVersionProperties",
-				ExtractVersionProperties.class);
+		ExtractVersionProperties extractVersionProperties = project.getTasks()
+				.create("extractVersionProperties", ExtractVersionProperties.class);
 		extractVersionProperties.setEffectiveBoms(project.getConfigurations().create("versionProperties"));
-		extractVersionProperties.getDestination().set(project.getLayout().getBuildDirectory().dir("generated-resources")
-				.map((dir) -> dir.file("extracted-versions.properties")));
+		extractVersionProperties.getDestination()
+				.set(project.getLayout()
+						.getBuildDirectory()
+						.dir("generated-resources")
+						.map((dir) -> dir.file("extracted-versions.properties")));
 	}
 
 	public static class FormatHelpMojoSource extends DefaultTask {
@@ -282,7 +287,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		void setGenerator(Task generator) {
 			this.generator = generator;
-			getInputs().files(this.generator).withPathSensitivity(PathSensitivity.RELATIVE)
+			getInputs().files(this.generator)
+					.withPathSensitivity(PathSensitivity.RELATIVE)
 					.withPropertyName("generated source");
 		}
 
@@ -329,10 +335,11 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		@Override
 		public void execute(ComponentMetadataContext context) {
-			context.getDetails().maybeAddVariant("compileWithMetadata", "compile",
-					(variant) -> configureVariant(context, variant));
-			context.getDetails().maybeAddVariant("apiElementsWithMetadata", "apiElements",
-					(variant) -> configureVariant(context, variant));
+			context.getDetails()
+					.maybeAddVariant("compileWithMetadata", "compile", (variant) -> configureVariant(context, variant));
+			context.getDetails()
+					.maybeAddVariant("apiElementsWithMetadata", "apiElements",
+							(variant) -> configureVariant(context, variant));
 		}
 
 		private void configureVariant(ComponentMetadataContext context, VariantMetadata variant) {
@@ -374,10 +381,13 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		public void createRepository() {
 			for (ResolvedArtifactResult result : this.runtimeClasspath.getIncoming().getArtifacts()) {
 				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier identifier) {
-					String fileName = result.getFile().getName()
+					String fileName = result.getFile()
+							.getName()
 							.replace(identifier.getVersion() + "-" + identifier.getVersion(), identifier.getVersion());
-					File repositoryLocation = this.outputDirectory.dir(identifier.getGroup().replace('.', '/') + "/"
-							+ identifier.getModule() + "/" + identifier.getVersion() + "/" + fileName).get()
+					File repositoryLocation = this.outputDirectory
+							.dir(identifier.getGroup().replace('.', '/') + "/" + identifier.getModule() + "/"
+									+ identifier.getVersion() + "/" + fileName)
+							.get()
 							.getAsFile();
 					repositoryLocation.getParentFile().mkdirs();
 					try {
@@ -487,8 +497,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		private String get(String expression) {
 			try {
-				Node node = (Node) this.xpath.compile("/project/" + expression).evaluate(this.document,
-						XPathConstants.NODE);
+				Node node = (Node) this.xpath.compile("/project/" + expression)
+						.evaluate(this.document, XPathConstants.NODE);
 				String text = (node != null) ? node.getTextContent() : null;
 				Assert.hasLength(text, () -> "No result for expression " + expression);
 				return text;

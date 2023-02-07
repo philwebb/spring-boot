@@ -67,14 +67,17 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 
 	@Test
 	void checkShouldSendEmptySpanList() {
-		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().string("[]")).andRespond(withStatus(HttpStatus.ACCEPTED));
+		this.mockServer.expect(requestTo(ZIPKIN_URL))
+				.andExpect(method(HttpMethod.POST))
+				.andExpect(content().string("[]"))
+				.andRespond(withStatus(HttpStatus.ACCEPTED));
 		assertThat(this.sut.check()).isEqualTo(CheckResult.OK);
 	}
 
 	@Test
 	void checkShouldNotRaiseException() {
-		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
+		this.mockServer.expect(requestTo(ZIPKIN_URL))
+				.andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 		CheckResult result = this.sut.check();
 		assertThat(result.ok()).isFalse();
@@ -84,8 +87,10 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
 	void sendSpansShouldSendSpansToZipkin(boolean async) throws IOException {
-		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
-				.andExpect(content().contentType("application/json")).andExpect(content().string("[span1,span2]"))
+		this.mockServer.expect(requestTo(ZIPKIN_URL))
+				.andExpect(method(HttpMethod.POST))
+				.andExpect(content().contentType("application/json"))
+				.andExpect(content().string("[span1,span2]"))
 				.andRespond(withStatus(HttpStatus.ACCEPTED));
 		makeRequest(List.of(toByteArray("span1"), toByteArray("span2")), async);
 	}
@@ -93,7 +98,8 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 	@ParameterizedTest
 	@ValueSource(booleans = { true, false })
 	void sendSpansShouldHandleHttpFailures(boolean async) {
-		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
+		this.mockServer.expect(requestTo(ZIPKIN_URL))
+				.andExpect(method(HttpMethod.POST))
 				.andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 		if (async) {
 			CallbackResult callbackResult = makeAsyncRequest(Collections.emptyList());
@@ -113,9 +119,12 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
 				.decode("H4sIAAAAAAAA/+3BMQ0AAAwDIKFLj/k3UR8NcA8AAAAAAAAAAAADUsAZfeASJwAA");
-		this.mockServer.expect(requestTo(ZIPKIN_URL)).andExpect(method(HttpMethod.POST))
-				.andExpect(header("Content-Encoding", "gzip")).andExpect(content().contentType("application/json"))
-				.andExpect(content().bytes(compressed)).andRespond(withStatus(HttpStatus.ACCEPTED));
+		this.mockServer.expect(requestTo(ZIPKIN_URL))
+				.andExpect(method(HttpMethod.POST))
+				.andExpect(header("Content-Encoding", "gzip"))
+				.andExpect(content().contentType("application/json"))
+				.andExpect(content().bytes(compressed))
+				.andRespond(withStatus(HttpStatus.ACCEPTED));
 		makeRequest(List.of(toByteArray(uncompressed)), async);
 	}
 

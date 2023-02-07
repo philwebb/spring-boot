@@ -57,7 +57,8 @@ class CustomHibernateJpaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.generate-unique-name=true")
-			.withUserConfiguration(TestConfiguration.class).withConfiguration(
+			.withUserConfiguration(TestConfiguration.class)
+			.withConfiguration(
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class));
 
 	@Test
@@ -75,7 +76,8 @@ class CustomHibernateJpaAutoConfigurationTests {
 	@Test
 	void namingStrategyBeansAreUsed() {
 		this.contextRunner.withUserConfiguration(NamingStrategyConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans").run((context) -> {
+				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans")
+				.run((context) -> {
 					HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
 					Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
 					assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",

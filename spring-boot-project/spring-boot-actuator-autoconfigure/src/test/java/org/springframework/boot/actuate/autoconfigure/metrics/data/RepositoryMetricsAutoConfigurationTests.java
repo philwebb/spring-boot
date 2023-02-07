@@ -105,8 +105,10 @@ class RepositoryMetricsAutoConfigurationTests {
 
 	@Test
 	void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.data.repository.autotime.enabled=true",
-				"management.metrics.data.repository.autotime.percentiles=0.5,0.7").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.metrics.data.repository.autotime.enabled=true",
+						"management.metrics.data.repository.autotime.percentiles=0.5,0.7")
+				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context, ExampleRepository.class);
 					Timer timer = registry.get("spring.data.repository.invocations").timer();
 					HistogramSnapshot snapshot = timer.takeSnapshot();

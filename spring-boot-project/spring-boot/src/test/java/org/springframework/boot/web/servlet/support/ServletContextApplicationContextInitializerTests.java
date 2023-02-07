@@ -53,8 +53,8 @@ class ServletContextApplicationContextInitializerTests {
 	@Test
 	void applicationContextCanBeStoredInServletContext() {
 		new ServletContextApplicationContextInitializer(this.servletContext, true).initialize(this.applicationContext);
-		then(this.servletContext).should().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.applicationContext);
+		then(this.servletContext).should()
+				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
 	}
 
 }

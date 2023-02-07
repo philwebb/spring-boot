@@ -121,15 +121,17 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		ExtractResources extractLegalResources = project.getTasks().create("extractLegalResources",
-				ExtractResources.class);
+		ExtractResources extractLegalResources = project.getTasks()
+				.create("extractLegalResources", ExtractResources.class);
 		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 		extractLegalResources.property("version", project.getVersion().toString());
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
+		Set<String> sourceJarTaskNames = sourceSets.stream()
+				.map(SourceSet::getSourcesJarTaskName)
 				.collect(Collectors.toSet());
-		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
+		Set<String> javadocJarTaskNames = sourceSets.stream()
+				.map(SourceSet::getJavadocJarTaskName)
 				.collect(Collectors.toSet());
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
 			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
@@ -167,8 +169,11 @@ class JavaConventions {
 			testRetry.getFailOnPassedAfterRetry().set(true);
 			testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 		});
-		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
-				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
+		project.getPlugins()
+				.withType(JavaPlugin.class,
+						(javaPlugin) -> project.getDependencies()
+								.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME,
+										"org.junit.platform:junit-platform-launcher"));
 	}
 
 	private boolean isCi() {
@@ -234,11 +239,15 @@ class JavaConventions {
 				.matching((configuration) -> configuration.getName().endsWith("Classpath")
 						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
 				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
-		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
-				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+		Dependency springBootParent = project.getDependencies()
+				.enforcedPlatform(project.getDependencies()
+						.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
 		dependencyManagement.getDependencies().add(springBootParent);
-		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
-				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+		project.getPlugins()
+				.withType(OptionalDependenciesPlugin.class,
+						(optionalDependencies) -> configurations
+								.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME)
+								.extendsFrom(dependencyManagement));
 	}
 
 	private void configureToolchain(Project project) {
@@ -260,9 +269,9 @@ class JavaConventions {
 	}
 
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
-		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
-				CheckClasspathForProhibitedDependencies.class);
+		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks()
+				.create("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+						CheckClasspathForProhibitedDependencies.class);
 		checkClasspathForProhibitedDependencies.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}

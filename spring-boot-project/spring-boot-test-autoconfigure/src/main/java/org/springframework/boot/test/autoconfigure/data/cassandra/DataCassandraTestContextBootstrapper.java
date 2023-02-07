@@ -31,8 +31,10 @@ class DataCassandraTestContextBootstrapper extends SpringBootTestContextBootstra
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataCassandraTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(DataCassandraTest.class)
+				.getValue("properties", String[].class)
+				.orElse(null);
 	}
 
 }

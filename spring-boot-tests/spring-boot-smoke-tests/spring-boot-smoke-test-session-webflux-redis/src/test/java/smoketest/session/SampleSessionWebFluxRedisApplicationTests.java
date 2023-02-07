@@ -75,11 +75,13 @@ class SampleSessionWebFluxRedisApplicationTests {
 						.doOnNext((sessionId) -> assertThat(sessionId).isEqualTo(tuple.getT2()))
 						.thenReturn(sessionCookie);
 			});
-		}).delayElement(Duration.ofSeconds(10))
+		})
+				.delayElement(Duration.ofSeconds(10))
 				.flatMap((sessionCookie) -> client.get().cookie("SESSION", sessionCookie).exchangeToMono((response) -> {
 					assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 					return response.releaseBody();
-				})).block(Duration.ofSeconds(30));
+				}))
+				.block(Duration.ofSeconds(30));
 	}
 
 	private String getBasicAuth() {

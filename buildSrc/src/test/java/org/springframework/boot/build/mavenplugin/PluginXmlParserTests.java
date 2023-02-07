@@ -50,7 +50,8 @@ class PluginXmlParserTests {
 	@Test
 	void parseNonExistingFileThrowException() {
 		assertThatThrownBy(() -> this.parser.parse(new File("src/test/resources/nonexistent.xml")))
-				.isInstanceOf(RuntimeException.class).hasCauseInstanceOf(FileNotFoundException.class);
+				.isInstanceOf(RuntimeException.class)
+				.hasCauseInstanceOf(FileNotFoundException.class);
 	}
 
 }

@@ -151,10 +151,12 @@ class RemoteDevToolsAutoConfigurationTests {
 	void securityConfigurationShouldAllowAccess() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(springSecurity()).addFilter(filter)
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.apply(springSecurity())
+				.addFilter(filter)
 				.build();
-		mockMvc.perform(MockMvcRequestBuilders.get(DEFAULT_CONTEXT_PATH + "/restart").header(DEFAULT_SECRET_HEADER_NAME,
-				"supersecret")).andExpect(status().isOk());
+		mockMvc.perform(MockMvcRequestBuilders.get(DEFAULT_CONTEXT_PATH + "/restart")
+				.header(DEFAULT_SECRET_HEADER_NAME, "supersecret")).andExpect(status().isOk());
 		assertRestartInvoked(true);
 		assertThat(this.context.containsBean("devtoolsSecurityFilterChain")).isTrue();
 	}
@@ -164,7 +166,9 @@ class RemoteDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
 				"server.servlet.context-path:/test", "spring.devtools.remote.context-path:/custom"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(springSecurity()).addFilter(filter)
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.apply(springSecurity())
+				.addFilter(filter)
 				.build();
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/test/custom/restart").header(DEFAULT_SECRET_HEADER_NAME, "supersecret"))
@@ -177,8 +181,10 @@ class RemoteDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret"));
 		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
 		Filter securityFilterChain = this.context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).addFilter(securityFilterChain)
-				.addFilter(filter).build();
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.addFilter(securityFilterChain)
+				.addFilter(filter)
+				.build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/my-path")).andExpect(status().isUnauthorized());
 	}
 

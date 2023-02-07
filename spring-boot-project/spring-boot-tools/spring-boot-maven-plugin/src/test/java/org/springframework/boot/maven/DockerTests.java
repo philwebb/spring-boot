@@ -41,7 +41,9 @@ class DockerTests {
 		assertThat(dockerConfiguration.getHost()).isNull();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"username\" : \"\"")
+				.contains("\"password\" : \"\"")
+				.contains("\"email\" : \"\"")
 				.contains("\"serveraddress\" : \"\"");
 	}
 
@@ -59,7 +61,9 @@ class DockerTests {
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"username\" : \"\"")
+				.contains("\"password\" : \"\"")
+				.contains("\"email\" : \"\"")
 				.contains("\"serveraddress\" : \"\"");
 	}
 
@@ -78,7 +82,9 @@ class DockerTests {
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
+				.contains("\"username\" : \"\"")
+				.contains("\"password\" : \"\"")
+				.contains("\"email\" : \"\"")
 				.contains("\"serveraddress\" : \"\"");
 	}
 
@@ -91,11 +97,13 @@ class DockerTests {
 				new Docker.DockerRegistry("user2", "secret2", "https://docker2.example.com", "docker2@example.com"));
 		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
 		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"user1\"").contains("\"password\" : \"secret1\"")
+				.contains("\"username\" : \"user1\"")
+				.contains("\"password\" : \"secret1\"")
 				.contains("\"email\" : \"docker1@example.com\"")
 				.contains("\"serveraddress\" : \"https://docker1.example.com\"");
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"user2\"").contains("\"password\" : \"secret2\"")
+				.contains("\"username\" : \"user2\"")
+				.contains("\"password\" : \"secret2\"")
 				.contains("\"email\" : \"docker2@example.com\"")
 				.contains("\"serveraddress\" : \"https://docker2.example.com\"");
 	}

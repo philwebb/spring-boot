@@ -411,12 +411,15 @@ public class UndertowWebServer implements WebServer {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerTypeIfPresent(classLoader, "io.undertow.Undertow",
-					(hint) -> hint.withField("listeners").withField("channels"));
-			hints.reflection().registerTypeIfPresent(classLoader, "io.undertow.Undertow$ListenerConfig",
-					(hint) -> hint.withField("type").withField("port"));
-			hints.reflection().registerTypeIfPresent(classLoader,
-					"io.undertow.protocols.ssl.UndertowAcceptingSslChannel", (hint) -> hint.withField("ssl"));
+			hints.reflection()
+					.registerTypeIfPresent(classLoader, "io.undertow.Undertow",
+							(hint) -> hint.withField("listeners").withField("channels"));
+			hints.reflection()
+					.registerTypeIfPresent(classLoader, "io.undertow.Undertow$ListenerConfig",
+							(hint) -> hint.withField("type").withField("port"));
+			hints.reflection()
+					.registerTypeIfPresent(classLoader, "io.undertow.protocols.ssl.UndertowAcceptingSslChannel",
+							(hint) -> hint.withField("ssl"));
 		}
 
 	}

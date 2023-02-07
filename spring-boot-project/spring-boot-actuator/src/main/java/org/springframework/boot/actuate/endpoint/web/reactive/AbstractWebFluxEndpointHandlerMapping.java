@@ -186,7 +186,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		String path = this.endpointMapping.getPath();
 		String linksPath = StringUtils.hasLength(path) ? path : "/";
 		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
-		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath).methods(RequestMethod.GET).produces(produces)
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath)
+				.methods(RequestMethod.GET)
+				.produces(produces)
 				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler,
@@ -338,7 +340,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			if (body != null) {
 				arguments.putAll(body);
 			}
-			exchange.getRequest().getQueryParams()
+			exchange.getRequest()
+					.getQueryParams()
 					.forEach((name, values) -> arguments.put(name, (values.size() != 1) ? values : values.get(0)));
 			return arguments;
 		}
@@ -347,7 +350,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
-						.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication()).value();
+						.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication())
+						.value();
 				return tokenizePathSegments(remainingSegments);
 			}
 			return tokenizePathSegments(pathPattern.toString());
@@ -371,7 +375,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			if (result instanceof Flux) {
 				result = ((Flux<?>) result).collectList();
 			}
-			return Mono.from(result).map(this::toResponseEntity)
+			return Mono.from(result)
+					.map(this::toResponseEntity)
 					.onErrorMap(InvalidEndpointRequestException.class,
 							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getReason()))
 					.defaultIfEmpty(new ResponseEntity<>(
@@ -384,7 +389,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			}
 			MediaType contentType = (webEndpointResponse.getContentType() != null)
 					? new MediaType(webEndpointResponse.getContentType()) : null;
-			return ResponseEntity.status(webEndpointResponse.getStatus()).contentType(contentType)
+			return ResponseEntity.status(webEndpointResponse.getStatus())
+					.contentType(contentType)
 					.body(webEndpointResponse.getBody());
 		}
 
@@ -485,7 +491,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public boolean isUserInRole(String role) {
 			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
-			return AuthorityAuthorizationManager.hasAuthority(authority).check(this::getAuthentication, null)
+			return AuthorityAuthorizationManager.hasAuthority(authority)
+					.check(this::getAuthentication, null)
 					.isGranted();
 		}
 

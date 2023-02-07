@@ -65,8 +65,10 @@ class StartupTimeMetricsListenerAutoConfigurationTests {
 
 	@Test
 	void startupTimeMetricsCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.application.started.time:false",
-				"management.metrics.enable.application.ready.time:false").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.metrics.enable.application.started.time:false",
+						"management.metrics.enable.application.ready.time:false")
+				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext(), Duration.ofMillis(2500)));
 					context.publishEvent(new ApplicationReadyEvent(new SpringApplication(), null,

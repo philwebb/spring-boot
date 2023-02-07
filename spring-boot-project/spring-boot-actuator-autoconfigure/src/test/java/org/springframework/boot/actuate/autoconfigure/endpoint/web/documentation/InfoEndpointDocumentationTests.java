@@ -49,7 +49,8 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	void info() throws Exception {
-		this.mockMvc.perform(get("/actuator/info")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/info"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("info",
 						responseFields(beneathPath("git"),
 								fieldWithPath("branch").description("Name of the Git branch, if any."),
@@ -62,11 +63,13 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 										.optional(),
 								fieldWithPath("group").description("Group ID of the application, if any.").optional(),
 								fieldWithPath("name").description("Name of the application, if any.")
-										.type(JsonFieldType.STRING).optional(),
+										.type(JsonFieldType.STRING)
+										.optional(),
 								fieldWithPath("version").description("Version of the application, if any.").optional(),
 								fieldWithPath("time")
 										.description("Timestamp of when the application was built, if any.")
-										.type(JsonFieldType.VARIES).optional())));
+										.type(JsonFieldType.VARIES)
+										.optional())));
 	}
 
 	@Configuration(proxyBeanMethods = false)

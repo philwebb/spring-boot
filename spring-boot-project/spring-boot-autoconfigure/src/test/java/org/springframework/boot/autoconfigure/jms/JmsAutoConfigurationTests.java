@@ -211,7 +211,8 @@ class JmsAutoConfigurationTests {
 	void testDefaultContainerFactoryWithExceptionListener() {
 		ExceptionListener exceptionListener = mock(ExceptionListener.class);
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
-				.withBean(ExceptionListener.class, () -> exceptionListener).run((context) -> {
+				.withBean(ExceptionListener.class, () -> exceptionListener)
+				.run((context) -> {
 					DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
 					assertThat(container.getExceptionListener()).isSameAs(exceptionListener);
 				});
@@ -220,7 +221,8 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testCustomContainerFactoryWithConfigurer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration9.class, EnableJmsConfiguration.class)
-				.withPropertyValues("spring.jms.listener.autoStartup=false").run((context) -> {
+				.withPropertyValues("spring.jms.listener.autoStartup=false")
+				.run((context) -> {
 					DefaultMessageListenerContainer container = getContainer(context, "customListenerContainerFactory");
 					assertThat(container.getCacheLevel()).isEqualTo(DefaultMessageListenerContainer.CACHE_CONSUMER);
 					assertThat(container.isAutoStartup()).isFalse();
@@ -292,7 +294,8 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testPubSubDomainActive() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.jms.pubSubDomain:true").run((context) -> {
+				.withPropertyValues("spring.jms.pubSubDomain:true")
+				.run((context) -> {
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
 					DefaultMessageListenerContainer defaultMessageListenerContainer = context
 							.getBean(DefaultJmsListenerContainerFactory.class)
@@ -305,7 +308,8 @@ class JmsAutoConfigurationTests {
 	@Test
 	void testPubSubDomainOverride() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.jms.pubSubDomain:false").run((context) -> {
+				.withPropertyValues("spring.jms.pubSubDomain:false")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(JmsTemplate.class);
 					assertThat(context).hasSingleBean(ConnectionFactory.class);
 					JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);

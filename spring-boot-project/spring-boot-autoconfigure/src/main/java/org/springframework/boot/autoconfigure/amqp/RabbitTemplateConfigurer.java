@@ -90,9 +90,13 @@ public class RabbitTemplateConfigurer {
 			template.setRetryTemplate(new RetryTemplateFactory(this.retryTemplateCustomizers)
 					.createRetryTemplate(templateProperties.getRetry(), RabbitRetryTemplateCustomizer.Target.SENDER));
 		}
-		map.from(templateProperties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
+		map.from(templateProperties::getReceiveTimeout)
+				.whenNonNull()
+				.as(Duration::toMillis)
 				.to(template::setReceiveTimeout);
-		map.from(templateProperties::getReplyTimeout).whenNonNull().as(Duration::toMillis)
+		map.from(templateProperties::getReplyTimeout)
+				.whenNonNull()
+				.as(Duration::toMillis)
 				.to(template::setReplyTimeout);
 		map.from(templateProperties::getExchange).to(template::setExchange);
 		map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);

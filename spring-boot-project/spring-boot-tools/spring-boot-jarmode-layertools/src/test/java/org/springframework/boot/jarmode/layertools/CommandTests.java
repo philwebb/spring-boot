@@ -90,7 +90,8 @@ class CommandTests {
 	void runWithOptionMissingRequiredValueThrowsException() {
 		TestCommand command = new TestCommand("test", VERBOSE_FLAG, LOG_LEVEL_OPTION);
 		assertThatExceptionOfType(MissingValueException.class)
-				.isThrownBy(() -> run(command, "--verbose", "--log-level")).withMessage("--log-level");
+				.isThrownBy(() -> run(command, "--verbose", "--log-level"))
+				.withMessage("--log-level");
 	}
 
 	@Test

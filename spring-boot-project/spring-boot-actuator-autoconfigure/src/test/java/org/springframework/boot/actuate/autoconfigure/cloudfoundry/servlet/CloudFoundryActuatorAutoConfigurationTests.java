@@ -79,8 +79,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActive() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping,
 							"endpointMapping");
@@ -97,8 +99,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudfoundryapplicationProducesActuatorMediaType() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 					mockMvc.perform(get("/cloudfoundryapplication"))
 							.andExpect(header().string("Content-Type", V3_JSON));
@@ -107,8 +111,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActiveSetsApplicationId() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
 					String applicationId = (String) ReflectionTestUtils.getField(interceptor, "applicationId");
@@ -118,8 +124,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActiveSetsCloudControllerUrl() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
 					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
@@ -132,9 +140,11 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void skipSslValidation() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com",
-				"management.cloudfoundry.skip-ssl-validation:true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com",
+						"management.cloudfoundry.skip-ssl-validation:true")
+				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
 					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
@@ -189,14 +199,15 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void allEndpointsAvailableUnderCloudFoundryWithoutExposeAllOnWeb() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
 					assertThat(endpoints.stream()
-							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId())).findFirst())
-									.isNotEmpty();
+							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId()))
+							.findFirst()).isNotEmpty();
 				});
 	}
 
@@ -206,11 +217,13 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 						"vcap.application.cf_api:https://my-cloud-controller.com",
 						"management.endpoints.web.path-mapping.test=custom")
-				.withBean(TestEndpoint.class, TestEndpoint::new).run((context) -> {
+				.withBean(TestEndpoint.class, TestEndpoint::new)
+				.run((context) -> {
 					CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.stream()
-							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId())).findFirst()
+							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId()))
+							.findFirst()
 							.get();
 					Collection<WebOperation> operations = endpoint.getOperations();
 					assertThat(operations).hasSize(1);

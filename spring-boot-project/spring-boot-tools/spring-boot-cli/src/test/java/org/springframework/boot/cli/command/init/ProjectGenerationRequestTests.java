@@ -173,7 +173,8 @@ class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
-				.withMessageContaining("gradle-project").withMessageContaining("gradle-project-2");
+				.withMessageContaining("gradle-project")
+				.withMessageContaining("gradle-project-2");
 	}
 
 	@Test

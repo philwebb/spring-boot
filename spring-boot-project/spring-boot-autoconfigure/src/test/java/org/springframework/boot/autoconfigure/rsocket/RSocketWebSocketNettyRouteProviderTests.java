@@ -69,18 +69,27 @@ class RSocketWebSocketNettyRouteProviderTests {
 					ReactiveWebServerApplicationContext serverContext = (ReactiveWebServerApplicationContext) context
 							.getSourceApplicationContext();
 					RSocketRequester requester = createRSocketRequester(context, serverContext.getWebServer());
-					TestProtocol rsocketResponse = requester.route("websocket").data(new TestProtocol("rsocket"))
-							.retrieveMono(TestProtocol.class).block(Duration.ofSeconds(3));
+					TestProtocol rsocketResponse = requester.route("websocket")
+							.data(new TestProtocol("rsocket"))
+							.retrieveMono(TestProtocol.class)
+							.block(Duration.ofSeconds(3));
 					assertThat(rsocketResponse.getName()).isEqualTo("rsocket");
 					WebTestClient client = createWebTestClient(serverContext.getWebServer());
-					client.get().uri("/protocol").exchange().expectStatus().isOk().expectBody().jsonPath("name",
-							"http");
+					client.get()
+							.uri("/protocol")
+							.exchange()
+							.expectStatus()
+							.isOk()
+							.expectBody()
+							.jsonPath("name", "http");
 				});
 	}
 
 	private WebTestClient createWebTestClient(WebServer server) {
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + server.getPort())
-				.responseTimeout(Duration.ofMinutes(5)).build();
+		return WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + server.getPort())
+				.responseTimeout(Duration.ofMinutes(5))
+				.build();
 	}
 
 	private RSocketRequester createRSocketRequester(ApplicationContext context, WebServer server) {

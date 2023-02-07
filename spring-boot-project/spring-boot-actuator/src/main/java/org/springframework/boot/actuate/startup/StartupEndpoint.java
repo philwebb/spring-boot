@@ -106,10 +106,13 @@ public class StartupEndpoint {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
-					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
-			hints.reflection().registerType(FLIGHT_RECORDER_TAG, (typeHint) -> typeHint
-					.onReachableType(FLIGHT_RECORDER_STARTUP_STEP).withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection()
+					.registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
+							.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection()
+					.registerType(FLIGHT_RECORDER_TAG,
+							(typeHint) -> typeHint.onReachableType(FLIGHT_RECORDER_STARTUP_STEP)
+									.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
 		}
 
 	}

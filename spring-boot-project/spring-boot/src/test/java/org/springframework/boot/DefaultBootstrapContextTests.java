@@ -247,7 +247,8 @@ class DefaultBootstrapContextTests {
 		this.context.addCloseListener(listener);
 		assertThat(listener).wasNotCalled();
 		this.context.close(this.applicationContext);
-		assertThat(listener).wasCalledOnlyOnce().hasBootstrapContextSameAs(this.context)
+		assertThat(listener).wasCalledOnlyOnce()
+				.hasBootstrapContextSameAs(this.context)
 				.hasApplicationContextSameAs(this.applicationContext);
 	}
 

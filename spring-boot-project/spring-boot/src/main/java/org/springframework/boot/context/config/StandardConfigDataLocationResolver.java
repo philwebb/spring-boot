@@ -287,7 +287,8 @@ public class StandardConfigDataLocationResolver
 			String message = String.format("Config data location '%s' contains no subdirectories", location);
 			throw new ConfigDataLocationNotFoundException(location, message, null);
 		}
-		return Arrays.stream(subdirectories).filter(Resource::exists)
+		return Arrays.stream(subdirectories)
+				.filter(Resource::exists)
 				.map((resource) -> new StandardConfigDataResource(reference, resource, true))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

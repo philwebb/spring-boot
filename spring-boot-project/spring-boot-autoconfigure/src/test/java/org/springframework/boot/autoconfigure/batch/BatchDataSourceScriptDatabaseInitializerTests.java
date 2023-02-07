@@ -85,7 +85,8 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		List<String> schemaNames = Stream
 				.of(resolver.getResources("classpath:org/springframework/batch/core/schema-*.sql"))
-				.map((resource) -> resource.getFilename()).filter((resourceName) -> !resourceName.contains("-drop-"))
+				.map((resource) -> resource.getFilename())
+				.filter((resourceName) -> !resourceName.contains("-drop-"))
 				.toList();
 		assertThat(schemaNames).containsExactlyInAnyOrder("schema-derby.sql", "schema-sqlserver.sql",
 				"schema-mariadb.sql", "schema-mysql.sql", "schema-sqlite.sql", "schema-postgresql.sql",

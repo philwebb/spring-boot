@@ -104,7 +104,8 @@ class ConfigDataEnvironmentContributorTests {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null, null,
 				false, configData, 0);
 		assertThat(contributor.getConfigurationPropertySource()
-				.getConfigurationProperty(ConfigurationPropertyName.of("spring")).getValue()).isEqualTo("boot");
+				.getConfigurationProperty(ConfigurationPropertyName.of("spring"))
+				.getValue()).isEqualTo("boot");
 	}
 
 	@Test

@@ -48,7 +48,8 @@ class PropertiesMigrationListenerTests {
 	@Test
 	void sampleReport(CapturedOutput output) {
 		this.context = createSampleApplication().run("--logging.file=test.log");
-		assertThat(output).contains("commandLineArgs").contains("logging.file.name")
+		assertThat(output).contains("commandLineArgs")
+				.contains("logging.file.name")
 				.contains("Each configuration key has been temporarily mapped")
 				.doesNotContain("Please refer to the release notes");
 	}

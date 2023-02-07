@@ -75,16 +75,20 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontSender.class).hasBean("customConfig"));
+						.hasSingleBean(WavefrontMeterRegistry.class)
+						.hasSingleBean(WavefrontConfig.class)
+						.hasSingleBean(WavefrontSender.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.wavefront.api-token=abcde")
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasBean("customRegistry"));
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+						.hasSingleBean(WavefrontConfig.class)
+						.hasSingleBean(WavefrontMeterRegistry.class)
+						.hasBean("customRegistry"));
 	}
 
 	@Test
@@ -94,13 +98,19 @@ class WavefrontMetricsExportAutoConfigurationTests {
 		builder.shard("super-shard");
 		builder.customTags(Map.of("custom-key", "custom-val"));
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withUserConfiguration(BaseConfiguration.class).withBean(ApplicationTags.class, builder::build)
+				.withUserConfiguration(BaseConfiguration.class)
+				.withBean(ApplicationTags.class, builder::build)
 				.run((context) -> {
 					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");
-					assertThat(registry.find("my.counter").tags("env", "qa").tags("application", "super-application")
-							.tags("service", "super-service").tags("cluster", "super-cluster")
-							.tags("shard", "super-shard").tags("custom-key", "custom-val").counter()).isNotNull();
+					assertThat(registry.find("my.counter")
+							.tags("env", "qa")
+							.tags("application", "super-application")
+							.tags("service", "super-service")
+							.tags("cluster", "super-cluster")
+							.tags("shard", "super-shard")
+							.tags("custom-key", "custom-val")
+							.counter()).isNotNull();
 				});
 	}
 
@@ -111,19 +121,25 @@ class WavefrontMetricsExportAutoConfigurationTests {
 						"management.wavefront.application.name=super-application",
 						"management.wavefront.application.cluster-name=super-cluster",
 						"management.wavefront.application.shard-name=super-shard")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
 					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");
-					assertThat(registry.find("my.counter").tags("env", "qa").tags("application", "super-application")
-							.tags("service", "super-service").tags("cluster", "super-cluster")
-							.tags("shard", "super-shard").counter()).isNotNull();
+					assertThat(registry.find("my.counter")
+							.tags("env", "qa")
+							.tags("application", "super-application")
+							.tags("service", "super-service")
+							.tags("cluster", "super-cluster")
+							.tags("shard", "super-shard")
+							.counter()).isNotNull();
 				});
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.wavefront.api-token=abcde").run((context) -> {
+				.withPropertyValues("management.wavefront.api-token=abcde")
+				.run((context) -> {
 					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
 					assertThat(registry.isClosed()).isFalse();
 					context.close();

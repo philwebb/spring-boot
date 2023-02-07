@@ -60,8 +60,15 @@ class HeapDumpWebEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) {
-		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.APPLICATION_OCTET_STREAM).expectBody(String.class).isEqualTo("HEAPDUMP");
+		client.get()
+				.uri("/actuator/heapdump")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectHeader()
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.expectBody(String.class)
+				.isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();
 	}
 

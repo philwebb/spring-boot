@@ -40,8 +40,9 @@ public class MyConfiguration__BeanDefinitions {
 	 * Get the bean instance supplier for 'myBean'.
 	 */
 	private static BeanInstanceSupplier<MyBean> getMyBeanInstanceSupplier() {
-		return BeanInstanceSupplier.<MyBean>forFactoryMethod(MyConfiguration.class, "myBean").withGenerator(
-				(registeredBean) -> registeredBean.getBeanFactory().getBean(MyConfiguration.class).myBean());
+		return BeanInstanceSupplier.<MyBean>forFactoryMethod(MyConfiguration.class, "myBean")
+				.withGenerator(
+						(registeredBean) -> registeredBean.getBeanFactory().getBean(MyConfiguration.class).myBean());
 	}
 
 	/**

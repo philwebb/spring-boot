@@ -168,8 +168,11 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 		load(FilterRegistrationOtherConfiguration.class, "spring.web.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(beans).hasSize(2);
-		FilterRegistrationBean registration = beans.values().stream()
-				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+		FilterRegistrationBean registration = beans.values()
+				.stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst()
+				.get();
 		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
 	}
@@ -181,8 +184,11 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 		load(FilterRegistrationResourceConfiguration.class, "spring.web.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(beans).hasSize(1);
-		FilterRegistrationBean registration = beans.values().stream()
-				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+		FilterRegistrationBean registration = beans.values()
+				.stream()
+				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+				.findFirst()
+				.get();
 		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes", EnumSet.of(DispatcherType.INCLUDE));
 	}
 

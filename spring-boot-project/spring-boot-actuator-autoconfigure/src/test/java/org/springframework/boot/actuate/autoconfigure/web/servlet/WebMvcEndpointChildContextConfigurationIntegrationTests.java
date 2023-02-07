@@ -89,8 +89,11 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test // gh-17938
 	void errorEndpointIsUsedWithEndpoint() {
 		this.runner.run(withWebTestClient((client) -> {
-			Map<String, ?> body = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
-					.exchangeToMono(toResponseBody()).block();
+			Map<String, ?> body = client.get()
+					.uri("actuator/fail")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody())
+					.block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("IllegalStateException"));
 			assertThat(body).hasEntrySatisfying("message",
@@ -102,8 +105,11 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	void errorPageAndErrorControllerIncludeDetails() {
 		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-message=always")
 				.run(withWebTestClient((client) -> {
-					Map<String, ?> body = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
-							.exchangeToMono(toResponseBody()).block();
+					Map<String, ?> body = client.get()
+							.uri("actuator/fail")
+							.accept(MediaType.APPLICATION_JSON)
+							.exchangeToMono(toResponseBody())
+							.block();
 					assertThat(body).hasEntrySatisfying("message",
 							(value) -> assertThat(value).asString().contains("Epic Fail"));
 					assertThat(body).hasEntrySatisfying("trace", (value) -> assertThat(value).asString()
@@ -114,8 +120,11 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test
 	void errorEndpointIsUsedWithRestControllerEndpoint() {
 		this.runner.run(withWebTestClient((client) -> {
-			Map<String, ?> body = client.get().uri("actuator/failController").accept(MediaType.APPLICATION_JSON)
-					.exchangeToMono(toResponseBody()).block();
+			Map<String, ?> body = client.get()
+					.uri("actuator/failController")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody())
+					.block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("IllegalStateException"));
 			assertThat(body).hasEntrySatisfying("message",
@@ -126,9 +135,12 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test
 	void errorEndpointIsUsedWithRestControllerEndpointOnBindingError() {
 		this.runner.run(withWebTestClient((client) -> {
-			Map<String, ?> body = client.post().uri("actuator/failController")
-					.bodyValue(Collections.singletonMap("content", "")).accept(MediaType.APPLICATION_JSON)
-					.exchangeToMono(toResponseBody()).block();
+			Map<String, ?> body = client.post()
+					.uri("actuator/failController")
+					.bodyValue(Collections.singletonMap("content", ""))
+					.accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody())
+					.block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("MethodArgumentNotValidException"));
 			assertThat(body).hasEntrySatisfying("message",
@@ -140,8 +152,11 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test
 	void whenManagementServerBasePathIsConfiguredThenEndpointsAreBeneathThatPath() {
 		this.runner.withPropertyValues("management.server.base-path:/manage").run(withWebTestClient((client) -> {
-			String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
-					.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+			String body = client.get()
+					.uri("manage/actuator/success")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono((response) -> response.bodyToMono(String.class))
+					.block();
 			assertThat(body).isEqualTo("Success");
 		}));
 	}
@@ -154,8 +169,9 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	private void addConfigTreePropertySource(ConfigurableApplicationContext applicationContext) {
 		try {
-			applicationContext.getEnvironment().setConversionService(
-					(ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
+			applicationContext.getEnvironment()
+					.setConversionService(
+							(ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
 			Path configtree = this.temp.resolve("configtree");
 			Path file = configtree.resolve("management/server/port");
 			file.toFile().getParentFile().mkdirs();

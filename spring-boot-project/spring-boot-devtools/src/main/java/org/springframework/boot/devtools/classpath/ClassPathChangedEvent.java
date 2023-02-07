@@ -70,7 +70,8 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("changeSet", this.changeSet)
-				.append("restartRequired", this.restartRequired).toString();
+				.append("restartRequired", this.restartRequired)
+				.toString();
 	}
 
 	/**

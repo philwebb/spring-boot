@@ -75,9 +75,9 @@ class ConfigTreeConfigDataLocationResolverTests {
 		List<ConfigTreeConfigDataResource> locations = this.resolver.resolve(this.context,
 				ConfigDataLocation.of("configtree:" + this.temp.getAbsolutePath() + "/*/"));
 		assertThat(locations).hasSize(2);
-		assertThat(locations).extracting(Object::toString).containsExactly(
-				"config tree [" + directoryA.getAbsolutePath() + "]",
-				"config tree [" + directoryB.getAbsolutePath() + "]");
+		assertThat(locations).extracting(Object::toString)
+				.containsExactly("config tree [" + directoryA.getAbsolutePath() + "]",
+						"config tree [" + directoryB.getAbsolutePath() + "]");
 	}
 
 }

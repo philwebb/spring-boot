@@ -104,7 +104,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		List<String> missing = filter(requiredBeanTypes, ClassNameFilter.MISSING, getBeanClassLoader());
 		if (!missing.isEmpty()) {
 			ConditionMessage message = ConditionMessage.forCondition(annotation)
-					.didNotFind("required type", "required types").items(Style.QUOTE, missing);
+					.didNotFind("required type", "required types")
+					.items(Style.QUOTE, missing);
 			return ConditionOutcome.noMatch(message);
 		}
 		return null;
@@ -121,8 +122,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				String reason = createOnBeanNoMatchReason(matchResult);
 				return ConditionOutcome.noMatch(spec.message().because(reason));
 			}
-			matchMessage = spec.message(matchMessage).found("bean", "beans").items(Style.QUOTE,
-					matchResult.getNamesOfAllMatches());
+			matchMessage = spec.message(matchMessage)
+					.found("bean", "beans")
+					.items(Style.QUOTE, matchResult.getNamesOfAllMatches());
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
 			Spec<ConditionalOnSingleCandidate> spec = new SingleCandidateSpec(context, metadata, annotations);

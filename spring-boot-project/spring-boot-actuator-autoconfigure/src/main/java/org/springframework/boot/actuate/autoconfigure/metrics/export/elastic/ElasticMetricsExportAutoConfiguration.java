@@ -73,8 +73,10 @@ public class ElasticMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig, Clock clock) {
-		return ElasticMeterRegistry.builder(elasticConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
+		return ElasticMeterRegistry.builder(elasticConfig)
+				.clock(clock)
+				.httpClient(new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+						this.properties.getReadTimeout()))
 				.build();
 	}
 

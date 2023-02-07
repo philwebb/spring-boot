@@ -116,7 +116,9 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 			SpringApplication springApplication) {
 		if (timeTaken != null) {
 			Iterable<Tag> tags = createTagsFrom(springApplication);
-			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS).tags(tags).description(description)
+			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS)
+					.tags(tags)
+					.description(description)
 					.register(this.meterRegistry);
 		}
 	}

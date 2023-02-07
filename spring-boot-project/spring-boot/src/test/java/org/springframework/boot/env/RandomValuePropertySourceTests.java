@@ -183,8 +183,9 @@ class RandomValuePropertySourceTests {
 	@Test
 	void addToEnvironmentAddsAfterSystemEnvironment() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.getPropertySources().addFirst(new SystemEnvironmentPropertySource(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, Collections.emptyMap()));
+		environment.getPropertySources()
+				.addFirst(new SystemEnvironmentPropertySource(
+						StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, Collections.emptyMap()));
 		RandomValuePropertySource.addToEnvironment(environment);
 		assertThat(environment.getPropertySources().stream().map(PropertySource::getName)).containsExactly(
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,

@@ -128,8 +128,12 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(SimpleTypeProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleTypeProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "myString");
-			assertItemMetadata(metadataEnv, property).isProperty().hasName("test.my-string").hasType(String.class)
-					.hasSourceType(SimpleTypeProperties.class).hasNoDescription().isNotDeprecated();
+			assertItemMetadata(metadataEnv, property).isProperty()
+					.hasName("test.my-string")
+					.hasType(String.class)
+					.hasSourceType(SimpleTypeProperties.class)
+					.hasNoDescription()
+					.isNotDeprecated();
 		});
 	}
 
@@ -138,9 +142,12 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(SimpleCollectionProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleCollectionProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "doubles");
-			assertItemMetadata(metadataEnv, property).isProperty().hasName("test.doubles")
-					.hasType("java.util.List<java.lang.Double>").hasSourceType(SimpleCollectionProperties.class)
-					.hasNoDescription().isNotDeprecated();
+			assertItemMetadata(metadataEnv, property).isProperty()
+					.hasName("test.doubles")
+					.hasType("java.util.List<java.lang.Double>")
+					.hasSourceType(SimpleCollectionProperties.class)
+					.hasNoDescription()
+					.isNotDeprecated();
 		});
 	}
 
@@ -149,9 +156,12 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(InnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(InnerClassProperties.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
-			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.first")
+			assertItemMetadata(metadataEnv, property).isGroup()
+					.hasName("test.first")
 					.hasType("org.springframework.boot.configurationsample.specific.InnerClassProperties$Foo")
-					.hasSourceType(InnerClassProperties.class).hasSourceMethod("getFirst()").hasNoDescription()
+					.hasSourceType(InnerClassProperties.class)
+					.hasSourceMethod("getFirst()")
+					.hasNoDescription()
 					.isNotDeprecated();
 		});
 	}
@@ -184,7 +194,8 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 		process(DeprecatedSingleProperty.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(DeprecatedSingleProperty.class);
 			JavaBeanPropertyDescriptor property = createPropertyDescriptor(ownerElement, "name");
-			assertItemMetadata(metadataEnv, property).isProperty().isDeprecatedWithReason("renamed")
+			assertItemMetadata(metadataEnv, property).isProperty()
+					.isDeprecatedWithReason("renamed")
 					.isDeprecatedWithReplacement("singledeprecated.new-name");
 		});
 	}

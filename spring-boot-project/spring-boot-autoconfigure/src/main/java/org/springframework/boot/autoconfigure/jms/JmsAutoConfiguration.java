@@ -91,11 +91,15 @@ public class JmsAutoConfiguration {
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
-			map.from(properties::getDeliveryMode).whenNonNull().as(DeliveryMode::getValue)
+			map.from(properties::getDeliveryMode)
+					.whenNonNull()
+					.as(DeliveryMode::getValue)
 					.to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
 			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
-			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
+			map.from(properties::getReceiveTimeout)
+					.whenNonNull()
+					.as(Duration::toMillis)
 					.to(template::setReceiveTimeout);
 		}
 

@@ -134,14 +134,20 @@ class JsonComponentModuleTests {
 		TestGenerationContext generationContext = new TestGenerationContext();
 		contribution.applyTo(generationContext, null);
 		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
-		assertThat(RuntimeHintsPredicates.reflection().onType(ComponentWithInnerAbstractClass.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(ComponentWithInnerAbstractClass.class)
 				.withMemberCategory(MemberCategory.DECLARED_CLASSES)).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(ConcreteSerializer.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(ConcreteSerializer.class)
 				.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(AbstractSerializer.class)
-				.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS).negate()).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NotSuitable.class)
-				.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS).negate()).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(AbstractSerializer.class)
+				.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+				.negate()).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(NotSuitable.class)
+				.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+				.negate()).accepts(runtimeHints);
 	}
 
 	private void load(Class<?>... configs) {

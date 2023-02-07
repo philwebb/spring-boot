@@ -50,7 +50,8 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void flyway() throws Exception {
-		this.mockMvc.perform(get("/actuator/flyway")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/flyway"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("flyway",
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 								fieldWithPath("contexts.*.flywayBeans.*.migrations").description(
@@ -68,7 +69,8 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				fieldWithPath("installedBy").description("User that installed the applied migration, if any.")
 						.optional(),
 				fieldWithPath("installedOn")
-						.description("Timestamp of when the applied migration was installed, if any.").optional(),
+						.description("Timestamp of when the applied migration was installed, if any.")
+						.optional(),
 				fieldWithPath("installedRank")
 						.description("Rank of the applied migration, if any. Later migrations have higher ranks.")
 						.optional(),
@@ -76,8 +78,9 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 						.optional(),
 				fieldWithPath("state")
 						.description("State of the migration. (" + describeEnumValues(MigrationState.class) + ")"),
-				fieldWithPath("type").description("Type of the migration."), fieldWithPath("version")
-						.description("Version of the database after applying the migration, if any.").optional());
+				fieldWithPath("type").description("Type of the migration."),
+				fieldWithPath("version").description("Version of the database after applying the migration, if any.")
+						.optional());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -88,7 +91,8 @@ class FlywayEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		@Bean
 		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType()).build();
+					.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType())
+					.build();
 		}
 
 		@Bean

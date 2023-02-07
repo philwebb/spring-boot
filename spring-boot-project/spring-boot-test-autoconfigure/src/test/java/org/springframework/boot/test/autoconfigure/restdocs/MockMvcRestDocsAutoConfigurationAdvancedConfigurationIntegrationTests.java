@@ -69,8 +69,9 @@ class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Test
 	void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/")).andDo(this.documentationHandler
-				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
+		this.mvc.perform(get("/"))
+				.andDo(this.documentationHandler
+						.document(links(linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'http://localhost:8080/'");

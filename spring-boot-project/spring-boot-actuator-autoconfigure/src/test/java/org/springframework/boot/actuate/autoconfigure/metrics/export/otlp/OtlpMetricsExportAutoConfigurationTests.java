@@ -46,8 +46,9 @@ class OtlpMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(OtlpMeterRegistry.class).hasSingleBean(OtlpConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(OtlpMeterRegistry.class)
+						.hasSingleBean(OtlpConfig.class));
 	}
 
 	@Test
@@ -61,20 +62,25 @@ class OtlpMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.otlp.metrics.export.enabled=false").run((context) -> assertThat(context)
-						.doesNotHaveBean(OtlpMeterRegistry.class).doesNotHaveBean(OtlpConfig.class));
+				.withPropertyValues("management.otlp.metrics.export.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(OtlpMeterRegistry.class)
+						.doesNotHaveBean(OtlpConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(OtlpMeterRegistry.class).hasSingleBean(OtlpConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(OtlpMeterRegistry.class)
+						.hasSingleBean(OtlpConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsRegistryToBeCustomized() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(OtlpMeterRegistry.class).hasSingleBean(OtlpConfig.class).hasBean("customRegistry"));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(OtlpMeterRegistry.class)
+						.hasSingleBean(OtlpConfig.class)
+						.hasBean("customRegistry"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

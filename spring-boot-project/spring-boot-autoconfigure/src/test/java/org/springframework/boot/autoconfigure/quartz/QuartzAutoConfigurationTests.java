@@ -122,9 +122,11 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.quartz.job-store-type=memory").run((context) -> {
+				.withPropertyValues("spring.quartz.job-store-type=memory")
+				.run((context) -> {
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean("dataSource", DataSource.class));
-					assertThat(jdbcTemplate.queryForList("SHOW TABLES").stream()
+					assertThat(jdbcTemplate.queryForList("SHOW TABLES")
+							.stream()
 							.map((table) -> (String) table.get("TABLE_NAME")))
 									.noneMatch((name) -> name.startsWith("QRTZ"));
 				});
@@ -149,7 +151,8 @@ class QuartzAutoConfigurationTests {
 	void transactionManagerWithQuartzTransactionManagerUsedWhenMultiplePresent() {
 		this.contextRunner
 				.withUserConfiguration(QuartzJobsConfiguration.class, MultipleTransactionManagersConfiguration.class)
-				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> {
 					SchedulerFactoryBean schedulerFactoryBean = context.getBean(SchedulerFactoryBean.class);
 					assertThat(schedulerFactoryBean).extracting("transactionManager")
 							.isEqualTo(context.getBean("quartzTransactionManager"));
@@ -159,7 +162,8 @@ class QuartzAutoConfigurationTests {
 	@Test
 	void withTaskExecutor() {
 		this.contextRunner.withUserConfiguration(MockExecutorConfiguration.class)
-				.withPropertyValues("spring.quartz.properties.org.quartz.threadPool.threadCount=50").run((context) -> {
+				.withPropertyValues("spring.quartz.properties.org.quartz.threadPool.threadCount=50")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getMetaData().getThreadPoolSize()).isEqualTo(50);
@@ -171,7 +175,8 @@ class QuartzAutoConfigurationTests {
 	@Test
 	void withOverwriteExistingJobs() {
 		this.contextRunner.withUserConfiguration(OverwriteTriggerConfiguration.class)
-				.withPropertyValues("spring.quartz.overwrite-existing-jobs=true").run((context) -> {
+				.withPropertyValues("spring.quartz.overwrite-existing-jobs=true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					Trigger fooTrigger = scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"));
@@ -183,13 +188,15 @@ class QuartzAutoConfigurationTests {
 	@Test
 	void withConfiguredJobAndTrigger(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
-				.withPropertyValues("test-name=withConfiguredJobAndTrigger").run((context) -> {
+				.withPropertyValues("test-name=withConfiguredJobAndTrigger")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
-					Awaitility.waitAtMost(Duration.ofSeconds(5)).untilAsserted(
-							() -> assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue"));
+					Awaitility.waitAtMost(Duration.ofSeconds(5))
+							.untilAsserted(() -> assertThat(output).contains("withConfiguredJobAndTrigger")
+									.contains("jobDataValue"));
 				});
 	}
 
@@ -242,9 +249,11 @@ class QuartzAutoConfigurationTests {
 
 	@Test
 	void withCustomConfiguration() {
-		this.contextRunner.withPropertyValues("spring.quartz.auto-startup=false", "spring.quartz.startup-delay=1m",
-				"spring.quartz.wait-for-jobs-to-complete-on-shutdown=true",
-				"spring.quartz.overwrite-existing-jobs=true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.quartz.auto-startup=false", "spring.quartz.startup-delay=1m",
+						"spring.quartz.wait-for-jobs-to-complete-on-shutdown=true",
+						"spring.quartz.overwrite-existing-jobs=true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(SchedulerFactoryBean.class);
 					SchedulerFactoryBean schedulerFactory = context.getBean(SchedulerFactoryBean.class);
 					assertThat(schedulerFactory.isAutoStartup()).isFalse();
@@ -314,7 +323,8 @@ class QuartzAutoConfigurationTests {
 						DataSourceTransactionManagerAutoConfiguration.class))
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run((context) -> assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
-						.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer").hasBean("customInitializer"));
+						.doesNotHaveBean("quartzDataSourceScriptDatabaseInitializer")
+						.hasBean("customInitializer"));
 	}
 
 	@Test
@@ -322,8 +332,9 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
-				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> assertThat(context)
-						.hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class).hasBean("customInitializer"));
+				.withPropertyValues("spring.quartz.job-store-type=jdbc")
+				.run((context) -> assertThat(context).hasSingleBean(QuartzDataSourceScriptDatabaseInitializer.class)
+						.hasBean("customInitializer"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDataSourceInitialized(String dataSourceName) {
@@ -383,17 +394,25 @@ class QuartzAutoConfigurationTests {
 
 		@Bean
 		JobDetail fooJob() {
-			return JobBuilder.newJob().ofType(FooJob.class).withIdentity("fooJob")
-					.usingJobData("jobDataKey", "jobDataValue").storeDurably().build();
+			return JobBuilder.newJob()
+					.ofType(FooJob.class)
+					.withIdentity("fooJob")
+					.usingJobData("jobDataKey", "jobDataValue")
+					.storeDurably()
+					.build();
 		}
 
 		@Bean
 		Trigger fooTrigger(JobDetail jobDetail) {
-			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(10)
+			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+					.withIntervalInSeconds(10)
 					.repeatForever();
 
-			return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity("fooTrigger")
-					.withSchedule(scheduleBuilder).build();
+			return TriggerBuilder.newTrigger()
+					.forJob(jobDetail)
+					.withIdentity("fooTrigger")
+					.withSchedule(scheduleBuilder)
+					.build();
 		}
 
 	}
@@ -404,10 +423,14 @@ class QuartzAutoConfigurationTests {
 
 		@Bean
 		Trigger anotherFooTrigger(JobDetail fooJob) {
-			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(30)
+			SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule()
+					.withIntervalInSeconds(30)
 					.repeatForever();
 
-			return TriggerBuilder.newTrigger().forJob(fooJob).withIdentity("fooTrigger").withSchedule(scheduleBuilder)
+			return TriggerBuilder.newTrigger()
+					.forJob(fooJob)
+					.withIdentity("fooTrigger")
+					.withSchedule(scheduleBuilder)
 					.build();
 		}
 

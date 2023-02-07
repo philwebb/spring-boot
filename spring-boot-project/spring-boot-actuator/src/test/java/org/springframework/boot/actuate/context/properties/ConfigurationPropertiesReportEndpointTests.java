@@ -70,8 +70,9 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void descriptorWithJavaBeanBindMethodDetectsRelevantProperties() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
-				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> assertThat(properties).containsOnlyKeys("dbPassword",
+						"myTestProperty", "duration")));
 	}
 
 	@Test
@@ -82,15 +83,16 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void descriptorWithValueObjectBindMethodDetectsRelevantProperties() {
-		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class).run(assertProperties(
-				"immutable",
-				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "for")));
+		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class)
+				.run(assertProperties("immutable", (properties) -> assertThat(properties).containsOnlyKeys("dbPassword",
+						"myTestProperty", "for")));
 	}
 
 	@Test
 	void descriptorWithValueObjectBindMethodUseDedicatedConstructor() {
-		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class).run(assertProperties(
-				"multiconstructor", (properties) -> assertThat(properties).containsOnly(entry("name", "test"))));
+		this.contextRunner.withUserConfiguration(MultiConstructorPropertiesConfiguration.class)
+				.run(assertProperties("multiconstructor",
+						(properties) -> assertThat(properties).containsOnly(entry("name", "test"))));
 	}
 
 	@Test
@@ -117,7 +119,8 @@ class ConfigurationPropertiesReportEndpointTests {
 	@Test
 	void descriptorWithSimpleList() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
-				.withPropertyValues("sensible.simpleList=a,b").run(assertProperties("sensible", (properties) -> {
+				.withPropertyValues("sensible.simpleList=a,b")
+				.run(assertProperties("sensible", (properties) -> {
 					assertThat(properties.get("simpleList")).isInstanceOf(List.class);
 					List<String> list = (List<String>) properties.get("simpleList");
 					assertThat(list).hasSize(2);
@@ -142,20 +145,23 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void descriptorWithDurationProperty() {
-		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).run(assertProperties("test",
-				(properties) -> assertThat(properties.get("duration")).isEqualTo(Duration.ofSeconds(10).toString())));
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
+				.run(assertProperties("test", (properties) -> assertThat(properties.get("duration"))
+						.isEqualTo(Duration.ofSeconds(10).toString())));
 	}
 
 	@Test
 	void descriptorWithNonCamelCaseProperty() {
-		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
-				"mixedcase", (properties) -> assertThat(properties.get("myURL")).isEqualTo("https://example.com")));
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
+				.run(assertProperties("mixedcase",
+						(properties) -> assertThat(properties.get("myURL")).isEqualTo("https://example.com")));
 	}
 
 	@Test
 	void descriptorWithMixedCaseProperty() {
-		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class).run(assertProperties(
-				"mixedcase", (properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
+		this.contextRunner.withUserConfiguration(MixedCasePropertiesConfiguration.class)
+				.run(assertProperties("mixedcase",
+						(properties) -> assertThat(properties.get("mIxedCase")).isEqualTo("mixed")));
 	}
 
 	@Test
@@ -166,14 +172,16 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void descriptorWithSimpleBooleanProperty() {
-		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
-				(properties) -> assertThat(properties.get("simpleBoolean")).isEqualTo(true)));
+		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class)
+				.run(assertProperties("boolean",
+						(properties) -> assertThat(properties.get("simpleBoolean")).isEqualTo(true)));
 	}
 
 	@Test
 	void descriptorWithMixedBooleanProperty() {
-		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class).run(assertProperties("boolean",
-				(properties) -> assertThat(properties.get("mixedBoolean")).isEqualTo(true)));
+		this.contextRunner.withUserConfiguration(BooleanPropertiesConfiguration.class)
+				.run(assertProperties("boolean",
+						(properties) -> assertThat(properties.get("mixedBoolean")).isEqualTo(true)));
 	}
 
 	@Test
@@ -181,7 +189,8 @@ class ConfigurationPropertiesReportEndpointTests {
 		String configSize = "1MB";
 		String stringifySize = DataSize.parse(configSize).toString();
 		this.contextRunner.withUserConfiguration(DataSizePropertiesConfiguration.class)
-				.withPropertyValues(String.format("data.size=%s", configSize)).run(assertProperties("data",
+				.withPropertyValues(String.format("data.size=%s", configSize))
+				.run(assertProperties("data",
 						(properties) -> assertThat(properties.get("size")).isEqualTo(stringifySize), (inputs) -> {
 							Map<String, Object> size = (Map<String, Object>) inputs.get("size");
 							assertThat(size).containsEntry("value", configSize);
@@ -240,8 +249,9 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	@Test
 	void sanitizeWithCustomSanitizingFunction() {
-		new ApplicationContextRunner().withUserConfiguration(CustomSanitizingEndpointConfig.class,
-				SanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
+		new ApplicationContextRunner()
+				.withUserConfiguration(CustomSanitizingEndpointConfig.class, SanitizingFunctionConfiguration.class,
+						TestPropertiesConfiguration.class)
 				.run(assertProperties("test", (properties) -> {
 					assertThat(properties).containsEntry("dbPassword", "$$$");
 					assertThat(properties).containsEntry("myTestProperty", "$$$");
@@ -253,7 +263,8 @@ class ConfigurationPropertiesReportEndpointTests {
 		new ApplicationContextRunner()
 				.withUserConfiguration(CustomSanitizingEndpointConfig.class,
 						PropertySourceBasedSanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
-				.withPropertyValues("test.my-test-property=abcde").run(assertProperties("test", (properties) -> {
+				.withPropertyValues("test.my-test-property=abcde")
+				.run(assertProperties("test", (properties) -> {
 					assertThat(properties).containsEntry("dbPassword", "123456");
 					assertThat(properties).containsEntry("myTestProperty", "$$$");
 				}));
@@ -305,7 +316,8 @@ class ConfigurationPropertiesReportEndpointTests {
 	@Test
 	void originParents() {
 		this.contextRunner.withUserConfiguration(SensiblePropertiesConfiguration.class)
-				.withInitializer(this::initializeOriginParents).run(assertProperties("sensible", (properties) -> {
+				.withInitializer(this::initializeOriginParents)
+				.run(assertProperties("sensible", (properties) -> {
 				}, (inputs) -> {
 					Map<String, Object> stringInputs = (Map<String, Object>) inputs.get("string");
 					String[] originParents = (String[]) stringInputs.get("originParents");
@@ -334,8 +346,11 @@ class ConfigurationPropertiesReportEndpointTests {
 					.configurationProperties();
 			ContextConfigurationPropertiesDescriptor allProperties = configurationProperties.getContexts()
 					.get(context.getId());
-			Optional<String> key = allProperties.getBeans().keySet().stream()
-					.filter((id) -> findIdFromPrefix(prefix, id)).findAny();
+			Optional<String> key = allProperties.getBeans()
+					.keySet()
+					.stream()
+					.filter((id) -> findIdFromPrefix(prefix, id))
+					.findAny();
 			assertThat(key).describedAs("No configuration properties with prefix '%s' found", prefix).isPresent();
 			ConfigurationPropertiesBeanDescriptor descriptor = allProperties.getBeans().get(key.get());
 			assertThat(descriptor.getPrefix()).isEqualTo(prefix);

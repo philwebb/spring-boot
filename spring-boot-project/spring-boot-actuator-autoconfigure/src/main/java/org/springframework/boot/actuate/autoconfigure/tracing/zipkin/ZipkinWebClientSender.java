@@ -74,8 +74,12 @@ class ZipkinWebClientSender extends HttpSender {
 		}
 
 		private Mono<ResponseEntity<Void>> sendRequest() {
-			return this.webClient.post().uri(this.endpoint).headers(this::addDefaultHeaders).bodyValue(getBody())
-					.retrieve().toBodilessEntity();
+			return this.webClient.post()
+					.uri(this.endpoint)
+					.headers(this::addDefaultHeaders)
+					.bodyValue(getBody())
+					.retrieve()
+					.toBodilessEntity();
 		}
 
 		private void addDefaultHeaders(HttpHeaders headers) {

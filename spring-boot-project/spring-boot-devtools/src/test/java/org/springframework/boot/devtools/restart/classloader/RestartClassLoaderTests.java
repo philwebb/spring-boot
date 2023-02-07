@@ -222,7 +222,8 @@ class RestartClassLoaderTests {
 		try (RestartClassLoader restartClassLoader = new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
 				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
 			new ApplicationContextRunner().withClassLoader(restartClassLoader)
-					.withUserConfiguration(ProxyConfiguration.class).run((context) -> {
+					.withUserConfiguration(ProxyConfiguration.class)
+					.run((context) -> {
 						assertThat(context).hasNotFailed();
 						ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
 						assertThat(AopUtils.isCglibProxy(transactional)).isTrue();

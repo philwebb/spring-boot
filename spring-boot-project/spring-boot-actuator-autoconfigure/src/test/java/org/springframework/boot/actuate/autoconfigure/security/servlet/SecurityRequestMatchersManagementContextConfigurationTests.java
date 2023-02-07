@@ -70,7 +70,8 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 	@Test
 	void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-				.withUserConfiguration(TestJerseyConfiguration.class).run((context) -> {
+				.withUserConfiguration(TestJerseyConfiguration.class)
+				.run((context) -> {
 					AntPathRequestMatcherProvider matcherProvider = context
 							.getBean(AntPathRequestMatcherProvider.class);
 					RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example");

@@ -428,18 +428,22 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(this::getAutoCommitInterval).asInt(Duration::toMillis)
+			map.from(this::getAutoCommitInterval)
+					.asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
 			map.from(this::getAutoOffsetReset).to(properties.in(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG));
 			map.from(this::getBootstrapServers).to(properties.in(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
 			map.from(this::getClientId).to(properties.in(ConsumerConfig.CLIENT_ID_CONFIG));
 			map.from(this::getEnableAutoCommit).to(properties.in(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG));
-			map.from(this::getFetchMaxWait).asInt(Duration::toMillis)
+			map.from(this::getFetchMaxWait)
+					.asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG));
-			map.from(this::getFetchMinSize).asInt(DataSize::toBytes)
+			map.from(this::getFetchMinSize)
+					.asInt(DataSize::toBytes)
 					.to(properties.in(ConsumerConfig.FETCH_MIN_BYTES_CONFIG));
 			map.from(this::getGroupId).to(properties.in(ConsumerConfig.GROUP_ID_CONFIG));
-			map.from(this::getHeartbeatInterval).asInt(Duration::toMillis)
+			map.from(this::getHeartbeatInterval)
+					.asInt(Duration::toMillis)
 					.to(properties.in(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG));
 			map.from(() -> getIsolationLevel().name().toLowerCase(Locale.ROOT))
 					.to(properties.in(ConsumerConfig.ISOLATION_LEVEL_CONFIG));
@@ -614,7 +618,8 @@ public class KafkaProperties {
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
 			map.from(this::getBatchSize).asInt(DataSize::toBytes).to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
 			map.from(this::getBootstrapServers).to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getBufferMemory).as(DataSize::toBytes)
+			map.from(this::getBufferMemory)
+					.as(DataSize::toBytes)
 					.to(properties.in(ProducerConfig.BUFFER_MEMORY_CONFIG));
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			map.from(this::getCompressionType).to(properties.in(ProducerConfig.COMPRESSION_TYPE_CONFIG));
@@ -867,7 +872,8 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers).to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
-			map.from(this::getCacheMaxSizeBuffering).asInt(DataSize::toBytes)
+			map.from(this::getCacheMaxSizeBuffering)
+					.asInt(DataSize::toBytes)
 					.to(properties.in("cache.max.bytes.buffering"));
 			map.from(this::getClientId).to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));
 			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
@@ -1308,12 +1314,14 @@ public class KafkaProperties {
 			map.from(this::getKeyStoreCertificateChain)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
 			map.from(this::getKeyStoreKey).to(properties.in(SslConfigs.SSL_KEYSTORE_KEY_CONFIG));
-			map.from(this::getKeyStoreLocation).as(this::resourceToPath)
+			map.from(this::getKeyStoreLocation)
+					.as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
 			map.from(this::getKeyStorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
 			map.from(this::getTrustStoreCertificates).to(properties.in(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG));
-			map.from(this::getTrustStoreLocation).as(this::resourceToPath)
+			map.from(this::getTrustStoreLocation)
+					.as(this::resourceToPath)
 					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
 			map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
 			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));

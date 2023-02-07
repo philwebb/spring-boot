@@ -59,7 +59,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				manifest.hasMainClass("org.springframework.boot.loader.JarLauncher");
 				manifest.hasStartClass("some.random.Main");
 				manifest.hasAttribute("Not-Used", "Foo");
-			}).hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+			})
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-6")
@@ -68,7 +69,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(buildLog(project))
 					.contains("Replacing main artifact " + repackaged + " with repackaged archive,")
 					.contains("The original artifact has been renamed to " + original)
-					.contains("Installing " + repackaged + " to").doesNotContain("Installing " + original + " to");
+					.contains("Installing " + repackaged + " to")
+					.doesNotContain("Installing " + original + " to");
 		});
 	}
 
@@ -80,7 +82,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File main = new File(project, "target/jar-attach-disabled-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(main).isFile();
 			assertThat(buildLog(project)).contains("Updating main artifact " + main + " to " + original)
-					.contains("Installing " + original + " to").doesNotContain("Installing " + main + " to");
+					.contains("Installing " + original + " to")
+					.doesNotContain("Installing " + main + " to");
 		});
 	}
 
@@ -97,7 +100,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(buildLog(project))
 					.contains("Attaching repackaged archive " + repackaged + " with classifier test")
 					.doesNotContain("Creating repackaged archive " + repackaged + " with classifier test")
-					.contains("Installing " + main + " to").contains("Installing " + repackaged + " to");
+					.contains("Installing " + main + " to")
+					.contains("Installing " + repackaged + " to");
 		});
 	}
 
@@ -112,7 +116,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(buildLog(project))
 					.contains("Replacing artifact with classifier test " + repackaged + " with repackaged archive,")
 					.contains("The original artifact has been renamed to " + original)
-					.doesNotContain("Installing " + original + " to").contains("Installing " + repackaged + " to");
+					.doesNotContain("Installing " + original + " to")
+					.contains("Installing " + repackaged + " to");
 		});
 	}
 
@@ -128,7 +133,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(buildLog(project))
 					.doesNotContain("Attaching repackaged archive " + repackaged + " with classifier test")
 					.contains("Updating artifact with classifier test " + repackaged + " to " + original)
-					.contains("Installing " + original + " to").doesNotContain("Installing " + repackaged + " to");
+					.contains("Installing " + original + " to")
+					.doesNotContain("Installing " + repackaged + " to");
 		});
 	}
 
@@ -190,7 +196,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "target/jar-executable-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/");
 			assertThat(launchScript(repackaged)).contains("Spring Boot Startup Script")
-					.contains("MyFullyExecutableJarName").contains("MyFullyExecutableJarDesc");
+					.contains("MyFullyExecutableJarName")
+					.contains("MyFullyExecutableJarDesc");
 		});
 	}
 
@@ -262,7 +269,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenAProjectIsBuiltWithALayoutPropertyTheSpecifiedLayoutIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("jar-with-layout-property").goals("package", "-Dspring-boot.repackage.layout=ZIP")
+		mavenBuild.project("jar-with-layout-property")
+				.goals("package", "-Dspring-boot.repackage.layout=ZIP")
 				.execute((project) -> {
 					File main = new File(project, "target/jar-with-layout-property-0.0.1.BUILD-SNAPSHOT.jar");
 					assertThat(jar(main)).manifest(
@@ -308,7 +316,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
-					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot").hasEntryWithNameStartingWith(
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
+					.hasEntryWithNameStartingWith(
 							"BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getCoordinates().getArtifactId());
 			try (JarFile jarFile = new JarFile(repackaged)) {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
@@ -400,7 +409,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			try (JarFile jar = new JarFile(repackaged)) {
 				List<String> unreproducibleEntries = jar.stream()
 						.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
-						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime()).toList();
+						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
+						.toList();
 				assertThat(unreproducibleEntries).isEmpty();
 				jarHash.set(FileUtils.sha1Hash(repackaged));
 				FileSystemUtils.deleteRecursively(project);
@@ -420,8 +430,9 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 					"BOOT-INF/lib/spring-beans", "BOOT-INF/lib/spring-boot-jarmode-layertools",
 					"BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression",
 					"BOOT-INF/lib/spring-jcl");
-			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/").zipSatisfy(sortedLibs,
-					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
+			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/")
+					.zipSatisfy(sortedLibs,
+							(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
 		});
 	}
 

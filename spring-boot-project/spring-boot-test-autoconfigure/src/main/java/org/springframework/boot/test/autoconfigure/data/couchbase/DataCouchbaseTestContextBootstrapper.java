@@ -31,8 +31,10 @@ class DataCouchbaseTestContextBootstrapper extends SpringBootTestContextBootstra
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataCouchbaseTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(DataCouchbaseTest.class)
+				.getValue("properties", String[].class)
+				.orElse(null);
 	}
 
 }

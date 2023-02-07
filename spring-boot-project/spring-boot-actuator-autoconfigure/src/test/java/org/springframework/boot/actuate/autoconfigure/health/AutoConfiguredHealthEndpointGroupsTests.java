@@ -63,8 +63,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void getNamesReturnsGroupNames() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.group.a.include=*",
-				"management.endpoint.health.group.b.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.group.a.include=*",
+						"management.endpoint.health.group.b.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					assertThat(groups.getNames()).containsExactlyInAnyOrder("a", "b");
 				});
@@ -141,8 +143,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenHasStatusAggregatorPropertyReturnsInstanceWithPropertyUsedForAllGroups() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.status.order=up,down",
-				"management.endpoint.health.group.a.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.status.order=up,down",
+						"management.endpoint.health.group.a.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup primary = groups.getPrimary();
 					HealthEndpointGroup groupA = groups.get("a");
@@ -155,10 +159,12 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenHasStatusAggregatorPropertyAndGroupSpecificPropertyReturnsInstanceWithPropertyUsedForExpectedGroups() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.status.order=up,down",
-				"management.endpoint.health.group.a.include=*",
-				"management.endpoint.health.group.a.status.order=unknown,up,down",
-				"management.endpoint.health.group.b.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.status.order=up,down",
+						"management.endpoint.health.group.a.include=*",
+						"management.endpoint.health.group.a.status.order=unknown,up,down",
+						"management.endpoint.health.group.b.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup primary = groups.getPrimary();
 					HealthEndpointGroup groupA = groups.get("a");
@@ -247,8 +253,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenHasHttpCodeStatusMapperPropertyReturnsInstanceWithPropertyUsedForAllGroups() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.status.http-mapping.down=201",
-				"management.endpoint.health.group.a.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.status.http-mapping.down=201",
+						"management.endpoint.health.group.a.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup primary = groups.getPrimary();
 					HealthEndpointGroup groupA = groups.get("a");
@@ -259,10 +267,12 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenHasHttpCodeStatusMapperPropertyAndGroupSpecificPropertyReturnsInstanceWithPropertyUsedForExpectedGroups() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.status.http-mapping.down=201",
-				"management.endpoint.health.group.a.include=*",
-				"management.endpoint.health.group.a.status.http-mapping.down=202",
-				"management.endpoint.health.group.b.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.status.http-mapping.down=201",
+						"management.endpoint.health.group.a.include=*",
+						"management.endpoint.health.group.a.status.http-mapping.down=202",
+						"management.endpoint.health.group.b.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup primary = groups.getPrimary();
 					HealthEndpointGroup groupA = groups.get("a");
@@ -311,8 +321,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenGroupWithNoShowDetailsOverrideInheritsShowDetails() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always",
-				"management.endpoint.health.group.a.include=*").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoint.health.show-details=always",
+						"management.endpoint.health.group.a.include=*")
+				.run((context) -> {
 					HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 					HealthEndpointGroup groupA = groups.get("a");
 					assertThat(groupA.showDetails(SecurityContext.NONE)).isTrue();

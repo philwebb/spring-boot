@@ -56,8 +56,9 @@ class Neo4jReactiveRepositoriesAutoConfigurationTests {
 
 	@Test
 	void configurationWithNoRepositories() {
-		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveNeo4jTemplate.class).doesNotHaveBean(ReactiveNeo4jRepository.class));
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class)
+						.doesNotHaveBean(ReactiveNeo4jRepository.class));
 	}
 
 	@Test
@@ -80,7 +81,8 @@ class Neo4jReactiveRepositoriesAutoConfigurationTests {
 				.withUserConfiguration(SortOfInvalidCustomConfiguration.class, WithCustomReactiveRepositoryScan.class)
 				.withPropertyValues("spring.data.neo4j.repositories.type=reactive")
 				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class)
-						.doesNotHaveBean(ReactiveCityRepository.class).doesNotHaveBean(CountryRepository.class)
+						.doesNotHaveBean(ReactiveCityRepository.class)
+						.doesNotHaveBean(CountryRepository.class)
 						.hasSingleBean(ReactiveCountryRepository.class));
 	}
 

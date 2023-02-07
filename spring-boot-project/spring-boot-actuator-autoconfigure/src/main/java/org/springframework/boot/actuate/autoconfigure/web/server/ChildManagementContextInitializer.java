@@ -163,14 +163,15 @@ class ChildManagementContextInitializer
 			GenerationContext managementGenerationContext = generationContext.withName("Management");
 			ClassName generatedInitializerClassName = new ApplicationContextAotGenerator()
 					.processAheadOfTime(this.managementContext, managementGenerationContext);
-			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods().add("addManagementInitializer",
-					(method) -> method.addJavadoc("Use AOT management context initialization")
-							.addModifiers(Modifier.PRIVATE, Modifier.STATIC)
-							.addParameter(RegisteredBean.class, "registeredBean")
-							.addParameter(ChildManagementContextInitializer.class, "instance")
-							.returns(ChildManagementContextInitializer.class)
-							.addStatement("return instance.withApplicationContextInitializer(new $L())",
-									generatedInitializerClassName));
+			GeneratedMethod postProcessorMethod = beanRegistrationCode.getMethods()
+					.add("addManagementInitializer",
+							(method) -> method.addJavadoc("Use AOT management context initialization")
+									.addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+									.addParameter(RegisteredBean.class, "registeredBean")
+									.addParameter(ChildManagementContextInitializer.class, "instance")
+									.returns(ChildManagementContextInitializer.class)
+									.addStatement("return instance.withApplicationContextInitializer(new $L())",
+											generatedInitializerClassName));
 			beanRegistrationCode.addInstancePostProcessor(postProcessorMethod.toMethodReference());
 		}
 

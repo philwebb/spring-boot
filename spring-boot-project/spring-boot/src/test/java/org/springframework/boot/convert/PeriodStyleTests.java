@@ -184,8 +184,9 @@ class PeriodStyleTests {
 
 	@Test
 	void parseSimpleWhenUnknownUnitShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10x")).satisfies(
-				(ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Does not match simple period pattern"));
+		assertThatIllegalArgumentException().isThrownBy(() -> PeriodStyle.SIMPLE.parse("10x"))
+				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+						.isEqualTo("Does not match simple period pattern"));
 	}
 
 	@Test

@@ -124,16 +124,18 @@ class ControllerEndpointDiscovererTests {
 
 	@Test
 	void getEndpointWhenEndpointHasOperationsShouldThrowException() {
-		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class).run(
-				assertDiscoverer((discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
-						.withMessageContaining("ControllerEndpoints must not declare operations")));
+		this.contextRunner.withUserConfiguration(TestControllerWithOperation.class)
+				.run(assertDiscoverer(
+						(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("ControllerEndpoints must not declare operations")));
 	}
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new ControllerEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ControllerEndpointFilter.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(ControllerEndpointFilter.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 
 	}

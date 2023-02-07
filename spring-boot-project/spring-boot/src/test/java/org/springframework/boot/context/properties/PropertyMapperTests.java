@@ -186,8 +186,12 @@ class PropertyMapperTests {
 	@Test
 	void whenWhenCombinedWithAsUsesSourceValue() {
 		Count<String> source = new Count<>(() -> "123");
-		Long result = this.map.from(source).when("123"::equals).as(Integer::valueOf).when((v) -> v == 123)
-				.as(Integer::longValue).toInstance(Long::valueOf);
+		Long result = this.map.from(source)
+				.when("123"::equals)
+				.as(Integer::valueOf)
+				.when((v) -> v == 123)
+				.as(Integer::longValue)
+				.toInstance(Long::valueOf);
 		assertThat(result).isEqualTo(123);
 		assertThat(source.getCount()).isOne();
 	}

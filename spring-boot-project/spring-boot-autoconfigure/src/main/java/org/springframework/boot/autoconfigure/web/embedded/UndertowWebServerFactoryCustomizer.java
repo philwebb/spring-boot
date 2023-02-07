@@ -78,7 +78,9 @@ public class UndertowWebServerFactoryCustomizer
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
 		ServerProperties properties = this.serverProperties;
-		map.from(properties::getMaxHttpRequestHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
+		map.from(properties::getMaxHttpRequestHeaderSize)
+				.asInt(DataSize::toBytes)
+				.when(this::isPositive)
 				.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
 		mapUndertowProperties(factory, options);
 		mapAccessLogProperties(factory);
@@ -93,7 +95,9 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(threadProperties::getIo).to(factory::setIoThreads);
 		map.from(threadProperties::getWorker).to(factory::setWorkerThreads);
 		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
-		map.from(properties::getMaxHttpPostSize).as(DataSize::toBytes).when(this::isPositive)
+		map.from(properties::getMaxHttpPostSize)
+				.as(DataSize::toBytes)
+				.when(this::isPositive)
 				.to(serverOptions.option(UndertowOptions.MAX_ENTITY_SIZE));
 		map.from(properties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
 		map.from(properties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
@@ -102,7 +106,8 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
 		map.from(properties::getUrlCharset).as(Charset::name).to(serverOptions.option(UndertowOptions.URL_CHARSET));
 		map.from(properties::isAlwaysSetKeepAlive).to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
-		map.from(properties::getNoRequestTimeout).asInt(Duration::toMillis)
+		map.from(properties::getNoRequestTimeout)
+				.asInt(Duration::toMillis)
 				.to(serverOptions.option(UndertowOptions.NO_REQUEST_TIMEOUT));
 		map.from(properties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
 		SocketOptions socketOptions = new SocketOptions(factory);
@@ -176,7 +181,9 @@ public class UndertowWebServerFactoryCustomizer
 
 		private static String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+			name.chars()
+					.filter(Character::isLetterOrDigit)
+					.map(Character::toLowerCase)
 					.forEach((c) -> canonicalName.append((char) c));
 			return canonicalName.toString();
 		}

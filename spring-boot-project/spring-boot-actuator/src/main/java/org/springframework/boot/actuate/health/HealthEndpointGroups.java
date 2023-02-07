@@ -78,8 +78,10 @@ public interface HealthEndpointGroups {
 	default Set<HealthEndpointGroup> getAllWithAdditionalPath(WebServerNamespace namespace) {
 		Assert.notNull(namespace, "Namespace must not be null");
 		Set<HealthEndpointGroup> filteredGroups = new LinkedHashSet<>();
-		getNames().stream().map(this::get).filter(
-				(group) -> group.getAdditionalPath() != null && group.getAdditionalPath().hasNamespace(namespace))
+		getNames().stream()
+				.map(this::get)
+				.filter((group) -> group.getAdditionalPath() != null
+						&& group.getAdditionalPath().hasNamespace(namespace))
 				.forEach(filteredGroups::add);
 		return filteredGroups;
 	}

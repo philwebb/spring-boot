@@ -59,7 +59,8 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 	void fooBeansShouldDependOnBarBeanNamesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
-			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class).withParent(parentContext)
+			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class)
+					.withParent(parentContext)
 					.run(this::assertThatFooDependsOnBar);
 		}
 	}
@@ -68,7 +69,8 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 	void fooBeansShouldDependOnBarBeanTypesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
-			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class).withParent(parentContext)
+			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class)
+					.withParent(parentContext)
 					.run(this::assertThatFooDependsOnBar);
 		}
 	}

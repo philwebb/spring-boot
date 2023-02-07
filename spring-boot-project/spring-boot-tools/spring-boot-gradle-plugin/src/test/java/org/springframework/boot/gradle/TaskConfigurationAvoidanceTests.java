@@ -47,10 +47,12 @@ class TaskConfigurationAvoidanceTests {
 	@ArchTest
 	void noApisThatCauseEagerTaskConfigurationShouldBeCalled(JavaClasses classes) {
 		ProhibitedMethods prohibited = new ProhibitedMethods();
-		prohibited.on(TaskContainer.class).methodsNamed("create", "findByPath, getByPath").method("withType",
-				Class.class, Action.class);
+		prohibited.on(TaskContainer.class)
+				.methodsNamed("create", "findByPath, getByPath")
+				.method("withType", Class.class, Action.class);
 		prohibited.on(TaskCollection.class).methodsNamed("findByName", "getByName");
-		ArchRuleDefinition.noClasses().should()
+		ArchRuleDefinition.noClasses()
+				.should()
 				.callMethodWhere(DescribedPredicate.describe("it would cause eager task configuration", prohibited))
 				.check(classes);
 	}

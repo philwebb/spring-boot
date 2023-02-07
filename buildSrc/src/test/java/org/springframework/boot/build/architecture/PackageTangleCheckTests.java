@@ -67,8 +67,9 @@ class PackageTangleCheckTests {
 		projectDir.mkdirs();
 		copyClasses(classes, projectDir);
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build();
-		PackageTangleCheck packageTangleCheck = project.getTasks().create("checkForPackageTangles",
-				PackageTangleCheck.class, (task) -> task.setClasses(project.files("classes")));
+		PackageTangleCheck packageTangleCheck = project.getTasks()
+				.create("checkForPackageTangles", PackageTangleCheck.class,
+						(task) -> task.setClasses(project.files("classes")));
 		callback.accept(packageTangleCheck);
 	}
 

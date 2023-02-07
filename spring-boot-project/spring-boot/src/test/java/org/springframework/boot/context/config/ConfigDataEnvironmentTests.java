@@ -85,10 +85,13 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource3);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+				.getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
-				.map(ConfigDataEnvironmentContributor::getPropertySource).toArray();
+		Object[] wrapped = children.stream()
+				.filter((child) -> child.getKind() == Kind.EXISTING)
+				.map(ConfigDataEnvironmentContributor::getPropertySource)
+				.toArray();
 		assertThat(wrapped[1]).isEqualTo(propertySource1);
 		assertThat(wrapped[2]).isEqualTo(propertySource2);
 		assertThat(wrapped[3]).isEqualTo(propertySource3);
@@ -104,10 +107,13 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource2);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+				.getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
-				.map(ConfigDataEnvironmentContributor::getPropertySource).toArray();
+		Object[] wrapped = children.stream()
+				.filter((child) -> child.getKind() == Kind.EXISTING)
+				.map(ConfigDataEnvironmentContributor::getPropertySource)
+				.toArray();
 		assertThat(wrapped[1]).isEqualTo(propertySource1);
 		assertThat(wrapped[2]).isEqualTo(propertySource2);
 		assertThat(wrapped[3]).isEqualTo(defaultPropertySource);
@@ -120,10 +126,14 @@ class ConfigDataEnvironmentTests {
 		this.environment.setProperty("spring.config.import", "i1,i2");
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+				.getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] imports = children.stream().filter((child) -> child.getKind() == Kind.INITIAL_IMPORT)
-				.map(ConfigDataEnvironmentContributor::getImports).map(Object::toString).toArray();
+		Object[] imports = children.stream()
+				.filter((child) -> child.getKind() == Kind.INITIAL_IMPORT)
+				.map(ConfigDataEnvironmentContributor::getImports)
+				.map(Object::toString)
+				.toArray();
 		assertThat(imports).containsExactly("[i2]", "[i1]", "[a2]", "[a1]", "[l2]", "[l1]");
 	}
 

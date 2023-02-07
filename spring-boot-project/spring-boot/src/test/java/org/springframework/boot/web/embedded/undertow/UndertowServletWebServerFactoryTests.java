@@ -291,13 +291,15 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		return ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
+		return ((UndertowServletWebServer) this.webServer).getDeploymentManager()
+				.getDeployment()
 				.getMimeExtensionMappings();
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		DeploymentInfo info = ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
+		DeploymentInfo info = ((UndertowServletWebServer) this.webServer).getDeploymentManager()
+				.getDeployment()
 				.getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;

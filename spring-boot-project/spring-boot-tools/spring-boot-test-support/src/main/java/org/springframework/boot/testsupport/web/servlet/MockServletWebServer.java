@@ -88,7 +88,8 @@ public abstract class MockServletWebServer {
 			}).when(this.servletContext).setInitParameter(anyString(), anyString());
 			given(this.servletContext.getInitParameterNames())
 					.willReturn(Collections.enumeration(initParameters.keySet()));
-			lenient().doAnswer((invocation) -> initParameters.get(invocation.getArgument(0))).when(this.servletContext)
+			lenient().doAnswer((invocation) -> initParameters.get(invocation.getArgument(0)))
+					.when(this.servletContext)
 					.getInitParameter(anyString());
 			given(this.servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 			for (Initializer initializer : this.initializers) {

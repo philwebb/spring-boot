@@ -100,7 +100,8 @@ class JavaBeanBinderTests {
 		this.sources.add(source);
 		ExampleValueBean bean = new ExampleValueBean();
 		ExampleValueBean boundBean = this.binder
-				.bind("foo", Bindable.of(ExampleValueBean.class).withExistingValue(bean)).get();
+				.bind("foo", Bindable.of(ExampleValueBean.class).withExistingValue(bean))
+				.get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
@@ -138,7 +139,8 @@ class JavaBeanBinderTests {
 		ExampleDefaultsBean bean = new ExampleDefaultsBean();
 		bean.setFoo(888);
 		ExampleDefaultsBean boundBean = this.binder
-				.bind("foo", Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean)).get();
+				.bind("foo", Bindable.of(ExampleDefaultsBean.class).withExistingValue(bean))
+				.get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getFoo()).isEqualTo(888);
 		assertThat(bean.getBar()).isEqualTo(999);
@@ -201,7 +203,8 @@ class JavaBeanBinderTests {
 		source.put("foo.collection", "foo-bar|bar-baz");
 		this.sources.add(source);
 		ExampleCollectionBeanWithDelimiter bean = this.binder
-				.bind("foo", Bindable.of(ExampleCollectionBeanWithDelimiter.class)).get();
+				.bind("foo", Bindable.of(ExampleCollectionBeanWithDelimiter.class))
+				.get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
@@ -245,7 +248,8 @@ class JavaBeanBinderTests {
 		source.put("foo.collection[1]", "bar-baz");
 		this.sources.add(source);
 		ExampleCollectionBeanWithoutSetter bean = this.binder
-				.bind("foo", Bindable.of(ExampleCollectionBeanWithoutSetter.class)).get();
+				.bind("foo", Bindable.of(ExampleCollectionBeanWithoutSetter.class))
+				.get();
 		assertThat(bean.getCollection()).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
@@ -267,7 +271,8 @@ class JavaBeanBinderTests {
 		source.put("foo.value-bean.string-value", "foo");
 		this.sources.add(source);
 		ExampleNestedBeanWithoutSetterOrType bean = this.binder
-				.bind("foo", Bindable.of(ExampleNestedBeanWithoutSetterOrType.class)).get();
+				.bind("foo", Bindable.of(ExampleNestedBeanWithoutSetterOrType.class))
+				.get();
 		ExampleValueBean valueBean = (ExampleValueBean) bean.getValueBean();
 		assertThat(valueBean.getIntValue()).isEqualTo(123);
 		assertThat(valueBean.getStringValue()).isEqualTo("foo");
@@ -361,7 +366,8 @@ class JavaBeanBinderTests {
 		this.sources.add(source);
 		ExampleWithNonDefaultConstructor bean = new ExampleWithNonDefaultConstructor("faf");
 		ExampleWithNonDefaultConstructor boundBean = binder
-				.bind("foo", Bindable.of(ExampleWithNonDefaultConstructor.class).withExistingValue(bean)).get();
+				.bind("foo", Bindable.of(ExampleWithNonDefaultConstructor.class).withExistingValue(bean))
+				.get();
 		assertThat(boundBean).isSameAs(bean);
 		assertThat(bean.getValue()).isEqualTo("bar");
 	}

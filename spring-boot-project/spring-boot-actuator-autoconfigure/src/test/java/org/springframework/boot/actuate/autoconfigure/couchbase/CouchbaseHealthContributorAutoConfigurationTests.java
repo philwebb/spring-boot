@@ -37,8 +37,9 @@ import static org.mockito.Mockito.mock;
 class CouchbaseHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(Cluster.class, () -> mock(Cluster.class)).withConfiguration(AutoConfigurations
-					.of(CouchbaseHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withBean(Cluster.class, () -> mock(Cluster.class))
+			.withConfiguration(AutoConfigurations.of(CouchbaseHealthContributorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

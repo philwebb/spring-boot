@@ -62,7 +62,8 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@Test
 	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
+				.withUserConfiguration(OverriddenPrefix.class)
+				.withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);

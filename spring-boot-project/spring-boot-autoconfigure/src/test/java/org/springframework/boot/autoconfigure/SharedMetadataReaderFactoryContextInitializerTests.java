@@ -72,7 +72,8 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		ConfigurationClassPostProcessor configurationAnnotationPostProcessor = mock(
 				ConfigurationClassPostProcessor.class);
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(ConfigurationClassPostProcessor.class).getBeanDefinition();
+				.genericBeanDefinition(ConfigurationClassPostProcessor.class)
+				.getBeanDefinition();
 		((AbstractBeanDefinition) beanDefinition).setInstanceSupplier(() -> configurationAnnotationPostProcessor);
 		registry.registerBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME,
 				beanDefinition);

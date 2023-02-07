@@ -84,7 +84,8 @@ class StartupEndpointTests {
 				TypeReference.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag"),
 				TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag"));
 		for (TypeReference bindingType : bindingTypes) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+			assertThat(RuntimeHintsPredicates.reflection()
+					.onType(bindingType)
 					.withMemberCategories(MemberCategory.INVOKE_PUBLIC_METHODS)).accepts(runtimeHints);
 		}
 	}

@@ -194,7 +194,8 @@ public class SpringApplicationBuilder {
 		child.sources(sources);
 
 		// Copy environment stuff from parent to child
-		child.properties(this.defaultProperties).environment(this.environment)
+		child.properties(this.defaultProperties)
+				.environment(this.environment)
 				.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
@@ -221,7 +222,8 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
 			this.parent = new SpringApplicationBuilder(sources).web(WebApplicationType.NONE)
-					.properties(this.defaultProperties).environment(this.environment);
+					.properties(this.defaultProperties)
+					.environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);

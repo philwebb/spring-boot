@@ -73,8 +73,12 @@ public class SampleParentContextApplication {
 
 		@Bean
 		public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
-			return IntegrationFlow.from(fileReader(), new FixedRatePoller()).channel(inputChannel()).handle(endpoint)
-					.channel(outputChannel()).handle(fileWriter()).get();
+			return IntegrationFlow.from(fileReader(), new FixedRatePoller())
+					.channel(inputChannel())
+					.handle(endpoint)
+					.channel(outputChannel())
+					.handle(fileWriter())
+					.get();
 		}
 
 		private static class FixedRatePoller implements Consumer<SourcePollingChannelAdapterSpec> {

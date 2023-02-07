@@ -60,19 +60,25 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			Configuration annotationProcessors = project.getConfigurations()
 					.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 			annotationProcessors.getDependencies()
-					.add(project.getDependencies().project(Collections.singletonMap("path",
-							":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor")));
+					.add(project.getDependencies()
+							.project(Collections.singletonMap("path",
+									":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor")));
 			annotationProcessors.getDependencies()
-					.add(project.getDependencies().project(Collections.singletonMap("path",
-							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
+					.add(project.getDependencies()
+							.project(Collections.singletonMap("path",
+									":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				SourceSet main = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+				SourceSet main = project.getExtensions()
+						.getByType(JavaPluginExtension.class)
+						.getSourceSets()
 						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
 				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
-				project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
-						project.provider((Callable<File>) task::getOutputFile), (artifact) -> artifact.builtBy(task));
+				project.getArtifacts()
+						.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
+								project.provider((Callable<File>) task::getOutputFile),
+								(artifact) -> artifact.builtBy(task));
 			});
 		});
 	}

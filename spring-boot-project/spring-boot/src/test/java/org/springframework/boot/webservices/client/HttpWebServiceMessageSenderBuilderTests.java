@@ -48,7 +48,8 @@ class HttpWebServiceMessageSenderBuilderTests {
 	void buildWithReadAndConnectTimeout() {
 		ClientHttpRequestMessageSender messageSender = build(
 				new HttpWebServiceMessageSenderBuilder().requestFactory(SimpleClientHttpRequestFactory::new)
-						.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(2)));
+						.setConnectTimeout(Duration.ofSeconds(5))
+						.setReadTimeout(Duration.ofSeconds(2)));
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) messageSender
 				.getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
@@ -57,8 +58,9 @@ class HttpWebServiceMessageSenderBuilderTests {
 
 	@Test
 	void buildUsesHttpComponentsByDefault() {
-		ClientHttpRequestMessageSender messageSender = build(new HttpWebServiceMessageSenderBuilder()
-				.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(5)));
+		ClientHttpRequestMessageSender messageSender = build(
+				new HttpWebServiceMessageSenderBuilder().setConnectTimeout(Duration.ofSeconds(5))
+						.setReadTimeout(Duration.ofSeconds(5)));
 		ClientHttpRequestFactory requestFactory = messageSender.getRequestFactory();
 		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}

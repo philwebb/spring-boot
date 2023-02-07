@@ -187,8 +187,10 @@ class WebEndpointDiscovererTests {
 			Map<EndpointId, ExposableWebEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("resource"));
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("resource"));
-			assertThat(requestPredicates(endpoint)).has(requestPredicates(path("resource")
-					.httpMethod(WebEndpointHttpMethod.GET).consumes().produces("application/octet-stream")));
+			assertThat(requestPredicates(endpoint))
+					.has(requestPredicates(path("resource").httpMethod(WebEndpointHttpMethod.GET)
+							.consumes()
+							.produces("application/octet-stream")));
 		});
 	}
 
@@ -201,7 +203,8 @@ class WebEndpointDiscovererTests {
 			assertThat(requestPredicates(endpoint)).has(requestPredicates(
 					path("custommediatypes").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("text/plain"),
 					path("custommediatypes").httpMethod(WebEndpointHttpMethod.POST).consumes().produces("a/b", "c/d"),
-					path("custommediatypes").httpMethod(WebEndpointHttpMethod.DELETE).consumes()
+					path("custommediatypes").httpMethod(WebEndpointHttpMethod.DELETE)
+							.consumes()
 							.produces("text/plain")));
 		});
 	}
@@ -214,7 +217,8 @@ class WebEndpointDiscovererTests {
 			ExposableWebEndpoint endpoint = endpoints.get(EndpointId.of("test"));
 			Condition<List<? extends WebOperationRequestPredicate>> expected = requestPredicates(
 					path("custom/test").httpMethod(WebEndpointHttpMethod.GET).consumes().produces("application/json"),
-					path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET).consumes()
+					path("custom/test/{id}").httpMethod(WebEndpointHttpMethod.GET)
+							.consumes()
 							.produces("application/json"));
 			assertThat(requestPredicates(endpoint)).has(expected);
 		});
@@ -224,7 +228,8 @@ class WebEndpointDiscovererTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new WebEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(WebEndpointFilter.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(WebEndpointFilter.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 
 	}

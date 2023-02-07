@@ -77,19 +77,32 @@ class WebFluxEndpointIntegrationTests
 	@Test
 	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/test").accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
+				(client) -> client.options()
+						.uri("/test")
+						.accept(MediaType.APPLICATION_JSON)
+						.header("Access-Control-Request-Method", "POST")
+						.header("Origin", "https://example.com")
+						.exchange()
+						.expectStatus()
+						.isOk()
+						.expectHeader()
+						.valueEquals("Access-Control-Allow-Origin", "https://example.com")
+						.expectHeader()
 						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
 	void readOperationsThatReturnAResourceSupportRangeRequests() {
 		load(ResourceEndpointConfiguration.class, (client) -> {
-			byte[] responseBody = client.get().uri("/resource").header("Range", "bytes=0-3").exchange().expectStatus()
-					.isEqualTo(HttpStatus.PARTIAL_CONTENT).expectHeader()
-					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
+			byte[] responseBody = client.get()
+					.uri("/resource")
+					.header("Range", "bytes=0-3")
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.PARTIAL_CONTENT)
+					.expectHeader()
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.returnResult(byte[].class)
 					.getResponseBodyContent();
 			assertThat(responseBody).containsExactly(0, 1, 2, 3);
 		});
@@ -141,9 +154,11 @@ class WebFluxEndpointIntegrationTests
 
 		@Bean
 		WebFilter webFilter() {
-			return (exchange, chain) -> chain.filter(exchange).contextWrite(
-					ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("Alice",
-							"secret", Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));
+			return (exchange,
+					chain) -> chain.filter(exchange)
+							.contextWrite(ReactiveSecurityContextHolder
+									.withAuthentication(new UsernamePasswordAuthenticationToken("Alice", "secret",
+											Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));
 		}
 
 	}

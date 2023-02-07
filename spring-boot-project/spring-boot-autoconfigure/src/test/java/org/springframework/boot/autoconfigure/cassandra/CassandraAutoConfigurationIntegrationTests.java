@@ -46,7 +46,8 @@ class CassandraAutoConfigurationIntegrationTests {
 	static final CassandraContainer cassandra = new CassandraContainer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
+			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+			.withPropertyValues(
 					"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
 					"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
 					"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s");
@@ -55,7 +56,8 @@ class CassandraAutoConfigurationIntegrationTests {
 	void whenTheContextIsClosedThenTheDriverConfigLoaderIsClosed() {
 		this.contextRunner.withUserConfiguration(DriverConfigLoaderSpyConfiguration.class).run((context) -> {
 			assertThat(((BeanDefinitionRegistry) context.getSourceApplicationContext())
-					.getBeanDefinition("cassandraDriverConfigLoader").getDestroyMethodName()).isEmpty();
+					.getBeanDefinition("cassandraDriverConfigLoader")
+					.getDestroyMethodName()).isEmpty();
 			// Initialize lazy bean
 			context.getBean(CqlSession.class);
 			DriverConfigLoader driverConfigLoader = context.getBean(DriverConfigLoader.class);

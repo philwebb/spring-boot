@@ -84,8 +84,10 @@ class RSocketStrategiesAutoConfigurationTests {
 
 		@Bean
 		RSocketStrategies customRSocketStrategies() {
-			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build();
+			return RSocketStrategies.builder()
+					.encoder(CharSequenceEncoder.textPlainOnly())
+					.decoder(StringDecoder.textPlainOnly())
+					.build();
 		}
 
 	}

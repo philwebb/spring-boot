@@ -119,8 +119,8 @@ class ValidationBindHandlerTests {
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
 		Set<ConfigurationProperty> boundProperties = cause.getValidationErrors().getBoundProperties();
-		assertThat(boundProperties).extracting((p) -> p.getName().toString()).contains("foo.nested.age",
-				"foo.nested.name");
+		assertThat(boundProperties).extracting((p) -> p.getName().toString())
+				.contains("foo.nested.age", "foo.nested.name");
 	}
 
 	@Test

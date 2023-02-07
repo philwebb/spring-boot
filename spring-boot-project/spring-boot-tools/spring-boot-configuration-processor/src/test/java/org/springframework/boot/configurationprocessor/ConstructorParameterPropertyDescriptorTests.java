@@ -99,8 +99,12 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		process(ImmutableSimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "counter");
-			assertItemMetadata(metadataEnv, property).isProperty().hasName("test.counter").hasType(Long.class)
-					.hasSourceType(ImmutableSimpleProperties.class).hasNoDescription().isNotDeprecated();
+			assertItemMetadata(metadataEnv, property).isProperty()
+					.hasName("test.counter")
+					.hasType(Long.class)
+					.hasSourceType(ImmutableSimpleProperties.class)
+					.hasNoDescription()
+					.isNotDeprecated();
 		});
 	}
 
@@ -109,9 +113,12 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		process(ImmutableInnerClassProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
-			assertItemMetadata(metadataEnv, property).isGroup().hasName("test.first")
+			assertItemMetadata(metadataEnv, property).isGroup()
+					.hasName("test.first")
 					.hasType("org.springframework.boot.configurationsample.immutable.ImmutableInnerClassProperties$Foo")
-					.hasSourceType(ImmutableInnerClassProperties.class).hasSourceMethod("getFirst()").hasNoDescription()
+					.hasSourceType(ImmutableInnerClassProperties.class)
+					.hasSourceMethod("getFirst()")
+					.hasNoDescription()
 					.isNotDeprecated();
 		});
 	}
@@ -220,13 +227,19 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 	}
 
 	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {
-		List<ExecutableElement> constructors = ElementFilter.constructorsIn(ownerElement.getEnclosedElements()).stream()
-				.filter((constructor) -> !constructor.getParameters().isEmpty()).toList();
+		List<ExecutableElement> constructors = ElementFilter.constructorsIn(ownerElement.getEnclosedElements())
+				.stream()
+				.filter((constructor) -> !constructor.getParameters().isEmpty())
+				.toList();
 		if (constructors.size() != 1) {
 			throw new IllegalStateException("No candidate constructor for " + ownerElement);
 		}
-		return constructors.get(0).getParameters().stream()
-				.filter((parameter) -> parameter.getSimpleName().toString().equals(name)).findFirst().orElse(null);
+		return constructors.get(0)
+				.getParameters()
+				.stream()
+				.filter((parameter) -> parameter.getSimpleName().toString().equals(name))
+				.findFirst()
+				.orElse(null);
 	}
 
 }

@@ -79,9 +79,11 @@ class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
-				.child(ChildConfiguration.class).run("--server.port=0"));
+				.child(ChildConfiguration.class)
+				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+				.andExpect(status().is5xxServerError())
+				.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}
@@ -91,7 +93,8 @@ class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+				.andExpect(status().is5xxServerError())
+				.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}
@@ -109,7 +112,8 @@ class BasicErrorControllerDirectMockMvcTests {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
 				.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+				.andExpect(status().is5xxServerError())
+				.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}

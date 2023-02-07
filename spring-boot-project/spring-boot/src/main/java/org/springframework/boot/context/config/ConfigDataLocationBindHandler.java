@@ -45,7 +45,8 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return withOrigin(context, location);
 		}
 		if (result instanceof List) {
-			List<Object> list = ((List<Object>) result).stream().filter(Objects::nonNull)
+			List<Object> list = ((List<Object>) result).stream()
+					.filter(Objects::nonNull)
 					.collect(Collectors.toCollection(ArrayList::new));
 			for (int i = 0; i < list.size(); i++) {
 				Object element = list.get(i);
@@ -56,7 +57,8 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return list;
 		}
 		if (result instanceof ConfigDataLocation[] unfilteredLocations) {
-			ConfigDataLocation[] locations = Arrays.stream(unfilteredLocations).filter(Objects::nonNull)
+			ConfigDataLocation[] locations = Arrays.stream(unfilteredLocations)
+					.filter(Objects::nonNull)
 					.toArray(ConfigDataLocation[]::new);
 			for (int i = 0; i < locations.length; i++) {
 				locations[i] = withOrigin(context, locations[i]);

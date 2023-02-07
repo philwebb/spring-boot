@@ -86,7 +86,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
-			Map<String, DataSource> filteredDatasources = dataSources.entrySet().stream()
+			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
+					.stream()
 					.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
@@ -127,7 +128,9 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
 				Function<DataSource, HealthContributor> contributorFunction) {
-			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
+			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources()
+					.entrySet()
+					.stream()
 					.collect(Collectors.toMap((e) -> Objects.toString(e.getKey(), UNNAMED_DATASOURCE_KEY),
 							Map.Entry::getValue));
 			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);

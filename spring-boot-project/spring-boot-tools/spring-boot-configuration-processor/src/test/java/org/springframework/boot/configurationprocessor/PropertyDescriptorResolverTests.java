@@ -73,10 +73,12 @@ class PropertyDescriptorResolverTests {
 					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
 							"second", "first");
-					assertThat(resolver.resolve(type, null).map(
-							(descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
-									.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
-											"HierarchicalPropertiesParent");
+					assertThat(resolver.resolve(type, null)
+							.map((descriptor) -> descriptor.getGetter()
+									.getEnclosingElement()
+									.getSimpleName()
+									.toString())).containsExactly("HierarchicalProperties",
+											"HierarchicalPropertiesParent", "HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
 							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
 							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
@@ -197,7 +199,9 @@ class PropertyDescriptorResolverTests {
 				internalConsumer, new MetadataGenerationEnvironmentFactory());
 		SourceFile targetSource = SourceFile.forTestClass(target);
 		List<SourceFile> additionalSource = additionalClasses.stream().map(SourceFile::forTestClass).toList();
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor).withSources(targetSource)
+		TestCompiler compiler = TestCompiler.forSystem()
+				.withProcessors(processor)
+				.withSources(targetSource)
 				.withSources(additionalSource);
 		compiler.compile((compiled) -> {
 		});

@@ -59,7 +59,8 @@ class SpringBootContextLoaderAotTests {
 		TestContextAotGenerator generator = new TestContextAotGenerator(generatedFiles);
 		Class<?> testClass = ExampleTest.class;
 		generator.processAheadOfTime(Stream.of(testClass));
-		TestCompiler.forSystem().with(CompilerFiles.from(generatedFiles))
+		TestCompiler.forSystem()
+				.with(CompilerFiles.from(generatedFiles))
 				.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
 	}
 

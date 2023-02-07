@@ -47,25 +47,29 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void ofNameShouldNotStartWithDash() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("-foo")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("-foo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	void ofNameShouldNotStartWithDot() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of(".foo")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of(".foo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	void ofNameShouldNotEndWithDot() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("foo.")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("foo."))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	void ofNameShouldNotContainUppercase() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("fOo")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("fOo"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
@@ -153,19 +157,22 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void ofNameWhenMissingCloseBracket() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("[bar")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("[bar"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	void ofNameWhenMissingOpenBracket() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("bar]")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("bar]"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
 	void ofNameWhenMultipleMismatchedBrackets() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("[a[[[b]ar]")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("[a[[[b]ar]"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test
@@ -179,7 +186,8 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void ofNameWithWhitespaceInName() {
 		assertThatExceptionOfType(InvalidConfigurationPropertyNameException.class)
-				.isThrownBy(() -> ConfigurationPropertyName.of("foo. bar")).withMessageContaining("is not valid");
+				.isThrownBy(() -> ConfigurationPropertyName.of("foo. bar"))
+				.withMessageContaining("is not valid");
 	}
 
 	@Test

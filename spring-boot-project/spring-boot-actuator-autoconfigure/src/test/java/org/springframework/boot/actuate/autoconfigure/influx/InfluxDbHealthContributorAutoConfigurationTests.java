@@ -35,8 +35,9 @@ import static org.mockito.Mockito.mock;
 class InfluxDbHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(InfluxDB.class, () -> mock(InfluxDB.class)).withConfiguration(AutoConfigurations
-					.of(InfluxDbHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withBean(InfluxDB.class, () -> mock(InfluxDB.class))
+			.withConfiguration(AutoConfigurations.of(InfluxDbHealthContributorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

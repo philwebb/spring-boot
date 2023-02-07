@@ -50,14 +50,16 @@ class RSocketServerAutoConfigurationTests {
 	@Test
 	void shouldNotCreateBeansByDefault() {
 		contextRunner().run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
-				.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
+				.doesNotHaveBean(RSocketServerFactory.class)
+				.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
 	void shouldNotCreateDefaultBeansForReactiveWebAppWithoutMapping() {
 		reactiveWebContextRunner()
 				.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
-						.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
+						.doesNotHaveBean(RSocketServerFactory.class)
+						.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -66,7 +68,8 @@ class RSocketServerAutoConfigurationTests {
 				.withPropertyValues("spring.rsocket.server.transport=tcp",
 						"spring.rsocket.server.mapping-path=/rsocket")
 				.run((context) -> assertThat(context).doesNotHaveBean(WebServerFactoryCustomizer.class)
-						.doesNotHaveBean(RSocketServerFactory.class).doesNotHaveBean(RSocketServerBootstrap.class));
+						.doesNotHaveBean(RSocketServerFactory.class)
+						.doesNotHaveBean(RSocketServerBootstrap.class));
 	}
 
 	@Test
@@ -81,15 +84,18 @@ class RSocketServerAutoConfigurationTests {
 	void shouldCreateDefaultBeansForRSocketServerWhenPortIsSet() {
 		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
-						.hasSingleBean(RSocketServerBootstrap.class).hasSingleBean(RSocketServerCustomizer.class));
+						.hasSingleBean(RSocketServerBootstrap.class)
+						.hasSingleBean(RSocketServerCustomizer.class));
 	}
 
 	@Test
 	void shouldSetLocalServerPortWhenRSocketServerPortIsSet() {
 		reactiveWebContextRunner().withPropertyValues("spring.rsocket.server.port=0")
-				.withInitializer(new RSocketPortInfoApplicationContextInitializer()).run((context) -> {
+				.withInitializer(new RSocketPortInfoApplicationContextInitializer())
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RSocketServerFactory.class)
-							.hasSingleBean(RSocketServerBootstrap.class).hasSingleBean(RSocketServerCustomizer.class);
+							.hasSingleBean(RSocketServerBootstrap.class)
+							.hasSingleBean(RSocketServerCustomizer.class);
 					assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNotNull();
 				});
 	}
@@ -122,7 +128,8 @@ class RSocketServerAutoConfigurationTests {
 				.withPropertyValues("spring.rsocket.server.ssl.keyStore=classpath:rsocket/test.jks",
 						"spring.rsocket.server.ssl.keyPassword=password", "spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
-						.hasSingleBean(RSocketServerBootstrap.class).hasSingleBean(RSocketServerCustomizer.class)
+						.hasSingleBean(RSocketServerBootstrap.class)
+						.hasSingleBean(RSocketServerCustomizer.class)
 						.getBean(RSocketServerFactory.class)
 						.hasFieldOrPropertyWithValue("ssl.keyStore", "classpath:rsocket/test.jks")
 						.hasFieldOrPropertyWithValue("ssl.keyPassword", "password"));
@@ -130,8 +137,9 @@ class RSocketServerAutoConfigurationTests {
 
 	@Test
 	void shouldUseCustomServerBootstrap() {
-		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class).run((context) -> assertThat(context)
-				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
+		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class)
+				.run((context) -> assertThat(context).getBeanNames(RSocketServerBootstrap.class)
+						.containsExactly("customServerBootstrap"));
 	}
 
 	@Test
@@ -166,8 +174,10 @@ class RSocketServerAutoConfigurationTests {
 		@Bean
 		RSocketMessageHandler messageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
-			messageHandler.setRSocketStrategies(RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.allMimeTypes()).build());
+			messageHandler.setRSocketStrategies(RSocketStrategies.builder()
+					.encoder(CharSequenceEncoder.textPlainOnly())
+					.decoder(StringDecoder.allMimeTypes())
+					.build());
 			return messageHandler;
 		}
 

@@ -40,7 +40,8 @@ class R2dbcScriptDatabaseInitializerTests
 
 	private final ConnectionFactory standaloneConnectionFactory = ConnectionFactoryBuilder
 			.withUrl("r2dbc:h2:file:///"
-					+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation().getAbsolutePath()
+					+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation()
+							.getAbsolutePath()
 							.replace('\\', '/')
 					+ "/" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
 			.build();
@@ -68,8 +69,12 @@ class R2dbcScriptDatabaseInitializerTests
 	}
 
 	private int numberOfRows(ConnectionFactory connectionFactory, String sql) {
-		return DatabaseClient.create(connectionFactory).sql(sql).map((row, metadata) -> row.get(0)).first()
-				.map((number) -> ((Number) number).intValue()).block();
+		return DatabaseClient.create(connectionFactory)
+				.sql(sql)
+				.map((row, metadata) -> row.get(0))
+				.first()
+				.map((number) -> ((Number) number).intValue())
+				.block();
 	}
 
 	@Override

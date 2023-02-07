@@ -98,12 +98,12 @@ class BannerTests {
 		this.context = application.run();
 		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
 		assertThat(printedBanner).hasFieldOrPropertyWithValue("banner", banner);
-		then(banner).should().printBanner(any(Environment.class), this.sourceClassCaptor.capture(),
-				any(PrintStream.class));
+		then(banner).should()
+				.printBanner(any(Environment.class), this.sourceClassCaptor.capture(), any(PrintStream.class));
 		reset(banner);
 		printedBanner.printBanner(this.context.getEnvironment(), null, System.out);
-		then(banner).should().printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()),
-				any(PrintStream.class));
+		then(banner).should()
+				.printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()), any(PrintStream.class));
 	}
 
 	@Test

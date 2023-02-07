@@ -598,9 +598,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		blockingServlet.awaitQueue();
 		this.webServer.shutDownGracefully((result) -> {
 		});
-		Object unconnectableRequest = Awaitility.await().until(
-				() -> initiateGetRequest(HttpClients.createDefault(), port, "/").get(),
-				(result) -> result instanceof Exception);
+		Object unconnectableRequest = Awaitility.await()
+				.until(() -> initiateGetRequest(HttpClients.createDefault(), port, "/").get(),
+						(result) -> result instanceof Exception);
 		assertThat(unconnectableRequest).isInstanceOf(HttpHostConnectException.class);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);

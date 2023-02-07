@@ -94,7 +94,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	private void addJsonBean(Object bean) {
 		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
-				.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(JsonComponent.class);
+				.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY)
+				.get(JsonComponent.class);
 		Class<?>[] types = annotation.getClassArray("type");
 		Scope scope = annotation.getEnum("scope", JsonComponent.Scope.class);
 		addJsonBean(bean, types, scope);

@@ -84,8 +84,9 @@ class StandardConfigDataLocationResolverTests {
 				.of("file:src/test/resources/configdata/properties/application.properties");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations).hasSize(1);
-		assertThat(locations).extracting(Object::toString).containsExactly(
-				filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
+		assertThat(locations).extracting(Object::toString)
+				.containsExactly(
+						filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
 	}
 
 	@Test
@@ -108,7 +109,8 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationWildcardIsNotBeforeLastSlashThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/*/config/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Location '").withMessageEndingWith("' must end with '*/'");
+				.withMessageStartingWith("Location '")
+				.withMessageEndingWith("' must end with '*/'");
 	}
 
 	@Test
@@ -117,14 +119,16 @@ class StandardConfigDataLocationResolverTests {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
 						this.resourceLoader))
-				.withMessageStartingWith("Config name '").withMessageEndingWith("' cannot contain '*'");
+				.withMessageStartingWith("Config name '")
+				.withMessageEndingWith("' cannot contain '*'");
 	}
 
 	@Test
 	void resolveWhenLocationHasMultipleWildcardsThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/config/**/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Location '").withMessageEndingWith("' cannot contain multiple wildcards");
+				.withMessageStartingWith("Location '")
+				.withMessageEndingWith("' cannot contain multiple wildcards");
 	}
 
 	@Test
@@ -148,10 +152,10 @@ class StandardConfigDataLocationResolverTests {
 		this.resolver = new StandardConfigDataLocationResolver(new DeferredLogs(), this.environmentBinder,
 				this.resourceLoader);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations).extracting(Object::toString).containsExactly(
-				filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
-				filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
-				filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
+		assertThat(locations).extracting(Object::toString)
+				.containsExactly(filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
+						filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
+						filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
 	}
 
 	@Test

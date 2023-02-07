@@ -106,7 +106,8 @@ final class ChangeableUrls implements Iterable<URL> {
 			return urlClassLoader.getURLs();
 		}
 		return Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
-				.map(ChangeableUrls::toURL).toArray(URL[]::new);
+				.map(ChangeableUrls::toURL)
+				.toArray(URL[]::new);
 	}
 
 	private static URL toURL(String classPathEntry) {

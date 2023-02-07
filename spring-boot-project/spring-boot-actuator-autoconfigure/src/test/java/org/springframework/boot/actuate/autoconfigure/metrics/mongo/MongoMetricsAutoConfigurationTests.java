@@ -57,10 +57,12 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsCommandListenerIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoMetricsCommandListener.class);
 					assertThat(getActualMongoClientSettingsUsedToConstructClient(context))
-							.extracting(MongoClientSettings::getCommandListeners).asList()
+							.extracting(MongoClientSettings::getCommandListeners)
+							.asList()
 							.containsExactly(context.getBean(MongoMetricsCommandListener.class));
 					assertThat(getMongoCommandTagsProviderUsedToConstructListener(context))
 							.isInstanceOf(DefaultMongoCommandTagsProvider.class);
@@ -70,7 +72,8 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoMetricsConnectionPoolListener.class);
 					assertThat(getConnectionPoolListenersFromClient(context))
 							.containsExactly(context.getBean(MongoMetricsConnectionPoolListener.class));
@@ -164,7 +167,9 @@ class MongoMetricsAutoConfigurationTests {
 		return (context) -> {
 			assertThat(context).doesNotHaveBean(MongoMetricsCommandListener.class);
 			assertThat(getActualMongoClientSettingsUsedToConstructClient(context))
-					.extracting(MongoClientSettings::getCommandListeners).asList().isEmpty();
+					.extracting(MongoClientSettings::getCommandListeners)
+					.asList()
+					.isEmpty();
 		};
 	}
 

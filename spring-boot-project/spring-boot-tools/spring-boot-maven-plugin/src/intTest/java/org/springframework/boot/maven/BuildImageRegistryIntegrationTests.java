@@ -64,9 +64,12 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 	void whenBuildImageIsInvokedWithPublish(MavenBuild mavenBuild) {
 		String repoName = "test-image";
 		String imageName = this.registryAddress + "/" + repoName;
-		mavenBuild.project("build-image-publish").goals("package")
-				.systemProperty("spring-boot.build-image.imageName", imageName).execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image").contains("Successfully built image")
+		mavenBuild.project("build-image-publish")
+				.goals("package")
+				.systemProperty("spring-boot.build-image.imageName", imageName)
+				.execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("Successfully built image")
 							.contains("Pushing image '" + imageName + ":latest" + "'")
 							.contains("Pushed image '" + imageName + ":latest" + "'");
 					ImageReference imageReference = ImageReference.of(imageName);

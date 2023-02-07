@@ -108,8 +108,9 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	@Disabled("Expected to fail per gh-1075")
 	void testMessageSourceFromPropertySourceAnnotation() {
-		this.contextRunner.withUserConfiguration(Config.class).run(
-				(context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar"));
+		this.contextRunner.withUserConfiguration(Config.class)
+				.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+						.isEqualTo("bar"));
 	}
 
 	@Test

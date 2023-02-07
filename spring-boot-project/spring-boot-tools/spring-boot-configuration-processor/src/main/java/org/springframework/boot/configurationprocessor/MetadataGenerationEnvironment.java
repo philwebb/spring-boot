@@ -306,7 +306,9 @@ class MetadataGenerationEnvironment {
 	}
 
 	Set<TypeElement> getEndpointAnnotationElements() {
-		return this.endpointAnnotations.stream().map(this.elements::getTypeElement).filter(Objects::nonNull)
+		return this.endpointAnnotations.stream()
+				.map(this.elements::getTypeElement)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toSet());
 	}
 

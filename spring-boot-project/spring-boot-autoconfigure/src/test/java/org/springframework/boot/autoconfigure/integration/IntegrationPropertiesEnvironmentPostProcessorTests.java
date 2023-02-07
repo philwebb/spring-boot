@@ -56,8 +56,9 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 	@Test
 	void postProcessEnvironmentAddPropertySourceLast() {
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		environment.getPropertySources().addLast(new MapPropertySource("test",
-				Collections.singletonMap("spring.integration.endpoint.no-auto-startup", "another*")));
+		environment.getPropertySources()
+				.addLast(new MapPropertySource("test",
+						Collections.singletonMap("spring.integration.endpoint.no-auto-startup", "another*")));
 		new IntegrationPropertiesEnvironmentPostProcessor().postProcessEnvironment(environment,
 				mock(SpringApplication.class));
 		assertThat(environment.getPropertySources().contains("META-INF/spring.integration.properties")).isTrue();
@@ -70,7 +71,8 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 		ClassPathResource unknown = new ClassPathResource("does-not-exist.properties", getClass());
 		assertThatThrownBy(() -> new IntegrationPropertiesEnvironmentPostProcessor()
 				.registerIntegrationPropertiesPropertySource(environment, unknown))
-						.isInstanceOf(IllegalStateException.class).hasCauseInstanceOf(FileNotFoundException.class)
+						.isInstanceOf(IllegalStateException.class)
+						.hasCauseInstanceOf(FileNotFoundException.class)
 						.hasMessageContaining(unknown.toString());
 	}
 

@@ -100,7 +100,8 @@ class IntegrationGraphEndpointTests {
 				MessageProducerNode.class, PollableChannelNode.class, MessageChannelNode.class,
 				MessageHandlerNode.class, MessageSourceNode.class, RoutingMessageHandlerNode.class);
 		for (Class<?> bindingType : bindingTypes) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+			assertThat(RuntimeHintsPredicates.reflection()
+					.onType(bindingType)
 					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 							.accepts(runtimeHints);
 		}

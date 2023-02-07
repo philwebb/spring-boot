@@ -73,8 +73,13 @@ public class StarterMetadata extends DefaultTask {
 		Properties properties = CollectionFactory.createSortedProperties(true);
 		properties.setProperty("name", getProject().getName());
 		properties.setProperty("description", getProject().getDescription());
-		properties.setProperty("dependencies", String.join(",", this.dependencies.getResolvedConfiguration()
-				.getResolvedArtifacts().stream().map(ResolvedArtifact::getName).collect(Collectors.toSet())));
+		properties.setProperty("dependencies",
+				String.join(",",
+						this.dependencies.getResolvedConfiguration()
+								.getResolvedArtifacts()
+								.stream()
+								.map(ResolvedArtifact::getName)
+								.collect(Collectors.toSet())));
 		this.destination.getParentFile().mkdirs();
 		try (FileWriter writer = new FileWriter(this.destination)) {
 			properties.store(writer, null);

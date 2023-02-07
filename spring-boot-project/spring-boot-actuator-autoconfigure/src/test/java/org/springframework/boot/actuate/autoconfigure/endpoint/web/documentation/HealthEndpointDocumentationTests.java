@@ -79,26 +79,30 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		FieldDescriptor componentStatus = fieldWithPath("components.*.status")
 				.description("Status of a specific part of the application.");
 		FieldDescriptor nestedComponents = subsectionWithPath("components.*.components")
-				.description("The nested components that make up the health.").optional();
+				.description("The nested components that make up the health.")
+				.optional();
 		FieldDescriptor componentDetails = subsectionWithPath("components.*.details")
 				.description("Details of the health of a specific part of the application. "
 						+ "Presence is controlled by `management.endpoint.health.show-details`.")
 				.optional();
-		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andDo(document("health",
 						responseFields(status, components, componentStatus, nestedComponents, componentDetails)));
 	}
 
 	@Test
 	void healthComponent() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/db").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/health/db").accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
 				.andDo(document("health/component", responseFields(componentFields)));
 	}
 
 	@Test
 	void healthComponentInstance() throws Exception {
 		this.mockMvc.perform(get("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andDo(document("health/instance", responseFields(componentFields)));
+				.andExpect(status().isOk())
+				.andDo(document("health/instance", responseFields(componentFields)));
 	}
 
 	@Configuration(proxyBeanMethods = false)

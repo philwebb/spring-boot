@@ -40,7 +40,11 @@ class SampleR2dbcApplicationTests {
 
 	@Test
 	void citiesEndpointReturnInitialState() {
-		this.webClient.get().uri("/cities").exchange().expectBody().jsonPath("$[*].id")
+		this.webClient.get()
+				.uri("/cities")
+				.exchange()
+				.expectBody()
+				.jsonPath("$[*].id")
 				.isEqualTo(new JSONArray().appendElement(2000).appendElement(2001));
 	}
 
@@ -51,8 +55,15 @@ class SampleR2dbcApplicationTests {
 
 	@Test
 	void healthEndpointHasR2dbcEntry() {
-		this.webClient.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("components.r2dbc.status").isEqualTo("UP").jsonPath("components.r2dbc.details.database")
+		this.webClient.get()
+				.uri("/actuator/health")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("components.r2dbc.status")
+				.isEqualTo("UP")
+				.jsonPath("components.r2dbc.details.database")
 				.isEqualTo("H2");
 	}
 

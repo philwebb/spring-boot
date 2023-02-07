@@ -109,7 +109,8 @@ class ReactiveTokenValidatorTests {
 				.consumeErrorWith((ex) -> {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_KEY_ID);
-				}).verify();
+				})
+				.verify();
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -155,7 +156,8 @@ class ReactiveTokenValidatorTests {
 				.consumeErrorWith((ex) -> {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_KEY_ID);
-				}).verify();
+				})
+				.verify();
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -186,7 +188,8 @@ class ReactiveTokenValidatorTests {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_SIGNATURE);
-				}).verify();
+				})
+				.verify();
 	}
 
 	@Test
@@ -201,7 +204,8 @@ class ReactiveTokenValidatorTests {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.UNSUPPORTED_TOKEN_SIGNING_ALGORITHM);
-				}).verify();
+				})
+				.verify();
 	}
 
 	@Test
@@ -215,7 +219,8 @@ class ReactiveTokenValidatorTests {
 				.consumeErrorWith((ex) -> {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.TOKEN_EXPIRED);
-				}).verify();
+				})
+				.verify();
 	}
 
 	@Test
@@ -229,7 +234,8 @@ class ReactiveTokenValidatorTests {
 				.consumeErrorWith((ex) -> {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason()).isEqualTo(Reason.INVALID_ISSUER);
-				}).verify();
+				})
+				.verify();
 	}
 
 	@Test
@@ -244,7 +250,8 @@ class ReactiveTokenValidatorTests {
 					assertThat(ex).isExactlyInstanceOf(CloudFoundryAuthorizationException.class);
 					assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 							.isEqualTo(Reason.INVALID_AUDIENCE);
-				}).verify();
+				})
+				.verify();
 	}
 
 	private String getSignedToken(byte[] header, byte[] claims) throws Exception {

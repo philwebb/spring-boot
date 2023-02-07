@@ -128,8 +128,8 @@ class DatabaseInitializationDependencyConfigurerTests {
 					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
 							.isEqualTo(MockDatabaseInitializerDetector.class.getName());
 					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
-					then(MockDatabaseInitializerDetector.instance).should().detectionComplete(context.getBeanFactory(),
-							Collections.singleton("alpha"));
+					then(MockDatabaseInitializerDetector.instance).should()
+							.detectionComplete(context.getBeanFactory(), Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
 				});
 	}

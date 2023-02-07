@@ -206,8 +206,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ContextConfigurationPropertiesDescriptor describeBeans(ObjectMapper mapper, ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
-		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
-				.filter(beanFilterPredicate).collect(Collectors.toMap(ConfigurationPropertiesBean::getName,
+		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values()
+				.stream()
+				.filter(beanFilterPredicate)
+				.collect(Collectors.toMap(ConfigurationPropertiesBean::getName,
 						(bean) -> describeBean(mapper, bean, showUnsanitized)));
 		return new ContextConfigurationPropertiesDescriptor(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
@@ -508,7 +510,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					names = new String[parameters.length];
 				}
 				for (int i = 0; i < parameters.length; i++) {
-					String name = MergedAnnotations.from(parameters[i]).get(Name.class)
+					String name = MergedAnnotations.from(parameters[i])
+							.get(Name.class)
 							.getValue(MergedAnnotation.VALUE, String.class)
 							.orElse((names[i] != null) ? names[i] : parameters[i].getName());
 					if (name.equals(writer.getName())) {

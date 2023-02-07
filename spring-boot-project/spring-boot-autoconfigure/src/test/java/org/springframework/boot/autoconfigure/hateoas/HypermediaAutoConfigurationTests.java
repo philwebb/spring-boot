@@ -91,8 +91,10 @@ class HypermediaAutoConfigurationTests {
 	void whenUsingTheDefaultConfigurationThenMappingJacksonConverterCanWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters().stream()
-					.filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
+			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
+					.stream()
+					.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+					.findFirst();
 			assertThat(mappingJacksonConverter).hasValueSatisfying(
 					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
 							.isTrue());
@@ -105,7 +107,9 @@ class HypermediaAutoConfigurationTests {
 				.run((context) -> {
 					RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 					Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
-							.stream().filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
+							.stream()
+							.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+							.findFirst();
 					assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
 							converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON)).isFalse());
 				});

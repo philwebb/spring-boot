@@ -154,7 +154,9 @@ class SpringBootContextLoaderTests {
 		TestContext context = new ExposedTestContextManager(PropertySourceOrdering.class).getExposedTestContext();
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getApplicationContext()
 				.getEnvironment();
-		List<String> names = environment.getPropertySources().stream().map(PropertySource::getName)
+		List<String> names = environment.getPropertySources()
+				.stream()
+				.map(PropertySource::getName)
 				.collect(Collectors.toCollection(ArrayList::new));
 		String last = names.remove(names.size() - 1);
 		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
@@ -181,7 +183,8 @@ class SpringBootContextLoaderTests {
 	void whenUseMainMethodAlwaysAndMainMethodThrowsException() {
 		TestContext testContext = new ExposedTestContextManager(UseMainMethodAlwaysAndMainMethodThrowsException.class)
 				.getExposedTestContext();
-		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
+				.havingCause()
 				.withMessageContaining("ThrownFromMain");
 	}
 
@@ -212,7 +215,8 @@ class SpringBootContextLoaderTests {
 	void whenUseMainMethodWithBeanThrowingException() {
 		TestContext testContext = new ExposedTestContextManager(UseMainMethodWithBeanThrowingException.class)
 				.getExposedTestContext();
-		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
+				.havingCause()
 				.satisfies((exception) -> {
 					assertThat(exception).isInstanceOf(BeanCreationException.class);
 					assertThat(exception)
@@ -225,7 +229,8 @@ class SpringBootContextLoaderTests {
 	void whenNoMainMethodWithBeanThrowingException() {
 		TestContext testContext = new ExposedTestContextManager(NoMainMethodWithBeanThrowingException.class)
 				.getExposedTestContext();
-		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
+				.havingCause()
 				.satisfies((exception) -> {
 					assertThat(exception).isInstanceOf(BeanCreationException.class);
 					assertThat(exception)
@@ -238,7 +243,8 @@ class SpringBootContextLoaderTests {
 	void whenUseMainMethodWithContextHierarchyThrowsException() {
 		TestContext testContext = new ExposedTestContextManager(UseMainMethodWithContextHierarchy.class)
 				.getExposedTestContext();
-		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
+				.havingCause()
 				.withMessage("UseMainMethod.ALWAYS cannot be used with @ContextHierarchy tests");
 	}
 

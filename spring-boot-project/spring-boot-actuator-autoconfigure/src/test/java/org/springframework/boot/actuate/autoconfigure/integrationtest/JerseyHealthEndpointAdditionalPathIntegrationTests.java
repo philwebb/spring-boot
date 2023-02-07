@@ -50,7 +50,8 @@ class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 						ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
 						HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
 				.withInitializer(new ServerPortInfoApplicationContextInitializer())
-				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class)).withPropertyValues("server.port=0"));
+				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
+				.withPropertyValues("server.port=0"));
 	}
 
 }

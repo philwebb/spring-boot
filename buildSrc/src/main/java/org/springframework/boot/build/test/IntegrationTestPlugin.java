@@ -55,8 +55,9 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 		project.getTasks().getByName(LifecycleBasePlugin.CHECK_TASK_NAME).dependsOn(intTest);
 		project.getPlugins().withType(EclipsePlugin.class, (eclipsePlugin) -> {
 			EclipseModel eclipse = project.getExtensions().getByType(EclipseModel.class);
-			eclipse.classpath((classpath) -> classpath.getPlusConfigurations().add(
-					project.getConfigurations().getByName(intTestSourceSet.getRuntimeClasspathConfigurationName())));
+			eclipse.classpath((classpath) -> classpath.getPlusConfigurations()
+					.add(project.getConfigurations()
+							.getByName(intTestSourceSet.getRuntimeClasspathConfigurationName())));
 		});
 	}
 

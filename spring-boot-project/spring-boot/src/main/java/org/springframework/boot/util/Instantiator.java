@@ -47,7 +47,8 @@ import org.springframework.util.ReflectionUtils;
 public class Instantiator<T> {
 
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = Comparator
-			.<Constructor<?>>comparingInt(Constructor::getParameterCount).reversed();
+			.<Constructor<?>>comparingInt(Constructor::getParameterCount)
+			.reversed();
 
 	private static final FailureHandler throwingFailureHandler = (type, implementationName, failure) -> {
 		throw new IllegalArgumentException("Unable to instantiate " + implementationName + " [" + type.getName() + "]",

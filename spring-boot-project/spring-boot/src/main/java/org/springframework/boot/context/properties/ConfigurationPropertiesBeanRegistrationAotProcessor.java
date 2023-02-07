@@ -91,7 +91,8 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {
 				Class<?> beanClass = this.registeredBean.getBeanClass();
 				method.addJavadoc("Get the bean instance for '$L'.", this.registeredBean.getBeanName())
-						.addModifiers(Modifier.PRIVATE, Modifier.STATIC).returns(beanClass)
+						.addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+						.returns(beanClass)
 						.addParameter(RegisteredBean.class, REGISTERED_BEAN_PARAMETER_NAME)
 						.addStatement("$T beanFactory = registeredBean.getBeanFactory()", BeanFactory.class)
 						.addStatement("$T beanName = registeredBean.getBeanName()", String.class)

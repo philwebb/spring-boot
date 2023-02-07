@@ -78,8 +78,10 @@ class HealthEndpointWebExtensionConfiguration {
 
 	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		return webEndpoints.stream().filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-				.findFirst().get();
+		return webEndpoints.stream()
+				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+				.findFirst()
+				.get();
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
@@ -161,7 +163,9 @@ class HealthEndpointWebExtensionConfiguration {
 					WebServerNamespace.SERVER, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
 					.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
-					.stream().filter(Objects::nonNull).toList();
+					.stream()
+					.filter(Objects::nonNull)
+					.toList();
 			register(endpointResources, config);
 		}
 

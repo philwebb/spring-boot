@@ -63,8 +63,9 @@ class SampleSecureApplicationTests {
 
 	@Test
 	void authenticated() {
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
+		SecurityContextHolder.getContext()
+				.setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
+						AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
 		assertThat(this.service.secure()).isEqualTo("Hello Security");
 	}
 

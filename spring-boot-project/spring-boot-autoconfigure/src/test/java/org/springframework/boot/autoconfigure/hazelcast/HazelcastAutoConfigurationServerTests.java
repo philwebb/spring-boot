@@ -164,7 +164,8 @@ class HazelcastAutoConfigurationServerTests {
 	@Test
 	void unknownConfigFile() {
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("foo/bar/unknown.xml"));
 	}
 
@@ -174,7 +175,8 @@ class HazelcastAutoConfigurationServerTests {
 		HazelcastInstance existing = Hazelcast.newHazelcastInstance(config);
 		try {
 			this.contextRunner.withUserConfiguration(HazelcastConfigWithName.class)
-					.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml").run((context) -> {
+					.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+					.run((context) -> {
 						HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
 						assertThat(hazelcast.getConfig().getInstanceName()).isEqualTo("my-test-instance");
 						// Should reuse any existing instance by default.
@@ -189,7 +191,8 @@ class HazelcastAutoConfigurationServerTests {
 	@Test
 	void configInstanceWithoutName() {
 		this.contextRunner.withUserConfiguration(HazelcastConfigNoName.class)
-				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml").run((context) -> {
+				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+				.run((context) -> {
 					Config config = context.getBean(HazelcastInstance.class).getConfig();
 					Map<String, QueueConfig> queueConfigs = config.getQueueConfigs();
 					assertThat(queueConfigs.keySet()).containsOnly("another-queue");

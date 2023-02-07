@@ -38,7 +38,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 class LayersIndex extends ArrayList<Map<String, List<String>>> {
 
 	List<String> getLayer(String layerName) {
-		return stream().filter((entry) -> entry.containsKey(layerName)).findFirst().map((entry) -> entry.get(layerName))
+		return stream().filter((entry) -> entry.containsKey(layerName))
+				.findFirst()
+				.map((entry) -> entry.get(layerName))
 				.orElse(Collections.emptyList());
 	}
 

@@ -71,9 +71,9 @@ class SslServerCustomizerTests {
 		Server server = createCustomizedServer(http2);
 		assertThat(server.getConnectors()).hasSize(1);
 		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
-		assertThat(factories).extracting((factory) -> (Class) factory.getClass()).containsExactly(
-				SslConnectionFactory.class, ALPNServerConnectionFactory.class, HTTP2ServerConnectionFactory.class,
-				HttpConnectionFactory.class);
+		assertThat(factories).extracting((factory) -> (Class) factory.getClass())
+				.containsExactly(SslConnectionFactory.class, ALPNServerConnectionFactory.class,
+						HTTP2ServerConnectionFactory.class, HttpConnectionFactory.class);
 	}
 
 	@Test

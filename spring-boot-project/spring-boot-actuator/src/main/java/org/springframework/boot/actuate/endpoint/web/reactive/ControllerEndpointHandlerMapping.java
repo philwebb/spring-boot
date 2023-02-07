@@ -92,7 +92,8 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 			patterns = Collections.singleton(getPathPatternParser().parse(""));
 		}
 		String[] endpointMappedPatterns = patterns.stream()
-				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);
+				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))
+				.toArray(String[]::new);
 		return mapping.mutate().paths(endpointMappedPatterns).build();
 	}
 

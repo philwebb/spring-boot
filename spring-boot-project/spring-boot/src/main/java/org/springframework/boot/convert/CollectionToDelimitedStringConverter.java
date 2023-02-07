@@ -66,7 +66,8 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		if (source.isEmpty()) {
 			return "";
 		}
-		return source.stream().map((element) -> convertElement(element, sourceType, targetType))
+		return source.stream()
+				.map((element) -> convertElement(element, sourceType, targetType))
 				.collect(Collectors.joining(getDelimiter(sourceType)));
 	}
 

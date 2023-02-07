@@ -109,7 +109,8 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@Test
 	void filterOrderCanBeCustomizedWithCustomStore() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.servlet.filter-order=123").run((context) -> {
+				.withPropertyValues("spring.session.servlet.filter-order=123")
+				.run((context) -> {
 					FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 					assertThat(registration.getOrder()).isEqualTo(123);
 				});
@@ -118,7 +119,8 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@Test
 	void filterDispatcherTypesCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=error, request").run((context) -> {
+				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=error, request")
+				.run((context) -> {
 					FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 					assertThat(registration)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
@@ -129,7 +131,8 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@Test
 	void emptyFilterDispatcherTypesDoNotThrowException() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=").run((context) -> {
+				.withPropertyValues("spring.session.servlet.filter-dispatcher-types=")
+				.run((context) -> {
 					FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
 					assertThat(registration)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
@@ -159,7 +162,8 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@Test
 	void autoConfiguredCookieSerializerIsUsedBySessionRepositoryFilter() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.port=0").run((context) -> {
+				.withPropertyValues("server.port=0")
+				.run((context) -> {
 					SessionRepositoryFilter<?> filter = context.getBean(SessionRepositoryFilter.class);
 					assertThat(filter).extracting("httpSessionIdResolver.cookieSerializer")
 							.isSameAs(context.getBean(DefaultCookieSerializer.class));

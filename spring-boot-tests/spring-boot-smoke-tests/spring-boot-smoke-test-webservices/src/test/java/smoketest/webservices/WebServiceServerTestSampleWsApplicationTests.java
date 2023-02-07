@@ -64,8 +64,8 @@ class WebServiceServerTestSampleWsApplicationTests {
 		StreamSource source = new StreamSource(new StringReader(request));
 		this.client.sendRequest(RequestCreators.withPayload(source)).andExpect(ResponseMatchers.noFault());
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		then(this.service).should().bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"),
-				"John Doe");
+		then(this.service).should()
+				.bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"), "John Doe");
 	}
 
 }

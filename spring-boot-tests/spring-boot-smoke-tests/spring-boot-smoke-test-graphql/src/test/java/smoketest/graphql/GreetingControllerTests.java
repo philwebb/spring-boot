@@ -44,14 +44,21 @@ class GreetingControllerTests {
 	@Test
 	void shouldGreetWithSpecificName() {
 		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
-		authenticated.documentName("greeting").variable("name", "Brian").execute().path("greeting").entity(String.class)
+		authenticated.documentName("greeting")
+				.variable("name", "Brian")
+				.execute()
+				.path("greeting")
+				.entity(String.class)
 				.isEqualTo("Hello, Brian!");
 	}
 
 	@Test
 	void shouldGreetWithDefaultName() {
 		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
-		authenticated.document("{ greeting }").execute().path("greeting").entity(String.class)
+		authenticated.document("{ greeting }")
+				.execute()
+				.path("greeting")
+				.entity(String.class)
 				.isEqualTo("Hello, Spring!");
 	}
 

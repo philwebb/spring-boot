@@ -141,9 +141,11 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "one.jar")).isNotNull().extracting(ZipEntry::getMethod)
+			assertThat(jarFile.getEntry(this.libPath + "one.jar")).isNotNull()
+					.extracting(ZipEntry::getMethod)
 					.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry(this.libPath + "two.jar")).isNotNull().extracting(ZipEntry::getMethod)
+			assertThat(jarFile.getEntry(this.libPath + "two.jar")).isNotNull()
+					.extracting(ZipEntry::getMethod)
 					.isEqualTo(ZipEntry.STORED);
 		}
 	}

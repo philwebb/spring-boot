@@ -31,13 +31,19 @@ class GreetingControllerTests {
 
 	@Test
 	void shouldGreetWithSpecificName() {
-		this.graphQlTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
+		this.graphQlTester.document("{ greeting(name: \"Alice\") } ")
+				.execute()
+				.path("greeting")
+				.entity(String.class)
 				.isEqualTo("Hello, Alice!");
 	}
 
 	@Test
 	void shouldGreetWithDefaultName() {
-		this.graphQlTester.document("{ greeting } ").execute().path("greeting").entity(String.class)
+		this.graphQlTester.document("{ greeting } ")
+				.execute()
+				.path("greeting")
+				.entity(String.class)
 				.isEqualTo("Hello, Spring!");
 	}
 

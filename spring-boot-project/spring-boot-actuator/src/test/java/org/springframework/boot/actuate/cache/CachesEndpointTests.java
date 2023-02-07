@@ -87,7 +87,9 @@ class CachesEndpointTests {
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class).isThrownBy(() -> endpoint.cache("dupe-cache", null))
-				.withMessageContaining("dupe-cache").withMessageContaining("test").withMessageContaining("another");
+				.withMessageContaining("dupe-cache")
+				.withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test
@@ -147,8 +149,10 @@ class CachesEndpointTests {
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class)
-				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null)).withMessageContaining("dupe-cache")
-				.withMessageContaining("test").withMessageContaining("another");
+				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null))
+				.withMessageContaining("dupe-cache")
+				.withMessageContaining("test")
+				.withMessageContaining("another");
 	}
 
 	@Test

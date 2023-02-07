@@ -214,8 +214,8 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(),
-				eq(secondLocations));
+		then(this.importer).should()
+				.resolveAndLoad(any(), this.locationResolverContext.capture(), any(), eq(secondLocations));
 		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
 		assertThat(context.getParent()).hasToString("a");
 	}

@@ -56,29 +56,49 @@ class ManagementPortSampleSecureWebFluxTests {
 
 	@Test
 	void testHome() {
-		this.webClient.get().uri("http://localhost:" + this.port, String.class).header("Authorization", getBasicAuth())
-				.exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("Hello user");
+		this.webClient.get()
+				.uri("http://localhost:" + this.port, String.class)
+				.header("Authorization", getBasicAuth())
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.isEqualTo("Hello user");
 	}
 
 	@Test
 	void actuatorPathOnMainPortShouldNotMatch() {
-		this.webClient.get().uri("http://localhost:" + this.port + "/actuator", String.class).exchange().expectStatus()
+		this.webClient.get()
+				.uri("http://localhost:" + this.port + "/actuator", String.class)
+				.exchange()
+				.expectStatus()
 				.isUnauthorized();
-		this.webClient.get().uri("http://localhost:" + this.port + "/actuator/health", String.class).exchange()
-				.expectStatus().isUnauthorized();
+		this.webClient.get()
+				.uri("http://localhost:" + this.port + "/actuator/health", String.class)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
 	}
 
 	@Test
 	void testSecureActuator() {
-		this.webClient.get().uri("http://localhost:" + this.managementPort + "/actuator/env", String.class).exchange()
-				.expectStatus().isUnauthorized();
+		this.webClient.get()
+				.uri("http://localhost:" + this.managementPort + "/actuator/env", String.class)
+				.exchange()
+				.expectStatus()
+				.isUnauthorized();
 	}
 
 	@Test
 	void testInsecureActuator() {
 		String responseBody = this.webClient.get()
-				.uri("http://localhost:" + this.managementPort + "/actuator/health", String.class).exchange()
-				.expectStatus().isOk().expectBody(String.class).returnResult().getResponseBody();
+				.uri("http://localhost:" + this.managementPort + "/actuator/health", String.class)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
 		assertThat(responseBody).contains("\"status\":\"UP\"");
 	}
 

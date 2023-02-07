@@ -120,7 +120,8 @@ public abstract class Configurations {
 		List<Configurations> ordered = new ArrayList<>(configurations);
 		ordered.sort(COMPARATOR);
 		List<Configurations> collated = collate(ordered);
-		LinkedHashSet<Class<?>> classes = collated.stream().flatMap(Configurations::streamClasses)
+		LinkedHashSet<Class<?>> classes = collated.stream()
+				.flatMap(Configurations::streamClasses)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 		return ClassUtils.toClassArray(classes);
 	}

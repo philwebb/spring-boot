@@ -98,14 +98,20 @@ class ReactiveMultipartAutoConfigurationTests {
 	}
 
 	private DefaultPartHttpMessageReader getDefaultPartReader(DefaultServerCodecConfigurer codecConfigurer) {
-		return codecConfigurer.getReaders().stream().filter(DefaultPartHttpMessageReader.class::isInstance)
-				.map(DefaultPartHttpMessageReader.class::cast).findFirst()
+		return codecConfigurer.getReaders()
+				.stream()
+				.filter(DefaultPartHttpMessageReader.class::isInstance)
+				.map(DefaultPartHttpMessageReader.class::cast)
+				.findFirst()
 				.orElseThrow(() -> new IllegalStateException("Could not find DefaultPartHttpMessageReader"));
 	}
 
 	private PartEventHttpMessageReader getPartEventReader(DefaultServerCodecConfigurer codecConfigurer) {
-		return codecConfigurer.getReaders().stream().filter(PartEventHttpMessageReader.class::isInstance)
-				.map(PartEventHttpMessageReader.class::cast).findFirst()
+		return codecConfigurer.getReaders()
+				.stream()
+				.filter(PartEventHttpMessageReader.class::isInstance)
+				.map(PartEventHttpMessageReader.class::cast)
+				.findFirst()
 				.orElseThrow(() -> new IllegalStateException("Could not find PartEventHttpMessageReader"));
 	}
 

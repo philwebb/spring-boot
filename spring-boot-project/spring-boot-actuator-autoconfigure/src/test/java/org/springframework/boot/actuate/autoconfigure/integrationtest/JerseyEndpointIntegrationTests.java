@@ -63,12 +63,16 @@ class JerseyEndpointIntegrationTests {
 	@Test
 	void linksPageIsNotAvailableWhenDisabled() {
 		getContextRunner(new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class })
-				.withPropertyValues("management.endpoints.web.discovery.enabled:false").run((context) -> {
+				.withPropertyValues("management.endpoints.web.discovery.enabled:false")
+				.run((context) -> {
 					int port = context
 							.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-							.getWebServer().getPort();
-					WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-							.responseTimeout(Duration.ofMinutes(5)).build();
+							.getWebServer()
+							.getPort();
+					WebTestClient client = WebTestClient.bindToServer()
+							.baseUrl("http://localhost:" + port)
+							.responseTimeout(Duration.ofMinutes(5))
+							.build();
 					client.get().uri("/actuator").exchange().expectStatus().isNotFound();
 				});
 	}
@@ -85,9 +89,12 @@ class JerseyEndpointIntegrationTests {
 				getAutoconfigurations(SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 		contextRunner.run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-					.getWebServer().getPort();
-			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-					.responseTimeout(Duration.ofMinutes(5)).build();
+					.getWebServer()
+					.getPort();
+			WebTestClient client = WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
 			client.get().uri("/actuator").exchange().expectStatus().isUnauthorized();
 		});
 	}
@@ -98,9 +105,12 @@ class JerseyEndpointIntegrationTests {
 				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
 		contextRunner.run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-					.getWebServer().getPort();
-			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-					.responseTimeout(Duration.ofMinutes(5)).build();
+					.getWebServer()
+					.getPort();
+			WebTestClient client = WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
 			client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody().consumeWith((result) -> {
 				String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
 				assertThat(json).contains("\"scope\":\"notelgnis\"");
@@ -111,11 +121,23 @@ class JerseyEndpointIntegrationTests {
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
 		getContextRunner(userConfigurations).run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-					.getWebServer().getPort();
-			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-					.responseTimeout(Duration.ofMinutes(5)).build();
-			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
-					.isNotEmpty().jsonPath("_links.restcontroller").doesNotExist().jsonPath("_links.controller")
+					.getWebServer()
+					.getPort();
+			WebTestClient client = WebTestClient.bindToServer()
+					.baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5))
+					.build();
+			client.get()
+					.uri("/actuator")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("_links.beans")
+					.isNotEmpty()
+					.jsonPath("_links.restcontroller")
+					.doesNotExist()
+					.jsonPath("_links.controller")
 					.doesNotExist();
 		});
 	}

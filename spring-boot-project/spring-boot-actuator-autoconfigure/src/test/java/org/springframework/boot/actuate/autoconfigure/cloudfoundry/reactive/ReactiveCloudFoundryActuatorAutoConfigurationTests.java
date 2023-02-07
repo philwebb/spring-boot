@@ -101,8 +101,10 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActive() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping,
 							"endpointMapping");
@@ -119,18 +121,23 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudfoundryapplicationProducesActuatorMediaType() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
-					webTestClient.get().uri("/cloudfoundryapplication").header("Content-Type",
-							V2_JSON + ";charset=UTF-8");
+					webTestClient.get()
+							.uri("/cloudfoundryapplication")
+							.header("Content-Type", V2_JSON + ";charset=UTF-8");
 				});
 	}
 
 	@Test
 	void cloudFoundryPlatformActiveSetsApplicationId() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
 					String applicationId = (String) ReflectionTestUtils.getField(interceptor, "applicationId");
@@ -140,8 +147,10 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPlatformActiveSetsCloudControllerUrl() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
 					Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
@@ -169,8 +178,10 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void cloudFoundryPathsIgnoredBySpringSecurity() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					WebFilterChainProxy chainProxy = context.getBean(WebFilterChainProxy.class);
 					List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils
 							.getField(chainProxy, "filters");
@@ -199,14 +210,16 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryManagementEndpointsDisabled() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false").run(
-				(context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping")).isFalse());
+		this.contextRunner.withPropertyValues("VCAP_APPLICATION=---", "management.cloudfoundry.enabled:false")
+				.run((context) -> assertThat(context.containsBean("cloudFoundryWebFluxEndpointHandlerMapping"))
+						.isFalse());
 	}
 
 	@Test
 	void allEndpointsAvailableUnderCloudFoundryWithoutEnablingWebIncludes() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
@@ -217,13 +230,15 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void endpointPathCustomizationIsNotApplied() {
-		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
-				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
+						"vcap.application.cf_api:https://my-cloud-controller.com")
 				.run((context) -> {
 					CloudFoundryWebFluxEndpointHandlerMapping handlerMapping = getHandlerMapping(context);
 					Collection<ExposableWebEndpoint> endpoints = handlerMapping.getEndpoints();
 					ExposableWebEndpoint endpoint = endpoints.stream()
-							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId())).findFirst()
+							.filter((candidate) -> EndpointId.of("test").equals(candidate.getEndpointId()))
+							.findFirst()
 							.get();
 					assertThat(endpoint.getOperations()).hasSize(1);
 					WebOperation operation = endpoint.getOperations().iterator().next();
@@ -241,7 +256,8 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					ExposableWebEndpoint endpoint = endpoints.iterator().next();
 					assertThat(endpoint.getOperations()).hasSize(2);
 					WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
-					assertThat(webOperation).extracting("invoker").extracting("target")
+					assertThat(webOperation).extracting("invoker")
+							.extracting("target")
 							.isInstanceOf(CloudFoundryReactiveHealthEndpointWebExtension.class);
 				});
 	}
@@ -271,7 +287,10 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							"cloudFoundrySecurityService");
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
-					webClient.get().uri("https://self-signed.badssl.com/").retrieve().toBodilessEntity()
+					webClient.get()
+							.uri("https://self-signed.badssl.com/")
+							.retrieve()
+							.toBodilessEntity()
 							.block(Duration.ofSeconds(30));
 				});
 	}
@@ -288,10 +307,11 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							"cloudFoundrySecurityService");
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
-					assertThatExceptionOfType(RuntimeException.class)
-							.isThrownBy(() -> webClient.get().uri("https://self-signed.badssl.com/").retrieve()
-									.toBodilessEntity().block(Duration.ofSeconds(30)))
-							.withCauseInstanceOf(SSLException.class);
+					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> webClient.get()
+							.uri("https://self-signed.badssl.com/")
+							.retrieve()
+							.toBodilessEntity()
+							.block(Duration.ofSeconds(30))).withCauseInstanceOf(SSLException.class);
 				});
 	}
 

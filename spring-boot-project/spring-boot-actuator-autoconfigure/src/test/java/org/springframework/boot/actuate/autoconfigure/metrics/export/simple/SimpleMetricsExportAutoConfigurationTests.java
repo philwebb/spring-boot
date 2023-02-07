@@ -44,8 +44,10 @@ class SimpleMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(SimpleMeterRegistry.class).hasSingleBean(Clock.class).hasSingleBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(SimpleMeterRegistry.class)
+						.hasSingleBean(Clock.class)
+						.hasSingleBean(SimpleConfig.class));
 	}
 
 	@Test
@@ -72,8 +74,10 @@ class SimpleMetricsExportAutoConfigurationTests {
 
 	@Test
 	void backsOffEntirelyWithCustomMeterRegistry() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(MeterRegistry.class).hasBean("customRegistry").doesNotHaveBean(SimpleConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(MeterRegistry.class)
+						.hasBean("customRegistry")
+						.doesNotHaveBean(SimpleConfig.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

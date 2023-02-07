@@ -51,8 +51,9 @@ class Log4J2MetricsWithLog4jLoggerContextAutoConfigurationTests {
 	void allowsCustomLog4J2MetricsToBeUsed() {
 		assertThat(LogManager.getContext().getClass().getName())
 				.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
-		this.contextRunner.withUserConfiguration(CustomLog4J2MetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class).hasBean("customLog4J2Metrics"));
+		this.contextRunner.withUserConfiguration(CustomLog4J2MetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class)
+						.hasBean("customLog4J2Metrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

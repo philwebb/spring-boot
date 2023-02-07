@@ -50,7 +50,8 @@ class WebTestClientContextCustomizerTests {
 	@Test
 	void whenUsingAotGeneratedArtifactsWebTestClientIsNotRegistered() {
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(this::applyWebTestClientContextCustomizer).run((context) -> {
+				.withInitializer(this::applyWebTestClientContextCustomizer)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(WebTestClientRegistrar.class);
 					assertThat(context).doesNotHaveBean(WebTestClient.class);
 				});

@@ -43,7 +43,10 @@ class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestInteg
 	void toLinksWhenApplicationPathSetShouldMatch() {
 		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
-			webTestClient.get().uri("/admin/actuator/").exchange().expectStatus()
+			webTestClient.get()
+					.uri("/admin/actuator/")
+					.exchange()
+					.expectStatus()
 					.isEqualTo(expectedStatusWithTrailingSlash());
 			webTestClient.get().uri("/admin/actuator").exchange().expectStatus().isOk();
 		});
@@ -64,37 +67,60 @@ class JerseyEndpointRequestIntegrationTests extends AbstractEndpointRequestInteg
 				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
 					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/e2").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
+					webTestClient.get()
+							.uri("/admin/actuator/e2")
+							.header("Authorization", getBasicAuth())
+							.exchange()
+							.expectStatus()
+							.isOk();
 				});
 	}
 
 	@Test
 	void toAnyEndpointShouldMatchServletEndpoint() {
-		getContextRunner().withPropertyValues("spring.security.user.password=password",
-				"management.endpoints.web.exposure.include=se1").run((context) -> {
+		getContextRunner()
+				.withPropertyValues("spring.security.user.password=password",
+						"management.endpoints.web.exposure.include=se1")
+				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
 					webTestClient.get().uri("/actuator/se1").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/actuator/se1").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
+					webTestClient.get()
+							.uri("/actuator/se1")
+							.header("Authorization", getBasicAuth())
+							.exchange()
+							.expectStatus()
+							.isOk();
 					webTestClient.get().uri("/actuator/se1/list").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/actuator/se1/list").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
+					webTestClient.get()
+							.uri("/actuator/se1/list")
+							.header("Authorization", getBasicAuth())
+							.exchange()
+							.expectStatus()
+							.isOk();
 				});
 	}
 
 	@Test
 	void toAnyEndpointWhenApplicationPathSetShouldMatchServletEndpoint() {
-		getContextRunner().withPropertyValues("spring.jersey.application-path=/admin",
-				"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
+		getContextRunner()
+				.withPropertyValues("spring.jersey.application-path=/admin", "spring.security.user.password=password",
+						"management.endpoints.web.exposure.include=se1")
 				.run((context) -> {
 					WebTestClient webTestClient = getWebTestClient(context);
 					webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/se1").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
+					webTestClient.get()
+							.uri("/admin/actuator/se1")
+							.header("Authorization", getBasicAuth())
+							.exchange()
+							.expectStatus()
+							.isOk();
 					webTestClient.get().uri("/admin/actuator/se1/list").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/se1/list").header("Authorization", getBasicAuth())
-							.exchange().expectStatus().isOk();
+					webTestClient.get()
+							.uri("/admin/actuator/se1/list")
+							.header("Authorization", getBasicAuth())
+							.exchange()
+							.expectStatus()
+							.isOk();
 				});
 	}
 

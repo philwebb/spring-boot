@@ -86,9 +86,11 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 		testWith((mockMvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
 			MvcResult result = mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}")).andReturn();
-			mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk())
+			mockMvc.perform(asyncDispatch(result))
+					.andExpect(status().isOk())
 					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-					.andExpect(jsonPath("data.bookById.name").doesNotExist()).andExpect(
+					.andExpect(jsonPath("data.bookById.name").doesNotExist())
+					.andExpect(
 							jsonPath("errors[0].extensions.classification").value(ErrorType.UNAUTHORIZED.toString()));
 		});
 	}
@@ -98,8 +100,10 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 		testWith((mockMvc) -> {
 			String query = "{  bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
 			MvcResult result = mockMvc
-					.perform(post("/graphql").content("{\"query\": \"" + query + "\"}").with(user("rob"))).andReturn();
-			mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk())
+					.perform(post("/graphql").content("{\"query\": \"" + query + "\"}").with(user("rob")))
+					.andReturn();
+			mockMvc.perform(asyncDispatch(result))
+					.andExpect(status().isOk())
 					.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 					.andExpect(jsonPath("data.bookById.name").value("GraphQL for beginners"))
 					.andExpect(jsonPath("errors").doesNotExist());
@@ -111,7 +115,8 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			MediaType mediaType = MediaType.APPLICATION_JSON;
 			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context)
-					.defaultRequest(post("/graphql").contentType(mediaType).accept(mediaType)).apply(springSecurity())
+					.defaultRequest(post("/graphql").contentType(mediaType).accept(mediaType))
+					.apply(springSecurity())
 					.build();
 			mockMvcConsumer.accept(mockMvc);
 		});
@@ -128,8 +133,8 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById",
-					(env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+					.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
 		}
 
 		@Bean
@@ -160,7 +165,8 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 			return http.csrf((c) -> c.disable())
 					// Demonstrate that method security works
 					// Best practice to use both for defense in depth
-					.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults())
+					.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
+					.httpBasic(withDefaults())
 					.build();
 		}
 

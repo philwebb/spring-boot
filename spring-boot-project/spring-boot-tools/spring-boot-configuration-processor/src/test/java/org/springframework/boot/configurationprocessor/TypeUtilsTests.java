@@ -80,7 +80,8 @@ class TypeUtilsTests {
 
 	private void process(Class<?> target, BiConsumer<RoundEnvironmentTester, TypeUtils> consumer) {
 		TestableAnnotationProcessor<TypeUtils> processor = new TestableAnnotationProcessor<>(consumer, TypeUtils::new);
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
+		TestCompiler compiler = TestCompiler.forSystem()
+				.withProcessors(processor)
 				.withSources(SourceFile.forTestClass(target));
 		compiler.compile((compiled) -> {
 		});

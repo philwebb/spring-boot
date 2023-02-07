@@ -156,15 +156,20 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
 			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
-			map.from(this.properties::isSocketKeepAlive).to((keepAlive) -> builder
-					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
+			map.from(this.properties::isSocketKeepAlive)
+					.to((keepAlive) -> builder
+							.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
 		}
 
 		@Override
 		public void customize(RequestConfig.Builder builder) {
-			map.from(this.properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+			map.from(this.properties::getConnectionTimeout)
+					.whenNonNull()
+					.asInt(Duration::toMillis)
 					.to(builder::setConnectTimeout);
-			map.from(this.properties::getSocketTimeout).whenNonNull().asInt(Duration::toMillis)
+			map.from(this.properties::getSocketTimeout)
+					.whenNonNull()
+					.asInt(Duration::toMillis)
 					.to(builder::setSocketTimeout);
 		}
 
@@ -178,7 +183,10 @@ class ElasticsearchRestClientConfigurations {
 						properties.getPassword());
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			properties.getUris().stream().map(this::toUri).filter(this::hasUserInfo)
+			properties.getUris()
+					.stream()
+					.map(this::toUri)
+					.filter(this::hasUserInfo)
 					.forEach(this::addUserInfoCredentials);
 		}
 

@@ -108,7 +108,8 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 			if (accessLevel == null) {
 				return new LinkedHashMap<>();
 			}
-			return links.entrySet().stream()
+			return links.entrySet()
+					.stream()
 					.filter((entry) -> entry.getKey().equals("self") || accessLevel.isAccessAllowed(entry.getKey()))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}

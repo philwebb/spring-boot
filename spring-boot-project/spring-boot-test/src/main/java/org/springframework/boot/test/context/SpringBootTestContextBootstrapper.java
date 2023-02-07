@@ -211,7 +211,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
 		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
-				.get(WebAppConfiguration.class).getValue(MergedAnnotation.VALUE, String.class)
+				.get(WebAppConfiguration.class)
+				.getValue(MergedAnnotation.VALUE, String.class)
 				.orElse("src/main/webapp");
 	}
 
@@ -351,8 +352,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 
 	protected void verifyConfiguration(Class<?> testClass) {
 		SpringBootTest springBootTest = getAnnotation(testClass);
-		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment()) && MergedAnnotations
-				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).isPresent(WebAppConfiguration.class)) {
+		if (springBootTest != null && isListeningOnPort(springBootTest.webEnvironment())
+				&& MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+						.isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
 					+ "mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");

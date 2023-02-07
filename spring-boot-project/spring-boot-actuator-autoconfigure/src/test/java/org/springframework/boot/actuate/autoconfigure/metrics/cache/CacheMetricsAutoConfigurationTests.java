@@ -36,7 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CacheMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withUserConfiguration(CachingConfiguration.class).withConfiguration(
+			.withUserConfiguration(CachingConfiguration.class)
+			.withConfiguration(
 					AutoConfigurations.of(CacheAutoConfiguration.class, CacheMetricsAutoConfiguration.class));
 
 	@Test
@@ -64,20 +65,28 @@ class CacheMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
 				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager")
+					assertThat(registry.find("cache.gets")
+							.tags("name", "cache1")
+							.tags("cache.manager", "cacheManager")
 							.meter()).isNull();
-					assertThat(registry.find("cache.gets").tags("name", "cache2").tags("cache.manager", "cacheManager")
+					assertThat(registry.find("cache.gets")
+							.tags("name", "cache2")
+							.tags("cache.manager", "cacheManager")
 							.meter()).isNull();
 				});
 	}
 
 	@Test
 	void cacheInstrumentationCanBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.enable.cache=false", "spring.cache.type=caffeine",
-				"spring.cache.cache-names=cache1").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.metrics.enable.cache=false", "spring.cache.type=caffeine",
+						"spring.cache.cache-names=cache1")
+				.run((context) -> {
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("cache.requests").tags("name", "cache1")
-							.tags("cache.manager", "cacheManager").meter()).isNull();
+					assertThat(registry.find("cache.requests")
+							.tags("name", "cache1")
+							.tags("cache.manager", "cacheManager")
+							.meter()).isNull();
 				});
 	}
 

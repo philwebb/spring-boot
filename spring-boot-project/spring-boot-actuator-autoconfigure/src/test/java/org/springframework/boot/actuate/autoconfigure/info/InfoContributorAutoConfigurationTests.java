@@ -101,7 +101,8 @@ class InfoContributorAutoConfigurationTests {
 	@Test
 	void gitPropertiesFullMode() {
 		this.contextRunner.withPropertyValues("management.info.git.mode=full")
-				.withUserConfiguration(GitPropertiesConfiguration.class).run((context) -> {
+				.withUserConfiguration(GitPropertiesConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(GitInfoContributor.class);
 					Map<String, Object> content = invokeContributor(context.getBean(GitInfoContributor.class));
 					Object git = content.get("git");

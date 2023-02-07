@@ -196,17 +196,21 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
-		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path)).options(this.builderConfig)
+		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path))
+				.options(this.builderConfig)
 				.methods(RequestMethod.valueOf(predicate.getHttpMethod().name()))
 				.consumes(predicate.getConsumes().toArray(new String[0]))
-				.produces(predicate.getProduces().toArray(new String[0])).build();
+				.produces(predicate.getProduces().toArray(new String[0]))
+				.build();
 	}
 
 	private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
 		String linksPath = (StringUtils.hasLength(path)) ? this.endpointMapping.createSubPath("/") : "/";
-		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath).methods(RequestMethod.GET)
-				.produces(this.endpointMediaTypes.getProduced().toArray(new String[0])).options(this.builderConfig)
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath)
+				.methods(RequestMethod.GET)
+				.produces(this.endpointMediaTypes.getProduced().toArray(new String[0]))
+				.options(this.builderConfig)
 				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
@@ -336,8 +340,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			if (body != null && HttpMethod.POST.name().equals(request.getMethod())) {
 				arguments.putAll(body);
 			}
-			request.getParameterMap().forEach(
-					(name, values) -> arguments.put(name, (values.length != 1) ? Arrays.asList(values) : values[0]));
+			request.getParameterMap()
+					.forEach((name, values) -> arguments.put(name,
+							(values.length != 1) ? Arrays.asList(values) : values[0]));
 			return arguments;
 		}
 
@@ -380,7 +385,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			}
 			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
 					: null;
-			return ResponseEntity.status(response.getStatus()).contentType(contentType)
+			return ResponseEntity.status(response.getStatus())
+					.contentType(contentType)
 					.body(convertIfNecessary(response.getBody()));
 		}
 

@@ -102,13 +102,17 @@ public abstract class AbstractEndpointDocumentationTests {
 
 	protected FieldDescriptor parentIdField() {
 		return fieldWithPath("contexts.*.parentId").description("Id of the parent application context, if any.")
-				.optional().type(JsonFieldType.STRING);
+				.optional()
+				.type(JsonFieldType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, Object> select(Map<String, Object> candidates, Predicate<T> filter) {
 		Map<String, Object> selected = new HashMap<>();
-		candidates.entrySet().stream().filter((candidate) -> filter.test((T) candidate)).limit(3)
+		candidates.entrySet()
+				.stream()
+				.filter((candidate) -> filter.test((T) candidate))
+				.limit(3)
 				.forEach((entry) -> selected.put(entry.getKey(), entry.getValue()));
 		return selected;
 	}

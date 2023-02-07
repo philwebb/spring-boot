@@ -88,40 +88,59 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	private void configureConfigurationPropertiesAnnotationProcessor(Project project) {
 		Configuration annotationProcessors = project.getConfigurations()
 				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
-		annotationProcessors.getDependencies().add(project.getDependencies().project(Collections.singletonMap("path",
-				":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
+		annotationProcessors.getDependencies()
+				.add(project.getDependencies()
+						.project(Collections.singletonMap("path",
+								":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 		project.getPlugins().apply(ProcessedAnnotationsPlugin.class);
 	}
 
 	private void disableIncrementalCompilation(Project project) {
-		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		project.getTasks().named(mainSourceSet.getCompileJavaTaskName(), JavaCompile.class)
+		project.getTasks()
+				.named(mainSourceSet.getCompileJavaTaskName(), JavaCompile.class)
 				.configure((compileJava) -> compileJava.getOptions().setIncremental(false));
 	}
 
 	private void addMetadataArtifact(Project project) {
-		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+		SourceSet mainSourceSet = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		project.getConfigurations().maybeCreate(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME);
-		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts().add(
-				CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
-				mainSourceSet.getJava().getDestinationDirectory().dir("META-INF/spring-configuration-metadata.json"),
-				(artifact) -> artifact
-						.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
+		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts()
+				.add(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
+						mainSourceSet.getJava()
+								.getDestinationDirectory()
+								.dir("META-INF/spring-configuration-metadata.json"),
+						(artifact) -> artifact
+								.builtBy(evaluatedProject.getTasks().getByName(mainSourceSet.getClassesTaskName()))));
 	}
 
 	private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
-		JavaCompile compileJava = project.getTasks().withType(JavaCompile.class)
+		JavaCompile compileJava = project.getTasks()
+				.withType(JavaCompile.class)
 				.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
-		((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("processed resources");
-		SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+		((Task) compileJava).getInputs()
+				.files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME))
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("processed resources");
+		SourceSet mainSourceSet = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		compileJava.getOptions().getCompilerArgs()
-				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + StringUtils
-						.collectionToCommaDelimitedString(mainSourceSet.getResources().getSourceDirectories().getFiles()
-								.stream().map(project.getRootProject()::relativePath).collect(Collectors.toSet())));
+		compileJava.getOptions()
+				.getCompilerArgs()
+				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+						+ StringUtils.collectionToCommaDelimitedString(mainSourceSet.getResources()
+								.getSourceDirectories()
+								.getFiles()
+								.stream()
+								.map(project.getRootProject()::relativePath)
+								.collect(Collectors.toSet())));
 	}
 
 	private void registerCheckAdditionalMetadataTask(Project project) {
@@ -129,14 +148,19 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 				.register(CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME,
 						CheckAdditionalSpringConfigurationMetadata.class);
 		checkConfigurationMetadata.configure((check) -> {
-			SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+			SourceSet mainSourceSet = project.getExtensions()
+					.getByType(JavaPluginExtension.class)
+					.getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			check.setSource(mainSourceSet.getResources());
 			check.include("META-INF/additional-spring-configuration-metadata.json");
-			check.getReportLocation().set(project.getLayout().getBuildDirectory()
-					.file("reports/additional-spring-configuration-metadata/check.txt"));
+			check.getReportLocation()
+					.set(project.getLayout()
+							.getBuildDirectory()
+							.file("reports/additional-spring-configuration-metadata/check.txt"));
 		});
-		project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME)
+		project.getTasks()
+				.named(LifecycleBasePlugin.CHECK_TASK_NAME)
 				.configure((check) -> check.dependsOn(checkConfigurationMetadata));
 	}
 
@@ -144,17 +168,22 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 		TaskProvider<CheckSpringConfigurationMetadata> checkConfigurationMetadata = project.getTasks()
 				.register(CHECK_SPRING_CONFIGURATION_METADATA_TASK_NAME, CheckSpringConfigurationMetadata.class);
 		checkConfigurationMetadata.configure((check) -> {
-			SourceSet mainSourceSet = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
+			SourceSet mainSourceSet = project.getExtensions()
+					.getByType(JavaPluginExtension.class)
+					.getSourceSets()
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			Provider<RegularFile> metadataLocation = project.getTasks()
 					.named(mainSourceSet.getCompileJavaTaskName(), JavaCompile.class)
 					.flatMap((javaCompile) -> javaCompile.getDestinationDirectory()
 							.file("META-INF/spring-configuration-metadata.json"));
 			check.getMetadataLocation().set(metadataLocation);
-			check.getReportLocation().set(
-					project.getLayout().getBuildDirectory().file("reports/spring-configuration-metadata/check.txt"));
+			check.getReportLocation()
+					.set(project.getLayout()
+							.getBuildDirectory()
+							.file("reports/spring-configuration-metadata/check.txt"));
 		});
-		project.getTasks().named(LifecycleBasePlugin.CHECK_TASK_NAME)
+		project.getTasks()
+				.named(LifecycleBasePlugin.CHECK_TASK_NAME)
 				.configure((check) -> check.dependsOn(checkConfigurationMetadata));
 	}
 

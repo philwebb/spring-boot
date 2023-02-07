@@ -94,7 +94,8 @@ class EndpointMBeanTests {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		assertThatExceptionOfType(MBeanException.class)
 				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
-				.withCauseInstanceOf(IllegalStateException.class).withMessageContaining("test failure");
+				.withCauseInstanceOf(IllegalStateException.class)
+				.withMessageContaining("test failure");
 
 	}
 
@@ -106,7 +107,8 @@ class EndpointMBeanTests {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		assertThatExceptionOfType(MBeanException.class)
 				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
-				.withCauseInstanceOf(UnsupportedOperationException.class).withMessageContaining("test failure");
+				.withCauseInstanceOf(UnsupportedOperationException.class)
+				.withMessageContaining("test failure");
 	}
 
 	@Test
@@ -144,7 +146,8 @@ class EndpointMBeanTests {
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		assertThatExceptionOfType(ReflectionException.class)
 				.isThrownBy(() -> bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE))
-				.withRootCauseInstanceOf(IllegalArgumentException.class).withMessageContaining("test failure");
+				.withRootCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("test failure");
 	}
 
 	@Test

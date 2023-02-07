@@ -96,10 +96,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				isNull());
-		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-				isNull());
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(), isNull());
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
@@ -114,24 +114,29 @@ class BuilderTests {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 				.withBuilderRegistryTokenAuthentication("builder token")
 				.withPublishRegistryTokenAuthentication("publish token");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(runImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(builderImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true);
 		builder.build(request);
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
-		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		then(docker.image()).should().push(eq(request.getName()), any(),
-				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.push(eq(request.getName()), any(),
+						eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
@@ -165,9 +170,10 @@ class BuilderTests {
 		Image runImage = loadImage("run-image.json");
 		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(), isNull()))
 				.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of(
-				"docker.io/cloudfoundry/run@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d")),
-				any(), isNull())).willAnswer(withPulledImage(runImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of(
+						"docker.io/cloudfoundry/run@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d")),
+						any(), isNull())).willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
 		builder.build(request);
@@ -260,11 +266,13 @@ class BuilderTests {
 				.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
 				.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)))).willThrow(
-				new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME))))
+				.willThrow(new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+						null))
 				.willReturn(builderImage);
-		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")))).willThrow(
-				new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))))
+				.willThrow(new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+						null))
 				.willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT);
@@ -309,12 +317,14 @@ class BuilderTests {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 				.withBuilderRegistryTokenAuthentication("builder token")
 				.withPublishRegistryTokenAuthentication("publish token");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(runImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(builderImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true).withTags(ImageReference.of("my-application:1.2.3"));
 		builder.build(request);
@@ -322,15 +332,19 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
 
-		then(docker.image()).should().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		then(docker.image()).should().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
-		then(docker.image()).should().push(eq(request.getName()), any(),
-				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.push(eq(request.getName()), any(),
+						eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should().tag(eq(request.getName()), eq(ImageReference.of("my-application:1.2.3")));
-		then(docker.image()).should().push(eq(ImageReference.of("my-application:1.2.3")), any(),
-				eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
+		then(docker.image()).should()
+				.push(eq(ImageReference.of("my-application:1.2.3")), any(),
+						eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
@@ -349,8 +363,9 @@ class BuilderTests {
 				.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request)).withMessage(
-				"Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'io.buildpacks.stacks.bionic'");
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
+				.withMessage(
+						"Run image stack 'org.cloudfoundry.stacks.cfwindowsfs3' does not match builder stack 'io.buildpacks.stacks.bionic'");
 	}
 
 	@Test
@@ -376,13 +391,15 @@ class BuilderTests {
 		Image builderImage = loadImage("image-with-run-image-different-registry.json");
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 				.withBuilderRegistryTokenAuthentication("builder token");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(builderImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(builderImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest();
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request)).withMessage(
-				"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
+				.withMessage(
+						"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
 	}
 
 	@Test
@@ -392,13 +409,15 @@ class BuilderTests {
 		Image builderImage = loadImage("image.json");
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 				.withBuilderRegistryTokenAuthentication("builder token");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
-				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
-						.willAnswer(withPulledImage(builderImage));
+		given(docker.image()
+				.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+						eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+								.willAnswer(withPulledImage(builderImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
-		assertThatIllegalStateException().isThrownBy(() -> builder.build(request)).withMessage(
-				"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
+				.withMessage(
+						"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
 	}
 
 	@Test

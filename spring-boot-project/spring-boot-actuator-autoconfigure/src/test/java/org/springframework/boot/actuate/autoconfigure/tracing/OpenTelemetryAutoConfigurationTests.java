@@ -178,8 +178,10 @@ class OpenTelemetryAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyB3PropagationIfPropagationPropertySetAndBaggageDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3",
-				"management.tracing.baggage.enabled=false").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.tracing.propagation.type=B3",
+						"management.tracing.baggage.enabled=false")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(B3Propagator.class);
 					assertThat(context).hasBean("b3TextMapPropagator");
 					assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);

@@ -362,7 +362,8 @@ class LambdaSafeTests {
 	void callbackWithFilterShouldUseFilter() {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
-		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withFilter(Filter.allowAll())
+		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument)
+				.withFilter(Filter.allowAll())
 				.invoke((c) -> c.handle(null));
 		then(callbackInstance).should().handle(null);
 	}
@@ -374,11 +375,12 @@ class LambdaSafeTests {
 		given(logger.isDebugEnabled()).willReturn(true);
 		GenericCallback<StringBuilder> callbackInstance = (s) -> fail("Should not get here");
 		String argument = "foo";
-		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument).withLogger(logger)
+		LambdaSafe.callback(GenericCallback.class, callbackInstance, argument)
+				.withLogger(logger)
 				.invoke((c) -> c.handle(argument));
-		then(logger).should().debug(
-				contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
-				any(Throwable.class));
+		then(logger).should()
+				.debug(contains("Non-matching CharSequence type for callback LambdaSafeTests.GenericCallback"),
+						any(Throwable.class));
 	}
 
 	interface NonGenericCallback {

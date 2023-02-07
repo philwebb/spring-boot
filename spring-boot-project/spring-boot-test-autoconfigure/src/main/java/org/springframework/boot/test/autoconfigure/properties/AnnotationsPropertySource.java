@@ -64,11 +64,13 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	private void getProperties(Class<?> source, Map<String, Object> properties) {
-		MergedAnnotations.from(source, SearchStrategy.SUPERCLASS).stream()
-				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getType)).forEach((annotation) -> {
+		MergedAnnotations.from(source, SearchStrategy.SUPERCLASS)
+				.stream()
+				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getType))
+				.forEach((annotation) -> {
 					Class<Annotation> type = annotation.getType();
-					MergedAnnotation<?> typeMapping = MergedAnnotations.from(type).get(PropertyMapping.class,
-							MergedAnnotation::isDirectlyPresent);
+					MergedAnnotation<?> typeMapping = MergedAnnotations.from(type)
+							.get(PropertyMapping.class, MergedAnnotation::isDirectlyPresent);
 					String prefix = typeMapping.getValue(MergedAnnotation.VALUE, String.class).orElse("");
 					SkipPropertyMapping defaultSkip = typeMapping.getValue("skip", SkipPropertyMapping.class)
 							.orElse(SkipPropertyMapping.YES);

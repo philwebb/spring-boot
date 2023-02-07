@@ -65,7 +65,8 @@ class ObservationAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingContextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withUserConfiguration(TracerConfiguration.class)
+			.with(MetricsRun.simple())
+			.withUserConfiguration(TracerConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class));
 
 	@Test
@@ -130,7 +131,8 @@ class ObservationAutoConfigurationTests {
 	@Test
 	void supplyMeterHandlerAndGroupingWhenMicrometerCoreAndTracingAreOnClassPathButThereIsNoTracer() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+				.run((context) -> {
 					ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 					Observation.start("test-observation", observationRegistry).stop();
 					assertThat(context).hasSingleBean(ObservationHandler.class);

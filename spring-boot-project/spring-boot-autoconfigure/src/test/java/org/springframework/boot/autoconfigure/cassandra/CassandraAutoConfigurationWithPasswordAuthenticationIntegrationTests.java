@@ -52,10 +52,12 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	@Container
 	static final CassandraContainer cassandra = new PasswordAuthenticatorCassandraContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10)).waitingFor(new CassandraWaitStrategy());
+			.withStartupTimeout(Duration.ofMinutes(10))
+			.waitingFor(new CassandraWaitStrategy());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
+			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+			.withPropertyValues(
 					"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
 					"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
 					"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s");
@@ -114,7 +116,8 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 			return CqlSession.builder()
 					.addContactPoint(new InetSocketAddress(this.waitStrategyTarget.getHost(),
 							this.waitStrategyTarget.getFirstMappedPort()))
-					.withLocalDatacenter("datacenter1").withAuthCredentials("cassandra", "cassandra");
+					.withLocalDatacenter("datacenter1")
+					.withAuthCredentials("cassandra", "cassandra");
 		}
 
 	}

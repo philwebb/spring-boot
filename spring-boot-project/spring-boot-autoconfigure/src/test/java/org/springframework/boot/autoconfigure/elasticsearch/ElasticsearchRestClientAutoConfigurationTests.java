@@ -65,7 +65,8 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureWhenCustomRestClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(RestClientBuilder.class)
-						.hasSingleBean(RestClient.class).hasBean("customRestClient"));
+						.hasSingleBean(RestClient.class)
+						.hasBean("customRestClient"));
 	}
 
 	@Test
@@ -91,8 +92,10 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureWithCustomTimeouts() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.connection-timeout=15s",
-				"spring.elasticsearch.socket-timeout=1m").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.connection-timeout=15s",
+						"spring.elasticsearch.socket-timeout=1m")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RestClient.class);
 					RestClient restClient = context.getBean(RestClient.class);
 					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
@@ -220,8 +223,10 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureWithCustomSnifferSettings() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.restclient.sniffer.interval=180s",
-				"spring.elasticsearch.restclient.sniffer.delay-after-failure=30s").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.elasticsearch.restclient.sniffer.interval=180s",
+						"spring.elasticsearch.restclient.sniffer.delay-after-failure=30s")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Sniffer.class);
 					Sniffer sniffer = context.getBean(Sniffer.class);
 					assertThat(sniffer).hasFieldOrPropertyWithValue("sniffIntervalMillis",

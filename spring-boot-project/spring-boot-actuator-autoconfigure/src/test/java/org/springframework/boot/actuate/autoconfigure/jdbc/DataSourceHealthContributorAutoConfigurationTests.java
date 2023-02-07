@@ -90,7 +90,8 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	@Test
 	void runWithRoutingAndEmbeddedDataSourceShouldNotIncludeRoutingDataSourceWhenIgnored() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDataSourceConfig.class)
-				.withPropertyValues("management.health.db.ignore-routing-datasources:true").run((context) -> {
+				.withPropertyValues("management.health.db.ignore-routing-datasources:true")
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
 					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
 					assertThat(context).doesNotHaveBean(RoutingDataSourceHealthContributor.class);
@@ -105,7 +106,8 @@ class DataSourceHealthContributorAutoConfigurationTests {
 					.getBean(RoutingDataSourceHealthContributor.class);
 			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("two")).isInstanceOf(DataSourceHealthIndicator.class);
-			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
+			assertThat(routingHealthContributor.iterator()).toIterable()
+					.extracting("name")
 					.containsExactlyInAnyOrder("one", "two");
 		});
 	}
@@ -114,7 +116,8 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	void runWithOnlyRoutingDataSourceShouldCrashWhenIgnored() {
 		this.contextRunner.withUserConfiguration(RoutingDataSourceConfig.class)
 				.withPropertyValues("management.health.db.ignore-routing-datasources:true")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
 						.hasRootCauseInstanceOf(IllegalArgumentException.class));
 	}
 
@@ -122,7 +125,8 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	void runWithValidationQueryPropertyShouldUseCustomQuery() {
 		this.contextRunner
 				.withUserConfiguration(DataSourceConfig.class, DataSourcePoolMetadataProvidersConfiguration.class)
-				.withPropertyValues("spring.datasource.test.validation-query:SELECT from FOOBAR").run((context) -> {
+				.withPropertyValues("spring.datasource.test.validation-query:SELECT from FOOBAR")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
 					DataSourceHealthIndicator indicator = context.getBean(DataSourceHealthIndicator.class);
 					assertThat(indicator.getQuery()).isEqualTo("SELECT from FOOBAR");
@@ -146,7 +150,8 @@ class DataSourceHealthContributorAutoConfigurationTests {
 			assertThat(routingHealthContributor.getContributor("unnamed"))
 					.isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
-			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
+			assertThat(routingHealthContributor.iterator()).toIterable()
+					.extracting("name")
 					.containsExactlyInAnyOrder("unnamed", "one");
 		});
 	}
@@ -158,8 +163,12 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.test")
 		DataSource testDataSource() {
-			return DataSourceBuilder.create().type(org.apache.tomcat.jdbc.pool.DataSource.class)
-					.driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:test").username("sa").build();
+			return DataSourceBuilder.create()
+					.type(org.apache.tomcat.jdbc.pool.DataSource.class)
+					.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+					.url("jdbc:hsqldb:mem:test")
+					.username("sa")
+					.build();
 		}
 
 	}

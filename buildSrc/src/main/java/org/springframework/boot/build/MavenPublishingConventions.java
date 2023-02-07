@@ -67,7 +67,8 @@ class MavenPublishingConventions {
 					mavenRepository.setName("deployment");
 				});
 			}
-			publishing.getPublications().withType(MavenPublication.class)
+			publishing.getPublications()
+					.withType(MavenPublication.class)
 					.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
@@ -79,7 +80,8 @@ class MavenPublishingConventions {
 
 	private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
-		project.getPlugins().withType(JavaPlugin.class)
+		project.getPlugins()
+				.withType(JavaPlugin.class)
 				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
 		suppressMavenOptionalFeatureWarnings(publication);
 	}

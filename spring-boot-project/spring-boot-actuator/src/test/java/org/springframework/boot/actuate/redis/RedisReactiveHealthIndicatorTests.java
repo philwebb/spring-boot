@@ -114,7 +114,8 @@ class RedisReactiveHealthIndicatorTests {
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+		StepVerifier.create(health)
+				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
 		then(redisConnection).should().closeLater();
 	}
@@ -126,7 +127,8 @@ class RedisReactiveHealthIndicatorTests {
 				.willThrow(new RedisConnectionException("Unable to connect to localhost:6379"));
 		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+		StepVerifier.create(health)
+				.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
 				.verifyComplete();
 	}
 

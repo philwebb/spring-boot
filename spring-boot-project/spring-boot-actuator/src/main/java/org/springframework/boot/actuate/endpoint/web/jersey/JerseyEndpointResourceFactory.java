@@ -84,8 +84,10 @@ public class JerseyEndpointResourceFactory {
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			EndpointLinksResolver linksResolver, boolean shouldRegisterLinks) {
 		List<Resource> resources = new ArrayList<>();
-		endpoints.stream().flatMap((endpoint) -> endpoint.getOperations().stream())
-				.map((operation) -> createResource(endpointMapping, operation)).forEach(resources::add);
+		endpoints.stream()
+				.flatMap((endpoint) -> endpoint.getOperations().stream())
+				.map((operation) -> createResource(endpointMapping, operation))
+				.forEach(resources::add);
 		if (shouldRegisterLinks) {
 			Resource resource = createEndpointLinksResource(endpointMapping.getPath(), endpointMediaTypes,
 					linksResolver);
@@ -108,7 +110,8 @@ public class JerseyEndpointResourceFactory {
 	protected Resource getResource(EndpointMapping endpointMapping, WebOperation operation,
 			WebOperationRequestPredicate requestPredicate, String path, WebServerNamespace serverNamespace,
 			JerseyRemainingPathSegmentProvider remainingPathSegmentProvider) {
-		Builder resourceBuilder = Resource.builder().path(endpointMapping.getPath())
+		Builder resourceBuilder = Resource.builder()
+				.path(endpointMapping.getPath())
 				.path(endpointMapping.createSubPath(path));
 		resourceBuilder.addMethod(requestPredicate.getHttpMethod().name())
 				.consumes(StringUtils.toStringArray(requestPredicate.getConsumes()))
@@ -121,7 +124,8 @@ public class JerseyEndpointResourceFactory {
 	private Resource createEndpointLinksResource(String endpointPath, EndpointMediaTypes endpointMediaTypes,
 			EndpointLinksResolver linksResolver) {
 		Builder resourceBuilder = Resource.builder().path(endpointPath);
-		resourceBuilder.addMethod("GET").produces(StringUtils.toStringArray(endpointMediaTypes.getProduced()))
+		resourceBuilder.addMethod("GET")
+				.produces(StringUtils.toStringArray(endpointMediaTypes.getProduced()))
 				.handledBy(new EndpointLinksInflector(linksResolver));
 		return resourceBuilder.build();
 	}
@@ -245,7 +249,8 @@ public class JerseyEndpointResourceFactory {
 			}
 			return Response.status(webEndpointResponse.getStatus())
 					.header("Content-Type", webEndpointResponse.getContentType())
-					.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
+					.entity(convertIfNecessary(webEndpointResponse.getBody()))
+					.build();
 		}
 
 		private Object convertIfNecessary(Object body) {

@@ -88,8 +88,10 @@ class ConfigDataImporterTests {
 		given(this.loaders.load(this.loaderContext, resource2)).willReturn(configData2);
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
 				this.resolvers, this.loaders);
-		Collection<ConfigData> loaded = importer.resolveAndLoad(this.activationContext, this.locationResolverContext,
-				this.loaderContext, Arrays.asList(location1, location2)).values();
+		Collection<ConfigData> loaded = importer
+				.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext,
+						Arrays.asList(location1, location2))
+				.values();
 		assertThat(loaded).containsExactly(configData2, configData1);
 	}
 
@@ -117,10 +119,14 @@ class ConfigDataImporterTests {
 		given(this.loaders.load(this.loaderContext, resource3)).willReturn(configData3);
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
 				this.resolvers, this.loaders);
-		Collection<ConfigData> loaded1and2 = importer.resolveAndLoad(this.activationContext,
-				this.locationResolverContext, this.loaderContext, locations1and2).values();
-		Collection<ConfigData> loaded2and3 = importer.resolveAndLoad(this.activationContext,
-				this.locationResolverContext, this.loaderContext, locations2and3).values();
+		Collection<ConfigData> loaded1and2 = importer
+				.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext,
+						locations1and2)
+				.values();
+		Collection<ConfigData> loaded2and3 = importer
+				.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext,
+						locations2and3)
+				.values();
 		assertThat(loaded1and2).containsExactly(configData2, configData1);
 		assertThat(loaded2and3).containsExactly(configData3);
 	}

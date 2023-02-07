@@ -239,12 +239,14 @@ class HttpTunnelServerTests {
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h1.getServletResponse()::getStatus,
-				(status) -> status == 204);
+		Awaitility.await()
+				.atMost(Duration.ofSeconds(30))
+				.until(h1.getServletResponse()::getStatus, (status) -> status == 204);
 		MockHttpConnection h2 = new MockHttpConnection();
 		this.server.handle(h2);
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h2.getServletResponse()::getStatus,
-				(status) -> status == 204);
+		Awaitility.await()
+				.atMost(Duration.ofSeconds(30))
+				.until(h2.getServletResponse()::getStatus, (status) -> status == 204);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}

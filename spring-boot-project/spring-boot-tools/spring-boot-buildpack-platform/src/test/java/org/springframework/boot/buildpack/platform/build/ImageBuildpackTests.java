@@ -217,14 +217,15 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				entry = tar.getNextTarEntry();
 			}
 		}
-		assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
-				tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
-						TarArchiveEntry.DEFAULT_FILE_MODE));
+		assertThat(entries).extracting("name", "mode")
+				.containsExactlyInAnyOrder(tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
+						tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
+						tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
+						tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
+						tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml",
+								TarArchiveEntry.DEFAULT_FILE_MODE),
+						tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
+								TarArchiveEntry.DEFAULT_FILE_MODE));
 	}
 
 	private void assertAppliesNoLayers(Buildpack buildpack) throws IOException {

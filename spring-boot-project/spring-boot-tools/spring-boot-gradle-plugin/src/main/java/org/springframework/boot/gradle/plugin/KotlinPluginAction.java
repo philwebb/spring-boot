@@ -47,7 +47,8 @@ class KotlinPluginAction implements PluginApplicationAction {
 	}
 
 	private void enableJavaParametersOption(Project project) {
-		project.getTasks().withType(KotlinCompile.class)
+		project.getTasks()
+				.withType(KotlinCompile.class)
 				.configureEach((compile) -> compile.getKotlinOptions().setJavaParameters(true));
 	}
 

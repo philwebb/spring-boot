@@ -33,7 +33,10 @@ class GraphQlIntegrationTests {
 				.webTestClient(
 						(client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
 				.build();
-		authenticatedTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
+		authenticatedTester.document("{ greeting(name: \"Alice\") } ")
+				.execute()
+				.path("greeting")
+				.entity(String.class)
 				.isEqualTo("Hello, Alice!");
 	}
 

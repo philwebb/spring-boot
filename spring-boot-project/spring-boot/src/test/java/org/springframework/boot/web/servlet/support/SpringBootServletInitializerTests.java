@@ -329,7 +329,8 @@ class SpringBootServletInitializerTests {
 
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-			PropertySource<?> propertySource = event.getEnvironment().getPropertySources()
+			PropertySource<?> propertySource = event.getEnvironment()
+					.getPropertySources()
 					.get(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
 			assertThat(propertySource.getProperty("spring.profiles.active")).isEqualTo("from-servlet-context");
 		}

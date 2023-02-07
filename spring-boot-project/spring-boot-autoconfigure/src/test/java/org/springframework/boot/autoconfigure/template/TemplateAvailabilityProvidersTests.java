@@ -145,8 +145,8 @@ class TemplateAvailabilityProvidersTests {
 		TemplateAvailabilityProvider found = this.providers.getProvider(this.view, this.environment, this.classLoader,
 				this.resourceLoader);
 		assertThat(found).isNull();
-		then(this.provider).should().isTemplateAvailable(this.view, this.environment, this.classLoader,
-				this.resourceLoader);
+		then(this.provider).should()
+				.isTemplateAvailable(this.view, this.environment, this.classLoader, this.resourceLoader);
 	}
 
 	@Test
@@ -165,16 +165,16 @@ class TemplateAvailabilityProvidersTests {
 				.willReturn(true);
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
-		then(this.provider).should().isTemplateAvailable(this.view, this.environment, this.classLoader,
-				this.resourceLoader);
+		then(this.provider).should()
+				.isTemplateAvailable(this.view, this.environment, this.classLoader, this.resourceLoader);
 	}
 
 	@Test
 	void getProviderShouldCacheNoMatchResult() {
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
-		then(this.provider).should().isTemplateAvailable(this.view, this.environment, this.classLoader,
-				this.resourceLoader);
+		then(this.provider).should()
+				.isTemplateAvailable(this.view, this.environment, this.classLoader, this.resourceLoader);
 	}
 
 	@Test
@@ -184,8 +184,8 @@ class TemplateAvailabilityProvidersTests {
 		this.environment.setProperty("spring.template.provider.cache", "false");
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
 		this.providers.getProvider(this.view, this.environment, this.classLoader, this.resourceLoader);
-		then(this.provider).should(times(2)).isTemplateAvailable(this.view, this.environment, this.classLoader,
-				this.resourceLoader);
+		then(this.provider).should(times(2))
+				.isTemplateAvailable(this.view, this.environment, this.classLoader, this.resourceLoader);
 	}
 
 }

@@ -87,8 +87,8 @@ class MapConfigurationPropertySourceTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.iterator()).toIterable().containsExactly(ConfigurationPropertyName.of("foo.bar"),
-				ConfigurationPropertyName.of("foo.baz"));
+		assertThat(source.iterator()).toIterable()
+				.containsExactly(ConfigurationPropertyName.of("foo.bar"), ConfigurationPropertyName.of("foo.baz"));
 	}
 
 	@Test

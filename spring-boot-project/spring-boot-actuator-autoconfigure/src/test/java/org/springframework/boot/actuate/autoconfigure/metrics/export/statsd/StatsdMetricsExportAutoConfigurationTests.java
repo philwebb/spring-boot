@@ -46,8 +46,9 @@ class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigMeterRegistryAndMetrics() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasSingleBean(StatsdConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+						.hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test
@@ -66,14 +67,18 @@ class StatsdMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasSingleBean(StatsdConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+						.hasSingleBean(StatsdConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(StatsdMeterRegistry.class).hasBean("customRegistry").hasSingleBean(StatsdConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(StatsdMeterRegistry.class)
+						.hasBean("customRegistry")
+						.hasSingleBean(StatsdConfig.class));
 	}
 
 	@Test

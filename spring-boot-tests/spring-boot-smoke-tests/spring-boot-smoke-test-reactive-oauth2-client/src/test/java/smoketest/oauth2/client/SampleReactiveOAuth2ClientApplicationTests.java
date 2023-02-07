@@ -34,13 +34,23 @@ class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Test
 	void everythingShouldRedirectToLogin() {
-		this.webTestClient.get().uri("/").exchange().expectStatus().isFound().expectHeader().valueEquals("Location",
-				"/login");
+		this.webTestClient.get()
+				.uri("/")
+				.exchange()
+				.expectStatus()
+				.isFound()
+				.expectHeader()
+				.valueEquals("Location", "/login");
 	}
 
 	@Test
 	void loginShouldHaveBothOAuthClientsToChooseFrom() {
-		byte[] body = this.webTestClient.get().uri("/login").exchange().expectStatus().isOk().returnResult(String.class)
+		byte[] body = this.webTestClient.get()
+				.uri("/login")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.returnResult(String.class)
 				.getResponseBodyContent();
 		String bodyString = new String(body);
 		assertThat(bodyString).contains("/oauth2/authorization/yahoo");
@@ -50,7 +60,12 @@ class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Test
 	void actuatorShouldBeSecuredByOAuth() {
-		this.webTestClient.get().uri("/actuator/health").exchange().expectStatus().isFound().expectHeader()
+		this.webTestClient.get()
+				.uri("/actuator/health")
+				.exchange()
+				.expectStatus()
+				.isFound()
+				.expectHeader()
 				.valueEquals("Location", "/login");
 	}
 

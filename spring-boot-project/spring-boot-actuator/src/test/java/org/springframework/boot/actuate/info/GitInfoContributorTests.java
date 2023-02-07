@@ -88,7 +88,8 @@ class GitInfoContributorTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new GitInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(GitProperties.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(GitProperties.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 						.accepts(runtimeHints);
 

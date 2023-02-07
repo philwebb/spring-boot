@@ -78,8 +78,10 @@ class DataSourceJmxConfigurationTests {
 		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
 		Set<ObjectInstance> existingInstances = mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"),
 				null);
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.register-mbeans=true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HikariDataSource.class);
 					HikariDataSource hikariDataSource = context.getBean(HikariDataSource.class);
 					assertThat(hikariDataSource.isRegisterMbeans()).isTrue();
@@ -96,9 +98,11 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void hikariAutoConfiguredUsesJmxFlag() {
 		String poolName = UUID.randomUUID().toString();
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
-				"spring.datasource.hikari.register-mbeans=true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName(),
+						"spring.jmx.enabled=false", "spring.datasource.name=" + poolName,
+						"spring.datasource.hikari.register-mbeans=true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HikariDataSource.class);
 					HikariDataSource hikariDataSource = context.getBean(HikariDataSource.class);
 					assertThat(hikariDataSource.isRegisterMbeans()).isTrue();
@@ -146,8 +150,10 @@ class DataSourceJmxConfigurationTests {
 
 	@Test
 	void tomcatAutoConfiguredCanExposeMBeanPool() {
-		this.contextRunner.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
-				"spring.datasource.tomcat.jmx-enabled=true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+						"spring.datasource.tomcat.jmx-enabled=true")
+				.run((context) -> {
 					assertThat(context).hasBean("dataSourceMBean");
 					assertThat(context).hasSingleBean(ConnectionPool.class);
 					assertThat(context.getBean(DataSourceProxy.class).createPool().getJmxPool())

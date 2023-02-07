@@ -67,9 +67,11 @@ public class TestSliceMetadata extends DefaultTask {
 
 	public TestSliceMetadata() {
 		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir())
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("resources");
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("resources");
 		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs())
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("classes");
+				.withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("classes");
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -84,8 +86,9 @@ public class TestSliceMetadata extends DefaultTask {
 	public void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
-		getProject().getArtifacts().add(testSliceMetadata.getName(),
-				getProject().provider((Callable<File>) this::getOutputFile), (artifact) -> artifact.builtBy(this));
+		getProject().getArtifacts()
+				.add(testSliceMetadata.getName(), getProject().provider((Callable<File>) this::getOutputFile),
+						(artifact) -> artifact.builtBy(this));
 	}
 
 	@TaskAction
@@ -100,7 +103,8 @@ public class TestSliceMetadata extends DefaultTask {
 	private Properties readTestSlices() throws IOException {
 		Properties testSlices = CollectionFactory.createSortedProperties(true);
 		try (URLClassLoader classLoader = new URLClassLoader(
-				StreamSupport.stream(this.sourceSet.getRuntimeClasspath().spliterator(), false).map(this::toURL)
+				StreamSupport.stream(this.sourceSet.getRuntimeClasspath().spliterator(), false)
+						.map(this::toURL)
 						.toArray(URL[]::new))) {
 			MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory(classLoader);
 			Properties springFactories = readSpringFactories(
@@ -129,8 +133,8 @@ public class TestSliceMetadata extends DefaultTask {
 		for (File file : files) {
 			try {
 				List<String> lines = removeComments(Files.readAllLines(file.toPath()));
-				String fileNameWithoutExtension = file.getName().substring(0,
-						file.getName().length() - ".imports".length());
+				String fileNameWithoutExtension = file.getName()
+						.substring(0, file.getName().length() - ".imports".length());
 				springFactories.setProperty(fileNameWithoutExtension,
 						StringUtils.collectionToCommaDelimitedString(lines));
 			}
@@ -210,7 +214,8 @@ public class TestSliceMetadata extends DefaultTask {
 	}
 
 	private Stream<String> findMetaImporters(AnnotationMetadata annotationMetadata) {
-		return annotationMetadata.getAnnotationTypes().stream()
+		return annotationMetadata.getAnnotationTypes()
+				.stream()
 				.filter((annotationType) -> isAutoConfigurationImporter(annotationType, annotationMetadata));
 	}
 

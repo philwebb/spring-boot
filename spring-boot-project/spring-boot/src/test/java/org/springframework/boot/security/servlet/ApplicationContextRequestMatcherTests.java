@@ -54,7 +54,8 @@ class ApplicationContextRequestMatcherTests {
 	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
+				.callMatchesAndReturnProvidedContext(context)
+				.get()).isEqualTo(context);
 	}
 
 	@Test
@@ -62,7 +63,8 @@ class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
+				.callMatchesAndReturnProvidedContext(context)
+				.get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test

@@ -57,8 +57,9 @@ public class ConnectionPoolMetrics implements MeterBinder {
 			bindConnectionPoolMetric(registry, Gauge.builder(metricKey("idle"), poolMetrics, PoolMetrics::idleSize)
 					.description("Size of idle connections in the pool."));
 			bindConnectionPoolMetric(registry,
-					Gauge.builder(metricKey("pending"), poolMetrics, PoolMetrics::pendingAcquireSize).description(
-							"Size of pending to acquire connections from the underlying connection factory."));
+					Gauge.builder(metricKey("pending"), poolMetrics, PoolMetrics::pendingAcquireSize)
+							.description(
+									"Size of pending to acquire connections from the underlying connection factory."));
 			bindConnectionPoolMetric(registry,
 					Gauge.builder(metricKey("max.allocated"), poolMetrics, PoolMetrics::getMaxAllocatedSize)
 							.description("Maximum size of allocated connections that this pool allows."));

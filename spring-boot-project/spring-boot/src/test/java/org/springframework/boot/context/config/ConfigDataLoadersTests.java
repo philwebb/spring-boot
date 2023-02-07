@@ -64,7 +64,8 @@ class ConfigDataLoadersTests {
 		springFactoriesLoader.add(ConfigDataLoader.class, DeferredLogFactoryConfigDataLoader.class);
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
 				springFactoriesLoader);
-		assertThat(loaders).extracting("loaders").asList()
+		assertThat(loaders).extracting("loaders")
+				.asList()
 				.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
 	}
 
@@ -80,7 +81,8 @@ class ConfigDataLoadersTests {
 		springFactoriesLoader.add(ConfigDataLoader.class, LogConfigDataLoader.class);
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ConfigDataLoaders(this.logFactory, this.bootstrapContext, springFactoriesLoader))
-				.havingCause().isInstanceOf(IllegalArgumentException.class)
+				.havingCause()
+				.isInstanceOf(IllegalArgumentException.class)
 				.withMessageContaining("use DeferredLogFactory");
 	}
 

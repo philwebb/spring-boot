@@ -74,7 +74,8 @@ class RestTemplateAutoConfigurationTests {
 	@Test
 	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
+				.withUserConfiguration(RestTemplateConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					RestTemplate restTemplate = context.getBean(RestTemplate.class);
 					List<HttpMessageConverter<?>> converters = context.getBean(HttpMessageConverters.class)
@@ -98,7 +99,8 @@ class RestTemplateAutoConfigurationTests {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.withUserConfiguration(CustomHttpMessageConverter.class, RestTemplateConfig.class).run((context) -> {
+				.withUserConfiguration(CustomHttpMessageConverter.class, RestTemplateConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					RestTemplate restTemplate = context.getBean(RestTemplate.class);
 					assertThat(restTemplate.getMessageConverters()).extracting(HttpMessageConverter::getClass)
@@ -119,8 +121,10 @@ class RestTemplateAutoConfigurationTests {
 
 	@Test
 	void restTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
-		this.contextRunner.withUserConfiguration(RestTemplateConfig.class, CustomRestTemplateBuilderConfig.class,
-				RestTemplateCustomizerConfig.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(RestTemplateConfig.class, CustomRestTemplateBuilderConfig.class,
+						RestTemplateCustomizerConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					RestTemplate restTemplate = context.getBean(RestTemplate.class);
 					assertThat(restTemplate.getMessageConverters()).hasSize(1);
@@ -132,8 +136,9 @@ class RestTemplateAutoConfigurationTests {
 
 	@Test
 	void restTemplateWhenHasCustomBuilderCouldReuseBuilderConfigurer() {
-		this.contextRunner.withUserConfiguration(RestTemplateConfig.class,
-				CustomRestTemplateBuilderWithConfigurerConfig.class, RestTemplateCustomizerConfig.class)
+		this.contextRunner
+				.withUserConfiguration(RestTemplateConfig.class, CustomRestTemplateBuilderWithConfigurerConfig.class,
+						RestTemplateCustomizerConfig.class)
 				.run((context) -> {
 					assertThat(context).hasSingleBean(RestTemplate.class);
 					RestTemplate restTemplate = context.getBean(RestTemplate.class);

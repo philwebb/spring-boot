@@ -78,7 +78,8 @@ class CloudFoundryWebEndpointDiscovererTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new CloudFoundryWebEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(CloudFoundryEndpointFilter.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(CloudFoundryEndpointFilter.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 

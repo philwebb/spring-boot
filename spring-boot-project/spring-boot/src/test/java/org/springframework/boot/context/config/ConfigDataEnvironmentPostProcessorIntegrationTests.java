@@ -408,9 +408,10 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		assertThat(context.getEnvironment().getPropertySources()).extracting("name").contains(
-				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #0)",
-				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #1)");
+		assertThat(context.getEnvironment().getPropertySources()).extracting("name")
+				.contains(
+						"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #0)",
+						"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #1)");
 	}
 
 	@Test
@@ -536,7 +537,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenConfigLocationHasUnknownFileExtensionFailsFast() {
 		String location = "classpath:application.unknown";
 		assertThatIllegalStateException().isThrownBy(() -> this.application.run("--spring.config.location=" + location))
-				.withMessageContaining("Unable to load config data").withMessageContaining(location)
+				.withMessageContaining("Unable to load config data")
+				.withMessageContaining(location)
 				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageContaining("File extension is not known")
 						.hasMessageContaining("it must end in '/'"));
 	}

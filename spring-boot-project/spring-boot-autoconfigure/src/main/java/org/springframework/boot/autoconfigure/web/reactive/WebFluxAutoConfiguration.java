@@ -262,8 +262,10 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public FormattingConversionService webFluxConversionService() {
 			Format format = this.webFluxProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(new DateTimeFormatters()
-					.dateFormat(format.getDate()).timeFormat(format.getTime()).dateTimeFormat(format.getDateTime()));
+			WebConversionService conversionService = new WebConversionService(
+					new DateTimeFormatters().dateFormat(format.getDate())
+							.timeFormat(format.getTime())
+							.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
 		}

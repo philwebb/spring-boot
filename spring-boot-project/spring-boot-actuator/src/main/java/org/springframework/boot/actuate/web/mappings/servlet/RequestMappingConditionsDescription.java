@@ -46,16 +46,28 @@ public class RequestMappingConditionsDescription {
 	private final List<MediaTypeExpressionDescription> produces;
 
 	RequestMappingConditionsDescription(RequestMappingInfo requestMapping) {
-		this.consumes = requestMapping.getConsumesCondition().getExpressions().stream()
-				.map(MediaTypeExpressionDescription::new).toList();
-		this.headers = requestMapping.getHeadersCondition().getExpressions().stream()
-				.map(NameValueExpressionDescription::new).toList();
+		this.consumes = requestMapping.getConsumesCondition()
+				.getExpressions()
+				.stream()
+				.map(MediaTypeExpressionDescription::new)
+				.toList();
+		this.headers = requestMapping.getHeadersCondition()
+				.getExpressions()
+				.stream()
+				.map(NameValueExpressionDescription::new)
+				.toList();
 		this.methods = requestMapping.getMethodsCondition().getMethods();
-		this.params = requestMapping.getParamsCondition().getExpressions().stream()
-				.map(NameValueExpressionDescription::new).toList();
+		this.params = requestMapping.getParamsCondition()
+				.getExpressions()
+				.stream()
+				.map(NameValueExpressionDescription::new)
+				.toList();
 		this.patterns = extractPathPatterns(requestMapping);
-		this.produces = requestMapping.getProducesCondition().getExpressions().stream()
-				.map(MediaTypeExpressionDescription::new).toList();
+		this.produces = requestMapping.getProducesCondition()
+				.getExpressions()
+				.stream()
+				.map(MediaTypeExpressionDescription::new)
+				.toList();
 	}
 
 	private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {

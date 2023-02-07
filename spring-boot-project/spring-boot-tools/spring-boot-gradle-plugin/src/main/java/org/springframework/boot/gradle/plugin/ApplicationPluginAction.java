@@ -50,9 +50,9 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		Distribution distribution = distributions.create("boot");
 		distribution.getDistributionBaseName()
 				.convention((project.provider(() -> javaApplication.getApplicationName() + "-boot")));
-		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks().register("bootStartScripts",
-				CreateStartScripts.class,
-				(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
+		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks()
+				.register("bootStartScripts", CreateStartScripts.class,
+						(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
@@ -72,8 +72,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		createStartScripts.getConventionMapping().map("outputDir",
-				() -> new File(project.getBuildDir(), "bootScripts"));
+		createStartScripts.getConventionMapping()
+				.map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
 		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
 		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}

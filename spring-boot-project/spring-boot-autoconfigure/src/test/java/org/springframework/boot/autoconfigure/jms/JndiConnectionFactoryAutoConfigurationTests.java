@@ -104,7 +104,8 @@ class JndiConnectionFactoryAutoConfigurationTests {
 	void jndiNamePropertySetWithWrongValue() {
 		this.contextRunner.withPropertyValues("spring.jms.jndi-name=doesNotExistCF").run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
+			assertThat(context).getFailure()
+					.isInstanceOf(BeanCreationException.class)
 					.hasMessageContaining("doesNotExistCF");
 		});
 	}

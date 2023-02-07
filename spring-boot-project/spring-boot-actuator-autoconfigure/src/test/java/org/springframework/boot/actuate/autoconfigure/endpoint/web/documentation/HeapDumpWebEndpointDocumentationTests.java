@@ -45,7 +45,8 @@ class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@Test
 	void heapDump() throws Exception {
-		this.mockMvc.perform(get("/actuator/heapdump")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/heapdump"))
+				.andExpect(status().isOk())
 				.andDo(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
 
 					@Override

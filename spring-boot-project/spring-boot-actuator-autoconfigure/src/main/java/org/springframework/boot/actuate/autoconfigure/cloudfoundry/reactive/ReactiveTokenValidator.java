@@ -51,8 +51,10 @@ class ReactiveTokenValidator {
 	}
 
 	Mono<Void> validate(Token token) {
-		return validateAlgorithm(token).then(validateKeyIdAndSignature(token)).then(validateExpiry(token))
-				.then(validateIssuer(token)).then(validateAudience(token));
+		return validateAlgorithm(token).then(validateKeyIdAndSignature(token))
+				.then(validateExpiry(token))
+				.then(validateIssuer(token))
+				.then(validateAudience(token));
 	}
 
 	private Mono<Void> validateAlgorithm(Token token) {
@@ -81,8 +83,10 @@ class ReactiveTokenValidator {
 		if (cached != null) {
 			return Mono.just(cached);
 		}
-		return this.securityService.fetchTokenKeys().doOnSuccess(this::cacheTokenKeys)
-				.filter((tokenKeys) -> tokenKeys.containsKey(keyId)).map((tokenKeys) -> tokenKeys.get(keyId))
+		return this.securityService.fetchTokenKeys()
+				.doOnSuccess(this::cacheTokenKeys)
+				.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
+				.map((tokenKeys) -> tokenKeys.get(keyId))
 				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
 						"Key Id present in token header does not match")));
 	}
@@ -122,7 +126,8 @@ class ReactiveTokenValidator {
 	}
 
 	private Mono<Void> validateIssuer(Token token) {
-		return this.securityService.getUaaUrl().map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
+		return this.securityService.getUaaUrl()
+				.map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
 				.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
 				.switchIfEmpty(Mono.error(
 						new CloudFoundryAuthorizationException(Reason.INVALID_ISSUER, "Token issuer does not match")))

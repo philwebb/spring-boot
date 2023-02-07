@@ -56,7 +56,8 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class)).withConfiguration(
+			.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class))
+			.withConfiguration(
 					AutoConfigurations.of(SessionAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class,
 							RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
 
@@ -101,12 +102,15 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
-				"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort(),
-				"server.reactive.session.cookie.name:JSESSIONID", "server.reactive.session.cookie.domain:.example.com",
-				"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
-				"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
-				"server.reactive.session.cookie.same-site:strict").run(assertExchangeWithSession((exchange) -> {
+		this.contextRunner.withUserConfiguration(Config.class)
+				.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+						"spring.data.redis.port=" + redis.getFirstMappedPort(),
+						"server.reactive.session.cookie.name:JSESSIONID",
+						"server.reactive.session.cookie.domain:.example.com",
+						"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
+						"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
+						"server.reactive.session.cookie.same-site:strict")
+				.run(assertExchangeWithSession((exchange) -> {
 					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 					assertThat(cookies).isNotEmpty();
 					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));

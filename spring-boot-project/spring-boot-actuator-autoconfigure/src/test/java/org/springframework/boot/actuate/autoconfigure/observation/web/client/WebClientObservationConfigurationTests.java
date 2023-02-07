@@ -84,8 +84,10 @@ class WebClientObservationConfigurationTests {
 
 	@Test
 	void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class).run((context) -> assertThat(context)
-				.getBeans(WebClientExchangeTagsProvider.class).hasSize(1).containsKey("customTagsProvider"));
+		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
+				.run((context) -> assertThat(context).getBeans(WebClientExchangeTagsProvider.class)
+						.hasSize(1)
+						.containsKey("customTagsProvider"));
 	}
 
 	@Test
@@ -95,10 +97,15 @@ class WebClientObservationConfigurationTests {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClient webClient = mockWebClient(builder);
 			TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
-			webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
+			webClient.get()
+					.uri("https://example.org/projects/{project}", "spring-boot")
+					.retrieve()
+					.toBodilessEntity()
 					.block(Duration.ofSeconds(30));
-			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
-					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+			TestObservationRegistryAssert.assertThat(registry)
+					.hasObservationWithNameEqualTo("http.client.requests")
+					.that()
+					.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
 	}
 
@@ -134,7 +141,10 @@ class WebClientObservationConfigurationTests {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("https://example.org/projects/" + i).retrieve().toBodilessEntity()
+			webClient.get()
+					.uri("https://example.org/projects/" + i)
+					.retrieve()
+					.toBodilessEntity()
 					.block(Duration.ofSeconds(30));
 		}
 		return registry;
@@ -143,9 +153,14 @@ class WebClientObservationConfigurationTests {
 	private void validateWebClient(WebClient.Builder builder, TestObservationRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
 		TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
-		webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
+		webClient.get()
+				.uri("https://example.org/projects/{project}", "spring-boot")
+				.retrieve()
+				.toBodilessEntity()
 				.block(Duration.ofSeconds(30));
-		TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests").that()
+		TestObservationRegistryAssert.assertThat(registry)
+				.hasObservationWithNameEqualTo("http.client.requests")
+				.that()
 				.hasLowCardinalityKeyValue("uri", "https://example.org/projects/{project}");
 	}
 

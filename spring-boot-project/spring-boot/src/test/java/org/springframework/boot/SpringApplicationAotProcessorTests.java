@@ -90,9 +90,13 @@ class SpringApplicationAotProcessorTests {
 	}
 
 	private Settings settings(Path directory) {
-		return Settings.builder().sourceOutput(directory.resolve("source"))
-				.resourceOutput(directory.resolve("resource")).classOutput(directory.resolve("class"))
-				.groupId("com.example").artifactId("example").build();
+		return Settings.builder()
+				.sourceOutput(directory.resolve("source"))
+				.resourceOutput(directory.resolve("resource"))
+				.classOutput(directory.resolve("class"))
+				.groupId("com.example")
+				.artifactId("example")
+				.build();
 
 	}
 

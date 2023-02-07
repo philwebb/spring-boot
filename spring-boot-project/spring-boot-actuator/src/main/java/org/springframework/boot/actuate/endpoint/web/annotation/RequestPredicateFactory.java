@@ -53,7 +53,9 @@ class RequestPredicateFactory {
 
 	WebOperationRequestPredicate getRequestPredicate(String rootPath, DiscoveredOperationMethod operationMethod) {
 		Method method = operationMethod.getMethod();
-		OperationParameter[] selectorParameters = operationMethod.getParameters().stream().filter(this::hasSelector)
+		OperationParameter[] selectorParameters = operationMethod.getParameters()
+				.stream()
+				.filter(this::hasSelector)
 				.toArray(OperationParameter[]::new);
 		OperationParameter allRemainingPathSegmentsParameter = getAllRemainingPathSegmentsParameter(selectorParameters);
 		String path = getPath(rootPath, selectorParameters, allRemainingPathSegmentsParameter != null);

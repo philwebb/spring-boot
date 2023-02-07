@@ -46,8 +46,9 @@ class KairosMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+						.hasSingleBean(KairosConfig.class));
 	}
 
 	@Test
@@ -68,14 +69,18 @@ class KairosMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+						.hasSingleBean(KairosConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasBean("customRegistry").hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+						.hasBean("customRegistry")
+						.hasSingleBean(KairosConfig.class));
 	}
 
 	@Test

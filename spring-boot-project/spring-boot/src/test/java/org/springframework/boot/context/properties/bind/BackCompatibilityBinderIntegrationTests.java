@@ -42,7 +42,8 @@ class BackCompatibilityBinderIntegrationTests {
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("FOO_ZK_NODES", "foo"));
 		environment.getPropertySources().addFirst(propertySource);
-		ExampleCamelCaseBean result = Binder.get(environment).bind("foo", Bindable.of(ExampleCamelCaseBean.class))
+		ExampleCamelCaseBean result = Binder.get(environment)
+				.bind("foo", Bindable.of(ExampleCamelCaseBean.class))
 				.get();
 		assertThat(result.getZkNodes()).isEqualTo("foo");
 	}

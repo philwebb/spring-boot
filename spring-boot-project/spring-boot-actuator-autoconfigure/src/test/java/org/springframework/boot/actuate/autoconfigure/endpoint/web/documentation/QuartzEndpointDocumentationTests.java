@@ -84,36 +84,52 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
 
-	private static final JobDetail jobOne = JobBuilder.newJob(DelegatingJob.class).withIdentity("jobOne", "samples")
-			.withDescription("A sample job").usingJobData("user", "admin").usingJobData("password", "secret").build();
+	private static final JobDetail jobOne = JobBuilder.newJob(DelegatingJob.class)
+			.withIdentity("jobOne", "samples")
+			.withDescription("A sample job")
+			.usingJobData("user", "admin")
+			.usingJobData("password", "secret")
+			.build();
 
 	private static final JobDetail jobTwo = JobBuilder.newJob(Job.class).withIdentity("jobTwo", "samples").build();
 
 	private static final JobDetail jobThree = JobBuilder.newJob(Job.class).withIdentity("jobThree", "tests").build();
 
-	private static final CronTrigger cronTrigger = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(3)
-			.withDescription("3AM on weekdays").withIdentity("3am-weekdays", "samples")
+	private static final CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+			.forJob(jobOne)
+			.withPriority(3)
+			.withDescription("3AM on weekdays")
+			.withIdentity("3am-weekdays", "samples")
 			.withSchedule(
 					CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(3, 0, 1, 2, 3, 4, 5).inTimeZone(timeZone))
 			.build();
 
-	private static final SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(7)
-			.withDescription("Once a day").withIdentity("every-day", "samples")
-			.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24)).build();
+	private static final SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger()
+			.forJob(jobOne)
+			.withPriority(7)
+			.withDescription("Once a day")
+			.withIdentity("every-day", "samples")
+			.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24))
+			.build();
 
-	private static final CalendarIntervalTrigger calendarIntervalTrigger = TriggerBuilder.newTrigger().forJob(jobTwo)
-			.withDescription("Once a week").withIdentity("once-a-week", "samples")
-			.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1)
+	private static final CalendarIntervalTrigger calendarIntervalTrigger = TriggerBuilder.newTrigger()
+			.forJob(jobTwo)
+			.withDescription("Once a week")
+			.withIdentity("once-a-week", "samples")
+			.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+					.withIntervalInWeeks(1)
 					.inTimeZone(timeZone))
 			.build();
 
 	private static final DailyTimeIntervalTrigger dailyTimeIntervalTrigger = TriggerBuilder.newTrigger()
-			.forJob(jobThree).withDescription("Every hour between 9AM and 6PM on Tuesday and Thursday")
+			.forJob(jobThree)
+			.withDescription("Every hour between 9AM and 6PM on Tuesday and Thursday")
 			.withIdentity("every-hour-tue-thu")
 			.withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
 					.onDaysOfTheWeek(Calendar.TUESDAY, Calendar.THURSDAY)
 					.startingDailyAt(TimeOfDay.hourAndMinuteOfDay(9, 0))
-					.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0)).withInterval(1, IntervalUnit.HOUR))
+					.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0))
+					.withInterval(1, IntervalUnit.HOUR))
 			.build();
 
 	private static final List<FieldDescriptor> triggerSummary = Arrays.asList(previousFireTime(""), nextFireTime(""),
@@ -121,7 +137,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final List<FieldDescriptor> cronTriggerSummary = Arrays.asList(
 			fieldWithPath("expression").description("Cron expression to use."),
-			fieldWithPath("timeZone").type(JsonFieldType.STRING).optional()
+			fieldWithPath("timeZone").type(JsonFieldType.STRING)
+					.optional()
 					.description("Time zone for which the expression will be resolved, if any."));
 
 	private static final List<FieldDescriptor> simpleTriggerSummary = Collections
@@ -157,9 +174,11 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 							+ "Determines the key of the object containing type-specific details."),
 			fieldWithPath("calendarName").description("Name of the Calendar associated with this Trigger, if any."),
 			startTime(""), endTime(""), previousFireTime(""), nextFireTime(""), priority(""),
-			fieldWithPath("finalFireTime").optional().type(JsonFieldType.STRING)
+			fieldWithPath("finalFireTime").optional()
+					.type(JsonFieldType.STRING)
 					.description("Last time at which the Trigger will fire, if any."),
-			fieldWithPath("data").optional().type(JsonFieldType.OBJECT)
+			fieldWithPath("data").optional()
+					.type(JsonFieldType.OBJECT)
 					.description("Job data map keyed by name, if any.") };
 
 	@MockBean
@@ -169,7 +188,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	void quartzReport() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
 		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
-		this.mockMvc.perform(get("/actuator/quartz")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/report",
 						responseFields(fieldWithPath("jobs.groups").description("An array of job group names."),
 								fieldWithPath("triggers.groups").description("An array of trigger group names."))));
@@ -178,15 +198,18 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzJobs() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
-		this.mockMvc.perform(get("/actuator/quartz/jobs")).andExpect(status().isOk()).andDo(
-				document("quartz/jobs", responseFields(fieldWithPath("groups").description("Job groups keyed by name."),
-						fieldWithPath("groups.*.jobs").description("An array of job names."))));
+		this.mockMvc.perform(get("/actuator/quartz/jobs"))
+				.andExpect(status().isOk())
+				.andDo(document("quartz/jobs",
+						responseFields(fieldWithPath("groups").description("Job groups keyed by name."),
+								fieldWithPath("groups.*.jobs").description("An array of job names."))));
 	}
 
 	@Test
 	void quartzTriggers() throws Exception {
 		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/triggers",
 						responseFields(fieldWithPath("groups").description("Trigger groups keyed by name."),
 								fieldWithPath("groups.*.paused").description("Whether this trigger group is paused."),
@@ -196,7 +219,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzJobGroup() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
-		this.mockMvc.perform(get("/actuator/quartz/jobs/samples")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/jobs/samples"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/job-group",
 						responseFields(fieldWithPath("group").description("Name of the group."),
 								fieldWithPath("jobs").description("Job details keyed by name."),
@@ -206,17 +230,23 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void quartzTriggerGroup() throws Exception {
-		CronTrigger cron = cronTrigger.getTriggerBuilder().startAt(fromUtc("2020-11-30T17:00:00Z"))
-				.endAt(fromUtc("2020-12-30T03:00:00Z")).withIdentity("3am-week", "tests").build();
+		CronTrigger cron = cronTrigger.getTriggerBuilder()
+				.startAt(fromUtc("2020-11-30T17:00:00Z"))
+				.endAt(fromUtc("2020-12-30T03:00:00Z"))
+				.withIdentity("3am-week", "tests")
+				.build();
 		setPreviousNextFireTime(cron, "2020-12-04T03:00:00Z", "2020-12-07T03:00:00Z");
 		SimpleTrigger simple = simpleTrigger.getTriggerBuilder().withIdentity("every-day", "tests").build();
 		setPreviousNextFireTime(simple, null, "2020-12-04T12:00:00Z");
 		CalendarIntervalTrigger calendarInterval = calendarIntervalTrigger.getTriggerBuilder()
-				.withIdentity("once-a-week", "tests").startAt(fromUtc("2019-07-10T14:00:00Z"))
-				.endAt(fromUtc("2023-01-01T12:00:00Z")).build();
+				.withIdentity("once-a-week", "tests")
+				.startAt(fromUtc("2019-07-10T14:00:00Z"))
+				.endAt(fromUtc("2023-01-01T12:00:00Z"))
+				.build();
 		setPreviousNextFireTime(calendarInterval, "2020-12-02T14:00:00Z", "2020-12-08T14:00:00Z");
 		DailyTimeIntervalTrigger tueThuTrigger = dailyTimeIntervalTrigger.getTriggerBuilder()
-				.withIdentity("tue-thu", "tests").build();
+				.withIdentity("tue-thu", "tests")
+				.build();
 		Trigger customTrigger = mock(Trigger.class);
 		given(customTrigger.getKey()).willReturn(TriggerKey.triggerKey("once-a-year-custom", "tests"));
 		given(customTrigger.toString()).willReturn("com.example.CustomTrigger@fdsfsd");
@@ -224,9 +254,10 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		given(customTrigger.getPreviousFireTime()).willReturn(fromUtc("2020-07-14T16:00:00Z"));
 		given(customTrigger.getNextFireTime()).willReturn(fromUtc("2021-07-14T16:00:00Z"));
 		mockTriggers(cron, simple, calendarInterval, tueThuTrigger, customTrigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/tests")).andExpect(status().isOk()).andDo(document(
-				"quartz/trigger-group",
-				responseFields(fieldWithPath("group").description("Name of the group."),
+		this.mockMvc.perform(get("/actuator/quartz/triggers/tests"))
+				.andExpect(status().isOk())
+				.andDo(document("quartz/trigger-group", responseFields(
+						fieldWithPath("group").description("Name of the group."),
 						fieldWithPath("paused").description("Whether the group is paused."),
 						fieldWithPath("triggers.cron").description("Cron triggers keyed by name, if any."),
 						fieldWithPath("triggers.simple").description("Simple triggers keyed by name, if any."),
@@ -254,9 +285,10 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		mockTriggers(firstTrigger, secondTrigger);
 		given(this.scheduler.getTriggersOfJob(jobOne.getKey()))
 				.willAnswer((invocation) -> Arrays.asList(firstTrigger, secondTrigger));
-		this.mockMvc.perform(get("/actuator/quartz/jobs/samples/jobOne")).andExpect(status().isOk()).andDo(document(
-				"quartz/job-details",
-				responseFields(fieldWithPath("group").description("Name of the group."),
+		this.mockMvc.perform(get("/actuator/quartz/jobs/samples/jobOne"))
+				.andExpect(status().isOk())
+				.andDo(document("quartz/job-details", responseFields(
+						fieldWithPath("group").description("Name of the group."),
 						fieldWithPath("name").description("Name of the job."),
 						fieldWithPath("description").description("Description of the job, if any."),
 						fieldWithPath("className").description("Fully qualified name of the job implementation."),
@@ -274,29 +306,36 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerCommon() throws Exception {
 		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
-				.andDo(document("quartz/trigger-details-common", responseFields(commonCronDetails).and(
-						subsectionWithPath("calendarInterval").description(
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
+				.andDo(document("quartz/trigger-details-common",
+						responseFields(commonCronDetails).and(subsectionWithPath("calendarInterval").description(
 								"Calendar time interval trigger details, if any. Present when `type` is `calendarInterval`.")
-								.optional().type(JsonFieldType.OBJECT),
-						subsectionWithPath("custom")
-								.description("Custom trigger details, if any. Present when `type` is `custom`.")
-								.optional().type(JsonFieldType.OBJECT),
-						subsectionWithPath("cron")
-								.description("Cron trigger details, if any. Present when `type` is `cron`.").optional()
+								.optional()
 								.type(JsonFieldType.OBJECT),
-						subsectionWithPath("dailyTimeInterval").description(
-								"Daily time interval trigger details, if any. Present when `type` is `dailyTimeInterval`.")
-								.optional().type(JsonFieldType.OBJECT),
-						subsectionWithPath("simple")
-								.description("Simple trigger details, if any. Present when `type` is `simple`.")
-								.optional().type(JsonFieldType.OBJECT))));
+								subsectionWithPath("custom")
+										.description("Custom trigger details, if any. Present when `type` is `custom`.")
+										.optional()
+										.type(JsonFieldType.OBJECT),
+								subsectionWithPath("cron")
+										.description("Cron trigger details, if any. Present when `type` is `cron`.")
+										.optional()
+										.type(JsonFieldType.OBJECT),
+								subsectionWithPath("dailyTimeInterval").description(
+										"Daily time interval trigger details, if any. Present when `type` is `dailyTimeInterval`.")
+										.optional()
+										.type(JsonFieldType.OBJECT),
+								subsectionWithPath("simple")
+										.description("Simple trigger details, if any. Present when `type` is `simple`.")
+										.optional()
+										.type(JsonFieldType.OBJECT))));
 	}
 
 	@Test
 	void quartzTriggerCron() throws Exception {
 		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-cron",
 						relaxedResponseFields(fieldWithPath("cron").description("Cron trigger specific details."))
 								.andWithPrefix("cron.", cronTriggerSummary)));
@@ -305,7 +344,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerSimple() throws Exception {
 		setupTriggerDetails(simpleTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-simple",
 						relaxedResponseFields(fieldWithPath("simple").description("Simple trigger specific details."))
 								.andWithPrefix("simple.", simpleTriggerSummary)
@@ -315,7 +355,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerCalendarInterval() throws Exception {
 		setupTriggerDetails(calendarIntervalTrigger.getTriggerBuilder(), TriggerState.NORMAL);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-calendar-interval", relaxedResponseFields(
 						fieldWithPath("calendarInterval").description("Calendar interval trigger specific details."))
 								.andWithPrefix("calendarInterval.", calendarIntervalTriggerSummary)
@@ -330,7 +371,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzTriggerDailyTimeInterval() throws Exception {
 		setupTriggerDetails(dailyTimeIntervalTrigger.getTriggerBuilder(), TriggerState.PAUSED);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-daily-time-interval",
 						relaxedResponseFields(fieldWithPath("dailyTimeInterval")
 								.description("Daily time interval trigger specific details."))
@@ -352,7 +394,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		given(trigger.getNextFireTime()).willReturn(fromUtc("2020-12-07T03:00:00Z"));
 		given(this.scheduler.getTriggerState(trigger.getKey())).willReturn(TriggerState.NORMAL);
 		mockTriggers(trigger);
-		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example"))
+				.andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-custom",
 						relaxedResponseFields(fieldWithPath("custom").description("Custom trigger specific details."))
 								.andWithPrefix("custom.", customTriggerSummary)));
@@ -360,9 +403,12 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private <T extends Trigger> T setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
 			throws SchedulerException {
-		T trigger = builder.withIdentity("example", "samples").withDescription("Example trigger")
-				.startAt(fromUtc("2020-11-30T17:00:00Z")).modifiedByCalendar("bankHolidays")
-				.endAt(fromUtc("2020-12-30T03:00:00Z")).build();
+		T trigger = builder.withIdentity("example", "samples")
+				.withDescription("Example trigger")
+				.startAt(fromUtc("2020-11-30T17:00:00Z"))
+				.modifiedByCalendar("bankHolidays")
+				.endAt(fromUtc("2020-12-30T03:00:00Z"))
+				.build();
 		setPreviousNextFireTime(trigger, "2020-12-04T03:00:00Z", "2020-12-07T03:00:00Z");
 		given(this.scheduler.getTriggerState(trigger.getKey())).willReturn(state);
 		mockTriggers(trigger);
@@ -379,12 +425,14 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	}
 
 	private static FieldDescriptor previousFireTime(String prefix) {
-		return fieldWithPath(prefix + "previousFireTime").optional().type(JsonFieldType.STRING)
+		return fieldWithPath(prefix + "previousFireTime").optional()
+				.type(JsonFieldType.STRING)
 				.description("Last time the trigger fired, if any.");
 	}
 
 	private static FieldDescriptor nextFireTime(String prefix) {
-		return fieldWithPath(prefix + "nextFireTime").optional().type(JsonFieldType.STRING)
+		return fieldWithPath(prefix + "nextFireTime").optional()
+				.type(JsonFieldType.STRING)
 				.description("Next time at which the Trigger is scheduled to fire, if any.");
 	}
 

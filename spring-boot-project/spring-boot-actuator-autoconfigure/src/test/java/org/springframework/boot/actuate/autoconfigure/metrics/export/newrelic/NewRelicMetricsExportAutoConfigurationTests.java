@@ -78,7 +78,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 						"management.newrelic.metrics.export.account-id=12345",
 						"management.newrelic.metrics.export.event-type=wxyz")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class)
+						.hasSingleBean(NewRelicConfig.class));
 	}
 
 	@Test
@@ -89,7 +90,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 						"management.newrelic.metrics.export.event-type=",
 						"management.newrelic.metrics.export.meter-name-event-type-enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class)
+						.hasSingleBean(NewRelicConfig.class));
 	}
 
 	@Test
@@ -98,7 +100,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.newrelic.metrics.export.api-key=abcde",
 						"management.newrelic.metrics.export.account-id=12345")
 				.run((context) -> assertThat(context).hasSingleBean(NewRelicMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(NewRelicConfig.class));
+						.hasSingleBean(Clock.class)
+						.hasSingleBean(NewRelicConfig.class));
 	}
 
 	@Test
@@ -151,7 +154,8 @@ class NewRelicMetricsExportAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("management.newrelic.metrics.export.api-key=abcde",
 						"management.newrelic.metrics.export.account-id=abcde")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
 					NewRelicMeterRegistry registry = context.getBean(NewRelicMeterRegistry.class);
 					assertThat(registry.isClosed()).isFalse();
 					context.close();

@@ -163,8 +163,9 @@ class PropertiesMigrationReporterTests {
 
 	@Test
 	void mapPropertiesDeprecatedNoReplacement() throws IOException {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("first",
+						Collections.singletonMap("custom.map-no-replacement.key", "value")));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.map-no-replacement.key")
@@ -173,8 +174,9 @@ class PropertiesMigrationReporterTests {
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacement() throws IOException {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map-with-replacement.key", "value")));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("first",
+						Collections.singletonMap("custom.map-with-replacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.map-with-replacement.key")
@@ -183,8 +185,9 @@ class PropertiesMigrationReporterTests {
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacementRelaxedBindingUnderscore() {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map_with_replacement.key", "value")));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("first",
+						Collections.singletonMap("custom.map_with_replacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.mapwithreplacement.key")
@@ -193,8 +196,9 @@ class PropertiesMigrationReporterTests {
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacementRelaxedBindingCamelCase() {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.MapWithReplacement.key", "value")));
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("first",
+						Collections.singletonMap("custom.MapWithReplacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.mapwithreplacement.key")

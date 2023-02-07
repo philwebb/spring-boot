@@ -46,7 +46,8 @@ public abstract class MockMvcEndpointDocumentationTests extends AbstractEndpoint
 	@BeforeEach
 	void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris()).build();
+				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris())
+				.build();
 	}
 
 	protected WebApplicationContext getApplicationContext() {

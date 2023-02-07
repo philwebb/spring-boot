@@ -76,7 +76,8 @@ class ClientHttpConnectorConfigurationTests {
 	void shouldApplyHttpClientMapper() {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
-				.withUserConfiguration(CustomHttpClientMapper.class).run((context) -> {
+				.withUserConfiguration(CustomHttpClientMapper.class)
+				.run((context) -> {
 					context.getBean("reactorClientHttpConnector");
 					assertThat(CustomHttpClientMapper.called).isTrue();
 				});

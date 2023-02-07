@@ -71,7 +71,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndUrlSenderIsNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
@@ -83,7 +84,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsServletAndUrlSenderIsNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
@@ -93,7 +95,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientInNonWebApplicationAndUrlConnectionSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection")).run((context) -> {
+				.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
@@ -103,7 +106,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
@@ -113,7 +117,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInServletWebApplicationIfUrlConnectionSenderAndWebClientNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
@@ -123,7 +128,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInReactiveWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 					assertThat(context).hasSingleBean(Sender.class);
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);

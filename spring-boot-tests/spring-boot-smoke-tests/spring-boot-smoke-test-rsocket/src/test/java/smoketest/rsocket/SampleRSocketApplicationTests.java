@@ -55,7 +55,8 @@ class SampleRSocketApplicationTests {
 						MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
 				.tcp("localhost", this.port);
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
-		StepVerifier.create(result).assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
+		StepVerifier.create(result)
+				.assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
 				.verifyComplete();
 	}
 

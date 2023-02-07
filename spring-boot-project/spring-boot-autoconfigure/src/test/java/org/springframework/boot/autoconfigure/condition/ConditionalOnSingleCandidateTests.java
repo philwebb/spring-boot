@@ -66,14 +66,16 @@ class ConditionalOnSingleCandidateTests {
 	void singleCandidateInAncestorsOneCandidateInCurrent() {
 		this.contextRunner.run((parent) -> this.contextRunner
 				.withUserConfiguration(AlphaConfiguration.class, OnBeanSingleCandidateInAncestorsConfiguration.class)
-				.withParent(parent).run((child) -> assertThat(child).doesNotHaveBean("consumer")));
+				.withParent(parent)
+				.run((child) -> assertThat(child).doesNotHaveBean("consumer")));
 	}
 
 	@Test
 	void singleCandidateInAncestorsOneCandidateInParent() {
 		this.contextRunner.withUserConfiguration(AlphaConfiguration.class)
 				.run((parent) -> this.contextRunner
-						.withUserConfiguration(OnBeanSingleCandidateInAncestorsConfiguration.class).withParent(parent)
+						.withUserConfiguration(OnBeanSingleCandidateInAncestorsConfiguration.class)
+						.withParent(parent)
 						.run((child) -> {
 							assertThat(child).hasBean("consumer");
 							assertThat(child.getBean("consumer")).isEqualTo("alpha");
@@ -86,7 +88,8 @@ class ConditionalOnSingleCandidateTests {
 				.run((grandparent) -> this.contextRunner.withParent(grandparent)
 						.run((parent) -> this.contextRunner
 								.withUserConfiguration(OnBeanSingleCandidateInAncestorsConfiguration.class)
-								.withParent(parent).run((child) -> {
+								.withParent(parent)
+								.run((child) -> {
 									assertThat(child).hasBean("consumer");
 									assertThat(child.getBean("consumer")).isEqualTo("alpha");
 								})));
@@ -102,8 +105,10 @@ class ConditionalOnSingleCandidateTests {
 
 	@Test
 	void singleCandidateMultipleCandidatesOnePrimary() {
-		this.contextRunner.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoConfiguration.class,
-				OnBeanSingleCandidateConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoConfiguration.class,
+						OnBeanSingleCandidateConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasBean("consumer");
 					assertThat(context.getBean("consumer")).isEqualTo("alpha");
 				});
@@ -121,7 +126,8 @@ class ConditionalOnSingleCandidateTests {
 	void invalidAnnotationTwoTypes() {
 		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateTwoTypesConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasCauseInstanceOf(IllegalArgumentException.class)
+			assertThat(context).getFailure()
+					.hasCauseInstanceOf(IllegalArgumentException.class)
 					.hasMessageContaining(OnBeanSingleCandidateTwoTypesConfiguration.class.getName());
 		});
 	}
@@ -130,7 +136,8 @@ class ConditionalOnSingleCandidateTests {
 	void invalidAnnotationNoType() {
 		this.contextRunner.withUserConfiguration(OnBeanSingleCandidateNoTypeConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasCauseInstanceOf(IllegalArgumentException.class)
+			assertThat(context).getFailure()
+					.hasCauseInstanceOf(IllegalArgumentException.class)
 					.hasMessageContaining(OnBeanSingleCandidateNoTypeConfiguration.class.getName());
 		});
 	}
@@ -139,7 +146,8 @@ class ConditionalOnSingleCandidateTests {
 	void singleCandidateMultipleCandidatesInContextHierarchy() {
 		this.contextRunner.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoConfiguration.class)
 				.run((parent) -> this.contextRunner.withUserConfiguration(OnBeanSingleCandidateConfiguration.class)
-						.withParent(parent).run((child) -> {
+						.withParent(parent)
+						.run((child) -> {
 							assertThat(child).hasBean("consumer");
 							assertThat(child.getBean("consumer")).isEqualTo("alpha");
 						}));

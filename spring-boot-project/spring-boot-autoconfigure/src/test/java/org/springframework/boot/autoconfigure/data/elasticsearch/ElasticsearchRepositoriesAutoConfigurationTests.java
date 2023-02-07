@@ -51,7 +51,8 @@ class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+			.withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
@@ -61,8 +62,9 @@ class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(CityRepository.class).hasSingleBean(ElasticsearchTemplate.class));
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
+						.hasSingleBean(ElasticsearchTemplate.class));
 	}
 
 	@Test

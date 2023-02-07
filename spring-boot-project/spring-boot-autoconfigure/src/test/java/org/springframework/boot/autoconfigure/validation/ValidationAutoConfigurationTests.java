@@ -197,7 +197,8 @@ class ValidationAutoConfigurationTests {
 	@Test
 	void validationCanBeConfiguredToUseJdkProxy() {
 		this.contextRunner.withUserConfiguration(AnotherSampleServiceConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class=false").run((context) -> {
+				.withPropertyValues("spring.aop.proxy-target-class=false")
+				.run((context) -> {
 					assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
 					assertThat(context.getBeansOfType(DefaultAnotherSampleService.class)).isEmpty();
 					AnotherSampleService service = context.getBean(AnotherSampleService.class);
@@ -233,7 +234,9 @@ class ValidationAutoConfigurationTests {
 	void validationIsEnabledInChildContext() {
 		this.contextRunner.run((parent) -> new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(SampleService.class).withParent(parent).run((context) -> {
+				.withUserConfiguration(SampleService.class)
+				.withParent(parent)
+				.run((context) -> {
 					assertThat(context.getBeansOfType(Validator.class)).isEmpty();
 					assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
 					SampleService service = context.getBean(SampleService.class);

@@ -310,7 +310,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void addJasperInitializer(TomcatEmbeddedContext context) {
 		try {
 			ServletContainerInitializer initializer = (ServletContainerInitializer) ClassUtils
-					.forName("org.apache.jasper.servlet.JasperInitializer", null).getDeclaredConstructor()
+					.forName("org.apache.jasper.servlet.JasperInitializer", null)
+					.getDeclaredConstructor()
 					.newInstance();
 			context.addServletContainerInitializer(initializer, null);
 		}
@@ -356,8 +357,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	@SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
-		LambdaSafe.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers,
-				protocolHandler).invoke((customizer) -> customizer.customize(protocolHandler));
+		LambdaSafe
+				.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers,
+						protocolHandler)
+				.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
 	private void customizeSsl(Connector connector) {
@@ -867,7 +870,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		@Override
 		public Set<String> listWebAppPaths(String path) {
-			return this.delegate.listWebAppPaths(path).stream()
+			return this.delegate.listWebAppPaths(path)
+					.stream()
 					.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
 					.collect(Collectors.toSet());
 		}

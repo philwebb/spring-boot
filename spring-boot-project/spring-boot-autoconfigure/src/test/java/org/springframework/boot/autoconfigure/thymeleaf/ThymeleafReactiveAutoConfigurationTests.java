@@ -104,9 +104,10 @@ class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	void overrideMediaTypes() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain").run(
-				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
-						.containsExactly(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain")
+				.run((context) -> assertThat(
+						context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+								.containsExactly(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
 	}
 
 	@Test
@@ -133,23 +134,25 @@ class ThymeleafReactiveAutoConfigurationTests {
 
 	@Test
 	void overrideFullModeViewNames() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.fullModeViewNames:foo,bar").run(
-				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getFullModeViewNames())
-						.isEqualTo(new String[] { "foo", "bar" }));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.fullModeViewNames:foo,bar")
+				.run((context) -> assertThat(
+						context.getBean(ThymeleafReactiveViewResolver.class).getFullModeViewNames())
+								.isEqualTo(new String[] { "foo", "bar" }));
 	}
 
 	@Test
 	void overrideChunkedModeViewNames() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.chunkedModeViewNames:foo,bar").run(
-				(context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getChunkedModeViewNames())
-						.isEqualTo(new String[] { "foo", "bar" }));
+		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.chunkedModeViewNames:foo,bar")
+				.run((context) -> assertThat(
+						context.getBean(ThymeleafReactiveViewResolver.class).getChunkedModeViewNames())
+								.isEqualTo(new String[] { "foo", "bar" }));
 	}
 
 	@Test
 	void overrideEnableSpringElCompiler() {
-		this.contextRunner.withPropertyValues("spring.thymeleaf.enable-spring-el-compiler:true").run(
-				(context) -> assertThat(context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler())
-						.isTrue());
+		this.contextRunner.withPropertyValues("spring.thymeleaf.enable-spring-el-compiler:true")
+				.run((context) -> assertThat(
+						context.getBean(SpringWebFluxTemplateEngine.class).getEnableSpringELCompiler()).isTrue());
 	}
 
 	@Test
@@ -211,10 +214,11 @@ class ThymeleafReactiveAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ISpringWebFluxTemplateEngine engine = context.getBean(ISpringWebFluxTemplateEngine.class);
 			MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
-			exchange.getAttributes().put(SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
-					new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
-			WebContext attrs = new WebContext(SpringWebFluxWebApplication.buildApplication(null).buildExchange(exchange,
-					Locale.US, MediaType.TEXT_HTML, StandardCharsets.UTF_8));
+			exchange.getAttributes()
+					.put(SpringSecurityContextUtils.SECURITY_CONTEXT_MODEL_ATTRIBUTE_NAME,
+							new SecurityContextImpl(new TestingAuthenticationToken("alice", "admin")));
+			WebContext attrs = new WebContext(SpringWebFluxWebApplication.buildApplication(null)
+					.buildExchange(exchange, Locale.US, MediaType.TEXT_HTML, StandardCharsets.UTF_8));
 			String result = engine.process("security-dialect", attrs);
 			assertThat(result).isEqualTo("<html><body><div>alice</div></body></html>" + System.lineSeparator());
 		});

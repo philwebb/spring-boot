@@ -224,7 +224,8 @@ public class GradleBuild {
 		if (repository.exists()) {
 			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
 		}
-		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
+		GradleRunner gradleRunner = GradleRunner.create()
+				.withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
 			// see https://github.com/gradle/gradle/issues/6862

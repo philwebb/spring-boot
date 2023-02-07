@@ -79,8 +79,10 @@ class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	void settingAllowedOriginPatternsEnablesCors() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
-				"management.endpoints.web.cors.allow-credentials:true").run(withMockMvc((mockMvc) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
+						"management.endpoints.web.cors.allow-credentials:true")
+				.run(withMockMvc((mockMvc) -> {
 					mockMvc.perform(options("/actuator/beans").header("Origin", "bar.example.org")
 							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
 							.andExpect(status().isForbidden());

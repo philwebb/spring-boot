@@ -69,8 +69,10 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithCustomTimeout() {
-		this.contextRunner.withPropertyValues("spring.session.timeout=1m",
-				"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl()).run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.session.timeout=1m",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 							ReactiveMongoSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
@@ -80,8 +82,10 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithCustomSessionTimeout() {
-		this.contextRunner.withPropertyValues("server.reactive.session.timeout=1m",
-				"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl()).run((context) -> {
+		this.contextRunner
+				.withPropertyValues("server.reactive.session.timeout=1m",
+						"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+				.run((context) -> {
 					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 							ReactiveMongoSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",

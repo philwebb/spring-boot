@@ -115,8 +115,10 @@ class RestTemplateObservationConfigurationTests {
 			RestTemplate restTemplate = buildRestTemplate(context);
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
-					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+			TestObservationRegistryAssert.assertThat(registry)
+					.hasObservationWithNameEqualTo("http.client.requests")
+					.that()
+					.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
 	}
 
@@ -126,14 +128,17 @@ class RestTemplateObservationConfigurationTests {
 			RestTemplate restTemplate = buildRestTemplate(context);
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
-					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+			TestObservationRegistryAssert.assertThat(registry)
+					.hasObservationWithNameEqualTo("http.client.requests")
+					.that()
+					.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
 	}
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.web.client.max-uri-tags=2")
+		this.contextRunner.with(MetricsRun.simple())
+				.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
 				.run((context) -> {
 					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 					MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);

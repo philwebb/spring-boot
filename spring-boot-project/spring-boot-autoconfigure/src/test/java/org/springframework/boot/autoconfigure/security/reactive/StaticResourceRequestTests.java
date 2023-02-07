@@ -112,7 +112,8 @@ class StaticResourceRequestTests {
 
 		private void matches(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Matches " + getRequestPath(exchange)).isTrue();
+					.as("Matches " + getRequestPath(exchange))
+					.isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -123,7 +124,8 @@ class StaticResourceRequestTests {
 
 		private void doesNotMatch(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Does not match " + getRequestPath(exchange)).isFalse();
+					.as("Does not match " + getRequestPath(exchange))
+					.isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

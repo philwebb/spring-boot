@@ -106,14 +106,19 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 						getLaterVersionsForModule(group.getId(), plugin, libraryVersion));
 			}
 		}
-		List<DependencyVersion> allVersions = moduleVersions.values().stream().flatMap(SortedSet::stream).distinct()
+		List<DependencyVersion> allVersions = moduleVersions.values()
+				.stream()
+				.flatMap(SortedSet::stream)
+				.distinct()
 				.filter((dependencyVersion) -> isPermitted(dependencyVersion, library.getProhibitedVersions()))
 				.collect(Collectors.toList());
 		if (allVersions.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return allVersions.stream().map((version) -> new VersionOption.ResolvedVersionOption(version,
-				getMissingModules(moduleVersions, version))).collect(Collectors.toList());
+		return allVersions.stream()
+				.map((version) -> new VersionOption.ResolvedVersionOption(version,
+						getMissingModules(moduleVersions, version)))
+				.collect(Collectors.toList());
 	}
 
 	private List<VersionOption> determineAlignedVersionOption(Library library, Map<String, Library> libraries) {

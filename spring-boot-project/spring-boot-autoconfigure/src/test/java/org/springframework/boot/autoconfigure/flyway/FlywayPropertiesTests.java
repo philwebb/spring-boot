@@ -54,7 +54,8 @@ class FlywayPropertiesTests {
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
-		assertThat(properties.getConnectRetriesInterval()).extracting(Duration::getSeconds).extracting(Long::intValue)
+		assertThat(properties.getConnectRetriesInterval()).extracting(Duration::getSeconds)
+				.extracting(Long::intValue)
 				.isEqualTo(configuration.getConnectRetriesInterval());
 		assertThat(properties.getLockRetryCount()).isEqualTo(configuration.getLockRetryCount());
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());

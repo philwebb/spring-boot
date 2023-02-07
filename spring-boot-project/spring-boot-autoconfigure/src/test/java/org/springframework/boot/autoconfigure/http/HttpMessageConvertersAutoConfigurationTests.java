@@ -96,8 +96,9 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void jacksonXmlConverterWithBuilder() {
-		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class).run(assertConverter(
-				MappingJackson2XmlHttpMessageConverter.class, "mappingJackson2XmlHttpMessageConverter"));
+		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class)
+				.run(assertConverter(MappingJackson2XmlHttpMessageConverter.class,
+						"mappingJackson2XmlHttpMessageConverter"));
 	}
 
 	@Test
@@ -181,8 +182,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter() {
-		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class,
-				TypeConstrainedConverterConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(JacksonObjectMapperBuilderConfig.class,
+						TypeConstrainedConverterConfiguration.class)
+				.run((context) -> {
 					BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
 							.getBeanDefinition("mappingJackson2HttpMessageConverter");
 					assertThat(beanDefinition.getFactoryBeanName())
@@ -260,7 +263,8 @@ class HttpMessageConvertersAutoConfigurationTests {
 	void whenEncodingCharsetIsConfiguredThenStringMessageConverterUsesSpecificCharset() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.withPropertyValues("server.servlet.encoding.charset=UTF-16").run((context) -> {
+				.withPropertyValues("server.servlet.encoding.charset=UTF-16")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
 					assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
 							.isEqualTo(StandardCharsets.UTF_16);

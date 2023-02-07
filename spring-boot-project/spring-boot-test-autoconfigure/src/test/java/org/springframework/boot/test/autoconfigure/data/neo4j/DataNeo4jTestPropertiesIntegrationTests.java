@@ -43,7 +43,8 @@ class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Container
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+			.withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

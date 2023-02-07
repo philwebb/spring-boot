@@ -51,39 +51,44 @@ class RunningDocumentationTests {
 	void applicationPluginMainClassName() throws IOException {
 		writeMainClass();
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/application-plugin-main-class-name")
-				.build("bootRun").getOutput()).contains("com.example.ExampleApplication");
+				.build("bootRun")
+				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void springBootDslMainClassName() throws IOException {
 		writeMainClass();
-		assertThat(this.gradleBuild.script("src/docs/gradle/running/spring-boot-dsl-main-class-name").build("bootRun")
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/spring-boot-dsl-main-class-name")
+				.build("bootRun")
 				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void bootRunSourceResources() {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-source-resources")
-				.build("configuredClasspath").getOutput()).contains(new File("src/main/resources").getPath());
+				.build("configuredClasspath")
+				.getOutput()).contains(new File("src/main/resources").getPath());
 	}
 
 	@TestTemplate
 	void bootRunDisableOptimizedLaunch() {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-disable-optimized-launch")
-				.build("optimizedLaunch").getOutput()).contains("false");
+				.build("optimizedLaunch")
+				.getOutput()).contains("false");
 	}
 
 	@TestTemplate
 	void bootRunSystemPropertyDefaultValue() {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-system-property")
-				.build("configuredSystemProperties").getOutput()).contains("com.example.property = default");
+				.build("configuredSystemProperties")
+				.getOutput()).contains("com.example.property = default");
 	}
 
 	@TestTemplate
 	void bootRunSystemProperty() {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-system-property")
-				.build("-Pexample=custom", "configuredSystemProperties").getOutput())
-						.contains("com.example.property = custom");
+				.build("-Pexample=custom", "configuredSystemProperties")
+				.getOutput()).contains("com.example.property = custom");
 	}
 
 	private void writeMainClass() throws IOException {

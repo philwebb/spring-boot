@@ -122,7 +122,8 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
 						TaskSchedulingAutoConfiguration.class))
-				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=default").run((context) -> assertThat(
+				.withPropertyValues("spring.data.jpa.repositories.bootstrap-mode=default")
+				.run((context) -> assertThat(
 						context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor()).isNull());
 	}
 

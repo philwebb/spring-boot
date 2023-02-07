@@ -165,7 +165,8 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
 		this.contextRunner.withUserConfiguration(configClass)
-				.withPropertyValues("spring.security.user.password=" + providedPassword).run(((context) -> {
+				.withPropertyValues("spring.security.user.password=" + providedPassword)
+				.run(((context) -> {
 					InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
 					String password = userDetailsService.loadUserByUsername("user").getPassword();
 					assertThat(password).isEqualTo(expectedPassword);

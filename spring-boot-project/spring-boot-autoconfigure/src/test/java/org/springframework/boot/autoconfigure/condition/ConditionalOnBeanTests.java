@@ -140,7 +140,8 @@ class ConditionalOnBeanTests {
 	void onBeanConditionOutputShouldNotContainConditionalOnMissingBeanClassInMessage() {
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
 			Collection<ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.get(context.getSourceApplicationContext().getBeanFactory())
+					.getConditionAndOutcomesBySource()
 					.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 			assertThat(message).doesNotContain("@ConditionalOnMissingBean");
@@ -149,8 +150,10 @@ class ConditionalOnBeanTests {
 
 	@Test
 	void conditionEvaluationConsidersChangeInTypeWhenBeanIsOverridden() {
-		this.contextRunner.withAllowBeanDefinitionOverriding(true).withUserConfiguration(OriginalDefinition.class,
-				OverridingDefinition.class, ConsumingConfiguration.class).run((context) -> {
+		this.contextRunner.withAllowBeanDefinitionOverriding(true)
+				.withUserConfiguration(OriginalDefinition.class, OverridingDefinition.class,
+						ConsumingConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasBean("testBean");
 					assertThat(context).hasSingleBean(Integer.class);
 					assertThat(context).doesNotHaveBean(ConsumingConfiguration.class);

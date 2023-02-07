@@ -186,7 +186,8 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
-				.contains("maxRetries: 3").contains("failOnPassedAfterRetry: true");
+				.contains("maxRetries: 3")
+				.contains("failOnPassedAfterRetry: true");
 	}
 
 	@Test
@@ -207,7 +208,8 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
-				.contains("maxRetries: 0").contains("failOnPassedAfterRetry: true");
+				.contains("maxRetries: 0")
+				.contains("failOnPassedAfterRetry: true");
 	}
 
 	private BuildResult runGradle(String... args) {
@@ -215,8 +217,12 @@ class ConventionsPluginTests {
 	}
 
 	private BuildResult runGradle(Map<String, String> environment, String... args) {
-		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
-				.withPluginClasspath().build();
+		return GradleRunner.create()
+				.withProjectDir(this.projectDir)
+				.withEnvironment(environment)
+				.withArguments(args)
+				.withPluginClasspath()
+				.build();
 	}
 
 }

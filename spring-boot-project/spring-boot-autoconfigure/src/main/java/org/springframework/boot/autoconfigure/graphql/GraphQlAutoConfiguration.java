@@ -87,7 +87,8 @@ public class GraphQlAutoConfiguration {
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
 		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
-				.schemaResources(schemaResources).exceptionResolvers(exceptionResolvers.orderedStream().toList())
+				.schemaResources(schemaResources)
+				.exceptionResolvers(exceptionResolvers.orderedStream().toList())
 				.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
 				.instrumentation(instrumentations.orderedStream().toList());
 		if (!properties.getSchema().getIntrospection().isEnabled()) {

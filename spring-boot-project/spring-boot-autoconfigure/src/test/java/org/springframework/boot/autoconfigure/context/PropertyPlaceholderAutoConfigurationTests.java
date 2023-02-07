@@ -43,20 +43,23 @@ class PropertyPlaceholderAutoConfigurationTests {
 
 	@Test
 	void whenTheAutoConfigurationIsNotUsedThenBeanDefinitionPlaceholdersAreNotResolved() {
-		this.contextRunner.withPropertyValues("fruit:banana").withInitializer(this::definePlaceholderBean)
+		this.contextRunner.withPropertyValues("fruit:banana")
+				.withInitializer(this::definePlaceholderBean)
 				.run((context) -> assertThat(context.getBean(PlaceholderBean.class).fruit).isEqualTo("${fruit:apple}"));
 	}
 
 	@Test
 	void whenTheAutoConfigurationIsUsedThenBeanDefinitionPlaceholdersAreResolved() {
-		this.contextRunner.withPropertyValues("fruit:banana").withInitializer(this::definePlaceholderBean)
+		this.contextRunner.withPropertyValues("fruit:banana")
+				.withInitializer(this::definePlaceholderBean)
 				.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class))
 				.run((context) -> assertThat(context.getBean(PlaceholderBean.class).fruit).isEqualTo("banana"));
 	}
 
 	@Test
 	void whenTheAutoConfigurationIsNotUsedThenValuePlaceholdersAreResolved() {
-		this.contextRunner.withPropertyValues("fruit:banana").withUserConfiguration(PlaceholderConfig.class)
+		this.contextRunner.withPropertyValues("fruit:banana")
+				.withUserConfiguration(PlaceholderConfig.class)
 				.run((context) -> assertThat(context.getBean(PlaceholderConfig.class).fruit).isEqualTo("banana"));
 	}
 
@@ -70,7 +73,8 @@ class PropertyPlaceholderAutoConfigurationTests {
 
 	@Test
 	void whenThereIsAUserDefinedPropertySourcesPlaceholderConfigurerThenItIsUsedForBeanDefinitionPlaceholderResolution() {
-		this.contextRunner.withPropertyValues("fruit:banana").withInitializer(this::definePlaceholderBean)
+		this.contextRunner.withPropertyValues("fruit:banana")
+				.withInitializer(this::definePlaceholderBean)
 				.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class))
 				.withUserConfiguration(PlaceholdersOverride.class)
 				.run((context) -> assertThat(context.getBean(PlaceholderBean.class).fruit).isEqualTo("orange"));
@@ -86,7 +90,8 @@ class PropertyPlaceholderAutoConfigurationTests {
 
 	private void definePlaceholderBean(ConfigurableApplicationContext context) {
 		((BeanDefinitionRegistry) context.getBeanFactory()).registerBeanDefinition("placeholderBean",
-				BeanDefinitionBuilder.rootBeanDefinition(PlaceholderBean.class).addConstructorArgValue("${fruit:apple}")
+				BeanDefinitionBuilder.rootBeanDefinition(PlaceholderBean.class)
+						.addConstructorArgValue("${fruit:apple}")
 						.getBeanDefinition());
 	}
 

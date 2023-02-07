@@ -104,9 +104,9 @@ class WebEndpointAutoConfigurationTests {
 
 	@Test
 	void webApplicationConfiguresExposeExcludePropertyEndpointFilter() {
-		this.contextRunner
-				.run((context) -> assertThat(context).getBeans(IncludeExcludeEndpointFilter.class).containsKeys(
-						"webExposeExcludePropertyEndpointFilter", "controllerExposeExcludePropertyEndpointFilter"));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(IncludeExcludeEndpointFilter.class)
+				.containsKeys("webExposeExcludePropertyEndpointFilter",
+						"controllerExposeExcludePropertyEndpointFilter"));
 	}
 
 	@Test

@@ -81,9 +81,17 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	void anonymousUserShouldBeUnauthorized() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			client.post().uri("").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
-					.expectBody().jsonPath("data.bookById.name").doesNotExist()
-					.jsonPath("errors[0].extensions.classification").isEqualTo(ErrorType.UNAUTHORIZED.toString());
+			client.post()
+					.uri("")
+					.bodyValue("{  \"query\": \"" + query + "\"}")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("data.bookById.name")
+					.doesNotExist()
+					.jsonPath("errors[0].extensions.classification")
+					.isEqualTo(ErrorType.UNAUTHORIZED.toString());
 		});
 	}
 
@@ -91,20 +99,31 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	void authenticatedUserShouldGetData() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			client.post().uri("").headers((headers) -> headers.setBasicAuth("rob", "rob"))
-					.bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk().expectBody()
-					.jsonPath("data.bookById.name").isEqualTo("GraphQL for beginners")
-					.jsonPath("errors[0].extensions.classification").doesNotExist();
+			client.post()
+					.uri("")
+					.headers((headers) -> headers.setBasicAuth("rob", "rob"))
+					.bodyValue("{  \"query\": \"" + query + "\"}")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("data.bookById.name")
+					.isEqualTo("GraphQL for beginners")
+					.jsonPath("errors[0].extensions.classification")
+					.doesNotExist();
 		});
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context).configureClient()
+			WebTestClient client = WebTestClient.bindToApplicationContext(context)
+					.configureClient()
 					.defaultHeaders((headers) -> {
 						headers.setContentType(MediaType.APPLICATION_JSON);
 						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-					}).baseUrl(BASE_URL).build();
+					})
+					.baseUrl(BASE_URL)
+					.build();
 			consumer.accept(client);
 		});
 	}
@@ -114,8 +133,8 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById",
-					(env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+					.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
 		}
 
 		@Bean
@@ -145,7 +164,8 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 			return http.csrf((spec) -> spec.disable())
 					// Demonstrate that method security works
 					// Best practice to use both for defense in depth
-					.authorizeExchange((requests) -> requests.anyExchange().permitAll()).httpBasic(withDefaults())
+					.authorizeExchange((requests) -> requests.anyExchange().permitAll())
+					.httpBasic(withDefaults())
 					.build();
 		}
 

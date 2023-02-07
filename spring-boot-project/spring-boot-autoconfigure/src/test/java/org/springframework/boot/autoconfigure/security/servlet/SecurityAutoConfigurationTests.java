@@ -91,7 +91,8 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
+				.withUserConfiguration(TestSecurityFilterChainConfig.class)
+				.run((context) -> {
 					assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
 					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
 				});
@@ -169,7 +170,8 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void customFilterDispatcherTypes() {
 		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
-				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
@@ -181,7 +183,8 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void emptyFilterDispatcherTypesDoNotThrowException() {
 		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:")
-				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+				.run((context) -> {
 					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
@@ -243,7 +246,8 @@ class SecurityAutoConfigurationTests {
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.securityMatcher("/**")
-					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
 
 		}
 

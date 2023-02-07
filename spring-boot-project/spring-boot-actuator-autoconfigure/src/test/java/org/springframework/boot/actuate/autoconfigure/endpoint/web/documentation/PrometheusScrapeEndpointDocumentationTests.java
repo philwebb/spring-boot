@@ -62,8 +62,10 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 				.perform(get("/actuator/prometheus").param("includedNames",
 						"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
 				.andExpect(status().isOk())
-				.andDo(document("prometheus/names", queryParameters(parameterWithName("includedNames")
-						.description("Restricts the samples to those that match the names. Optional.").optional())));
+				.andDo(document("prometheus/names",
+						queryParameters(parameterWithName("includedNames")
+								.description("Restricts the samples to those that match the names. Optional.")
+								.optional())));
 	}
 
 	@Configuration(proxyBeanMethods = false)

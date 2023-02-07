@@ -330,7 +330,8 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
-		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull().extracting(Header::getValue)
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull()
+				.extracting(Header::getValue)
 				.isEqualTo("close");
 		this.webServer.stop();
 	}

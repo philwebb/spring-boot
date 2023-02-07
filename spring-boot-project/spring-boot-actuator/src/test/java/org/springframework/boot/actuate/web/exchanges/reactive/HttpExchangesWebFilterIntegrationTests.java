@@ -54,7 +54,12 @@ class HttpExchangesWebFilterIntegrationTests {
 	@Test
 	void exchangeForNotFoundResponseHas404Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
+			WebTestClient.bindToApplicationContext(context)
+					.build()
+					.get()
+					.uri("/")
+					.exchange()
+					.expectStatus()
 					.isNotFound();
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
@@ -65,7 +70,12 @@ class HttpExchangesWebFilterIntegrationTests {
 	@Test
 	void exchangeForMonoErrorWithRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
+			WebTestClient.bindToApplicationContext(context)
+					.build()
+					.get()
+					.uri("/mono-error")
+					.exchange()
+					.expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
@@ -76,7 +86,12 @@ class HttpExchangesWebFilterIntegrationTests {
 	@Test
 	void exchangeForThrownRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
+			WebTestClient.bindToApplicationContext(context)
+					.build()
+					.get()
+					.uri("/thrown")
+					.exchange()
+					.expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);

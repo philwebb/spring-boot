@@ -98,12 +98,15 @@ abstract class AbstractDevToolsIntegrationTests {
 		}
 
 		protected void build() throws Exception {
-			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
+			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class)
+					.name(this.name)
 					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
 			for (String mapping : this.mappings) {
 				builder = builder.defineMethod(mapping, String.class, Visibility.PUBLIC)
-						.intercept(FixedValue.value(mapping)).annotateMethod(AnnotationDescription.Builder
-								.ofType(RequestMapping.class).defineArray("value", mapping).build());
+						.intercept(FixedValue.value(mapping))
+						.annotateMethod(AnnotationDescription.Builder.ofType(RequestMapping.class)
+								.defineArray("value", mapping)
+								.build());
 			}
 			builder.make().saveIn(this.classesDirectory);
 		}

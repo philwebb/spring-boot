@@ -182,8 +182,10 @@ class JooqAutoConfigurationTests {
 
 	@Test
 	void transactionProviderFromConfigurationCustomizerOverridesTransactionProviderBean() {
-		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
-				CustomTransactionProviderFromCustomizerConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
+						CustomTransactionProviderFromCustomizerConfiguration.class)
+				.run((context) -> {
 					TransactionProvider transactionProvider = context.getBean(TransactionProvider.class);
 					assertThat(transactionProvider).isInstanceOf(SpringTransactionProvider.class);
 					DSLContext dsl = context.getBean(DSLContext.class);

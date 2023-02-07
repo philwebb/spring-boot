@@ -100,7 +100,8 @@ public class GraphQlProperties {
 		}
 
 		private String[] appendSlashIfNecessary(String[] locations) {
-			return Arrays.stream(locations).map((location) -> location.endsWith("/") ? location : location + "/")
+			return Arrays.stream(locations)
+					.map((location) -> location.endsWith("/") ? location : location + "/")
 					.toArray(String[]::new);
 		}
 

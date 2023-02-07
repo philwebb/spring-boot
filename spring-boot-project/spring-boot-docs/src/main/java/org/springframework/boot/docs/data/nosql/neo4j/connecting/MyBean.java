@@ -37,7 +37,9 @@ public class MyBean {
 			return session.executeWrite((transaction) -> transaction
 					.run("CREATE (a:Greeting) SET a.message = $message RETURN a.message + ', from node ' + id(a)",
 							Values.parameters("message", message))
-					.single().get(0).asString());
+					.single()
+					.get(0)
+					.asString());
 		}
 	}
 	// @fold:off

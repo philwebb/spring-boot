@@ -125,8 +125,9 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void customFieldNamingStrategy() {
-		this.contextRunner.withPropertyValues(
-				"spring.data.mongodb.field-naming-strategy:" + CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
+		this.contextRunner
+				.withPropertyValues("spring.data.mongodb.field-naming-strategy:"
+						+ CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
 				.run((context) -> {
 					MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 					FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils

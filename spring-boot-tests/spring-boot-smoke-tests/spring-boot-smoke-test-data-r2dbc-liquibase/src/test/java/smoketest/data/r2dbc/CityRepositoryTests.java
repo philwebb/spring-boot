@@ -59,7 +59,8 @@ class CityRepositoryTests {
 	@Test
 	void databaseHasBeenInitialized() {
 		StepVerifier.create(this.repository.findByState("DC").filter((city) -> city.getName().equals("Washington")))
-				.consumeNextWith((city) -> assertThat(city.getId()).isNotNull()).verifyComplete();
+				.consumeNextWith((city) -> assertThat(city.getId()).isNotNull())
+				.verifyComplete();
 	}
 
 	private static String r2dbcUrl() {

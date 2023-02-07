@@ -133,7 +133,8 @@ class TestRestTemplateTests {
 	void options() {
 		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-				.getRestTemplate().getRequestFactory();
+				.getRestTemplate()
+				.getRequestFactory();
 		RequestConfig config = factory.createRequestConfig();
 		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
@@ -154,7 +155,8 @@ class TestRestTemplateTests {
 						method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
 				assertThat(Modifier.isPublic(equivalent.getModifiers()))
-						.as("Method %s should have been public", equivalent).isTrue();
+						.as("Method %s should have been public", equivalent)
+						.isTrue();
 				try {
 					equivalent.invoke(restTemplate, mockArguments(method.getParameterTypes()));
 				}

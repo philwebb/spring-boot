@@ -73,35 +73,41 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void createWhenPushGatewayIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(null, this.registry,
-				this.scheduler, this.pushRate, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PrometheusPushGatewayManager(null, this.registry, this.scheduler, this.pushRate,
+						"job", this.groupingKey, null))
 				.withMessage("PushGateway must not be null");
 	}
 
 	@Test
 	void createWhenCollectorRegistryIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null,
-				this.scheduler, this.pushRate, "job", this.groupingKey, null)).withMessage("Registry must not be null");
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null, this.scheduler,
+						this.pushRate, "job", this.groupingKey, null))
+				.withMessage("Registry must not be null");
 	}
 
 	@Test
 	void createWhenSchedulerIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
-				this.registry, null, this.pushRate, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, null, this.pushRate,
+						"job", this.groupingKey, null))
 				.withMessage("Scheduler must not be null");
 	}
 
 	@Test
 	void createWhenPushRateIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
-				this.registry, this.scheduler, null, "job", this.groupingKey, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
+						null, "job", this.groupingKey, null))
 				.withMessage("PushRate must not be null");
 	}
 
 	@Test
 	void createWhenJobIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway,
-				this.registry, this.scheduler, this.pushRate, "", this.groupingKey, null))
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
+						this.pushRate, "", this.groupingKey, null))
 				.withMessage("Job must not be empty");
 	}
 

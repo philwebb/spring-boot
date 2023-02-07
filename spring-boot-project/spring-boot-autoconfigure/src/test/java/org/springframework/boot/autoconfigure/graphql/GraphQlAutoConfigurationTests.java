@@ -127,7 +127,8 @@ class GraphQlAutoConfigurationTests {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
 			Instrumentation customInstrumentation = context.getBean("customInstrumentation", Instrumentation.class);
 			GraphQL graphQL = graphQlSource.graphQl();
-			assertThat(graphQL).extracting("instrumentation").isInstanceOf(ChainedInstrumentation.class)
+			assertThat(graphQL).extracting("instrumentation")
+					.isInstanceOf(ChainedInstrumentation.class)
 					.extracting("instrumentations", InstanceOfAssertFactories.iterable(Instrumentation.class))
 					.contains(customInstrumentation);
 		});
@@ -198,9 +199,9 @@ class GraphQlAutoConfigurationTests {
 
 		@Bean
 		GraphQlSource.SchemaResourceBuilder customGraphQlSourceBuilder() {
-			return GraphQlSource.schemaResourceBuilder().schemaResources(
-					new ClassPathResource("graphql/schema.graphqls"),
-					new ClassPathResource("graphql/types/book.graphqls"));
+			return GraphQlSource.schemaResourceBuilder()
+					.schemaResources(new ClassPathResource("graphql/schema.graphqls"),
+							new ClassPathResource("graphql/types/book.graphqls"));
 		}
 
 	}

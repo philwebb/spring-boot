@@ -54,8 +54,9 @@ class SystemMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomUptimeMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class)
+						.hasBean("customUptimeMetrics"));
 	}
 
 	@Test
@@ -96,22 +97,24 @@ class SystemMetricsAutoConfigurationTests {
 
 	@Test
 	void diskSpaceMetricsUsesDefaultPath() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
-						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
+		this.contextRunner.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+				.getBean(DiskSpaceMetricsBinder.class)
+				.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
 	}
 
 	@Test
 	void allowsDiskSpaceMetricsPathToBeConfiguredWithSinglePath() {
 		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:..")
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
+				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+						.getBean(DiskSpaceMetricsBinder.class)
 						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File(".."))));
 	}
 
 	@Test
 	void allowsDiskSpaceMetricsPathToBeConfiguredWithMultiplePaths() {
 		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:.,..")
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
+				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+						.getBean(DiskSpaceMetricsBinder.class)
 						.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
 	}
 

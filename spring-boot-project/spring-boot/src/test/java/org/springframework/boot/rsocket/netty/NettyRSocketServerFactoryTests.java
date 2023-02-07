@@ -264,8 +264,9 @@ class NettyRSocketServerFactoryTests {
 
 	private HttpClient createSecureHttpClient() {
 		HttpClient httpClient = createHttpClient();
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient().configure(
-				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+				.configure((builder) -> builder.sslProvider(SslProvider.JDK)
+						.trustManager(InsecureTrustManagerFactory.INSTANCE));
 		return httpClient.secure((spec) -> spec.sslContext(sslContextSpec));
 	}
 
@@ -277,8 +278,9 @@ class NettyRSocketServerFactoryTests {
 
 	private TcpClient createSecureTcpClient() {
 		TcpClient tcpClient = createTcpClient();
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient().configure(
-				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+				.configure((builder) -> builder.sslProvider(SslProvider.JDK)
+						.trustManager(InsecureTrustManagerFactory.INSTANCE));
 		return tcpClient.secure((spec) -> spec.sslContext(sslContextSpec));
 	}
 
@@ -289,9 +291,11 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private RSocketRequester.Builder createRSocketRequesterBuilder() {
-		RSocketStrategies strategies = RSocketStrategies.builder().decoder(StringDecoder.allMimeTypes())
+		RSocketStrategies strategies = RSocketStrategies.builder()
+				.decoder(StringDecoder.allMimeTypes())
 				.encoder(CharSequenceEncoder.allMimeTypes())
-				.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT)).build();
+				.dataBufferFactory(new NettyDataBufferFactory(PooledByteBufAllocator.DEFAULT))
+				.build();
 		return RSocketRequester.builder().rsocketStrategies(strategies);
 	}
 

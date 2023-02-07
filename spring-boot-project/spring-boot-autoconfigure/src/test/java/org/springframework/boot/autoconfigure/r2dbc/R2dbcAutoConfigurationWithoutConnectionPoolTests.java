@@ -63,7 +63,8 @@ class R2dbcAutoConfigurationWithoutConnectionPoolTests {
 				.withPropertyValues("spring.r2dbc.pool.enabled=true",
 						"spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName()
 								+ "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
-				.run((context) -> assertThat(context).getFailure().rootCause()
+				.run((context) -> assertThat(context).getFailure()
+						.rootCause()
 						.isInstanceOf(MissingR2dbcPoolDependencyException.class));
 	}
 
@@ -72,7 +73,8 @@ class R2dbcAutoConfigurationWithoutConnectionPoolTests {
 		this.contextRunner
 				.withPropertyValues("spring.r2dbc.url:r2dbc:pool:h2:mem:///" + randomDatabaseName()
 						+ "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
-				.run((context) -> assertThat(context).getFailure().rootCause()
+				.run((context) -> assertThat(context).getFailure()
+						.rootCause()
 						.isInstanceOf(MissingR2dbcPoolDependencyException.class));
 	}
 

@@ -148,9 +148,11 @@ public final class ClientHttpRequestFactories {
 
 		private static HttpClient createHttpClient(Duration readTimeout) {
 			SocketConfig socketConfig = SocketConfig.custom()
-					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS).build();
+					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+					.build();
 			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-					.setDefaultSocketConfig(socketConfig).build();
+					.setDefaultSocketConfig(socketConfig)
+					.build();
 			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
 		}
 

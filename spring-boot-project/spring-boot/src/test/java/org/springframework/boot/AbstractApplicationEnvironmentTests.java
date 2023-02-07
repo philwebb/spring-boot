@@ -39,8 +39,9 @@ public abstract class AbstractApplicationEnvironmentTests {
 	void getActiveProfilesDoesNotResolveProperty() {
 		StandardEnvironment environment = createEnvironment();
 		new MockPropertySource().withProperty("", "");
-		environment.getPropertySources().addFirst(
-				new MockPropertySource().withProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "test"));
+		environment.getPropertySources()
+				.addFirst(new MockPropertySource().withProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME,
+						"test"));
 		assertThat(environment.getActiveProfiles()).isEmpty();
 	}
 
@@ -48,8 +49,9 @@ public abstract class AbstractApplicationEnvironmentTests {
 	void getDefaultProfilesDoesNotResolveProperty() {
 		StandardEnvironment environment = createEnvironment();
 		new MockPropertySource().withProperty("", "");
-		environment.getPropertySources().addFirst(
-				new MockPropertySource().withProperty(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, "test"));
+		environment.getPropertySources()
+				.addFirst(new MockPropertySource().withProperty(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME,
+						"test"));
 		assertThat(environment.getDefaultProfiles()).containsExactly("default");
 	}
 

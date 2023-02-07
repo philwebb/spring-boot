@@ -82,7 +82,8 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 		ConfigurationMetadata metadata = compile(MethodAndClassConfig.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("conflict.name", String.class).fromSource(MethodAndClassConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class).withDefaultValue(false)
+		assertThat(metadata).has(Metadata.withProperty("conflict.flag", Boolean.class)
+				.withDefaultValue(false)
 				.fromSource(MethodAndClassConfig.Foo.class));
 		assertThat(metadata)
 				.has(Metadata.withProperty("conflict.value", String.class).fromSource(MethodAndClassConfig.class));
@@ -95,7 +96,8 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 				.fromSource(SingleConstructorMethodConfig.Foo.class));
 		assertThat(metadata).has(
 				Metadata.withProperty("foo.name", String.class).fromSource(SingleConstructorMethodConfig.Foo.class));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.withDefaultValue(false)
 				.fromSource(SingleConstructorMethodConfig.Foo.class));
 	}
 
@@ -111,9 +113,12 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("foo").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
-				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
-				.fromSource(DeprecatedMethodConfig.Foo.class).withDeprecation(null, null));
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.withDefaultValue(false)
+				.fromSource(DeprecatedMethodConfig.Foo.class)
+				.withDeprecation(null, null));
 	}
 
 	@Test
@@ -125,7 +130,8 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 		assertThat(metadata).has(Metadata.withProperty("foo.name", String.class)
 				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class).withDefaultValue(false)
+		assertThat(metadata).has(Metadata.withProperty("foo.flag", Boolean.class)
+				.withDefaultValue(false)
 				.fromSource(org.springframework.boot.configurationsample.method.DeprecatedClassMethodConfig.Foo.class)
 				.withDeprecation(null, null));
 	}

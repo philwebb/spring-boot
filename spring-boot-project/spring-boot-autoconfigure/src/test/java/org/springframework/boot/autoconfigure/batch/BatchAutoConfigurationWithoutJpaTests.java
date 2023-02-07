@@ -57,7 +57,8 @@ class BatchAutoConfigurationWithoutJpaTests {
 	void jdbcWithDefaultSettings() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.generate-unique-name=true")
-				.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO)).run((context) -> {
+				.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(context).hasSingleBean(JobExplorer.class);
 					assertThat(context).hasSingleBean(JobRepository.class);

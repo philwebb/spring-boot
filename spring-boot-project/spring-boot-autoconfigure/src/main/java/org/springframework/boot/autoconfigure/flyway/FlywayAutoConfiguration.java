@@ -182,12 +182,15 @@ public class FlywayAutoConfiguration {
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
-					.resolveLocations(properties.getLocations()).toArray(new String[0]);
+					.resolveLocations(properties.getLocations())
+					.toArray(new String[0]);
 			map.from(properties.isFailOnMissingLocations()).to(configuration::failOnMissingLocations);
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
-			map.from(properties.getConnectRetriesInterval()).as(Duration::getSeconds).as(Long::intValue)
+			map.from(properties.getConnectRetriesInterval())
+					.as(Duration::getSeconds)
+					.as(Long::intValue)
 					.to(configuration::connectRetriesInterval);
 			map.from(properties.getLockRetryCount()).to(configuration::lockRetryCount);
 			map.from(properties.getDefaultSchema()).to(configuration::defaultSchema);
@@ -204,7 +207,8 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getPlaceholderSeparator()).to(configuration::placeholderSeparator);
 			map.from(properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
 			map.from(properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
-			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
+			map.from(properties.getSqlMigrationSuffixes())
+					.as(StringUtils::toStringArray)
 					.to(configuration::sqlMigrationSuffixes);
 			map.from(properties.getSqlMigrationSeparator()).to(configuration::sqlMigrationSeparator);
 			map.from(properties.getRepeatableSqlMigrationPrefix()).to(configuration::repeatableSqlMigrationPrefix);
@@ -219,7 +223,8 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
 			map.from(properties.isValidateMigrationNaming()).to(configuration::validateMigrationNaming);
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
-			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
+			map.from(properties.getInitSqls())
+					.whenNot(CollectionUtils::isEmpty)
 					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
 					.to(configuration::initSql);
 			map.from(properties.getScriptPlaceholderPrefix())
@@ -240,12 +245,15 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getKerberosConfigFile()).to(configuration::kerberosConfigFile);
 			map.from(properties.getOracleKerberosCacheFile()).to(configuration::oracleKerberosCacheFile);
 			map.from(properties.getOutputQueryResults()).to(configuration::outputQueryResults);
-			map.from(properties.getSqlServerKerberosLoginFile()).whenNonNull()
+			map.from(properties.getSqlServerKerberosLoginFile())
+					.whenNonNull()
 					.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
 							sqlServerKerberosLoginFile));
 			map.from(properties.getSkipExecutingMigrations()).to(configuration::skipExecutingMigrations);
-			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
-					.as((patterns) -> patterns.toArray(new String[0])).to(configuration::ignoreMigrationPatterns);
+			map.from(properties.getIgnoreMigrationPatterns())
+					.whenNot(List::isEmpty)
+					.as((patterns) -> patterns.toArray(new String[0]))
+					.to(configuration::ignoreMigrationPatterns);
 			map.from(properties.getDetectEncoding()).to(configuration::detectEncoding);
 		}
 

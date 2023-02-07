@@ -105,7 +105,8 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 			}
 			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
 					.resolveLinks(request.getRequestURL().toString());
-			filteredLinks = links.entrySet().stream()
+			filteredLinks = links.entrySet()
+					.stream()
 					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return Collections.singletonMap("_links", filteredLinks);

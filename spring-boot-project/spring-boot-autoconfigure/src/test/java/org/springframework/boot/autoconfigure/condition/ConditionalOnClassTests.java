@@ -69,7 +69,8 @@ class ConditionalOnClassTests {
 	void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class).run((context) -> {
 			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.get(context.getSourceApplicationContext().getBeanFactory())
+					.getConditionAndOutcomesBySource()
 					.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 			assertThat(message).doesNotContain("@ConditionalOnMissingClass did not find unwanted class");

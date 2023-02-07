@@ -70,8 +70,8 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 			messages.add(message.found("schema", "schemas").items(ConditionMessage.Style.QUOTE, schemaResources));
 		}
 		else {
-			messages.add(message.didNotFind("schema files in locations").items(ConditionMessage.Style.QUOTE,
-					Arrays.asList(schema.getLocations())));
+			messages.add(message.didNotFind("schema files in locations")
+					.items(ConditionMessage.Style.QUOTE, Arrays.asList(schema.getLocations())));
 		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] customizerBeans = beanFactory.getBeanNamesForType(GraphQlSourceBuilderCustomizer.class, false, false);

@@ -95,8 +95,10 @@ class MongoAutoConfigurationTests {
 
 		@Bean
 		MongoClientSettings mongoClientSettings() {
-			return MongoClientSettings.builder().applyToSocketSettings(
-					(socketSettings) -> socketSettings.connectTimeout(300, TimeUnit.MILLISECONDS)).build();
+			return MongoClientSettings.builder()
+					.applyToSocketSettings(
+							(socketSettings) -> socketSettings.connectTimeout(300, TimeUnit.MILLISECONDS))
+					.build();
 		}
 
 	}

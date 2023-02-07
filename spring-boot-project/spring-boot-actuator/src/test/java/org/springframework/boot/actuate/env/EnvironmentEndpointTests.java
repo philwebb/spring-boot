@@ -228,8 +228,8 @@ class EnvironmentEndpointTests {
 	private void testPropertyEntry(Show always, String bar, String another) {
 		TestPropertyValues.of("my.foo=another").applyToSystemProperties(() -> {
 			StandardEnvironment environment = new StandardEnvironment();
-			TestPropertyValues.of("my.foo=bar", "my.foo2=bar2").applyTo(environment, TestPropertyValues.Type.MAP,
-					"test");
+			TestPropertyValues.of("my.foo=bar", "my.foo2=bar2")
+					.applyTo(environment, TestPropertyValues.Type.MAP, "test");
 			EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment, Collections.emptyList(),
 					always).environmentEntry("my.foo");
 			assertThat(descriptor).isNotNull();

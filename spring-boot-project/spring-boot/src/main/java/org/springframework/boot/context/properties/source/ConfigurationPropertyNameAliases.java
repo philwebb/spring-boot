@@ -67,8 +67,12 @@ public final class ConfigurationPropertyNameAliases implements Iterable<Configur
 	}
 
 	public ConfigurationPropertyName getNameForAlias(ConfigurationPropertyName alias) {
-		return this.aliases.entrySet().stream().filter((e) -> e.getValue().contains(alias)).map(Map.Entry::getKey)
-				.findFirst().orElse(null);
+		return this.aliases.entrySet()
+				.stream()
+				.filter((e) -> e.getValue().contains(alias))
+				.map(Map.Entry::getKey)
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

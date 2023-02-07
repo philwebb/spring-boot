@@ -108,7 +108,8 @@ class CloudFoundrySecurityServiceTests {
 	@Test
 	void getAccessLevelWhenTokenIsNotValidShouldThrowException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token")).andRespond(withUnauthorizedRequest());
+				.andExpect(header("Authorization", "bearer my-access-token"))
+				.andRespond(withUnauthorizedRequest());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
 				.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
 				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
@@ -127,7 +128,8 @@ class CloudFoundrySecurityServiceTests {
 	@Test
 	void getAccessLevelWhenCloudControllerIsNotReachableThrowsException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token")).andRespond(withServerError());
+				.andExpect(header("Authorization", "bearer my-access-token"))
+				.andRespond(withServerError());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
 				.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
 				.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));

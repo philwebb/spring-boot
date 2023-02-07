@@ -60,7 +60,8 @@ class ReactiveWebServerApplicationContextTests {
 	@Test
 	void whenThereIsNoWebServerFactoryBeanThenContextRefreshWillFail() {
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.havingRootCause().withMessageContaining(
+				.havingRootCause()
+				.withMessageContaining(
 						"Unable to start ReactiveWebServerApplicationContext due to missing ReactiveWebServerFactory bean");
 	}
 
@@ -77,7 +78,8 @@ class ReactiveWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		addWebServerFactoryBean("anotherWebServerFactory");
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.havingRootCause().withMessageContaining(
+				.havingRootCause()
+				.withMessageContaining(
 						"Unable to start ReactiveWebApplicationContext due to multiple ReactiveWebServerFactory beans");
 	}
 
@@ -87,7 +89,8 @@ class ReactiveWebServerApplicationContextTests {
 		addHttpHandlerBean("httpHandler1");
 		addHttpHandlerBean("httpHandler2");
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.havingRootCause().withMessageContaining(
+				.havingRootCause()
+				.withMessageContaining(
 						"Unable to start ReactiveWebApplicationContext due to multiple HttpHandler beans");
 	}
 
@@ -99,8 +102,9 @@ class ReactiveWebServerApplicationContextTests {
 		this.context.addApplicationListener(listener);
 		this.context.refresh();
 		List<ApplicationEvent> events = listener.receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").containsExactly(ReactiveWebServerInitializedEvent.class,
-				ContextRefreshedEvent.class);
+		assertThat(events).hasSize(2)
+				.extracting("class")
+				.containsExactly(ReactiveWebServerInitializedEvent.class, ContextRefreshedEvent.class);
 		ReactiveWebServerInitializedEvent initializedEvent = (ReactiveWebServerInitializedEvent) events.get(0);
 		assertThat(initializedEvent.getSource().getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
@@ -137,8 +141,9 @@ class ReactiveWebServerApplicationContextTests {
 		this.context.addApplicationListener(listener);
 		this.context.close();
 		List<ApplicationEvent> events = listener.receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").contains(AvailabilityChangeEvent.class,
-				ContextClosedEvent.class);
+		assertThat(events).hasSize(2)
+				.extracting("class")
+				.contains(AvailabilityChangeEvent.class, ContextClosedEvent.class);
 		assertThat(((AvailabilityChangeEvent<ReadinessState>) events.get(0)).getState())
 				.isEqualTo(ReadinessState.REFUSING_TRAFFIC);
 	}

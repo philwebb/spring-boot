@@ -115,7 +115,8 @@ class ConfigurationPropertySourcesTests {
 	@Test
 	void fromPropertySourceShouldReturnSpringConfigurationPropertySource() {
 		PropertySource<?> source = new MapPropertySource("foo", Collections.singletonMap("foo", "bar"));
-		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources.from(source).iterator()
+		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySources.from(source)
+				.iterator()
 				.next();
 		assertThat(configurationPropertySource).isInstanceOf(SpringConfigurationPropertySource.class);
 	}

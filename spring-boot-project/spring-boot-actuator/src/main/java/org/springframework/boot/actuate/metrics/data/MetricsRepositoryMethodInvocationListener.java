@@ -69,8 +69,10 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 		Iterable<Tag> tags = this.tagsProvider.repositoryTags(invocation);
 		long duration = invocation.getDuration(TimeUnit.NANOSECONDS);
 		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-				(builder) -> builder.description("Duration of repository invocations").tags(tags)
-						.register(this.registrySupplier.get()).record(duration, TimeUnit.NANOSECONDS));
+				(builder) -> builder.description("Duration of repository invocations")
+						.tags(tags)
+						.register(this.registrySupplier.get())
+						.record(duration, TimeUnit.NANOSECONDS));
 	}
 
 }

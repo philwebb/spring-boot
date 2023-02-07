@@ -58,7 +58,8 @@ class ApplicationContextServerWebExchangeMatcherTests {
 		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(exchange).get()).isEqualTo(context);
+				.callMatchesAndReturnProvidedContext(exchange)
+				.get()).isEqualTo(context);
 	}
 
 	@Test
@@ -67,7 +68,8 @@ class ApplicationContextServerWebExchangeMatcherTests {
 		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(exchange).get()).isEqualTo(context.getBean(ExistingBean.class));
+				.callMatchesAndReturnProvidedContext(exchange)
+				.get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test

@@ -269,7 +269,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected RunArguments resolveJvmArguments() {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (this.systemPropertyVariables != null) {
-			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
+			stringBuilder.append(this.systemPropertyVariables.entrySet()
+					.stream()
 					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
 					.collect(Collectors.joining(" ")));
 		}

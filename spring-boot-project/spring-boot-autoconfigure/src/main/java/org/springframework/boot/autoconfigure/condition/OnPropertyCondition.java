@@ -50,7 +50,8 @@ class OnPropertyCondition extends SpringBootCondition {
 		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
 				.stream(ConditionalOnProperty.class.getName())
 				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-				.map(MergedAnnotation::asAnnotationAttributes).toList();
+				.map(MergedAnnotation::asAnnotationAttributes)
+				.toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
@@ -70,7 +71,8 @@ class OnPropertyCondition extends SpringBootCondition {
 		spec.collectProperties(resolver, missingProperties, nonMatchingProperties);
 		if (!missingProperties.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
-					.didNotFind("property", "properties").items(Style.QUOTE, missingProperties));
+					.didNotFind("property", "properties")
+					.items(Style.QUOTE, missingProperties));
 		}
 		if (!nonMatchingProperties.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)

@@ -77,7 +77,8 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	private Iterable<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
-		return configurations.stream().filter(this::isNotDevelopmentOnly)
+		return configurations.stream()
+				.filter(this::isNotDevelopmentOnly)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
@@ -114,12 +115,14 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	private void copyReachabilityMetadataToBootJar(Project project) {
-		project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
+		project.getTasks()
+				.named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
 				.configure((bootJar) -> bootJar.from(project.getTasks().named("collectReachabilityMetadata")));
 	}
 
 	private void configureBootBuildImageToProduceANativeImage(Project project) {
-		project.getTasks().named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
+		project.getTasks()
+				.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
 				.configure((bootBuildImage) -> {
 					bootBuildImage.getBuilder().convention("paketobuildpacks/builder:tiny");
 					bootBuildImage.getEnvironment().put("BP_NATIVE_IMAGE", "true");

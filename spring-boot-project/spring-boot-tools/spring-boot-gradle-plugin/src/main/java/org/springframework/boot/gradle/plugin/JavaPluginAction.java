@@ -91,36 +91,41 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void classifyJarTask(Project project) {
-		project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class)
+		project.getTasks()
+				.named(JavaPlugin.JAR_TASK_NAME, Jar.class)
 				.configure((task) -> task.getArchiveClassifier().convention("plain"));
 	}
 
 	private void configureBuildTask(Project project) {
-		project.getTasks().named(BasePlugin.ASSEMBLE_TASK_NAME)
+		project.getTasks()
+				.named(BasePlugin.ASSEMBLE_TASK_NAME)
 				.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
 	}
 
 	private TaskProvider<ResolveMainClassName> configureResolveMainClassNameTask(Project project) {
-		return project.getTasks().register(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME,
-				ResolveMainClassName.class, (resolveMainClassName) -> {
-					ExtensionContainer extensions = project.getExtensions();
-					resolveMainClassName.setDescription("Resolves the name of the application's main class.");
-					resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
-					Callable<FileCollection> classpath = () -> project.getExtensions()
-							.getByType(SourceSetContainer.class).getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput();
-					resolveMainClassName.setClasspath(classpath);
-					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
-						String javaApplicationMainClass = getJavaApplicationMainClass(extensions);
-						if (javaApplicationMainClass != null) {
-							return javaApplicationMainClass;
-						}
-						SpringBootExtension springBootExtension = project.getExtensions()
-								.findByType(SpringBootExtension.class);
-						return springBootExtension.getMainClass().getOrNull();
-					}));
-					resolveMainClassName.getOutputFile()
-							.set(project.getLayout().getBuildDirectory().file("resolvedMainClassName"));
-				});
+		return project.getTasks()
+				.register(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class,
+						(resolveMainClassName) -> {
+							ExtensionContainer extensions = project.getExtensions();
+							resolveMainClassName.setDescription("Resolves the name of the application's main class.");
+							resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
+							Callable<FileCollection> classpath = () -> project.getExtensions()
+									.getByType(SourceSetContainer.class)
+									.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+									.getOutput();
+							resolveMainClassName.setClasspath(classpath);
+							resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
+								String javaApplicationMainClass = getJavaApplicationMainClass(extensions);
+								if (javaApplicationMainClass != null) {
+									return javaApplicationMainClass;
+								}
+								SpringBootExtension springBootExtension = project.getExtensions()
+										.findByType(SpringBootExtension.class);
+								return springBootExtension.getMainClass().getOrNull();
+							}));
+							resolveMainClassName.getOutputFile()
+									.set(project.getLayout().getBuildDirectory().file("resolvedMainClassName"));
+						});
 	}
 
 	private static String getJavaApplicationMainClass(ExtensionContainer extensions) {
@@ -140,7 +145,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
-				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
+				.minus((developmentOnly.minus(productionRuntimeClasspath)))
+				.filter(new JarTypeFileSpec());
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
@@ -148,8 +154,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 			bootJar.classpath(classpath);
 			Provider<String> manifestStartClass = project
 					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
-			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
-					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+			bootJar.getMainClass()
+					.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
+							? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 			bootJar.getTargetJavaVersion()
 					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
 		});
@@ -169,7 +176,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureBootRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
 		Callable<FileCollection> classpath = () -> javaPluginExtension(project).getSourceSets()
-				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
+				.findByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getRuntimeClasspath()
+				.filter(new JarTypeFileSpec());
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
@@ -215,15 +224,20 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class)
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
+				.withType(JavaCompile.class)
 				.configureEach(this::configureAdditionalMetadataLocations));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
-		SourceSetContainer sourceSets = compile.getProject().getExtensions().getByType(JavaPluginExtension.class)
+		SourceSetContainer sourceSets = compile.getProject()
+				.getExtensions()
+				.getByType(JavaPluginExtension.class)
 				.getSourceSets();
-		sourceSets.stream().filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
-				.map((match) -> match.getResources().getSrcDirs()).findFirst()
+		sourceSets.stream()
+				.filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
+				.map((match) -> match.getResources().getSrcDirs())
+				.findFirst()
 				.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
@@ -275,12 +289,14 @@ final class JavaPluginAction implements PluginApplicationAction {
 		private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
 			Set<File> files = (compile.getOptions().getAnnotationProcessorPath() != null)
 					? compile.getOptions().getAnnotationProcessorPath().getFiles() : compile.getClasspath().getFiles();
-			return files.stream().map(File::getName)
+			return files.stream()
+					.map(File::getName)
 					.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
 		}
 
 		private void configureAdditionalMetadataLocations(JavaCompile compile) {
-			compile.getOptions().getCompilerArgs()
+			compile.getOptions()
+					.getCompilerArgs()
 					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
 							+ StringUtils.collectionToCommaDelimitedString(this.locations));
 		}

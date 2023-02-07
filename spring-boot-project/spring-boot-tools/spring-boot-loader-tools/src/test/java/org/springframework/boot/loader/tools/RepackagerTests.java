@@ -185,8 +185,10 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 					timestamp = entry.getTime();
 				}
 				else {
-					assertThat(entry.getTime()).withFailMessage("Expected time %d to be equal to %d for entry %s",
-							entry.getTime(), timestamp, entry.getName()).isEqualTo(timestamp);
+					assertThat(entry.getTime())
+							.withFailMessage("Expected time %d to be equal to %d for entry %s", entry.getTime(),
+									timestamp, entry.getName())
+							.isEqualTo(timestamp);
 				}
 			}
 		}

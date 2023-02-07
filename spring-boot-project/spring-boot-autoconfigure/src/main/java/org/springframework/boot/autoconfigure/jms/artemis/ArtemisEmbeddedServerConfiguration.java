@@ -66,11 +66,12 @@ class ArtemisEmbeddedServerConfiguration {
 			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers) {
 		for (JMSQueueConfiguration queueConfiguration : jmsConfiguration.getQueueConfigurations()) {
 			String queueName = queueConfiguration.getName();
-			configuration.addAddressConfiguration(
-					new CoreAddressConfiguration().setName(queueName).addRoutingType(RoutingType.ANYCAST)
-							.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
-									.setFilterString(queueConfiguration.getSelector())
-									.setDurable(queueConfiguration.isDurable()).setRoutingType(RoutingType.ANYCAST)));
+			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(queueName)
+					.addRoutingType(RoutingType.ANYCAST)
+					.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
+							.setFilterString(queueConfiguration.getSelector())
+							.setDurable(queueConfiguration.isDurable())
+							.setRoutingType(RoutingType.ANYCAST)));
 		}
 		for (TopicConfiguration topicConfiguration : jmsConfiguration.getTopicConfigurations()) {
 			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(topicConfiguration.getName())

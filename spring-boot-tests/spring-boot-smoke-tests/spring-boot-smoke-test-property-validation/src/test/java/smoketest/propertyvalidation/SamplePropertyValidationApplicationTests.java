@@ -57,14 +57,16 @@ class SamplePropertyValidationApplicationTests {
 	void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090").applyTo(this.context);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh).havingRootCause()
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+				.havingRootCause()
 				.isInstanceOf(BindValidationException.class);
 	}
 
 	@Test
 	void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh).havingRootCause()
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+				.havingRootCause()
 				.isInstanceOf(BindValidationException.class);
 	}
 

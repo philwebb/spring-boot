@@ -140,7 +140,8 @@ public final class StaticResourceRequest {
 		}
 
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
-			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
+			return this.locations.stream()
+					.flatMap(StaticResourceLocation::getPatterns)
 					.map(dispatcherServletPath::getRelativePath);
 		}
 

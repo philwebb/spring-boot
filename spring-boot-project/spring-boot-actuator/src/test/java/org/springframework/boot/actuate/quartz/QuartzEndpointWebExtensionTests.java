@@ -103,7 +103,8 @@ class QuartzEndpointWebExtensionTests {
 		Set<Class<?>> bindingTypes = Set.of(QuartzGroupsDescriptor.class, QuartzJobDetailsDescriptor.class,
 				QuartzJobGroupSummaryDescriptor.class, QuartzTriggerGroupSummaryDescriptor.class);
 		for (Class<?> bindingType : bindingTypes) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+			assertThat(RuntimeHintsPredicates.reflection()
+					.onType(bindingType)
 					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 							.accepts(runtimeHints);
 		}

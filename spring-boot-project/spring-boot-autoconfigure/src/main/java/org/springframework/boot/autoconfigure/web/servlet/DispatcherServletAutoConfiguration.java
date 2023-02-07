@@ -201,7 +201,8 @@ public class DispatcherServletAutoConfiguration {
 				return ConditionOutcome.noMatch(message.found("non servlet registration bean")
 						.items(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME));
 			}
-			return ConditionOutcome.match(message.found("servlet registration beans").items(Style.QUOTE, registrations)
+			return ConditionOutcome.match(message.found("servlet registration beans")
+					.items(Style.QUOTE, registrations)
 					.append("and none is named " + DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME));
 		}
 

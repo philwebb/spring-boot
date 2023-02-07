@@ -74,7 +74,8 @@ class PrometheusExemplarsAutoConfigurationTests {
 	void shouldSupplyCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
-						.getBean(SpanContextSupplier.class).isSameAs(CustomConfiguration.SUPPLIER));
+						.getBean(SpanContextSupplier.class)
+						.isSameAs(CustomConfiguration.SUPPLIER));
 	}
 
 	@Test
@@ -85,7 +86,8 @@ class PrometheusExemplarsAutoConfigurationTests {
 			Observation.start("test.observation", observationRegistry).stop();
 			PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
 			String openMetricsOutput = prometheusMeterRegistry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
-			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket").containsOnlyOnce("trace_id=")
+			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket")
+					.containsOnlyOnce("trace_id=")
 					.containsOnlyOnce("span_id=");
 		});
 	}

@@ -103,7 +103,8 @@ class BootBuildImageTests {
 	void whenIndividualEntriesAreAddedToTheEnvironmentThenTheyAreIncludedInTheRequest() {
 		this.buildImage.getEnvironment().put("ALPHA", "a");
 		this.buildImage.getEnvironment().put("BRAVO", "b");
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+				.containsEntry("BRAVO", "b")
 				.hasSize(2);
 	}
 
@@ -113,7 +114,8 @@ class BootBuildImageTests {
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
 		this.buildImage.getEnvironment().putAll(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+				.containsEntry("BRAVO", "b")
 				.hasSize(2);
 	}
 
@@ -123,7 +125,8 @@ class BootBuildImageTests {
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
 		this.buildImage.getEnvironment().set(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+				.containsEntry("BRAVO", "b")
 				.hasSize(2);
 	}
 
@@ -134,7 +137,8 @@ class BootBuildImageTests {
 		environment.put("BRAVO", "b");
 		this.buildImage.getEnvironment().put("C", "Charlie");
 		this.buildImage.getEnvironment().set(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+				.containsEntry("BRAVO", "b")
 				.hasSize(2);
 	}
 
@@ -274,8 +278,9 @@ class BootBuildImageTests {
 
 	@Test
 	void whenEntriesAreAddedToTagsThenRequestHasTags() {
-		this.buildImage.getTags().addAll(
-				Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+		this.buildImage.getTags()
+				.addAll(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT",
+						"example.com/my-app:latest"));
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}

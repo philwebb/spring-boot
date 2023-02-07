@@ -180,7 +180,8 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenWhenHasNestedExternalType() {
 		RuntimeHints runtimeHints = registerHints(WithExternalNested.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithExternalNested.class))
-				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class))
+				.anySatisfy(javaBeanBinding(SampleType.class))
+				.anySatisfy(javaBeanBinding(SampleType.Nested.class))
 				.hasSize(3);
 	}
 
@@ -188,7 +189,8 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenWhenHasRecursiveType() {
 		RuntimeHints runtimeHints = registerHints(WithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithRecursive.class))
-				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(2);
+				.anySatisfy(javaBeanBinding(Recursive.class))
+				.hasSize(2);
 	}
 
 	@Test
@@ -213,7 +215,8 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenHasCrossReference() {
 		RuntimeHints runtimeHints = registerHints(WithCrossReference.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithCrossReference.class))
-				.anySatisfy(javaBeanBinding(CrossReferenceA.class)).anySatisfy(javaBeanBinding(CrossReferenceB.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceA.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceB.class))
 				.hasSize(3);
 	}
 

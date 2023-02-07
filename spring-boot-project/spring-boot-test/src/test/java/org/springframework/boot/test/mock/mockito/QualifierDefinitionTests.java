@@ -111,11 +111,14 @@ class QualifierDefinitionTests {
 		assertThat(directQualifier1).hasSameHashCodeAs(directQualifier2);
 		assertThat(differentDirectQualifier1).hasSameHashCodeAs(differentDirectQualifier2);
 		assertThat(customQualifier1).hasSameHashCodeAs(customQualifier2);
-		assertThat(differentDirectQualifier1).isEqualTo(differentDirectQualifier1).isEqualTo(differentDirectQualifier2)
+		assertThat(differentDirectQualifier1).isEqualTo(differentDirectQualifier1)
+				.isEqualTo(differentDirectQualifier2)
 				.isNotEqualTo(directQualifier2);
-		assertThat(directQualifier1).isEqualTo(directQualifier1).isEqualTo(directQualifier2)
+		assertThat(directQualifier1).isEqualTo(directQualifier1)
+				.isEqualTo(directQualifier2)
 				.isNotEqualTo(differentDirectQualifier1);
-		assertThat(customQualifier1).isEqualTo(customQualifier1).isEqualTo(customQualifier2)
+		assertThat(customQualifier1).isEqualTo(customQualifier1)
+				.isEqualTo(customQualifier2)
 				.isNotEqualTo(differentDirectQualifier1);
 	}
 

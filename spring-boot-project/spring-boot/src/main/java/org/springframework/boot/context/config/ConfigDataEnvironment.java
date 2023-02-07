@@ -317,8 +317,9 @@ class ConfigDataEnvironment {
 
 	private void registerBootstrapBinder(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, BinderOption... binderOptions) {
-		this.bootstrapContext.register(Binder.class, InstanceSupplier
-				.from(() -> contributors.getBinder(activationContext, binderOptions)).withScope(Scope.PROTOTYPE));
+		this.bootstrapContext.register(Binder.class,
+				InstanceSupplier.from(() -> contributors.getBinder(activationContext, binderOptions))
+						.withScope(Scope.PROTOTYPE));
 	}
 
 	private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,

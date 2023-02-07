@@ -56,8 +56,8 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 		try {
 			Method nativeCacheAccessor = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
 			Object nativeCache = ReflectionUtils.invokeMethod(nativeCacheAccessor, cache);
-			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class).newInstance(nativeCache,
-					tags);
+			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class)
+					.newInstance(nativeCache, tags);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to create MeterBinder for Hazelcast", ex);
@@ -72,7 +72,8 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 				Method getNativeCacheMethod = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
 				Assert.state(getNativeCacheMethod != null, "Unable to find 'getNativeCache' method");
 				Constructor<?> constructor = HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class);
-				hints.reflection().registerMethod(getNativeCacheMethod, ExecutableMode.INVOKE)
+				hints.reflection()
+						.registerMethod(getNativeCacheMethod, ExecutableMode.INVOKE)
 						.registerConstructor(constructor, ExecutableMode.INVOKE);
 			}
 			catch (NoSuchMethodException ex) {

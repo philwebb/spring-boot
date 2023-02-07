@@ -99,7 +99,8 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
 					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
+					.incrementer(new RunIdIncrementer())
+					.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
@@ -130,9 +131,11 @@ class JobLauncherApplicationRunnerTests {
 		this.contextRunner.run((context) -> {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
-			Job job = jobLauncherContext.jobBuilder().preventRestart()
+			Job job = jobLauncherContext.jobBuilder()
+					.preventRestart()
 					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
+					.incrementer(new RunIdIncrementer())
+					.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			// A failed job that is not restartable does not re-use the job params of
@@ -154,8 +157,10 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
 					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
-			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
+					.incrementer(new RunIdIncrementer())
+					.build();
+			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
+					.addLong("foo", 2L, false)
 					.toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);

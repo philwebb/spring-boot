@@ -36,8 +36,9 @@ import static org.mockito.Mockito.mock;
 class LdapHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(LdapOperations.class, () -> mock(LdapOperations.class)).withConfiguration(AutoConfigurations
-					.of(LdapHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+			.withBean(LdapOperations.class, () -> mock(LdapOperations.class))
+			.withConfiguration(AutoConfigurations.of(LdapHealthContributorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

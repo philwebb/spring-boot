@@ -49,7 +49,8 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfiguresUseTagsAsPrefix() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.graphite.metrics.export.tags-as-prefix=app").run((context) -> {
+				.withPropertyValues("management.graphite.metrics.export.tags-as-prefix=app")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(GraphiteMeterRegistry.class);
 					GraphiteMeterRegistry registry = context.getBean(GraphiteMeterRegistry.class);
 					registry.counter("test.count", Tags.of("app", "myapp"));
@@ -72,8 +73,9 @@ class GraphiteMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(GraphiteMeterRegistry.class).hasSingleBean(GraphiteConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
+						.hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test
@@ -96,14 +98,16 @@ class GraphiteMetricsExportAutoConfigurationTests {
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
-						.hasSingleBean(GraphiteConfig.class).hasBean("customConfig"));
+						.hasSingleBean(GraphiteConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(GraphiteMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(GraphiteConfig.class));
+						.hasBean("customRegistry")
+						.hasSingleBean(GraphiteConfig.class));
 	}
 
 	@Test

@@ -100,8 +100,8 @@ public class MetadataStore {
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "",
-				ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler()
+				.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		InputStream inputStream = getMetadataStream(fileObject);
 		if (inputStream != null) {
 			return inputStream;

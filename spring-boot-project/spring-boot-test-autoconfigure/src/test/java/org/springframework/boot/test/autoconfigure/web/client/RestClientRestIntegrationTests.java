@@ -55,7 +55,8 @@ class RestClientRestIntegrationTests {
 
 	@Test
 	void mockServerCallWithContent() {
-		this.server.expect(requestTo("/test")).andExpect(content().string("test"))
+		this.server.expect(requestTo("/test"))
+				.andExpect(content().string("test"))
 				.andRespond(withSuccess("1", MediaType.TEXT_HTML));
 		this.client.testPostWithBody("test");
 	}

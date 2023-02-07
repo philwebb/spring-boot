@@ -61,7 +61,8 @@ class R2dbcRepositoriesAutoConfigurationTests {
 	void backsOffWithNoDatabaseClientOperations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader("org.springframework.r2dbc"))
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+				.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(DatabaseClient.class);
 					assertThat(context).doesNotHaveBean(R2dbcRepositoryConfigurationExtension.class);
 				});
@@ -73,9 +74,13 @@ class R2dbcRepositoriesAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class))
 				.withUserConfiguration(DatabaseInitializationConfiguration.class, TestConfiguration.class)
-				.withPropertyValues("spring.r2dbc.generate-unique-name:true").run((context) -> {
+				.withPropertyValues("spring.r2dbc.generate-unique-name:true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(CityRepository.class);
-					context.getBean(CityRepository.class).findById(2000L).as(StepVerifier::create).expectNextCount(1)
+					context.getBean(CityRepository.class)
+							.findById(2000L)
+							.as(StepVerifier::create)
+							.expectNextCount(1)
 							.verifyComplete();
 				});
 	}
@@ -93,9 +98,13 @@ class R2dbcRepositoriesAutoConfigurationTests {
 				.withConfiguration(
 						AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class))
 				.withUserConfiguration(DatabaseInitializationConfiguration.class, EnableRepositoriesConfiguration.class)
-				.withPropertyValues("spring.r2dbc.generate-unique-name:true").run((context) -> {
+				.withPropertyValues("spring.r2dbc.generate-unique-name:true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(CityRepository.class);
-					context.getBean(CityRepository.class).findById(2000L).as(StepVerifier::create).expectNextCount(1)
+					context.getBean(CityRepository.class)
+							.findById(2000L)
+							.as(StepVerifier::create)
+							.expectNextCount(1)
 							.verifyComplete();
 				});
 	}

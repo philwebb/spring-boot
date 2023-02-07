@@ -92,7 +92,8 @@ class QuartzEndpointAutoConfigurationTests {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
 				.withPropertyValues("management.endpoint.quartz.roles: test")
 				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
 					QuartzEndpointWebExtension endpoint = context.getBean(QuartzEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
@@ -105,7 +106,8 @@ class QuartzEndpointAutoConfigurationTests {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
 				.withPropertyValues("management.endpoint.quartz.show-values: WHEN_AUTHORIZED")
 				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
 					assertThat(context.getBean(QuartzEndpointWebExtension.class)).extracting("showValues")
 							.isEqualTo(Show.WHEN_AUTHORIZED);

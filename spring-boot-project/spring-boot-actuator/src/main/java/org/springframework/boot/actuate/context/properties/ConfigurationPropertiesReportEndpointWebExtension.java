@@ -61,7 +61,9 @@ public class ConfigurationPropertiesReportEndpointWebExtension {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		ConfigurationPropertiesDescriptor configurationProperties = this.delegate.getConfigurationProperties(prefix,
 				showUnsanitized);
-		boolean foundMatchingBeans = configurationProperties.getContexts().values().stream()
+		boolean foundMatchingBeans = configurationProperties.getContexts()
+				.values()
+				.stream()
 				.anyMatch((context) -> !context.getBeans().isEmpty());
 		return (foundMatchingBeans) ? new WebEndpointResponse<>(configurationProperties, WebEndpointResponse.STATUS_OK)
 				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);

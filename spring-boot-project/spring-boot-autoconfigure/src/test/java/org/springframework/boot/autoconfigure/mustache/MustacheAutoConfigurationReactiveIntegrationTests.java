@@ -56,15 +56,27 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	void testHomePage() {
-		String result = this.client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+				.uri("/")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
 	@Test
 	void testPartialPage() {
-		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+				.uri("/partial")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 

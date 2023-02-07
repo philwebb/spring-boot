@@ -151,7 +151,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 			SecurityFilterChain testRemoteDevToolsSecurityFilterChain = context
 					.getBean("testRemoteDevToolsSecurityFilterChain", SecurityFilterChain.class);
 			List<SecurityFilterChain> orderedSecurityFilterChains = context.getBeanProvider(SecurityFilterChain.class)
-					.orderedStream().toList();
+					.orderedStream()
+					.toList();
 			assertThat(orderedSecurityFilterChains).containsExactly(testRemoteDevToolsSecurityFilterChain,
 					testSecurityFilterChain);
 			assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class);
@@ -193,7 +194,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.securityMatcher("/**")
-					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
 		}
 
 	}

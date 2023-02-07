@@ -136,7 +136,8 @@ class ValueObjectBinderTests {
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
 		MultipleConstructorsOnlyOneNotPrivateBean bean = this.binder
-				.bind("foo", Bindable.of(MultipleConstructorsOnlyOneNotPrivateBean.class)).get();
+				.bind("foo", Bindable.of(MultipleConstructorsOnlyOneNotPrivateBean.class))
+				.get();
 		bean = bean.withString("test");
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getStringValue()).isEqualTo("test");
@@ -212,7 +213,8 @@ class ValueObjectBinderTests {
 		source.put("foo.property", "test");
 		this.sources.add(source);
 		ExamplePackagePrivateConstructorBean bound = this.binder
-				.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class)).get();
+				.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class))
+				.get();
 		assertThat(bound.getProperty()).isEqualTo("test");
 	}
 

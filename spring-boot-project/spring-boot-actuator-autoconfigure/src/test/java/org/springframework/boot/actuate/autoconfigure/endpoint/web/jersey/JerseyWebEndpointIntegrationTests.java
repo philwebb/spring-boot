@@ -53,7 +53,8 @@ class JerseyWebEndpointIntegrationTests {
 						JerseyWebEndpointManagementContextConfiguration.class))
 				.withUserConfiguration(ResourceConfigConfiguration.class)
 				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
-				.withPropertyValues("spring.jersey.type=filter", "server.port=0").run((context) -> {
+				.withPropertyValues("spring.jersey.type=filter", "server.port=0")
+				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					Set<Resource> resources = context.getBean(ResourceConfig.class).getResources();
 					assertThat(resources).hasSize(1);

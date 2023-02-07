@@ -71,7 +71,9 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.rabbitProperties::determineUsername).whenNonNull().to(factory::setUsername);
 		map.from(this.rabbitProperties::determinePassword).whenNonNull().to(factory::setPassword);
 		map.from(this.rabbitProperties::determineVirtualHost).whenNonNull().to(factory::setVirtualHost);
-		map.from(this.rabbitProperties::getRequestedHeartbeat).whenNonNull().asInt(Duration::getSeconds)
+		map.from(this.rabbitProperties::getRequestedHeartbeat)
+				.whenNonNull()
+				.asInt(Duration::getSeconds)
 				.to(factory::setRequestedHeartbeat);
 		map.from(this.rabbitProperties::getRequestedChannelMax).to(factory::setRequestedChannelMax);
 		RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
@@ -90,9 +92,13 @@ public class RabbitConnectionFactoryBeanConfigurer {
 					.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
 			map.from(ssl::getVerifyHostname).to(factory::setEnableHostnameVerification);
 		}
-		map.from(this.rabbitProperties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
+		map.from(this.rabbitProperties::getConnectionTimeout)
+				.whenNonNull()
+				.asInt(Duration::toMillis)
 				.to(factory::setConnectionTimeout);
-		map.from(this.rabbitProperties::getChannelRpcTimeout).whenNonNull().asInt(Duration::toMillis)
+		map.from(this.rabbitProperties::getChannelRpcTimeout)
+				.whenNonNull()
+				.asInt(Duration::toMillis)
 				.to(factory::setChannelRpcTimeout);
 		map.from(this.credentialsProvider).whenNonNull().to(factory::setCredentialsProvider);
 		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);

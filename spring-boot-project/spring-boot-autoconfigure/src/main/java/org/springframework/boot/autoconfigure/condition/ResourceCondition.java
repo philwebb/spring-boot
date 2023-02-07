@@ -80,8 +80,8 @@ public abstract class ResourceCondition extends SpringBootCondition {
 			}
 		}
 		if (found.isEmpty()) {
-			ConditionMessage message = startConditionMessage().didNotFind("resource", "resources").items(Style.QUOTE,
-					Arrays.asList(this.resourceLocations));
+			ConditionMessage message = startConditionMessage().didNotFind("resource", "resources")
+					.items(Style.QUOTE, Arrays.asList(this.resourceLocations));
 			return ConditionOutcome.noMatch(message);
 		}
 		ConditionMessage message = startConditionMessage().found("resource", "resources").items(Style.QUOTE, found);

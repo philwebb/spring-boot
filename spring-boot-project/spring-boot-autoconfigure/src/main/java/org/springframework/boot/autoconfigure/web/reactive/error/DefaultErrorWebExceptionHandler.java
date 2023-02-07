@@ -145,7 +145,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
+		return ServerResponse.status(getHttpStatus(error))
+				.contentType(MediaType.APPLICATION_JSON)
 				.body(BodyInserters.fromValue(error));
 	}
 

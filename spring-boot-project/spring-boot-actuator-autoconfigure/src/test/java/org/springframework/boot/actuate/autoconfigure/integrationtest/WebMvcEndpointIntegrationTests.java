@@ -128,8 +128,12 @@ class WebMvcEndpointIntegrationTests {
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvc mockMvc = doCreateMockMvc();
-		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk()).andExpect(jsonPath("_links",
-				both(hasKey("beans")).and(hasKey("servlet")).and(hasKey("restcontroller")).and(hasKey("controller"))));
+		mockMvc.perform(get("/actuator").accept("*/*"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("_links",
+						both(hasKey("beans")).and(hasKey("servlet"))
+								.and(hasKey("restcontroller"))
+								.and(hasKey("controller"))));
 	}
 
 	@Test

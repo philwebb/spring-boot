@@ -46,8 +46,9 @@ class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasSingleBean(AtlasConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+						.hasSingleBean(AtlasConfig.class));
 	}
 
 	@Test
@@ -68,14 +69,18 @@ class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasSingleBean(AtlasConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+						.hasSingleBean(AtlasConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasBean("customRegistry").hasSingleBean(AtlasConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+						.hasBean("customRegistry")
+						.hasSingleBean(AtlasConfig.class));
 	}
 
 	@Test

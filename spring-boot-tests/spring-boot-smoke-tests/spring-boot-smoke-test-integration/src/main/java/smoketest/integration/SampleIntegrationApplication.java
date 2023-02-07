@@ -63,8 +63,12 @@ public class SampleIntegrationApplication {
 
 	@Bean
 	public IntegrationFlow integrationFlow(SampleEndpoint endpoint) {
-		return IntegrationFlow.from(fileReader(), new FixedRatePoller()).channel(inputChannel()).handle(endpoint)
-				.channel(outputChannel()).handle(fileWriter()).get();
+		return IntegrationFlow.from(fileReader(), new FixedRatePoller())
+				.channel(inputChannel())
+				.handle(endpoint)
+				.channel(outputChannel())
+				.handle(fileWriter())
+				.get();
 	}
 
 	public static void main(String[] args) {

@@ -151,8 +151,10 @@ public enum EmbeddedDatabaseConnection {
 	}
 
 	private static EmbeddedDatabaseConnection getEmbeddedDatabaseConnection(String driverClass) {
-		return Stream.of(H2, HSQLDB, DERBY).filter((connection) -> connection.isDriverCompatible(driverClass))
-				.findFirst().orElse(NONE);
+		return Stream.of(H2, HSQLDB, DERBY)
+				.filter((connection) -> connection.isDriverCompatible(driverClass))
+				.findFirst()
+				.orElse(NONE);
 	}
 
 	/**

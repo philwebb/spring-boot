@@ -307,7 +307,8 @@ class CollectionBinderTests {
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
 		ExampleCustomNoDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+				.bind("foo", ExampleCustomNoDefaultConstructorBean.class)
+				.get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}
@@ -319,7 +320,8 @@ class CollectionBinderTests {
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
 		ExampleCustomWithDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
+				.bind("foo", ExampleCustomWithDefaultConstructorBean.class)
+				.get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}

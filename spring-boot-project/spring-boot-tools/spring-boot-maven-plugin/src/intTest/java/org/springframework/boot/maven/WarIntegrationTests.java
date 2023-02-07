@@ -60,7 +60,8 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 						.hasEntryWithName("WEB-INF/classes/org/test/SampleApplication.class")
 						.hasEntryWithName("index.html")
 						.manifest((manifest) -> manifest.hasMainClass("org.springframework.boot.loader.WarLauncher")
-								.hasStartClass("org.test.SampleApplication").hasAttribute("Not-Used", "Foo")));
+								.hasStartClass("org.test.SampleApplication")
+								.hasAttribute("Not-Used", "Foo")));
 	}
 
 	@TestTemplate
@@ -73,11 +74,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenRequiresUnpackConfigurationIsProvidedItIsReflectedInTheRepackagedWar(MavenBuild mavenBuild) {
-		mavenBuild.project("war-with-unpack").execute(
-				(project) -> assertThat(jar(new File(project, "target/war-with-unpack-0.0.1.BUILD-SNAPSHOT.war")))
-						.hasUnpackEntryWithNameStartingWith("WEB-INF/lib/spring-core-")
-						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context-")
-						.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl-"));
+		mavenBuild.project("war-with-unpack")
+				.execute((project) -> assertThat(
+						jar(new File(project, "target/war-with-unpack-0.0.1.BUILD-SNAPSHOT.war")))
+								.hasUnpackEntryWithNameStartingWith("WEB-INF/lib/spring-core-")
+								.hasEntryWithNameStartingWith("WEB-INF/lib/spring-context-")
+								.hasEntryWithNameStartingWith("WEB-INF/lib/spring-jcl-"));
 	}
 
 	@TestTemplate
@@ -98,7 +100,8 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			try (JarFile jar = new JarFile(repackaged)) {
 				List<String> unreproducibleEntries = jar.stream()
 						.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
-						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime()).toList();
+						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
+						.toList();
 				assertThat(unreproducibleEntries).isEmpty();
 				warHash.set(FileUtils.sha1Hash(repackaged));
 				FileSystemUtils.deleteRecursively(project);
@@ -122,8 +125,9 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 					// these libraries are contributed by Spring Boot repackaging, and
 					// sorted separately
 					"WEB-INF/lib/spring-boot-jarmode-layertools");
-			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/").zipSatisfy(sortedLibs,
-					(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
+			assertThat(jar(repackaged)).entryNamesInPath("WEB-INF/lib/")
+					.zipSatisfy(sortedLibs,
+							(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
 		});
 	}
 
@@ -142,7 +146,8 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "war/target/war-layered-0.0.1.BUILD-SNAPSHOT.war");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
 					.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
-					.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot").hasEntryWithNameStartingWith(
+					.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
+					.hasEntryWithNameStartingWith(
 							"WEB-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getCoordinates().getArtifactId());
 			try (JarFile jarFile = new JarFile(repackaged)) {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);

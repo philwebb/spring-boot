@@ -78,7 +78,8 @@ class MappingsEndpointTests {
 	void servletWebMappings() {
 		Supplier<ConfigurableWebApplicationContext> contextSupplier = prepareContextSupplier();
 		new WebApplicationContextRunner(contextSupplier)
-				.withUserConfiguration(EndpointConfiguration.class, ServletWebConfiguration.class).run((context) -> {
+				.withUserConfiguration(EndpointConfiguration.class, ServletWebConfiguration.class)
+				.run((context) -> {
 					ContextMappingsDescriptor contextMappings = contextMappings(context);
 					assertThat(contextMappings.getParentId()).isNull();
 					assertThat(contextMappings.getMappings()).containsOnlyKeys("dispatcherServlets", "servletFilters",
@@ -155,7 +156,8 @@ class MappingsEndpointTests {
 	@Test
 	void reactiveWebMappings() {
 		new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(EndpointConfiguration.class, ReactiveWebConfiguration.class).run((context) -> {
+				.withUserConfiguration(EndpointConfiguration.class, ReactiveWebConfiguration.class)
+				.run((context) -> {
 					ContextMappingsDescriptor contextMappings = contextMappings(context);
 					assertThat(contextMappings.getParentId()).isNull();
 					assertThat(contextMappings.getMappings()).containsOnlyKeys("dispatcherHandlers");

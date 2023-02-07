@@ -222,7 +222,9 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
 			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
+			assertThat(Collections.list(jar.entries())
+					.stream()
+					.map(JarEntry::getName)
 					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
 		}
 	}
@@ -236,7 +238,9 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
 			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
+			assertThat(Collections.list(jar.entries())
+					.stream()
+					.map(JarEntry::getName)
 					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
 		}
 	}
@@ -282,7 +286,8 @@ class PackagingDocumentationTests {
 	void bootBuildImageWithDockerHostMinikube() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-host")
 				.build("bootBuildImageDocker");
-		assertThat(result.getOutput()).contains("host=tcp://192.168.99.100:2376").contains("tlsVerify=true")
+		assertThat(result.getOutput()).contains("host=tcp://192.168.99.100:2376")
+				.contains("tlsVerify=true")
 				.contains("certPath=/home/user/.minikube/certs");
 	}
 
@@ -298,8 +303,10 @@ class PackagingDocumentationTests {
 	void bootBuildImageWithDockerUserAuth() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-user")
 				.build("bootBuildImageDocker");
-		assertThat(result.getOutput()).contains("username=user").contains("password=secret")
-				.contains("url=https://docker.example.com/v1/").contains("email=user@example.com");
+		assertThat(result.getOutput()).contains("username=user")
+				.contains("password=secret")
+				.contains("url=https://docker.example.com/v1/")
+				.contains("email=user@example.com");
 	}
 
 	@TestTemplate

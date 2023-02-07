@@ -82,7 +82,8 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 	@Test
 	void registeredWithPropertyWhenThereAreMultipleMBeanExporters() {
 		this.contextRunner.withUserConfiguration(MultipleMBeanExportersConfiguration.class)
-				.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
+				.withPropertyValues(ENABLE_ADMIN_PROP)
+				.run((context) -> {
 					ObjectName objectName = createDefaultObjectName();
 					ObjectInstance objectInstance = this.server.getObjectInstance(objectName);
 					assertThat(objectInstance).as("Lifecycle bean should have been registered").isNotNull();
@@ -94,7 +95,8 @@ class SpringApplicationAdminJmxAutoConfigurationTests {
 		String customJmxName = "org.acme:name=FooBar";
 		this.contextRunner.withUserConfiguration(MultipleMBeanExportersConfiguration.class)
 				.withSystemProperties("spring.application.admin.jmx-name=" + customJmxName)
-				.withPropertyValues(ENABLE_ADMIN_PROP).run((context) -> {
+				.withPropertyValues(ENABLE_ADMIN_PROP)
+				.run((context) -> {
 					try {
 						this.server.getObjectInstance(createObjectName(customJmxName));
 					}

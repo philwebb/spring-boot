@@ -95,8 +95,10 @@ class LogFileWebEndpointAutoConfigurationTests {
 	void logFileWebEndpointUsesConfiguredExternalFile(@TempDir Path temp) throws IOException {
 		File file = new File(temp.toFile(), "logfile");
 		FileCopyUtils.copy("--TEST--".getBytes(), file);
-		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=logfile",
-				"management.endpoint.logfile.external-file:" + file.getAbsolutePath()).run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.exposure.include=logfile",
+						"management.endpoint.logfile.external-file:" + file.getAbsolutePath())
+				.run((context) -> {
 					assertThat(context).hasSingleBean(LogFileWebEndpoint.class);
 					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();

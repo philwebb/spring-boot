@@ -50,7 +50,8 @@ public abstract class AbstractFieldValuesProcessorTests {
 	@Test
 	void getFieldValues() throws Exception {
 		TestProcessor processor = new TestProcessor();
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor)
+		TestCompiler compiler = TestCompiler.forSystem()
+				.withProcessors(processor)
 				.withSources(SourceFile.forTestClass(FieldValues.class));
 		compiler.compile((compiled) -> {
 		});

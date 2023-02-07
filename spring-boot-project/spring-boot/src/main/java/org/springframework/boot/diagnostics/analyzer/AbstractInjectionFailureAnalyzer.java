@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @since 1.4.1
  */
-public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable> extends AbstractFailureAnalyzer<T> {
+public abstract class AbstractInjectionFailureAnalyzer<T extends Throwable>extends AbstractFailureAnalyzer<T> {
 
 	@Override
 	protected final FailureAnalysis analyze(Throwable rootFailure, T cause) {

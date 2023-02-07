@@ -86,7 +86,8 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		@ResponseBody
 		@Reflective
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
-			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
+			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
+					.replaceQuery(null)
 					.toUriString();
 			Map<String, Link> links = WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri);
 			return OperationResponseBody.of(Collections.singletonMap("_links", links));

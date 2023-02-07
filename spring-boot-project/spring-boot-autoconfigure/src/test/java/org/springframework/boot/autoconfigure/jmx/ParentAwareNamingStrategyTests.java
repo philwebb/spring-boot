@@ -62,33 +62,39 @@ class ParentAwareNamingStrategyTests {
 
 	@Test
 	void sameBeanInParentContextAddsContextProperty() {
-		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
-				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
-					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
-							new AnnotationJmxAttributeSource());
-					strategy.setApplicationContext(context);
-					Object resource = context.getBean("testManagedResource");
-					ObjectName objectName = strategy.getObjectName(resource, "testManagedResource");
-					assertThat(objectName.getDomain()).isEqualTo("ABC");
-					assertThat(objectName.getCanonicalKeyPropertyListString()).isEqualTo("context="
-							+ ObjectUtils.getIdentityHexString(context) + ",name1=def,name2=ghi,type=something");
-				}));
+		this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+				.run((parent) -> this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+						.withParent(parent)
+						.run((context) -> {
+							ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
+									new AnnotationJmxAttributeSource());
+							strategy.setApplicationContext(context);
+							Object resource = context.getBean("testManagedResource");
+							ObjectName objectName = strategy.getObjectName(resource, "testManagedResource");
+							assertThat(objectName.getDomain()).isEqualTo("ABC");
+							assertThat(objectName.getCanonicalKeyPropertyListString())
+									.isEqualTo("context=" + ObjectUtils.getIdentityHexString(context)
+											+ ",name1=def,name2=ghi,type=something");
+						}));
 	}
 
 	@Test
 	void uniqueObjectNameAndSameBeanInParentContextOnlyAddsIdentityProperty() {
-		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
-				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
-					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
-							new AnnotationJmxAttributeSource());
-					strategy.setApplicationContext(context);
-					strategy.setEnsureUniqueRuntimeObjectNames(true);
-					Object resource = context.getBean("testManagedResource");
-					ObjectName objectName = strategy.getObjectName(resource, "testManagedResource");
-					assertThat(objectName.getDomain()).isEqualTo("ABC");
-					assertThat(objectName.getCanonicalKeyPropertyListString()).isEqualTo("identity="
-							+ ObjectUtils.getIdentityHexString(resource) + ",name1=def,name2=ghi,type=something");
-				}));
+		this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+				.run((parent) -> this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+						.withParent(parent)
+						.run((context) -> {
+							ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
+									new AnnotationJmxAttributeSource());
+							strategy.setApplicationContext(context);
+							strategy.setEnsureUniqueRuntimeObjectNames(true);
+							Object resource = context.getBean("testManagedResource");
+							ObjectName objectName = strategy.getObjectName(resource, "testManagedResource");
+							assertThat(objectName.getDomain()).isEqualTo("ABC");
+							assertThat(objectName.getCanonicalKeyPropertyListString())
+									.isEqualTo("identity=" + ObjectUtils.getIdentityHexString(resource)
+											+ ",name1=def,name2=ghi,type=something");
+						}));
 	}
 
 	@ManagedResource(objectName = "ABC:type=something,name1=def,name2=ghi")

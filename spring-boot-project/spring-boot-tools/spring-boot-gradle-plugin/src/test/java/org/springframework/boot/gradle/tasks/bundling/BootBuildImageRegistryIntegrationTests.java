@@ -72,7 +72,8 @@ class BootBuildImageRegistryIntegrationTests {
 		String imageName = this.registryAddress + "/" + repoName;
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=" + imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("Building image").contains("Successfully built image")
+		assertThat(result.getOutput()).contains("Building image")
+				.contains("Successfully built image")
 				.contains("Pushing image '" + imageName + ":latest" + "'")
 				.contains("Pushed image '" + imageName + ":latest" + "'");
 		ImageReference imageReference = ImageReference.of(imageName);

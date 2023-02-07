@@ -79,7 +79,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	void invalidConfigurationPropertyValueWhenDefaultConfigIsUsedWithCustomCronCleanup() {
 		this.contextRunner.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
 				"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.redis.cleanup-cron=0 0 * * * *")
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure())
 							.hasRootCauseExactlyInstanceOf(InvalidConfigurationPropertyValueException.class);
@@ -100,7 +101,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 		this.contextRunner
 				.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
 						"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+				.run((context) -> {
 					RedisSessionRepository repository = validateSessionRepository(context,
 							RedisSessionRepository.class);
 					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",

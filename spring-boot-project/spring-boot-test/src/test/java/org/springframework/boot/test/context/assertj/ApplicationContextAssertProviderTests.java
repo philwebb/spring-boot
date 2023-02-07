@@ -109,7 +109,8 @@ class ApplicationContextAssertProviderTests {
 	void getWhenContextFailsShouldReturnProxyThatThrowsExceptions() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat((Object) context).isNotNull();
-		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo")).withCause(this.startupFailure)
+		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo"))
+				.withCause(this.startupFailure)
 				.withMessageContaining("failed to start");
 	}
 
@@ -123,7 +124,8 @@ class ApplicationContextAssertProviderTests {
 	void getSourceContextWhenContextFailsShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException().isThrownBy(context::getSourceApplicationContext)
-				.withCause(this.startupFailure).withMessageContaining("failed to start");
+				.withCause(this.startupFailure)
+				.withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -137,7 +139,8 @@ class ApplicationContextAssertProviderTests {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> context.getSourceApplicationContext(ApplicationContext.class))
-				.withCause(this.startupFailure).withMessageContaining("failed to start");
+				.withCause(this.startupFailure)
+				.withMessageContaining("failed to start");
 	}
 
 	@Test

@@ -56,7 +56,8 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.rabbitProperties::determineAddresses).to(connectionFactory::setAddresses);
-		map.from(this.rabbitProperties::getAddressShuffleMode).whenNonNull()
+		map.from(this.rabbitProperties::getAddressShuffleMode)
+				.whenNonNull()
 				.to(connectionFactory::setAddressShuffleMode);
 		map.from(this.connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
 		configure(connectionFactory, this.rabbitProperties);

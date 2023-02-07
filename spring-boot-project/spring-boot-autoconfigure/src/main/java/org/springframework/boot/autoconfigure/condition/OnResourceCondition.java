@@ -56,10 +56,12 @@ class OnResourceCondition extends SpringBootCondition {
 		}
 		if (!missing.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnResource.class)
-					.didNotFind("resource", "resources").items(Style.QUOTE, missing));
+					.didNotFind("resource", "resources")
+					.items(Style.QUOTE, missing));
 		}
 		return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnResource.class)
-				.found("location", "locations").items(locations));
+				.found("location", "locations")
+				.items(locations));
 	}
 
 	private void collectValues(List<String> names, List<Object> values) {

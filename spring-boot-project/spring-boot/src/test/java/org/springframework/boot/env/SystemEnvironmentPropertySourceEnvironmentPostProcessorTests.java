@@ -57,7 +57,8 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		PropertySource<?> original = this.environment.getPropertySources().get("systemEnvironment");
 		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
-				.getPropertySources().get("systemEnvironment");
+				.getPropertySources()
+				.get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
 		Map<String, Object> replacedMap = replaced.getSource();
 		originalMap.forEach((key, value) -> {
@@ -72,7 +73,8 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
-				.getPropertySources().get("systemEnvironment");
+				.getPropertySources()
+				.get("systemEnvironment");
 		assertThat(replaced.getOrigin("NON_EXISTENT")).isNull();
 	}
 
@@ -80,11 +82,12 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	void replacedPropertySourceShouldResolveProperty() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		Map<String, Object> source = Collections.singletonMap("FOO_BAR_BAZ", "hello");
-		this.environment.getPropertySources().replace("systemEnvironment",
-				new SystemEnvironmentPropertySource("systemEnvironment", source));
+		this.environment.getPropertySources()
+				.replace("systemEnvironment", new SystemEnvironmentPropertySource("systemEnvironment", source));
 		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
-				.getPropertySources().get("systemEnvironment");
+				.getPropertySources()
+				.get("systemEnvironment");
 		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced.getOrigin("foo.bar.baz");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR_BAZ");
 		assertThat(replaced.getProperty("foo.bar.baz")).isEqualTo("hello");
@@ -97,7 +100,8 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		application.setEnvironmentPrefix("my");
 		postProcessor.postProcessEnvironment(this.environment, application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
-				.getPropertySources().get("systemEnvironment");
+				.getPropertySources()
+				.get("systemEnvironment");
 		assertThat(replaced.getPrefix()).isEqualTo("my");
 	}
 

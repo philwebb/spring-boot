@@ -81,8 +81,10 @@ class RedisAutoConfigurationJedisTests {
 
 	@Test
 	void testRedisUrlConfiguration() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo",
-				"spring.data.redis.url:redis://user:password@example:33").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.host:foo",
+						"spring.data.redis.url:redis://user:password@example:33")
+				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("example");
 					assertThat(cf.getPort()).isEqualTo(33);
@@ -94,9 +96,11 @@ class RedisAutoConfigurationJedisTests {
 
 	@Test
 	void testOverrideUrlRedisConfiguration() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
-				"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
-				"spring.data.redis.url:rediss://user:password@example:33").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
+						"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
+						"spring.data.redis.url:rediss://user:password@example:33")
+				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("example");
 					assertThat(cf.getPort()).isEqualTo(33);
@@ -131,10 +135,12 @@ class RedisAutoConfigurationJedisTests {
 
 	@Test
 	void testRedisConfigurationWithPool() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:1",
-				"spring.data.redis.jedis.pool.max-idle:4", "spring.data.redis.jedis.pool.max-active:16",
-				"spring.data.redis.jedis.pool.max-wait:2000",
-				"spring.data.redis.jedis.pool.time-between-eviction-runs:30000").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:1",
+						"spring.data.redis.jedis.pool.max-idle:4", "spring.data.redis.jedis.pool.max-active:16",
+						"spring.data.redis.jedis.pool.max-wait:2000",
+						"spring.data.redis.jedis.pool.time-between-eviction-runs:30000")
+				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getPoolConfig().getMinIdle()).isOne();
@@ -158,8 +164,10 @@ class RedisAutoConfigurationJedisTests {
 
 	@Test
 	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
-				"spring.data.redis.connect-timeout:1000").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.timeout:250",
+						"spring.data.redis.connect-timeout:1000")
+				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getTimeout()).isEqualTo(250);
@@ -203,7 +211,8 @@ class RedisAutoConfigurationJedisTests {
 				.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
 						"spring.data.redis.sentinel.master:mymaster",
 						"spring.data.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
-				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
+				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
+				.run((context) -> {
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
 					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
 					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");

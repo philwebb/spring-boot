@@ -73,7 +73,12 @@ class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests 
 		given(this.documentationSpec)
 				.filter(document("default-snippets",
 						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
-				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
+				.when()
+				.port(this.port)
+				.get("/")
+				.then()
+				.assertThat()
+				.statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'https://api.example.com/'");

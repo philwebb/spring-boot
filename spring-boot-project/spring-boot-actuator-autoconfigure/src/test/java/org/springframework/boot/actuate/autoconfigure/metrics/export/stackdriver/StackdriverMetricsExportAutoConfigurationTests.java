@@ -78,7 +78,8 @@ class StackdriverMetricsExportAutoConfigurationTests {
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(StackdriverMeterRegistry.class)
-						.hasSingleBean(StackdriverConfig.class).hasBean("customConfig"));
+						.hasSingleBean(StackdriverConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
@@ -86,13 +87,15 @@ class StackdriverMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 				.withPropertyValues("management.stackdriver.metrics.export.project-id=test-project")
 				.run((context) -> assertThat(context).hasSingleBean(StackdriverMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(StackdriverConfig.class));
+						.hasBean("customRegistry")
+						.hasSingleBean(StackdriverConfig.class));
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.stackdriver.metrics.export.project-id=test-project").run((context) -> {
+				.withPropertyValues("management.stackdriver.metrics.export.project-id=test-project")
+				.run((context) -> {
 					StackdriverMeterRegistry registry = context.getBean(StackdriverMeterRegistry.class);
 					assertThat(registry.isClosed()).isFalse();
 					context.close();

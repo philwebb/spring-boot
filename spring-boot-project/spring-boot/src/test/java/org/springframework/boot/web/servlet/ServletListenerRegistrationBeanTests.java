@@ -66,7 +66,8 @@ class ServletListenerRegistrationBeanTests {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ServletListenerRegistrationBean<>(new EventListener() {
 
-				})).withMessageContaining("Listener is not of a supported type");
+				}))
+				.withMessageContaining("Listener is not of a supported type");
 	}
 
 }

@@ -42,7 +42,8 @@ class ShutdownEndpointAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	void runShouldHaveEndpointBeanThatIsNotDisposable() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
-				.withPropertyValues("management.endpoints.web.exposure.include=shutdown").run((context) -> {
+				.withPropertyValues("management.endpoints.web.exposure.include=shutdown")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ShutdownEndpoint.class);
 					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 					Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils

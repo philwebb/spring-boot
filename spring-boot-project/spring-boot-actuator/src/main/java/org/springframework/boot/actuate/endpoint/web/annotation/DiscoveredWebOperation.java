@@ -60,7 +60,10 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 	}
 
 	private String getId(EndpointId endpointId, OperationMethod method) {
-		return endpointId + method.getParameters().stream().filter(this::hasSelector).map(this::dashName)
+		return endpointId + method.getParameters()
+				.stream()
+				.filter(this::hasSelector)
+				.map(this::dashName)
 				.collect(Collectors.joining());
 	}
 
@@ -93,8 +96,9 @@ class DiscoveredWebOperation extends AbstractDiscoveredOperation implements WebO
 
 	@Override
 	protected void appendFields(ToStringCreator creator) {
-		creator.append("id", this.id).append("blocking", this.blocking).append("requestPredicate",
-				this.requestPredicate);
+		creator.append("id", this.id)
+				.append("blocking", this.blocking)
+				.append("requestPredicate", this.requestPredicate);
 	}
 
 }

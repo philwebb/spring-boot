@@ -103,7 +103,8 @@ class MetricsIntegrationTests {
 	@Test
 	void restTemplateIsInstrumented() {
 		MockRestServiceServer server = MockRestServiceServer.bindTo(this.external).build();
-		server.expect(once(), requestTo("/api/external")).andExpect(method(HttpMethod.GET))
+		server.expect(once(), requestTo("/api/external"))
+				.andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess("{\"message\": \"hello\"}", MediaType.APPLICATION_JSON));
 		assertThat(this.external.getForObject("/api/external", Map.class)).containsKey("message");
 		assertThat(this.registry.get("http.client.requests").timer().count()).isOne();
@@ -120,7 +121,8 @@ class MetricsIntegrationTests {
 	@Test
 	void automaticallyRegisteredBinders() {
 		assertThat(this.context.getBeansOfType(MeterBinder.class).values())
-				.hasAtLeastOneElementOfType(LogbackMetrics.class).hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
+				.hasAtLeastOneElementOfType(LogbackMetrics.class)
+				.hasAtLeastOneElementOfType(JvmMemoryMetrics.class);
 	}
 
 	@Test

@@ -84,7 +84,8 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
-		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
+				.andExpect(status().isOk())
 				.andDo(document("sessions/username",
 						responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
 								.andWithPrefix("sessions.[].", sessionFields),
@@ -94,13 +95,15 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 	@Test
 	void sessionWithId() throws Exception {
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
-		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId()))
+				.andExpect(status().isOk())
 				.andDo(document("sessions/id", responseFields(sessionFields)));
 	}
 
 	@Test
 	void deleteASession() throws Exception {
-		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isNoContent())
+		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId()))
+				.andExpect(status().isNoContent())
 				.andDo(document("sessions/delete"));
 		then(this.sessionRepository).should().deleteById(sessionTwo.getId());
 	}

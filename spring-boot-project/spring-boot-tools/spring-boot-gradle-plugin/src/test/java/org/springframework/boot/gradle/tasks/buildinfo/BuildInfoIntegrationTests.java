@@ -91,9 +91,13 @@ class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0").build("buildInfo").task(":buildInfo")
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0")
+				.build("buildInfo")
+				.task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0").build("buildInfo").task(":buildInfo")
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0")
+				.build("buildInfo")
+				.task(":buildInfo")
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 

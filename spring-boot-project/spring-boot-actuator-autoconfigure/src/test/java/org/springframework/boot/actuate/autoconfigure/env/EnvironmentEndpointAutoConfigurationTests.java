@@ -72,7 +72,8 @@ class EnvironmentEndpointAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SanitizingFunctionConfiguration.class)
 				.withPropertyValues("management.endpoint.env.show-values: WHEN_AUTHORIZED")
 				.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("custom=123456", "password=123456").run((context) -> {
+				.withSystemProperties("custom=123456", "password=123456")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 					EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 					EnvironmentDescriptor env = endpoint.environment(null);
@@ -88,7 +89,8 @@ class EnvironmentEndpointAutoConfigurationTests {
 	void rolesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.roles: test")
 				.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
 					EnvironmentEndpointWebExtension endpoint = context.getBean(EnvironmentEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
@@ -100,7 +102,8 @@ class EnvironmentEndpointAutoConfigurationTests {
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.show-values: WHEN_AUTHORIZED")
 				.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
+				.withSystemProperties("dbPassword=123456", "apiKey=123456")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 					assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
 					EnvironmentEndpointWebExtension webExtension = context
@@ -132,7 +135,10 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
-		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
+		return descriptor.getPropertySources()
+				.stream()
+				.filter((source) -> name.equals(source.getName()))
+				.findFirst()
 				.get();
 	}
 

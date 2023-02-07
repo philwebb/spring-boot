@@ -57,8 +57,9 @@ class ScheduledTasksEndpointAutoConfigurationTests {
 
 	@Test
 	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
-		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class).hasBean("customEndpoint"));
+		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class)
+						.hasBean("customEndpoint"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

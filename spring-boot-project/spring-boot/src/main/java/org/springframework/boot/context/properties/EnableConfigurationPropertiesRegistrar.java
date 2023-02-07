@@ -50,9 +50,11 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	}
 
 	private Set<Class<?>> getTypes(AnnotationMetadata metadata) {
-		return metadata.getAnnotations().stream(EnableConfigurationProperties.class)
+		return metadata.getAnnotations()
+				.stream(EnableConfigurationProperties.class)
 				.flatMap((annotation) -> Arrays.stream(annotation.getClassArray(MergedAnnotation.VALUE)))
-				.filter((type) -> void.class != type).collect(Collectors.toSet());
+				.filter((type) -> void.class != type)
+				.collect(Collectors.toSet());
 	}
 
 	static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
@@ -64,7 +66,8 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 		if (!registry.containsBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
 					.rootBeanDefinition(MethodValidationExcludeFilter.class, "byAnnotation")
-					.addConstructorArgValue(ConfigurationProperties.class).setRole(BeanDefinition.ROLE_INFRASTRUCTURE)
+					.addConstructorArgValue(ConfigurationProperties.class)
+					.setRole(BeanDefinition.ROLE_INFRASTRUCTURE)
 					.getBeanDefinition();
 			registry.registerBeanDefinition(METHOD_VALIDATION_EXCLUDE_FILTER_BEAN_NAME, definition);
 		}

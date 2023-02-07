@@ -70,7 +70,8 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
 		assertThat(metadata)
 				.has(Metadata.withGroup("management.endpoint.customprops").fromSource(CustomPropertiesEndpoint.class));
-		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name").ofType(String.class)
+		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name")
+				.ofType(String.class)
 				.withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
@@ -158,8 +159,10 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
-		return Metadata.withProperty("management.endpoint." + endpointId + ".cache.time-to-live").ofType(Duration.class)
-				.withDefaultValue("0ms").withDescription("Maximum time that a response can be cached.");
+		return Metadata.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
+				.ofType(Duration.class)
+				.withDefaultValue("0ms")
+				.withDescription("Maximum time that a response can be cached.");
 	}
 
 }

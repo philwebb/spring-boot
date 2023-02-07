@@ -38,8 +38,9 @@ class Neo4jHealthDetailsHandler {
 	void addHealthDetails(Builder builder, Neo4jHealthDetails healthDetails) {
 		ResultSummary summary = healthDetails.getSummary();
 		ServerInfo serverInfo = summary.server();
-		builder.up().withDetail("server", healthDetails.getVersion() + "@" + serverInfo.address()).withDetail("edition",
-				healthDetails.getEdition());
+		builder.up()
+				.withDetail("server", healthDetails.getVersion() + "@" + serverInfo.address())
+				.withDetail("edition", healthDetails.getEdition());
 		DatabaseInfo databaseInfo = summary.database();
 		if (StringUtils.hasText(databaseInfo.name())) {
 			builder.withDetail("database", databaseInfo.name());

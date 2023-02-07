@@ -523,9 +523,9 @@ class SpringApplicationTests {
 		CompositePropertySource composite = (CompositePropertySource) environment.getPropertySources()
 				.get("commandLineArgs");
 		assertThat(composite.getPropertySources()).hasSize(2);
-		assertThat(composite.getPropertySources()).first().matches(
-				(source) -> source.getName().equals("springApplicationCommandLineArgs"),
-				"is named springApplicationCommandLineArgs");
+		assertThat(composite.getPropertySources()).first()
+				.matches((source) -> source.getName().equals("springApplicationCommandLineArgs"),
+						"is named springApplicationCommandLineArgs");
 		assertThat(composite.getPropertySources()).element(1)
 				.matches((source) -> source.getName().equals("commandLineArgs"), "is named commandLineArgs");
 	}
@@ -850,10 +850,13 @@ class SpringApplicationTests {
 	@Test
 	void defaultPropertiesShouldBeMerged() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.getPropertySources().addFirst(
-				new MapPropertySource(DefaultPropertiesPropertySource.NAME, Collections.singletonMap("bar", "foo")));
+		environment.getPropertySources()
+				.addFirst(new MapPropertySource(DefaultPropertiesPropertySource.NAME,
+						Collections.singletonMap("bar", "foo")));
 		SpringApplication application = new SpringApplicationBuilder(ExampleConfig.class).environment(environment)
-				.properties("baz=bing").web(WebApplicationType.NONE).build();
+				.properties("baz=bing")
+				.web(WebApplicationType.NONE)
+				.build();
 		this.context = application.run();
 		assertThat(getEnvironment().getProperty("bar")).isEqualTo("foo");
 		assertThat(getEnvironment().getProperty("baz")).isEqualTo("bing");
@@ -1165,10 +1168,14 @@ class SpringApplicationTests {
 		then(applicationStartup).should().start("spring.boot.application.context-loaded");
 		then(applicationStartup).should().start("spring.boot.application.started");
 		then(applicationStartup).should().start("spring.boot.application.ready");
-		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
-				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
-		long endCount = mockingDetails(startupStep).getInvocations().stream()
-				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
+		long startCount = mockingDetails(applicationStartup).getInvocations()
+				.stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("start("))
+				.count();
+		long endCount = mockingDetails(startupStep).getInvocations()
+				.stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("end("))
+				.count();
 		assertThat(startCount).isEqualTo(endCount);
 	}
 
@@ -1186,10 +1193,14 @@ class SpringApplicationTests {
 		then(applicationStartup).should().start("spring.boot.application.starting");
 		then(applicationStartup).should().start("spring.boot.application.environment-prepared");
 		then(applicationStartup).should().start("spring.boot.application.failed");
-		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
-				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
-		long endCount = mockingDetails(startupStep).getInvocations().stream()
-				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
+		long startCount = mockingDetails(applicationStartup).getInvocations()
+				.stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("start("))
+				.count();
+		long endCount = mockingDetails(startupStep).getInvocations()
+				.stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("end("))
+				.count();
 		assertThat(startCount).isEqualTo(endCount);
 	}
 
@@ -1215,7 +1226,8 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addBootstrapRegistryInitializer((bootstrapContext) -> {
 			bootstrapContext.register(String.class, InstanceSupplier.of("boot"));
-			bootstrapContext.addCloseListener((event) -> event.getApplicationContext().getBeanFactory()
+			bootstrapContext.addCloseListener((event) -> event.getApplicationContext()
+					.getBeanFactory()
 					.registerSingleton("test", event.getBootstrapContext().get(String.class)));
 		});
 		ConfigurableApplicationContext applicationContext = application.run();
@@ -1255,8 +1267,11 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationFailedEvent.class);
-		ApplicationFailedEvent failure = events.stream().filter((event) -> event instanceof ApplicationFailedEvent)
-				.map(ApplicationFailedEvent.class::cast).findFirst().get();
+		ApplicationFailedEvent failure = events.stream()
+				.filter((event) -> event instanceof ApplicationFailedEvent)
+				.map(ApplicationFailedEvent.class::cast)
+				.findFirst()
+				.get();
 		assertThat(SpringApplicationShutdownHookInstance.get())
 				.didNotRegisterApplicationContext(failure.getApplicationContext());
 	}

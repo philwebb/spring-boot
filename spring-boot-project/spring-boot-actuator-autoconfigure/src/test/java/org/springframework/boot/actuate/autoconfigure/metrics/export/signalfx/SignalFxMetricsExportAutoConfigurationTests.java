@@ -55,7 +55,8 @@ class SignalFxMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.signalfx.metrics.export.access-token=abcde")
 				.run((context) -> assertThat(context).hasSingleBean(SignalFxMeterRegistry.class)
-						.hasSingleBean(Clock.class).hasSingleBean(SignalFxConfig.class));
+						.hasSingleBean(Clock.class)
+						.hasSingleBean(SignalFxConfig.class));
 	}
 
 	@Test
@@ -79,7 +80,8 @@ class SignalFxMetricsExportAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.signalfx.metrics.export.access-token=abcde")
 				.withUserConfiguration(CustomConfigConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(SignalFxMeterRegistry.class).hasSingleBean(SignalFxConfig.class)
+						.hasSingleBean(SignalFxMeterRegistry.class)
+						.hasSingleBean(SignalFxConfig.class)
 						.hasBean("customConfig"));
 	}
 
@@ -87,14 +89,17 @@ class SignalFxMetricsExportAutoConfigurationTests {
 	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withPropertyValues("management.signalfx.metrics.export.access-token=abcde")
 				.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(SignalFxConfig.class)
-						.hasSingleBean(SignalFxMeterRegistry.class).hasBean("customRegistry"));
+				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+						.hasSingleBean(SignalFxConfig.class)
+						.hasSingleBean(SignalFxMeterRegistry.class)
+						.hasBean("customRegistry"));
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withPropertyValues("management.signalfx.metrics.export.access-token=abcde")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+				.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> {
 					SignalFxMeterRegistry registry = context.getBean(SignalFxMeterRegistry.class);
 					assertThat(registry.isClosed()).isFalse();
 					context.close();

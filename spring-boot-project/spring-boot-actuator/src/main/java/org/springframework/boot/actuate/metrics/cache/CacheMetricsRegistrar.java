@@ -73,8 +73,10 @@ public class CacheMetricsRegistrar {
 		Tags cacheTags = tags.and(getAdditionalTags(cache));
 		return LambdaSafe.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
 				.withLogger(CacheMetricsRegistrar.class)
-				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache, cacheTags)).filter(Objects::nonNull)
-				.findFirst().orElse(null);
+				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache, cacheTags))
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
 	}
 
 	/**

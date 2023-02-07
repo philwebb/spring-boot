@@ -77,7 +77,8 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void settingsSslConfig() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
-				.withUserConfiguration(SslSettingsConfig.class).run((context) -> {
+				.withUserConfiguration(SslSettingsConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClientSettings settings = getSettings(context);
 					assertThat(settings.getApplicationName()).isEqualTo("test-config");
@@ -102,7 +103,8 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void customizerOverridesAutoConfig() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
-				.withUserConfiguration(SimpleCustomizerConfig.class).run((context) -> {
+				.withUserConfiguration(SimpleCustomizerConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(MongoClient.class);
 					MongoClientSettings settings = getSettings(context);
 					assertThat(settings.getApplicationName()).isEqualTo("overridden-name");
@@ -121,8 +123,10 @@ class MongoReactiveAutoConfigurationTests {
 
 		@Bean
 		MongoClientSettings mongoClientSettings() {
-			return MongoClientSettings.builder().readPreference(ReadPreference.nearest())
-					.applyToSocketSettings((socket) -> socket.readTimeout(300, TimeUnit.SECONDS)).build();
+			return MongoClientSettings.builder()
+					.readPreference(ReadPreference.nearest())
+					.applyToSocketSettings((socket) -> socket.readTimeout(300, TimeUnit.SECONDS))
+					.build();
 		}
 
 	}
@@ -132,8 +136,10 @@ class MongoReactiveAutoConfigurationTests {
 
 		@Bean
 		MongoClientSettings mongoClientSettings(StreamFactoryFactory streamFactoryFactory) {
-			return MongoClientSettings.builder().applicationName("test-config")
-					.streamFactoryFactory(streamFactoryFactory).build();
+			return MongoClientSettings.builder()
+					.applicationName("test-config")
+					.streamFactoryFactory(streamFactoryFactory)
+					.build();
 		}
 
 		@Bean

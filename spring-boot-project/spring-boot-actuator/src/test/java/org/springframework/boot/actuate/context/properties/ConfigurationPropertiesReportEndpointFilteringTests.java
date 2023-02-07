@@ -105,8 +105,11 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 					.get(context.getId());
-			Optional<String> key = contextProperties.getBeans().keySet().stream()
-					.filter((id) -> findIdFromPrefix("only.bar", id)).findAny();
+			Optional<String> key = contextProperties.getBeans()
+					.keySet()
+					.stream()
+					.filter((id) -> findIdFromPrefix("only.bar", id))
+					.findAny();
 			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());
 			assertThat(descriptor.getPrefix()).isEqualTo("only.bar");
 			assertThat(descriptor.getProperties()).containsEntry("name", value);

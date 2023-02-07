@@ -83,7 +83,8 @@ class EmbeddedServerContainerInvocationContextProvider
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		EmbeddedServletContainerTest annotation = context.getRequiredTestClass()
 				.getAnnotation(EmbeddedServletContainerTest.class);
-		return CONTAINERS.stream().map((container) -> getApplication(annotation, container))
+		return CONTAINERS.stream()
+				.map((container) -> getApplication(annotation, container))
 				.flatMap((builder) -> provideTestTemplateInvocationContexts(annotation, builder));
 	}
 

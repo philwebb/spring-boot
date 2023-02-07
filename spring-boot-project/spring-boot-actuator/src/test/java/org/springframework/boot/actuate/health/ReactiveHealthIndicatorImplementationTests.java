@@ -39,14 +39,16 @@ class ReactiveHealthIndicatorImplementationTests {
 	@Test
 	void healthUp(CapturedOutput output) {
 		StepVerifier.create(new SimpleReactiveHealthIndicator().health())
-				.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.up().build())).verifyComplete();
+				.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.up().build()))
+				.verifyComplete();
 		assertThat(output).doesNotContain("Health check failed for simple");
 	}
 
 	@Test
 	void healthDownWithCustomErrorMessage(CapturedOutput output) {
-		StepVerifier.create(new CustomErrorMessageReactiveHealthIndicator().health()).consumeNextWith(
-				(health) -> assertThat(health).isEqualTo(Health.down(new UnsupportedOperationException()).build()))
+		StepVerifier.create(new CustomErrorMessageReactiveHealthIndicator().health())
+				.consumeNextWith((health) -> assertThat(health)
+						.isEqualTo(Health.down(new UnsupportedOperationException()).build()))
 				.verifyComplete();
 		assertThat(output).contains("Health check failed for custom");
 	}

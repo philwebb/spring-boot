@@ -57,7 +57,8 @@ class WebMvcPropertiesTests {
 	@Test
 	void servletPathWhenHasWildcardThrowsException() {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
-				.withRootCauseInstanceOf(IllegalArgumentException.class).satisfies(
+				.withRootCauseInstanceOf(IllegalArgumentException.class)
+				.satisfies(
 						(ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("Path must not contain wildcards"));
 	}
 

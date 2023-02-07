@@ -110,7 +110,8 @@ class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	void testQueryEmbeddedLdap() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
-				.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(LdapTemplate.class);
 					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
 					assertThat(ldapTemplate.list("ou=company1,c=Sweden,dc=spring,dc=org")).hasSize(4);
@@ -119,8 +120,10 @@ class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	void testDisableSchemaValidation() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.validation.enabled:false",
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.ldap.embedded.validation.enabled:false",
+						"spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.run((context) -> {
 					InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 					assertThat(server.getSchema()).isNull();
 				});
@@ -128,9 +131,11 @@ class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	void testCustomSchemaValidation() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.validation.schema:classpath:custom-schema.ldif",
-				"spring.ldap.embedded.ldif:classpath:custom-schema-sample.ldif",
-				"spring.ldap.embedded.base-dn:dc=spring,dc=org").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.ldap.embedded.validation.schema:classpath:custom-schema.ldif",
+						"spring.ldap.embedded.ldif:classpath:custom-schema-sample.ldif",
+						"spring.ldap.embedded.base-dn:dc=spring,dc=org")
+				.run((context) -> {
 					InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 
 					assertThat(server.getSchema().getObjectClass("exampleAuxiliaryClass")).isNotNull();
@@ -172,7 +177,8 @@ class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	void ldapContextWithoutSpringLdapIsNotCreated() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org")
-				.withClassLoader(new FilteredClassLoader(ContextSource.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(ContextSource.class))
+				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					assertThat(context).doesNotHaveBean(LdapContextSource.class);
 				});
@@ -180,8 +186,10 @@ class EmbeddedLdapAutoConfigurationTests {
 
 	@Test
 	void ldapContextIsCreatedWithBase() {
-		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
-				"spring.ldap.base:dc=spring,dc=org").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+						"spring.ldap.base:dc=spring,dc=org")
+				.run((context) -> {
 					LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
 					assertThat(ldapContextSource.getBaseLdapPathAsString()).isEqualTo("dc=spring,dc=org");
 				});

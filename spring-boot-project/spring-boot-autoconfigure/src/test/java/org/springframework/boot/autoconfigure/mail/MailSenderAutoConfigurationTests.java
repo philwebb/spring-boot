@@ -91,9 +91,11 @@ class MailSenderAutoConfigurationTests {
 	@Test
 	void smtpHostWithSettings() {
 		String host = "192.168.1.234";
-		this.contextRunner.withPropertyValues("spring.mail.host:" + host, "spring.mail.port:42",
-				"spring.mail.username:john", "spring.mail.password:secret", "spring.mail.default-encoding:US-ASCII",
-				"spring.mail.protocol:smtps").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.mail.host:" + host, "spring.mail.port:42", "spring.mail.username:john",
+						"spring.mail.password:secret", "spring.mail.default-encoding:US-ASCII",
+						"spring.mail.protocol:smtps")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
 					assertThat(mailSender.getHost()).isEqualTo(host);
@@ -219,7 +221,8 @@ class MailSenderAutoConfigurationTests {
 	@Test
 	void connectionOnStartup() {
 		this.contextRunner.withUserConfiguration(MockMailConfiguration.class)
-				.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:true").run((context) -> {
+				.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:true")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
 					then(mailSender).should().testConnection();

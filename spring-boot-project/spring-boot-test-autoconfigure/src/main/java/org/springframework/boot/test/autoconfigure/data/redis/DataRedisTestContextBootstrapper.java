@@ -30,8 +30,10 @@ class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataRedisTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
+				.get(DataRedisTest.class)
+				.getValue("properties", String[].class)
+				.orElse(null);
 	}
 
 }

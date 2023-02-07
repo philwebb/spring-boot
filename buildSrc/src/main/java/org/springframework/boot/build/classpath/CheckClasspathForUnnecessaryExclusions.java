@@ -86,7 +86,9 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 
 	private void processDependency(ModuleDependency dependency) {
 		String dependencyId = getId(dependency);
-		TreeSet<String> exclusions = dependency.getExcludeRules().stream().map(this::getId)
+		TreeSet<String> exclusions = dependency.getExcludeRules()
+				.stream()
+				.map(this::getId)
 				.collect(Collectors.toCollection(TreeSet::new));
 		this.exclusionsByDependencyId.put(dependencyId, exclusions);
 		if (!exclusions.isEmpty()) {
@@ -106,7 +108,12 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 			if (!exclusions.isEmpty()) {
 				Dependency toCheck = this.dependencyById.get(dependencyId);
 				List<String> dependencies = this.configurations.detachedConfiguration(toCheck, this.platform)
-						.getIncoming().getArtifacts().getArtifacts().stream().map(this::getId).toList();
+						.getIncoming()
+						.getArtifacts()
+						.getArtifacts()
+						.stream()
+						.map(this::getId)
+						.toList();
 				exclusions.removeAll(dependencies);
 				removeProfileExclusions(dependencyId, exclusions);
 				if (!exclusions.isEmpty()) {

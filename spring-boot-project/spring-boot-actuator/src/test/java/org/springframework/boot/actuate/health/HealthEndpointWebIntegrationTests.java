@@ -51,32 +51,70 @@ class HealthEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void whenHealthIsUp200ResponseIsReturned(WebTestClient client) {
-		client.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody().jsonPath("status").isEqualTo("UP").jsonPath("components.alpha.status").isEqualTo("UP")
-				.jsonPath("components.bravo.status").isEqualTo("UP");
+		client.get()
+				.uri("/actuator/health")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("status")
+				.isEqualTo("UP")
+				.jsonPath("components.alpha.status")
+				.isEqualTo("UP")
+				.jsonPath("components.bravo.status")
+				.isEqualTo("UP");
 	}
 
 	@WebEndpointTest
 	void whenHealthIsUpAndAcceptsV3Request200ResponseIsReturned(WebTestClient client) {
-		client.get().uri("/actuator/health").headers((headers) -> headers.set(HttpHeaders.ACCEPT, V3_JSON)).exchange()
-				.expectStatus().isOk().expectBody().jsonPath("status").isEqualTo("UP")
-				.jsonPath("components.alpha.status").isEqualTo("UP").jsonPath("components.bravo.status")
+		client.get()
+				.uri("/actuator/health")
+				.headers((headers) -> headers.set(HttpHeaders.ACCEPT, V3_JSON))
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("status")
+				.isEqualTo("UP")
+				.jsonPath("components.alpha.status")
+				.isEqualTo("UP")
+				.jsonPath("components.bravo.status")
 				.isEqualTo("UP");
 	}
 
 	@WebEndpointTest
 	void whenHealthIsUpAndAcceptsAllRequest200ResponseIsReturned(WebTestClient client) {
-		client.get().uri("/actuator/health").headers((headers) -> headers.set(HttpHeaders.ACCEPT, "*/*")).exchange()
-				.expectStatus().isOk().expectBody().jsonPath("status").isEqualTo("UP")
-				.jsonPath("components.alpha.status").isEqualTo("UP").jsonPath("components.bravo.status")
+		client.get()
+				.uri("/actuator/health")
+				.headers((headers) -> headers.set(HttpHeaders.ACCEPT, "*/*"))
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("status")
+				.isEqualTo("UP")
+				.jsonPath("components.alpha.status")
+				.isEqualTo("UP")
+				.jsonPath("components.bravo.status")
 				.isEqualTo("UP");
 	}
 
 	@WebEndpointTest
 	void whenHealthIsUpAndV2Request200ResponseIsReturnedInV2Format(WebTestClient client) {
-		client.get().uri("/actuator/health").headers((headers) -> headers.set(HttpHeaders.ACCEPT, V2_JSON)).exchange()
-				.expectStatus().isOk().expectBody().jsonPath("status").isEqualTo("UP").jsonPath("details.alpha.status")
-				.isEqualTo("UP").jsonPath("details.bravo.status").isEqualTo("UP");
+		client.get()
+				.uri("/actuator/health")
+				.headers((headers) -> headers.set(HttpHeaders.ACCEPT, V2_JSON))
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("status")
+				.isEqualTo("UP")
+				.jsonPath("details.alpha.status")
+				.isEqualTo("UP")
+				.jsonPath("details.bravo.status")
+				.isEqualTo("UP");
 	}
 
 	@WebEndpointTest
@@ -84,10 +122,21 @@ class HealthEndpointWebIntegrationTests {
 		HealthIndicator healthIndicator = () -> Health.down().build();
 		ReactiveHealthIndicator reactiveHealthIndicator = () -> Mono.just(Health.down().build());
 		withHealthContributor(context, "charlie", healthIndicator, reactiveHealthIndicator,
-				() -> client.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-						.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status").isEqualTo("DOWN")
-						.jsonPath("components.alpha.status").isEqualTo("UP").jsonPath("components.bravo.status")
-						.isEqualTo("UP").jsonPath("components.charlie.status").isEqualTo("DOWN"));
+				() -> client.get()
+						.uri("/actuator/health")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+						.expectBody()
+						.jsonPath("status")
+						.isEqualTo("DOWN")
+						.jsonPath("components.alpha.status")
+						.isEqualTo("UP")
+						.jsonPath("components.bravo.status")
+						.isEqualTo("UP")
+						.jsonPath("components.charlie.status")
+						.isEqualTo("DOWN"));
 	}
 
 	@WebEndpointTest
@@ -95,8 +144,14 @@ class HealthEndpointWebIntegrationTests {
 		HealthIndicator healthIndicator = () -> Health.down().build();
 		ReactiveHealthIndicator reactiveHealthIndicator = () -> Mono.just(Health.down().build());
 		withHealthContributor(context, "charlie", healthIndicator, reactiveHealthIndicator,
-				() -> client.get().uri("/actuator/health/charlie").accept(MediaType.APPLICATION_JSON).exchange()
-						.expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
+				() -> client.get()
+						.uri("/actuator/health/charlie")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+						.expectBody()
+						.jsonPath("status")
 						.isEqualTo("DOWN"));
 	}
 
@@ -109,8 +164,14 @@ class HealthEndpointWebIntegrationTests {
 		CompositeReactiveHealthContributor reactiveComposite = CompositeReactiveHealthContributor
 				.fromMap(Collections.singletonMap("one", reactiveHealthIndicator));
 		withHealthContributor(context, "charlie", composite, reactiveComposite,
-				() -> client.get().uri("/actuator/health/charlie/one").accept(MediaType.APPLICATION_JSON).exchange()
-						.expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE).expectBody().jsonPath("status")
+				() -> client.get()
+						.uri("/actuator/health/charlie/one")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE)
+						.expectBody()
+						.jsonPath("status")
 						.isEqualTo("DOWN"));
 	}
 
@@ -154,9 +215,19 @@ class HealthEndpointWebIntegrationTests {
 		ReactiveHealthContributor reactiveBravo = (reactiveHealthContributorRegistry != null)
 				? reactiveHealthContributorRegistry.unregisterContributor(name) : null;
 		try {
-			client.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-					.expectBody().jsonPath("status").isEqualTo("UP").jsonPath("components.alpha.status").isEqualTo("UP")
-					.jsonPath("components.bravo.status").doesNotExist();
+			client.get()
+					.uri("/actuator/health")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("status")
+					.isEqualTo("UP")
+					.jsonPath("components.alpha.status")
+					.isEqualTo("UP")
+					.jsonPath("components.bravo.status")
+					.doesNotExist();
 		}
 		finally {
 			healthContributorRegistry.registerContributor(name, bravo);

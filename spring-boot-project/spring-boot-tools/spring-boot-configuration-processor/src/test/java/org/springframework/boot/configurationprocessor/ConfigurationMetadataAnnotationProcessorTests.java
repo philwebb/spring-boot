@@ -101,10 +101,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("simple").fromSource(SimpleProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
-				.fromSource(SimpleProperties.class).withDescription("The name of this simple properties.")
-				.withDefaultValue("boot").withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class).withDefaultValue(false)
-				.fromSource(SimpleProperties.class).withDescription("A simple flag.").withDeprecation(null, null));
+				.fromSource(SimpleProperties.class)
+				.withDescription("The name of this simple properties.")
+				.withDefaultValue("boot")
+				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("simple.flag", Boolean.class)
+				.withDefaultValue(false)
+				.fromSource(SimpleProperties.class)
+				.withDescription("A simple flag.")
+				.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
@@ -152,11 +157,14 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(HierarchicalProperties.class, HierarchicalPropertiesParent.class,
 				HierarchicalPropertiesGrandparent.class);
 		assertThat(metadata).has(Metadata.withGroup("hierarchical").fromSource(HierarchicalProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("hierarchical.first", String.class).withDefaultValue("one")
+		assertThat(metadata).has(Metadata.withProperty("hierarchical.first", String.class)
+				.withDefaultValue("one")
 				.fromSource(HierarchicalProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("hierarchical.second", String.class).withDefaultValue("two")
+		assertThat(metadata).has(Metadata.withProperty("hierarchical.second", String.class)
+				.withDefaultValue("two")
 				.fromSource(HierarchicalProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class).withDefaultValue("three")
+		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class)
+				.withDefaultValue("three")
 				.fromSource(HierarchicalProperties.class));
 	}
 
@@ -165,9 +173,11 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(DescriptionProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("description").fromSource(DescriptionProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("description.simple", String.class)
-				.fromSource(DescriptionProperties.class).withDescription("A simple description."));
+				.fromSource(DescriptionProperties.class)
+				.withDescription("A simple description."));
 		assertThat(metadata).has(Metadata.withProperty("description.multi-line", String.class)
-				.fromSource(DescriptionProperties.class).withDescription(
+				.fromSource(DescriptionProperties.class)
+				.withDescription(
 						"This is a lengthy description that spans across multiple lines to showcase that the line separators are cleaned automatically."));
 	}
 
@@ -179,7 +189,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withGroup("deprecated").fromSource(type));
 		assertThat(metadata).has(
 				Metadata.withProperty("deprecated.name", String.class).fromSource(type).withDeprecation(null, null));
-		assertThat(metadata).has(Metadata.withProperty("deprecated.description", String.class).fromSource(type)
+		assertThat(metadata).has(Metadata.withProperty("deprecated.description", String.class)
+				.fromSource(type)
 				.withDeprecation(null, null));
 	}
 
@@ -189,7 +200,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singledeprecated").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("singledeprecated.new-name", String.class).fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class).fromSource(type)
+		assertThat(metadata).has(Metadata.withProperty("singledeprecated.name", String.class)
+				.fromSource(type)
 				.withDeprecation("renamed", "singledeprecated.new-name"));
 	}
 
@@ -198,7 +210,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		Class<?> type = DeprecatedFieldSingleProperty.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("singlefielddeprecated").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("singlefielddeprecated.name", String.class).fromSource(type)
+		assertThat(metadata).has(Metadata.withProperty("singlefielddeprecated.name", String.class)
+				.fromSource(type)
 				.withDeprecation(null, null));
 	}
 
@@ -209,8 +222,10 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
 		assertThat(metadata).has(
 				Metadata.withProperty("not.deprecated.counter", Integer.class).withNoDeprecation().fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
-				.withNoDeprecation().fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class)
+				.withDefaultValue(false)
+				.withNoDeprecation()
+				.fromSource(type));
 	}
 
 	@Test
@@ -218,8 +233,10 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		Class<?> type = DeprecatedLessPreciseTypePojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
-				.withNoDeprecation().fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class)
+				.withDefaultValue(false)
+				.withNoDeprecation()
+				.fromSource(type));
 	}
 
 	@Test
@@ -227,7 +244,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		Class<?> type = DeprecatedRecord.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("deprecated-record").fromSource(type));
-		assertThat(metadata).has(Metadata.withProperty("deprecated-record.alpha", String.class).fromSource(type)
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.alpha", String.class)
+				.fromSource(type)
 				.withDeprecation("some-reason", null));
 		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class).fromSource(type));
 	}
@@ -286,7 +304,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(StaticAccessor.class);
 		assertThat(metadata).has(Metadata.withGroup("specific").fromSource(StaticAccessor.class));
 		assertThat(metadata).has(Metadata.withProperty("specific.counter", Integer.class)
-				.fromSource(StaticAccessor.class).withDefaultValue(42));
+				.fromSource(StaticAccessor.class)
+				.withDefaultValue(42));
 		assertThat(metadata)
 				.doesNotHave(Metadata.withProperty("specific.name", String.class).fromSource(StaticAccessor.class));
 		assertThat(metadata.getItems()).hasSize(2);
@@ -302,7 +321,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void innerClassProperties() {
 		ConfigurationMetadata metadata = compile(InnerClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(InnerClassProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(InnerClassProperties.Foo.class)
+		assertThat(metadata).has(Metadata.withGroup("config.first")
+				.ofType(InnerClassProperties.Foo.class)
 				.fromSource(InnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.first.bar.name"));
@@ -343,9 +363,11 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(
 				Metadata.withGroup("nestedChildProps").fromSource(ClassWithNestedProperties.NestedChildClass.class));
 		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.child-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(20));
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
+				.withDefaultValue(20));
 		assertThat(metadata).has(Metadata.withProperty("nestedChildProps.parent-class-property", Integer.class)
-				.fromSource(ClassWithNestedProperties.NestedChildClass.class).withDefaultValue(10));
+				.fromSource(ClassWithNestedProperties.NestedChildClass.class)
+				.withDefaultValue(10));
 	}
 
 	@Test
@@ -414,8 +436,11 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void constructorParameterPropertyWithEmptyDefaultValueOnProperty() {
 		ConfigurationMetadata metadata = compile(EmptyDefaultValueProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("test.name"));
-		ItemMetadata nameMetadata = metadata.getItems().stream().filter((item) -> item.getName().equals("test.name"))
-				.findFirst().get();
+		ItemMetadata nameMetadata = metadata.getItems()
+				.stream()
+				.filter((item) -> item.getName().equals("test.name"))
+				.findFirst()
+				.get();
 		assertThat(nameMetadata.getDefaultValue()).isNull();
 	}
 

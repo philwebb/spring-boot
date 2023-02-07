@@ -90,7 +90,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 		return sourceSets.create(newSourceSetName, (sourceSet) -> {
 			existingSourceSet.setRuntimeClasspath(existingSourceSet.getRuntimeClasspath().plus(sourceSet.getOutput()));
-			project.getConfigurations().getByName(sourceSet.getCompileClasspathConfigurationName())
+			project.getConfigurations()
+					.getByName(sourceSet.getCompileClasspathConfigurationName())
 					.attributes((attributes) -> {
 						configureClassesAndResourcesLibraryElementsAttribute(project, attributes);
 						configureJavaRuntimeUsageAttribute(project, attributes);
@@ -99,8 +100,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 	}
 
 	private void configureClassesAndResourcesLibraryElementsAttribute(Project project, AttributeContainer attributes) {
-		LibraryElements classesAndResources = project.getObjects().named(LibraryElements.class,
-				LibraryElements.CLASSES_AND_RESOURCES);
+		LibraryElements classesAndResources = project.getObjects()
+				.named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES);
 		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, classesAndResources);
 	}
 
@@ -117,10 +118,11 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		Configuration compileClasspath = project.getConfigurations()
 				.getByName(aotSourceSet.getCompileClasspathConfigurationName());
 		compileClasspath.extendsFrom(aotClasspath);
-		Provider<Directory> resourcesOutput = project.getLayout().getBuildDirectory()
+		Provider<Directory> resourcesOutput = project.getLayout()
+				.getBuildDirectory()
 				.dir("generated/" + aotSourceSet.getName() + "Resources");
-		TaskProvider<ProcessAot> processAot = project.getTasks().register(PROCESS_AOT_TASK_NAME, ProcessAot.class,
-				(task) -> {
+		TaskProvider<ProcessAot> processAot = project.getTasks()
+				.register(PROCESS_AOT_TASK_NAME, ProcessAot.class, (task) -> {
 					configureAotTask(project, aotSourceSet, task, mainSourceSet, resourcesOutput);
 					task.getApplicationMainClass()
 							.set(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
@@ -166,7 +168,8 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 
 	private void configureDependsOn(Project project, SourceSet aotSourceSet,
 			TaskProvider<? extends AbstractAot> processAot) {
-		project.getTasks().named(aotSourceSet.getProcessResourcesTaskName())
+		project.getTasks()
+				.named(aotSourceSet.getProcessResourcesTaskName())
 				.configure((processResources) -> processResources.dependsOn(processAot));
 	}
 
@@ -177,10 +180,11 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		Configuration compileClasspath = project.getConfigurations()
 				.getByName(aotTestSourceSet.getCompileClasspathConfigurationName());
 		compileClasspath.extendsFrom(aotClasspath);
-		Provider<Directory> resourcesOutput = project.getLayout().getBuildDirectory()
+		Provider<Directory> resourcesOutput = project.getLayout()
+				.getBuildDirectory()
 				.dir("generated/" + aotTestSourceSet.getName() + "Resources");
-		TaskProvider<ProcessTestAot> processTestAot = project.getTasks().register(PROCESS_TEST_AOT_TASK_NAME,
-				ProcessTestAot.class, (task) -> {
+		TaskProvider<ProcessTestAot> processTestAot = project.getTasks()
+				.register(PROCESS_TEST_AOT_TASK_NAME, ProcessTestAot.class, (task) -> {
 					configureAotTask(project, aotTestSourceSet, task, testSourceSet, resourcesOutput);
 					task.setClasspath(aotClasspath);
 					task.setClasspathRoots(testSourceSet.getOutput());

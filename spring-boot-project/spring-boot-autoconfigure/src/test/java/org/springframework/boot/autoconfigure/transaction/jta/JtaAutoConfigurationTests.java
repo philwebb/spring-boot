@@ -165,8 +165,8 @@ class JtaAutoConfigurationTests {
 		@Override
 		public void beforeEach(ExtensionContext context) throws Exception {
 			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
-			context.getStore(namespace).getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(),
-					InitialContext.class);
+			context.getStore(namespace)
+					.getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(), InitialContext.class);
 		}
 
 		private InitialContext createInitialContext() {
@@ -181,8 +181,8 @@ class JtaAutoConfigurationTests {
 		@Override
 		public void afterEach(ExtensionContext context) throws Exception {
 			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
-			InitialContext initialContext = context.getStore(namespace).remove(InitialContext.class,
-					InitialContext.class);
+			InitialContext initialContext = context.getStore(namespace)
+					.remove(InitialContext.class, InitialContext.class);
 			initialContext.removeFromEnvironment("org.osjava.sj.jndi.ignoreClose");
 			initialContext.close();
 		}

@@ -70,9 +70,11 @@ class WavefrontSenderConfigurationTests {
 
 	@Test
 	void configureWavefrontSender() {
-		this.contextRunner.withPropertyValues("management.wavefront.api-token=abcde",
-				"management.wavefront.sender.batch-size=50", "management.wavefront.sender.max-queue-size=100",
-				"management.wavefront.sender.message-size=1KB").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.wavefront.api-token=abcde", "management.wavefront.sender.batch-size=50",
+						"management.wavefront.sender.max-queue-size=100",
+						"management.wavefront.sender.message-size=1KB")
+				.run((context) -> {
 					WavefrontSender sender = context.getBean(WavefrontSender.class);
 					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
 					assertThat(sender)

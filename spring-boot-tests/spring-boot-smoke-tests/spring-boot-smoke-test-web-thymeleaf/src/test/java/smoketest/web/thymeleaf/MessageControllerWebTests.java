@@ -57,19 +57,22 @@ class MessageControllerWebTests {
 
 	@Test
 	void testHome() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/"))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("<title>Messages")));
 	}
 
 	@Test
 	void testCreate() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO")).andExpect(status().isFound())
+		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO"))
+				.andExpect(status().isFound())
 				.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
 	}
 
 	@Test
 	void testCreateValidation() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "").param("summary", "")).andExpect(status().isOk())
+		this.mockMvc.perform(post("/").param("text", "").param("summary", ""))
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString("is required")));
 	}
 

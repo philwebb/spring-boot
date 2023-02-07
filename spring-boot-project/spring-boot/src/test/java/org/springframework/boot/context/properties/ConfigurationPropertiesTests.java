@@ -459,9 +459,11 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenUsingSystemPropertiesShouldBindToMap() {
-		this.context.getEnvironment().getPropertySources().addLast(
-				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-						Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
+		this.context.getEnvironment()
+				.getPropertySources()
+				.addLast(
+						new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+								Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
 		load(WithComplexMapProperties.class);
 		WithComplexMapProperties bean = this.context.getBean(WithComplexMapProperties.class);
 		assertThat(bean.getMap()).containsOnlyKeys("foo");
@@ -470,9 +472,11 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadWhenDotsInSystemEnvironmentPropertiesShouldBind() {
-		this.context.getEnvironment().getPropertySources().addLast(
-				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-						Collections.singletonMap("com.example.bar", "baz")));
+		this.context.getEnvironment()
+				.getPropertySources()
+				.addLast(
+						new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+								Collections.singletonMap("com.example.bar", "baz")));
 		load(SimplePrefixedProperties.class);
 		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
 		assertThat(bean.getBar()).isEqualTo("baz");
@@ -812,8 +816,10 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadWhenConfigurationPropertiesInjectsAnotherBeanShouldNotFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class)).havingCause()
-				.isInstanceOf(BindException.class).withMessageContaining(OtherInjectedProperties.class.getName())
+				.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class))
+				.havingCause()
+				.isInstanceOf(BindException.class)
+				.withMessageContaining(OtherInjectedProperties.class.getName())
 				.withMessageContaining("Failed to bind properties under 'test'");
 	}
 
@@ -896,7 +902,8 @@ class ConfigurationPropertiesTests {
 		source.put("test.duration", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+				.havingCause()
 				.isInstanceOf(BindException.class);
 	}
 
@@ -907,7 +914,8 @@ class ConfigurationPropertiesTests {
 		source.put("test.period", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+				.havingCause()
 				.isInstanceOf(BindException.class);
 	}
 
@@ -923,7 +931,8 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadWhenBindingToConstructorParametersShouldValidate() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> load(ConstructorParameterValidationConfiguration.class)).satisfies((ex) -> {
+				.isThrownBy(() -> load(ConstructorParameterValidationConfiguration.class))
+				.satisfies((ex) -> {
 					assertThat(ex).hasCauseInstanceOf(BindException.class);
 					assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
 				});
@@ -935,8 +944,8 @@ class ConfigurationPropertiesTests {
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.name).isEqualTo("test");
 		bean.name = "override";
-		this.context.getBean(ConfigurationPropertiesBindingPostProcessor.class).postProcessBeforeInitialization(bean,
-				"does-not-exist");
+		this.context.getBean(ConfigurationPropertiesBindingPostProcessor.class)
+				.postProcessBeforeInitialization(bean, "does-not-exist");
 		assertThat(bean.name).isEqualTo("test");
 	}
 

@@ -68,7 +68,8 @@ class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+				.withCauseInstanceOf(WebServerException.class)
+				.withMessageContaining("Could not load key store 'null'");
 	}
 
 	@Test

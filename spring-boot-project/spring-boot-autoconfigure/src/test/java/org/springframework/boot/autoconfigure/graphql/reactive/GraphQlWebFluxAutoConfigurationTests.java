@@ -72,16 +72,25 @@ class GraphQlWebFluxAutoConfigurationTests {
 	@Test
 	void shouldContributeDefaultBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlHttpHandler.class)
-				.hasSingleBean(WebGraphQlHandler.class).doesNotHaveBean(GraphQlWebSocketHandler.class));
+				.hasSingleBean(WebGraphQlHandler.class)
+				.doesNotHaveBean(GraphQlWebSocketHandler.class));
 	}
 
 	@Test
 	void simpleQueryShouldWork() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
-					.expectHeader().contentType(MediaType.APPLICATION_GRAPHQL_RESPONSE_VALUE).expectBody()
-					.jsonPath("data.bookById.name").isEqualTo("GraphQL for beginners");
+			client.post()
+					.uri("/graphql")
+					.bodyValue("{  \"query\": \"" + query + "\"}")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.contentType(MediaType.APPLICATION_GRAPHQL_RESPONSE_VALUE)
+					.expectBody()
+					.jsonPath("data.bookById.name")
+					.isEqualTo("GraphQL for beginners");
 		});
 	}
 
@@ -89,8 +98,13 @@ class GraphQlWebFluxAutoConfigurationTests {
 	void httpGetQueryShouldBeSupported() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			client.get().uri("/graphql?query={query}", "{  \"query\": \"" + query + "\"}").exchange().expectStatus()
-					.isEqualTo(HttpStatus.METHOD_NOT_ALLOWED).expectHeader().valueEquals("Allow", "POST");
+			client.get()
+					.uri("/graphql?query={query}", "{  \"query\": \"" + query + "\"}")
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+					.expectHeader()
+					.valueEquals("Allow", "POST");
 		});
 	}
 
@@ -111,25 +125,49 @@ class GraphQlWebFluxAutoConfigurationTests {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 
-			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
-					.expectHeader().valueEquals("X-Custom-Header", "42");
+			client.post()
+					.uri("/graphql")
+					.bodyValue("{  \"query\": \"" + query + "\"}")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.valueEquals("X-Custom-Header", "42");
 		});
 	}
 
 	@Test
 	void shouldExposeSchemaEndpoint() {
-		testWithWebClient((client) -> client.get().uri("/graphql/schema").accept(MediaType.ALL).exchange()
-				.expectStatus().isOk().expectHeader().contentType(MediaType.TEXT_PLAIN).expectBody(String.class)
+		testWithWebClient((client) -> client.get()
+				.uri("/graphql/schema")
+				.accept(MediaType.ALL)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectHeader()
+				.contentType(MediaType.TEXT_PLAIN)
+				.expectBody(String.class)
 				.value(containsString("type Book")));
 	}
 
 	@Test
 	void shouldExposeGraphiqlEndpoint() {
 		testWithWebClient((client) -> {
-			client.get().uri("/graphiql").exchange().expectStatus().is3xxRedirection().expectHeader()
+			client.get()
+					.uri("/graphiql")
+					.exchange()
+					.expectStatus()
+					.is3xxRedirection()
+					.expectHeader()
 					.location("https://spring.example.org/graphiql?path=/graphql");
-			client.get().uri("/graphiql?path=/graphql").accept(MediaType.ALL).exchange().expectStatus().isOk()
-					.expectHeader().contentType(MediaType.TEXT_HTML);
+			client.get()
+					.uri("/graphiql?path=/graphql")
+					.accept(MediaType.ALL)
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.contentType(MediaType.TEXT_HTML);
 		});
 	}
 
@@ -138,10 +176,17 @@ class GraphQlWebFluxAutoConfigurationTests {
 		testWithWebClient((client) -> {
 			String query = "{" + "  bookById(id: \\\"book-1\\\"){ " + "    id" + "    name" + "    pageCount"
 					+ "    author" + "  }" + "}";
-			client.post().uri("/graphql").bodyValue("{  \"query\": \"" + query + "\"}")
+			client.post()
+					.uri("/graphql")
+					.bodyValue("{  \"query\": \"" + query + "\"}")
 					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
-					.header(HttpHeaders.ORIGIN, "https://example.com").exchange().expectStatus().isOk().expectHeader()
-					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com").expectHeader()
+					.header(HttpHeaders.ORIGIN, "https://example.com")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com")
+					.expectHeader()
 					.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 		});
 	}
@@ -172,11 +217,14 @@ class GraphQlWebFluxAutoConfigurationTests {
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context).configureClient()
+			WebTestClient client = WebTestClient.bindToApplicationContext(context)
+					.configureClient()
 					.defaultHeaders((headers) -> {
 						headers.setContentType(MediaType.APPLICATION_JSON);
 						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_GRAPHQL_RESPONSE));
-					}).baseUrl(BASE_URL).build();
+					})
+					.baseUrl(BASE_URL)
+					.build();
 			consumer.accept(client);
 		});
 	}
@@ -186,8 +234,8 @@ class GraphQlWebFluxAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher() {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById",
-					GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+					.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
 		}
 
 	}

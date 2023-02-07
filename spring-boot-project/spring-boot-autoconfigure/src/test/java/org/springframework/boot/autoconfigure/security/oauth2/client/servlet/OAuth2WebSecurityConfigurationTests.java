@@ -62,8 +62,10 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	void securityConfigurerConfiguresOAuth2Login() {
-		this.contextRunner.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					ClientRegistrationRepository expected = context.getBean(ClientRegistrationRepository.class);
 					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
 							getFilters(context, OAuth2LoginAuthenticationFilter.class).get(0),
@@ -77,8 +79,10 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	void securityConfigurerConfiguresAuthorizationCode() {
-		this.contextRunner.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					ClientRegistrationRepository expected = context.getBean(ClientRegistrationRepository.class);
 					ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
 							getFilters(context, OAuth2AuthorizationCodeGrantFilter.class).get(0),
@@ -131,7 +135,8 @@ class OAuth2WebSecurityConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class)).run((context) -> {
+				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class))
+				.run((context) -> {
 					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
 					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 				});
@@ -139,8 +144,10 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	void authorizedClientServiceBeanIsConditionalOnMissingBean() {
-		this.contextRunner.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(OAuth2AuthorizedClientServiceConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(OAuth2AuthorizedClientService.class);
 					assertThat(context).hasBean("testAuthorizedClientService");
 				});
@@ -148,8 +155,10 @@ class OAuth2WebSecurityConfigurationTests {
 
 	@Test
 	void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
-		this.contextRunner.withUserConfiguration(OAuth2AuthorizedClientRepositoryConfiguration.class,
-				OAuth2WebSecurityConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(OAuth2AuthorizedClientRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(OAuth2AuthorizedClientRepository.class);
 					assertThat(context).hasBean("testAuthorizedClientRepository");
 				});
@@ -205,13 +214,18 @@ class OAuth2WebSecurityConfigurationTests {
 
 		private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 			ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
-			builder.clientName("foo").clientId("foo")
+			builder.clientName("foo")
+					.clientId("foo")
 					.clientAuthenticationMethod(
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("read")
-					.clientSecret("secret").redirectUri("https://redirect-uri.com")
-					.authorizationUri("https://authorization-uri.com").tokenUri("https://token-uri.com")
-					.userInfoUri(userInfoUri).userNameAttributeName("login");
+					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+					.scope("read")
+					.clientSecret("secret")
+					.redirectUri("https://redirect-uri.com")
+					.authorizationUri("https://authorization-uri.com")
+					.tokenUri("https://token-uri.com")
+					.userInfoUri(userInfoUri)
+					.userNameAttributeName("login");
 			return builder.build();
 		}
 
@@ -224,7 +238,8 @@ class OAuth2WebSecurityConfigurationTests {
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.securityMatcher("/**")
-					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
 
 		}
 

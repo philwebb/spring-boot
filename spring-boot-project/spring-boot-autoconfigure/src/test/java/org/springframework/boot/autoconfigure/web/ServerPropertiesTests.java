@@ -488,7 +488,8 @@ class ServerPropertiesTests {
 								req.getParameterMap();
 							}
 
-						}).addMapping("/form"));
+						})
+						.addMapping("/form"));
 		jetty.start();
 		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
 		final AtomicReference<Throwable> failure = new AtomicReference<>();
@@ -573,7 +574,8 @@ class ServerPropertiesTests {
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
 		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
-				.getDeclaredConstructor().newInstance();
+				.getDeclaredConstructor()
+				.newInstance();
 	}
 
 	private void bind(String name, String value) {

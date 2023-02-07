@@ -62,8 +62,10 @@ class ElasticsearchDataAutoConfigurationTests {
 	@Test
 	void defaultRestBeansRegistered() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class)
-				.hasSingleBean(ReactiveElasticsearchTemplate.class).hasSingleBean(ElasticsearchConverter.class)
-				.hasSingleBean(ElasticsearchConverter.class).hasSingleBean(ElasticsearchCustomConversions.class));
+				.hasSingleBean(ReactiveElasticsearchTemplate.class)
+				.hasSingleBean(ElasticsearchConverter.class)
+				.hasSingleBean(ElasticsearchConverter.class)
+				.hasSingleBean(ElasticsearchCustomConversions.class));
 	}
 
 	@Test
@@ -71,7 +73,8 @@ class ElasticsearchDataAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			SimpleElasticsearchMappingContext mappingContext = context.getBean(SimpleElasticsearchMappingContext.class);
 			assertThat(mappingContext)
-					.extracting("simpleTypeHolder", InstanceOfAssertFactories.type(SimpleTypeHolder.class)).satisfies(
+					.extracting("simpleTypeHolder", InstanceOfAssertFactories.type(SimpleTypeHolder.class))
+					.satisfies(
 							(simpleTypeHolder) -> assertThat(simpleTypeHolder.isSimpleType(BigDecimal.class)).isTrue());
 		});
 	}
@@ -80,21 +83,25 @@ class ElasticsearchDataAutoConfigurationTests {
 	void customConversionsShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomElasticsearchCustomConversions.class).run((context) -> {
 			assertThat(context).hasSingleBean(ElasticsearchCustomConversions.class).hasBean("testCustomConversions");
-			assertThat(context.getBean(ElasticsearchConverter.class).getConversionService()
+			assertThat(context.getBean(ElasticsearchConverter.class)
+					.getConversionService()
 					.canConvert(ElasticsearchTemplate.class, Boolean.class)).isTrue();
 		});
 	}
 
 	@Test
 	void customRestTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRestTemplate.class).run((context) -> assertThat(context)
-				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
+		this.contextRunner.withUserConfiguration(CustomRestTemplate.class)
+				.run((context) -> assertThat(context).getBeanNames(ElasticsearchTemplate.class)
+						.hasSize(1)
+						.contains("elasticsearchTemplate"));
 	}
 
 	@Test
 	void customReactiveRestTemplateShouldBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomReactiveElasticsearchTemplate.class)
-				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
+				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class)
+						.hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));
 	}
 

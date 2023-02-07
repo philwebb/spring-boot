@@ -43,7 +43,8 @@ public abstract class AbstractMetadataGenerationTests {
 	}
 
 	protected ConfigurationMetadata compile(String additionalMetadata, Class<?> type, Class<?>... types) {
-		TestCompiler compiler = TestCompiler.forSystem().withSources(sourceFilesOf(type))
+		TestCompiler compiler = TestCompiler.forSystem()
+				.withSources(sourceFilesOf(type))
 				.withSources(sourceFilesOf(types))
 				.withResources(ResourceFile.of(ADDITIONAL_METADATA_FILE, additionalMetadata));
 		return compile(compiler);

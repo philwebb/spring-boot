@@ -52,8 +52,10 @@ class Snippets {
 
 	void writeTo(Path outputDirectory) throws IOException {
 		createDirectory(outputDirectory);
-		Set<String> remaining = this.properties.stream().filter((property) -> !property.isDeprecated())
-				.map(ConfigurationProperty::getName).collect(Collectors.toSet());
+		Set<String> remaining = this.properties.stream()
+				.filter((property) -> !property.isDeprecated())
+				.map(ConfigurationProperty::getName)
+				.collect(Collectors.toSet());
 		for (Snippet snippet : this.snippets) {
 			Set<String> written = writeSnippet(outputDirectory, snippet, remaining);
 			remaining.removeAll(written);

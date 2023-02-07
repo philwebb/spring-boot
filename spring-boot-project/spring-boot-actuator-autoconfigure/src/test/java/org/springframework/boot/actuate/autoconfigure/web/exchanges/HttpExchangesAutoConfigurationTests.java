@@ -65,7 +65,8 @@ class HttpExchangesAutoConfigurationTests {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpExchangesAutoConfiguration.class))
 				.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withUserConfiguration(CustomWebFilterConfiguration.class).run((context) -> {
+				.withUserConfiguration(CustomWebFilterConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HttpExchangesWebFilter.class);
 					assertThat(context.getBean(HttpExchangesWebFilter.class))
 							.isInstanceOf(CustomHttpExchangesWebFilter.class);
@@ -81,7 +82,8 @@ class HttpExchangesAutoConfigurationTests {
 	@Test
 	void usesUserProvidedServletFilter() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
+				.withUserConfiguration(CustomFilterConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HttpExchangesFilter.class);
 					assertThat(context.getBean(HttpExchangesFilter.class))
 							.isInstanceOf(CustomHttpExchangesFilter.class);

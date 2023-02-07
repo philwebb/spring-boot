@@ -186,7 +186,8 @@ class TomcatWebServerFactoryCustomizerTests {
 	void customMaxHttpHeaderSizeWithHttp2() {
 		bind("server.max-http-header-size=1KB", "server.http2.enabled=true");
 		customizeAndRunServer((server) -> {
-			AbstractHttp11Protocol<?> protocolHandler = (AbstractHttp11Protocol<?>) server.getTomcat().getConnector()
+			AbstractHttp11Protocol<?> protocolHandler = (AbstractHttp11Protocol<?>) server.getTomcat()
+					.getConnector()
 					.getProtocolHandler();
 			long expectedSize = DataSize.ofKilobytes(1).toBytes();
 			assertThat(protocolHandler.getMaxHttpRequestHeaderSize()).isEqualTo(expectedSize);

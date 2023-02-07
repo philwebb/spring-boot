@@ -359,8 +359,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					"%nExpecting:%n <%s>%nto contain a bean of name:%n <%s> (%s)%nbut found:%n <%s> of type <%s>",
 					getApplicationContext(), name, type, bean, bean.getClass()));
 		}
-		return Assertions.assertThat((T) bean).as("Bean of name <%s> and type <%s> from <%s>", name, type,
-				getApplicationContext());
+		return Assertions.assertThat((T) bean)
+				.as("Bean of name <%s> and type <%s> from <%s>", name, type, getApplicationContext());
 	}
 
 	private Object findBean(String name) {
@@ -517,7 +517,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 
 	}
 
-	private static final class ContextFailedToStart<C extends ApplicationContext> extends BasicErrorMessageFactory {
+	private static final class ContextFailedToStart<C extends ApplicationContext>extends BasicErrorMessageFactory {
 
 		private ContextFailedToStart(C context, Throwable ex, String expectationFormat, Object... arguments) {
 			super("%nExpecting:%n <%s>%n" + expectationFormat + ":%nbut context failed to start:%n%s",

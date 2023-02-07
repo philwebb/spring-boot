@@ -86,7 +86,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void missingHttpHandler() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class)
 				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class).rootCause()
+						.isInstanceOf(ApplicationContextException.class)
+						.rootCause()
 						.hasMessageContaining("missing HttpHandler bean"));
 	}
 
@@ -96,7 +97,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
 						TooManyHttpHandlers.class)
 				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class).rootCause()
+						.isInstanceOf(ApplicationContextException.class)
+						.rootCause()
 						.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
 
@@ -112,7 +114,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Test
 	void defaultWebServerIsTomcat() {
 		// Tomcat should be chosen over Netty if the Tomcat library is present.
-		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class).withPropertyValues("server.port=0")
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+				.withPropertyValues("server.port=0")
 				.run((context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
 						.isInstanceOf(TomcatReactiveWebServerFactory.class));
 	}
@@ -238,7 +241,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
 				.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class,
 						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port=0").run((context) -> {
+				.withPropertyValues("server.port=0")
+				.run((context) -> {
 					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
 					JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
 					assertThat(factory.getServerCustomizers()).contains(customizer);
@@ -265,7 +269,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
 				.withUserConfiguration(DoubleRegistrationUndertowBuilderCustomizerConfiguration.class,
 						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port: 0").run((context) -> {
+				.withPropertyValues("server.port: 0")
+				.run((context) -> {
 					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
 					UndertowBuilderCustomizer customizer = context.getBean("builderCustomizer",
 							UndertowBuilderCustomizer.class);
@@ -293,7 +298,8 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 				.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
 				.withUserConfiguration(DoubleRegistrationNettyServerCustomizerConfiguration.class,
 						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port: 0").run((context) -> {
+				.withPropertyValues("server.port: 0")
+				.run((context) -> {
 					NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
 					NettyServerCustomizer customizer = context.getBean("serverCustomizer", NettyServerCustomizer.class);
 					assertThat(factory.getServerCustomizers()).contains(customizer);

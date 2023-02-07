@@ -162,7 +162,8 @@ class ScheduledTasksEndpointTests {
 		Set<Class<?>> bindingTypes = Set.of(FixedRateTaskDescriptor.class, FixedDelayTaskDescriptor.class,
 				CronTaskDescriptor.class, CustomTriggerTaskDescriptor.class);
 		for (Class<?> bindingType : bindingTypes) {
-			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
+			assertThat(RuntimeHintsPredicates.reflection()
+					.onType(bindingType)
 					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 							.accepts(runtimeHints);
 		}

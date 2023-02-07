@@ -246,7 +246,9 @@ public final class EndpointRequest {
 		}
 
 		private String toString(List<Object> endpoints, String emptyValue) {
-			return (!endpoints.isEmpty()) ? endpoints.stream().map(this::getEndpointId).map(Object::toString)
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+					.map(this::getEndpointId)
+					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
 		}
 

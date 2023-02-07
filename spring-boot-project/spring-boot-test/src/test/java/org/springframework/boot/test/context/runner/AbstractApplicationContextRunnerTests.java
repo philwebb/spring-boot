@@ -81,7 +81,8 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
 		assertThat(System.getProperties()).doesNotContainKey(key);
-		get().withSystemProperties(key + "=value").withUserConfiguration(FailingConfig.class)
+		get().withSystemProperties(key + "=value")
+				.withUserConfiguration(FailingConfig.class)
 				.run((context) -> assertThat(context).hasFailed());
 		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
@@ -150,7 +151,8 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 
 	@Test
 	void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
-		get().withUserConfiguration(FooConfig.class).withConfiguration(UserConfigurations.of(BarConfig.class))
+		get().withUserConfiguration(FooConfig.class)
+				.withConfiguration(UserConfigurations.of(BarConfig.class))
 				.run((context) -> assertThat(context).hasBean("foo").hasBean("bar"));
 	}
 
@@ -175,10 +177,12 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 
 	@Test
 	void consecutiveRunWithFilteredClassLoaderShouldHaveBeanWithLazyProperties() {
-		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
+		get().withClassLoader(new FilteredClassLoader(Gson.class))
+				.withUserConfiguration(LazyConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
 
-		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
+		get().withClassLoader(new FilteredClassLoader(Gson.class))
+				.withUserConfiguration(LazyConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
 	}
 
@@ -216,8 +220,11 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 
 	@Test
 	void runWithUserBeanShouldBeRegisteredInOrder() {
-		get().withAllowBeanDefinitionOverriding(true).withBean(String.class, () -> "one")
-				.withBean(String.class, () -> "two").withBean(String.class, () -> "three").run((context) -> {
+		get().withAllowBeanDefinitionOverriding(true)
+				.withBean(String.class, () -> "one")
+				.withBean(String.class, () -> "two")
+				.withBean(String.class, () -> "three")
+				.run((context) -> {
 					assertThat(context).hasBean("string");
 					assertThat(context.getBean("string")).isEqualTo("three");
 				});
@@ -225,8 +232,10 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 
 	@Test
 	void runWithConfigurationsAndUserBeanShouldRegisterUserBeanLast() {
-		get().withAllowBeanDefinitionOverriding(true).withUserConfiguration(FooConfig.class)
-				.withBean("foo", String.class, () -> "overridden").run((context) -> {
+		get().withAllowBeanDefinitionOverriding(true)
+				.withUserConfiguration(FooConfig.class)
+				.withBean("foo", String.class, () -> "overridden")
+				.run((context) -> {
 					assertThat(context).hasBean("foo");
 					assertThat(context.getBean("foo")).isEqualTo("overridden");
 				});

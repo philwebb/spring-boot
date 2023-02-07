@@ -49,7 +49,8 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	void liquibase() throws Exception {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
 				.description("Change sets made by the Liquibase beans, keyed by bean name.");
-		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/liquibase"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("liquibase",
 						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 								changeSetsField)
@@ -72,7 +73,8 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 				fieldWithPath("labels").description("Labels associated with the change set."),
 				fieldWithPath("checksum").description("Checksum of the change set."),
 				fieldWithPath("orderExecuted").description("Order of the execution of the change set."),
-				fieldWithPath("tag").description("Tag associated with the change set, if any.").optional()
+				fieldWithPath("tag").description("Tag associated with the change set, if any.")
+						.optional()
 						.type(JsonFieldType.STRING));
 	}
 

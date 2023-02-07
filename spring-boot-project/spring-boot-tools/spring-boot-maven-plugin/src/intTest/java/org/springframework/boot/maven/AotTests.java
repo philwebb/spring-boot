@@ -126,8 +126,10 @@ class AotTests {
 
 	@TestTemplate
 	void whenAotRunsWithInvalidCompilerArgumentsCompileFails(MavenBuild mavenBuild) {
-		mavenBuild.project("aot-compiler-arguments").goals("package").executeAndFail(
-				(project) -> assertThat(buildLog(project)).contains("invalid flag: --invalid-compiler-arg"));
+		mavenBuild.project("aot-compiler-arguments")
+				.goals("package")
+				.executeAndFail(
+						(project) -> assertThat(buildLog(project)).contains("invalid flag: --invalid-compiler-arg"));
 	}
 
 	@TestTemplate
@@ -177,7 +179,8 @@ class AotTests {
 	List<Path> collectRelativePaths(Path sourceDirectory) {
 		try (Stream<Path> pathStream = Files.walk(sourceDirectory)) {
 			return pathStream.filter(Files::isRegularFile)
-					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount())).toList();
+					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount()))
+					.toList();
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);

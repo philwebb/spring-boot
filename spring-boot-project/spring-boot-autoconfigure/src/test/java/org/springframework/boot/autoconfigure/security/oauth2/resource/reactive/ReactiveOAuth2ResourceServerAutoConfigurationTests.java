@@ -143,9 +143,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationUsingPublicKeyValueShouldConfigureResourceServerUsingSingleJwsAlgorithm() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
-				"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS384").run((context) -> {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS384")
+				.run((context) -> {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
 					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJWSAlg")
 							.isEqualTo(JWSAlgorithm.RS384);
@@ -154,9 +156,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationUsingPublicKeyValueWithMultipleJwsAlgorithmsShouldFail() {
-		this.contextRunner.withPropertyValues(
-				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
-				"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RSA256,RS384").run((context) -> {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
+						"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RSA256,RS384")
+				.run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).hasRootCauseMessage(
 							"Creating a JWT decoder using a public key requires exactly one JWS algorithm but 2 were "
@@ -250,7 +254,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues(
 						"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:does-not-exist")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
 						.hasMessageContaining("class path resource [does-not-exist]")
 						.hasMessageContaining("Public key location does not exist"));
 	}
@@ -332,7 +337,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	void autoConfigurationWhenSecurityWebFilterChainConfigPresentShouldNotAddOne() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
-				.withUserConfiguration(SecurityWebFilterChainConfig.class).run((context) -> {
+				.withUserConfiguration(SecurityWebFilterChainConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
 					assertThat(context).hasBean("testSpringSecurityFilterChain");
 				});
@@ -381,7 +387,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
 						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
-				.withUserConfiguration(SecurityWebFilterChainConfig.class).run((context) -> {
+				.withUserConfiguration(SecurityWebFilterChainConfig.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(SecurityWebFilterChain.class);
 					assertThat(context).hasBean("testSpringSecurityFilterChain");
 				});
@@ -484,7 +491,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	private void validateDelegates(String issuerUri, Collection<OAuth2TokenValidator<Jwt>> delegates) {
 		assertThat(delegates).hasAtLeastOneElementOfType(JwtClaimValidator.class);
 		OAuth2TokenValidator<Jwt> delegatingValidator = delegates.stream()
-				.filter((v) -> v instanceof DelegatingOAuth2TokenValidator).findFirst().get();
+				.filter((v) -> v instanceof DelegatingOAuth2TokenValidator)
+				.findFirst()
+				.get();
 		Collection<OAuth2TokenValidator<Jwt>> nestedDelegates = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 				.getField(delegatingValidator, "tokenValidators");
 		if (issuerUri != null) {
@@ -552,7 +561,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 							.getField(jwtDecoder, "jwtValidator");
 					Jwt jwt = jwt().claim("iss", new URL(issuerUri))
-							.claim("aud", Collections.singletonList("https://other-audience.com")).build();
+							.claim("aud", Collections.singletonList("https://other-audience.com"))
+							.build();
 					assertThat(jwtValidator.validate(jwt).hasErrors()).isTrue();
 				});
 	}
@@ -562,7 +572,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
 		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
-				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
+				.filter((f) -> f instanceof AuthenticationWebFilter)
+				.findFirst()
+				.orElse(null);
 		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
 				.getField(webFilter, "authenticationManagerResolver");
 		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);
@@ -575,7 +587,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		Stream<WebFilter> filters = filterChain.getWebFilters().toStream();
 		AuthenticationWebFilter webFilter = (AuthenticationWebFilter) filters
-				.filter((f) -> f instanceof AuthenticationWebFilter).findFirst().orElse(null);
+				.filter((f) -> f instanceof AuthenticationWebFilter)
+				.findFirst()
+				.orElse(null);
 		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
 				.getField(webFilter, "authenticationManagerResolver");
 		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);

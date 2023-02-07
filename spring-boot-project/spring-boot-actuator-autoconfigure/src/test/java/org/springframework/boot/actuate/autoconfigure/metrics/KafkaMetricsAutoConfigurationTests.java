@@ -55,7 +55,8 @@ class KafkaMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsListenersAreAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+				.run((context) -> {
 					assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
 							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerProducerListener.class);
 					assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
@@ -77,7 +78,9 @@ class KafkaMetricsAutoConfigurationTests {
 	void whenKafkaStreamsIsEnabledAndThereIsAMeterRegistryThenMetricsListenersAreAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
 				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-				.withPropertyValues("spring.application.name=my-test-app").with(MetricsRun.simple()).run((context) -> {
+				.withPropertyValues("spring.application.name=my-test-app")
+				.with(MetricsRun.simple())
+				.run((context) -> {
 					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
 							.getBean(StreamsBuilderFactoryBean.class);
 					assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1)
@@ -89,7 +92,8 @@ class KafkaMetricsAutoConfigurationTests {
 	void whenKafkaStreamsIsEnabledAndThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
 				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-				.withPropertyValues("spring.application.name=my-test-app").run((context) -> {
+				.withPropertyValues("spring.application.name=my-test-app")
+				.run((context) -> {
 					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
 							.getBean(StreamsBuilderFactoryBean.class);
 					assertThat(streamsBuilderFactoryBean.getListeners()).isEmpty();

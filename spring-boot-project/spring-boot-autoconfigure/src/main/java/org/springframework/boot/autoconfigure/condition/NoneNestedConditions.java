@@ -62,8 +62,9 @@ public abstract class NoneNestedConditions extends AbstractNestedCondition {
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = memberOutcomes.getMatches().isEmpty();
 		List<ConditionMessage> messages = new ArrayList<>();
-		messages.add(ConditionMessage.forCondition("NoneNestedConditions").because(
-				memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size() + " did not"));
+		messages.add(ConditionMessage.forCondition("NoneNestedConditions")
+				.because(memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size()
+						+ " did not"));
 		for (ConditionOutcome outcome : memberOutcomes.getAll()) {
 			messages.add(outcome.getConditionMessage());
 		}

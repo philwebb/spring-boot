@@ -70,7 +70,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcObservationAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
+			.with(MetricsRun.simple())
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class))
 			.withConfiguration(AutoConfigurations.of(WebMvcObservationAutoConfiguration.class));
 
 	@Test
@@ -102,7 +103,8 @@ class WebMvcObservationAutoConfigurationTests {
 	void customConventionWhenPresent() {
 		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class)
 				.run((context) -> assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
-						.extracting("observationConvention").isInstanceOf(CustomConvention.class));
+						.extracting("observationConvention")
+						.isInstanceOf(CustomConvention.class));
 	}
 
 	@Test
@@ -149,7 +151,8 @@ class WebMvcObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
+				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
@@ -190,7 +193,8 @@ class WebMvcObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
+				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
 					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
 					assertThat(output)

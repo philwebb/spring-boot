@@ -46,7 +46,8 @@ class DataCouchbaseTestReactiveIntegrationTests {
 
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
+			.withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(10))
 			.withBucket(new BucketDefinition(BUCKET_NAME));
 
 	@DynamicPropertySource

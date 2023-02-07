@@ -58,8 +58,9 @@ public class LdapAutoConfiguration {
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
 		propertyMapper.from(properties.getBase()).to(source::setBase);
 		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
-		propertyMapper.from(properties.getBaseEnvironment()).to(
-				(baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
+		propertyMapper.from(properties.getBaseEnvironment())
+				.to((baseEnvironment) -> source
+						.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}
 

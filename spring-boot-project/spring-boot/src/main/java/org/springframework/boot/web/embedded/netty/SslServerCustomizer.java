@@ -240,8 +240,11 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 		@Override
 		protected KeyManager[] engineGetKeyManagers() {
-			return Arrays.stream(this.delegate.getKeyManagers()).filter(X509ExtendedKeyManager.class::isInstance)
-					.map(X509ExtendedKeyManager.class::cast).map(this::wrap).toArray(KeyManager[]::new);
+			return Arrays.stream(this.delegate.getKeyManagers())
+					.filter(X509ExtendedKeyManager.class::isInstance)
+					.map(X509ExtendedKeyManager.class::cast)
+					.map(this::wrap)
+					.toArray(KeyManager[]::new);
 		}
 
 		private ConfigurableAliasKeyManager wrap(X509ExtendedKeyManager keyManager) {

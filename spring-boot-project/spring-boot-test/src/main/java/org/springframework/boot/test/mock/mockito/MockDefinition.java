@@ -129,9 +129,13 @@ class MockDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName()).append("typeToMock", this.typeToMock)
-				.append("extraInterfaces", this.extraInterfaces).append("answer", this.answer)
-				.append("serializable", this.serializable).append("reset", getReset()).toString();
+		return new ToStringCreator(this).append("name", getName())
+				.append("typeToMock", this.typeToMock)
+				.append("extraInterfaces", this.extraInterfaces)
+				.append("answer", this.answer)
+				.append("serializable", this.serializable)
+				.append("reset", getReset())
+				.toString();
 	}
 
 	<T> T createMock() {

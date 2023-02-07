@@ -72,8 +72,11 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 
 	@BeforeEach
 	void webTestClient(RestDocumentationContextProvider restDocumentation) {
-		this.client = WebTestClient.bindToServer().filter(documentationConfiguration(restDocumentation))
-				.baseUrl("http://localhost:" + this.port).responseTimeout(Duration.ofMinutes(5)).build();
+		this.client = WebTestClient.bindToServer()
+				.filter(documentationConfiguration(restDocumentation))
+				.baseUrl("http://localhost:" + this.port)
+				.responseTimeout(Duration.ofMinutes(5))
+				.build();
 	}
 
 	@Test
@@ -87,12 +90,15 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 						.description("Servlet filter mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.servlets").description("Servlet mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.dispatcherHandlers")
-						.description("Dispatcher handler mappings, if any.").optional().type(JsonFieldType.OBJECT),
+						.description("Dispatcher handler mappings, if any.")
+						.optional()
+						.type(JsonFieldType.OBJECT),
 				parentIdField());
 		List<FieldDescriptor> dispatcherServletFields = new ArrayList<>(Arrays.asList(
 				fieldWithPath("*")
 						.description("Dispatcher servlet mappings, if any, keyed by dispatcher servlet bean name."),
-				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
+				fieldWithPath("*.[].details").optional()
+						.type(JsonFieldType.OBJECT)
 						.description("Additional implementation-specific details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
 				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
@@ -117,7 +123,8 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 				requestMappingConditionField(".produces.[].mediaType").description("Produced media type."),
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
-				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
+				fieldWithPath("*.[].details.handlerMethod").optional()
+						.type(JsonFieldType.OBJECT)
 						.description("Details of the method, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className")
 						.description("Fully qualified name of the class of the method."),
@@ -126,7 +133,10 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 						.description("Descriptor of the method as specified in the Java Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);
-		this.client.get().uri("/actuator/mappings").exchange().expectBody()
+		this.client.get()
+				.uri("/actuator/mappings")
+				.exchange()
+				.expectBody()
 				.consumeWith(document("mappings", commonResponseFields,
 						responseFields(beneathPath("contexts.*.mappings.dispatcherServlets")
 								.withSubsectionId("dispatcher-servlets"), dispatcherServletFields),

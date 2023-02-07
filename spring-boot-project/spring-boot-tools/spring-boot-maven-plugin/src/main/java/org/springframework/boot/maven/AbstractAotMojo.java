@@ -114,8 +114,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	protected void generateAotAssets(URL[] classPath, String processorClassName, String... arguments) throws Exception {
 		List<String> command = CommandLineBuilder.forMainClass(processorClassName)
 				.withSystemProperties(this.systemPropertyVariables)
-				.withJvmArguments(new RunArguments(this.jvmArguments).asArray()).withClasspath(classPath)
-				.withArguments(arguments).build();
+				.withJvmArguments(new RunArguments(this.jvmArguments).asArray())
+				.withClasspath(classPath)
+				.withArguments(arguments)
+				.build();
 		if (getLog().isDebugEnabled()) {
 			getLog().debug("Generating AOT assets using command: " + command);
 		}

@@ -69,7 +69,8 @@ class HttpHandlerAutoConfigurationTests {
 	@Test
 	void shouldConfigureBasePathCompositeHandler() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.withPropertyValues("spring.webflux.base-path=/something").run((context) -> {
+				.withPropertyValues("spring.webflux.base-path=/something")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(HttpHandler.class);
 					HttpHandler httpHandler = context.getBean(HttpHandler.class);
 					assertThat(httpHandler).isInstanceOf(ContextPathCompositeHandler.class)

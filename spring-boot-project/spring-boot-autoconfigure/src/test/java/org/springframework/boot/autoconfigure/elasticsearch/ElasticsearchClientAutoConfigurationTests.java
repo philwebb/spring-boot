@@ -50,48 +50,55 @@ class ElasticsearchClientAutoConfigurationTests {
 	@Test
 	void withoutRestClientThenAutoConfigurationShouldBackOff() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchTransport.class)
-				.doesNotHaveBean(JsonpMapper.class).doesNotHaveBean(ElasticsearchClient.class));
+				.doesNotHaveBean(JsonpMapper.class)
+				.doesNotHaveBean(ElasticsearchClient.class));
 	}
 
 	@Test
 	void withRestClientAutoConfigurationShouldDefineClientAndSupportingBeans() {
 		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
-						.hasSingleBean(RestClientTransport.class).hasSingleBean(ElasticsearchClient.class));
+						.hasSingleBean(RestClientTransport.class)
+						.hasSingleBean(ElasticsearchClient.class));
 	}
 
 	@Test
 	void withoutJsonbOrJacksonShouldDefineSimpleMapper() {
-		this.contextRunner.withUserConfiguration(RestClientConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(JsonpMapper.class).hasSingleBean(SimpleJsonpMapper.class));
+		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
+						.hasSingleBean(SimpleJsonpMapper.class));
 	}
 
 	@Test
 	void withJsonbShouldDefineJsonbMapper() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(JsonpMapper.class).hasSingleBean(JsonbJsonpMapper.class));
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
+						.hasSingleBean(JsonbJsonpMapper.class));
 	}
 
 	@Test
 	void withJacksonShouldDefineJacksonMapper() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(JsonpMapper.class).hasSingleBean(JacksonJsonpMapper.class));
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
+						.hasSingleBean(JacksonJsonpMapper.class));
 	}
 
 	@Test
 	void withJacksonAndJsonbShouldDefineJacksonMapper() {
 		this.contextRunner
 				.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class, JacksonAutoConfiguration.class))
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(JsonpMapper.class).hasSingleBean(JacksonJsonpMapper.class));
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
+						.hasSingleBean(JacksonJsonpMapper.class));
 	}
 
 	@Test
 	void withCustomMapperTransportShouldUseIt() {
 		this.contextRunner.withUserConfiguration(JsonpMapperConfiguration.class)
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> {
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(JsonpMapper.class).hasBean("customJsonpMapper");
 					JsonpMapper mapper = context.getBean(JsonpMapper.class);
 					assertThat(context.getBean(ElasticsearchTransport.class).jsonpMapper()).isSameAs(mapper);
@@ -101,7 +108,8 @@ class ElasticsearchClientAutoConfigurationTests {
 	@Test
 	void withCustomTransportClientShouldUseIt() {
 		this.contextRunner.withUserConfiguration(TransportConfiguration.class)
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> {
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ElasticsearchTransport.class)
 							.hasBean("customElasticsearchTransport");
 					ElasticsearchTransport transport = context.getBean(ElasticsearchTransport.class);
@@ -112,7 +120,8 @@ class ElasticsearchClientAutoConfigurationTests {
 	@Test
 	void jacksonJsonpMapperDoesNotUseGlobalObjectMapper() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withUserConfiguration(RestClientConfiguration.class).run((context) -> {
+				.withUserConfiguration(RestClientConfiguration.class)
+				.run((context) -> {
 					ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
 					JacksonJsonpMapper jacksonJsonpMapper = context.getBean(JacksonJsonpMapper.class);
 					assertThat(jacksonJsonpMapper.objectMapper()).isNotSameAs(objectMapper);

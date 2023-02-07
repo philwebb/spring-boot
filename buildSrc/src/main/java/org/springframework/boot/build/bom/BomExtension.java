@@ -125,7 +125,8 @@ public class BomExtension {
 
 	public void effectiveBomArtifact() {
 		Configuration effectiveBomConfiguration = this.project.getConfigurations().create("effectiveBom");
-		this.project.getTasks().matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
+		this.project.getTasks()
+				.matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
 				.all((task) -> {
 					Sync syncBom = this.project.getTasks().create("syncBom", Sync.class);
 					syncBom.dependsOn(task);
@@ -145,8 +146,8 @@ public class BomExtension {
 					catch (IOException ex) {
 						throw new GradleException("Failed to prepare settings.xml", ex);
 					}
-					MavenExec generateEffectiveBom = this.project.getTasks().create("generateEffectiveBom",
-							MavenExec.class);
+					MavenExec generateEffectiveBom = this.project.getTasks()
+							.create("generateEffectiveBom", MavenExec.class);
 					generateEffectiveBom.setProjectDir(generatedBomDir);
 					File effectiveBom = new File(this.project.getBuildDir(),
 							"generated/effective-bom/" + this.project.getName() + "-effective-bom.xml");
@@ -155,8 +156,9 @@ public class BomExtension {
 					generateEffectiveBom.dependsOn(syncBom);
 					generateEffectiveBom.getOutputs().file(effectiveBom);
 					generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
-					this.project.getArtifacts().add(effectiveBomConfiguration.getName(), effectiveBom,
-							(artifact) -> artifact.builtBy(generateEffectiveBom));
+					this.project.getArtifacts()
+							.add(effectiveBomConfiguration.getName(), effectiveBom,
+									(artifact) -> artifact.builtBy(generateEffectiveBom));
 				});
 	}
 
@@ -196,8 +198,9 @@ public class BomExtension {
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
 				putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
-				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
-						createDependencyNotation(group.getId(), module.getName(), library.getVersion().getVersion()));
+				this.dependencyHandler.getConstraints()
+						.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, createDependencyNotation(group.getId(),
+								module.getName(), library.getVersion().getVersion()));
 			}
 			for (String bomImport : group.getBoms()) {
 				putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
@@ -530,8 +533,9 @@ public class BomExtension {
 				org.w3c.dom.Node reporting = (org.w3c.dom.Node) xpath.evaluate("/project/reporting", document,
 						XPathConstants.NODE);
 				reporting.getParentNode().removeChild(reporting);
-				TransformerFactory.newInstance().newTransformer().transform(new DOMSource(document),
-						new StreamResult(this.effectiveBom));
+				TransformerFactory.newInstance()
+						.newTransformer()
+						.transform(new DOMSource(document), new StreamResult(this.effectiveBom));
 			}
 			catch (Exception ex) {
 				throw new TaskExecutionException(task, ex);

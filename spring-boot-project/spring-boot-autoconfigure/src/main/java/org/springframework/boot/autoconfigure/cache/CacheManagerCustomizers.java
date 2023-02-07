@@ -49,7 +49,8 @@ public class CacheManagerCustomizers {
 	@SuppressWarnings("unchecked")
 	public <T extends CacheManager> T customize(T cacheManager) {
 		LambdaSafe.callbacks(CacheManagerCustomizer.class, this.customizers, cacheManager)
-				.withLogger(CacheManagerCustomizers.class).invoke((customizer) -> customizer.customize(cacheManager));
+				.withLogger(CacheManagerCustomizers.class)
+				.invoke((customizer) -> customizer.customize(cacheManager));
 		return cacheManager;
 	}
 

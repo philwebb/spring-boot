@@ -165,8 +165,10 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyB3WithoutBaggageIfBaggageDisabledAndB3Picked() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
-				"management.tracing.propagation.type=B3").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.tracing.baggage.enabled=false",
+						"management.tracing.propagation.type=B3")
+				.run((context) -> {
 					assertThat(context).hasBean("propagationFactory");
 					assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
 					assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
@@ -175,8 +177,10 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldNotApplyCorrelationFieldsIfBaggageCorrelationDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false",
-				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.tracing.baggage.correlation.enabled=false",
+						"management.tracing.baggage.correlation.fields=alpha,bravo")
+				.run((context) -> {
 					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
 					assertThat(scopeDecorator)
 							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
@@ -186,8 +190,10 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldApplyCorrelationFieldsIfBaggageCorrelationEnabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
-				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
+						"management.tracing.baggage.correlation.fields=alpha,bravo")
+				.run((context) -> {
 					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
 					assertThat(scopeDecorator)
 							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
@@ -240,12 +246,15 @@ class BraveAutoConfigurationTests {
 			CompositeSpanHandlerComponentsConfiguration components = context
 					.getBean(CompositeSpanHandlerComponentsConfiguration.class);
 			CompositeSpanHandler composite = context.getBean(CompositeSpanHandler.class);
-			assertThat(composite).extracting("spanFilters").asList().containsExactly(components.filter1,
-					components.filter2);
-			assertThat(composite).extracting("filters").asList().containsExactly(components.predicate2,
-					components.predicate1);
-			assertThat(composite).extracting("reporters").asList().containsExactly(components.reporter1,
-					components.reporter3, components.reporter2);
+			assertThat(composite).extracting("spanFilters")
+					.asList()
+					.containsExactly(components.filter1, components.filter2);
+			assertThat(composite).extracting("filters")
+					.asList()
+					.containsExactly(components.predicate2, components.predicate1);
+			assertThat(composite).extracting("reporters")
+					.asList()
+					.containsExactly(components.reporter1, components.reporter3, components.reporter2);
 		});
 	}
 

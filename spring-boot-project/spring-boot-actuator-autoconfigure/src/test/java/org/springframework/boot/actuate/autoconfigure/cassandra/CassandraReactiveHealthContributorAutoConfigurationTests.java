@@ -51,8 +51,9 @@ class CassandraReactiveHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWithCqlSessionOnlyShouldCreateDriverIndicator() {
-		this.contextRunner.withBean(CqlSession.class, () -> mock(CqlSession.class)).run((context) -> assertThat(context)
-				.hasBean("cassandraHealthContributor").hasSingleBean(CassandraDriverReactiveHealthIndicator.class));
+		this.contextRunner.withBean(CqlSession.class, () -> mock(CqlSession.class))
+				.run((context) -> assertThat(context).hasBean("cassandraHealthContributor")
+						.hasSingleBean(CassandraDriverReactiveHealthIndicator.class));
 	}
 
 	@Test

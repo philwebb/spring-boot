@@ -65,7 +65,8 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		registerEntries(RenameMixInClass.class);
 		processAheadOfTime();
 		RuntimeHints runtimeHints = this.generationContext.getRuntimeHints();
-		assertThat(RuntimeHintsPredicates.reflection().onType(RenameMixInClass.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(RenameMixInClass.class)
 				.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
 						.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(RenameMixInClass.class, "getName").introspect())
@@ -78,8 +79,9 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
 			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP).containsExactly(
-					entry(Name.class, RenameMixInClass.class), entry(NameAndAge.class, RenameMixInClass.class));
+			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+					.containsExactly(entry(Name.class, RenameMixInClass.class),
+							entry(NameAndAge.class, RenameMixInClass.class));
 		});
 	}
 
@@ -91,9 +93,9 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
 			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP).containsExactly(
-					entry(Name.class.getName(), privateMixinClass.getName()),
-					entry(NameAndAge.class.getName(), privateMixinClass.getName()));
+			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+					.containsExactly(entry(Name.class.getName(), privateMixinClass.getName()),
+							entry(NameAndAge.class.getName(), privateMixinClass.getName()));
 		});
 	}
 
@@ -119,8 +121,10 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 
 	private void registerEntries(Class<?>... basePackageClasses) {
 		List<String> packageNames = Arrays.stream(basePackageClasses).map(Class::getPackageName).toList();
-		this.applicationContext.registerBeanDefinition("configuration", BeanDefinitionBuilder
-				.rootBeanDefinition(TestConfiguration.class).addConstructorArgValue(packageNames).getBeanDefinition());
+		this.applicationContext.registerBeanDefinition("configuration",
+				BeanDefinitionBuilder.rootBeanDefinition(TestConfiguration.class)
+						.addConstructorArgValue(packageNames)
+						.getBeanDefinition());
 	}
 
 	@Configuration(proxyBeanMethods = false)

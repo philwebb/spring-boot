@@ -304,7 +304,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		}
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			for (ImportPhase importPhase : ImportPhase.values()) {
-				if (contributor.getChildren(importPhase).stream()
+				if (contributor.getChildren(importPhase)
+						.stream()
 						.anyMatch((child) -> child.hasConfigDataOption(ConfigData.Option.PROFILE_SPECIFIC))) {
 					return true;
 				}

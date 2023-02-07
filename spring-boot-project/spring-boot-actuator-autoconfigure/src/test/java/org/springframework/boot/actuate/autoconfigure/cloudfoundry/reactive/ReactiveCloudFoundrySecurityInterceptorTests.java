@@ -61,9 +61,10 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 
 	@Test
 	void preHandleWhenRequestIsPreFlightShouldBeOk() {
-		MockServerWebExchange request = MockServerWebExchange
-				.from(MockServerHttpRequest.options("/a").header(HttpHeaders.ORIGIN, "https://example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").build());
+		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.options("/a")
+				.header(HttpHeaders.ORIGIN, "https://example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 				.consumeNextWith((response) -> assertThat(response.getStatus()).isEqualTo(HttpStatus.OK))
 				.verifyComplete();
@@ -72,8 +73,9 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 	@Test
 	void preHandleWhenTokenIsMissingShouldReturnMissingAuthorization() {
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a").build());
-		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeNextWith(
-				(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
+		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
+				.consumeNextWith((response) -> assertThat(response.getStatus())
+						.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
 				.verifyComplete();
 	}
 
@@ -81,8 +83,9 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 	void preHandleWhenTokenIsNotBearerShouldReturnMissingAuthorization() {
 		MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("/a").header(HttpHeaders.AUTHORIZATION, mockAccessToken()).build());
-		StepVerifier.create(this.interceptor.preHandle(request, "/a")).consumeNextWith(
-				(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
+		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
+				.consumeNextWith((response) -> assertThat(response.getStatus())
+						.isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
 				.verifyComplete();
 	}
 
@@ -90,7 +93,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 	void preHandleWhenApplicationIdIsNullShouldReturnError() {
 		this.interceptor = new CloudFoundrySecurityInterceptor(this.tokenValidator, this.securityService, null);
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a")
-				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken()).build());
+				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
+				.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 				.consumeErrorWith((ex) -> assertThat(((CloudFoundryAuthorizationException) ex).getReason())
 						.isEqualTo(Reason.SERVICE_UNAVAILABLE))
@@ -114,7 +118,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 				.willReturn(Mono.just(AccessLevel.RESTRICTED));
 		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
 		MockServerWebExchange request = MockServerWebExchange.from(MockServerHttpRequest.get("/a")
-				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken()).build());
+				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
+				.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 				.consumeNextWith(
 						(response) -> assertThat(response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus()))
@@ -127,7 +132,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		given(this.securityService.getAccessLevel(accessToken, "my-app-id")).willReturn(Mono.just(AccessLevel.FULL));
 		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/a")
-				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken()).build());
+				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
+				.build());
 		StepVerifier.create(this.interceptor.preHandle(exchange, "/a")).consumeNextWith((response) -> {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
@@ -141,7 +147,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 				.willReturn(Mono.just(AccessLevel.RESTRICTED));
 		given(this.tokenValidator.validate(any())).willReturn(Mono.empty());
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/info")
-				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken()).build());
+				.header(HttpHeaders.AUTHORIZATION, "bearer " + mockAccessToken())
+				.build());
 		StepVerifier.create(this.interceptor.preHandle(exchange, "info")).consumeNextWith((response) -> {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel"))

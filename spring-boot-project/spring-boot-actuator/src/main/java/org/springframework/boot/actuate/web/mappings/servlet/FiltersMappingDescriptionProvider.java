@@ -44,8 +44,12 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
-			return webApplicationContext.getServletContext().getFilterRegistrations().values().stream()
-					.map(FilterRegistrationMappingDescription::new).toList();
+			return webApplicationContext.getServletContext()
+					.getFilterRegistrations()
+					.values()
+					.stream()
+					.map(FilterRegistrationMappingDescription::new)
+					.toList();
 		}
 		return Collections.emptyList();
 	}

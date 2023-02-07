@@ -127,7 +127,8 @@ class JettyMetricsAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
 							.hasBean("customJettyConnectionMetricsBinder");
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.connections.messages.in").tag("custom-tag-name", "custom-tag-value")
+					assertThat(registry.find("jetty.connections.messages.in")
+							.tag("custom-tag-name", "custom-tag-value")
 							.meter()).isNotNull();
 				});
 	}

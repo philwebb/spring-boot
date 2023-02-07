@@ -96,7 +96,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		candidates.add(testMethod);
 		candidates.addAll(getAnnotatedElements(arguments.toArray()));
 		List<AnnotatedElement> annotatedElements = candidates.stream()
-				.filter(ModifiedClassPathClassLoader::hasAnnotation).collect(Collectors.toList());
+				.filter(ModifiedClassPathClassLoader::hasAnnotation)
+				.collect(Collectors.toList());
 		if (annotatedElements.isEmpty()) {
 			return null;
 		}

@@ -79,8 +79,10 @@ class SpyDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName()).append("typeToSpy", this.typeToSpy)
-				.append("reset", getReset()).toString();
+		return new ToStringCreator(this).append("name", getName())
+				.append("typeToSpy", this.typeToSpy)
+				.append("reset", getReset())
+				.toString();
 	}
 
 	<T> T createSpy(Object instance) {

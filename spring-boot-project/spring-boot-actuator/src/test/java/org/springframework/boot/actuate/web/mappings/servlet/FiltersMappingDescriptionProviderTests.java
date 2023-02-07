@@ -36,7 +36,8 @@ class FiltersMappingDescriptionProviderTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new FiltersMappingDescriptionProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(FilterRegistrationMappingDescription.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(FilterRegistrationMappingDescription.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 						.accepts(runtimeHints);
 	}

@@ -91,14 +91,20 @@ class QuartzEndpointTests {
 
 	private static final JobDetail jobThree = JobBuilder.newJob(Job.class).withIdentity("jobThree", "samples").build();
 
-	private static final Trigger triggerOne = TriggerBuilder.newTrigger().forJob(jobOne).withIdentity("triggerOne")
+	private static final Trigger triggerOne = TriggerBuilder.newTrigger()
+			.forJob(jobOne)
+			.withIdentity("triggerOne")
 			.build();
 
-	private static final Trigger triggerTwo = TriggerBuilder.newTrigger().forJob(jobOne).withIdentity("triggerTwo")
+	private static final Trigger triggerTwo = TriggerBuilder.newTrigger()
+			.forJob(jobOne)
+			.withIdentity("triggerTwo")
 			.build();
 
-	private static final Trigger triggerThree = TriggerBuilder.newTrigger().forJob(jobThree)
-			.withIdentity("triggerThree", "samples").build();
+	private static final Trigger triggerThree = TriggerBuilder.newTrigger()
+			.forJob(jobThree)
+			.withIdentity("triggerThree", "samples")
+			.build();
 
 	private final Scheduler scheduler;
 
@@ -163,10 +169,10 @@ class QuartzEndpointTests {
 		given(this.scheduler.getPausedTriggerGroups()).willReturn(Collections.singleton("samples"));
 		Map<String, Object> triggerGroups = this.endpoint.quartzTriggerGroups().getGroups();
 		assertThat(triggerGroups).containsOnlyKeys("DEFAULT", "samples");
-		assertThat(triggerGroups).extractingByKey("DEFAULT", nestedMap()).containsOnly(entry("paused", false),
-				entry("triggers", Arrays.asList("triggerOne", "triggerTwo")));
-		assertThat(triggerGroups).extractingByKey("samples", nestedMap()).containsOnly(entry("paused", true),
-				entry("triggers", Collections.singletonList("triggerThree")));
+		assertThat(triggerGroups).extractingByKey("DEFAULT", nestedMap())
+				.containsOnly(entry("paused", false), entry("triggers", Arrays.asList("triggerOne", "triggerTwo")));
+		assertThat(triggerGroups).extractingByKey("samples", nestedMap())
+				.containsOnly(entry("paused", true), entry("triggers", Collections.singletonList("triggerThree")));
 	}
 
 	@Test
@@ -230,8 +236,10 @@ class QuartzEndpointTests {
 
 	@Test
 	void quartzTriggerGroupSummaryWithCronTrigger() throws SchedulerException {
-		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples")
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).build();
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.build();
 		mockTriggers(cronTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		assertThat(summary.getGroup()).isEqualTo("samples");
@@ -248,23 +256,28 @@ class QuartzEndpointTests {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
 		TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples").withPriority(3)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone)).build();
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withPriority(3)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone))
+				.build();
 		((OperableTrigger) cronTrigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) cronTrigger).setNextFireTime(nextFireTime);
 		mockTriggers(cronTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		Map<String, Object> triggers = summary.getTriggers().getCron();
 		assertThat(triggers).containsOnlyKeys("3am-every-day");
-		assertThat(triggers).extractingByKey("3am-every-day", nestedMap()).containsOnly(
-				entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime), entry("priority", 3),
-				entry("expression", "0 0 3 ? * *"), entry("timeZone", timeZone));
+		assertThat(triggers).extractingByKey("3am-every-day", nestedMap())
+				.containsOnly(entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime),
+						entry("priority", 3), entry("expression", "0 0 3 ? * *"), entry("timeZone", timeZone));
 	}
 
 	@Test
 	void quartzTriggerGroupSummaryWithSimpleTrigger() throws SchedulerException {
-		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity("every-hour", "samples")
-				.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(1)).build();
+		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour", "samples")
+				.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(1))
+				.build();
 		mockTriggers(simpleTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		assertThat(summary.getGroup()).isEqualTo("samples");
@@ -280,24 +293,29 @@ class QuartzEndpointTests {
 	void quartzTriggerGroupSummaryWithSimpleTriggerDetails() throws SchedulerException {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity("every-hour", "samples").withPriority(7)
-				.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(1)).build();
+		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour", "samples")
+				.withPriority(7)
+				.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(1))
+				.build();
 		((OperableTrigger) simpleTrigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) simpleTrigger).setNextFireTime(nextFireTime);
 		mockTriggers(simpleTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		Map<String, Object> triggers = summary.getTriggers().getSimple();
 		assertThat(triggers).containsOnlyKeys("every-hour");
-		assertThat(triggers).extractingByKey("every-hour", nestedMap()).containsOnly(
-				entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime), entry("priority", 7),
-				entry("interval", 3600000L));
+		assertThat(triggers).extractingByKey("every-hour", nestedMap())
+				.containsOnly(entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime),
+						entry("priority", 7), entry("interval", 3600000L));
 	}
 
 	@Test
 	void quartzTriggerGroupSummaryWithDailyIntervalTrigger() throws SchedulerException {
-		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("every-hour-9am", "samples")
+		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour-9am", "samples")
 				.withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
-						.startingDailyAt(TimeOfDay.hourAndMinuteOfDay(9, 0)).withInterval(1, IntervalUnit.HOUR))
+						.startingDailyAt(TimeOfDay.hourAndMinuteOfDay(9, 0))
+						.withInterval(1, IntervalUnit.HOUR))
 				.build();
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
@@ -314,12 +332,14 @@ class QuartzEndpointTests {
 	void quartzTriggerGroupSummaryWithDailyIntervalTriggerDetails() throws SchedulerException {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("every-hour-tue-thu", "samples")
+		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour-tue-thu", "samples")
 				.withPriority(4)
 				.withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
 						.onDaysOfTheWeek(Calendar.TUESDAY, Calendar.THURSDAY)
 						.startingDailyAt(TimeOfDay.hourAndMinuteOfDay(9, 0))
-						.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0)).withInterval(1, IntervalUnit.HOUR))
+						.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0))
+						.withInterval(1, IntervalUnit.HOUR))
 				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
@@ -327,16 +347,17 @@ class QuartzEndpointTests {
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		Map<String, Object> triggers = summary.getTriggers().getDailyTimeInterval();
 		assertThat(triggers).containsOnlyKeys("every-hour-tue-thu");
-		assertThat(triggers).extractingByKey("every-hour-tue-thu", nestedMap()).containsOnly(
-				entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime), entry("priority", 4),
-				entry("interval", 3600000L), entry("startTimeOfDay", LocalTime.of(9, 0)),
-				entry("endTimeOfDay", LocalTime.of(18, 0)),
-				entry("daysOfWeek", new LinkedHashSet<>(Arrays.asList(3, 5))));
+		assertThat(triggers).extractingByKey("every-hour-tue-thu", nestedMap())
+				.containsOnly(entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime),
+						entry("priority", 4), entry("interval", 3600000L), entry("startTimeOfDay", LocalTime.of(9, 0)),
+						entry("endTimeOfDay", LocalTime.of(18, 0)),
+						entry("daysOfWeek", new LinkedHashSet<>(Arrays.asList(3, 5))));
 	}
 
 	@Test
 	void quartzTriggerGroupSummaryWithCalendarIntervalTrigger() throws SchedulerException {
-		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("once-a-week", "samples")
+		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("once-a-week", "samples")
 				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1))
 				.build();
 		mockTriggers(trigger);
@@ -355,9 +376,12 @@ class QuartzEndpointTests {
 		TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("once-a-week", "samples")
-				.withPriority(8).withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
-						.withIntervalInWeeks(1).inTimeZone(timeZone))
+		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("once-a-week", "samples")
+				.withPriority(8)
+				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+						.withIntervalInWeeks(1)
+						.inTimeZone(timeZone))
 				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
@@ -365,9 +389,9 @@ class QuartzEndpointTests {
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		Map<String, Object> triggers = summary.getTriggers().getCalendarInterval();
 		assertThat(triggers).containsOnlyKeys("once-a-week");
-		assertThat(triggers).extractingByKey("once-a-week", nestedMap()).containsOnly(
-				entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime), entry("priority", 8),
-				entry("interval", 604800000L), entry("timeZone", timeZone));
+		assertThat(triggers).extractingByKey("once-a-week", nestedMap())
+				.containsOnly(entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime),
+						entry("priority", 8), entry("interval", 604800000L), entry("timeZone", timeZone));
 	}
 
 	@Test
@@ -398,9 +422,9 @@ class QuartzEndpointTests {
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		Map<String, Object> triggers = summary.getTriggers().getCustom();
 		assertThat(triggers).containsOnlyKeys("custom");
-		assertThat(triggers).extractingByKey("custom", nestedMap()).containsOnly(
-				entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime), entry("priority", 9),
-				entry("trigger", trigger.toString()));
+		assertThat(triggers).extractingByKey("custom", nestedMap())
+				.containsOnly(entry("previousFireTime", previousFireTime), entry("nextFireTime", nextFireTime),
+						entry("priority", 9), entry("trigger", trigger.toString()));
 	}
 
 	@Test
@@ -408,9 +432,12 @@ class QuartzEndpointTests {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
 		TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-		CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples").withPriority(3)
+		CronTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withPriority(3)
 				.withDescription("Sample description")
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone)).build();
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone))
+				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
 		mockTriggers(trigger);
@@ -423,8 +450,8 @@ class QuartzEndpointTests {
 		assertThat(triggerDetails).contains(entry("previousFireTime", previousFireTime),
 				entry("nextFireTime", nextFireTime));
 		assertThat(triggerDetails).doesNotContainKeys("simple", "dailyTimeInterval", "calendarInterval", "custom");
-		assertThat(triggerDetails).extractingByKey("cron", nestedMap()).containsOnly(entry("expression", "0 0 3 ? * *"),
-				entry("timeZone", timeZone));
+		assertThat(triggerDetails).extractingByKey("cron", nestedMap())
+				.containsOnly(entry("expression", "0 0 3 ? * *"), entry("timeZone", timeZone));
 	}
 
 	@Test
@@ -433,8 +460,12 @@ class QuartzEndpointTests {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
 		Date endTime = Date.from(Instant.parse("2020-01-31T09:00:00Z"));
-		SimpleTrigger trigger = TriggerBuilder.newTrigger().withIdentity("every-hour", "samples").withPriority(20)
-				.withDescription("Every hour").startAt(startTime).endAt(endTime)
+		SimpleTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour", "samples")
+				.withPriority(20)
+				.withDescription("Every hour")
+				.startAt(startTime)
+				.endAt(endTime)
 				.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(1).withRepeatCount(2000))
 				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
@@ -449,20 +480,23 @@ class QuartzEndpointTests {
 		assertThat(triggerDetails).contains(entry("startTime", startTime), entry("previousFireTime", previousFireTime),
 				entry("nextFireTime", nextFireTime), entry("endTime", endTime));
 		assertThat(triggerDetails).doesNotContainKeys("cron", "dailyTimeInterval", "calendarInterval", "custom");
-		assertThat(triggerDetails).extractingByKey("simple", nestedMap()).containsOnly(entry("interval", 3600000L),
-				entry("repeatCount", 2000), entry("timesTriggered", 0));
+		assertThat(triggerDetails).extractingByKey("simple", nestedMap())
+				.containsOnly(entry("interval", 3600000L), entry("repeatCount", 2000), entry("timesTriggered", 0));
 	}
 
 	@Test
 	void quartzTriggerWithDailyTimeIntervalTrigger() throws SchedulerException {
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("every-hour-mon-wed", "samples")
-				.withDescription("Every working hour Mon Wed").withPriority(4)
+		DailyTimeIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("every-hour-mon-wed", "samples")
+				.withDescription("Every working hour Mon Wed")
+				.withPriority(4)
 				.withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
 						.onDaysOfTheWeek(Calendar.MONDAY, Calendar.WEDNESDAY)
 						.startingDailyAt(TimeOfDay.hourAndMinuteOfDay(9, 0))
-						.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0)).withInterval(1, IntervalUnit.HOUR))
+						.endingDailyAt(TimeOfDay.hourAndMinuteOfDay(18, 0))
+						.withInterval(1, IntervalUnit.HOUR))
 				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
@@ -476,11 +510,11 @@ class QuartzEndpointTests {
 		assertThat(triggerDetails).contains(entry("previousFireTime", previousFireTime),
 				entry("nextFireTime", nextFireTime));
 		assertThat(triggerDetails).doesNotContainKeys("cron", "simple", "calendarInterval", "custom");
-		assertThat(triggerDetails).extractingByKey("dailyTimeInterval", nestedMap()).containsOnly(
-				entry("interval", 3600000L), entry("startTimeOfDay", LocalTime.of(9, 0)),
-				entry("endTimeOfDay", LocalTime.of(18, 0)),
-				entry("daysOfWeek", new LinkedHashSet<>(Arrays.asList(2, 4))), entry("repeatCount", -1),
-				entry("timesTriggered", 0));
+		assertThat(triggerDetails).extractingByKey("dailyTimeInterval", nestedMap())
+				.containsOnly(entry("interval", 3600000L), entry("startTimeOfDay", LocalTime.of(9, 0)),
+						entry("endTimeOfDay", LocalTime.of(18, 0)),
+						entry("daysOfWeek", new LinkedHashSet<>(Arrays.asList(2, 4))), entry("repeatCount", -1),
+						entry("timesTriggered", 0));
 	}
 
 	@Test
@@ -488,10 +522,14 @@ class QuartzEndpointTests {
 		TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
 		Date previousFireTime = Date.from(Instant.parse("2020-11-30T03:00:00Z"));
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("once-a-week", "samples")
-				.withDescription("Once a week").withPriority(8)
-				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1)
-						.inTimeZone(timeZone).preserveHourOfDayAcrossDaylightSavings(true))
+		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("once-a-week", "samples")
+				.withDescription("Once a week")
+				.withPriority(8)
+				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule()
+						.withIntervalInWeeks(1)
+						.inTimeZone(timeZone)
+						.preserveHourOfDayAcrossDaylightSavings(true))
 				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
@@ -505,10 +543,10 @@ class QuartzEndpointTests {
 		assertThat(triggerDetails).contains(entry("previousFireTime", previousFireTime),
 				entry("nextFireTime", nextFireTime));
 		assertThat(triggerDetails).doesNotContainKeys("cron", "simple", "dailyTimeInterval", "custom");
-		assertThat(triggerDetails).extractingByKey("calendarInterval", nestedMap()).containsOnly(
-				entry("interval", 604800000L), entry("timeZone", timeZone),
-				entry("preserveHourOfDayAcrossDaylightSavings", true), entry("skipDayIfHourDoesNotExist", false),
-				entry("timesTriggered", 0));
+		assertThat(triggerDetails).extractingByKey("calendarInterval", nestedMap())
+				.containsOnly(entry("interval", 604800000L), entry("timeZone", timeZone),
+						entry("preserveHourOfDayAcrossDaylightSavings", true),
+						entry("skipDayIfHourDoesNotExist", false), entry("timesTriggered", 0));
 	}
 
 	@Test
@@ -535,34 +573,44 @@ class QuartzEndpointTests {
 
 	@Test
 	void quartzTriggerWithDataMap() throws SchedulerException {
-		CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples")
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).usingJobData("user", "user")
-				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
+		CronTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.usingJobData("user", "user")
+				.usingJobData("password", "secret")
+				.usingJobData("url", "https://user:secret@example.com")
+				.build();
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("3am-every-day", "samples")))
 				.willReturn(TriggerState.NORMAL);
 		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day", true);
-		assertThat(triggerDetails).extractingByKey("data", nestedMap()).containsOnly(entry("user", "user"),
-				entry("password", "secret"), entry("url", "https://user:secret@example.com"));
+		assertThat(triggerDetails).extractingByKey("data", nestedMap())
+				.containsOnly(entry("user", "user"), entry("password", "secret"),
+						entry("url", "https://user:secret@example.com"));
 	}
 
 	@Test
 	void quartzTriggerWithDataMapAndShowUnsanitizedFalse() throws SchedulerException {
-		CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples")
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).usingJobData("user", "user")
-				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
+		CronTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.usingJobData("user", "user")
+				.usingJobData("password", "secret")
+				.usingJobData("url", "https://user:secret@example.com")
+				.build();
 		mockTriggers(trigger);
 		given(this.scheduler.getTriggerState(TriggerKey.triggerKey("3am-every-day", "samples")))
 				.willReturn(TriggerState.NORMAL);
 		Map<String, Object> triggerDetails = this.endpoint.quartzTrigger("samples", "3am-every-day", false);
-		assertThat(triggerDetails).extractingByKey("data", nestedMap()).containsOnly(entry("user", "******"),
-				entry("password", "******"), entry("url", "******"));
+		assertThat(triggerDetails).extractingByKey("data", nestedMap())
+				.containsOnly(entry("user", "******"), entry("password", "******"), entry("url", "******"));
 	}
 
 	@ParameterizedTest(name = "unit {1}")
 	@MethodSource("intervalUnitParameters")
 	void canConvertIntervalUnit(int amount, IntervalUnit unit, Duration expectedDuration) throws SchedulerException {
-		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger().withIdentity("trigger", "samples")
+		CalendarIntervalTrigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("trigger", "samples")
 				.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withInterval(amount, unit))
 				.build();
 		mockTriggers(trigger);
@@ -584,8 +632,12 @@ class QuartzEndpointTests {
 
 	@Test
 	void quartzJobWithoutTrigger() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").withDescription("A sample job")
-				.storeDurably().requestRecovery(false).build();
+		JobDetail job = JobBuilder.newJob(Job.class)
+				.withIdentity("hello", "samples")
+				.withDescription("A sample job")
+				.storeDurably()
+				.requestRecovery(false)
+				.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getGroup()).isEqualTo("samples");
@@ -604,8 +656,11 @@ class QuartzEndpointTests {
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").build();
 		TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-		Trigger trigger = TriggerBuilder.newTrigger().withIdentity("3am-every-day", "samples").withPriority(4)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone)).build();
+		Trigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("3am-every-day", "samples")
+				.withPriority(4)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0).inTimeZone(timeZone))
+				.build();
 		((OperableTrigger) trigger).setPreviousFireTime(previousFireTime);
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
 		mockJobs(job);
@@ -624,12 +679,18 @@ class QuartzEndpointTests {
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").build();
 		mockJobs(job);
 		Date triggerOneNextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		CronTrigger triggerOne = TriggerBuilder.newTrigger().withIdentity("one", "samples").withPriority(5)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).build();
+		CronTrigger triggerOne = TriggerBuilder.newTrigger()
+				.withIdentity("one", "samples")
+				.withPriority(5)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.build();
 		((OperableTrigger) triggerOne).setNextFireTime(triggerOneNextFireTime);
 		Date triggerTwoNextFireTime = Date.from(Instant.parse("2020-12-01T02:00:00Z"));
-		CronTrigger triggerTwo = TriggerBuilder.newTrigger().withIdentity("two", "samples").withPriority(10)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 0)).build();
+		CronTrigger triggerTwo = TriggerBuilder.newTrigger()
+				.withIdentity("two", "samples")
+				.withPriority(10)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(2, 0))
+				.build();
 		((OperableTrigger) triggerTwo).setNextFireTime(triggerTwoNextFireTime);
 		mockTriggers(triggerOne, triggerTwo);
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
@@ -645,11 +706,17 @@ class QuartzEndpointTests {
 		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").build();
 		mockJobs(job);
 		Date nextFireTime = Date.from(Instant.parse("2020-12-01T03:00:00Z"));
-		CronTrigger triggerOne = TriggerBuilder.newTrigger().withIdentity("one", "samples").withPriority(3)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).build();
+		CronTrigger triggerOne = TriggerBuilder.newTrigger()
+				.withIdentity("one", "samples")
+				.withPriority(3)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.build();
 		((OperableTrigger) triggerOne).setNextFireTime(nextFireTime);
-		CronTrigger triggerTwo = TriggerBuilder.newTrigger().withIdentity("two", "samples").withPriority(7)
-				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).build();
+		CronTrigger triggerTwo = TriggerBuilder.newTrigger()
+				.withIdentity("two", "samples")
+				.withPriority(7)
+				.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+				.build();
 		((OperableTrigger) triggerTwo).setNextFireTime(nextFireTime);
 		mockTriggers(triggerOne, triggerTwo);
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
@@ -662,8 +729,12 @@ class QuartzEndpointTests {
 
 	@Test
 	void quartzJobWithDataMap() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("user", "user")
-				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
+		JobDetail job = JobBuilder.newJob(Job.class)
+				.withIdentity("hello", "samples")
+				.usingJobData("user", "user")
+				.usingJobData("password", "secret")
+				.usingJobData("url", "https://user:secret@example.com")
+				.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
 		assertThat(jobDetails.getData()).containsOnly(entry("user", "user"), entry("password", "secret"),
@@ -672,8 +743,12 @@ class QuartzEndpointTests {
 
 	@Test
 	void quartzJobWithDataMapAndShowUnsanitizedFalse() throws SchedulerException {
-		JobDetail job = JobBuilder.newJob(Job.class).withIdentity("hello", "samples").usingJobData("user", "user")
-				.usingJobData("password", "secret").usingJobData("url", "https://user:secret@example.com").build();
+		JobDetail job = JobBuilder.newJob(Job.class)
+				.withIdentity("hello", "samples")
+				.usingJobData("user", "user")
+				.usingJobData("password", "secret")
+				.usingJobData("url", "https://user:secret@example.com")
+				.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", false);
 		assertThat(jobDetails.getData()).containsOnly(entry("user", "******"), entry("password", "******"),

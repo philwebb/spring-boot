@@ -70,8 +70,10 @@ public class ConditionEvaluationReportMessage {
 	private void logPositiveMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
 		message.append(String.format("Positive matches:%n"));
 		message.append(String.format("-----------------%n"));
-		List<Entry<String, ConditionAndOutcomes>> matched = shortOutcomes.entrySet().stream()
-				.filter((entry) -> entry.getValue().isFullMatch()).toList();
+		List<Entry<String, ConditionAndOutcomes>> matched = shortOutcomes.entrySet()
+				.stream()
+				.filter((entry) -> entry.getValue().isFullMatch())
+				.toList();
 		if (matched.isEmpty()) {
 			message.append(String.format("%n    None%n"));
 		}
@@ -84,8 +86,10 @@ public class ConditionEvaluationReportMessage {
 	private void logNegativeMatches(StringBuilder message, Map<String, ConditionAndOutcomes> shortOutcomes) {
 		message.append(String.format("Negative matches:%n"));
 		message.append(String.format("-----------------%n"));
-		List<Entry<String, ConditionAndOutcomes>> nonMatched = shortOutcomes.entrySet().stream()
-				.filter((entry) -> !entry.getValue().isFullMatch()).toList();
+		List<Entry<String, ConditionAndOutcomes>> nonMatched = shortOutcomes.entrySet()
+				.stream()
+				.filter((entry) -> !entry.getValue().isFullMatch())
+				.toList();
 		if (nonMatched.isEmpty()) {
 			message.append(String.format("%n    None%n"));
 		}

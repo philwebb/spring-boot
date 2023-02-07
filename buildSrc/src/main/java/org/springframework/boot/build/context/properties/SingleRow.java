@@ -45,7 +45,8 @@ class SingleRow extends Row {
 			return null;
 		}
 		if (defaultValue.getClass().isArray()) {
-			return Arrays.stream((Object[]) defaultValue).map(Object::toString)
+			return Arrays.stream((Object[]) defaultValue)
+					.map(Object::toString)
 					.collect(Collectors.joining("," + System.lineSeparator()));
 		}
 		return defaultValue.toString();

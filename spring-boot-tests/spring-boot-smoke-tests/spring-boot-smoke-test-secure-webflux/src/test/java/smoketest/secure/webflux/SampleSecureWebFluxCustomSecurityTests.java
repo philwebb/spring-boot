@@ -50,46 +50,82 @@ class SampleSecureWebFluxCustomSecurityTests {
 
 	@Test
 	void userDefinedMappingsSecure() {
-		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+		this.webClient.get()
+				.uri("/")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
 				.isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void healthDoesNotRequireAuthentication() {
-		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+		this.webClient.get()
+				.uri("/actuator/health")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
 				.isOk();
 	}
 
 	@Test
 	void actuatorsSecuredByRole() {
-		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", getBasicAuth()).exchange().expectStatus().isForbidden();
+		this.webClient.get()
+				.uri("/actuator/env")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", getBasicAuth())
+				.exchange()
+				.expectStatus()
+				.isForbidden();
 	}
 
 	@Test
 	void actuatorsAccessibleOnCorrectLogin() {
-		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+		this.webClient.get()
+				.uri("/actuator/env")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", getBasicAuthForAdmin())
+				.exchange()
+				.expectStatus()
+				.isOk();
 	}
 
 	@Test
 	void actuatorExcludedFromEndpointRequestMatcher() {
-		this.webClient.get().uri("/actuator/mappings").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", getBasicAuth()).exchange().expectStatus().isOk();
+		this.webClient.get()
+				.uri("/actuator/mappings")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", getBasicAuth())
+				.exchange()
+				.expectStatus()
+				.isOk();
 	}
 
 	@Test
 	void staticResourceShouldBeAccessible() {
-		this.webClient.get().uri("/css/bootstrap.min.css").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+		this.webClient.get()
+				.uri("/css/bootstrap.min.css")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
 				.isOk();
 	}
 
 	@Test
 	void actuatorLinksIsSecure() {
-		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+		this.webClient.get()
+				.uri("/actuator")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
 				.isUnauthorized();
-		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+		this.webClient.get()
+				.uri("/actuator")
+				.accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", getBasicAuthForAdmin())
+				.exchange()
+				.expectStatus()
+				.isOk();
 	}
 
 	private String getBasicAuth() {
@@ -107,10 +143,16 @@ class SampleSecureWebFluxCustomSecurityTests {
 		@Bean
 		MapReactiveUserDetailsService userDetailsService() {
 			return new MapReactiveUserDetailsService(
-					User.withDefaultPasswordEncoder().username("user").password("password").authorities("ROLE_USER")
+					User.withDefaultPasswordEncoder()
+							.username("user")
+							.password("password")
+							.authorities("ROLE_USER")
 							.build(),
-					User.withDefaultPasswordEncoder().username("admin").password("admin")
-							.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
+					User.withDefaultPasswordEncoder()
+							.username("admin")
+							.password("admin")
+							.authorities("ROLE_ACTUATOR", "ROLE_USER")
+							.build());
 		}
 
 		@Bean

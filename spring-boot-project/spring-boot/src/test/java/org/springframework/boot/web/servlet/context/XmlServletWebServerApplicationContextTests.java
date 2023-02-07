@@ -31,7 +31,8 @@ import static org.mockito.BDDMockito.then;
  */
 class XmlServletWebServerApplicationContextTests {
 
-	private static final String PATH = XmlServletWebServerApplicationContextTests.class.getPackage().getName()
+	private static final String PATH = XmlServletWebServerApplicationContextTests.class.getPackage()
+			.getName()
 			.replace('.', '/') + "/";
 
 	private static final String FILE = "exampleEmbeddedWebApplicationConfiguration.xml";

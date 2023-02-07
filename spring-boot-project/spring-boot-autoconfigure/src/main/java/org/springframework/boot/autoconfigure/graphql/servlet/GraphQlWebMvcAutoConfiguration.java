@@ -170,7 +170,10 @@ public class GraphQlWebMvcAutoConfiguration {
 		}
 
 		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
-			return converters.getConverters().stream().filter(this::canReadJsonMap).findFirst()
+			return converters.getConverters()
+					.stream()
+					.filter(this::canReadJsonMap)
+					.findFirst()
 					.map(this::asGenericHttpMessageConverter)
 					.orElseThrow(() -> new IllegalStateException("No JSON converter"));
 		}

@@ -47,8 +47,9 @@ class HumioMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(HumioMeterRegistry.class).hasSingleBean(HumioConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(HumioMeterRegistry.class)
+						.hasSingleBean(HumioConfig.class));
 	}
 
 	@Test
@@ -69,14 +70,18 @@ class HumioMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(HumioMeterRegistry.class).hasSingleBean(HumioConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(HumioMeterRegistry.class)
+						.hasSingleBean(HumioConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(HumioMeterRegistry.class).hasBean("customRegistry").hasSingleBean(HumioConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(HumioMeterRegistry.class)
+						.hasBean("customRegistry")
+						.hasSingleBean(HumioConfig.class));
 	}
 
 	@Test

@@ -274,7 +274,8 @@ class ConditionalOnPropertyTests {
 
 	private void load(Class<?> config, String... environment) {
 		TestPropertyValues.of(environment).applyTo(this.environment);
-		this.context = new SpringApplicationBuilder(config).environment(this.environment).web(WebApplicationType.NONE)
+		this.context = new SpringApplicationBuilder(config).environment(this.environment)
+				.web(WebApplicationType.NONE)
 				.run();
 	}
 

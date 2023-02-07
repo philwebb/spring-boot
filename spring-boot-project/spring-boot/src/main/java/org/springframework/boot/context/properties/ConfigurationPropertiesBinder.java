@@ -156,7 +156,8 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class).orderedStream()
+		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+				.orderedStream()
 				.toList();
 	}
 
@@ -190,7 +191,8 @@ class ConfigurationPropertiesBinder {
 	static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class).getBeanDefinition();
+					.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
+					.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
 		}

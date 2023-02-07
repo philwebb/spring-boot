@@ -49,7 +49,8 @@ class TestRestTemplateContextCustomizerTests {
 	@Test
 	void whenUsingAotGeneratedArtifactsTestRestTemplateIsNotRegistered() {
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(this::applyTestRestTemplateContextCustomizer).run((context) -> {
+				.withInitializer(this::applyTestRestTemplateContextCustomizer)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(TestRestTemplateRegistrar.class);
 					assertThat(context).doesNotHaveBean(TestRestTemplate.class);
 				});

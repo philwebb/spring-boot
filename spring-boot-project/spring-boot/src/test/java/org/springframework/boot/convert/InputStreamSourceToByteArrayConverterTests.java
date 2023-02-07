@@ -53,7 +53,8 @@ class InputStreamSourceToByteArrayConverterTests {
 		InputStreamSource source = mock(InputStreamSource.class);
 		given(source.getInputStream()).willThrow(IOException.class);
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
+				.isThrownBy(() -> conversionService.convert(source, byte[].class))
+				.havingCause()
 				.isInstanceOf(IllegalStateException.class)
 				.withMessageContaining("Unable to read from input stream source");
 	}
@@ -66,8 +67,10 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getInputStream()).willThrow(IOException.class);
 		given(((OriginProvider) source).getOrigin()).willReturn(origin);
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
-				.isInstanceOf(IllegalStateException.class).withMessageContaining("Unable to read from mylocation");
+				.isThrownBy(() -> conversionService.convert(source, byte[].class))
+				.havingCause()
+				.isInstanceOf(IllegalStateException.class)
+				.withMessageContaining("Unable to read from mylocation");
 	}
 
 	@ConversionServiceTest
@@ -77,8 +80,10 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getInputStream()).willThrow(IOException.class);
 		given(source.getDescription()).willReturn("myresource");
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
-				.isInstanceOf(IllegalStateException.class).withMessageContaining("Unable to read from myresource");
+				.isThrownBy(() -> conversionService.convert(source, byte[].class))
+				.havingCause()
+				.isInstanceOf(IllegalStateException.class)
+				.withMessageContaining("Unable to read from myresource");
 	}
 
 	static Stream<? extends Arguments> conversionServices() {

@@ -208,8 +208,10 @@ public final class Metadata {
 		}
 
 		private ItemMetadata findItem(ConfigurationMetadata metadata, String name) {
-			List<ItemMetadata> candidates = metadata.getItems().stream()
-					.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName())).toList();
+			List<ItemMetadata> candidates = metadata.getItems()
+					.stream()
+					.filter((item) -> item.isOfItemType(this.itemType) && name.equals(item.getName()))
+					.toList();
 			if (candidates.size() > 1) {
 				throw new IllegalStateException("More than one metadata item with name '" + name + "': " + candidates);
 			}

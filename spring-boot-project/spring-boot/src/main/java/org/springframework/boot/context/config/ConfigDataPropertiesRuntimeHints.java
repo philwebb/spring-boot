@@ -32,8 +32,9 @@ class ConfigDataPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		BindableRuntimeHintsRegistrar.forTypes(ConfigDataProperties.class).registerHints(hints);
-		hints.reflection().registerMethod(ReflectionUtils.findMethod(ConfigDataLocation.class, "of", String.class),
-				ExecutableMode.INVOKE);
+		hints.reflection()
+				.registerMethod(ReflectionUtils.findMethod(ConfigDataLocation.class, "of", String.class),
+						ExecutableMode.INVOKE);
 	}
 
 }

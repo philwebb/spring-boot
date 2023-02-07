@@ -56,7 +56,10 @@ class GraphQlQueryByExampleAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ExecutionGraphQlService graphQlService = context.getBean(ExecutionGraphQlService.class);
 			ExecutionGraphQlServiceTester graphQlTester = ExecutionGraphQlServiceTester.create(graphQlService);
-			graphQlTester.document("{ bookById(id: 1) {name}}").execute().path("bookById.name").entity(String.class)
+			graphQlTester.document("{ bookById(id: 1) {name}}")
+					.execute()
+					.path("bookById.name")
+					.entity(String.class)
 					.isEqualTo("Test title");
 		});
 	}

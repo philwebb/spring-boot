@@ -49,8 +49,9 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 
 	public static Map<String, ClientRegistration> getClientRegistrations(OAuth2ClientProperties properties) {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		properties.getRegistration().forEach((key, value) -> clientRegistrations.put(key,
-				getClientRegistration(key, value, properties.getProvider())));
+		properties.getRegistration()
+				.forEach((key, value) -> clientRegistrations.put(key,
+						getClientRegistration(key, value, properties.getProvider())));
 		return clientRegistrations;
 	}
 
@@ -63,9 +64,11 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
-		map.from(properties::getClientAuthenticationMethod).as(ClientAuthenticationMethod::new)
+		map.from(properties::getClientAuthenticationMethod)
+				.as(ClientAuthenticationMethod::new)
 				.to(builder::clientAuthenticationMethod);
-		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
+		map.from(properties::getAuthorizationGrantType)
+				.as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
 		map.from(properties::getRedirectUri).to(builder::redirectUri);
 		map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
@@ -112,7 +115,8 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
 		map.from(provider::getTokenUri).to(builder::tokenUri);
 		map.from(provider::getUserInfoUri).to(builder::userInfoUri);
-		map.from(provider::getUserInfoAuthenticationMethod).as(AuthenticationMethod::new)
+		map.from(provider::getUserInfoAuthenticationMethod)
+				.as(AuthenticationMethod::new)
 				.to(builder::userInfoAuthenticationMethod);
 		map.from(provider::getJwkSetUri).to(builder::jwkSetUri);
 		map.from(provider::getUserNameAttribute).to(builder::userNameAttributeName);

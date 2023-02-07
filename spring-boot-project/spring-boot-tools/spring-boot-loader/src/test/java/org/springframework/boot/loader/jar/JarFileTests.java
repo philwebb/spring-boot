@@ -542,7 +542,8 @@ class JarFileTests {
 			try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 				URL context = nested.getUrl();
 				new URL(context, "jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat").openConnection()
-						.getInputStream().close();
+						.getInputStream()
+						.close();
 				assertThatExceptionOfType(FileNotFoundException.class)
 						.isThrownBy(new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
 								.openConnection()::getInputStream);

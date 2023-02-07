@@ -77,8 +77,11 @@ class PropertiesMigrationReport {
 
 	private Map<String, List<PropertyMigration>> getContent(
 			Function<LegacyProperties, List<PropertyMigration>> extractor) {
-		return this.content.entrySet().stream().filter((entry) -> !extractor.apply(entry.getValue()).isEmpty()).collect(
-				Collectors.toMap(Map.Entry::getKey, (entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
+		return this.content.entrySet()
+				.stream()
+				.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
+				.collect(Collectors.toMap(Map.Entry::getKey,
+						(entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
 	}
 
 	private void append(StringBuilder report, Map<String, List<PropertyMigration>> content) {

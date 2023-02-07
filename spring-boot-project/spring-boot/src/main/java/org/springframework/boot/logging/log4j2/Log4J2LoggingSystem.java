@@ -381,8 +381,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
 		if (logger == null) {
-			getLoggerContext().getConfiguration().addLogger(loggerName,
-					new LevelSetLoggerConfig(loggerName, level, true));
+			getLoggerContext().getConfiguration()
+					.addLogger(loggerName, new LevelSetLoggerConfig(loggerName, level, true));
 		}
 		else {
 			logger.setLevel(level);

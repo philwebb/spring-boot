@@ -47,8 +47,9 @@ class ElasticMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(ElasticMeterRegistry.class).hasSingleBean(ElasticConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticMeterRegistry.class)
+						.hasSingleBean(ElasticConfig.class));
 	}
 
 	@Test
@@ -69,8 +70,10 @@ class ElasticMetricsExportAutoConfigurationTests {
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(ElasticMeterRegistry.class).hasSingleBean(ElasticConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(ElasticMeterRegistry.class)
+						.hasSingleBean(ElasticConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
@@ -78,7 +81,8 @@ class ElasticMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
 
 				.run((context) -> assertThat(context).hasSingleBean(ElasticMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(ElasticConfig.class));
+						.hasBean("customRegistry")
+						.hasSingleBean(ElasticConfig.class));
 	}
 
 	@Test
@@ -96,7 +100,9 @@ class ElasticMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
 						"management.elastic.metrics.export.user-name:alice")
-				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
+						.rootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 
@@ -105,7 +111,9 @@ class ElasticMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.elastic.metrics.export.api-key-credentials:secret",
 						"management.elastic.metrics.export.password:secret")
-				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
+						.rootCause()
 						.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
 	}
 

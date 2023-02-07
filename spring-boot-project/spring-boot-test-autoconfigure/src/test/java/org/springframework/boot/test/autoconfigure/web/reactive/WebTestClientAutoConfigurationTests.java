@@ -72,7 +72,8 @@ class WebTestClientAutoConfigurationTests {
 	@Test
 	void shouldCustomizeTimeout() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("spring.test.webtestclient.timeout=15m").run((context) -> {
+				.withPropertyValues("spring.test.webtestclient.timeout=15m")
+				.run((context) -> {
 					WebTestClient webTestClient = context.getBean(WebTestClient.class);
 					assertThat(webTestClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofMinutes(15));
 				});
@@ -97,7 +98,8 @@ class WebTestClientAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	void shouldNotApplySpringSecurityConfigurerWhenSpringSecurityNotOnClassPath() {
 		FilteredClassLoader classLoader = new FilteredClassLoader(SecurityMockServerConfigurers.class);
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).withClassLoader(classLoader)
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withClassLoader(classLoader)
 				.run((context) -> {
 					WebTestClient webTestClient = context.getBean(WebTestClient.class);
 					WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils.getField(webTestClient,

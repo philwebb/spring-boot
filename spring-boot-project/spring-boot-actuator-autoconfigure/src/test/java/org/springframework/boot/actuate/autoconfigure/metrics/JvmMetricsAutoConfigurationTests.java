@@ -60,8 +60,9 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomJvmHeapPressureMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmHeapPressureMetricsConfiguration.class).run(
-				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmHeapPressureMetrics")));
+		this.contextRunner.withUserConfiguration(CustomJvmHeapPressureMetricsConfiguration.class)
+				.run(assertMetricsBeans()
+						.andThen((context) -> assertThat(context).hasBean("customJvmHeapPressureMetrics")));
 	}
 
 	@Test
@@ -78,8 +79,9 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomClassLoaderMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class).run(
-				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
+		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
+				.run(assertMetricsBeans()
+						.andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
 	}
 
 	@Test
@@ -90,15 +92,19 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomJvmCompilationMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmCompilationMetricsConfiguration.class).run(
-				assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmCompilationMetrics")));
+		this.contextRunner.withUserConfiguration(CustomJvmCompilationMetricsConfiguration.class)
+				.run(assertMetricsBeans()
+						.andThen((context) -> assertThat(context).hasBean("customJvmCompilationMetrics")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertMetricsBeans() {
 		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
-				.hasSingleBean(JvmHeapPressureMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-				.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
-				.hasSingleBean(JvmInfoMetrics.class).hasSingleBean(JvmCompilationMetrics.class);
+				.hasSingleBean(JvmHeapPressureMetrics.class)
+				.hasSingleBean(JvmMemoryMetrics.class)
+				.hasSingleBean(JvmThreadMetrics.class)
+				.hasSingleBean(ClassLoaderMetrics.class)
+				.hasSingleBean(JvmInfoMetrics.class)
+				.hasSingleBean(JvmCompilationMetrics.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

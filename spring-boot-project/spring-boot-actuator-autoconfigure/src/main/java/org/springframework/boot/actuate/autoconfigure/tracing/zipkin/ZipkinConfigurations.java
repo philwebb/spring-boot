@@ -79,7 +79,8 @@ class ZipkinConfigurations {
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
-					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
+					.setConnectTimeout(properties.getConnectTimeout())
+					.setReadTimeout(properties.getReadTimeout());
 			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}

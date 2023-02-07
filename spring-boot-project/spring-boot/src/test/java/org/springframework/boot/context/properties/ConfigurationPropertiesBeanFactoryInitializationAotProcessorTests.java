@@ -173,7 +173,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithExternalNested.class);
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithExternalNested.class))
-				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class))
+				.anySatisfy(javaBeanBinding(SampleType.class))
+				.anySatisfy(javaBeanBinding(SampleType.Nested.class))
 				.hasSize(3);
 	}
 
@@ -182,7 +183,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithRecursive.class))
-				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(2);
+				.anySatisfy(javaBeanBinding(Recursive.class))
+				.hasSize(2);
 	}
 
 	@Test
@@ -200,7 +202,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	void processConfigurationPropertiesWithWellKnownTypes() {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithWellKnownTypes.class);
 		assertThat(runtimeHints.reflection().typeHints())
-				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class)).hasSize(1);
+				.anySatisfy(javaBeanBinding(SamplePropertiesWithWellKnownTypes.class))
+				.hasSize(1);
 	}
 
 	@Test
@@ -208,7 +211,8 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 		RuntimeHints runtimeHints = process(SamplePropertiesWithCrossReference.class);
 		assertThat(runtimeHints.reflection().typeHints())
 				.anySatisfy(javaBeanBinding(SamplePropertiesWithCrossReference.class))
-				.anySatisfy(javaBeanBinding(CrossReferenceA.class)).anySatisfy(javaBeanBinding(CrossReferenceB.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceA.class))
+				.anySatisfy(javaBeanBinding(CrossReferenceB.class))
 				.hasSize(3);
 	}
 

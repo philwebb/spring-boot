@@ -76,18 +76,22 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		Instant instant = Instant.parse("2022-12-22T13:43:41.00Z");
 		Clock start = Clock.fixed(instant, ZoneId.systemDefault());
 		Clock end = Clock.offset(start, Duration.ofMillis(23));
-		HttpExchange exchange = HttpExchange.start(start, request).finish(end, response, () -> principal,
-				() -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
+		HttpExchange exchange = HttpExchange.start(start, request)
+				.finish(end, response, () -> principal, () -> UUID.randomUUID().toString(),
+						EnumSet.allOf(Include.class));
 		given(this.repository.findAll()).willReturn(Arrays.asList(exchange));
-		this.mockMvc.perform(get("/actuator/httpexchanges")).andExpect(status().isOk()).andDo(document("httpexchanges",
-				responseFields(fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
+		this.mockMvc.perform(get("/actuator/httpexchanges"))
+				.andExpect(status().isOk())
+				.andDo(document("httpexchanges", responseFields(
+						fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
 						fieldWithPath("exchanges.[].timestamp").description("Timestamp of when the exchange occurred."),
 						fieldWithPath("exchanges.[].principal").description("Principal of the exchange, if any.")
 								.optional(),
 						fieldWithPath("exchanges.[].principal.name").description("Name of the principal.").optional(),
 						fieldWithPath("exchanges.[].request.method").description("HTTP method of the request."),
 						fieldWithPath("exchanges.[].request.remoteAddress")
-								.description("Remote address from which the request was received, if known.").optional()
+								.description("Remote address from which the request was received, if known.")
+								.optional()
 								.type(JsonFieldType.STRING),
 						fieldWithPath("exchanges.[].request.uri").description("URI of the request."),
 						fieldWithPath("exchanges.[].request.headers")
@@ -98,7 +102,8 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 								.description("Headers of the response, keyed by header name."),
 						fieldWithPath("exchanges.[].response.headers.*.[]").description("Values of the header"),
 						fieldWithPath("exchanges.[].session")
-								.description("Session associated with the exchange, if any.").optional(),
+								.description("Session associated with the exchange, if any.")
+								.optional(),
 						fieldWithPath("exchanges.[].session.id").description("ID of the session."),
 						fieldWithPath("exchanges.[].timeTaken").description("Time taken to handle the exchange."))));
 	}

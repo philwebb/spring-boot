@@ -67,12 +67,14 @@ class JmxEndpointAutoConfigurationTests {
 	@Test
 	void jmxEndpointWithoutJmxSupportNotAutoConfigured() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(MBeanServer.class)
-				.doesNotHaveBean(JmxEndpointDiscoverer.class).doesNotHaveBean(JmxEndpointExporter.class));
+				.doesNotHaveBean(JmxEndpointDiscoverer.class)
+				.doesNotHaveBean(JmxEndpointExporter.class));
 	}
 
 	@Test
 	void jmxEndpointWithJmxSupportAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.jmx.enabled=true").with(mockMBeanServer())
+		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
+				.with(mockMBeanServer())
 				.run((context) -> assertThat(context).hasSingleBean(JmxEndpointDiscoverer.class)
 						.hasSingleBean(JmxEndpointExporter.class));
 	}
@@ -82,7 +84,9 @@ class JmxEndpointAutoConfigurationTests {
 		EndpointObjectNameFactory factory = mock(EndpointObjectNameFactory.class);
 		this.contextRunner
 				.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=test")
-				.with(mockMBeanServer()).withBean(EndpointObjectNameFactory.class, () -> factory).run((context) -> {
+				.with(mockMBeanServer())
+				.withBean(EndpointObjectNameFactory.class, () -> factory)
+				.run((context) -> {
 					ArgumentCaptor<ExposableJmxEndpoint> argumentCaptor = ArgumentCaptor
 							.forClass(ExposableJmxEndpoint.class);
 					then(factory).should().getObjectName(argumentCaptor.capture());

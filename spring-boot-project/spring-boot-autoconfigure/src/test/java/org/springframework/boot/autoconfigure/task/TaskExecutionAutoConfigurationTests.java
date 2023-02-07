@@ -99,7 +99,8 @@ class TaskExecutionAutoConfigurationTests {
 	void taskExecutorAutoConfiguredIsLazy() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
-			BeanDefinition beanDefinition = context.getSourceApplicationContext().getBeanFactory()
+			BeanDefinition beanDefinition = context.getSourceApplicationContext()
+					.getBeanFactory()
 					.getBeanDefinition("applicationTaskExecutor");
 			assertThat(beanDefinition.isLazyInit()).isTrue();
 			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
@@ -126,7 +127,8 @@ class TaskExecutionAutoConfigurationTests {
 	@Test
 	void enableAsyncUsesAutoConfiguredOneByDefault() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
-				.withUserConfiguration(AsyncConfiguration.class, TestBean.class).run((context) -> {
+				.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(TaskExecutor.class);
 					TestBean bean = context.getBean(TestBean.class);
 					String text = bean.echo("something").get();

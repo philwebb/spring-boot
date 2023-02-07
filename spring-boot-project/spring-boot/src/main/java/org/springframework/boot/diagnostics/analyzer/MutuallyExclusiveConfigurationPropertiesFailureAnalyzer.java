@@ -71,14 +71,16 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName)).toList();
+				.map((source) -> Descriptor.get(source, propertyName))
+				.toList();
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
 		if (this.environment == null) {
 			return Stream.empty();
 		}
-		return this.environment.getPropertySources().stream()
+		return this.environment.getPropertySources()
+				.stream()
 				.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 

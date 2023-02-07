@@ -57,7 +57,8 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * The default session config to use while connecting.
 	 */
-	static final SessionConfig DEFAULT_SESSION_CONFIG = SessionConfig.builder().withDefaultAccessMode(AccessMode.WRITE)
+	static final SessionConfig DEFAULT_SESSION_CONFIG = SessionConfig.builder()
+			.withDefaultAccessMode(AccessMode.WRITE)
 			.build();
 
 	private final Driver driver;

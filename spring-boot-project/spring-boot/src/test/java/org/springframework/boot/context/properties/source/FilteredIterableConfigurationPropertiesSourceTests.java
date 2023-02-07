@@ -32,7 +32,8 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 	void iteratorShouldFilterNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
-		assertThat(filtered.iterator()).toIterable().extracting(ConfigurationPropertyName::toString)
+		assertThat(filtered.iterator()).toIterable()
+				.extracting(ConfigurationPropertyName::toString)
 				.containsExactly("a", "b", "c");
 	}
 

@@ -142,7 +142,8 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionOutputShouldNotContainConditionalOnBeanClassInMessage() {
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
 			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
+					.get(context.getSourceApplicationContext().getBeanFactory())
+					.getConditionAndOutcomesBySource()
 					.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 			assertThat(message).doesNotContain("@ConditionalOnBean");
@@ -233,8 +234,10 @@ class ConditionalOnMissingBeanTests {
 
 	@Test
 	void testOnMissingBeanConditionWithIgnoredSubclass() {
-		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclass.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(CustomExampleBeanConfiguration.class, ConditionalOnIgnoredSubclass.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
 					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
 				});
@@ -242,8 +245,10 @@ class ConditionalOnMissingBeanTests {
 
 	@Test
 	void testOnMissingBeanConditionWithIgnoredSubclassByName() {
-		this.contextRunner.withUserConfiguration(CustomExampleBeanConfiguration.class,
-				ConditionalOnIgnoredSubclassByName.class, PropertyPlaceholderAutoConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(CustomExampleBeanConfiguration.class, ConditionalOnIgnoredSubclassByName.class,
+						PropertyPlaceholderAutoConfiguration.class)
+				.run((context) -> {
 					assertThat(context).getBeans(ExampleBean.class).hasSize(2);
 					assertThat(context).getBeans(CustomExampleBean.class).hasSize(1);
 				});
@@ -268,8 +273,10 @@ class ConditionalOnMissingBeanTests {
 
 	@Test
 	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
-		this.contextRunner.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
-				OnAnnotationWithFactoryBeanConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
+						OnAnnotationWithFactoryBeanConfiguration.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean("bar");
 					assertThat(context).hasSingleBean(ExampleBean.class);
 				});

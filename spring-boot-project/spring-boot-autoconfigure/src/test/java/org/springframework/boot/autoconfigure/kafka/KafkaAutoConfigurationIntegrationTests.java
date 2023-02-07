@@ -110,10 +110,13 @@ class KafkaAutoConfigurationIntegrationTests {
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
 		RetryListener listener = this.context.getBean(RetryListener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
-		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived).containsExactly("foo",
-				"bar");
-		assertThat(listener).extracting(RetryListener::getTopics).asList().hasSize(5).containsSequence("testRetryTopic",
-				"testRetryTopic-retry-0", "testRetryTopic-retry-1", "testRetryTopic-retry-2", "testRetryTopic-retry-3");
+		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived)
+				.containsExactly("foo", "bar");
+		assertThat(listener).extracting(RetryListener::getTopics)
+				.asList()
+				.hasSize(5)
+				.containsSequence("testRetryTopic", "testRetryTopic-retry-0", "testRetryTopic-retry-1",
+						"testRetryTopic-retry-2", "testRetryTopic-retry-3");
 	}
 
 	@Test

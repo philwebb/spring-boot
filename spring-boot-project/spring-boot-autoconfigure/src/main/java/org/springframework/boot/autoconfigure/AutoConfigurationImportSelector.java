@@ -241,7 +241,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		}
 		if (environment instanceof ConfigurableEnvironment) {
 			Binder binder = Binder.get(environment);
-			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class).map(Arrays::asList)
+			return binder.bind(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class)
+					.map(Arrays::asList)
 					.orElse(Collections.emptyList());
 		}
 		String[] excludes = environment.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
@@ -439,14 +440,18 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 				return Collections.emptyList();
 			}
 			Set<String> allExclusions = this.autoConfigurationEntries.stream()
-					.map(AutoConfigurationEntry::getExclusions).flatMap(Collection::stream).collect(Collectors.toSet());
+					.map(AutoConfigurationEntry::getExclusions)
+					.flatMap(Collection::stream)
+					.collect(Collectors.toSet());
 			Set<String> processedConfigurations = this.autoConfigurationEntries.stream()
-					.map(AutoConfigurationEntry::getConfigurations).flatMap(Collection::stream)
+					.map(AutoConfigurationEntry::getConfigurations)
+					.flatMap(Collection::stream)
 					.collect(Collectors.toCollection(LinkedHashSet::new));
 			processedConfigurations.removeAll(allExclusions);
 
 			return sortAutoConfigurations(processedConfigurations, getAutoConfigurationMetadata()).stream()
-					.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName)).toList();
+					.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName))
+					.toList();
 		}
 
 		private AutoConfigurationMetadata getAutoConfigurationMetadata() {

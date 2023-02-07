@@ -54,13 +54,16 @@ class LoaderIntegrationTests {
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
-			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from").doesNotContain("WARNING:")
-					.doesNotContain("illegal").doesNotContain("jar written to temp");
+			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from")
+					.doesNotContain("WARNING:")
+					.doesNotContain("illegal")
+					.doesNotContain("jar written to temp");
 		}
 	}
 
 	private GenericContainer<?> createContainer(JavaRuntime javaRuntime) {
-		return javaRuntime.getContainer().withLogConsumer(this.output)
+		return javaRuntime.getContainer()
+				.withLogConsumer(this.output)
 				.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
 				.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
 				.withCommand("java", "-jar", "app.jar");

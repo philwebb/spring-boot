@@ -50,7 +50,8 @@ class HttpGraphQlTesterContextCustomizerTests {
 	@Test
 	void whenUsingAotGeneratedArtifactsHttpGraphQlTesterIsNotRegistered() {
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(this::applyHttpGraphQlTesterContextCustomizer).run((context) -> {
+				.withInitializer(this::applyHttpGraphQlTesterContextCustomizer)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(HttpGraphQlTesterRegistrar.class);
 					assertThat(context).doesNotHaveBean(HttpGraphQlTester.class);
 				});

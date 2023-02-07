@@ -79,8 +79,10 @@ class H2ConsoleAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=custom")
 				.run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class).cause()
-							.isInstanceOf(ConfigurationPropertiesBindException.class).cause()
+					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class)
+							.cause()
+							.isInstanceOf(ConfigurationPropertiesBindException.class)
+							.cause()
 							.isInstanceOf(BindException.class)
 							.hasMessageContaining("Failed to bind properties under 'spring.h2.console'");
 				});
@@ -108,9 +110,11 @@ class H2ConsoleAutoConfigurationTests {
 
 	@Test
 	void customInitParameters() {
-		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.settings.trace=true",
-				"spring.h2.console.settings.web-allow-others=true",
-				"spring.h2.console.settings.web-admin-password=abcd").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.settings.trace=true",
+						"spring.h2.console.settings.web-allow-others=true",
+						"spring.h2.console.settings.web-admin-password=abcd")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ServletRegistrationBean.class);
 					ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
 					assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
@@ -124,7 +128,8 @@ class H2ConsoleAutoConfigurationTests {
 	@ExtendWith(OutputCaptureExtension.class)
 	void singleDataSourceUrlIsLoggedWhenOnlyOneAvailable(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
+				.withPropertyValues("spring.h2.console.enabled=true")
+				.run((context) -> {
 					try (Connection connection = context.getBean(DataSource.class).getConnection()) {
 						assertThat(output).contains("H2 console available at '/h2-console'. Database available at '"
 								+ connection.getMetaData().getURL() + "'");
@@ -146,7 +151,8 @@ class H2ConsoleAutoConfigurationTests {
 		ClassLoader webAppClassLoader = new URLClassLoader(new URL[0]);
 		this.contextRunner.withClassLoader(webAppClassLoader)
 				.withUserConfiguration(FailingDataSourceConfiguration.class, MultiDataSourceConfiguration.class)
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> assertThat(output).contains(
+				.withPropertyValues("spring.h2.console.enabled=true")
+				.run((context) -> assertThat(output).contains(
 						"H2 console available at '/h2-console'. Databases available at 'someJdbcUrl', 'anotherJdbcUrl'"));
 	}
 

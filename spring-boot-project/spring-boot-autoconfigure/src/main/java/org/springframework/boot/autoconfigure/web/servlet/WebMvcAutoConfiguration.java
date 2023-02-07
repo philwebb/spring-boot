@@ -257,8 +257,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		private boolean singleDispatcherServlet() {
-			return this.servletRegistrations.stream().map(ServletRegistrationBean::getServlet)
-					.filter(DispatcherServlet.class::isInstance).count() == 1;
+			return this.servletRegistrations.stream()
+					.map(ServletRegistrationBean::getServlet)
+					.filter(DispatcherServlet.class::isInstance)
+					.count() == 1;
 		}
 
 		@Override
@@ -502,8 +504,10 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public FormattingConversionService mvcConversionService() {
 			Format format = this.mvcProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(new DateTimeFormatters()
-					.dateFormat(format.getDate()).timeFormat(format.getTime()).dateTimeFormat(format.getDateTime()));
+			WebConversionService conversionService = new WebConversionService(
+					new DateTimeFormatters().dateFormat(format.getDate())
+							.timeFormat(format.getTime())
+							.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
 		}

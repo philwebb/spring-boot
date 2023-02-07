@@ -60,7 +60,8 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 	@BeforeEach
 	void setup(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris()).build();
+				.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris())
+				.build();
 	}
 
 	@Test
@@ -76,12 +77,15 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 				fieldWithPath(".*.notMatched.[].message").description("Details of why the condition was not matched."),
 				fieldWithPath(".*.matched").description("Conditions that were matched."),
 				fieldWithPath(".*.matched.[].condition").description("Name of the condition.")
-						.type(JsonFieldType.STRING).optional(),
+						.type(JsonFieldType.STRING)
+						.optional(),
 				fieldWithPath(".*.matched.[].message").description("Details of why the condition was matched.")
-						.type(JsonFieldType.STRING).optional());
+						.type(JsonFieldType.STRING)
+						.optional());
 		FieldDescriptor unconditionalClassesField = fieldWithPath("contexts.*.unconditionalClasses")
 				.description("Names of unconditional auto-configuration classes if any.");
-		this.mockMvc.perform(get("/actuator/conditions")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/conditions"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("conditions",
 						preprocessResponse(limit("contexts", getApplicationContext().getId(), "positiveMatches"),
 								limit("contexts", getApplicationContext().getId(), "negativeMatches")),

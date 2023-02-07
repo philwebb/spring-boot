@@ -50,7 +50,8 @@ class AopAutoConfigurationTests {
 
 	@Test
 	void aopDisabled() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues("spring.aop.auto:false")
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.aop.auto:false")
 				.run((context) -> {
 					TestAspect aspect = context.getBean(TestAspect.class);
 					assertThat(aspect.isCalled()).isFalse();
@@ -68,13 +69,15 @@ class AopAutoConfigurationTests {
 	@Test
 	void aopWithEnabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:true").run(proxyTargetClassEnabled());
+				.withPropertyValues("spring.aop.proxy-target-class:true")
+				.run(proxyTargetClassEnabled());
 	}
 
 	@Test
 	void aopWithDisabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:false").run(proxyTargetClassDisabled());
+				.withPropertyValues("spring.aop.proxy-target-class:false")
+				.run(proxyTargetClassDisabled());
 	}
 
 	@Test

@@ -258,18 +258,21 @@ class KafkaAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	void streamsProperties() {
-		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).withPropertyValues(
-				"spring.kafka.client-id=cid", "spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
-				"spring.application.name=appName", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-				"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cache-max-size-buffering=1KB",
-				"spring.kafka.streams.client-id=override", "spring.kafka.streams.properties.fiz.buz=fix.fox",
-				"spring.kafka.streams.replication-factor=2", "spring.kafka.streams.state-dir=/tmp/state",
-				"spring.kafka.streams.security.protocol=SSL", "spring.kafka.streams.ssl.key-password=p7",
-				"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
-				"spring.kafka.streams.ssl.key-store-password=p8", "spring.kafka.streams.ssl.key-store-type=PKCS12",
-				"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
-				"spring.kafka.streams.ssl.trust-store-password=p9", "spring.kafka.streams.ssl.trust-store-type=PKCS12",
-				"spring.kafka.streams.ssl.protocol=TLSv1.2").run((context) -> {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.kafka.client-id=cid",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.application.name=appName", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
+						"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cache-max-size-buffering=1KB",
+						"spring.kafka.streams.client-id=override", "spring.kafka.streams.properties.fiz.buz=fix.fox",
+						"spring.kafka.streams.replication-factor=2", "spring.kafka.streams.state-dir=/tmp/state",
+						"spring.kafka.streams.security.protocol=SSL", "spring.kafka.streams.ssl.key-password=p7",
+						"spring.kafka.streams.ssl.key-store-location=classpath:ksLocP",
+						"spring.kafka.streams.ssl.key-store-password=p8",
+						"spring.kafka.streams.ssl.key-store-type=PKCS12",
+						"spring.kafka.streams.ssl.trust-store-location=classpath:tsLocP",
+						"spring.kafka.streams.ssl.trust-store-password=p9",
+						"spring.kafka.streams.ssl.trust-store-type=PKCS12", "spring.kafka.streams.ssl.protocol=TLSv1.2")
+				.run((context) -> {
 					Properties configs = context
 							.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 									KafkaStreamsConfiguration.class)
@@ -366,7 +369,8 @@ class KafkaAutoConfigurationTests {
 							.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
 							.containsExactly(tuple(0L, ""), tuple(1000L, "-retry"), tuple(0L, "-dlt"));
 					assertThat(configuration.forKafkaTopicAutoCreation()).extracting("shouldCreateTopics")
-							.asInstanceOf(InstanceOfAssertFactories.BOOLEAN).isFalse();
+							.asInstanceOf(InstanceOfAssertFactories.BOOLEAN)
+							.isFalse();
 				}));
 	}
 
@@ -377,7 +381,8 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=2s")
 				.run(assertRetryTopicConfiguration(
 						(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
-								.extracting(DestinationTopic.Properties::delay).containsExactly(0L, 2000L, 0L)));
+								.extracting(DestinationTopic.Properties::delay)
+								.containsExactly(0L, 2000L, 0L)));
 	}
 
 	@Test
@@ -387,7 +392,8 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=0")
 				.run(assertRetryTopicConfiguration(
 						(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
-								.extracting(DestinationTopic.Properties::delay).containsExactly(0L, 0L, 0L)));
+								.extracting(DestinationTopic.Properties::delay)
+								.containsExactly(0L, 0L, 0L)));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertRetryTopicConfiguration(
@@ -415,9 +421,11 @@ class KafkaAutoConfigurationTests {
 					assertThat((List<String>) configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.containsExactly("localhost:9092", "localhost:9093");
 					then(context.getBean("&firstStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class))
-							.should(never()).setAutoStartup(false);
+							.should(never())
+							.setAutoStartup(false);
 					then(context.getBean("&secondStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class))
-							.should(never()).setAutoStartup(false);
+							.should(never())
+							.setAutoStartup(false);
 				});
 	}
 
@@ -445,7 +453,8 @@ class KafkaAutoConfigurationTests {
 	void streamsApplicationIdIsMandatory() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasMessageContaining("spring.kafka.streams.application-id")
+			assertThat(context).getFailure()
+					.hasMessageContaining("spring.kafka.streams.application-id")
 					.hasMessageContaining(
 							"This property is mandatory and fallback 'spring.application.name' is not set either.");
 
@@ -522,7 +531,8 @@ class KafkaAutoConfigurationTests {
 	@Test
 	void testKafkaTemplateRecordMessageConverters() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
-				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
+				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
+				.run((context) -> {
 					KafkaTemplate<?, ?> kafkaTemplate = context.getBean(KafkaTemplate.class);
 					assertThat(kafkaTemplate.getMessageConverter()).isSameAs(context.getBean("myMessageConverter"));
 				});
@@ -542,7 +552,8 @@ class KafkaAutoConfigurationTests {
 	void testConcurrentKafkaListenerContainerFactoryInBatchModeWithCustomMessageConverter() {
 		this.contextRunner
 				.withUserConfiguration(BatchMessageConverterConfiguration.class, MessageConverterConfiguration.class)
-				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
+				.withPropertyValues("spring.kafka.listener.type=batch")
+				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue("messageConverter",
@@ -553,7 +564,8 @@ class KafkaAutoConfigurationTests {
 	@Test
 	void testConcurrentKafkaListenerContainerFactoryInBatchModeWrapsCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConverterConfiguration.class)
-				.withPropertyValues("spring.kafka.listener.type=batch").run((context) -> {
+				.withPropertyValues("spring.kafka.listener.type=batch")
+				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					Object messageConverter = ReflectionTestUtils.getField(kafkaListenerContainerFactory,
@@ -622,7 +634,8 @@ class KafkaAutoConfigurationTests {
 		KafkaTransactionManager<Object, Object> customTransactionManager = mock(KafkaTransactionManager.class);
 		this.contextRunner
 				.withBean("customTransactionManager", KafkaTransactionManager.class, () -> customTransactionManager)
-				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test").run((context) -> {
+				.withPropertyValues("spring.kafka.producer.transaction-id-prefix=test")
+				.run((context) -> {
 					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 							.getBean(ConcurrentKafkaListenerContainerFactory.class);
 					assertThat(factory.getContainerProperties().getTransactionManager())
@@ -711,8 +724,10 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void specificSecurityProtocolOverridesCommonSecurityProtocol() {
-		this.contextRunner.withPropertyValues("spring.kafka.security.protocol=SSL",
-				"spring.kafka.admin.security.protocol=PLAINTEXT").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.kafka.security.protocol=SSL",
+						"spring.kafka.admin.security.protocol=PLAINTEXT")
+				.run((context) -> {
 					DefaultKafkaProducerFactory<?, ?> producerFactory = context
 							.getBean(DefaultKafkaProducerFactory.class);
 					Map<String, Object> producerConfigs = producerFactory.getConfigurationProperties();

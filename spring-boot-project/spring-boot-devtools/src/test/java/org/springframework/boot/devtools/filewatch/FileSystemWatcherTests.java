@@ -313,8 +313,10 @@ class FileSystemWatcherTests {
 	}
 
 	private Set<ChangedFile> getAllFileChanges(List<Set<ChangedFiles>> changes) {
-		return changes.stream().flatMap(Set<ChangedFiles>::stream)
-				.flatMap((changedFiles) -> changedFiles.getFiles().stream()).collect(Collectors.toSet());
+		return changes.stream()
+				.flatMap(Set<ChangedFiles>::stream)
+				.flatMap((changedFiles) -> changedFiles.getFiles().stream())
+				.collect(Collectors.toSet());
 	}
 
 	private File touch(File file) throws IOException {

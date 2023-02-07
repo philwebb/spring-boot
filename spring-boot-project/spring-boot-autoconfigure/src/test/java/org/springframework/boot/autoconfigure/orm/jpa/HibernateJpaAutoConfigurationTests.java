@@ -205,15 +205,18 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	private ContextConsumer<AssertableApplicationContext> assertJtaPlatform(Class<? extends JtaPlatform> expectedType) {
 		return (context) -> {
 			SessionFactoryImpl sessionFactory = context.getBean(LocalContainerEntityManagerFactoryBean.class)
-					.getNativeEntityManagerFactory().unwrap(SessionFactoryImpl.class);
+					.getNativeEntityManagerFactory()
+					.unwrap(SessionFactoryImpl.class);
 			assertThat(sessionFactory.getServiceRegistry().getService(JtaPlatform.class)).isInstanceOf(expectedType);
 		};
 	}
 
 	@Test
 	void jtaCustomTransactionManagerUsingProperties() {
-		contextRunner().withPropertyValues("spring.transaction.default-timeout:30",
-				"spring.transaction.rollback-on-commit-failure:true").run((context) -> {
+		contextRunner()
+				.withPropertyValues("spring.transaction.default-timeout:30",
+						"spring.transaction.rollback-on-commit-failure:true")
+				.run((context) -> {
 					JpaTransactionManager transactionManager = context.getBean(JpaTransactionManager.class);
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(30);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
@@ -225,7 +228,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		contextRunner()
 				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
 						XADataSourceAutoConfiguration.class, JtaAutoConfiguration.class))
-				.withUserConfiguration(TestTwoDataSourcesConfiguration.class).run((context) -> {
+				.withUserConfiguration(TestTwoDataSourcesConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					assertThat(context).doesNotHaveBean(EntityManagerFactory.class);
 				});
@@ -233,8 +237,10 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void providerDisablesAutoCommitIsConfigured() {
-		contextRunner().withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.auto-commit:false").run((context) -> {
+		contextRunner()
+				.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.auto-commit:false")
+				.run((context) -> {
 					Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
 							.getJpaPropertyMap();
 					assertThat(jpaProperties)
@@ -244,8 +250,10 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void providerDisablesAutoCommitIsNotConfiguredIfAutoCommitIsEnabled() {
-		contextRunner().withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.auto-commit:true").run((context) -> {
+		contextRunner()
+				.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
+						"spring.datasource.hikari.auto-commit:true")
+				.run((context) -> {
 					Map<String, Object> jpaProperties = context.getBean(LocalContainerEntityManagerFactoryBean.class)
 							.getJpaPropertyMap();
 					assertThat(jpaProperties).doesNotContainKeys("hibernate.connection.provider_disables_autocommit");
@@ -419,9 +427,11 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void vendorPropertiesWhenBothDdlAutoPropertiesAreSet() {
-		contextRunner().withPropertyValues(
-				"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create",
-				"spring.jpa.hibernate.ddl-auto=create-only").run(vendorProperties((vendorProperties) -> {
+		contextRunner()
+				.withPropertyValues(
+						"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create",
+						"spring.jpa.hibernate.ddl-auto=create-only")
+				.run(vendorProperties((vendorProperties) -> {
 					assertThat(vendorProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
 							"create");
 					assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-only");
@@ -446,8 +456,10 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void withAsyncBootstrappingAnApplicationListenerThatUsesJpaDoesNotTriggerABeanCurrentlyInCreationException() {
-		contextRunner().withUserConfiguration(AsyncBootstrappingConfiguration.class,
-				JpaUsingApplicationListenerConfiguration.class).run((context) -> {
+		contextRunner()
+				.withUserConfiguration(AsyncBootstrappingConfiguration.class,
+						JpaUsingApplicationListenerConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasNotFailed();
 					EventCapturingApplicationListener listener = context
 							.getBean(EventCapturingApplicationListener.class);

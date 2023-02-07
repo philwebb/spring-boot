@@ -163,12 +163,17 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	private WebTestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class).getWebServer()
+		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+				.getWebServer()
 				.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
-				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1)).build();
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).exchangeStrategies(exchangeStrategies)
-				.responseTimeout(Duration.ofMinutes(5)).build();
+				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1))
+				.build();
+		return WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + port)
+				.exchangeStrategies(exchangeStrategies)
+				.responseTimeout(Duration.ofMinutes(5))
+				.build();
 	}
 
 	private boolean isExposed(WebTestClient client, HttpMethod method, String path) {

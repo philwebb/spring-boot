@@ -101,9 +101,11 @@ public class ReactiveHealthEndpointWebExtension
 	protected Mono<? extends HealthComponent> aggregateContributions(ApiVersion apiVersion,
 			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
-		return Flux.fromIterable(contributions.entrySet()).flatMap(NamedHealthComponent::create)
-				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth).map((components) -> this
-						.getCompositeHealth(apiVersion, components, statusAggregator, showComponents, groupNames));
+		return Flux.fromIterable(contributions.entrySet())
+				.flatMap(NamedHealthComponent::create)
+				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth)
+				.map((components) -> this.getCompositeHealth(apiVersion, components, statusAggregator, showComponents,
+						groupNames));
 	}
 
 	/**

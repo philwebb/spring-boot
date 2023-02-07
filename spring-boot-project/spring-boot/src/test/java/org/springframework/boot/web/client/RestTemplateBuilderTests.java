@@ -121,7 +121,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void rootUriShouldApplyAfterUriTemplateHandler() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
-		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler).rootUri("https://example.com")
+		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
+				.rootUri("https://example.com")
 				.build();
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
@@ -152,7 +153,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void messageConvertersShouldReplaceExisting() {
 		RestTemplate template = this.builder.messageConverters(new ResourceHttpMessageConverter())
-				.messageConverters(Collections.singleton(this.messageConverter)).build();
+				.messageConverters(Collections.singleton(this.messageConverter))
+				.build();
 		assertThat(template.getMessageConverters()).containsOnly(this.messageConverter);
 	}
 
@@ -174,7 +176,8 @@ class RestTemplateBuilderTests {
 	void additionalMessageConvertersShouldAddToExisting() {
 		HttpMessageConverter<?> resourceConverter = new ResourceHttpMessageConverter();
 		RestTemplate template = this.builder.messageConverters(resourceConverter)
-				.additionalMessageConverters(this.messageConverter).build();
+				.additionalMessageConverters(this.messageConverter)
+				.build();
 		assertThat(template.getMessageConverters()).containsOnly(resourceConverter, this.messageConverter);
 	}
 
@@ -215,7 +218,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void interceptorsShouldReplaceExisting() {
 		RestTemplate template = this.builder.interceptors(mock(ClientHttpRequestInterceptor.class))
-				.interceptors(Collections.singleton(this.interceptor)).build();
+				.interceptors(Collections.singleton(this.interceptor))
+				.build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
@@ -342,7 +346,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void requestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
-				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework")).build();
+				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
+				.build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")));
 	}
@@ -351,7 +356,8 @@ class RestTemplateBuilderTests {
 	void additionalRequestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
 				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
-				.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java")).build();
+				.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java"))
+				.build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")))
 				.contains(entry("for", Collections.singletonList("java")));
@@ -389,7 +395,8 @@ class RestTemplateBuilderTests {
 	void customizersShouldReplaceExisting() {
 		RestTemplateCustomizer customizer1 = mock(RestTemplateCustomizer.class);
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
-		RestTemplate template = this.builder.customizers(customizer1).customizers(Collections.singleton(customizer2))
+		RestTemplate template = this.builder.customizers(customizer1)
+				.customizers(Collections.singleton(customizer2))
 				.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(template);
@@ -423,9 +430,13 @@ class RestTemplateBuilderTests {
 	void customizerShouldBeAppliedAtTheEnd() {
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		this.builder.interceptors(this.interceptor).messageConverters(this.messageConverter)
-				.rootUri("http://localhost:8080").errorHandler(errorHandler).basicAuthentication("spring", "boot")
-				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
+		this.builder.interceptors(this.interceptor)
+				.messageConverters(this.messageConverter)
+				.rootUri("http://localhost:8080")
+				.errorHandler(errorHandler)
+				.basicAuthentication("spring", "boot")
+				.requestFactory(() -> requestFactory)
+				.customizers((restTemplate) -> {
 					assertThat(restTemplate.getInterceptors()).hasSize(1);
 					assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
 					assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
@@ -434,7 +445,8 @@ class RestTemplateBuilderTests {
 					assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
 					ClientHttpRequestInitializer initializer = restTemplate.getClientHttpRequestInitializers().get(0);
 					assertThat(initializer).isInstanceOf(RestTemplateBuilderClientHttpRequestInitializer.class);
-				}).build();
+				})
+				.build();
 	}
 
 	@Test

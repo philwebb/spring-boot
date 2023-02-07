@@ -45,8 +45,9 @@ class LogbackMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomLogbackMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
+		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class)
+						.hasBean("customLogbackMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

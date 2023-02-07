@@ -37,11 +37,14 @@ public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactor
 	public void configure(CachingConnectionFactory connectionFactory, RabbitProperties rabbitProperties) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(rabbitProperties::isPublisherReturns).to(connectionFactory::setPublisherReturns);
-		map.from(rabbitProperties::getPublisherConfirmType).whenNonNull()
+		map.from(rabbitProperties::getPublisherConfirmType)
+				.whenNonNull()
 				.to(connectionFactory::setPublisherConfirmType);
 		RabbitProperties.Cache.Channel channel = rabbitProperties.getCache().getChannel();
 		map.from(channel::getSize).whenNonNull().to(connectionFactory::setChannelCacheSize);
-		map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)
+		map.from(channel::getCheckoutTimeout)
+				.whenNonNull()
+				.as(Duration::toMillis)
 				.to(connectionFactory::setChannelCheckoutTimeout);
 		RabbitProperties.Cache.Connection connection = rabbitProperties.getCache().getConnection();
 		map.from(connection::getMode).whenNonNull().to(connectionFactory::setCacheMode);

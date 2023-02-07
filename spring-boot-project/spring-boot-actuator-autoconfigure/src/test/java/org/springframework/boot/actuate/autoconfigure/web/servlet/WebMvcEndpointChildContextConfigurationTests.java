@@ -55,8 +55,10 @@ class WebMvcEndpointChildContextConfigurationTests {
 
 	@Test
 	void contextShouldNotConfigureRequestContextFilterWhenRequestContextListenerPresent() {
-		this.contextRunner.withUserConfiguration(RequestContextListenerConfig.class,
-				WebMvcEndpointChildContextConfiguration.class).run((context) -> {
+		this.contextRunner
+				.withUserConfiguration(RequestContextListenerConfig.class,
+						WebMvcEndpointChildContextConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RequestContextListener.class);
 					assertThat(context).doesNotHaveBean(OrderedRequestContextFilter.class);
 				});

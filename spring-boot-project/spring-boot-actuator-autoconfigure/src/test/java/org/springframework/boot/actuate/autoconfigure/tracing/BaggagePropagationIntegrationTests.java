@@ -136,7 +136,8 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class)).withPropertyValues(
+						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+						.withPropertyValues(
 								"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
 								"management.tracing.baggage.correlation.fields=country-code,bp");
 			}

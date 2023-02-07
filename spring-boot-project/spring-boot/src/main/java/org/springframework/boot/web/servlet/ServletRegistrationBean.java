@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
  */
-public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
+public class ServletRegistrationBean<T extends Servlet>extends DynamicRegistrationBean<ServletRegistration.Dynamic> {
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 

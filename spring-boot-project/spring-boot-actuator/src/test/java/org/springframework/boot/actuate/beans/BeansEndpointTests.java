@@ -93,7 +93,8 @@ class BeansEndpointTests {
 		ApplicationContextRunner parentRunner = new ApplicationContextRunner()
 				.withUserConfiguration(BeanConfiguration.class);
 		parentRunner.run((parent) -> {
-			new ApplicationContextRunner().withUserConfiguration(EndpointConfiguration.class).withParent(parent)
+			new ApplicationContextRunner().withUserConfiguration(EndpointConfiguration.class)
+					.withParent(parent)
 					.run((child) -> {
 						BeansDescriptor result = child.getBean(BeansEndpoint.class).beans();
 						assertThat(result.getContexts().get(parent.getId()).getBeans()).containsKey("bean");

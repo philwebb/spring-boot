@@ -98,8 +98,10 @@ public class QuartzEndpoint {
 	public QuartzGroupsDescriptor quartzJobGroups() throws SchedulerException {
 		Map<String, Object> result = new LinkedHashMap<>();
 		for (String groupName : this.scheduler.getJobGroupNames()) {
-			List<String> jobs = this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName)).stream()
-					.map((key) -> key.getName()).toList();
+			List<String> jobs = this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))
+					.stream()
+					.map((key) -> key.getName())
+					.toList();
 			result.put(groupName, Collections.singletonMap("jobs", jobs));
 		}
 		return new QuartzGroupsDescriptor(result);
@@ -116,8 +118,11 @@ public class QuartzEndpoint {
 		for (String groupName : this.scheduler.getTriggerGroupNames()) {
 			Map<String, Object> groupDetails = new LinkedHashMap<>();
 			groupDetails.put("paused", pausedTriggerGroups.contains(groupName));
-			groupDetails.put("triggers", this.scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))
-					.stream().map((key) -> key.getName()).toList());
+			groupDetails.put("triggers",
+					this.scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))
+							.stream()
+							.map((key) -> key.getName())
+							.toList());
 			result.put(groupName, groupDetails);
 		}
 		return new QuartzGroupsDescriptor(result);
@@ -570,8 +575,11 @@ public class QuartzEndpoint {
 		private final TriggerType type;
 
 		private static TriggerDescriptor of(Trigger trigger) {
-			return DESCRIBERS.entrySet().stream().filter((entry) -> entry.getKey().isInstance(trigger))
-					.map((entry) -> entry.getValue().apply(trigger)).findFirst()
+			return DESCRIBERS.entrySet()
+					.stream()
+					.filter((entry) -> entry.getKey().isInstance(trigger))
+					.map((entry) -> entry.getValue().apply(trigger))
+					.findFirst()
 					.orElse(new CustomTriggerDescriptor(trigger));
 		}
 

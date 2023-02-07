@@ -106,7 +106,8 @@ class ObservabilityContextCustomizerFactoryTests {
 		try (FilteredClassLoader filteredClassLoader = new FilteredClassLoader("io.micrometer.tracing")) {
 			ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 			new ApplicationContextRunner().withClassLoader(filteredClassLoader)
-					.withInitializer(applyCustomizer(customizer)).run((context) -> {
+					.withInitializer(applyCustomizer(customizer))
+					.run((context) -> {
 						assertThat(context).doesNotHaveBean(Tracer.class);
 						assertThatMetricsAreDisabled(context);
 						assertThatTracingIsDisabled(context);
@@ -118,7 +119,8 @@ class ObservabilityContextCustomizerFactoryTests {
 	void shouldBackOffOnCustomTracer() {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		new ApplicationContextRunner().withConfiguration(UserConfigurations.of(CustomTracer.class))
-				.withInitializer(applyCustomizer(customizer)).run((context) -> {
+				.withInitializer(applyCustomizer(customizer))
+				.run((context) -> {
 					assertThat(context).hasSingleBean(Tracer.class);
 					assertThat(context).hasBean("customTracer");
 				});

@@ -81,7 +81,8 @@ abstract class AbstractJpaAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.jta.log-dir="
 								+ new File(new BuildOutput(getClass()).getRootLocation(), "transaction-logs"))
-				.withUserConfiguration(TestConfiguration.class).withConfiguration(
+				.withUserConfiguration(TestConfiguration.class)
+				.withConfiguration(
 						AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
 								SqlInitializationAutoConfiguration.class, autoConfiguredClass));
 	}
@@ -99,7 +100,8 @@ abstract class AbstractJpaAutoConfigurationTests {
 	@Test
 	void notConfiguredIfNoSingleDataSourceCandidateIsAvailable() {
 		new ApplicationContextRunner().withUserConfiguration(TestTwoDataSourcesConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass)).run(assertJpaIsNotAutoConfigured());
+				.withConfiguration(AutoConfigurations.of(this.autoConfiguredClass))
+				.run(assertJpaIsNotAutoConfigured());
 	}
 
 	protected ContextConsumer<AssertableApplicationContext> assertJpaIsNotAutoConfigured() {
@@ -191,8 +193,10 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	void customJpaProperties() {
-		this.contextRunner.withPropertyValues("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
-				"spring.jpa.properties.c:d").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.jpa.properties.a:b", "spring.jpa.properties.a.b:c",
+						"spring.jpa.properties.c:d")
+				.run((context) -> {
 					LocalContainerEntityManagerFactoryBean bean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
 					Map<String, Object> map = bean.getJpaPropertyMap();

@@ -50,7 +50,10 @@ class ResolvedDependencies {
 	}
 
 	void processConfiguration(Project project, Configuration configuration) {
-		Set<String> localProjectIds = project.getRootProject().getAllprojects().stream().map(this::projectId)
+		Set<String> localProjectIds = project.getRootProject()
+				.getAllprojects()
+				.stream()
+				.map(this::projectId)
 				.collect(Collectors.toSet());
 		this.configurationDependencies.put(configuration,
 				new ResolvedConfigurationDependencies(localProjectIds, configuration.getResolvedConfiguration()));

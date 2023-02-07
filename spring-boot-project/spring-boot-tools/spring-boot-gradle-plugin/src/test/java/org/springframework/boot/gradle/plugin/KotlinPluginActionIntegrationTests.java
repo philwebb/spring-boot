@@ -56,13 +56,15 @@ class KotlinPluginActionIntegrationTests {
 	@TestTemplate
 	void kotlinCompileTasksUseJavaParametersFlagByDefault() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: true").contains("compileTestKotlin java parameters: true");
+				.contains("compileKotlin java parameters: true")
+				.contains("compileTestKotlin java parameters: true");
 	}
 
 	@TestTemplate
 	void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
 		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: false").contains("compileTestKotlin java parameters: false");
+				.contains("compileKotlin java parameters: false")
+				.contains("compileTestKotlin java parameters: false");
 	}
 
 	@TestTemplate

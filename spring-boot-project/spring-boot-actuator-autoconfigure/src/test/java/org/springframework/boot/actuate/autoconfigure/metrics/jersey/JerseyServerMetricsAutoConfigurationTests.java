@@ -66,7 +66,8 @@ class JerseyServerMetricsAutoConfigurationTests {
 					AutoConfigurations.of(JerseyAutoConfiguration.class, JerseyServerMetricsAutoConfiguration.class,
 							ServletWebServerFactoryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class,
 							ObservationAutoConfiguration.class, MetricsAutoConfiguration.class))
-					.withUserConfiguration(ResourceConfiguration.class).withPropertyValues("server.port:0");
+					.withUserConfiguration(ResourceConfiguration.class)
+					.withPropertyValues("server.port:0");
 
 	@Test
 	void shouldOnlyBeActiveInWebApplicationContext() {
@@ -108,7 +109,8 @@ class JerseyServerMetricsAutoConfigurationTests {
 
 	private static void doRequest(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer().getPort();
+				.getWebServer()
+				.getPort();
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getForEntity(URI.create("http://localhost:" + port + "/users/3"), String.class);
 	}

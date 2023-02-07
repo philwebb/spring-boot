@@ -73,10 +73,10 @@ class ArrayBinderTests {
 		BindHandler handler = mockBindHandler();
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(),
-				isA(List.class));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(), isA(List.class));
 	}
 
 	@Test
@@ -204,10 +204,10 @@ class ArrayBinderTests {
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(Integer[].class));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+				.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Integer[].class));
 	}
 
 	@Test

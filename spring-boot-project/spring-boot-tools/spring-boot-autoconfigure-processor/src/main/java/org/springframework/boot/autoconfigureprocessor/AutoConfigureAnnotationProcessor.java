@@ -274,7 +274,8 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 
 		private int compare(Object o1, Object o2) {
-			return Comparator.comparing(this::isSpringClass).thenComparing(String.CASE_INSENSITIVE_ORDER)
+			return Comparator.comparing(this::isSpringClass)
+					.thenComparing(String.CASE_INSENSITIVE_ORDER)
 					.compare(o1.toString(), o2.toString());
 		}
 

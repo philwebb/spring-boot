@@ -98,7 +98,8 @@ class JsonTestIntegrationTests {
 		ExampleJsonObjectWithView object = new ExampleJsonObjectWithView();
 		object.setValue("spring");
 		JsonContent<ExampleJsonObjectWithView> content = this.jacksonWithViewJson
-				.forView(ExampleJsonObjectWithView.TestView.class).write(object);
+				.forView(ExampleJsonObjectWithView.TestView.class)
+				.write(object);
 		assertThat(content).doesNotHaveJsonPathValue("id");
 		assertThat(content).isEqualToJson("example.json");
 	}

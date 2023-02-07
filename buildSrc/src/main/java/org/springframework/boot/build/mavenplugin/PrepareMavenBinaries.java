@@ -60,8 +60,9 @@ public class PrepareMavenBinaries extends DefaultTask {
 	@TaskAction
 	public void prepareBinaries() {
 		for (String version : this.versions) {
-			Configuration configuration = getProject().getConfigurations().detachedConfiguration(
-					getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
+			Configuration configuration = getProject().getConfigurations()
+					.detachedConfiguration(getProject().getDependencies()
+							.create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
 			getProject().copy(
 					(copy) -> copy.into(this.outputDir).from(getProject().zipTree(configuration.getSingleFile())));
 		}

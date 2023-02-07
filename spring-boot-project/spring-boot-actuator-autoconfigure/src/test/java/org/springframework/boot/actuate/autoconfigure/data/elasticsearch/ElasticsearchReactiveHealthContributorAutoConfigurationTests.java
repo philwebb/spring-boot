@@ -45,8 +45,9 @@ class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ElasticsearchReactiveHealthIndicator.class).hasBean("elasticsearchHealthContributor"));
+		this.contextRunner
+				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchReactiveHealthIndicator.class)
+						.hasBean("elasticsearchHealthContributor"));
 	}
 
 	@Test

@@ -65,8 +65,9 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	@Test
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClass() {
-		this.contextRunner.withPropertyValues(getPropertyValues()).withClassLoader(new FilteredClassLoader(
-				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
+		this.contextRunner.withPropertyValues(getPropertyValues())
+				.withClassLoader(new FilteredClassLoader(
+						"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository"))
 				.run((context) -> assertThat(context).doesNotHaveBean(RelyingPartyRegistrationRepository.class));
 	}
 
@@ -170,8 +171,10 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			server.start();
 			String metadataUrl = server.url("").toString();
 			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
-			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
-					PREFIX + ".foo.assertingparty.singlesignon.binding=redirect").run((context) -> {
+			this.contextRunner
+					.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
+							PREFIX + ".foo.assertingparty.singlesignon.binding=redirect")
+					.run((context) -> {
 						RelyingPartyRegistrationRepository repository = context
 								.getBean(RelyingPartyRegistrationRepository.class);
 						RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
@@ -194,7 +197,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Test
 	void relyingPartyRegistrationRepositoryShouldBeConditionalOnMissingBean() {
 		this.contextRunner.withPropertyValues(getPropertyValues())
-				.withUserConfiguration(RegistrationRepositoryConfiguration.class).run((context) -> {
+				.withUserConfiguration(RegistrationRepositoryConfiguration.class)
+				.run((context) -> {
 					assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
 					assertThat(context).hasBean("testRegistrationRepository");
 				});
@@ -209,7 +213,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	@Test
 	void samlLoginShouldBackOffWhenASecurityFilterChainBeanIsPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityFilterChainConfig.class).withPropertyValues(getPropertyValues())
+				.withUserConfiguration(TestSecurityFilterChainConfig.class)
+				.withPropertyValues(getPropertyValues())
 				.run((context) -> assertThat(hasFilter(context, Saml2WebSsoAuthenticationFilter.class)).isFalse());
 	}
 
@@ -303,7 +308,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.securityMatcher("/**")
-					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
+					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
 		}
 
 	}

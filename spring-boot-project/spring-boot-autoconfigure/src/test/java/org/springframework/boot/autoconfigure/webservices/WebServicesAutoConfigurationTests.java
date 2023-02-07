@@ -51,7 +51,9 @@ class WebServicesAutoConfigurationTests {
 	@Test
 	void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class).rootCause()
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
+						.rootCause()
 						.hasMessageContaining("Path must start with '/'"));
 	}
 
@@ -81,7 +83,8 @@ class WebServicesAutoConfigurationTests {
 				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
 						"spring.webservices.servlet.init.key2=value2")
 				.run((context) -> assertThat(getServletRegistrationBean(context).getInitParameters())
-						.containsEntry("key1", "value1").containsEntry("key2", "value2"));
+						.containsEntry("key1", "value1")
+						.containsEntry("key2", "value2"));
 	}
 
 	@Test

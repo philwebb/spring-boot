@@ -111,7 +111,8 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar")
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
+				.contains("-Dcom.foo=bar")
 				.contains("-XX:TieredStopAtLevel=1");
 	}
 

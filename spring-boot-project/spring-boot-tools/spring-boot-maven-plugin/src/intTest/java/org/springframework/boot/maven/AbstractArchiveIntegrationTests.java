@@ -178,8 +178,10 @@ abstract class AbstractArchiveIntegrationTests {
 
 		ListAssert<String> entryNamesInPath(String path) {
 			List<String> matches = new ArrayList<>();
-			withJarFile((jarFile) -> withEntries(jarFile, (entries) -> matches.addAll(entries.map(ZipEntry::getName)
-					.filter((name) -> name.startsWith(path) && name.length() > path.length()).toList())));
+			withJarFile((jarFile) -> withEntries(jarFile,
+					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
+							.filter((name) -> name.startsWith(path) && name.length() > path.length())
+							.toList())));
 			return new ListAssert<>(matches);
 		}
 

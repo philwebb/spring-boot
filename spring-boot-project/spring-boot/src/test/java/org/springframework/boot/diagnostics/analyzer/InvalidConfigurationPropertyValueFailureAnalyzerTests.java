@@ -58,7 +58,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription()).contains("Validation failed for the following reason")
-				.contains("This is not valid.").doesNotContain("Additionally, this property is also set");
+				.contains("This is not valid.")
+				.doesNotContain("Additionally, this property is also set");
 	}
 
 	@Test
@@ -101,7 +102,8 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 	}
 
 	private void assertCommonParts(InvalidConfigurationPropertyValueException failure, FailureAnalysis analysis) {
-		assertThat(analysis.getDescription()).contains("test.property").contains("invalid")
+		assertThat(analysis.getDescription()).contains("test.property")
+				.contains("invalid")
 				.contains("TestOrigin test.property");
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}

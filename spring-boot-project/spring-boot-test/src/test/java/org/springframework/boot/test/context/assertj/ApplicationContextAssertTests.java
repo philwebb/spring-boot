@@ -193,7 +193,8 @@ class ApplicationContextAssertTests {
 	void doesNotHaveBeanOfNameWhenFailedToStartShouldFail() {
 		assertThatExceptionOfType(AssertionError.class)
 				.isThrownBy(() -> assertThat(getAssert(this.failure)).doesNotHaveBean("foo"))
-				.withMessageContaining("not to have any beans of name").withMessageContaining("failed to start");
+				.withMessageContaining("not to have any beans of name")
+				.withMessageContaining("failed to start");
 	}
 
 	@Test

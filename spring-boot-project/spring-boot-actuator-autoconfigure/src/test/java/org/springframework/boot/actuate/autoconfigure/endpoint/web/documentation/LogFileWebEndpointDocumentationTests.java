@@ -38,14 +38,16 @@ class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 
 	@Test
 	void logFile() throws Exception {
-		this.mockMvc.perform(get("/actuator/logfile")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/logfile"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("logfile/entire"));
 	}
 
 	@Test
 	void logFileRange() throws Exception {
 		this.mockMvc.perform(get("/actuator/logfile").header("Range", "bytes=0-1023"))
-				.andExpect(status().isPartialContent()).andDo(MockMvcRestDocumentation.document("logfile/range"));
+				.andExpect(status().isPartialContent())
+				.andDo(MockMvcRestDocumentation.document("logfile/range"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

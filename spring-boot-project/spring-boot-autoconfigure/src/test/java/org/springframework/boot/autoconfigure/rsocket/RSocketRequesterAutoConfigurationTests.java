@@ -68,7 +68,8 @@ class RSocketRequesterAutoConfigurationTests {
 		RSocketConnectorConfigurer first = mock(RSocketConnectorConfigurer.class);
 		RSocketConnectorConfigurer second = mock(RSocketConnectorConfigurer.class);
 		this.contextRunner.withBean("first", RSocketConnectorConfigurer.class, () -> first)
-				.withBean("second", RSocketConnectorConfigurer.class, () -> second).run((context) -> {
+				.withBean("second", RSocketConnectorConfigurer.class, () -> second)
+				.run((context) -> {
 					assertThat(context).getBeans(RSocketConnectorConfigurer.class).hasSize(2);
 					RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
 					assertThat(builder).extracting("rsocketConnectorConfigurers", as(InstanceOfAssertFactories.LIST))

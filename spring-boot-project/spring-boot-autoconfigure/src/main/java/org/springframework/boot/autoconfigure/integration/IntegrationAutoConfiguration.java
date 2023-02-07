@@ -103,9 +103,11 @@ public class IntegrationAutoConfiguration {
 		map.from(properties.getError().isIgnoreFailures()).to(integrationProperties::setErrorChannelIgnoreFailures);
 		map.from(properties.getEndpoint().isThrowExceptionOnLateReply())
 				.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
-		map.from(properties.getEndpoint().getReadOnlyHeaders()).as(StringUtils::toStringArray)
+		map.from(properties.getEndpoint().getReadOnlyHeaders())
+				.as(StringUtils::toStringArray)
 				.to(integrationProperties::setReadOnlyHeaders);
-		map.from(properties.getEndpoint().getNoAutoStartup()).as(StringUtils::toStringArray)
+		map.from(properties.getEndpoint().getNoAutoStartup())
+				.as(StringUtils::toStringArray)
 				.to(integrationProperties::setNoAutoStartupEndpoints);
 		return integrationProperties;
 	}

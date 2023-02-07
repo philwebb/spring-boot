@@ -145,8 +145,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	void initParametersAreConfiguredOnTheServletContext() {
-		this.contextRunner.withPropertyValues("server.servlet.context-parameters.a:alpha",
-				"server.servlet.context-parameters.b:bravo").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("server.servlet.context-parameters.a:alpha",
+						"server.servlet.context-parameters.b:bravo")
+				.run((context) -> {
 					ServletContext servletContext = context.getServletContext();
 					assertThat(servletContext.getInitParameter("a")).isEqualTo("alpha");
 					assertThat(servletContext.getInitParameter("b")).isEqualTo("bravo");

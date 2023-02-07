@@ -37,7 +37,8 @@ public class WebResourcesRuntimeHints implements RuntimeHintsRegistrar {
 		ClassLoader classLoaderToUse = (classLoader != null) ? classLoader : getClass().getClassLoader();
 		String[] locations = DEFAULT_LOCATIONS.stream()
 				.filter((candidate) -> classLoaderToUse.getResource(candidate) != null)
-				.map((location) -> location + "*").toArray(String[]::new);
+				.map((location) -> location + "*")
+				.toArray(String[]::new);
 		if (locations.length > 0) {
 			hints.resources().registerPattern((hint) -> hint.includes(locations));
 		}

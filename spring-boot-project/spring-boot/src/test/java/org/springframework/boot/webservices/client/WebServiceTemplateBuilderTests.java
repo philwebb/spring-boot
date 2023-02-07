@@ -110,7 +110,8 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void messageSendersShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.messageSenders(new ClientHttpRequestMessageSender())
-				.messageSenders(this.messageSender).build();
+				.messageSenders(this.messageSender)
+				.build();
 		assertThat(template.getMessageSenders()).containsOnly(this.messageSender);
 	}
 
@@ -132,7 +133,8 @@ class WebServiceTemplateBuilderTests {
 	void additionalMessageSendersShouldAddToExisting() {
 		ClientHttpRequestMessageSender httpMessageSender = new ClientHttpRequestMessageSender();
 		WebServiceTemplate template = this.builder.messageSenders(httpMessageSender)
-				.additionalMessageSenders(this.messageSender).build();
+				.additionalMessageSenders(this.messageSender)
+				.build();
 		assertThat(template.getMessageSenders()).containsOnly(httpMessageSender, this.messageSender);
 	}
 
@@ -165,7 +167,8 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void interceptorsShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.interceptors(mock(ClientInterceptor.class))
-				.interceptors(Collections.singleton(this.interceptor)).build();
+				.interceptors(Collections.singleton(this.interceptor))
+				.build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
@@ -186,7 +189,8 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void additionalInterceptorsShouldAddToExisting() {
 		ClientInterceptor interceptor = mock(ClientInterceptor.class);
-		WebServiceTemplate template = this.builder.interceptors(interceptor).additionalInterceptors(this.interceptor)
+		WebServiceTemplate template = this.builder.interceptors(interceptor)
+				.additionalInterceptors(this.interceptor)
 				.build();
 		assertThat(template.getInterceptors()).containsOnly(interceptor, this.interceptor);
 	}
@@ -235,7 +239,8 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplateCustomizer customizer1 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+				.customizers(Collections.singleton(customizer2))
+				.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(template);
 	}

@@ -68,7 +68,11 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator/e2").exchange().expectStatus().isUnauthorized();
-			webTestClient.get().uri("/actuator/e2").header("Authorization", getBasicAuth()).exchange().expectStatus()
+			webTestClient.get()
+					.uri("/actuator/e2")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
 					.isOk();
 		});
 	}
@@ -78,7 +82,10 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/actuator/").exchange().expectStatus()
+			webTestClient.get()
+					.uri("/actuator/")
+					.exchange()
+					.expectStatus()
 					.isEqualTo(expectedStatusWithTrailingSlash());
 		});
 	}
@@ -89,7 +96,8 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	protected final WebApplicationContextRunner getContextRunner() {
 		return createContextRunner().withPropertyValues("management.endpoints.web.exposure.include=*")
-				.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class).withConfiguration(
+				.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class)
+				.withConfiguration(
 						AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
 								UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
 								WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
@@ -100,8 +108,11 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer().getPort();
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).responseTimeout(Duration.ofMinutes(5))
+				.getWebServer()
+				.getPort();
+		return WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + port)
+				.responseTimeout(Duration.ofMinutes(5))
 				.build();
 	}
 

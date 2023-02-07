@@ -136,15 +136,17 @@ class HazelcastAutoConfigurationClientTests {
 	@Test
 	void unknownConfigFile() {
 		this.contextRunner.withPropertyValues("spring.hazelcast.config=foo/bar/unknown.xml")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("foo/bar/unknown.xml"));
 	}
 
 	@Test
 	void clientConfigTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(HazelcastServerAndClientConfig.class)
-				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml").run((context) -> assertThat(context)
-						.getBean(HazelcastInstance.class).isInstanceOf(HazelcastClientProxy.class));
+				.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
+						.isInstanceOf(HazelcastClientProxy.class));
 	}
 
 	@Test
@@ -154,7 +156,8 @@ class HazelcastAutoConfigurationClientTests {
 				.withPropertyValues("spring.hazelcast.config=classpath:org/springframework/"
 						+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
-						.extracting(HazelcastInstance::getName).isEqualTo("spring-boot"));
+						.extracting(HazelcastInstance::getName)
+						.isEqualTo("spring-boot"));
 	}
 
 	@Test
@@ -170,12 +173,15 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
-		return (context) -> assertThat(context).getBean(HazelcastInstance.class).isInstanceOf(HazelcastInstance.class)
+		return (context) -> assertThat(context).getBean(HazelcastInstance.class)
+				.isInstanceOf(HazelcastInstance.class)
 				.has(labelEqualTo(label));
 	}
 
 	private static Condition<HazelcastInstance> labelEqualTo(String label) {
-		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig().getLabels().stream()
+		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig()
+				.getLabels()
+				.stream()
 				.anyMatch((e) -> e.equals(label)), "Label equals to " + label);
 	}
 

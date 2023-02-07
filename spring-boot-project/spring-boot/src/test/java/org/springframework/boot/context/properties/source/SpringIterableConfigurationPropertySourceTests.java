@@ -70,8 +70,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper2.addFromPropertySource("key2", "my.key2b");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper1, mapper2);
-		assertThat(adapter.iterator()).toIterable().extracting(Object::toString).containsExactly("my.key1", "my.key2a",
-				"my.key4");
+		assertThat(adapter.iterator()).toIterable()
+				.extracting(Object::toString)
+				.containsExactly("my.key1", "my.key2a", "my.key4");
 	}
 
 	@Test

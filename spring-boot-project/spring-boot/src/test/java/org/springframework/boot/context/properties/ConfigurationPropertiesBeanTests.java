@@ -256,9 +256,13 @@ class ConfigurationPropertiesBeanTests {
 		Class<?> implicitConstructorBinding = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
 				.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
 				.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
-						.define("prefix", "implicit").build())
-				.defineRecordComponent("someString", String.class).defineRecordComponent("someInteger", Integer.class)
-				.make().load(getClass().getClassLoader()).getLoaded();
+						.define("prefix", "implicit")
+						.build())
+				.defineRecordComponent("someString", String.class)
+				.defineRecordComponent("someInteger", Integer.class)
+				.make()
+				.load(getClass().getClassLoader())
+				.getLoaded();
 		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
 				.forValueObject(implicitConstructorBinding, "implicitBindingRecord");
 		assertThat(propertiesBean.getName()).isEqualTo("implicitBindingRecord");

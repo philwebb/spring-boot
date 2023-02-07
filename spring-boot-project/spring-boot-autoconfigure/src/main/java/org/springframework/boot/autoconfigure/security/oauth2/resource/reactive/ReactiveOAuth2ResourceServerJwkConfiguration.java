@@ -79,7 +79,9 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		ReactiveJwtDecoder jwtDecoder() {
 			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = NimbusReactiveJwtDecoder
-					.withJwkSetUri(this.properties.getJwkSetUri()).jwsAlgorithms(this::jwsAlgorithms).build();
+					.withJwkSetUri(this.properties.getJwkSetUri())
+					.jwsAlgorithms(this::jwsAlgorithms)
+					.build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
@@ -112,7 +114,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey)
-					.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm())).build();
+					.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()))
+					.build();
 			jwtDecoder.setJwtValidator(getValidators(JwtValidators::createDefault));
 			return jwtDecoder;
 		}

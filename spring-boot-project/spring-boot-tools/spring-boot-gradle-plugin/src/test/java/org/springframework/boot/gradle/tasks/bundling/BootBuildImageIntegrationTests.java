@@ -362,7 +362,8 @@ class BootBuildImageIntegrationTests {
 	private void writeLongNameResource() throws IOException {
 		StringBuilder name = new StringBuilder();
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
-		Path path = this.gradleBuild.getProjectDir().toPath()
+		Path path = this.gradleBuild.getProjectDir()
+				.toPath()
 				.resolve(Paths.get("src", "main", "resources", name.toString()));
 		Files.createDirectories(path.getParent());
 		Files.createFile(path);

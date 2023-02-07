@@ -46,8 +46,9 @@ class JmxMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(JmxMeterRegistry.class).hasSingleBean(JmxConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JmxMeterRegistry.class)
+						.hasSingleBean(JmxConfig.class));
 	}
 
 	@Test
@@ -61,20 +62,25 @@ class JmxMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.jmx.metrics.export.enabled=false").run((context) -> assertThat(context)
-						.doesNotHaveBean(JmxMeterRegistry.class).doesNotHaveBean(JmxConfig.class));
+				.withPropertyValues("management.jmx.metrics.export.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(JmxMeterRegistry.class)
+						.doesNotHaveBean(JmxConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(JmxMeterRegistry.class).hasSingleBean(JmxConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JmxMeterRegistry.class)
+						.hasSingleBean(JmxConfig.class)
+						.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(JmxMeterRegistry.class).hasBean("customRegistry").hasSingleBean(JmxConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JmxMeterRegistry.class)
+						.hasBean("customRegistry")
+						.hasSingleBean(JmxConfig.class));
 	}
 
 	@Test

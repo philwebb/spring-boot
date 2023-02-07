@@ -343,7 +343,8 @@ class JacksonAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.jackson.default-leniency:false").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
 			assertThatThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
-					.isInstanceOf(InvalidFormatException.class).hasMessageContaining("expected format")
+					.isInstanceOf(InvalidFormatException.class)
+					.hasMessageContaining("expected format")
 					.hasMessageContaining("yyyyMMdd");
 		});
 	}
@@ -473,7 +474,8 @@ class JacksonAutoConfigurationTests {
 		RuntimeHints hints = new RuntimeHints();
 		new JacksonAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		Stream.of(fieldNames).map((name) -> reflection.onField(type, name))
+		Stream.of(fieldNames)
+				.map((name) -> reflection.onField(type, name))
 				.forEach((predicate) -> assertThat(predicate).accepts(hints));
 	}
 
@@ -482,7 +484,9 @@ class JacksonAutoConfigurationTests {
 			DeserializationConfig deserializationConfig = context.getBean(ObjectMapper.class)
 					.getDeserializationConfig();
 			AnnotationIntrospector annotationIntrospector = deserializationConfig.getAnnotationIntrospector()
-					.allIntrospectors().iterator().next();
+					.allIntrospectors()
+					.iterator()
+					.next();
 			assertThat(annotationIntrospector).hasFieldOrPropertyWithValue("creatorBinding", expectedMode);
 		});
 	}

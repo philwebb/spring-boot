@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
 class LifecycleVersion implements Comparable<LifecycleVersion> {
 
 	private static final Comparator<LifecycleVersion> COMPARATOR = Comparator.comparingInt(LifecycleVersion::getMajor)
-			.thenComparingInt(LifecycleVersion::getMinor).thenComparing(LifecycleVersion::getPatch);
+			.thenComparingInt(LifecycleVersion::getMinor)
+			.thenComparing(LifecycleVersion::getPatch);
 
 	private final int major;
 

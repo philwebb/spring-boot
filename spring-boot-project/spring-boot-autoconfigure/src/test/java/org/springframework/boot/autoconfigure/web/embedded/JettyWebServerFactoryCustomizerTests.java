@@ -355,7 +355,9 @@ class JettyWebServerFactoryCustomizerTests {
 		server.start();
 		server.stop();
 		return Arrays.stream(server.getServer().getConnectors())
-				.filter((connector) -> connector instanceof AbstractConnector).map(Connector::getIdleTimeout).toList();
+				.filter((connector) -> connector instanceof AbstractConnector)
+				.map(Connector::getIdleTimeout)
+				.toList();
 	}
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
@@ -373,7 +375,9 @@ class JettyWebServerFactoryCustomizerTests {
 		server.stop();
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
-			connector.getConnectionFactories().stream().filter((factory) -> factory instanceof ConnectionFactory)
+			connector.getConnectionFactories()
+					.stream()
+					.filter((factory) -> factory instanceof ConnectionFactory)
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();

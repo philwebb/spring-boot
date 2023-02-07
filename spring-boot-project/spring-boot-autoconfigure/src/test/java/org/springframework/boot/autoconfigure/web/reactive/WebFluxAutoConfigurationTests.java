@@ -303,8 +303,8 @@ class WebFluxAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
 							.containsExactly("defaultValidator");
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("defaultValidator",
-							"webFluxValidator");
+					assertThat(context).getBeanNames(Validator.class)
+							.containsExactlyInAnyOrder("defaultValidator", "webFluxValidator");
 					Validator validator = context.getBean("webFluxValidator", Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 					Object defaultValidator = context.getBean("defaultValidator");
@@ -342,11 +342,12 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void validationCustomConfigurerTakesPrecedence() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(ValidatorWebFluxConfigurer.class).run((context) -> {
+				.withUserConfiguration(ValidatorWebFluxConfigurer.class)
+				.run((context) -> {
 					assertThat(context).getBeans(ValidatorFactory.class).hasSize(1);
 					assertThat(context).getBeans(jakarta.validation.Validator.class).hasSize(1);
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("defaultValidator",
-							"webFluxValidator");
+					assertThat(context).getBeanNames(Validator.class)
+							.containsExactlyInAnyOrder("defaultValidator", "webFluxValidator");
 					assertThat(context.getBean("webFluxValidator"))
 							.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
 					// Primary Spring validator is the auto-configured one as the WebFlux
@@ -358,11 +359,12 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void validatorWithCustomSpringValidatorIgnored() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(CustomSpringValidator.class).run((context) -> {
+				.withUserConfiguration(CustomSpringValidator.class)
+				.run((context) -> {
 					assertThat(context).getBeanNames(jakarta.validation.Validator.class)
 							.containsExactly("defaultValidator");
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("customValidator",
-							"defaultValidator", "webFluxValidator");
+					assertThat(context).getBeanNames(Validator.class)
+							.containsExactlyInAnyOrder("customValidator", "defaultValidator", "webFluxValidator");
 					Validator validator = context.getBean("webFluxValidator", Validator.class);
 					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 					Object defaultValidator = context.getBean("defaultValidator");
@@ -394,7 +396,8 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void hiddenHttpMethodFilterCanBeOverridden() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
-				.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
+				.withUserConfiguration(CustomHiddenHttpMethodFilter.class)
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
 					assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
 				});
@@ -453,8 +456,10 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void cacheControl() {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
-				"spring.web.resources.cache.cachecontrol.proxy-revalidate:true").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
+						"spring.web.resources.cache.cachecontrol.proxy-revalidate:true")
+				.run((context) -> {
 					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
@@ -496,7 +501,8 @@ class WebFluxAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
 					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
-							.extracting("order").isEqualTo(1);
+							.extracting("order")
+							.isEqualTo(1);
 				});
 	}
 
@@ -514,7 +520,8 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
 				.run((context) -> {
 					MockServerHttpRequest request = MockServerHttpRequest.get("/")
-							.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
+							.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
+							.build();
 					MockServerWebExchange exchange = MockServerWebExchange.from(request);
 					LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 					assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
@@ -527,7 +534,8 @@ class WebFluxAutoConfigurationTests {
 	void whenAcceptHeaderLocaleContextResolverIsUsedThenAcceptLanguagesHeaderIsHonoured() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
 			MockServerHttpRequest request = MockServerHttpRequest.get("/")
-					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
+					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
+					.build();
 			MockServerWebExchange exchange = MockServerWebExchange.from(request);
 			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
@@ -561,8 +569,10 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void customLocaleContextResolverWithDifferentNameDoesNotReplaceAutoConfiguredLocaleContextResolver() {
-		this.contextRunner.withBean("customLocaleContextResolver", CustomLocaleContextResolver.class,
-				CustomLocaleContextResolver::new).run((context) -> {
+		this.contextRunner
+				.withBean("customLocaleContextResolver", CustomLocaleContextResolver.class,
+						CustomLocaleContextResolver::new)
+				.run((context) -> {
 					assertThat(context.getBean("customLocaleContextResolver"))
 							.isInstanceOf(CustomLocaleContextResolver.class);
 					assertThat(context.getBean("localeContextResolver"))
@@ -576,15 +586,18 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withBean(HighPrecedenceConfigurer.class, HighPrecedenceConfigurer::new)
 				.withBean(LowPrecedenceConfigurer.class, LowPrecedenceConfigurer::new)
 				.run((context) -> assertThat(context.getBean(DelegatingWebFluxConfiguration.class))
-						.extracting("configurers.delegates").asList()
-						.extracting((configurer) -> (Class) configurer.getClass()).containsExactly(
-								HighPrecedenceConfigurer.class, WebFluxConfig.class, LowPrecedenceConfigurer.class));
+						.extracting("configurers.delegates")
+						.asList()
+						.extracting((configurer) -> (Class) configurer.getClass())
+						.containsExactly(HighPrecedenceConfigurer.class, WebFluxConfig.class,
+								LowPrecedenceConfigurer.class));
 	}
 
 	@Test
 	void customWebSessionIdResolverShouldBeApplied() {
-		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class).run(assertExchangeWithSession(
-				(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
+		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class)
+				.run(assertExchangeWithSession(
+						(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
 	}
 
 	@Test

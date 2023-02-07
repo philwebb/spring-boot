@@ -106,37 +106,42 @@ class ServletEndpointDiscovererTests {
 
 	@Test
 	void getEndpointWhenEndpointHasOperationsShouldThrowException() {
-		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class).run(
-				assertDiscoverer((discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
-						.withMessageContaining("ServletEndpoints must not declare operations")));
+		this.contextRunner.withUserConfiguration(TestServletEndpointWithOperation.class)
+				.run(assertDiscoverer(
+						(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("ServletEndpoints must not declare operations")));
 	}
 
 	@Test
 	void getEndpointWhenEndpointNotASupplierShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointNotASupplier.class)
-				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
-						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must be a supplier")));
+				.run(assertDiscoverer(
+						(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("must be a supplier")));
 	}
 
 	@Test
 	void getEndpointWhenEndpointSuppliesWrongTypeShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfWrongType.class)
-				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
-						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must supply an EndpointServlet")));
+				.run(assertDiscoverer(
+						(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("must supply an EndpointServlet")));
 	}
 
 	@Test
 	void getEndpointWhenEndpointSuppliesNullShouldThrowException() {
 		this.contextRunner.withUserConfiguration(TestServletEndpointSupplierOfNull.class)
-				.run(assertDiscoverer((discoverer) -> assertThatIllegalStateException()
-						.isThrownBy(discoverer::getEndpoints).withMessageContaining("must not supply null")));
+				.run(assertDiscoverer(
+						(discoverer) -> assertThatIllegalStateException().isThrownBy(discoverer::getEndpoints)
+								.withMessageContaining("must not supply null")));
 	}
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new ServletEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(ServletEndpointFilter.class)
+		assertThat(RuntimeHintsPredicates.reflection()
+				.onType(ServletEndpointFilter.class)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 

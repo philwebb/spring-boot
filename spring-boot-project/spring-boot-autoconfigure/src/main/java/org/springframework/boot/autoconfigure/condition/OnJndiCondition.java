@@ -68,7 +68,8 @@ class OnJndiCondition extends SpringBootCondition {
 					.foundExactly("\"" + location + "\""));
 		}
 		return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnJndi.class, details)
-				.didNotFind("any matching JNDI location").atAll());
+				.didNotFind("any matching JNDI location")
+				.atAll());
 	}
 
 	protected boolean isJndiAvailable() {

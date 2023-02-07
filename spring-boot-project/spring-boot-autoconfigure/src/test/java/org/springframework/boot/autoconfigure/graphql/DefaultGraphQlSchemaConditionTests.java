@@ -49,7 +49,8 @@ class DefaultGraphQlSchemaConditionTests {
 	@Test
 	void matchesWhenCustomizerIsDetected() {
 		this.contextRunner.withUserConfiguration(CustomCustomizerConfiguration.class, TestingConfiguration.class)
-				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing").run((context) -> {
+				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing")
+				.run((context) -> {
 					didMatch(context);
 					assertThat(conditionReportMessage(context)).contains(
 							"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
@@ -60,7 +61,8 @@ class DefaultGraphQlSchemaConditionTests {
 	@Test
 	void doesNotMatchWhenBothAreMissing() {
 		this.contextRunner.withUserConfiguration(TestingConfiguration.class)
-				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing").run((context) -> {
+				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing")
+				.run((context) -> {
 					assertThat(context).doesNotHaveBean("success");
 					assertThat(conditionReportMessage(context)).contains(
 							"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
@@ -75,7 +77,9 @@ class DefaultGraphQlSchemaConditionTests {
 
 	private String conditionReportMessage(AssertableApplicationContext context) {
 		Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-				.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource().values();
+				.get(context.getSourceApplicationContext().getBeanFactory())
+				.getConditionAndOutcomesBySource()
+				.values();
 		return conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 	}
 

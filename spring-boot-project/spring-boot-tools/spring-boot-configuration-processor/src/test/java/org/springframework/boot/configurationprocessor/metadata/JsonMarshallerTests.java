@@ -55,8 +55,11 @@ class JsonMarshallerTests {
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
 		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(outputStream.toByteArray()));
-		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-				.withDescription("desc").withDefaultValue("x").withDeprecation("Deprecation comment", "b.c.d"));
+		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class)
+				.fromSource(InputStream.class)
+				.withDescription("desc")
+				.withDefaultValue("x")
+				.withDeprecation("Deprecation comment", "b.c.d"));
 		assertThat(read).has(Metadata.withProperty("b.c.d"));
 		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
 		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));

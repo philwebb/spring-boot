@@ -101,11 +101,13 @@ class JmxEndpointIntegrationTests {
 	private void checkEndpointMBeans(MBeanServer mBeanServer, String[] enabledEndpoints, String[] disabledEndpoints) {
 		for (String enabledEndpoint : enabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(enabledEndpoint)))
-					.as(String.format("Endpoint %s", enabledEndpoint)).isTrue();
+					.as(String.format("Endpoint %s", enabledEndpoint))
+					.isTrue();
 		}
 		for (String disabledEndpoint : disabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(disabledEndpoint)))
-					.as(String.format("Endpoint %s", disabledEndpoint)).isFalse();
+					.as(String.format("Endpoint %s", disabledEndpoint))
+					.isFalse();
 		}
 	}
 

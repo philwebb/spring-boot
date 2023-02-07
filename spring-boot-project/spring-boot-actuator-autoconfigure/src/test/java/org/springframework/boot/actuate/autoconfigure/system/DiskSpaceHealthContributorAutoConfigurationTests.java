@@ -46,7 +46,9 @@ class DiskSpaceHealthContributorAutoConfigurationTests {
 	@Test
 	void thresholdMustBePositive() {
 		this.contextRunner.withPropertyValues("management.health.diskspace.threshold=-10MB")
-				.run((context) -> assertThat(context).hasFailed().getFailure().rootCause()
+				.run((context) -> assertThat(context).hasFailed()
+						.getFailure()
+						.rootCause()
 						.hasMessage("threshold must be greater than or equal to 0"));
 	}
 

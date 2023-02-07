@@ -91,7 +91,8 @@ class DataSourceAutoConfigurationTests {
 	@Test
 	void testBadDriverClass() {
 		this.contextRunner.withPropertyValues("spring.datasource.driverClassName:org.none.jdbcDriver")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
+				.run((context) -> assertThat(context).getFailure()
+						.isInstanceOf(BeanCreationException.class)
 						.hasMessageContaining("org.none.jdbcDriver"));
 	}
 
@@ -159,8 +160,10 @@ class DataSourceAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("resource")
 	void testEmbeddedTypeDefaultsUsername() {
-		this.contextRunner.withPropertyValues("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
-				"spring.datasource.url:jdbc:hsqldb:mem:testdb").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+						"spring.datasource.url:jdbc:hsqldb:mem:testdb")
+				.run((context) -> {
 					DataSource bean = context.getBean(DataSource.class);
 					HikariDataSource pool = (HikariDataSource) bean;
 					assertThat(pool.getDriverClassName()).isEqualTo("org.hsqldb.jdbcDriver");
@@ -204,8 +207,10 @@ class DataSourceAutoConfigurationTests {
 
 	@Test
 	void testExplicitDriverClassClearsUsername() {
-		this.contextRunner.withPropertyValues("spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
-				"spring.datasource.url:jdbc:foo://localhost").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.datasource.driverClassName:" + DatabaseTestDriver.class.getName(),
+						"spring.datasource.url:jdbc:foo://localhost")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(DataSource.class);
 					HikariDataSource dataSource = context.getBean(HikariDataSource.class);
 					assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseTestDriver.class.getName());
@@ -228,7 +233,8 @@ class DataSourceAutoConfigurationTests {
 
 	@Test
 	void whenThereIsAnEmptyUserProvidedDataSource() {
-		this.contextRunner.with(hideConnectionPools()).withPropertyValues("spring.datasource.url:")
+		this.contextRunner.with(hideConnectionPools())
+				.withPropertyValues("spring.datasource.url:")
 				.run((context) -> assertThat(context).getBean(DataSource.class).isInstanceOf(EmbeddedDatabase.class));
 	}
 

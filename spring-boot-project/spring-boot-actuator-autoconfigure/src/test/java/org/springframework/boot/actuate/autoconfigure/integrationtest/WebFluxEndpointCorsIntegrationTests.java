@@ -55,17 +55,25 @@ class WebFluxEndpointCorsIntegrationTests {
 
 	@Test
 	void corsIsDisabledByDefault() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
-				.header("Origin", "spring.example.org").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-				.exchange().expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN)));
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.options()
+				.uri("/actuator/beans")
+				.header("Origin", "spring.example.org")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.exchange()
+				.expectHeader()
+				.doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN)));
 	}
 
 	@Test
 	void settingAllowedOriginsEnablesCors() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
 				.run(withWebTestClient((webTestClient) -> {
-					webTestClient.options().uri("/actuator/beans").header("Origin", "test.example.org")
-							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange().expectStatus()
+					webTestClient.options()
+							.uri("/actuator/beans")
+							.header("Origin", "test.example.org")
+							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+							.exchange()
+							.expectStatus()
 							.isForbidden();
 					performAcceptedCorsRequest(webTestClient, "/actuator/beans");
 				}));
@@ -77,8 +85,12 @@ class WebFluxEndpointCorsIntegrationTests {
 				.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.org",
 						"management.endpoints.web.cors.allow-credentials:true")
 				.run(withWebTestClient((webTestClient) -> {
-					webTestClient.options().uri("/actuator/beans").header("Origin", "spring.example.com")
-							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange().expectStatus()
+					webTestClient.options()
+							.uri("/actuator/beans")
+							.header("Origin", "spring.example.com")
+							.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+							.exchange()
+							.expectStatus()
 							.isForbidden();
 					performAcceptedCorsRequest(webTestClient, "/actuator/beans");
 				}));
@@ -87,8 +99,9 @@ class WebFluxEndpointCorsIntegrationTests {
 	@Test
 	void maxAgeDefaultsTo30Minutes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
-				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
-						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800")));
+				.run(withWebTestClient(
+						(webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans").expectHeader()
+								.valueEquals(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800")));
 	}
 
 	@Test
@@ -96,16 +109,21 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.max-age: 2400")
-				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
-						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400")));
+				.run(withWebTestClient(
+						(webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans").expectHeader()
+								.valueEquals(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400")));
 	}
 
 	@Test
 	void requestsWithDisallowedHeadersAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
-				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
-						.header("Origin", "spring.example.org").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha").exchange().expectStatus()
+				.run(withWebTestClient((webTestClient) -> webTestClient.options()
+						.uri("/actuator/beans")
+						.header("Origin", "spring.example.org")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha")
+						.exchange()
+						.expectStatus()
 						.isForbidden()));
 	}
 
@@ -114,18 +132,27 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
-				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
-						.header("Origin", "spring.example.org").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha").exchange().expectStatus().isOk()
-						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha")));
+				.run(withWebTestClient((webTestClient) -> webTestClient.options()
+						.uri("/actuator/beans")
+						.header("Origin", "spring.example.org")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha")
+						.exchange()
+						.expectStatus()
+						.isOk()
+						.expectHeader()
+						.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha")));
 	}
 
 	@Test
 	void requestsWithDisallowedMethodsAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org")
-				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
+				.run(withWebTestClient((webTestClient) -> webTestClient.options()
+						.uri("/actuator/beans")
 						.header("Origin", "spring.example.org")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH").exchange().expectStatus()
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH")
+						.exchange()
+						.expectStatus()
 						.isForbidden()));
 	}
 
@@ -134,10 +161,15 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allowed-methods:GET,HEAD")
-				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
+				.run(withWebTestClient((webTestClient) -> webTestClient.options()
+						.uri("/actuator/beans")
 						.header("Origin", "spring.example.org")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD").exchange().expectStatus().isOk()
-						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD")));
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD")
+						.exchange()
+						.expectStatus()
+						.isOk()
+						.expectHeader()
+						.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD")));
 	}
 
 	@Test
@@ -145,8 +177,9 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:true")
-				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
-						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")));
+				.run(withWebTestClient(
+						(webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans").expectHeader()
+								.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")));
 	}
 
 	@Test
@@ -154,19 +187,28 @@ class WebFluxEndpointCorsIntegrationTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.web.cors.allowed-origins:spring.example.org",
 						"management.endpoints.web.cors.allow-credentials:false")
-				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
-						.expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS)));
+				.run(withWebTestClient(
+						(webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans").expectHeader()
+								.doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS)));
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> withWebTestClient(Consumer<WebTestClient> webTestClient) {
-		return (context) -> webTestClient.accept(WebTestClient.bindToApplicationContext(context).configureClient()
-				.baseUrl("https://spring.example.org").build());
+		return (context) -> webTestClient.accept(WebTestClient.bindToApplicationContext(context)
+				.configureClient()
+				.baseUrl("https://spring.example.org")
+				.build());
 	}
 
 	private WebTestClient.ResponseSpec performAcceptedCorsRequest(WebTestClient webTestClient, String url) {
-		return webTestClient.options().uri(url).header(HttpHeaders.ORIGIN, "spring.example.org")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET").exchange().expectHeader()
-				.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "spring.example.org").expectStatus().isOk();
+		return webTestClient.options()
+				.uri(url)
+				.header(HttpHeaders.ORIGIN, "spring.example.org")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.exchange()
+				.expectHeader()
+				.valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "spring.example.org")
+				.expectStatus()
+				.isOk();
 	}
 
 }

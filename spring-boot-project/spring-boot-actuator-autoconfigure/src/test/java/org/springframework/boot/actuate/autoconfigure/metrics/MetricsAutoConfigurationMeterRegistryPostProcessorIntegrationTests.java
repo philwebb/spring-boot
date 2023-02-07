@@ -68,14 +68,16 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 		new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
 						SimpleMetricsExportAutoConfiguration.class))
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+				.withUserConfiguration(TestConfiguration.class)
+				.run((context) -> {
 				});
 	}
 
 	@Test
 	void counterIsIncrementedOncePerEventWithoutCompositeMeterRegistry() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
+				.run((context) -> {
 					Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
@@ -90,7 +92,8 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 		new ApplicationContextRunner()
 				.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class,
 						PrometheusMetricsExportAutoConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
+				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
+				.run((context) -> {
 					Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("test-logger");
 					logger.error("Error.");
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);

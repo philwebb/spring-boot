@@ -47,7 +47,8 @@ public class JacksonEndpointAutoConfiguration {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
 				.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
 						SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
-				.serializationInclusion(Include.NON_NULL).build();
+				.serializationInclusion(Include.NON_NULL)
+				.build();
 		return () -> objectMapper;
 	}
 

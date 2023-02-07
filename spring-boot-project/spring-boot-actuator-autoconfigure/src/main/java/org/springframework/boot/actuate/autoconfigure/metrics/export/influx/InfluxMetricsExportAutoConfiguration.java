@@ -64,8 +64,10 @@ public class InfluxMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
-		return InfluxMeterRegistry.builder(influxConfig).clock(clock).httpClient(
-				new HttpUrlConnectionSender(this.properties.getConnectTimeout(), this.properties.getReadTimeout()))
+		return InfluxMeterRegistry.builder(influxConfig)
+				.clock(clock)
+				.httpClient(new HttpUrlConnectionSender(this.properties.getConnectTimeout(),
+						this.properties.getReadTimeout()))
 				.build();
 
 	}

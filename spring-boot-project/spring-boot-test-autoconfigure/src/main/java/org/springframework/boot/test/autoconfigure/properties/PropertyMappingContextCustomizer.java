@@ -51,8 +51,9 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		if (!this.propertySource.isEmpty()) {
 			context.getEnvironment().getPropertySources().addFirst(this.propertySource);
 		}
-		context.getBeanFactory().registerSingleton(PropertyMappingCheckBeanPostProcessor.class.getName(),
-				new PropertyMappingCheckBeanPostProcessor());
+		context.getBeanFactory()
+				.registerSingleton(PropertyMappingCheckBeanPostProcessor.class.getName(),
+						new PropertyMappingCheckBeanPostProcessor());
 	}
 
 	@Override
@@ -76,9 +77,11 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			Class<?> beanClass = bean.getClass();
 			MergedAnnotations annotations = MergedAnnotations.from(beanClass, SearchStrategy.SUPERCLASS);
-			Set<Class<?>> components = annotations.stream(Component.class).map(this::getRoot)
+			Set<Class<?>> components = annotations.stream(Component.class)
+					.map(this::getRoot)
 					.collect(Collectors.toSet());
-			Set<Class<?>> propertyMappings = annotations.stream(PropertyMapping.class).map(this::getRoot)
+			Set<Class<?>> propertyMappings = annotations.stream(PropertyMapping.class)
+					.map(this::getRoot)
 					.collect(Collectors.toSet());
 			if (!components.isEmpty() && !propertyMappings.isEmpty()) {
 				throw new IllegalStateException("The @PropertyMapping " + getAnnotationsDescription(propertyMappings)

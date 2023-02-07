@@ -204,13 +204,18 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 
 		private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 			ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
-			builder.clientName("foo").clientId("foo")
+			builder.clientName("foo")
+					.clientId("foo")
 					.clientAuthenticationMethod(
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("read")
-					.clientSecret("secret").redirectUri("https://redirect-uri.com")
-					.authorizationUri("https://authorization-uri.com").tokenUri("https://token-uri.com")
-					.userInfoUri(userInfoUri).userNameAttributeName("login");
+					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+					.scope("read")
+					.clientSecret("secret")
+					.redirectUri("https://redirect-uri.com")
+					.authorizationUri("https://authorization-uri.com")
+					.tokenUri("https://token-uri.com")
+					.userInfoUri(userInfoUri)
+					.userNameAttributeName("login");
 			return builder.build();
 		}
 

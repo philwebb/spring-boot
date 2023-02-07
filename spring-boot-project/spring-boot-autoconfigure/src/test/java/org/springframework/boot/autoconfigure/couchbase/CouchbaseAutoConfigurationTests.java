@@ -63,7 +63,8 @@ class CouchbaseAutoConfigurationTests {
 	@Test
 	void connectionStringCreateEnvironmentAndCluster() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+				.withPropertyValues("spring.couchbase.connection-string=localhost")
+				.run((context) -> {
 					assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 					assertThat(context.getBean(Cluster.class))
 							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
@@ -74,15 +75,18 @@ class CouchbaseAutoConfigurationTests {
 	void whenObjectMapperBeanIsDefinedThenClusterEnvironmentObjectMapperIsDerivedFromIt() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+				.withPropertyValues("spring.couchbase.connection-string=localhost")
+				.run((context) -> {
 					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
 					Set<Object> expectedModuleIds = new HashSet<>(
 							context.getBean(ObjectMapper.class).getRegisteredModuleIds());
 					expectedModuleIds.add(new JsonValueModule().getTypeId());
 					JsonSerializer serializer = env.jsonSerializer();
-					assertThat(serializer).extracting("wrapped").isInstanceOf(JacksonJsonSerializer.class)
+					assertThat(serializer).extracting("wrapped")
+							.isInstanceOf(JacksonJsonSerializer.class)
 							.extracting("mapper", as(InstanceOfAssertFactories.type(ObjectMapper.class)))
-							.extracting(ObjectMapper::getRegisteredModuleIds).isEqualTo(expectedModuleIds);
+							.extracting(ObjectMapper::getRegisteredModuleIds)
+							.isEqualTo(expectedModuleIds);
 				});
 	}
 
@@ -93,7 +97,8 @@ class CouchbaseAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
 				.withBean(ClusterEnvironmentBuilderCustomizer.class,
 						() -> (builder) -> builder.jsonSerializer(customJsonSerializer))
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+				.withPropertyValues("spring.couchbase.connection-string=localhost")
+				.run((context) -> {
 					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
 					JsonSerializer serializer = env.jsonSerializer();
 					assertThat(serializer).extracting("wrapped").isSameAs(customJsonSerializer);
@@ -152,7 +157,8 @@ class CouchbaseAutoConfigurationTests {
 
 	private void testClusterEnvironment(Consumer<ClusterEnvironment> environmentConsumer, String... environment) {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.couchbase.connection-string=localhost").withPropertyValues(environment)
+				.withPropertyValues("spring.couchbase.connection-string=localhost")
+				.withPropertyValues(environment)
 				.run((context) -> environmentConsumer.accept(context.getBean(ClusterEnvironment.class)));
 	}
 
@@ -176,7 +182,8 @@ class CouchbaseAutoConfigurationTests {
 
 		@Bean
 		ClusterEnvironmentBuilderCustomizer clusterEnvironmentBuilderCustomizer() {
-			return (builder) -> builder.timeoutConfig().kvTimeout(Duration.ofSeconds(5))
+			return (builder) -> builder.timeoutConfig()
+					.kvTimeout(Duration.ofSeconds(5))
 					.connectTimeout(Duration.ofSeconds(2));
 		}
 

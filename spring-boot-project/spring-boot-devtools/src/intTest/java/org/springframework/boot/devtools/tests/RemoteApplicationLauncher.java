@@ -109,8 +109,8 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 	private void awaitRemoteSpringApplication(LaunchedJvm launchedJvm) {
 		FileContents contents = new FileContents(launchedJvm.getStandardOut());
 		try {
-			Awaitility.waitAtMost(Duration.ofMinutes(3)).until(contents::get,
-					containsString("Started RemoteSpringApplication"));
+			Awaitility.waitAtMost(Duration.ofMinutes(3))
+					.until(contents::get, containsString("Started RemoteSpringApplication"));
 		}
 		catch (ConditionTimeoutException ex) {
 			if (!launchedJvm.getProcess().isAlive()) {

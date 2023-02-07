@@ -61,7 +61,8 @@ class SampleDataRestApplicationTests {
 	@Test
 	void findByNameAndCountry() throws Exception {
 		this.mvc.perform(get("/api/cities/search/findByNameAndCountryAllIgnoringCase?name=Melbourne&country=Australia"))
-				.andExpect(status().isOk()).andExpect(jsonPath("state", equalTo("Victoria")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("state", equalTo("Victoria")))
 				.andExpect(jsonPath("name", equalTo("Melbourne")));
 	}
 
@@ -69,7 +70,8 @@ class SampleDataRestApplicationTests {
 	void findByContaining() throws Exception {
 		this.mvc.perform(
 				get("/api/cities/search/findByNameContainingAndCountryContainingAllIgnoringCase?name=&country=UK"))
-				.andExpect(status().isOk()).andExpect(jsonPath("_embedded.cities", hasSize(3)));
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("_embedded.cities", hasSize(3)));
 	}
 
 }

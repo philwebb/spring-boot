@@ -319,8 +319,12 @@ class BomPluginIntegrationTests {
 	// }
 
 	private BuildResult runGradle(String... args) {
-		return GradleRunner.create().withDebug(true).withProjectDir(this.projectDir).withArguments(args)
-				.withPluginClasspath().build();
+		return GradleRunner.create()
+				.withDebug(true)
+				.withProjectDir(this.projectDir)
+				.withArguments(args)
+				.withPluginClasspath()
+				.build();
 	}
 
 	private void generatePom(Consumer<NodeAssert> consumer) {

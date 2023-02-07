@@ -37,8 +37,9 @@ class LoggingMainClassTimeoutWarningListener implements MainClassTimeoutWarningL
 
 	@Override
 	public void handleTimeoutWarning(long duration, String mainMethod) {
-		this.log.get().warn("Searching for the main-class is taking some time, "
-				+ "consider using the mainClass configuration parameter");
+		this.log.get()
+				.warn("Searching for the main-class is taking some time, "
+						+ "consider using the mainClass configuration parameter");
 	}
 
 }

@@ -61,7 +61,8 @@ class TomcatMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(TomcatMetricsAutoConfiguration.class,
 						ServletWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
+				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
+				.run((context) -> {
 					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 					assertThat(context).hasSingleBean(TomcatMetricsBinder.class);
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
@@ -77,7 +78,8 @@ class TomcatMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(TomcatMetricsAutoConfiguration.class,
 						ReactiveWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true").run((context) -> {
+				.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
+				.run((context) -> {
 					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
 					assertThat(registry.find("tomcat.sessions.active.max").meter()).isNotNull();

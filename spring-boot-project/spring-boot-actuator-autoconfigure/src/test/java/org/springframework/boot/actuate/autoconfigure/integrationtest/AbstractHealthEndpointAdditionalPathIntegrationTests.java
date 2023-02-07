@@ -84,8 +84,12 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 						"management.server.port=0", "management.endpoint.health.group.live.include=diskSpace",
 						"management.endpoint.health.group.live.additional-path=server:healthz",
 						"management.endpoint.health.group.live.show-components=always")
-				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
-						.exchange().expectStatus().isNotFound(), "local.server.port"));
+				.run(withWebTestClient((client) -> client.get()
+						.uri("/healthz")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isNotFound(), "local.server.port"));
 	}
 
 	@Test
@@ -94,8 +98,12 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 				"spring.main.cloud-platform=cloud_foundry", "management.endpoint.health.group.live.include=diskSpace",
 				"management.endpoint.health.group.live.additional-path=server:healthz",
 				"management.endpoint.health.group.live.show-components=always")
-				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
-						.exchange().expectStatus().isNotFound(), "local.server.port"));
+				.run(withWebTestClient((client) -> client.get()
+						.uri("/healthz")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isNotFound(), "local.server.port"));
 	}
 
 	@Test
@@ -106,13 +114,26 @@ abstract class AbstractHealthEndpointAdditionalPathIntegrationTests<T extends Ab
 						"management.endpoint.health.group.live.include=diskSpace",
 						"management.endpoint.health.group.live.additional-path=server:healthz",
 						"management.endpoint.health.group.live.show-components=always")
-				.run(withWebTestClient((client) -> client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON)
-						.exchange().expectStatus().isNotFound(), "local.server.port"));
+				.run(withWebTestClient((client) -> client.get()
+						.uri("/healthz")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchange()
+						.expectStatus()
+						.isNotFound(), "local.server.port"));
 	}
 
 	private void testResponse(WebTestClient client) {
-		client.get().uri("/healthz").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectBody()
-				.jsonPath("status").isEqualTo("UP").jsonPath("components.diskSpace").exists();
+		client.get()
+				.uri("/healthz")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("status")
+				.isEqualTo("UP")
+				.jsonPath("components.diskSpace")
+				.exists();
 	}
 
 	private ContextConsumer<A> withWebTestClient(Consumer<WebTestClient> consumer, String property) {

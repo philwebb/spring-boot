@@ -63,7 +63,8 @@ class WebMvcTestPrintDefaultIntegrationTests {
 
 	private void executeTests(Class<?> testClass) {
 		LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-				.selectors(DiscoverySelectors.selectClass(testClass)).build();
+				.selectors(DiscoverySelectors.selectClass(testClass))
+				.build();
 		Launcher launcher = LauncherFactory.create();
 		launcher.execute(request);
 	}

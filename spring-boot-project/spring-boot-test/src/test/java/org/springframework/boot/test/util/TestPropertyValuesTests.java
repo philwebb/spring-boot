@@ -133,8 +133,10 @@ class TestPropertyValuesTests {
 
 	@Test
 	void andShouldChainAndAddSingleKeyValue() {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing").applyTo(this.environment,
-				Type.MAP);
+		TestPropertyValues.of("foo.bar=baz")
+				.and("hello.world=hi")
+				.and("bling.blah=bing")
+				.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");

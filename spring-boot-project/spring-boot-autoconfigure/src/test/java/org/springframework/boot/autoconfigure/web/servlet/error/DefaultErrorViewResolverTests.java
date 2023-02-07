@@ -106,8 +106,9 @@ class DefaultErrorViewResolverTests {
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
 		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
-		then(this.templateAvailabilityProvider).should().isTemplateAvailable(eq("error/404"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class));
+		then(this.templateAvailabilityProvider).should()
+				.isTemplateAvailable(eq("error/404"), any(Environment.class), any(ClassLoader.class),
+						any(ResourceLoader.class));
 		then(this.templateAvailabilityProvider).shouldHaveNoMoreInteractions();
 	}
 

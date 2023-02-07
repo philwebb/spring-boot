@@ -52,7 +52,10 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoBinding() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.binding",
 				"post");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
+		assertThat(this.properties.getRegistration()
+				.get("simplesamlphp")
+				.getAssertingparty()
+				.getSinglesignon()
 				.getBinding()).isEqualTo(Saml2MessageBinding.POST);
 	}
 
@@ -60,7 +63,10 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoSignRequests() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request",
 				"false");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
+		assertThat(this.properties.getRegistration()
+				.get("simplesamlphp")
+				.getAssertingparty()
+				.getSinglesignon()
 				.isSignRequest()).isFalse();
 	}
 
@@ -89,7 +95,10 @@ class Saml2RelyingPartyPropertiesTests {
 	@Test
 	void customizeSsoSignRequestsIsTrueByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
+		assertThat(this.properties.getRegistration()
+				.get("simplesamlphp")
+				.getAssertingparty()
+				.getSinglesignon()
 				.isSignRequest()).isTrue();
 	}
 

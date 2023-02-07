@@ -100,7 +100,8 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+				.customizers(Collections.singleton(customizer2))
+				.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(scheduler);
 	}
@@ -123,7 +124,8 @@ class TaskSchedulerBuilderTests {
 	void additionalCustomizersShouldAddToExisting() {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
-		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
+		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
+				.additionalCustomizers(customizer2)
 				.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);

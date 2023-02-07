@@ -62,7 +62,8 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void allCaches() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches")).andExpect(status().isOk())
+		this.mockMvc.perform(get("/actuator/caches"))
+				.andExpect(status().isOk())
 				.andDo(MockMvcRestDocumentation.document("caches/all",
 						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
 								fieldWithPath("cacheManagers.*.caches")
@@ -73,13 +74,16 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void namedCache() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
-				.document("caches/named", queryParameters(queryParameters), responseFields(levelFields)));
+		this.mockMvc.perform(get("/actuator/caches/cities"))
+				.andExpect(status().isOk())
+				.andDo(MockMvcRestDocumentation.document("caches/named", queryParameters(queryParameters),
+						responseFields(levelFields)));
 	}
 
 	@Test
 	void evictAllCaches() throws Exception {
-		this.mockMvc.perform(delete("/actuator/caches")).andExpect(status().isNoContent())
+		this.mockMvc.perform(delete("/actuator/caches"))
+				.andExpect(status().isNoContent())
 				.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
 	}
 

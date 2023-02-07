@@ -521,8 +521,11 @@ class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
 		this.springApplication.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = this.springApplication.run();
-		ApplicationListener<?> listener = this.springApplication.getListeners().stream()
-				.filter(LoggingApplicationListener.class::isInstance).findFirst().get();
+		ApplicationListener<?> listener = this.springApplication.getListeners()
+				.stream()
+				.filter(LoggingApplicationListener.class::isInstance)
+				.findFirst()
+				.get();
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils.getField(listener,
 				"loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();

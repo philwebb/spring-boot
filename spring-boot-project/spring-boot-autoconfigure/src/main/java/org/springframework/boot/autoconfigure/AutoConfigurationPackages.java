@@ -108,7 +108,8 @@ public abstract class AutoConfigurationPackages {
 			String[] existingPackages = (String[]) constructorArgumentValues.getIndexedArgumentValue(0, String[].class)
 					.getValue();
 			constructorArgumentValues.addIndexedArgumentValue(0,
-					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages)).distinct()
+					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages))
+							.distinct()
 							.toArray(String[]::new));
 		}
 		else {

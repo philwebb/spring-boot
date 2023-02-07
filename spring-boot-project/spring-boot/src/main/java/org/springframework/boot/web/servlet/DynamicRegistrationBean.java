@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @since 2.0.0
  */
-public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> extends RegistrationBean
+public abstract class DynamicRegistrationBean<D extends Registration.Dynamic>extends RegistrationBean
 		implements BeanNameAware {
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);

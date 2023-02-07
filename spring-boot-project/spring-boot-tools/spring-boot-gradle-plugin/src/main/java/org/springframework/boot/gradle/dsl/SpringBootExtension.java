@@ -91,7 +91,8 @@ public class SpringBootExtension {
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
 			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
-			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties().getArtifact()
+			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
+					.getArtifact()
 					.convention(this.project.provider(() -> determineArtifactBaseName())));
 		});
 		if (configurer != null) {
@@ -102,13 +103,19 @@ public class SpringBootExtension {
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
-		task.getDestinationDir().convention(this.project.getLayout()
-				.dir(this.project.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
+		task.getDestinationDir()
+				.convention(this.project.getLayout()
+						.dir(this.project
+								.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
+		return this.project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getOutput()
+				.getResourcesDir();
 	}
 
 	private String determineArtifactBaseName() {
